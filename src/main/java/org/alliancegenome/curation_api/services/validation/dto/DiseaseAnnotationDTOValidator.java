@@ -231,7 +231,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getConditionRelationDtos())) {
 			List<ConditionRelation> relations = new ArrayList<>();
 			for (ConditionRelationDTO conditionRelationDTO : dto.getConditionRelationDtos()) {
-				if (conditionRelationDTO.getHandle() != null) {
+				if (StringUtils.isNotBlank(conditionRelationDTO.getHandle())) {
 					if (!conditionRelationDTO.getReferenceCurie().equals(dto.getReferenceCurie())) {
 						daResponse.addErrorMessage("condition_relation_dtos - reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + conditionRelationDTO.getReferenceCurie() + ")");
 					}

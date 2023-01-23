@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.model.entities.slotAnnotations;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -34,6 +36,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "NameSlotAnnotation", description = "POJO representing a name slot annotation")
+@Table(indexes = { @Index(name = "nameslotannotation_nametype_index", columnList = "nameType_id"), @Index(name = "nameslotannotation_synonymscope_index", columnList = "synonymScope_id") })
 public abstract class NameSlotAnnotation extends SlotAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)

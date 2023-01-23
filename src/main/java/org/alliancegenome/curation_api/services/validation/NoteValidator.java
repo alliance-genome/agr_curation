@@ -96,15 +96,12 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
 		if (singleRefResponse.getEntity() == null) {
-			Map<String, String> errors = singleRefResponse.getErrorMessages();
-			for (String refField : errors.keySet()) {
-				addMessageResponse("references", refField + " - " + errors.get(refField));
-			}
+			addMessageResponse("references", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
 		if (singleRefResponse.getEntity().getObsolete() && !previousCuries.contains(singleRefResponse.getEntity().getCurie())) {
-			addMessageResponse("references", "curie - " + ValidationConstants.OBSOLETE_MESSAGE);
+			addMessageResponse("references", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 

@@ -1,0 +1,74 @@
+[
+  {
+    "mod_entity_id": "DATEST:Annot0003",
+    "created_by_curie": "DATEST:Person0002",
+    "updated_by_curie": "DATEST:Person0001",
+    "date_created": "2022-03-19T22:10:12+00:00",
+    "date_updated": "2022-03-20T22:10:12+00:00",
+    "agm_curie": "DATEST:AGM0002",
+    "do_term_curie": "DATEST:Disease0002",
+    "data_provider_name": "TEST2",
+    "secondary_data_provider_name": "TEST",
+    "disease_relation_name": "is_exacerbated_model_of",
+    "genetic_sex_name": "female",
+    "evidence_code_curies": [
+      "DATEST:Evidence0002"
+    ],
+    "condition_relation_dtos": [
+      {
+        "reference_curie": "PMID:25920551",
+        "handle": "test_handle_2",
+        "condition_relation_type_name": "induced_by",
+        "created_by_curie": "DATEST:Person0002",
+        "updated_by_curie": "DATEST:Person0001",
+        "date_created": "2022-03-19T22:10:12+00:00",
+        "date_updated": "2022-03-20T22:10:12+00:00",
+        "condition_dtos": [
+          {
+            "condition_class_curie": "DATEST:ExpCondTerm0003",
+            "condition_id_curie": "DATEST:ExpCondTerm0001",
+            "condition_quantity": "Some amount 2",
+            "condition_gene_ontology_curie": "DATEST:GOTerm0002",
+            "condition_anatomy_curie": "DATEST:AnatomyTerm0002",
+            "condition_taxon_curie": "NCBITaxon:9606",
+            "condition_chemical_curie": "DATEST:ChemicalTerm0002",
+            "condition_free_text": "Free text 2",
+            "created_by_curie": "DATEST:Person0002",
+            "updated_by_curie": "DATEST:Person0001",
+            "date_created": "2022-03-19T22:10:12+00:00",
+            "date_updated": "2022-03-20T22:10:12+00:00"
+          }
+        ]
+      }
+    ],
+    "disease_genetic_modifier_curie": "DATEST:Gene0001",
+    "disease_genetic_modifier_relation_name": "exacerbated_by",
+    "with_gene_curies": [
+      "HGNC:0002"
+    ],
+    "reference_curie": "PMID:25920551",
+    "note_dtos": [
+      {
+        "free_text": "Test note 2",
+        "note_type_name": "disease_note",
+        "created_by_curie": "DATEST:Person0002",
+        "updated_by_curie": "DATEST:Person0001",
+        "date_created": "2022-03-19T22:10:12+00:00",
+        "date_updated": "2022-03-20T22:10:12+00:00",
+        "evidence_curies": [
+          "PMID:25920551"
+        ]
+      }
+    ],
+    "annotation_type_name": "computational",
+    "disease_qualifier_names": [
+      "severity"
+    ],
+    "inferred_gene_curie": "DATEST:Gene0002",
+    "asserted_gene_curies": [
+      "DATEST:Gene0001"
+    ],
+    "inferred_allele_curie": "DATEST:Allele0002",
+    "asserted_allele_curie": "DATEST:Allele0001"
+  }
+]

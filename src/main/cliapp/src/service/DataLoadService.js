@@ -57,6 +57,13 @@ export class DataLoadService extends BaseAuthService {
 			return this.api.get(`/bulkloadfilehistory/${id}`);
 		}
 
+		getHistoryExceptions(historyId, rows, page) {
+			var searchObject ={
+				"bulkLoadFileHistory.id" : historyId
+			}
+			return this.api.post(`/bulkloadfileexception/find?limit=${rows}&page=${page}`, searchObject);
+		}
+
 		deleteLoadFile(id) {
 			return this.api.delete(`/bulkloadfile/${id}`);
 		}
@@ -78,7 +85,7 @@ export class DataLoadService extends BaseAuthService {
 
 		getOntologyTypes() {
 				return [
-						"ECO", "ZFA", "DO", "RO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO", "ATP"
+						"ECO", "ZFA", "DO", "RO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO", "ATP", "OBI"
 				];
 		}
 

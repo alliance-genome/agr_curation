@@ -1,24 +1,35 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import java.util.List;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+	
+	private String errorMessage;
 
-	public AffectedGenomicModel validateAnnotation(AffectedGenomicModel uiEntity) {
+	public AffectedGenomicModel validateAffectedGenomicModelUpdate(AffectedGenomicModel uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not update AGM: [" + uiEntity.getCurie() + "]";
 
 		String curie = validateCurie(uiEntity);
 		if (curie == null) {
@@ -27,21 +38,38 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 		AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(curie);
 		if (dbEntity == null) {
-			addMessageResponse("Could not find AGM with curie: [" + curie + "]");
+			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
-
-		String errorTitle = "Could not update AGM [" + curie + "]";
-
+		
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		
+		return validateAffectedGenomicModel(uiEntity, dbEntity);
+	}
+	
+	public AffectedGenomicModel validateAffectedGenomicModelCreate(AffectedGenomicModel uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create AGM [" + uiEntity.getCurie() + "]";
 
-		String name = StringUtils.isNotBlank(uiEntity.getName()) ? uiEntity.getName() : null;
+		AffectedGenomicModel dbEntity = new AffectedGenomicModel();
+		String curie = validateCurie(uiEntity);
+		dbEntity.setCurie(curie);
+		
+		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, true);
+		
+		return validateAffectedGenomicModel(uiEntity, dbEntity);
+	}
+	
+	private AffectedGenomicModel validateAffectedGenomicModel(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
+
+		String name = handleStringField(uiEntity.getName());
 		dbEntity.setName(name);
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
-
-		dbEntity.setSubtype(uiEntity.getSubtype());
+		
+		VocabularyTerm subtype = validateSubtype(uiEntity, dbEntity);
+		dbEntity.setSubtype(subtype);
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
@@ -49,18 +77,36 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 			dbEntity.setSecondaryIdentifiers(null);
 		}
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
-			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
-		} else {
-			dbEntity.setCrossReferences(null);
-		}
+		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
+		dbEntity.setCrossReferences(crossReferences);
 
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
 		return dbEntity;
+	}
+	
+	public VocabularyTerm validateSubtype(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
+		String field = "subtype";
+		if (uiEntity.getSubtype() == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+
+		VocabularyTerm subtype = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, uiEntity.getSubtype().getName());
+		if (subtype == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+
+		if (subtype.getObsolete() && (dbEntity.getSubtype() == null || !subtype.getName().equals(dbEntity.getSubtype().getName()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+
+		return subtype;
 	}
 
 }

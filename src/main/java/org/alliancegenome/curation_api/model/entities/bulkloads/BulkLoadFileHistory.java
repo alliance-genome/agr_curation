@@ -55,7 +55,6 @@ public class BulkLoadFileHistory extends GeneratedAuditedObject {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BulkLoadFile bulkLoadFile;
 
-	@JsonView(View.BulkLoadFileHistory.class)
 	@OneToMany(mappedBy = "bulkLoadFileHistory")
 	private List<BulkLoadFileException> exceptions = new ArrayList<>();
 

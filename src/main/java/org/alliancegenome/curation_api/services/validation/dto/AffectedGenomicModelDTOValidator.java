@@ -4,9 +4,12 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
@@ -17,6 +20,8 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
 
 	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto) throws ObjectValidationException {
 		ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<AffectedGenomicModel>();
@@ -43,6 +48,17 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 		agmResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		agm = geResponse.getEntity();
+		
+		VocabularyTerm subtype = null;
+		if (StringUtils.isBlank(dto.getSubtypeName())) {
+			agmResponse.addErrorMessage("subtype_name", ValidationConstants.REQUIRED_MESSAGE);
+		
+		} else {
+			subtype = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dto.getSubtypeName());
+			if (subtype == null)
+				agmResponse.addErrorMessage("subtype_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSubtypeName() + ")");
+		}
+		agm.setSubtype(subtype);
 
 		if (agmResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, agmResponse.errorMessagesString());

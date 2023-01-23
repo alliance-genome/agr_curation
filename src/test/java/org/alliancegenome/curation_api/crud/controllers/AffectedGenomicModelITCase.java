@@ -1,178 +1,302 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+
+import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel.Subtype;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.junit.jupiter.api.*;
-
-
-import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(9)
-public class AffectedGenomicModelITCase {
+public class AffectedGenomicModelITCase extends BaseITCase {
 
-	private final String AGM_CURIE = "AGM:0001";
-	private final String AGM_TAXON = "NCBITaxon:10090";
-	private final String AGM_SUBTYPE = "genotype";
-	private final String AGM_NAME = "AGM Test 1";
-	private final String INVALID_TAXON = "NCBI:00001";
-	private AffectedGenomicModel agm;
+	private final String AGM = "AGM:0001";
+	
+	private NCBITaxonTerm taxon;
+	private NCBITaxonTerm taxon2;
+	private OffsetDateTime datetime;
+	private OffsetDateTime datetime2;
+	private Person person;
+	private VocabularyTerm subtype;
+	private VocabularyTerm subtype2;
+	
+	private void loadRequiredEntities() {
+		taxon = getNCBITaxonTerm("NCBITaxon:10090");
+		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
+		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
+		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
+		person = createPerson("TEST:AGMPerson0001");
+		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
+		subtype = getVocabularyTerm(subtypeVocabulary, "fish");
+		subtype2 = getVocabularyTerm(subtypeVocabulary, "genotype");
+	}
 	
 	@Test
 	@Order(1)
 	public void createValidAGM() {
-		agm = createModel(AGM_CURIE, AGM_NAME, AGM_TAXON, AGM_SUBTYPE);
+		loadRequiredEntities();
+		
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		agm.setCurie(AGM);
+		agm.setTaxon(taxon);
+		agm.setName("Test AGM");
+		agm.setDateCreated(datetime);
+		agm.setSubtype(subtype);;
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(agm).
-				when().
-				post("/api/agm").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(agm).
+			when().
+			post("/api/agm").
+			then().
+			statusCode(200);
+		
 		RestAssured.given().
-				when().
-				get("/api/agm/" + AGM_CURIE).
-				then().
-				statusCode(200).
-				body("entity.curie", is(AGM_CURIE)).
-				body("entity.name", is(AGM_NAME)).
-				body("entity.taxon.curie", is(AGM_TAXON)).
-				body("entity.internal", is(false)).
-				body("entity.subtype", is(AGM_SUBTYPE));
+			when().
+			get("/api/agm/" + AGM).
+			then().
+			statusCode(200).
+			body("entity.curie", is(AGM)).
+			body("entity.name", is("Test AGM")).
+			body("entity.subtype.name", is(subtype.getName())).
+			body("entity.taxon.curie", is(taxon.getCurie())).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test
 	@Order(2)
 	public void editAGM() {
-		
-		
-		agm.setName("AGM edited");
-		agm.setSubtype(Subtype.valueOf("strain"));
-		agm.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setName("AGM edited");;
+		agm.setTaxon(taxon2);
 		agm.setInternal(true);
+		agm.setObsolete(true);
+		agm.setDateCreated(datetime2);
+		agm.setCreatedBy(person);
+		agm.setSubtype(subtype2);
 
 		RestAssured.given().
-				contentType("application/json").
-				body(agm).
-				when().
-				put("/api/agm").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(200);
 
 		RestAssured.given().
-				when().
-				get("/api/agm/" + AGM_CURIE).
-				then().
-				statusCode(200).
-				body("entity.curie", is(AGM_CURIE)).
-				body("entity.name", is("AGM edited")).
-				body("entity.taxon.curie", is("NCBITaxon:9606")).
-				body("entity.internal", is(true)).
-				body("entity.subtype", is("strain"));
+			when().
+			get("/api/agm/" + AGM).
+			then().
+			statusCode(200).
+			body("entity.curie", is(AGM)).
+			body("entity.name", is("AGM edited")).
+			body("entity.subtype.name", is(subtype2.getName())).
+			body("entity.taxon.curie", is(taxon2.getCurie())).
+			body("entity.internal", is(true)).
+			body("entity.obsolete", is(true)).
+			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
-
+	
 	@Test
 	@Order(3)
-	public void deleteAGM() {
-
+	public void createAGMWithMissingRequiredFields() {
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		
 		RestAssured.given().
-				when().
-				delete("/api/agm/" + AGM_CURIE).
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(agm).
+			when().
+			post("/api/agm").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(3))).
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.subtype", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(4)
-	public void createMissingCurieAGM() {
-		AffectedGenomicModel noCurieAgm = createModel(null, AGM_NAME, AGM_TAXON, AGM_SUBTYPE);
+	public void editAGMWithMissingCurie() {
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setCurie(null);
 		
 		RestAssured.given().
 			contentType("application/json").
-			body(noCurieAgm).
+			body(agm).
 			when().
 			put("/api/agm").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(5)
-	public void createMissingNameAGM() {
-		AffectedGenomicModel noNameAgm = createModel(AGM_CURIE, null, AGM_TAXON, AGM_SUBTYPE);
+	public void editAGMWithMissingRequiredFields() {
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setTaxon(null);
+		agm.setSubtype(null);
 		
 		RestAssured.given().
 			contentType("application/json").
-			body(noNameAgm).
+			body(agm).
 			when().
 			put("/api/agm").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.subtype", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(6)
-	public void createMissingTaxonAGM() {
-		AffectedGenomicModel noTaxonAgm = createModel(AGM_CURIE, AGM_NAME, null, AGM_SUBTYPE);
+	public void createAGMWithEmptyRequiredFields() {
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		agm.setCurie("");
+		agm.setTaxon(taxon);
+		agm.setSubtype(subtype);
 		
 		RestAssured.given().
 			contentType("application/json").
-			body(noTaxonAgm).
+			body(agm).
 			when().
-			put("/api/agm").
+			post("/api/agm").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
 	@Order(7)
-	public void createInvalidTaxonAGM() {
-		AffectedGenomicModel invalidTaxonAgm = createModel(AGM_CURIE, AGM_NAME, INVALID_TAXON, AGM_SUBTYPE);
-	
+	public void editAGMWithEmptyCurie() {
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setCurie("");
 
 		RestAssured.given().
 			contentType("application/json").
-			body(invalidTaxonAgm).
+			body(agm).
 			when().
 			put("/api/agm").
 			then().
-			statusCode(400);
-	}
-
-	private AffectedGenomicModel createModel(String curie, String name, String taxon, String subtype) {
-		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setCurie(curie);
-		agm.setTaxon(getTaxonFromCurie(taxon));
-		agm.setName(name);
-		agm.setSubtype(Subtype.valueOf(subtype));
-				
-		return agm;
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
-	private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
-		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
+	@Test
+	@Order(8)
+	public void createAGMWithInvalidFields() {
+		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
+		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
+		VocabularyTerm nonPersistedTerm = new VocabularyTerm();
+		nonPersistedTerm.setName("invalid");
+		
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		agm.setCurie("AGM:0008");
+		agm.setTaxon(nonPersistedTaxon);
+		agm.setSubtype(nonPersistedTerm);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
 			when().
-			get("/api/ncbitaxonterm/" + taxonCurie).
+			post("/api/agm").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.subtype", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(9)
+	public void editAGMWithInvalidFields() {
+		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
+		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
+		VocabularyTerm nonPersistedTerm = new VocabularyTerm();
+		nonPersistedTerm.setName("invalid");
+		
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setTaxon(nonPersistedTaxon);
+		agm.setSubtype(nonPersistedTerm);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.subtype", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(10)
+	public void editAGMWithNullNonRequiredFields() {
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setName(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/agm/" + AGM).
 			then().
 			statusCode(200).
-			extract().body().as(getObjectResponseTypeRef());
+			body("entity", not(hasKey("name")));
 		
-		return response.getEntity();
 	}
+	
+	@Test
+	@Order(11)
+	public void deleteAGM() {
 
-	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRef() {
-		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+		RestAssured.given().
+				when().
+				delete("/api/agm/" + AGM).
+				then().
+				statusCode(200);
 	}
 }

@@ -31,19 +31,25 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 
-	public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity) {
+	public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity, GenomicEntity dbEntity) {
 		String field = "taxon";
 		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(uiEntity.getTaxon().getCurie());
-		if (taxon.getEntity() == null) {
+		NCBITaxonTerm taxon = ncbiTaxonTermService.get(uiEntity.getTaxon().getCurie()).getEntity();
+		if (taxon == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		return taxon.getEntity();
+		
+		if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return taxon;
 	}
 
 	public List<CrossReference> validateCrossReferences(GenomicEntity uiEntity, GenomicEntity dbEntity) {
@@ -54,10 +60,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 			for (CrossReference newXref : uiEntity.getCrossReferences()) {
 				ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(newXref);
 				if (xrefResponse.getEntity() == null) {
-					Map<String, String> errors = xrefResponse.getErrorMessages();
-					for (String xrefField : errors.keySet()) {
-						addMessageResponse(field, xrefField + " - " + errors.get(xrefField));
-					}
+					addMessageResponse(field, xrefResponse.errorMessagesString());
 					return null;
 				}
 				validatedXrefs.add(xrefResponse.getEntity());

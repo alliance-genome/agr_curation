@@ -15,6 +15,7 @@ import { NewConditionForm } from './NewConditionForm';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useNewConditionReducer } from './useNewConditionReducer';
 import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
+import { getDefaultTableState } from '../../service/TableStateService';
 
 
 export const ExperimentalConditionsTable = () => {
@@ -333,6 +334,13 @@ export const ExperimentalConditionsTable = () => {
 	},
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("ExperimentalConditions", defaultColumnNames);
+
 	const headerButtons = () => {
 		return (
 			<>
@@ -349,6 +357,8 @@ export const ExperimentalConditionsTable = () => {
 					endpoint="experimental-condition"
 					tableName="Experimental Conditions"
 					columns={columns}
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					isEditable={true}
 					curieFields={["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntology", "conditionChemical"]}
 					sortMapping={sortMapping}

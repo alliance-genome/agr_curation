@@ -34,8 +34,6 @@ import lombok.ToString;
 @Table(indexes = { @Index(name = "allelesymbol_singleallele_curie_index", columnList = "singleallele_curie"), })
 public class AlleleSymbolSlotAnnotation extends NameSlotAnnotation {
 
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonBackReference
 	private Allele singleAllele;

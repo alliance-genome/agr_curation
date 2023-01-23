@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
@@ -34,6 +35,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 
 	@Inject AlleleDAO alleleDAO;
 	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
+	@Inject AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
 	@Inject AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
 	@Inject AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
 	@Inject AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
@@ -115,6 +117,9 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	private void deleteAlleleSlotAnnotations(Allele allele) {
 		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes()))
 			allele.getAlleleMutationTypes().forEach(amt -> {alleleMutationTypeDAO.remove(amt.getId());});
+		
+		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes()))
+			allele.getAlleleInheritanceModes().forEach(aim -> {alleleInheritanceModeDAO.remove(aim.getId());});
 		
 		if (allele.getAlleleSymbol() != null)
 			alleleSymbolDAO.remove(allele.getAlleleSymbol().getId());

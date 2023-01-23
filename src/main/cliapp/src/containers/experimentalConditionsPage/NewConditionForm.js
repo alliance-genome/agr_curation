@@ -49,8 +49,14 @@ export const NewConditionForm = ({
 				newConditionDispatch({type: "RESET"});
 			},
 			onError: (error) => {
+
+				const message =
+					error.response.data.errorMessages.uniqueId ?
+					"Page Error: New experimental condition is a duplicate of an existing experimental condition" :
+					error.response.data.errorMessage;
+
 				toast_error.current.show([
-					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
+					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
 				]);
 				newConditionDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
 			}

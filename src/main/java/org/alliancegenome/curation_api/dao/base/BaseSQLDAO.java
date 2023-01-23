@@ -19,6 +19,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.IdentifiableType;
+import javax.persistence.metamodel.Metamodel;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -32,6 +34,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.common.ValueConvert;
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.query.SearchQuery;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
@@ -136,7 +139,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
-		CriteriaQuery<E> all = findQuery.select(rootEntry);
+
+		Metamodel metaModel = entityManager.getMetamodel();
+		IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
+		
+		CriteriaQuery<E> all = findQuery.select(rootEntry).orderBy(cb.asc(rootEntry.get(of.getId(of.getIdType().getJavaType()).getName())));
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(myClass)));
@@ -344,18 +351,25 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 										String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
 										BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
 
-										String queryField = field;
 										Boolean useKeywordFields = (Boolean) searchFilters.get(filterName).get(field).get("useKeywordFields");
-										if (useKeywordFields != null && useKeywordFields) {
-											queryField = field + "_keyword";
-										}
 
 										String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
 										if (queryType != null && queryType.equals("matchQuery")) {
-											q.should(p.match().field(queryField).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value : 1));
+											BooleanPredicateClausesStep<?> clause = p.bool();
+											if (useKeywordFields != null && useKeywordFields) {
+												clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value * 10 : 10));
+											}
+											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value : 1));
+											q.should(clause);
 										} else { // assume simple query
-											q.should(p.simpleQueryString().fields(queryField).matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+											BooleanPredicateClausesStep<?> clause = p.bool();
+											if (useKeywordFields != null && useKeywordFields) {
+												clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+													.defaultOperator(booleanOperator).boost(value >= 1 ? value * 10 : 10));
+											}
+											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString())
 												.defaultOperator(booleanOperator).boost(value >= 1 ? value : 1));
+											q.should(clause);
 										}
 										boost++;
 									}
@@ -468,7 +482,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
 		Root<E> root = query.from(myClass);
 		Root<E> countRoot = countQuery.from(myClass);
-
+		
 		// System.out.println("Root: " + root);
 		List<Predicate> restrictions = new ArrayList<>();
 		List<Predicate> countRestrictions = new ArrayList<>();
@@ -559,6 +573,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		if (orderByField != null) {
 			query.orderBy(builder.asc(root.get(orderByField)));
+		} else {
+			Metamodel metaModel = entityManager.getMetamodel();
+			IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
+			query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));
 		}
 
 		query.where(builder.and(restrictions.toArray(new Predicate[0])));

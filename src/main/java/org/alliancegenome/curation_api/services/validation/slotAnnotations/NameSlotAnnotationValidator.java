@@ -19,14 +19,14 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 		dbEntity = validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (StringUtils.isBlank(uiEntity.getDisplayText())) {
-			response.addErrorMessage("displayText", ValidationConstants.REQUIRED_MESSAGE);
+			addMessageResponse("displayText", ValidationConstants.REQUIRED_MESSAGE);
 			dbEntity.setDisplayText(null);
 		} else {
 			dbEntity.setDisplayText(uiEntity.getDisplayText());
 		}
 
 		if (StringUtils.isBlank(uiEntity.getFormatText())) {
-			response.addErrorMessage("formatText", ValidationConstants.REQUIRED_MESSAGE);
+			addMessageResponse("formatText", ValidationConstants.REQUIRED_MESSAGE);
 			dbEntity.setFormatText(null);
 		} else {
 			dbEntity.setFormatText(uiEntity.getFormatText());

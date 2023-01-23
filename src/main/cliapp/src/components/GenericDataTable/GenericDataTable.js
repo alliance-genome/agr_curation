@@ -16,11 +16,23 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled, dataKey = 'id', deprecateIfPublic = false } = props;
+	const { 
+		tableName, 
+		isEnabled, 
+		aggregationFields, 
+		endpoint, 
+		columns, 
+		headerButtons, 
+		deletionEnabled, 
+		dataKey = 'id', 
+		deprecateIfPublic = false,
+		modReset = false 
+	} = props;
 
 	const {
 		setSelectedColumnNames,
 		tableStateConfirm,
+		modResetConfirm,
 		onFilter,
 		setColumnList,
 		columnWidths,
@@ -70,8 +82,10 @@ export const GenericDataTable = (props) => {
 				defaultColumnNames = {defaultColumnNames}
 				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
 				buttons = {headerButtons ? headerButtons() : undefined}
-				onclickEvent = {tableStateConfirm}
+				tableStateConfirm = {tableStateConfirm}
+				modResetConfirm = {modResetConfirm}
 				isEnabled = {isEnabled}
+				modReset={modReset}
 		/>
 	);
 

@@ -6,6 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.View.VocabularyTermSetView;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -28,7 +29,7 @@ public class GeneratedAuditedObject extends AuditedObject {
 	@DocumentId
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class, VocabularyTermSetView.class })
 	@EqualsAndHashCode.Include
 	protected Long id;
 

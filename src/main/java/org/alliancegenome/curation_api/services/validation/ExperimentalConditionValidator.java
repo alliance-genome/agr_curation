@@ -27,6 +27,8 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Exper
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+
 @RequestScoped
 public class ExperimentalConditionValidator extends AuditedObjectValidator<ExperimentalCondition> {
 
@@ -69,7 +71,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ExperimentalCondition validateExperimentalConditionCreate(ExperimentalCondition uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not create ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
+		errorMessage = "Could not create ExperimentalCondition";
 
 		ExperimentalCondition dbEntity = new ExperimentalCondition();
 

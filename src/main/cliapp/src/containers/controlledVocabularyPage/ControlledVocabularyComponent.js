@@ -12,6 +12,7 @@ import {ControlledVocabularyDropdown} from "../../components/ControlledVocabular
 import {NewTermForm} from "../../containers/controlledVocabularyPage/NewTermForm";
 import {NewVocabularyForm} from "../../containers/controlledVocabularyPage/NewVocabularyForm";
 import {Button} from "primereact/button";
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const ControlledVocabularyComponent = () => {
 		const newTermReducer = (state, action) => {
@@ -262,6 +263,13 @@ export const ControlledVocabularyComponent = () => {
 		}
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("ControlledVocabularyTerms", defaultColumnNames);
+
 	return (
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
@@ -270,6 +278,8 @@ export const ControlledVocabularyComponent = () => {
 					endpoint="vocabularyterm" 
 					tableName="Controlled Vocabulary Terms" 
 					columns={columns}  
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					isEditable={true}
 					mutation={mutation}
 					isEnabled={isEnabled}

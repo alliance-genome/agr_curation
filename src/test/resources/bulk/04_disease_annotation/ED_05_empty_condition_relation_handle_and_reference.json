@@ -1,0 +1,64 @@
+[
+  {
+    "mod_entity_id": "DATEST:ED05",
+    "internal": false,
+    "obsolete": false,
+    "gene_curie": "DATEST:Gene0001",
+    "do_term_curie": "DATEST:Disease0001",
+    "data_provider_name": "TEST",
+    "secondary_data_provider_name": "TEST2",
+    "negated": true,
+    "disease_relation_name": "is_implicated_in",
+    "genetic_sex_name": "male",
+    "updated_by_curie": "DATEST:Person0001",
+    "evidence_code_curies": [
+      "DATEST:Evidence0001"
+    ],
+    "condition_relation_dtos": [
+      {
+        "condition_relation_type_name": "exacerbated_by",
+        "internal": false,
+        "obsolete": false,
+        "condition_dtos": [
+          {
+            "condition_class_curie": "DATEST:ExpCondTerm0001",
+            "condition_id_curie": "DATEST:ExpCondTerm0002",
+            "condition_quantity": "Some amount",
+            "condition_gene_ontology_curie": "DATEST:GOTerm0001",
+            "condition_anatomy_curie": "DATEST:AnatomyTerm0001",
+            "condition_taxon_curie": "NCBITaxon:6239",
+            "condition_chemical_curie": "DATEST:ChemicalTerm0001",
+            "condition_free_text": "Free text",
+            "internal": false,
+            "obsolete": false
+          }
+        ]
+      }
+    ],
+    "disease_genetic_modifier_curie": "DATEST:Gene0002",
+    "disease_genetic_modifier_relation_name": "ameliorated_by",
+    "with_gene_curies": [
+      "HGNC:0001"
+    ],
+    "reference_curie": "PMID:25920554",
+    "note_dtos": [
+      {
+        "free_text": "Test note",
+        "note_type_name": "disease_summary",
+        "internal": false,
+        "obsolete": false,
+        "evidence_curies": [
+          "PMID:25920554"
+        ]
+      }
+    ],
+    "created_by_curie": "DATEST:Person0001",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-09T22:10:12+00:00",
+    "sgd_strain_background_curie": "SGD:AGM0001",
+    "annotation_type_name": "manually_curated",
+    "disease_qualifier_names": [
+      "susceptibility"
+    ]
+  }
+]

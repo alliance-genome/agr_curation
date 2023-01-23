@@ -47,6 +47,7 @@ export const Dashboard = () => {
 		XPOTerm: { name: "XPO", link: "/#/ontology/xpo", type: 'ontology', },
 		ATPTerm: { name: "ATP", link: "/#/ontology/atp", type: 'ontology', },
 		XBEDTerm: { name: "XBED", link: "/#/ontology/xbed", type: 'ontology', },
+		OBITerm: { name: "OBI", link: "/#/ontology/obi", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },

@@ -34,8 +34,6 @@ import lombok.ToString;
 @Table(indexes = { @Index(name = "genesynonym_singlegene_curie_index", columnList = "singlegene_curie"), })
 public class GeneSynonymSlotAnnotation extends NameSlotAnnotation {
 
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonBackReference
 	private Gene singleGene;
