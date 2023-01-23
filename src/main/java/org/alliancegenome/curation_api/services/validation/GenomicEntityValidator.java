@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -11,6 +10,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
+import org.alliancegenome.curation_api.enums.SupportedSpecies;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -44,11 +44,9 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 			return null;
 		}
 		
-		if (!ValidationConstants.CANONICAL_TAXONS.contains(taxon.getCurie())) {
-			if (!ValidationConstants.SUPPORTED_SPECIES.contains(taxon.getGenusSpecies())) {
-				addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
-				return null;
-			}
+		if (!SupportedSpecies.isSupported(taxon.getGenusSpecies())) {
+			addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
+			return null;
 		}
 		
 		if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
