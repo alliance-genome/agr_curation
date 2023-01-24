@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +19,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -62,7 +62,7 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 		
 		String idPattern = null;
 		if (StringUtils.isNotBlank(dto.getGidPattern()))
-			idPattern = dto.getGidPattern();
+			idPattern = StringEscapeUtils.escapeJava(dto.getGidPattern());
 		rd.setIdPattern(idPattern);
 		
 		String idExample = null;
