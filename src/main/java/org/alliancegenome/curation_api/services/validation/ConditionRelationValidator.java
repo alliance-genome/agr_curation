@@ -83,7 +83,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 		ConditionRelation dbEntity = new ConditionRelation();
 
-		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity, true);
+		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, true);
 
 		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
@@ -215,6 +215,9 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			if (conditionResponse == null || conditionResponse.getSingleResult() == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
+			}
+			if(condition.getId() == null){
+				condition = conditionResponse.getSingleResult();
 			}
 			conditions.add(condition);
 		}

@@ -43,7 +43,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 			return null;
 		}
 
-		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, false);
 
 		if (response.hasErrors()) {
 			if (throwError) {

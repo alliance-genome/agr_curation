@@ -334,8 +334,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		if (CollectionUtils.isEmpty(uiEntity.getConditionRelations()))
 			return null;
 
-		List<ConditionRelation> validatedConditionRelations = new ArrayList<ConditionRelation>();
-		List<Long> previousConditionRelationIds = new ArrayList<Long>();
+		List<ConditionRelation> validatedConditionRelations = new ArrayList<>();
+		List<Long> previousConditionRelationIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations()))
 			previousConditionRelationIds = dbEntity.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
 
@@ -417,7 +417,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		Boolean newEntity = false;
 		if (dbEntity.getId() == null)
 			newEntity = true;
-		dbEntity = (DiseaseAnnotation) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
+		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
 		if (uiEntity.getModEntityId() != null)
 			dbEntity.setModEntityId(uiEntity.getModEntityId());
@@ -434,7 +434,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		List<Gene> genes = validateWith(uiEntity, dbEntity);
 		dbEntity.setWith(genes);
 
-		Boolean negated = uiEntity.getNegated() == null ? false : uiEntity.getNegated();
+		Boolean negated = uiEntity.getNegated() != null && uiEntity.getNegated();
 		dbEntity.setNegated(negated);
 
 		VocabularyTerm annotationType = validateAnnotationType(uiEntity, dbEntity);

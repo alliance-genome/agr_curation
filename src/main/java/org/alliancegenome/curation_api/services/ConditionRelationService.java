@@ -72,6 +72,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 		conditionRelation.setSingleReference(reference);
 		conditionRelation.setConditionRelationType(vocabularyTermDAO.getTermInVocabulary("Condition relation types", "has_condition"));
 		ExperimentalCondition condition = new ExperimentalCondition();
+		condition.setUniqueId("ZECO:0000103");
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("curie", "ZECO:0000103");
 		condition.setConditionClass(zecoTermDAO.findByParams(null, params).getSingleResult());
@@ -87,25 +88,31 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 			response.addErrorMessage(key, "Cannot find any reference ID under map key: " + key);
 			throw new ApiErrorException(response);
 		}
-		Reference reference = referenceService.get(referenceID).getEntity();
+		Reference reference = referenceService.retrieveFromDbOrLiteratureService(referenceID);
 		if (ObjectUtils.isEmpty(reference)) {
 			ObjectResponse<ConditionRelation> response = new ObjectResponse<>();
 			response.addErrorMessage(key, "Cannot find reference for given reference ID: " + referenceID);
 			throw new ApiErrorException(response);
 		}
 		SearchResponse<ConditionRelation> conditionRelationSearchResponse = conditionRelationDAO.findByField(key, referenceID);
-		Optional<ConditionRelation> standardOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_STANDARD)).findFirst();
-		Optional<ConditionRelation> genericOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_GENERIC_CONTROL)).findFirst();
+		Optional<ConditionRelation> standardOptional = Optional.empty();
+		Optional<ConditionRelation> genericOptional = Optional.empty();
 		// add standard experiments (standard, generic_control) if not present as per ZFIN requirement
+		if (conditionRelationSearchResponse != null) {
+			standardOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_STANDARD)).findFirst();
+			genericOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_GENERIC_CONTROL)).findFirst();
+		} else {
+			conditionRelationSearchResponse = new SearchResponse<>();
+		}
 		if (standardOptional.isEmpty()) {
 			conditionRelationSearchResponse.getResults().add(getStandardExperiment(ConditionRelation.Constant.HANDLE_STANDARD, reference));
-			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() + 1);
-			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() + 1);
 		}
 		if (genericOptional.isEmpty()) {
 			conditionRelationSearchResponse.getResults().add(getStandardExperiment(ConditionRelation.Constant.HANDLE_GENERIC_CONTROL, reference));
-			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() + 1);
-			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() + 1);
+		}
+		if (genericOptional.isEmpty() || standardOptional.isEmpty()) {
+			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() == null ? 1 : conditionRelationSearchResponse.getTotalResults() + 1);
+			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() == null ? 1 : conditionRelationSearchResponse.getReturnedRecords() + 1);
 		}
 		return conditionRelationSearchResponse;
 	}

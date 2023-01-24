@@ -31,7 +31,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "pageAreas" }, callSuper = true)
-@Schema(name = "Cross Reference", description = "POJO that represents the Cross Reference")
+@Schema(name = "CrossReference", description = "POJO that represents the Cross Reference")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = { @Index(name = "crossreference_createdby_index", columnList = "createdBy_id"), @Index(name = "crossreference_updatedby_index", columnList = "updatedBy_id") })
 public class CrossReference extends CurieAuditedObject {
