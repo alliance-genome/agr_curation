@@ -9,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -22,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ResourceDescriptorCrudInterface extends BaseIdCrudInterface<ResourceDescriptor> {
 
+	@Override
 	@GET
 	@Path("/{id}")
 	@JsonView(View.ResourceDescriptorView.class)
