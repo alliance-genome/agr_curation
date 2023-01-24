@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.interfaces.crud.GeneDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
@@ -44,43 +45,8 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	}
 
 	@Override
-	public APIResponse updateGeneDiseaseAnnotations(String taxonID, List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad(taxonID, annotations);
-	}
-
-	@Override
-	public APIResponse updateZfinGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:7955", annotations);
-	}
-
-	@Override
-	public APIResponse updateMgiGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:10090", annotations);
-	}
-
-	@Override
-	public APIResponse updateRgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:10116", annotations);
-	}
-
-	@Override
-	public APIResponse updateFbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:7227", annotations);
-	}
-
-	@Override
-	public APIResponse updateWbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:6239", annotations);
-	}
-
-	@Override
-	public APIResponse updateHumanGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:9606", annotations);
-	}
-
-	@Override
-	public APIResponse updateSgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:559292", annotations);
+	public APIResponse updateGeneDiseaseAnnotations(String dataType, List<GeneDiseaseAnnotationDTO> annotations) {
+		return geneDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
 	}
 
 }

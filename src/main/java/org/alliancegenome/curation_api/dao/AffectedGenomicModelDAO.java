@@ -15,9 +15,9 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		super(AffectedGenomicModel.class);
 	}
 
-	public List<String> findAllCuriesByTaxon(String taxonId) {
-		Query jpqlQuery = entityManager.createQuery("SELECT agm.curie FROM AffectedGenomicModel agm WHERE agm.taxon.curie=:taxonId");
-		jpqlQuery.setParameter("taxonId", taxonId);
+	public List<String> findAllCuriesBySpeciesName(String speciesName) {
+		Query jpqlQuery = entityManager.createQuery("SELECT agm.curie FROM AffectedGenomicModel agm WHERE agm.taxon.name LIKE CONCAT(:speciesName, '%')");
+		jpqlQuery.setParameter("speciesName", speciesName);
 		return (List<String>) jpqlQuery.getResultList();
 	}
 

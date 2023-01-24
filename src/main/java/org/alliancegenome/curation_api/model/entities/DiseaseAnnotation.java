@@ -181,6 +181,9 @@ public abstract class DiseaseAnnotation extends Association {
 	public abstract String getSubjectTaxonCurie();
 
 	@Transient
+	public abstract String getSubjectSpeciesName();
+
+	@Transient
 	@JsonIgnore
 	public String getDataProviderString(){
 		StringBuilder builder = new StringBuilder(dataProvider.getAbbreviation());

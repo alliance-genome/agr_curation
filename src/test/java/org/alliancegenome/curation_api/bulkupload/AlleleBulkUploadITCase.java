@@ -306,9 +306,15 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_19_invalid_allele_inheritance_mode_phenotype_term.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_20_invalid_allele_inheritance_mode_evidence.json");
 	}
-
+	
 	@Test
 	@Order(6)
+	public void agmBulkUploadUnsupportedFields() throws Exception {
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "US_01_unsupported_taxon.json");
+	}
+
+	@Test
+	@Order(7)
 	public void alleleBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_01_update_no_non_required_fields_level_1.json");
@@ -333,7 +339,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	public void alleleBulkUploadUpdateMissingNonRequiredFieldsLevel2() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_02_update_no_non_required_fields_level_2.json");
@@ -384,7 +390,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(8)
+	@Order(9)
 	public void alleleBulkUploadUpdateEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UE_01_update_empty_non_required_fields.json");

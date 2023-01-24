@@ -399,7 +399,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		} else if (StringUtils.isBlank(uiEntity.getSubjectCurie()) || StringUtils.isBlank(uiEntity.getSubjectTaxonCurie()) || uiEntity.getObject() == null || uiEntity.getSingleReference() == null) {
 			return null;
 		} else {
-			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubjectTaxonCurie()).getCurieID(uiEntity);
+			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubjectSpeciesName()).getCurieID(uiEntity);
 		}
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {

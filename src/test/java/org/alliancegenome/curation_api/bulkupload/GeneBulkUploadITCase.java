@@ -252,6 +252,12 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_14_invalid_gene_systematic_name_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_15_invalid_gene_synonym_evidence.json");
 	}
+	
+	@Test
+	@Order(6)
+	public void agmBulkUploadUnsupportedFields() throws Exception {
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "US_01_unsupported_taxon.json");
+	}
 
 	@Test
 	@Order(7)
