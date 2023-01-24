@@ -95,11 +95,11 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 60000));
 	}
 	
-	private final String geneDaBulkPostEndpoint = "/api/gene-disease-annotation/bulk/wbAnnotationFile";
+	private final String geneDaBulkPostEndpoint = "/api/gene-disease-annotation/bulk/WB/annotationFile";
 	private final String geneDaGetEndpoint = "/api/gene-disease-annotation/findBy/";
-	private final String alleleDaBulkPostEndpoint = "/api/allele-disease-annotation/bulk/wbAnnotationFile";
+	private final String alleleDaBulkPostEndpoint = "/api/allele-disease-annotation/bulk/WB/annotationFile";
 	private final String alleleDaGetEndpoint = "/api/allele-disease-annotation/findBy/";
-	private final String agmDaBulkPostEndpoint = "/api/agm-disease-annotation/bulk/wbAnnotationFile";
+	private final String agmDaBulkPostEndpoint = "/api/agm-disease-annotation/bulk/WB/annotationFile";
 	private final String agmDaGetEndpoint = "/api/agm-disease-annotation/findBy/";
 	private final String daTestFilePath = "src/test/resources/bulk/04_disease_annotation/";
 	

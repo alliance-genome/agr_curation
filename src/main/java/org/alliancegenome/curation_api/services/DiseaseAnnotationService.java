@@ -41,14 +41,14 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 	// The following methods are for bulk validation
 
-	public void removeNonUpdatedAnnotations(String taxonId, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
-		log.debug("runLoad: After: " + taxonId + " " + annotationIdsAfter.size());
+	public void removeNonUpdatedAnnotations(String speciesName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
+		log.debug("runLoad: After: " + speciesName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + taxonId + " " + distinctAfter.size());
+		log.debug("runLoad: Distinct: " + speciesName + " " + distinctAfter.size());
 
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + taxonId + " " + idsToRemove.size());
+		log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
 
 		for (Long id : idsToRemove) {
 			deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation");

@@ -15,9 +15,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		super(Allele.class);
 	}
 
-	public List<String> findAllCuriesByTaxon(String taxonId) {
-		Query jpqlQuery = entityManager.createQuery("SELECT allele.curie FROM Allele allele WHERE allele.taxon.curie=:taxonId");
-		jpqlQuery.setParameter("taxonId", taxonId);
+	public List<String> findAllCuriesBySpeciesName(String speciesName) {
+		Query jpqlQuery = entityManager.createQuery("SELECT allele.curie FROM Allele allele WHERE allele.taxon.name LIKE CONCAT(:speciesName, '%')");
+		jpqlQuery.setParameter("speciesName", speciesName);
 		return (List<String>) jpqlQuery.getResultList();
 	}
 

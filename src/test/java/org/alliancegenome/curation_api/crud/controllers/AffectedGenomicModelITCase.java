@@ -38,11 +38,14 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
+	private NCBITaxonTerm unsupportedTaxon;
+	private NCBITaxonTerm obsoleteTaxon;
 	private OffsetDateTime datetime;
 	private OffsetDateTime datetime2;
 	private Person person;
 	private VocabularyTerm subtype;
 	private VocabularyTerm subtype2;
+	private VocabularyTerm obsoleteSubtype;
 	
 	private void loadRequiredEntities() {
 		taxon = getNCBITaxonTerm("NCBITaxon:10090");
@@ -53,6 +56,9 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		subtype = getVocabularyTerm(subtypeVocabulary, "fish");
 		subtype2 = getVocabularyTerm(subtypeVocabulary, "genotype");
+		obsoleteSubtype = createVocabularyTerm(subtypeVocabulary, "obsolete", true);
+		unsupportedTaxon = getNCBITaxonTerm("NCBITaxon:11290");
+		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");
 	}
 	
 	@Test
@@ -268,6 +274,81 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	
 	@Test
 	@Order(10)
+	public void createAGMWithObsoleteFields() {
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		agm.setCurie("AGM:0010");
+		agm.setTaxon(obsoleteTaxon);
+		agm.setSubtype(obsoleteSubtype);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			post("/api/agm").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.subtype", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(11)
+	public void editAGMWithObsoleteFields() {
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setTaxon(obsoleteTaxon);
+		agm.setSubtype(obsoleteSubtype);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.subtype", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(12)
+	public void createAGMWithUnsupportedFields() {
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		agm.setCurie("AGM:0012");
+		agm.setTaxon(unsupportedTaxon);
+		agm.setSubtype(subtype);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			post("/api/agm").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));
+	}
+	
+	@Test
+	@Order(13)
+	public void editAGMWithUnsupportedFields() {
+		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
+		agm.setTaxon(unsupportedTaxon);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));
+	}
+	
+	@Test
+	@Order(14)
 	public void editAGMWithNullNonRequiredFields() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setName(null);
@@ -290,7 +371,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(11)
+	@Order(15)
 	public void deleteAGM() {
 
 		RestAssured.given().

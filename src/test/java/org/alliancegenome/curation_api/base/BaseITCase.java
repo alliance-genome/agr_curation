@@ -314,9 +314,10 @@ public class BaseITCase {
 		return mpTerm;
 	}
 	
-	public NCBITaxonTerm createNCBITaxonTerm(String curie, Boolean obsolete) {
+	public NCBITaxonTerm createNCBITaxonTerm(String curie, String name, Boolean obsolete) {
 		NCBITaxonTerm term = new NCBITaxonTerm();
 		term.setCurie(curie);
+		term.setName(name);
 		term.setObsolete(obsolete);
 		
 		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
