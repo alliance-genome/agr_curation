@@ -29,6 +29,8 @@ import { SiteLayout } from './containers/layout/SiteLayout';
 //import { Login } from './Login';
 
 import { GeneralOntologyComponent } from './containers/ontologies/GeneralOntologyComponent';
+import { ResourceDescriptorsPage } from './containers/resourceDescriptorPage';
+import { ResourceDescriptorPagesPage } from './containers/resourceDescriptorPagePage';
 
 export default (
 	<SiteLayout>
@@ -46,6 +48,8 @@ export default (
 		<SecureRoute path="/vocabterms" render={() => <ControlledVocabularyPage />} />
 		<SecureRoute path="/vocabularies" render={() => <VocabulariesPage />} />
 		<SecureRoute path="/vocabularytermsets" render={() => <VocabularyTermSetPage />} />
+		<SecureRoute path="/resourcedescriptors" render={() => <ResourceDescriptorsPage />} />
+		<SecureRoute path="/resourcedescriptorpages" render={() => <ResourceDescriptorPagesPage />} />
 
 		<SecureRoute path="/ontology/eco" render={() => <GeneralOntologyComponent showAbbreviation={true} name="ECO" endpoint="ecoterm" />} />
 
