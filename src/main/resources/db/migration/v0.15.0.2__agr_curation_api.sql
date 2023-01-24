@@ -6,6 +6,7 @@ CREATE TABLE resourcedescriptor (
 	idexample varchar(255),
 	defaulturltemplate varchar(255),
 	dateupdated timestamp without time zone,
+	datecreated timestamp without time zone,
 	dbdatecreated timestamp without time zone,
 	dbdateupdated timestamp without time zone,
 	internal boolean DEFAULT false,
@@ -38,25 +39,25 @@ ALTER TABLE resourcedescriptor_aud
 	ADD CONSTRAINT resourcedescriptor_aud_rev_fk
 		FOREIGN KEY (rev) REFERENCES revinfo (rev);
 		
-CREATE TABLE resourcedescriptor_synonym (
+CREATE TABLE resourcedescriptor_synonyms (
 	resourcedescriptor_id bigint NOT NULL,
-	synonym varchar(255)
+	synonyms varchar(255)
 );
 	
-CREATE TABLE resourcedescriptor_synonym_aud (
+CREATE TABLE resourcedescriptor_synonyms_aud (
 	resourcedescriptor_id bigint NOT NULL,
-	rev integer NOT Null,
+	rev integer NOT NULL,
 	revtype smallint,
-	synonym varchar(255),
-	PRIMARY KEY (resourcedescriptor_id, synonym, rev)
+	synonyms varchar(255),
+	PRIMARY KEY (resourcedescriptor_id, synonyms, rev)
 );
 	
-ALTER TABLE resourcedescriptor_synonym
-	ADD CONSTRAINT resourcedescriptor_synonym_resourcedescriptor_id_fk
+ALTER TABLE resourcedescriptor_synonyms
+	ADD CONSTRAINT resourcedescriptor_synonyms_resourcedescriptor_id_fk
 		FOREIGN KEY (resourcedescriptor_id) REFERENCES resourcedescriptor (id);
 		
-ALTER TABLE resourcedescriptor_synonym_aud
-	ADD CONSTRAINT resourcedescriptor_synonym_aud_rev_fk
+ALTER TABLE resourcedescriptor_synonyms_aud
+	ADD CONSTRAINT resourcedescriptor_synonyms_aud_rev_fk
 		FOREIGN KEY (rev) REFERENCES revinfo (rev);	
 
 CREATE TABLE resourcedescriptorpage (
@@ -64,6 +65,14 @@ CREATE TABLE resourcedescriptorpage (
 	name varchar(255),
 	urltemplate varchar(255),
 	pagedescription varchar(255),
+	dateupdated timestamp without time zone,
+	datecreated timestamp without time zone,
+	dbdatecreated timestamp without time zone,
+	dbdateupdated timestamp without time zone,
+	internal boolean DEFAULT false,
+	obsolete boolean DEFAULT false,
+	createdby_id bigint,
+	updatedby_id bigint,
 	resourcedescriptor_id bigint
 );
 
@@ -73,10 +82,18 @@ CREATE TABLE resourcedescriptorpage_aud (
 	revtype smallint,
 	name varchar(255),
 	urltemplate varchar(255),
-	pagedescriptrion varchar(255),
+	pagedescription varchar(255),
 	resourcedescriptor_id bigint,
 	PRIMARY KEY (id, rev)
 );
+	
+ALTER TABLE resourcedescriptorpage
+	ADD CONSTRAINT resourcedescriptorpage_createdby_id_fk
+		FOREIGN KEY (createdby_id) REFERENCES person (id);	
+
+ALTER TABLE resourcedescriptorpage
+	ADD CONSTRAINT resourcedescriptorpage_updatedby_id_fk
+		FOREIGN KEY (updatedby_id) REFERENCES person (id);
 
 ALTER TABLE resourcedescriptorpage
 	ADD CONSTRAINT resourcedescriptorpage_resourcedescriptor_id_fk
