@@ -236,13 +236,13 @@ export const NewAnnotationForm = ({
 	const subjectSearch = (event, setFiltered, setQuery) => {
 		//The order of the below fields are as per the Autocomplete search result
 		const autocompleteFields = [
-			"geneFullName.displayText",
-			"alleleFullName.displayText",
 			"geneSymbol.displayText",
 			"alleleSymbol.displayText",
+			"name",
+			"geneFullName.displayText",
+			"alleleFullName.displayText",
 			"alleleSynonyms.displayText",
 			"geneSynonyms.displayText",
-			"name",
 			"curie",
 			"crossReferences.curie",
 			"secondaryIdentifiers",
