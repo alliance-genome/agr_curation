@@ -28,12 +28,12 @@ public enum BackendBulkDataType {
 	
 	private static BackendBulkDataType getDataType(String dataTypeName) {
 		BackendBulkDataType result = null;
-	    for (BackendBulkDataType dataType : values()) {
-	        if (dataType.name().equalsIgnoreCase(dataTypeName)) {
-	            result = dataType;
-	            break;
-	        }
-	    }
-	    return result;
+		for (BackendBulkDataType dataType : values()) {
+			if (dataType.name().equalsIgnoreCase(dataTypeName)) {
+				result = dataType;
+				break;
+			}
+		}
+		return result;
 	}
 }

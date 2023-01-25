@@ -42,12 +42,12 @@ public enum SupportedSpecies {
 	private static SupportedSpecies getSpeciesFromName(String speciesName) {
 		speciesName = speciesName.replace(" ", "_");
 		SupportedSpecies result = null;
-	    for (SupportedSpecies species : values()) {
-	        if (species.name().equalsIgnoreCase(speciesName)) {
-	            result = species;
-	            break;
-	        }
-	    }
-	    return result;
+		for (SupportedSpecies species : values()) {
+			if (species.name().equalsIgnoreCase(speciesName)) {
+				result = species;
+				break;
+			}
+		}
+		return result;
 	}
 }
