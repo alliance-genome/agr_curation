@@ -72,6 +72,7 @@ export const GenericDataTable = (props) => {
 
 	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
 		return (<MultiSelect
+				aria-label='columnToggle'
 				value={tableState.selectedColumnNames}
 				options={defaultColumnNames}
 				onChange={e => setSelectedColumnNames(e.value)}
@@ -251,7 +252,8 @@ export const GenericDataTable = (props) => {
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} >
 					{props.isEditable &&
 						<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
-							headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+							headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'
+						/>
 					}
 					{deletionEnabled &&
 						<Column field="delete" editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} filterElement={rowEditorFilterNameHeader}
