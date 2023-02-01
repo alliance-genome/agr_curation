@@ -169,15 +169,23 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		String field = isPrimary ? "dataProvider" : "secondaryDataProvider";
 		if (isPrimary) {
 			if (uiEntity.getDataProvider() == null) {
-				uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
+				if (dbEntity.getId() == null)
+					uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
 				if (uiEntity.getDataProvider() == null) {
 					addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 					return null;
 				}
 			}
 		} else {
-			if (uiEntity.getSecondaryDataProvider() == null)
-				return null;
+			if (uiEntity.getSecondaryDataProvider() == null) {
+				if (dbEntity.getId() == null) {
+					uiEntity.setSecondaryDataProvider(dataProviderService.createAllianceDataProvider());
+					if (uiEntity.getSecondaryDataProvider() == null)
+						return null;
+				} else {
+					return null;
+				}
+			}
 		}
 		
 		DataProvider uiDataProvider = isPrimary ? uiEntity.getDataProvider() : uiEntity.getSecondaryDataProvider();

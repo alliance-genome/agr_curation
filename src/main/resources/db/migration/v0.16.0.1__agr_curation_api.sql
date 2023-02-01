@@ -192,6 +192,9 @@ INSERT INTO dataprovider (id, sourceorganization_id)
 		FROM organization
 		WHERE organization.abbreviation IN ('FB', 'WB', 'RGD', 'SGD', 'MGI', 'ZFIN', 'OMIM');
 	
+INSERT INTO organization (id, uniqueid, abbreviation, fullname)
+	VALUES (nextval('hibernate_sequence'), 'Alliance', 'Alliance', 'Alliance of Genome Resources');
+	
 ALTER TABLE dataprovider
 	ADD CONSTRAINT dataprovider_crossreference_id_fk
 		FOREIGN KEY (crossreference_id) REFERENCES crossreference (id);
@@ -238,3 +241,8 @@ UPDATE organization
 	SET homepageresourcedescriptorpage_id = resourcedescriptorpage.id
 	FROM resourcedescriptorpage INNER JOIN resourcedescriptor ON resourcedescriptorpage.resourcedescriptor_id = resourcedescriptor.id
 	WHERE resourcedescriptor.prefix = organization.abbreviation AND resourcedescriptorpage.name = 'homepage'; 
+	
+UPDATE organization
+	SET homepageresourcedescriptorpage_id = resourcedescriptorpage.id
+	FROM resourcedescriptorpage INNER JOIN resourcedescriptor ON resourcedescriptorpage.resourcedescriptor_id = resourcedescriptor.id
+	WHERE resourcedescriptor.prefix = 'Alliance of Genome Resources' AND resourcedescriptorpage.name = 'homepage' AND organization.abbreviation = 'Alliance'; 

@@ -43,16 +43,13 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		setSQLDao(dataProviderDAO);
 	}
 
-	@Transactional
 	public DataProvider createAffiliatedModDataProvider() {
-		DataProvider dataProvider = new DataProvider();
-		
 		LoggedInPerson user = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
 
 		String affiliatedModAbbreviation = null;
 		if (user.getOktaEmail().equals("test@alliancegenome.org")) {
 			// Needed to enable local testing without missing dataProvider error
-			affiliatedModAbbreviation = "WB";
+			affiliatedModAbbreviation = "Alliance";
 		} else {
 			AllianceMember affiliatedMod = user.getAllianceMember();
 			if (affiliatedMod == null)
@@ -60,7 +57,17 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 			affiliatedModAbbreviation = affiliatedMod.getAbbreviation();
 		}
 		
-		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", affiliatedModAbbreviation);
+		return createDataProvider(affiliatedModAbbreviation);
+	}
+	
+	public DataProvider createAllianceDataProvider() {
+		return createDataProvider("Alliance");
+	}
+	
+	private DataProvider createDataProvider(String abbreviation) {
+		DataProvider dataProvider = new DataProvider();
+		
+		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", abbreviation);
 		if (orgResponse == null || orgResponse.getSingleResult() == null)
 			return null;
 		
@@ -68,8 +75,8 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		dataProvider.setSourceOrganization(sourceOrganization);
 	
 		CrossReference xref = new CrossReference();
-		xref.setDisplayName(affiliatedModAbbreviation);
-		xref.setReferencedCurie(affiliatedModAbbreviation);
+		xref.setDisplayName(abbreviation);
+		xref.setReferencedCurie(abbreviation);
 		xref.setResourceDescriptorPage(sourceOrganization.getHomepageResourceDescriptorPage());
 		dataProvider.setCrossReference(crossReferenceDAO.persist(xref));
 
