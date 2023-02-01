@@ -707,13 +707,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			post("/api/gene-disease-annotation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -728,13 +727,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			post("/api/allele-disease-annotation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -749,13 +747,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			post("/api/agm-disease-annotation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -776,13 +773,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			put("/api/gene-disease-annotation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -803,13 +799,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			put("/api/allele-disease-annotation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -830,13 +825,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			put("/api/agm-disease-annotation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.singleReference", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
