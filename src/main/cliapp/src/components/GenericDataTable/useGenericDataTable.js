@@ -5,7 +5,7 @@ import { SearchService } from '../../service/SearchService';
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog, validateBioEntityFields } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { useGetUserSettings } from "../../service/useGetUserSettings";
-import { getDefaultTableState } from '../../service/TableStateService';
+import {getDefaultTableState, getModTableState} from '../../service/TableStateService';
 
 
 export const useGenericDataTable = ({
@@ -313,6 +313,7 @@ export const useGenericDataTable = ({
 	};
 
 	const resetToModDefault = () => {
+		const initialTableState = getModTableState("DiseaseAnnotations");
 		let _tableState = {
 			...initialTableState,
 			isFirst: false,
