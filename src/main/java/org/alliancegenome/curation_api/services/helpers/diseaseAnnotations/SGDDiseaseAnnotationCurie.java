@@ -47,8 +47,8 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	}
 
 	@Override
-	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
-		return super.getCurieID(subject, object, reference, null, null, null);
+	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType, String negated, String diseaseGeneticModifierRelation, String diseaseGeneticModifier) {
+		return super.getCurieID(subject, object, reference, null, null, null, null, null, null);
 	}
 
 	public String getWithCuries(DiseaseAnnotationDTO annotationDTO) {
