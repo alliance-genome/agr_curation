@@ -1397,7 +1397,7 @@ export const DiseaseAnnotationsTable = () => {
 		body: assertedAlleleBodyTemplate
 	},
 	{
-		field: "dataProvider.sourceOrganiztion.abbreviation",
+		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
 		filter: true,

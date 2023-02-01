@@ -244,7 +244,7 @@ export const NewAnnotationForm = ({
 			"alleleSynonyms.displayText",
 			"geneSynonyms.displayText",
 			"curie",
-			"crossReferences.curie",
+			"crossReferences.referencedCurie",
 			"secondaryIdentifiers",
 		];
 		const endpoint = "biologicalentity";

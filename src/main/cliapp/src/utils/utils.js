@@ -114,7 +114,7 @@ export function getRefString(referenceItem) {
 	if (referenceItem.cross_references) {
 		referenceItem.cross_references.forEach((x,i) => xrefCuries.push(x.curie));
 	} else {
-		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.curie));
+		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.referencedCurie));
 	}
 
 	if (xrefCuries.length === 1)
@@ -181,7 +181,7 @@ export function filterDropDownObject(inputValue, object){
 	if (_object.crossReferences?.length > 0) {
 		const { crossReferences } = _object;
 		const filteredCrossReferences = crossReferences.filter((crossReference) => {
-			return crossReference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+			return crossReference.referencedCurie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
 		});
 		_object = { ..._object, crossReferences: filteredCrossReferences }
 	}

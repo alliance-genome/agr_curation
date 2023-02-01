@@ -170,9 +170,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		if (isPrimary) {
 			if (uiEntity.getDataProvider() == null) {
 				uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
-				if (uiEntity.getDataProvider() == null)
+				if (uiEntity.getDataProvider() == null) {
 					addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-				return null;
+					return null;
+				}
 			}
 		} else {
 			if (uiEntity.getSecondaryDataProvider() == null)
