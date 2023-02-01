@@ -122,7 +122,8 @@ public class ReferenceSynchronisationHelper {
 			CrossReference xref = crossReferenceDAO.find(litXref.getCurie());
 			if (xref == null) {
 				xref = new CrossReference();
-				xref.setCurie(litXref.getCurie());
+				xref.setReferencedCurie(litXref.getCurie());
+				xref.setDisplayName(litXref.getCurie());
 				xref.setInternal(false);
 				xref.setObsolete(false);
 				xref = crossReferenceDAO.persist(xref);

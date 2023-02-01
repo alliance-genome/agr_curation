@@ -52,12 +52,13 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		term.setObsolete(inTerm.getObsolete());
 		term.setNamespace(inTerm.getNamespace());
 		term.setDefinition(inTerm.getDefinition());
+		term.setCrossReferences(crossReferenceService.handleUpdate(inTerm.getCrossReferences(), term.getCrossReferences()));
+		
 
 		handleSubsets(term, inTerm);
 		handleDefinitionUrls(term, inTerm);
 		handleSecondaryIds(term, inTerm);
 		handleSynonyms(term, inTerm);
-		handleCrossReferences(term, inTerm);
 
 		dao.persist(term);
 
@@ -174,39 +175,6 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		});
 
-	}
-
-	private void handleCrossReferences(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
-		Map<String, CrossReference> currentIds;
-		if (dbTerm.getCrossReferences() == null) {
-			currentIds = new HashedMap<>();
-			dbTerm.setCrossReferences(new ArrayList<>());
-		} else {
-			currentIds = dbTerm.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
-		}
-		Map<String, CrossReference> newIds;
-		if (incomingTerm.getCrossReferences() == null) {
-			newIds = new HashedMap<>();
-		} else {
-			newIds = incomingTerm.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
-		}
-
-		newIds.forEach((k, v) -> {
-			if (!currentIds.containsKey(k)) {
-				if (crossReferenceDAO.find(k) == null) {
-					CrossReference cr = new CrossReference();
-					cr.setCurie(v.getCurie());
-					crossReferenceService.create(cr);
-				}
-				dbTerm.getCrossReferences().add(v);
-			}
-		});
-
-		currentIds.forEach((k, v) -> {
-			if (!newIds.containsKey(k)) {
-				dbTerm.getCrossReferences().remove(v);
-			}
-		});
 	}
 
 	private void handleSynonyms(OntologyTerm dbTerm, OntologyTerm incomingTerm) {

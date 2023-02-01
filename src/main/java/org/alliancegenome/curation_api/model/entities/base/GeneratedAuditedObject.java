@@ -20,9 +20,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @MappedSuperclass
-@ToString(callSuper = true)
+@ToString()
 public class GeneratedAuditedObject extends AuditedObject {
 
 	@Id
