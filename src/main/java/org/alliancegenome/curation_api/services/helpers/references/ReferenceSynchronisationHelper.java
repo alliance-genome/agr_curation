@@ -64,21 +64,30 @@ public class ReferenceSynchronisationHelper {
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("searchFilters", filter);
 
-		Pagination pagination = new Pagination(0, 50);
-		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-		if (response != null) {
-			for (LiteratureReference result : response.getResults()) {
-				if (result.getCurie().equals(curie))
-					return result;
-				for (LiteratureCrossReference resultXref : result.getCross_references()) {
-					if (resultXref.getCurie().equals(curie))
+		Boolean keepSearching = true;
+		int page = 0;
+		while (keepSearching) {
+			Pagination pagination = new Pagination(page, 50);
+			SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
+			if (response != null) {
+				for (LiteratureReference result : response.getResults()) {
+					if (result.getCurie().equals(curie))
 						return result;
+					for (LiteratureCrossReference resultXref : result.getCross_references()) {
+						if (resultXref.getCurie().equals(curie))
+							return result;
+					}
 				}
+				if (response.getReturnedRecords() < 50) {
+					keepSearching = false;
+				} else {
+					page++;
+				}
+			} else {
+				keepSearching = false;
 			}
-		} else {
-			return null;
 		}
-
+		
 		return null;
 	}
 
