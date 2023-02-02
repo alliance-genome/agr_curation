@@ -102,7 +102,7 @@ public class OntologyTerm extends CurieAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie"), @Index(columnList = "crossreferences_curie") })
+	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie"), @Index(columnList = "crossreferences_id") })
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 

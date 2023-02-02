@@ -9,8 +9,16 @@
     "date_updated": "2022-03-10T22:10:12+00:00",
     "gene_curie": "DATEST:Gene0001",
     "do_term_curie": "DATEST:Disease0001",
-    "data_provider_name": "TEST",
-    "secondary_data_provider_name": "TEST2",
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "TEST"
+    },
+    "secondary_data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "TEST2"
+    },
     "negated": true,
     "disease_relation_name": "is_implicated_in",
     "genetic_sex_name": "male",

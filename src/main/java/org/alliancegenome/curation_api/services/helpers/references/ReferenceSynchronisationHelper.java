@@ -119,13 +119,17 @@ public class ReferenceSynchronisationHelper {
 
 		List<CrossReference> xrefs = new ArrayList<CrossReference>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
-			CrossReference xref = crossReferenceDAO.find(litXref.getCurie());
-			if (xref == null) {
+			SearchResponse<CrossReference> xrefResponse = crossReferenceDAO.findByField("referencedCurie", litXref.getCurie());
+			CrossReference xref;
+			if (xrefResponse == null || xrefResponse.getSingleResult() == null) {
 				xref = new CrossReference();
-				xref.setCurie(litXref.getCurie());
+				xref.setReferencedCurie(litXref.getCurie());
+				xref.setDisplayName(litXref.getCurie());
 				xref.setInternal(false);
 				xref.setObsolete(false);
 				xref = crossReferenceDAO.persist(xref);
+			} else {
+				xref = xrefResponse.getSingleResult();
 			}
 			xrefs.add(xref);
 		}
