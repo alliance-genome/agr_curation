@@ -43,6 +43,7 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		setSQLDao(dataProviderDAO);
 	}
 
+	@Transactional
 	public DataProvider createAffiliatedModDataProvider() {
 		LoggedInPerson user = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
 
@@ -60,6 +61,7 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		return createDataProvider(affiliatedModAbbreviation);
 	}
 	
+	@Transactional
 	public DataProvider createAllianceDataProvider() {
 		return createDataProvider("Alliance");
 	}
