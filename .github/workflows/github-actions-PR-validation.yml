@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'zulu'
+          distribution: 'temurin'
       - id: install-secret-key
         name: Install gpg secret key
         run: |
