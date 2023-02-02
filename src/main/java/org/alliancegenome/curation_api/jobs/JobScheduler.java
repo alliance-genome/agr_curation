@@ -42,7 +42,10 @@ public class JobScheduler {
 	BulkLoadDAO bulkLoadDAO;
 
 	@ConfigProperty(name = "bulk.data.loads.schedulingEnabled")
-	Boolean schedulingEnabled;
+	Boolean loadSchedulingEnabled;
+
+	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false")
+	Boolean reindexSchedulingEnabled;
 
 	private ZonedDateTime lastCheck = null;
 
@@ -76,9 +79,9 @@ public class JobScheduler {
 
 	@Scheduled(every = "1s")
 	public void scheduleGroupJobs() {
-		if (schedulingEnabled) {
+		if (loadSchedulingEnabled) {
 			ZonedDateTime start = ZonedDateTime.now();
-			// log.info("scheduleGroupJobs: Scheduling Enabled: " + schedulingEnabled);
+			// log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
 			SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
 			for (BulkLoadGroup g : groups.getResults()) {
 				if (g.getLoads().size() > 0) {
@@ -140,7 +143,14 @@ public class JobScheduler {
 		// Not sure what is going to happen when this time's out but should run anyway
 		// Defaults taken from the API endpoint
 		// DAO used doesn't matter they all have this method
-		bulkLoadDAO.reindexEverything(1000, 10000, 0, 4, 7200, 1);
+
+		if(reindexSchedulingEnabled){
+			Log.info("Scheduled mass reindexing initiated.");
+			bulkLoadDAO.reindexEverything(1000, 10000, 0, 4, 7200, 1);
+		}
+		else{
+			Log.info("Scheduled mass reindexing not initiated (reindex scheduling not enabled).");
+		}
 	}
 
 	@Scheduled(every = "1s")
