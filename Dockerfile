@@ -10,7 +10,7 @@ WORKDIR /agr_curation/cliapp
 RUN make all build
 
 ### Stage 2: build API (and include UI components)
-FROM maven:3.8-openjdk-17 as BUILD_API_STAGE
+FROM maven:3.8-eclipse-temurin-17 as BUILD_API_STAGE
 ARG OVERWRITE_VERSION
 
 # copy the src code to the container
