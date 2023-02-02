@@ -1,6 +1,6 @@
 import React from "react";
-import {render, screen, waitFor} from "@testing-library/react";
-import { renderWithClient } from '../../../tools/jest/utils'
+import { waitFor } from "@testing-library/react";
+import { renderWithClient } from '../../../tools/jest/utils';
 import { ConditionRelationPage } from "../index";
 import { setLocalStorage } from "../../../tools/jest/setupTests";
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler } from "../../../tools/jest/commonMswhandlers";
@@ -28,16 +28,17 @@ describe("<ConditionRelationPage />", () => {
 
 	it("The table contains data", async () => {
 		const result = renderWithClient(<ConditionRelationPage />);
+
 		const handleTd = await result.findByText("Standard");
 		const referenceTd = await result.findByText(/PMID:28806732/i);
 		const relationTd = await result.findByText(/has_condition/i);
 		const exConTd = await result.findByText(/standard conditions/i);
 
 		await waitFor(() => {
-			expect(handleTd).toBeInTheDocument()
-			expect(referenceTd).toBeInTheDocument()
-			expect(relationTd).toBeInTheDocument()
-			expect(exConTd).toBeInTheDocument()
+			expect(handleTd).toBeInTheDocument();
+			expect(referenceTd).toBeInTheDocument();
+			expect(relationTd).toBeInTheDocument();
+			expect(exConTd).toBeInTheDocument();
 		});
 	});
 });

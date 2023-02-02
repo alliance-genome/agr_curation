@@ -22,7 +22,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
-@ToString(callSuper = true)
+@ToString()
 public class GeneratedAuditedObject extends AuditedObject {
 
 	@Id

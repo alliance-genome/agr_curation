@@ -72,8 +72,7 @@ public class MoleculeBulkUploadFmsITCase {
 				body("results[0].synonyms[1].name", is("TestMol1")).
 				body("results[0].synonyms", hasSize(2)).
 				body("results[0].internal", is(false)).
-				body("results[0].crossReferences[0].curie", is("TEST:TestMol00000001")).
-				body("results[0].crossReferences[0].pageAreas[0]", is("molecule")).
+				body("results[0].crossReferences[0].referencedCurie", is("TEST:TestMol00000001")).
 				body("results[0].crossReferences", hasSize(1));
 	}
 
