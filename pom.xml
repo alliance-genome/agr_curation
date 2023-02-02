@@ -7,15 +7,15 @@
 	<groupId>org.alliancegenome</groupId>
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
-	<version>0.0.0</version>
+	<version>0.0.0-SNAPSHOT</version>
 	<description>This software is for using the curation api as a library</description>
 	<url>https://github.com/alliance-genome/agr_curation</url>
 
 	<properties>
 		<compiler-plugin.version>3.8.1</compiler-plugin.version>
 		<maven.compiler.parameters>true</maven.compiler.parameters>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>

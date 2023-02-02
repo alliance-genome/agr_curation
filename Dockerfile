@@ -9,10 +9,8 @@ COPY src/main/cliapp ./cliapp
 WORKDIR /agr_curation/cliapp
 RUN make all build
 
-
-
 ### Stage 2: build API (and include UI components)
-FROM maven:3.8-openjdk-11 as BUILD_API_STAGE
+FROM maven:3.8-openjdk-17 as BUILD_API_STAGE
 ARG OVERWRITE_VERSION
 
 # copy the src code to the container
@@ -30,10 +28,8 @@ RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
 # build the api jar
 RUN mvn -T 8 clean package -Dquarkus.package.type=uber-jar -ntp
 
-
-
 ### Stage 3: build final application image
-FROM openjdk:11-jre-slim
+FROM openjdk:17.0.1-jdk-slim
 
 WORKDIR /agr_curation
 
