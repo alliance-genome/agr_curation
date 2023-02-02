@@ -29,7 +29,7 @@ RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
 RUN mvn -T 8 clean package -Dquarkus.package.type=uber-jar -ntp
 
 ### Stage 3: build final application image
-FROM openjdk:17.0.1-jdk-slim
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /agr_curation
 
