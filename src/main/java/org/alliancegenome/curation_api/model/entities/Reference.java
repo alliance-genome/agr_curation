@@ -9,6 +9,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.CrossReferencePrefix;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -26,20 +32,26 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import javax.persistence.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+
 @Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "Reference", description = "POJO that represents the Reference")
-@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { InformationContentEntity.class }, partial = true)
+@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {InformationContentEntity.class}, partial = true)
 public class Reference extends InformationContentEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsOnly.class })
-	@JoinTable(indexes = { @Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_curie") })
+	@JsonView({View.FieldsOnly.class})
+	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_curie")})
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 

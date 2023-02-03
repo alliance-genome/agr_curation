@@ -234,7 +234,8 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 	autocompleteFields.forEach(field => {
 		filter[field] = {
 			queryString: event.query,
-			tokenOperator: "AND"
+			tokenOperator: "AND",
+			useKeywordFields: true
 		}
 	})
 

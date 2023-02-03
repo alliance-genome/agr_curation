@@ -49,26 +49,30 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({ View.FieldsOnly.class })
 	private AffectedGenomicModel subject;
 
-	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText",
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private Gene inferredGene;
 
-	@IndexedEmbedded(includePaths = { "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "alleleSecondaryIds.secondaryId",
+			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleFullName.displayText_keyword", "alleleSynonyms.displayText_keyword", "alleleSecondaryIds.secondaryId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private Allele inferredAllele;
 
-	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText",
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "agmdiseaseannotation_id"))
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> assertedGenes;
 
-	@IndexedEmbedded(includePaths = { "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "alleleSecondaryIds.secondaryId",
+			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleFullName.displayText_keyword", "alleleSynonyms.displayText_keyword", "alleleSecondaryIds.secondaryId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })

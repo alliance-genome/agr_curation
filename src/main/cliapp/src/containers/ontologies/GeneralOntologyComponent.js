@@ -6,6 +6,7 @@ import { DefinitionTemplate } from './DefinitionTemplate';
 import { BooleanTemplate } from '../../components/BooleanTemplate';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { GenericDataTree } from '../../components/GenericDataTree';
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbbreviation, hideDefinition}) => {
 	const [isEnabled, setIsEnabled] = useState(true);
@@ -70,6 +71,13 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		}
 	);
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState(name, defaultColumnNames);
+
 	return (
 		<>
 			<Toast ref={toast_topleft} position="top-left" />
@@ -80,6 +88,8 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 						endpoint={endpoint}
 						tableName={name}
 						columns={columns}
+						defaultColumnNames={defaultColumnNames}
+						initialTableState={initialTableState}
 						isEditable={false}
 						isEnabled={isEnabled}
 						setIsEnabled={setIsEnabled}

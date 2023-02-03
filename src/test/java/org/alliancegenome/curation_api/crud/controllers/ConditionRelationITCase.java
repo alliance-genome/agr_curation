@@ -8,19 +8,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -31,14 +29,13 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(11)
-public class ConditionRelationITCase {
+public class ConditionRelationITCase extends BaseITCase {
 
 	private Vocabulary conditionRelationTypeVocabulary;
 	private VocabularyTerm conditionRelationType;
@@ -50,10 +47,10 @@ public class ConditionRelationITCase {
 
 	private void createRequiredObjects() {
 
-		testReference = createReference("AGRKB:000000004");
-		conditionRelationTypeVocabulary = createVocabulary("Condition relation type vocabulary");
+		testReference = createReference("AGRKB:000000004", false);
+		conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
-		experimentalCondition = createExperimentalCondition();
+		experimentalCondition = createExperimentalCondition("StatementCR1", "ZECO:cr00001", "Test");
 		conditionRelationNoHandle = createConditionRelation(null, null, conditionRelationType, List.of(experimentalCondition));
 		conditionRelationHandle1 = createConditionRelation("fructose", testReference, conditionRelationType, List.of(experimentalCondition));
 		conditionRelationHandle2 = createConditionRelation("vasilin", testReference, conditionRelationType, List.of(experimentalCondition));
@@ -142,8 +139,10 @@ public class ConditionRelationITCase {
 	public void updateConditionRelationSameHandleRef() {
 		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
 		
-		// change handle to empty
 		cr.setHandle("fructose");
+		ExperimentalCondition newCondition = createExperimentalCondition("StatementCR1", "ZECO:cr00002", "Test");
+		cr.setConditions(List.of(newCondition));
+		
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
 			body(cr).
@@ -425,198 +424,4 @@ public class ConditionRelationITCase {
 		assertEquals(response.getErrorMessage(), "Could not create ConditionRelation");
 		assertEquals(response.getErrorMessages().get("uniqueId"), ValidationConstants.NON_UNIQUE_MESSAGE);
 	}
-	
-	private ConditionRelation createConditionRelation(String handle, Reference reference, VocabularyTerm relationType, List<ExperimentalCondition> conditions) {
-		ConditionRelation conditionRelation = new ConditionRelation();
-		conditionRelation.setHandle(handle);
-		conditionRelation.setSingleReference(reference);
-		conditionRelation.setConditionRelationType(relationType);
-		conditionRelation.setConditions(conditions);
-
-		ObjectResponse<ConditionRelation> response = RestAssured.given().
-			contentType("application/json").
-			body(conditionRelation).
-			when().
-			post("/api/condition-relation").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefConditionRelation());
-
-
-		return response.getEntity();
-	}
-
-	private ConditionRelation getConditionRelation(Long id) {
-		ObjectResponse<ConditionRelation> response =
-				given().
-					when().
-					get("/api/condition-relation/" + id).
-					then().
-					statusCode(200).
-					extract().body().as(getObjectResponseTypeRefConditionRelation());
-
-			return response.getEntity();
-	}
-
-	private Reference createReference(String curie) {
-		Reference reference = new Reference();
-		reference.setCurie(curie);
-
-		ObjectResponse<Reference> response = given().
-			contentType("application/json").
-			body(reference).
-			when().
-			post("/api/reference").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefReference());
-
-		return response.getEntity();
-	}
-
-	private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name, Boolean obsolete) {
-		VocabularyTerm vocabularyTerm = new VocabularyTerm();
-		vocabularyTerm.setName(name);
-		vocabularyTerm.setVocabulary(vocabulary);
-		vocabularyTerm.setObsolete(obsolete);
-		vocabularyTerm.setInternal(false);
-
-		ObjectResponse<VocabularyTerm> response =
-			given().
-				contentType("application/json").
-				body(vocabularyTerm).
-				when().
-				post("/api/vocabularyterm").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
-
-		vocabularyTerm = response.getEntity();
-
-		return vocabularyTerm;
-	}
-	
-	private Vocabulary createVocabulary(String name) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setInternal(false);
-		
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabulary).
-				when().
-				post("/api/vocabulary").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-
-	private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
-		ObjectListResponse<VocabularyTerm> response =
-			given().
-				when().
-				get("/api/vocabulary/" + vocabulary.getId() + "/terms").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
-
-		List<VocabularyTerm> vocabularyTerms = response.getEntities();
-		for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
-			if (vocabularyTerm.getName().equals(name)) {
-				return vocabularyTerm;
-			}
-		}
-
-		return null;
-	}
-
-	private ZECOTerm getZecoTerm(String curie) {
-		ObjectResponse<ZECOTerm> response =
-			given().
-				when().
-				get("/api/zecoterm/" + curie).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefZecoTerm());
-
-		return response.getEntity();
-	}
-
-	private ExperimentalCondition createExperimentalCondition() {
-		ExperimentalCondition condition = new ExperimentalCondition();
-		condition.setConditionClass(createZecoTerm("ZECO:da00001"));
-		condition.setUniqueId("Statement1");
-
-		ObjectResponse<ExperimentalCondition> response = given().
-			contentType("application/json").
-			body(condition).
-			when().
-			post("/api/experimental-condition").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefExperimentalCondition());
-
-		return response.getEntity();
-	}
-
-	private ZECOTerm createZecoTerm(String curie) {
-		ZECOTerm zecoTerm = new ZECOTerm();
-		zecoTerm.setCurie(curie);
-		zecoTerm.setName("Test");
-		zecoTerm.setObsolete(false);
-		List<String> subsets = new ArrayList<String>();
-		subsets.add(OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		zecoTerm.setSubsets(subsets);
-
-		given().
-			contentType("application/json").
-			body(zecoTerm).
-			when().
-			post("/api/zecoterm").
-			then().
-			statusCode(200);
-		return zecoTerm;
-	}
-
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<>() {
-		};
-	}
-
-	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
-		return new TypeRef<>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRefExperimentalCondition() {
-		return new TypeRef<>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
-		return new TypeRef<>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
-		return new TypeRef<>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<ZECOTerm>> getObjectResponseTypeRefZecoTerm() {
-		return new TypeRef<>() {
-		};
-	}
-
-
 }

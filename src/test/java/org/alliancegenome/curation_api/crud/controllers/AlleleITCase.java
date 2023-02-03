@@ -7,27 +7,28 @@ import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -37,14 +38,13 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(8)
-public class AlleleITCase {
+public class AlleleITCase extends BaseITCase {
 
 	private final String ALLELE = "Allele:0001";
 	
@@ -52,197 +52,271 @@ public class AlleleITCase {
 	private Vocabulary inCollectionVocabulary;
 	private Vocabulary nameTypeVocabulary;
 	private Vocabulary synonymScopeVocabulary;
-	private VocabularyTerm inheritanceMode;
-	private VocabularyTerm inCollection;
+	private VocabularyTerm dominantInheritanceMode;
+	private VocabularyTerm recessiveInheritanceMode;
+	private VocabularyTerm obsoleteInheritanceModeTerm;
+	private VocabularyTerm mmpInCollection;
+	private VocabularyTerm wgsInCollection;
+	private VocabularyTerm obsoleteCollection;
 	private VocabularyTerm symbolNameType;
 	private VocabularyTerm fullNameType;
+	private VocabularyTerm obsoleteNameType;
+	private VocabularyTerm obsoleteSymbolNameType;
+	private VocabularyTerm obsoleteFullNameType;
 	private VocabularyTerm systematicNameType;
 	private VocabularyTerm exactSynonymScope;
 	private VocabularyTerm broadSynonymScope;
+	private VocabularyTerm obsoleteSynonymScope;
 	private Reference reference;
-	private List<Reference> references = new ArrayList<Reference>();
+	private Reference reference2;
+	private Reference obsoleteReference;
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
+	private NCBITaxonTerm obsoleteTaxon;
 	private Person person;
 	private OffsetDateTime datetime;
+	private OffsetDateTime datetime2;
 	private SOTerm soTerm;
 	private SOTerm soTerm2;
+	private SOTerm obsoleteSoTerm;
+	private MPTerm mpTerm;
+	private MPTerm mpTerm2;
+	private MPTerm obsoleteMpTerm;
 	private AlleleMutationTypeSlotAnnotation alleleMutationType;
+	private AlleleInheritanceModeSlotAnnotation alleleInheritanceMode;
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 	private AlleleFullNameSlotAnnotation alleleFullName;
 	private AlleleSynonymSlotAnnotation alleleSynonym;
+	private AlleleSecondaryIdSlotAnnotation alleleSecondaryId;
 	
-	private void createRequiredObjects() {
+	
+	private void loadRequiredEntities() {
 		inheritanceModeVocabulary = getVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
 		inCollectionVocabulary = getVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScopeVocabulary = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
-		inheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
-		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
+		dominantInheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
+		recessiveInheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "recessive");
+		obsoleteInheritanceModeTerm = createVocabularyTerm(inheritanceModeVocabulary, "obsolete_mode", true);
+		mmpInCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
+		wgsInCollection = getVocabularyTerm(inCollectionVocabulary, "WGS_Hobert");
+		obsoleteCollection = createVocabularyTerm(inCollectionVocabulary, "obsolete_collection", true);
 		symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		fullNameType = getVocabularyTerm(nameTypeVocabulary, "full_name");
 		systematicNameType = getVocabularyTerm(nameTypeVocabulary, "systematic_name");
+		obsoleteNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_name");
+		obsoleteSymbolNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_symbol_name");
+		obsoleteFullNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_full_name");
 		exactSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "exact");
 		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
-		reference = createReference("AGRKB:000000003");
-		soTerm = createSoTerm("SO:00002");
-		soTerm2 = createSoTerm("SO:00003");
-		references.add(reference);
-		taxon = getTaxonFromCurie("NCBITaxon:10090");
-		taxon2 = getTaxonFromCurie("NCBITaxon:9606");
+		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
+		obsoleteSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "obsolete");
+		reference = createReference("AGRKB:000000003", false);
+		reference2 = createReference("AGRKB:000000005", false);
+		obsoleteReference = createReference("AGRKB:000010000", true);
+		taxon = getNCBITaxonTerm("NCBITaxon:10090");
+		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
+		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");
 		person = createPerson("TEST:AllelePerson0001");
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
-		alleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, soTerm);
-		alleleSymbol = createAlleleSymbolSlotAnnotation("Test symbol");
-		alleleFullName = createAlleleFullNameSlotAnnotation("Test name");
-		alleleSynonym = createAlleleSynonymSlotAnnotation("Test synonym");
+		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
+		soTerm = getSoTerm("SO:00001");
+		soTerm2 = getSoTerm("SO:00002");
+		obsoleteSoTerm = createSoTerm("SO:00000", true);
+		mpTerm = getMpTerm("MP:00001");
+		mpTerm2 = getMpTerm("MP:00002");
+		obsoleteMpTerm = createMpTerm("MP:00000", true);
+		alleleMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), List.of(soTerm));
+		alleleInheritanceMode = createAlleleInheritanceModeSlotAnnotation(List.of(reference), dominantInheritanceMode, mpTerm, "Phenotype statement");
+		alleleSymbol = createAlleleSymbolSlotAnnotation(List.of(reference), "Test symbol", symbolNameType, exactSynonymScope, "https://test.org");
+		alleleFullName = createAlleleFullNameSlotAnnotation(List.of(reference), "Test name", fullNameType, exactSynonymScope, "https://test.org");
+		alleleSynonym = createAlleleSynonymSlotAnnotation(List.of(reference), "Test synonym", systematicNameType, exactSynonymScope, "https://test.org");
+		alleleSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(reference), "TEST:Secondary");
 	}
 	
 	@Test
 	@Order(1)
 	public void createValidAllele() {
-		
-		createRequiredObjects();
+		loadRequiredEntities();
 		
 		Allele allele = new Allele();
 		allele.setCurie(ALLELE);
 		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setCreatedBy(person);
+		allele.setInCollection(mmpInCollection);
+		allele.setReferences(List.of(reference));
 		allele.setIsExtinct(false);
 		allele.setDateCreated(datetime);
 		allele.setAlleleMutationTypes(List.of(alleleMutationType));
+		allele.setAlleleInheritanceModes(List.of(alleleInheritanceMode));
 		allele.setAlleleSymbol(alleleSymbol);
 		allele.setAlleleFullName(alleleFullName);
 		allele.setAlleleSynonyms(List.of(alleleSynonym));
+		allele.setAlleleSecondaryIds(List.of(alleleSecondaryId));
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				post("/api/allele").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200);
 		
 		RestAssured.given().
-				when().
-				get("/api/allele/" + ALLELE).
-				then().
-				statusCode(200).
-				body("entity.curie", is(ALLELE)).
-				body("entity.taxon.curie", is(taxon.getCurie())).
-				body("entity.internal", is(false)).
-				body("entity.obsolete", is(false)).
-				body("entity.inheritanceMode.name", is(inheritanceMode.getName())).
-				body("entity.inCollection.name", is(inCollection.getName())).
-				body("entity.isExtinct", is(false)).
-				body("entity.references[0].curie", is(reference.getCurie())).
-				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-				body("entity.createdBy.uniqueId", is("TEST:AllelePerson0001")).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
-				body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
-				body("entity.alleleSymbol.displayText", is("Test symbol")).
-				body("entity.alleleSymbol.formatText", is("Test symbol")).
-				body("entity.alleleSymbol.nameType.name", is(symbolNameType.getName())).
-				body("entity.alleleSymbol.synonymScope.name", is(exactSynonymScope.getName())).
-				body("entity.alleleSymbol.synonymUrl", is("https://test.org")).
-				body("entity.alleleFullName.displayText", is("Test name")).
-				body("entity.alleleFullName.formatText", is("Test name")).
-				body("entity.alleleFullName.nameType.name", is(fullNameType.getName())).
-				body("entity.alleleFullName.synonymScope.name", is(exactSynonymScope.getName())).
-				body("entity.alleleFullName.synonymUrl", is("https://test.org")).
-				body("entity.alleleSynonyms[0].displayText", is("Test synonym")).
-				body("entity.alleleSynonyms[0].formatText", is("Test synonym")).
-				body("entity.alleleSynonyms[0].nameType.name", is(symbolNameType.getName())).
-				body("entity.alleleSynonyms[0].synonymScope.name", is(exactSynonymScope.getName())).
-				body("entity.alleleSynonyms[0].synonymUrl", is("https://test.org"));
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity.curie", is(ALLELE)).
+			body("entity.taxon.curie", is(taxon.getCurie())).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.inCollection.name", is(mmpInCollection.getName())).
+			body("entity.isExtinct", is(false)).
+			body("entity.references[0].curie", is(reference.getCurie())).
+			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
+			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
+			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(reference.getCurie())).
+			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is(dominantInheritanceMode.getName())).
+			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
+			body("entity.alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
+			body("entity.alleleSymbol.displayText", is(alleleSymbol.getDisplayText())).
+			body("entity.alleleSymbol.formatText", is(alleleSymbol.getFormatText())).
+			body("entity.alleleSymbol.nameType.name", is(alleleSymbol.getNameType().getName())).
+			body("entity.alleleSymbol.synonymScope.name", is(alleleSymbol.getSynonymScope().getName())).
+			body("entity.alleleSymbol.synonymUrl", is(alleleSymbol.getSynonymUrl())).
+			body("entity.alleleSymbol.evidence[0].curie", is(alleleSymbol.getEvidence().get(0).getCurie())).
+			body("entity.alleleFullName.displayText", is(alleleFullName.getDisplayText())).
+			body("entity.alleleFullName.formatText", is(alleleFullName.getFormatText())).
+			body("entity.alleleFullName.nameType.name", is(alleleFullName.getNameType().getName())).
+			body("entity.alleleFullName.synonymScope.name", is(alleleFullName.getSynonymScope().getName())).
+			body("entity.alleleFullName.synonymUrl", is(alleleFullName.getSynonymUrl())).
+			body("entity.alleleFullName.evidence[0].curie", is(alleleFullName.getEvidence().get(0).getCurie())).
+			body("entity.alleleSynonyms[0].displayText", is(alleleSynonym.getDisplayText())).
+			body("entity.alleleSynonyms[0].formatText", is(alleleSynonym.getFormatText())).
+			body("entity.alleleSynonyms[0].nameType.name", is(alleleSynonym.getNameType().getName())).
+			body("entity.alleleSynonyms[0].synonymScope.name", is(alleleSynonym.getSynonymScope().getName())).
+			body("entity.alleleSynonyms[0].synonymUrl", is(alleleSynonym.getSynonymUrl())).
+			body("entity.alleleSynonyms[0].evidence[0].curie", is(alleleSynonym.getEvidence().get(0).getCurie())).
+			body("entity.alleleSecondaryIds[0].secondaryId", is(alleleSecondaryId.getSecondaryId())).
+			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(alleleSecondaryId.getEvidence().get(0).getCurie()));	
 	}
 
 	@Test
 	@Order(2)
 	public void editAllele() {
-		Allele allele = getAllele();
-		AlleleMutationTypeSlotAnnotation alleleMutationType2 = createAlleleMutationTypeSlotAnnotation(reference, soTerm2);
-		
+		Allele allele = getAllele(ALLELE);
+		allele.setCreatedBy(person);
+		allele.setCurie(ALLELE);
 		allele.setTaxon(taxon2);
+		allele.setInCollection(wgsInCollection);
+		allele.setReferences(List.of(reference2));
+		allele.setIsExtinct(true);
 		allele.setInternal(true);
 		allele.setObsolete(true);
-		allele.setIsExtinct(true);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType2));
-		allele.setAlleleSymbol(alleleSymbol);
+		allele.setDateCreated(datetime2);
 		
-		AlleleSymbolSlotAnnotation newSymbol = allele.getAlleleSymbol();
-		newSymbol.setDisplayText("EditedDisplay");
-		newSymbol.setFormatText("EditedFormat");
-		newSymbol.setNameType(systematicNameType);
-		newSymbol.setSynonymScope(broadSynonymScope);
-		newSymbol.setSynonymUrl("https://test2.org");
-		allele.setAlleleSymbol(newSymbol);
+		AlleleMutationTypeSlotAnnotation editedMutationType = allele.getAlleleMutationTypes().get(0);
+		editedMutationType.setMutationTypes(List.of(soTerm2));
+		editedMutationType.setEvidence(List.of(reference2));
+		allele.setAlleleMutationTypes(List.of(editedMutationType));
 		
-		AlleleFullNameSlotAnnotation newName = allele.getAlleleFullName();
-		newName.setDisplayText("EditedDisplay");
-		newName.setFormatText("EditedFormat");
-		newName.setSynonymScope(broadSynonymScope);
-		newName.setSynonymUrl("https://test2.org");
-		allele.setAlleleFullName(newName);
+		AlleleInheritanceModeSlotAnnotation editedInheritanceMode = allele.getAlleleInheritanceModes().get(0);
+		editedInheritanceMode.setInheritanceMode(recessiveInheritanceMode);
+		editedInheritanceMode.setPhenotypeTerm(mpTerm2);
+		editedInheritanceMode.setPhenotypeStatement("Edited phenotype statment");
+		editedInheritanceMode.setEvidence(List.of(reference2));
+		allele.setAlleleInheritanceModes(List.of(editedInheritanceMode));
 		
-		AlleleSynonymSlotAnnotation newSynonym = allele.getAlleleSynonyms().get(0);
-		newSynonym.setDisplayText("EditedDisplay");
-		newSynonym.setFormatText("EditedFormat");
-		newSynonym.setNameType(fullNameType);
-		newSynonym.setSynonymScope(broadSynonymScope);
-		newSynonym.setSynonymUrl("https://test2.org");
-		allele.setAlleleSynonyms(List.of(newSynonym));
+		AlleleSymbolSlotAnnotation editedSymbol = allele.getAlleleSymbol();
+		editedSymbol.setDisplayText("EditedDisplay");
+		editedSymbol.setFormatText("EditedFormat");
+		editedSymbol.setNameType(systematicNameType);
+		editedSymbol.setSynonymScope(broadSynonymScope);
+		editedSymbol.setSynonymUrl("https://test2.org");
+		editedSymbol.setEvidence(List.of(reference2));
+		allele.setAlleleSymbol(editedSymbol);
+		
+		AlleleFullNameSlotAnnotation editedFullName = allele.getAlleleFullName();
+		editedFullName.setDisplayText("EditedDisplay");
+		editedFullName.setFormatText("EditedFormat");
+		editedFullName.setSynonymScope(broadSynonymScope);
+		editedFullName.setSynonymUrl("https://test2.org");
+		editedFullName.setEvidence(List.of(reference2));
+		allele.setAlleleFullName(editedFullName);
+		
+		AlleleSynonymSlotAnnotation editedSynonym = allele.getAlleleSynonyms().get(0);
+		editedSynonym.setDisplayText("EditedDisplay");
+		editedSynonym.setFormatText("EditedFormat");
+		editedSynonym.setNameType(fullNameType);
+		editedSynonym.setSynonymScope(broadSynonymScope);
+		editedSynonym.setSynonymUrl("https://test2.org");
+		editedSynonym.setEvidence(List.of(reference2));
+		allele.setAlleleSynonyms(List.of(editedSynonym));
+		
+		AlleleSecondaryIdSlotAnnotation editedSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		editedSecondaryId.setSecondaryId("TEST:Secondary2");
+		editedSecondaryId.setEvidence(List.of(reference2));
+		allele.setAlleleSecondaryIds(List.of(editedSecondaryId));
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				put("/api/allele").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
 
 		RestAssured.given().
-				when().
-				get("/api/allele/" + ALLELE).
-				then().
-				statusCode(200).
-				body("entity.curie", is(ALLELE)).
-				body("entity.taxon.curie", is(taxon2.getCurie())).
-				body("entity.internal", is(true)).
-				body("entity.obsolete", is(true)).
-				body("entity.isExtinct", is(true)).
-				body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm2.getCurie())).
-				body("entity.alleleSymbol.displayText", is("EditedDisplay")).
-				body("entity.alleleSymbol.formatText", is("EditedFormat")).
-				body("entity.alleleSymbol.nameType.name", is(systematicNameType.getName())).
-				body("entity.alleleSymbol.synonymScope.name", is(broadSynonymScope.getName())).
-				body("entity.alleleSymbol.synonymUrl", is("https://test2.org")).
-				body("entity.alleleFullName.displayText", is("EditedDisplay")).
-				body("entity.alleleFullName.formatText", is("EditedFormat")).
-				body("entity.alleleFullName.nameType.name", is(fullNameType.getName())).
-				body("entity.alleleFullName.synonymScope.name", is(broadSynonymScope.getName())).
-				body("entity.alleleFullName.synonymUrl", is("https://test2.org")).
-				body("entity.alleleSynonyms[0].displayText", is("EditedDisplay")).
-				body("entity.alleleSynonyms[0].formatText", is("EditedFormat")).
-				body("entity.alleleSynonyms[0].nameType.name", is(fullNameType.getName())).
-				body("entity.alleleSynonyms[0].synonymScope.name", is(broadSynonymScope.getName())).
-				body("entity.alleleSynonyms[0].synonymUrl", is("https://test2.org"));
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity.curie", is(ALLELE)).
+			body("entity.inCollection.name", is(wgsInCollection.getName())).
+			body("entity.references[0].curie", is(reference2.getCurie())).
+			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.taxon.curie", is(taxon2.getCurie())).
+			body("entity.internal", is(true)).
+			body("entity.obsolete", is(true)).
+			body("entity.isExtinct", is(true)).
+			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
+			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
+			body("entity.alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
+			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(editedInheritanceMode.getEvidence().get(0).getCurie())).
+			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is(editedInheritanceMode.getInheritanceMode().getName())).
+			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(editedInheritanceMode.getPhenotypeTerm().getCurie())).
+			body("entity.alleleInheritanceModes[0].phenotypeStatement", is(editedInheritanceMode.getPhenotypeStatement())).
+			body("entity.alleleSymbol.displayText", is(editedSymbol.getDisplayText())).
+			body("entity.alleleSymbol.formatText", is(editedSymbol.getFormatText())).
+			body("entity.alleleSymbol.nameType.name", is(editedSymbol.getNameType().getName())).
+			body("entity.alleleSymbol.synonymScope.name", is(editedSymbol.getSynonymScope().getName())).
+			body("entity.alleleSymbol.synonymUrl", is(editedSymbol.getSynonymUrl())).
+			body("entity.alleleSymbol.evidence[0].curie", is(editedSymbol.getEvidence().get(0).getCurie())).
+			body("entity.alleleFullName.displayText", is(editedFullName.getDisplayText())).
+			body("entity.alleleFullName.formatText", is(editedFullName.getFormatText())).
+			body("entity.alleleFullName.nameType.name", is(editedFullName.getNameType().getName())).
+			body("entity.alleleFullName.synonymScope.name", is(editedFullName.getSynonymScope().getName())).
+			body("entity.alleleFullName.synonymUrl", is(editedFullName.getSynonymUrl())).
+			body("entity.alleleFullName.evidence[0].curie", is(editedFullName.getEvidence().get(0).getCurie())).
+			body("entity.alleleSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
+			body("entity.alleleSynonyms[0].formatText", is(editedSynonym.getFormatText())).
+			body("entity.alleleSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
+			body("entity.alleleSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
+			body("entity.alleleSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
+			body("entity.alleleSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
+			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
+			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie()));
 	}
 	
 	@Test
 	@Order(3)
-	public void createAlleleWithMissingCurie() {
+	public void createAlleleWithMissingRequiredFieldsLevel1() {
 		Allele allele = new Allele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -251,853 +325,34 @@ public class AlleleITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(4)
-	public void createAlleleWithMissingTaxon() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0005");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(5)
-	public void createAlleleWithInvalidTaxon() {
-		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
-		nonPersistedTaxon.setCurie("TEST:invalid");
-		nonPersistedTaxon.setName("Invalid");
-		
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0006");
-		allele.setTaxon(nonPersistedTaxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(6)
-	public void createAlleleWithInvalidInheritanceMode() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0007");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inCollection);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-	
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.inheritanceMode", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(7)
-	public void createAlleleWithInvalidInCollection() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0008");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inheritanceMode);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-	
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(8)
-	public void createAlleleWithInvalidReference() {
-		List<Reference> invalidReferences = new ArrayList<Reference>();
-		Reference invalidReference = new Reference();
-		invalidReference.setCurie("Invalid");
-		invalidReferences.add(invalidReference);
-		
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0010");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(invalidReferences);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(9)
-	public void editAlleleWithMissingCurie() {
-		Allele allele = getAllele();
-		allele.setCurie(null);
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(10)
-	public void editAlleleWithMissingTaxon() {
-		Allele allele = getAllele();
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setTaxon(null);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(11)
-	public void editAlleleWithInvalidTaxon() {
-		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
-		nonPersistedTaxon.setCurie("TEST:invalid");
-		nonPersistedTaxon.setName("Invalid");
-		
-		Allele allele = getAllele();
-		allele.setTaxon(nonPersistedTaxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(12)
-	public void editAlleleWithInvalidInheritanceMode() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inCollection);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.inheritanceMode", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(13)
-	public void editAlleleWithInvalidInCollection() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inheritanceMode);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(14)
-	public void editAlleleWithInvalidReference() {
-		List<Reference> invalidReferences = new ArrayList<Reference>();
-		Reference invalidReference = new Reference();
-		invalidReference.setCurie("Invalid");
-		invalidReferences.add(invalidReference);
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(invalidReferences);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(15)
-	public void editAlleleWithNullInheritanceMode() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", hasKey("inheritanceMode"));
-		
-		allele.setInheritanceMode(null);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("inheritanceMode")));
-	}
-
-	@Test
-	@Order(16)
-	public void editAlleleWithNullInCollection() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", hasKey("inCollection"));
-		
-		allele.setInCollection(null);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("inCollection")));
-	}
-
-	@Test
-	@Order(17)
-	public void editAlleleWithNullIsExtinct() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setIsExtinct(true);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", hasKey("isExtinct"));
-		
-		allele.setIsExtinct(null);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("isExtinct")));
-	}
-
-	@Test
-	@Order(18)
-	public void editAlleleWithNullReferences() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", hasKey("references"));
-		
-		allele.setReferences(null);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("references")));
-	}
-
-	@Test
-	@Order(19)
-	public void createAlleleWithMissingAlleleMutationTypeMutationTypes() {
-		Allele allele = new Allele();
-		
-		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = new AlleleMutationTypeSlotAnnotation();
-		invalidAlleleMutationType.setEvidence(List.of(reference));
-		invalidAlleleMutationType.setMutationTypes(null);
-
-		allele.setCurie("Allele:0022");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(20)
-	public void createAlleleWithInvalidAlleleMutationTypeMutationTypes() {
-		Allele allele = new Allele();
-		
-		SOTerm nonPersistedSoTerm = new SOTerm();
-		nonPersistedSoTerm.setCurie("SO:00004");
-		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, nonPersistedSoTerm);
-		
-		allele.setCurie("Allele:0023");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(21)
-	public void createAlleleWithInvalidAlleleMutationTypeEvidence() {
-		Allele allele = new Allele();
-		
-		Reference nonPersistedReference = new Reference();
-		nonPersistedReference.setCurie("PMID:00004");
-		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(nonPersistedReference, soTerm);
-		
-		allele.setCurie("Allele:0024");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleMutationTypes", is("evidence - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(22)
-	public void editAlleleWithMissingAlleleMutationTypeMutationTypes() {
-		Allele allele = getAllele();
-		
-		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = new AlleleMutationTypeSlotAnnotation();
-		invalidAlleleMutationType.setEvidence(List.of(reference));
-		invalidAlleleMutationType.setMutationTypes(null);
-		
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(23)
-	public void editAlleleWithInvalidAlleleMutationTypeMutationTypes() {
-		Allele allele = getAllele();
-		
-		SOTerm nonPersistedSoTerm = new SOTerm();
-		nonPersistedSoTerm.setCurie("SO:00004");
-		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, nonPersistedSoTerm);
-		
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(24)
-	public void editAlleleWithInvalidAlleleMutationTypeEvidence() {
-		Allele allele = getAllele();
-		
-		Reference nonPersistedReference = new Reference();
-		nonPersistedReference.setCurie("PMID:00004");
-		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(nonPersistedReference, soTerm);
-		
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleMutationTypes", is("evidence - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(25)
-	public void editAlleleWithNullAlleleMutationTypeEvidence() {
-		Allele allele = getAllele();
-		AlleleMutationTypeSlotAnnotation noEvidenceAlleleMutationType = new AlleleMutationTypeSlotAnnotation();
-		noEvidenceAlleleMutationType.setMutationTypes(List.of(soTerm));
-		
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200);
-			
-		RestAssured.given().
-			when().
-			get("/api/allele/" + ALLELE).
-			then().
-			statusCode(200).
-			body("entity.alleleMutationTypes[0]", hasKey("evidence"));
-
-		allele.setAlleleMutationTypes(List.of(noEvidenceAlleleMutationType));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200);
-	
-		RestAssured.given().
-			when().
-			get("/api/allele/" + ALLELE).
-			then().
-			statusCode(200).
-			body("entity.alleleMutationTypes[0]", not(hasKey("evidence")));
-	}
-	
-	@Test
-	@Order(26)
-	public void createAlleleWithMissingAlleleSymbol() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0026");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages", is(aMapWithSize(3))).
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
-	@Order(27)
-	public void createAlleleWithMissingAlleleSymbolDisplayText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0027");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameType);
-		symbol.setFormatText("MissingDisplayText");
-		symbol.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSymbol(symbol);
+	@Order(4)
+	public void editAlleleWithMissingCurie() {
+		Allele allele = getAllele(ALLELE);
+		allele.setCurie(null);
 		
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
 			when().
-			post("/api/allele").
+			put("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
-	@Order(28)
-	public void createAlleleWithEmptyAlleleSymbolDisplayText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0028");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameType);
-		symbol.setDisplayText("");
-		symbol.setFormatText("MissingDisplayText");
-		symbol.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(29)
-	public void createAlleleWithMissingAlleleSymbolFormatText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0029");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameType);
-		symbol.setDisplayText("MissingDisplayText");
-		symbol.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(30)
-	public void createAlleleWithEmptyAlleleSymbolFormatText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0030");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameType);
-		symbol.setDisplayText("MissingFormatText");
-		symbol.setFormatText("");
-		symbol.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(31)
-	public void createAlleleWithMissingAlleleSymbolNameType() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0031");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(null);
-		symbol.setDisplayText("MissingNameType");
-		symbol.setFormatText("MissingNameType");
-		symbol.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("nameType - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(32)
-	public void createAlleleWithInvalidSymbolNameType() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0032");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(fullNameType);
-		symbol.setDisplayText("InvalidNameType");
-		symbol.setFormatText("InvalidNameType");
-		symbol.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("nameType - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(33)
-	public void createAlleleWithInvalidSymbolSynomyScope() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0033");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameType);
-		symbol.setDisplayText("InvalidSynonymScope");
-		symbol.setFormatText("InvalidSynonymScope");
-		symbol.setSynonymScope(symbolNameType);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("synonymScope - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(34)
-	public void editAlleleWithMissingAlleleSymbol() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
+	@Order(5)
+	public void editAlleleWithMissingRequiredFieldsLevel1() {
+		Allele allele = getAllele(ALLELE);
+		allele.setTaxon(null);
 		allele.setAlleleSymbol(null);
 		
 		RestAssured.given().
@@ -1107,1078 +362,131 @@ public class AlleleITCase {
 			put("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
-
-	@Test
-	@Order(35)
-	public void editAlleleWithMissingAlleleSymbolDisplayText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setDisplayText(null);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(36)
-	public void editAlleleWithEmptyAlleleSymbolDisplayText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setDisplayText("");
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(37)
-	public void editAlleleWithMissingAlleleSymbolFormatText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setFormatText(null);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(38)
-	public void editAlleleWithEmptyAlleleSymbolFormatText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setFormatText("");
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(39)
-	public void editAlleleWithMissingAlleleSymbolNameType() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setNameType(null);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("nameType - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(40)
-	public void editAlleleWithInvalidAlleleSymbolNameType() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setNameType(fullNameType);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("nameType - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(41)
-	public void editAlleleWithInvalidAlleleSymbolSynonymScope() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setSynonymScope(symbolNameType);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("synonymScope - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(42)
-	public void editAlleleWithNullAlleleSymbolSynonymScope() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity.alleleSymbol", hasKey("synonymScope"));
-		
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-		symbol.setSynonymScope(null);
-		allele.setAlleleSymbol(symbol);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity.alleleSymbol", not(hasKey("synonymScope")));
-	}
 	
 	@Test
-	@Order(43)
-	public void createAlleleWithMissingAlleleFullNameDisplayText() {
+	@Order(6)
+	public void createAlleleWithEmptyRequiredFields() {
 		Allele allele = new Allele();
-		allele.setCurie("Allele:0043");
+		allele.setCurie("");
 		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
-		fullName.setNameType(fullNameType);
-		fullName.setFormatText("MissingDisplayText");
-		fullName.setSynonymScope(exactSynonymScope);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(44)
-	public void createAlleleWithEmptyAlleleFullNameDisplayText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0044");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
-		fullName.setNameType(fullNameType);
-		fullName.setDisplayText("");
-		fullName.setFormatText("MissingDisplayText");
-		fullName.setSynonymScope(exactSynonymScope);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(45)
-	public void createAlleleWithMissingAlleleFullNameFormatText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0045");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
-		fullName.setNameType(fullNameType);
-		fullName.setDisplayText("MissingFormatText");
-		fullName.setSynonymScope(exactSynonymScope);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(46)
-	public void createAlleleWithEmptyAlleleFullNameFormatText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0046");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
-		fullName.setNameType(fullNameType);
-		fullName.setDisplayText("MissingFormatText");
-		fullName.setFormatText("");
-		fullName.setSynonymScope(exactSynonymScope);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(47)
-	public void createAlleleWithMissingAlleleFullNameNameType() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0047");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
-		fullName.setDisplayText("MissingNameType");
-		fullName.setFormatText("MissingNameType");
-		fullName.setSynonymScope(exactSynonymScope);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("nameType - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(48)
-	public void createAlleleWithInvalidFullNameNameType() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0048");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
-		fullName.setDisplayText("MissingNameType");
-		fullName.setFormatText("MissingNameType");
-		fullName.setNameType(symbolNameType);
-		fullName.setSynonymScope(exactSynonymScope);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("nameType - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(49)
-	public void createAlleleWithInvalidFullNameSynomymScope() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0049");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
-		fullName.setNameType(fullNameType);
-		fullName.setDisplayText("MissingNameType");
-		fullName.setFormatText("MissingNameType");
-		fullName.setSynonymScope(symbolNameType);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("synonymScope - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(50)
-	public void editAlleleWithMissingAlleleFullNameDisplayText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setDisplayText(null);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(51)
-	public void editAlleleWithEmptyAlleleFullNameDisplayText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setDisplayText("");
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(52)
-	public void editAlleleWithMissingAlleleFullNameFormatText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setFormatText(null);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(53)
-	public void editAlleleWithEmptyAlleleFullNameFormatText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setFormatText("");
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(54)
-	public void editAlleleWithMissingAlleleFullNameNameType() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setNameType(null);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("nameType - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(55)
-	public void editAlleleWithInvalidAlleleFullNameNameType() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setNameType(symbolNameType);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("nameType - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(56)
-	public void editAlleleWithInvalidAlleleFullNameSynonymScope() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setSynonymScope(fullNameType);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleFullName", is("synonymScope - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(57)
-	public void editAlleleWithNullAlleleFullNameSynonymScope() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		allele.setAlleleFullName(alleleFullName);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity.alleleFullName", hasKey("synonymScope"));
-		
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		fullName.setSynonymScope(null);
-		allele.setAlleleFullName(fullName);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity.alleleFullName", not(hasKey("synonymScope")));
-	}
-	
-	@Test
-	@Order(58)
-	public void createAlleleWithMissingAlleleSynonymDisplayText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0058");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
-		synonym.setNameType(fullNameType);
-		synonym.setFormatText("MissingDisplayText");
-		synonym.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(59)
-	public void createAlleleWithEmptyAlleleSynonymDisplayText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0059");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
-		synonym.setNameType(fullNameType);
-		synonym.setDisplayText("");
-		synonym.setFormatText("EmptyDisplayText");
-		synonym.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(60)
-	public void createAlleleWithMissingAlleleSynonymFormatText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0060");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
-		synonym.setNameType(fullNameType);
-		synonym.setDisplayText("MissingFormatText");
-		synonym.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(61)
-	public void createAlleleWithEmptyAlleleSynonymFormatText() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0061");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
-		synonym.setNameType(fullNameType);
-		synonym.setDisplayText("EmptyFormatText");
-		synonym.setFormatText("");
-		synonym.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(62)
-	public void createAlleleWithMissingAlleleSynonymNameType() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0062");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
-		synonym.setDisplayText("MissingNameType");
-		synonym.setFormatText("MissingNameType");
-		synonym.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("nameType - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(63)
-	public void createAlleleWithInvalidSynonymNameType() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0063");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
-		synonym.setNameType(exactSynonymScope);
-		synonym.setDisplayText("InvalidNameType");
-		synonym.setFormatText("InvalidNameType");
-		synonym.setSynonymScope(exactSynonymScope);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("nameType - " + ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(64)
-	public void createAlleleWithInvalidSynonymSynomymScope() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0064");
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
-		synonym.setNameType(fullNameType);
-		synonym.setDisplayText("InvalidSynonymScope");
-		synonym.setFormatText("InvalidSynonymScope");
-		synonym.setSynonymScope(fullNameType);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("synonymScope - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(65)
-	public void editAlleleWithMissingAlleleSynonymDisplayText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setDisplayText(null);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(66)
-	public void editAlleleWithEmptyAlleleSynonymDisplayText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setDisplayText("");
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("displayText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(67)
-	public void editAlleleWithMissingAlleleSynonymFormatText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setFormatText(null);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(68)
-	public void editAlleleWithEmptyAlleleSynonymFormatText() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setFormatText("");
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("formatText - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(69)
-	public void editAlleleWithMissingAlleleSynonymNameType() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setNameType(null);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("nameType - " + ValidationConstants.REQUIRED_MESSAGE));
-	}
-
-	@Test
-	@Order(70)
-	public void editAlleleWithInvalidAlleleSynonymNameType() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setNameType(inCollection);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("nameType - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(71)
-	public void editAlleleWithInvalidAlleleSynonymSynonymScope() {
-		
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleSymbol(alleleSymbol);
-		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setSynonymScope(inCollection);
-		allele.setAlleleSynonyms(List.of(synonym));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSynonyms", is("synonymScope - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(72)
-	public void editAlleleWithNullAlleleSynonymSynonymScope() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
+		allele.setInCollection(mmpInCollection);
+		allele.setReferences(List.of(reference));
+		allele.setIsExtinct(false);
+		allele.setDateCreated(datetime);
 		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		allele.setAlleleSymbol(alleleSymbol);
 		allele.setAlleleFullName(alleleFullName);
 		allele.setAlleleSynonyms(List.of(alleleSynonym));
-
+		allele.setAlleleSecondaryIds(List.of(alleleSecondaryId));
+		allele.setAlleleInheritanceModes(List.of(alleleInheritanceMode));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+	}
+	
+	@Test
+	@Order(7)
+	public void editAlleleWithEmptyCurie() {
+		Allele allele = getAllele(ALLELE);
+		allele.setCurie("");
+		
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
 			when().
 			put("/api/allele").
 			then().
-			statusCode(200).
-			body("entity.alleleSynonyms[0]", hasKey("synonymScope"));
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+	}
+	
+	@Test
+	@Order(8)
+	public void createAlleleWithMissingRequiredFieldsLevel2() {
+		Allele allele = new Allele();
+		allele.setCurie("Allele:0008");
+		allele.setTaxon(taxon);
 		
-		AlleleSynonymSlotAnnotation synonym = allele.getAlleleSynonyms().get(0);
-		synonym.setSynonymScope(null);
-		allele.setAlleleSynonyms(List.of(synonym));
+		AlleleMutationTypeSlotAnnotation invalidMutationType = new AlleleMutationTypeSlotAnnotation();
+		AlleleInheritanceModeSlotAnnotation invalidInheritanceMode = new AlleleInheritanceModeSlotAnnotation();
+		AlleleSymbolSlotAnnotation invalidSymbol = new AlleleSymbolSlotAnnotation();
+		AlleleFullNameSlotAnnotation invalidFullName = new AlleleFullNameSlotAnnotation();
+		AlleleSynonymSlotAnnotation invalidSynonym = new AlleleSynonymSlotAnnotation();
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = new AlleleSecondaryIdSlotAnnotation();
+		
+		allele.setAlleleMutationTypes(List.of(invalidMutationType));
+		allele.setAlleleInheritanceModes(List.of(invalidInheritanceMode));
+		allele.setAlleleSymbol(invalidSymbol);
+		allele.setAlleleFullName(invalidFullName);
+		allele.setAlleleSynonyms(List.of(invalidSynonym));
+		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.alleleInheritanceModes", is("inheritanceMode - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+	
+	@Test
+	@Order(9)
+	public void editAlleleWithMissingRequiredFieldsLevel2() {
+		Allele allele = getAllele(ALLELE);
+		
+		AlleleMutationTypeSlotAnnotation invalidMutationType = allele.getAlleleMutationTypes().get(0);
+		invalidMutationType.setMutationTypes(null);
+		AlleleInheritanceModeSlotAnnotation invalidInheritanceMode = allele.getAlleleInheritanceModes().get(0);
+		invalidInheritanceMode.setInheritanceMode(null);
+		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
+		invalidSymbol.setDisplayText(null);
+		invalidSymbol.setFormatText(null);
+		invalidSymbol.setNameType(null);
+		AlleleFullNameSlotAnnotation invalidFullName = allele.getAlleleFullName();
+		invalidFullName.setDisplayText(null);
+		invalidFullName.setFormatText(null);
+		invalidFullName.setNameType(null);
+		AlleleSynonymSlotAnnotation invalidSynonym = allele.getAlleleSynonyms().get(0);
+		invalidSynonym.setDisplayText(null);
+		invalidSynonym.setFormatText(null);
+		invalidSynonym.setNameType(null);
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		invalidSecondaryId.setSecondaryId(null);
+		
+		allele.setAlleleMutationTypes(List.of(invalidMutationType));
+		allele.setAlleleSymbol(invalidSymbol);
+		allele.setAlleleFullName(invalidFullName);
+		allele.setAlleleSynonyms(List.of(invalidSynonym));
+		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -2186,12 +494,492 @@ public class AlleleITCase {
 			when().
 			put("/api/allele").
 			then().
-			statusCode(200).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope")));
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.alleleInheritanceModes", is("inheritanceMode - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+	
+	@Test
+	@Order(10)
+	public void createAlleleWithEmptyRequiredFieldsLevel2() {
+		Allele allele = new Allele();
+		allele.setCurie("Allele:0010");
+		allele.setTaxon(taxon);
+		
+		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(null, "", symbolNameType, null, null);
+		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(null, "", fullNameType, null, null);
+		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(null, "", systematicNameType, null, null);
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(null, "");
+		
+		allele.setAlleleSymbol(invalidSymbol);
+		allele.setAlleleFullName(invalidFullName);
+		allele.setAlleleSynonyms(List.of(invalidSynonym));
+		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+	
+	@Test
+	@Order(11)
+	public void editAlleleWithEmptyRequiredFieldsLevel2() {
+		Allele allele = getAllele(ALLELE);
+		
+		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
+		invalidSymbol.setDisplayText("");
+		invalidSymbol.setFormatText("");
+		AlleleFullNameSlotAnnotation invalidFullName = allele.getAlleleFullName();
+		invalidFullName.setDisplayText("");
+		invalidFullName.setFormatText("");
+		AlleleSynonymSlotAnnotation invalidSynonym = allele.getAlleleSynonyms().get(0);
+		invalidSynonym.setDisplayText("");
+		invalidSynonym.setFormatText("");
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		invalidSecondaryId.setSecondaryId("");
+		
+		allele.setAlleleSymbol(invalidSymbol);
+		allele.setAlleleFullName(invalidFullName);
+		allele.setAlleleSynonyms(List.of(invalidSynonym));
+		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
-	@Order(73)
+	@Order(12)
+	public void createAlleleWithInvalidFields() {
+		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
+		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
+		Reference nonPersistedReference = new Reference();
+		nonPersistedReference.setCurie("AGRKB:Invalid");
+		SOTerm nonPersistedSoTerm = new SOTerm();
+		nonPersistedSoTerm.setCurie("SO:Invalid");
+		MPTerm nonPersistedMpTerm = new MPTerm();
+		nonPersistedMpTerm.setCurie("MP:Invalid");
+		
+		Allele allele = new Allele();
+		allele.setCurie("Allele:0012");
+		allele.setTaxon(nonPersistedTaxon);
+		allele.setInCollection(dominantInheritanceMode);
+		allele.setReferences(List.of(nonPersistedReference));
+		allele.setIsExtinct(false);
+		allele.setDateCreated(datetime);
+		
+		AlleleMutationTypeSlotAnnotation invalidMutationType = createAlleleMutationTypeSlotAnnotation(List.of(nonPersistedReference), List.of(nonPersistedSoTerm));
+		AlleleInheritanceModeSlotAnnotation invalidInheritanceMode = createAlleleInheritanceModeSlotAnnotation(List.of(nonPersistedReference), fullNameType, nonPersistedMpTerm, "Invalid");
+		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(List.of(nonPersistedReference), "Test symbol", fullNameType, dominantInheritanceMode, "https://test.org");
+		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, dominantInheritanceMode, "https://test.org");
+		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(List.of(nonPersistedReference), "Test synonym", mmpInCollection, dominantInheritanceMode, "https://test.org");
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(nonPersistedReference), "TEST:Secondary");
+		
+		allele.setAlleleMutationTypes(List.of(invalidMutationType));
+		allele.setAlleleInheritanceModes(List.of(invalidInheritanceMode));
+		allele.setAlleleSymbol(invalidSymbol);
+		allele.setAlleleFullName(invalidFullName);
+		allele.setAlleleSynonyms(List.of(invalidSynonym));
+		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(9))).
+			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"mutationTypes - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"inheritanceMode - " + ValidationConstants.INVALID_MESSAGE,
+					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"nameType - " + ValidationConstants.INVALID_MESSAGE,
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"nameType - " + ValidationConstants.INVALID_MESSAGE,
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"nameType - " + ValidationConstants.INVALID_MESSAGE,
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE));
+	}
+
+	@Test
+	@Order(13)
+	public void editAlleleWithInvalidFields() {
+		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
+		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
+		Reference nonPersistedReference = new Reference();
+		nonPersistedReference.setCurie("AGRKB:Invalid");
+		SOTerm nonPersistedSoTerm = new SOTerm();
+		nonPersistedSoTerm.setCurie("SO:Invalid");
+		MPTerm nonPersistedMpTerm = new MPTerm();
+		nonPersistedMpTerm.setCurie("MP:Invalid");
+		
+		Allele allele = getAllele(ALLELE);
+		allele.setTaxon(nonPersistedTaxon);
+		allele.setInCollection(dominantInheritanceMode);
+		allele.setReferences(List.of(nonPersistedReference));
+		allele.setIsExtinct(false);
+		allele.setDateCreated(datetime);
+		
+		AlleleMutationTypeSlotAnnotation invalidMutationType = allele.getAlleleMutationTypes().get(0);
+		invalidMutationType.setEvidence(List.of(nonPersistedReference));
+		invalidMutationType.setMutationTypes(List.of(nonPersistedSoTerm));
+		AlleleInheritanceModeSlotAnnotation invalidInheritanceMode = allele.getAlleleInheritanceModes().get(0);
+		invalidInheritanceMode.setEvidence(List.of(nonPersistedReference));
+		invalidInheritanceMode.setInheritanceMode(fullNameType);
+		invalidInheritanceMode.setPhenotypeTerm(nonPersistedMpTerm);
+		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
+		invalidSymbol.setEvidence(List.of(nonPersistedReference));
+		invalidSymbol.setNameType(fullNameType);
+		invalidSymbol.setSynonymScope(dominantInheritanceMode);
+		AlleleFullNameSlotAnnotation invalidFullName = allele.getAlleleFullName();
+		invalidFullName.setEvidence(List.of(nonPersistedReference));
+		invalidFullName.setNameType(symbolNameType);
+		invalidFullName.setSynonymScope(dominantInheritanceMode);
+		AlleleSynonymSlotAnnotation invalidSynonym = allele.getAlleleSynonyms().get(0);
+		invalidSynonym.setEvidence(List.of(nonPersistedReference));
+		invalidSynonym.setNameType(mmpInCollection);
+		invalidSynonym.setSynonymScope(dominantInheritanceMode);
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		invalidSecondaryId.setEvidence(List.of(nonPersistedReference));
+		
+		allele.setAlleleMutationTypes(List.of(invalidMutationType));
+		allele.setAlleleInheritanceModes(List.of(invalidInheritanceMode));
+		allele.setAlleleSymbol(invalidSymbol);
+		allele.setAlleleFullName(invalidFullName);
+		allele.setAlleleSynonyms(List.of(invalidSynonym));
+		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(9))).
+			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"mutationTypes - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"inheritanceMode - " + ValidationConstants.INVALID_MESSAGE,
+					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"nameType - " + ValidationConstants.INVALID_MESSAGE,
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"nameType - " + ValidationConstants.INVALID_MESSAGE,
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.INVALID_MESSAGE,
+					"nameType - " + ValidationConstants.INVALID_MESSAGE,
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE));
+	}
+
+	@Test
+	@Order(14)
+	public void createAlleleWithObsoleteFields() {
+		Allele allele = new Allele();
+		allele.setCurie("Allele:0012");
+		allele.setTaxon(obsoleteTaxon);
+		allele.setInCollection(obsoleteCollection);
+		allele.setReferences(List.of(obsoleteReference));
+		
+		AlleleMutationTypeSlotAnnotation obsoleteMutationType = createAlleleMutationTypeSlotAnnotation(List.of(obsoleteReference), List.of(obsoleteSoTerm));
+		AlleleInheritanceModeSlotAnnotation obsoleteInheritanceMode = createAlleleInheritanceModeSlotAnnotation(List.of(obsoleteReference), obsoleteInheritanceModeTerm, obsoleteMpTerm, "Obsolete");
+		AlleleSymbolSlotAnnotation obsoleteSymbol = createAlleleSymbolSlotAnnotation(List.of(obsoleteReference), "Test symbol", obsoleteSymbolNameType, obsoleteSynonymScope, "https://test.org");
+		AlleleFullNameSlotAnnotation obsoleteFullName = createAlleleFullNameSlotAnnotation(List.of(obsoleteReference), "Test name", obsoleteFullNameType, obsoleteSynonymScope, "https://test.org");
+		AlleleSynonymSlotAnnotation obsoleteSynonym = createAlleleSynonymSlotAnnotation(List.of(obsoleteReference), "Test synonym", obsoleteNameType, obsoleteSynonymScope, "https://test.org");
+		AlleleSecondaryIdSlotAnnotation obsoleteSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(obsoleteReference), "TEST:Secondary");
+		
+		allele.setAlleleMutationTypes(List.of(obsoleteMutationType));
+		allele.setAlleleInheritanceModes(List.of(obsoleteInheritanceMode));
+		allele.setAlleleSymbol(obsoleteSymbol);
+		allele.setAlleleFullName(obsoleteFullName);
+		allele.setAlleleSynonyms(List.of(obsoleteSynonym));
+		allele.setAlleleSecondaryIds(List.of(obsoleteSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(9))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"mutationTypes - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"inheritanceMode - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE));
+	}
+
+	@Test
+	@Order(15)
+	public void editAlleleWithObsoleteFields() {
+		Allele allele = getAllele(ALLELE);
+		allele.setTaxon(obsoleteTaxon);
+		allele.setInCollection(obsoleteCollection);
+		allele.setReferences(List.of(obsoleteReference));
+		
+		AlleleMutationTypeSlotAnnotation obsoleteMutationType = allele.getAlleleMutationTypes().get(0);
+		obsoleteMutationType.setEvidence(List.of(obsoleteReference));
+		obsoleteMutationType.setMutationTypes(List.of(obsoleteSoTerm));
+		AlleleInheritanceModeSlotAnnotation obsoleteInheritanceMode = allele.getAlleleInheritanceModes().get(0);
+		obsoleteInheritanceMode.setEvidence(List.of(obsoleteReference));
+		obsoleteInheritanceMode.setInheritanceMode(obsoleteInheritanceModeTerm);
+		obsoleteInheritanceMode.setPhenotypeTerm(obsoleteMpTerm);
+		AlleleSymbolSlotAnnotation obsoleteSymbol = allele.getAlleleSymbol();
+		obsoleteSymbol.setEvidence(List.of(obsoleteReference));
+		obsoleteSymbol.setNameType(obsoleteSymbolNameType);
+		obsoleteSymbol.setSynonymScope(obsoleteSynonymScope);
+		AlleleFullNameSlotAnnotation obsoleteFullName = allele.getAlleleFullName();
+		obsoleteFullName.setEvidence(List.of(obsoleteReference));
+		obsoleteFullName.setNameType(obsoleteFullNameType);
+		obsoleteFullName.setSynonymScope(obsoleteSynonymScope);
+		AlleleSynonymSlotAnnotation obsoleteSynonym = allele.getAlleleSynonyms().get(0);
+		obsoleteSynonym.setEvidence(List.of(obsoleteReference));
+		obsoleteSynonym.setNameType(obsoleteNameType);
+		obsoleteSynonym.setSynonymScope(obsoleteSynonymScope);
+		AlleleSecondaryIdSlotAnnotation obsoleteSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		obsoleteSecondaryId.setEvidence(List.of(obsoleteReference));
+		
+		allele.setAlleleMutationTypes(List.of(obsoleteMutationType));
+		allele.setAlleleSymbol(obsoleteSymbol);
+		allele.setAlleleFullName(obsoleteFullName);
+		allele.setAlleleSynonyms(List.of(obsoleteSynonym));
+		allele.setAlleleSecondaryIds(List.of(obsoleteSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(9))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"mutationTypes - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"inheritanceMode - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE));
+	}
+
+	@Test
+	@Order(16)
+	public void editAlleleWithNullNonRequiredFieldsLevel2() {
+		// Level 2 done before 1 to avoid having to restore nulled fields
+		Allele allele = getAllele(ALLELE);
+
+		AlleleMutationTypeSlotAnnotation editedMutationType = allele.getAlleleMutationTypes().get(0);
+		editedMutationType.setEvidence(null);
+		
+		AlleleInheritanceModeSlotAnnotation editedInheritanceMode = allele.getAlleleInheritanceModes().get(0);
+		editedInheritanceMode.setEvidence(null);
+		editedInheritanceMode.setPhenotypeTerm(null);
+		editedInheritanceMode.setPhenotypeStatement(null);
+		
+		AlleleSymbolSlotAnnotation editedSymbol = allele.getAlleleSymbol();
+		editedSymbol.setEvidence(null);
+		editedSymbol.setSynonymScope(null);
+		editedSymbol.setSynonymUrl(null);
+		
+		AlleleFullNameSlotAnnotation editedFullName = allele.getAlleleFullName();
+		editedFullName.setEvidence(null);
+		editedFullName.setSynonymScope(null);
+		editedFullName.setSynonymUrl(null);
+		
+		AlleleSynonymSlotAnnotation editedSynonym = allele.getAlleleSynonyms().get(0);
+		editedSynonym.setEvidence(null);
+		editedSynonym.setSynonymScope(null);
+		editedSynonym.setSynonymUrl(null);
+		
+		AlleleSecondaryIdSlotAnnotation editedSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		editedSecondaryId.setEvidence(null);
+		
+		allele.setAlleleMutationTypes(List.of(editedMutationType));
+		allele.setAlleleInheritanceModes(List.of(editedInheritanceMode));
+		allele.setAlleleSymbol(editedSymbol);
+		allele.setAlleleFullName(editedFullName);
+		allele.setAlleleSynonyms(List.of(editedSynonym));
+		allele.setAlleleSecondaryIds(List.of(editedSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity", hasKey("alleleMutationTypes")).
+			body("entity", hasKey("alleleInheritanceModes")).
+			body("entity", hasKey("alleleSymbol")).
+			body("entity", hasKey("alleleFullName")).
+			body("entity", hasKey("alleleSynonyms")).
+			body("entity", hasKey("alleleSecondaryIds")).
+			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("evidence"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
+			body("entity.alleleSymbol", not(hasKey("evidence"))).
+			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
+			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
+			body("entity.alleleFullName", not(hasKey("evidence"))).
+			body("entity.alleleFullName", not(hasKey("synonymScope"))).
+			body("entity.alleleFullName", not(hasKey("synonymUrl"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("evidence"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence")));
+	}
+
+	@Test
+	@Order(17)
+	public void editAlleleWithNullNonRequiredFieldsLevel1() {
+		Allele allele = getAllele(ALLELE);
+
+		allele.setInCollection(null);
+		allele.setReferences(null);
+		allele.setIsExtinct(null);
+		allele.setDateCreated(null);
+		allele.setAlleleMutationTypes(null);
+		allele.setAlleleFullName(null);
+		allele.setAlleleSynonyms(null);
+		allele.setAlleleSecondaryIds(null);
+		allele.setAlleleInheritanceModes(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("inCollection"))).
+			body("entity", not(hasKey("references"))).
+			body("entity", not(hasKey("isExtinct"))).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("alleleMutationTypes"))).
+			body("entity", not(hasKey("alleleInheritanceModes"))).
+			body("entity", not(hasKey("alleleFullName"))).
+			body("entity", not(hasKey("alleleSynonyms"))).
+			body("entity", not(hasKey("alleleSecondaryIds")));
+	}
+
+	@Test
+	@Order(18)
 	public void deleteAllele() {
 
 		RestAssured.given().
@@ -2200,183 +988,67 @@ public class AlleleITCase {
 				then().
 				statusCode(200);
 	}
-
-	private Allele getAllele() {
-		ObjectResponse<Allele> res = RestAssured.given().
-				when().
-				get("/api/allele/" + ALLELE).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefAllele());
-
-		return res.getEntity();
-	}
 	
-	private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
-		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
-			when().
-			get("/api/ncbitaxonterm/" + taxonCurie).
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefTaxonTerm());
-		
-		return response.getEntity();
-	}
-
-	private Vocabulary getVocabulary(String name) {
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/findBy/" + name).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		Vocabulary vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-	
-	private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
-		ObjectListResponse<VocabularyTerm> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/" + vocabulary.getId() + "/terms").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
-		
-		List<VocabularyTerm> vocabularyTerms = response.getEntities();
-		for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
-			if (vocabularyTerm.getName().equals(name)) {
-				return vocabularyTerm;
-			}
-		}
-		
-		return null;
-	}
-	
-	private Reference createReference(String curie) {
-		Reference reference = new Reference();
-		reference.setCurie(curie);
-		
-		ObjectResponse<Reference> response = RestAssured.given().
-			contentType("application/json").
-			body(reference).
-			when().
-			post("/api/reference").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefReference());
-			
-		return response.getEntity();
-	}
-	
-	private Person createPerson(String uniqueId) {
-		LoggedInPerson person = new LoggedInPerson();
-		person.setUniqueId(uniqueId);
-		
-		ObjectResponse<LoggedInPerson> response = RestAssured.given().
-				contentType("application/json").
-				body(person).
-				when().
-				post("/api/loggedinperson").
-				then().
-				statusCode(200).extract().
-				body().as(getObjectResponseTypeRefLoggedInPerson());
-		
-		person = response.getEntity();
-		return (Person) person;
-	}
-	
-	private SOTerm createSoTerm(String curie) {
-		SOTerm term = new SOTerm();
-		term.setCurie(curie);
-		
-		ObjectResponse<SOTerm> response = RestAssured.given().
-				contentType("application/json").
-				body(term).
-				when().
-				post("/api/soterm").
-				then().
-				statusCode(200).extract().
-				body().as(getObjectResponseTypeRefSOTerm());
-		
-		return response.getEntity();
-	}
-	
-	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation (InformationContentEntity evidence, SOTerm mutationType) {
+	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation (List<InformationContentEntity> evidence, List<SOTerm> mutationTypes) {
 		AlleleMutationTypeSlotAnnotation amt = new AlleleMutationTypeSlotAnnotation();
-		if (evidence != null)
-			amt.setEvidence(List.of(evidence));
-		if (mutationType != null)
-			amt.setMutationTypes(List.of(mutationType));
+		amt.setEvidence(evidence);
+		amt.setMutationTypes(mutationTypes);
 		
 		return amt;
 	}
 
-	private AlleleSymbolSlotAnnotation createAlleleSymbolSlotAnnotation(String name) {
+	private AlleleInheritanceModeSlotAnnotation createAlleleInheritanceModeSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm inheritanceMode, PhenotypeTerm phenotypeTerm, String phenotypeStatement) {
+		AlleleInheritanceModeSlotAnnotation imAnnotation = new AlleleInheritanceModeSlotAnnotation();
+		imAnnotation.setEvidence(evidence);
+		imAnnotation.setInheritanceMode(inheritanceMode);
+		imAnnotation.setPhenotypeTerm(phenotypeTerm);
+		imAnnotation.setPhenotypeStatement(phenotypeStatement);
+		
+		return imAnnotation;
+	}
+		
+	private AlleleSymbolSlotAnnotation createAlleleSymbolSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
+		symbol.setEvidence(evidence);
 		symbol.setDisplayText(name);
 		symbol.setFormatText(name);
-		symbol.setNameType(symbolNameType);
-		symbol.setSynonymScope(exactSynonymScope);
-		symbol.setSynonymUrl("https://test.org");
+		symbol.setNameType(nameType);
+		symbol.setSynonymScope(synonymScope);
+		symbol.setSynonymUrl(synonymUrl);
 		
 		return symbol;
 	}
 
-	private AlleleFullNameSlotAnnotation createAlleleFullNameSlotAnnotation(String name) {
+	private AlleleFullNameSlotAnnotation createAlleleFullNameSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
+		fullName.setEvidence(evidence);
 		fullName.setDisplayText(name);
 		fullName.setFormatText(name);
-		fullName.setNameType(fullNameType);
-		fullName.setSynonymScope(exactSynonymScope);
-		fullName.setSynonymUrl("https://test.org");
+		fullName.setNameType(nameType);
+		fullName.setSynonymScope(synonymScope);
+		fullName.setSynonymUrl(synonymUrl);
 		
 		return fullName;
 	}
 
-	private AlleleSynonymSlotAnnotation createAlleleSynonymSlotAnnotation(String name) {
+	private AlleleSynonymSlotAnnotation createAlleleSynonymSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
+		synonym.setEvidence(evidence);
 		synonym.setDisplayText(name);
 		synonym.setFormatText(name);
-		synonym.setNameType(symbolNameType);
-		synonym.setSynonymScope(exactSynonymScope);
-		synonym.setSynonymUrl("https://test.org");
+		synonym.setNameType(nameType);
+		synonym.setSynonymScope(synonymScope);
+		synonym.setSynonymUrl(synonymUrl);
 		
 		return synonym;
 	}
-	
-	private TypeRef<ObjectResponse<Allele>> getObjectResponseTypeRefAllele() {
-		return new TypeRef<ObjectResponse <Allele>>() { };
-	}
 
-	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxonTerm() {
-		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
-	}
-
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
-	}
-
-	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
-		return new TypeRef<ObjectResponse <Reference>>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
-		return new TypeRef<ObjectResponse <LoggedInPerson>>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<SOTerm>> getObjectResponseTypeRefSOTerm() {
-		return new TypeRef<ObjectResponse <SOTerm>>() {
-		};
+	private AlleleSecondaryIdSlotAnnotation createAlleleSecondaryIdSlotAnnotation(List<InformationContentEntity> evidence, String id) {
+		AlleleSecondaryIdSlotAnnotation secondaryId = new AlleleSecondaryIdSlotAnnotation();
+		secondaryId.setSecondaryId(id);
+		secondaryId.setEvidence(evidence);
+		
+		return secondaryId;
 	}
 
 }

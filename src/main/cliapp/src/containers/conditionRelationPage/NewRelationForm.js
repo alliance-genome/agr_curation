@@ -51,8 +51,14 @@ export const NewRelationForm = ({
 				newRelationDispatch({type: "RESET"});
 			},
 			onError: (error) => {
+
+				const message =
+					error.response.data.errorMessages.uniqueId ?
+					"Page Error: New relation is a duplicate of an existing relation" :
+					error.response.data.errorMessage;
+
 				toast_error.current.show([
-					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
+					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
 				]);
 				newRelationDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
 			}

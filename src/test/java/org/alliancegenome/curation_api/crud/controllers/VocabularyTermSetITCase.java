@@ -6,13 +6,12 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -22,14 +21,13 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(13)
-public class VocabularyTermSetITCase {
+public class VocabularyTermSetITCase extends BaseITCase {
 	
 	private Vocabulary testVocabulary1;
 	private Vocabulary testVocabulary2;
@@ -45,10 +43,10 @@ public class VocabularyTermSetITCase {
 		testVocabulary1 = createVocabulary("VocabularyTermSet test vocabulary", false);
 		testVocabulary2 = createVocabulary("VocabularyTermSet test vocabulary 2", false);
 		testObsoleteVocabulary = createVocabulary("Obsolete VocabularyTermSet test vocabulary", true);
-		testVocabularyTerm1 = createVocabularyTerm("VocabularyTermSet_test_vocabulary_term_1", testVocabulary1, false);
-		testVocabularyTerm2 = createVocabularyTerm("VocabularyTermSet_test_vocabulary_term_2", testVocabulary1, false);
-		testVocabularyTerm3 = createVocabularyTerm("VocabularyTermSet_test_vocabulary_term_3", testVocabulary2, false);
-		testObsoleteVocabularyTerm = createVocabularyTerm("VocabularyTermSet_test_vocabulary_term_3", testVocabulary1, true);
+		testVocabularyTerm1 = createVocabularyTerm(testVocabulary1, "VocabularyTermSet_test_vocabulary_term_1", false);
+		testVocabularyTerm2 = createVocabularyTerm(testVocabulary1, "VocabularyTermSet_test_vocabulary_term_2", false);
+		testVocabularyTerm3 = createVocabularyTerm(testVocabulary2, "VocabularyTermSet_test_vocabulary_term_3", false);
+		testObsoleteVocabularyTerm = createVocabularyTerm(testVocabulary1, "VocabularyTermSet_test_vocabulary_term_3", true);
 		
 	}
 
@@ -412,69 +410,4 @@ public class VocabularyTermSetITCase {
 				body("errorMessages.memberTerms", is(ValidationConstants.INVALID_MESSAGE));
 	}
 
-
-	
-	private Vocabulary createVocabulary(String name, Boolean obsolete) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setObsolete(obsolete);
-
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabulary).
-				when().
-				post("/api/vocabulary").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		return response.getEntity();
-	}
-	
-	private VocabularyTerm createVocabularyTerm(String name, Vocabulary vocabulary, Boolean obsolete) {
-		VocabularyTerm vocabularyTerm = new VocabularyTerm();
-		vocabularyTerm.setName(name);
-		vocabularyTerm.setObsolete(obsolete);
-		vocabularyTerm.setVocabulary(vocabulary);
-
-		ObjectResponse<VocabularyTerm> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTerm).
-				when().
-				post("/api/vocabularyterm").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
-		
-		return response.getEntity();
-	}
-	
-	private VocabularyTermSet getVocabularyTermSet(String name) {
-		
-		SearchResponse<VocabularyTermSet> response =
-				RestAssured.given().
-					contentType("application/json").
-					body("{\"name\": \"" + name + "\" }").
-					when().
-					post("/api/vocabularytermset/find").
-					then().
-					statusCode(200).
-					extract().body().as(getSearchResponseTypeRefVocabularyTermSet());
-		
-		return response.getSingleResult();
-	}
-
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
-	}
-	
-	private TypeRef<SearchResponse<VocabularyTermSet>> getSearchResponseTypeRefVocabularyTermSet() {
-		return new TypeRef<SearchResponse <VocabularyTermSet>>() { };
-	}
 }

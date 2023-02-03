@@ -31,10 +31,11 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 	public ObjectResponse<E> response;
 
 	public E validateAuditedObjectFields(E uiEntity, E dbEntity, Boolean newEntity) {
-		Boolean internal = validateInternal(uiEntity);
+		Boolean internal = uiEntity.getInternal() == null ? false : uiEntity.getInternal();
 		dbEntity.setInternal(internal);
 
-		dbEntity.setObsolete(uiEntity.getObsolete());
+		Boolean obsolete = uiEntity.getObsolete() == null ? false : uiEntity.getObsolete();
+		dbEntity.setObsolete(obsolete);
 
 		if (newEntity && uiEntity.getDateCreated() == null) {
 			dbEntity.setDateCreated(OffsetDateTime.now());
@@ -56,14 +57,6 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 		dbEntity.setDateUpdated(OffsetDateTime.now());
 
 		return dbEntity;
-	}
-
-	public Boolean validateInternal(E uiEntity) {
-		if (uiEntity.getInternal() == null) {
-			addMessageResponse("internal", ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		return uiEntity.getInternal();
 	}
 
 	public String handleStringField(String string) {

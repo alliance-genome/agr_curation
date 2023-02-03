@@ -75,6 +75,7 @@ export default (
 		<SecureRoute path="/ontology/atp"		 render={() => <GeneralOntologyComponent name="ATP" endpoint="atpterm" />} />
 		<SecureRoute path="/ontology/xbed"	 render={() => <GeneralOntologyComponent name="XBED" endpoint="xbedterm" />} />
 		<SecureRoute path="/ontology/xsmo"	 render={() => <GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />} />
+		<SecureRoute path="/ontology/obi"	 render={() => <GeneralOntologyComponent name="OBI" endpoint="obiterm" />} />
 
 		<SecureRoute path="/fmspage" render={() => <FMSComponent />} />
 		<SecureRoute path="/metricspage" render={() =><MetricsComponent />} />

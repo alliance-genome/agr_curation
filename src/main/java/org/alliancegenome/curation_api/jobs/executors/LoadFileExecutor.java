@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -12,6 +13,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.ProcessDisplayService;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,6 +55,8 @@ public class LoadFileExecutor {
 	}
 
 	protected String getVersionNumber(String versionString) {
+		if (StringUtils.isBlank(versionString))
+			return LinkMLSchemaConstants.LATEST_RELEASE;
 		if (versionString.startsWith("v"))
 			return versionString.substring(1);
 		return versionString;

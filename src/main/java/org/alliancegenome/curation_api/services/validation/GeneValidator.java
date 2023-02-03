@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -91,7 +92,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
@@ -100,11 +101,8 @@ public class GeneValidator extends GenomicEntityValidator {
 			dbEntity.setSecondaryIdentifiers(null);
 		}
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
-			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
-		} else {
-			dbEntity.setCrossReferences(null);
-		}
+		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
+		dbEntity.setCrossReferences(crossReferences);
 
 		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
 		dbEntity.setGeneType(geneType);
@@ -177,10 +175,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		ObjectResponse<GeneSymbolSlotAnnotation> symbolResponse = geneSymbolValidator.validateGeneSymbolSlotAnnotation(uiEntity.getGeneSymbol());
 		if (symbolResponse.getEntity() == null) {
-			Map<String, String> errors = symbolResponse.getErrorMessages();
-			for (String symbolField : errors.keySet()) {
-				addMessageResponse(field, symbolField + " - " + errors.get(symbolField));
-			}
+			addMessageResponse(field, symbolResponse.errorMessagesString());
 			return null;
 		}
 
@@ -195,10 +190,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		ObjectResponse<GeneFullNameSlotAnnotation> nameResponse = geneFullNameValidator.validateGeneFullNameSlotAnnotation(uiEntity.getGeneFullName());
 		if (nameResponse.getEntity() == null) {
-			Map<String, String> errors = nameResponse.getErrorMessages();
-			for (String nameField : errors.keySet()) {
-				addMessageResponse(field, nameField + " - " + errors.get(nameField));
-			}
+			addMessageResponse(field, nameResponse.errorMessagesString());
 			return null;
 		}
 
@@ -213,10 +205,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		ObjectResponse<GeneSystematicNameSlotAnnotation> nameResponse = geneSystematicNameValidator.validateGeneSystematicNameSlotAnnotation(uiEntity.getGeneSystematicName());
 		if (nameResponse.getEntity() == null) {
-			Map<String, String> errors = nameResponse.getErrorMessages();
-			for (String nameField : errors.keySet()) {
-				addMessageResponse(field, nameField + " - " + errors.get(nameField));
-			}
+			addMessageResponse(field, nameResponse.errorMessagesString());
 			return null;
 		}
 
@@ -231,10 +220,7 @@ public class GeneValidator extends GenomicEntityValidator {
 			for (GeneSynonymSlotAnnotation syn : uiEntity.getGeneSynonyms()) {
 				ObjectResponse<GeneSynonymSlotAnnotation> synResponse = geneSynonymValidator.validateGeneSynonymSlotAnnotation(syn);
 				if (synResponse.getEntity() == null) {
-					Map<String, String> errors = synResponse.getErrorMessages();
-					for (String synField : errors.keySet()) {
-						addMessageResponse(field, synField + " - " + errors.get(synField));
-					}
+					addMessageResponse(field, synResponse.errorMessagesString());
 					return null;
 				}
 				syn = synResponse.getEntity();

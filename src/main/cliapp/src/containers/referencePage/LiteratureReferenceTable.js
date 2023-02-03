@@ -6,6 +6,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Card } from 'primereact/card';
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from 'primereact/toast';
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const LiteratureReferenceTable = () => {
 
@@ -101,6 +102,12 @@ export const LiteratureReferenceTable = () => {
 						filterElement: {type: "input", filterName: "citationFilter", fields: ["citation"]}, 
 				}
 		];
+		const defaultColumnNames = columns.map((col) => {
+			return col.header;
+		});
+
+
+		const initialTableState = getDefaultTableState("LiteratureReferences", defaultColumnNames);
 
 		return (
 						<Card>
@@ -110,6 +117,8 @@ export const LiteratureReferenceTable = () => {
 									endpoint="literature-reference" 
 									tableName="Literature References" 
 									columns={columns}	 
+									defaultColumnNames={defaultColumnNames}
+									initialTableState={initialTableState}
 									isEditable={false}
 									isEnabled={isEnabled}
 									setIsEnabled={setIsEnabled}
