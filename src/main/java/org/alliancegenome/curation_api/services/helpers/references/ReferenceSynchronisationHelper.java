@@ -87,7 +87,7 @@ public class ReferenceSynchronisationHelper {
 				keepSearching = false;
 			}
 		}
-		
+
 		return null;
 	}
 
