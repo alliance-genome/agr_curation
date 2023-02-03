@@ -1,10 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -12,6 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
@@ -26,7 +24,6 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.MoleculeValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -45,6 +42,8 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	MoleculeValidator moleculeValidator;
 	@Inject
 	CrossReferenceService crossReferenceService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	@Override
 	@PostConstruct
@@ -152,8 +151,29 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 
 			m.setNamespace("molecule");
 			
-			m.setCrossReferences(crossReferenceService.handleFmsDtoUpdate(molecule.getCrossReferences(), m.getCrossReferences()));
-
+			List<Long> currentXrefIds;
+			if (m.getCrossReferences() == null) {
+				currentXrefIds = new ArrayList<>();
+			} else {
+				currentXrefIds = m.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
+			}
+			
+			List<Long> mergedXrefIds;
+			if (molecule.getCrossReferences() == null) {
+				mergedXrefIds = new ArrayList<>();
+				m.setCrossReferences(null);
+			} else {
+				List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedFmsXrefList(molecule.getCrossReferences(), m.getCrossReferences());
+				mergedXrefIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
+				m.setCrossReferences(mergedCrossReferences);
+			}
+			
+			for (Long currentId : currentXrefIds) {
+				if (mergedXrefIds.contains(currentId)) {
+					crossReferenceDAO.remove(currentId);
+				}
+			}
+			
 			moleculeDAO.persist(m);
 	} catch (Exception e) {
 			e.printStackTrace();

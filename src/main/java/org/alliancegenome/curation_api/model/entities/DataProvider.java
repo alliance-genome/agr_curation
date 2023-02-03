@@ -29,7 +29,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Schema(name = "DataProvider", description = "POJO that represents the data provider")
 @AGRCurationSchemaVersion(min = "1.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "dataprovider_createdby_index", columnList = "createdBy_id"), @Index(name = "dataprovider_updatedby_index", columnList = "updatedBy_id") })
+@Table(indexes = { @Index(name = "dataprovider_createdby_index", columnList = "createdBy_id"), @Index(name = "dataprovider_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "dataprovider_crossreference_index", columnList = "crossreference_id"), @Index(name = "dataprovider_sourceorganization_index", columnList = "sourceorganization_id")})
 public class DataProvider extends GeneratedAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)

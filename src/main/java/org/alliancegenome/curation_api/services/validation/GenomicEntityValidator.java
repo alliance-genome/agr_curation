@@ -72,7 +72,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 			}
 		}
 		
-		validatedXrefs = crossReferenceService.handleUpdate(validatedXrefs, dbEntity.getCrossReferences());
+		validatedXrefs = crossReferenceService.getMergedXrefList(validatedXrefs, dbEntity.getCrossReferences());
 
 		if (CollectionUtils.isEmpty(validatedXrefs))
 			return null;

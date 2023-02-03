@@ -32,7 +32,7 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		setSQLDao(crossReferenceDAO);
 	}
 
-	public List<CrossReference> handleFmsDtoUpdate(List<CrossReferenceFmsDTO> fmsCrossReferences, List<CrossReference> existingCrossReferences) {
+	public List<CrossReference> getMergedFmsXrefList(List<CrossReferenceFmsDTO> fmsCrossReferences, List<CrossReference> existingCrossReferences) {
 		Map<String, CrossReference> incomingXrefMap = new HashedMap<>();
 		if (CollectionUtils.isNotEmpty(fmsCrossReferences)) {
 			for (CrossReferenceFmsDTO fmsXref : fmsCrossReferences) {
@@ -56,10 +56,10 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 			}
 		}
 		
-		return handleUpdate(incomingXrefMap, existingCrossReferences);
+		return getMergedXrefList(incomingXrefMap, existingCrossReferences);
 	}
 	
-	public List<CrossReference> handleUpdate(List<CrossReference> incomingCrossReferences, List<CrossReference> existingCrossReferences) {
+	public List<CrossReference> getMergedXrefList(List<CrossReference> incomingCrossReferences, List<CrossReference> existingCrossReferences) {
 		Map<String, CrossReference> incomingXrefMap = new HashedMap<>();
 		if (CollectionUtils.isNotEmpty(incomingCrossReferences)) {
 			for (CrossReference incomingCrossReference : incomingCrossReferences) {
@@ -67,27 +67,11 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 			}
 		}
 		
-		return handleUpdate(incomingXrefMap, existingCrossReferences);	
-	}
-	
-	public CrossReference handleUpdate(CrossReference incomingCrossReference, CrossReference existingCrossReference) {
-		List<CrossReference> existingCrossReferences = new ArrayList<>();
-		if (existingCrossReference != null)
-			existingCrossReferences.add(existingCrossReference);
-		
-		Map<String, CrossReference> incomingXrefMap = new HashedMap<>();
-		if (incomingCrossReference != null)
-			incomingXrefMap.put(getCrossReferenceUniqueId(incomingCrossReference), incomingCrossReference);
-		
-		List<CrossReference> updatedXrefs = handleUpdate(incomingXrefMap, existingCrossReferences);
-		if (CollectionUtils.isEmpty(updatedXrefs))
-			return null;
-		
-		return updatedXrefs.get(0);
+		return getMergedXrefList(incomingXrefMap, existingCrossReferences);	
 	}
 	
 	@Transactional
-	public List<CrossReference> handleUpdate(Map<String, CrossReference> incomingXrefMap, List<CrossReference> existingCrossReferences) {
+	public List<CrossReference> getMergedXrefList(Map<String, CrossReference> incomingXrefMap, List<CrossReference> existingCrossReferences) {
 		Map<String, CrossReference> currentXrefMap = new HashedMap<>();
 		if (CollectionUtils.isNotEmpty(existingCrossReferences)) {
 			for (CrossReference xref : existingCrossReferences) {
@@ -101,12 +85,6 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 				finalXrefs.add(updateCrossReference(currentXrefMap.get(k), v));
 			} else {
 				finalXrefs.add(crossReferenceDAO.persist(v));
-			}
-		});
-		
-		currentXrefMap.forEach((k,v) -> {
-			if (incomingXrefMap.containsKey(k)) {
-				crossReferenceDAO.remove(v.getId());
 			}
 		});
 		
