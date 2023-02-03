@@ -78,7 +78,7 @@ public class ReferenceSynchronisationHelper {
 							return result;
 					}
 				}
-				if (response.getReturnedRecords() < 50) {
+				if (response.getReturnedRecords() == null || response.getReturnedRecords() < 50) {
 					keepSearching = false;
 				} else {
 					page++;
