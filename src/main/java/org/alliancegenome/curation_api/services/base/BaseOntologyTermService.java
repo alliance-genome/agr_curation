@@ -3,9 +3,7 @@ package org.alliancegenome.curation_api.services.base;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -15,14 +13,12 @@ import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
-import org.apache.commons.collections4.map.HashedMap;
 
 public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
@@ -42,9 +38,11 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 		E term = dao.find(inTerm.getCurie());
 
+		boolean newTerm = false;
 		if (term == null) {
 			term = dao.getNewInstance();
 			term.setCurie(inTerm.getCurie());
+			newTerm = true;
 		}
 
 		term.setName(inTerm.getName());
@@ -59,20 +57,111 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		handleSynonyms(term, inTerm);
 		handleCrossReferences(term, inTerm);
 
-		dao.persist(term);
-		
-
-		return term;
+		if(newTerm) {
+			return dao.persist(term);
+		} else {
+			return term;
+		}
 	}
 
 	@Transactional
 	public E processUpdateRelationships(E inTerm) {
 		// TODO: 01 - figure out issues with ontologies
 		E term = dao.find(inTerm.getCurie());
+		
+		HashSet<String> incomingParents = new HashSet<>();
+		HashSet<String> parentAdds = new HashSet<>();
+		HashSet<String> dbParents = new HashSet<>();
+		HashSet<String> parentDeletes = new HashSet<>();
 
-		term.setIsaParents(inTerm.getIsaParents());
-		term.setIsaAncestors(inTerm.getIsaAncestors());
+		if(term.getIsaParents() != null) {
+			term.getIsaParents().forEach(o -> {
+				dbParents.add(o.getCurie());
+				parentDeletes.add(o.getCurie());
+			});
+		}
+		
+		if(inTerm.getIsaParents() != null) {
+			inTerm.getIsaParents().forEach(o -> {
+				incomingParents.add(o.getCurie());
+				parentAdds.add(o.getCurie());
+			});
+		}
+		
+		parentDeletes.removeAll(incomingParents);
+		parentAdds.removeAll(dbParents);
+		
 
+		if(term.getIsaParents() != null) {
+			term.getIsaParents().removeIf(f -> {
+				return parentDeletes.contains(f.getCurie());
+			});
+			if(inTerm.getIsaParents() != null) {
+				inTerm.getIsaParents().forEach(o -> {
+					if(parentAdds.contains(o.getCurie())) {
+						term.getIsaParents().add(o);
+					}
+				});
+			}
+		} else {
+			HashSet<OntologyTerm> set = new HashSet<>();
+			if(inTerm.getIsaParents() != null) {
+				inTerm.getIsaParents().forEach(o -> {
+					if(parentAdds.contains(o.getCurie())) {
+						set.add(o);
+					}
+				});
+				term.setIsaParents(set);
+			}
+		}
+
+		
+		HashSet<String> incomingAncestors = new HashSet<>();
+		HashSet<String> ancestorAdds = new HashSet<>();
+		HashSet<String> dbAncestors = new HashSet<>();
+		HashSet<String> ancestorDeletes = new HashSet<>();
+
+		if(term.getIsaAncestors() != null) {
+			term.getIsaAncestors().forEach(o -> {
+				dbAncestors.add(o.getCurie());
+				ancestorDeletes.add(o.getCurie());
+			});
+		}
+		
+		if(inTerm.getIsaAncestors() != null) {
+			inTerm.getIsaAncestors().forEach(o -> {
+				incomingAncestors.add(o.getCurie());
+				ancestorAdds.add(o.getCurie());
+			});
+		}
+		
+		ancestorDeletes.removeAll(incomingAncestors);
+		ancestorAdds.removeAll(dbAncestors);
+		
+
+		if(term.getIsaAncestors() != null) {
+			term.getIsaAncestors().removeIf(f -> {
+				return ancestorDeletes.contains(f.getCurie());
+			});
+			if(inTerm.getIsaAncestors() != null) {
+				inTerm.getIsaAncestors().forEach(o -> {
+					if(ancestorAdds.contains(o.getCurie())) {
+						term.getIsaAncestors().add(o);
+					}
+				});
+			}
+		} else {
+			HashSet<OntologyTerm> set = new HashSet<>();
+			if(inTerm.getIsaAncestors() != null) {
+				inTerm.getIsaAncestors().forEach(o -> {
+					if(ancestorAdds.contains(o.getCurie())) {
+						set.add(o);
+					}
+				});
+				term.setIsaAncestors(set);
+			}
+		}
+		
 		return term;
 	}
 
