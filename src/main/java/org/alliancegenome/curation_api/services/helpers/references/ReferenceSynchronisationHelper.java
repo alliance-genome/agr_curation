@@ -21,6 +21,9 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class ReferenceSynchronisationHelper {
 
@@ -47,15 +50,15 @@ public class ReferenceSynchronisationHelper {
 	}
 
 	protected LiteratureReference fetchLiteratureServiceReference(String curie) {
-		HashMap<String, String> searchDetails = new HashMap<>();
+		HashMap<String, Object> searchDetails = new HashMap<>();
 		searchDetails.put("tokenOperator", "AND");
 		searchDetails.put("queryString", curie);
 
 		HashMap<String, Object> searchField = new HashMap<>();
 		if (curie.startsWith("AGR")) {
-			searchField.put("curie", searchDetails);
+			searchField.put("curie.keyword", searchDetails);
 		} else {
-			searchField.put("cross_references.curie", searchDetails);
+			searchField.put("cross_references.curie.keyword", searchDetails);
 		}
 
 		HashMap<String, Object> filter = new HashMap<>();
@@ -64,27 +67,17 @@ public class ReferenceSynchronisationHelper {
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("searchFilters", filter);
 
-		Boolean keepSearching = true;
-		int page = 0;
-		while (keepSearching) {
-			Pagination pagination = new Pagination(page, 50);
-			SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-			if (response != null) {
-				for (LiteratureReference result : response.getResults()) {
-					if (result.getCurie().equals(curie))
+		
+		Pagination pagination = new Pagination(0, 50);
+		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
+		if (response != null) {
+			for (LiteratureReference result : response.getResults()) {
+				if (result.getCurie().equals(curie))
+					return result;
+				for (LiteratureCrossReference resultXref : result.getCross_references()) {
+					if (resultXref.getCurie().equals(curie))
 						return result;
-					for (LiteratureCrossReference resultXref : result.getCross_references()) {
-						if (resultXref.getCurie().equals(curie))
-							return result;
-					}
 				}
-				if (response.getReturnedRecords() == null || response.getReturnedRecords() < 50) {
-					keepSearching = false;
-				} else {
-					page++;
-				}
-			} else {
-				keepSearching = false;
 			}
 		}
 
