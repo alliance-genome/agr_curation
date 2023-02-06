@@ -21,9 +21,6 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ReferenceSynchronisationHelper {
 
