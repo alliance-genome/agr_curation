@@ -156,7 +156,7 @@ const modTableSettings = {
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
-	DefaultStaff: {
+	Default: {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
@@ -176,12 +176,10 @@ const modTableSettings = {
 	}
 }
 
-const modStaffList = ['RGDStaff','SGDStaff','WBStaff','FBStaff','ZFINStaff','MGIStaff'];
-
 export function getModTableState(table){
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	return global.structuredClone(modTableSettings[modStaffList.includes(mod) ? mod : 'DefaultStaff'][table]);
+	return global.structuredClone(modTableSettings[mod]? modTableSettings[mod][table] : modTableSettings['Default'][table]);
 };
 
 export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns){
