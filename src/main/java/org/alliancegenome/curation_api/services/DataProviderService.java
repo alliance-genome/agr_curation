@@ -47,7 +47,7 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	public DataProvider createAffiliatedModDataProvider() {
 		String affiliatedModAbbreviation = null;
 		AllianceMember member = authenticatedPerson.getAllianceMember();
-		if (authenticatedPerson.getAllianceMember() == null) {
+		if (member == null) {
 			affiliatedModAbbreviation = "Alliance";
 		} else {
 			affiliatedModAbbreviation = member.getAbbreviation();
