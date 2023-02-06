@@ -47,7 +47,7 @@ public class ReferenceSynchronisationHelper {
 	}
 
 	protected LiteratureReference fetchLiteratureServiceReference(String curie) {
-		HashMap<String, Object> searchDetails = new HashMap<>();
+		HashMap<String, String> searchDetails = new HashMap<>();
 		searchDetails.put("tokenOperator", "AND");
 		searchDetails.put("queryString", curie);
 
