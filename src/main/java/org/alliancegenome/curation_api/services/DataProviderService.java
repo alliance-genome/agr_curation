@@ -45,17 +45,12 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 
 	@Transactional
 	public DataProvider createAffiliatedModDataProvider() {
-		LoggedInPerson user = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
-
 		String affiliatedModAbbreviation = null;
-		if (user.getOktaEmail().equals("test@alliancegenome.org")) {
-			// Needed to enable local testing without missing dataProvider error
+		AllianceMember member = authenticatedPerson.getAllianceMember();
+		if (authenticatedPerson.getAllianceMember() == null) {
 			affiliatedModAbbreviation = "Alliance";
 		} else {
-			AllianceMember affiliatedMod = user.getAllianceMember();
-			if (affiliatedMod == null)
-				return null;
-			affiliatedModAbbreviation = affiliatedMod.getAbbreviation();
+			affiliatedModAbbreviation = member.getAbbreviation();
 		}
 		
 		return createDataProvider(affiliatedModAbbreviation);
