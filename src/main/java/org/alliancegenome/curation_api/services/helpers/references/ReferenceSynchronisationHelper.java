@@ -63,7 +63,7 @@ public class ReferenceSynchronisationHelper {
 
 		Pagination pagination = new Pagination(0, 50);
 		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-		if (response != null && response.getTotalResults() == 1)
+		if (response != null && response.getTotalResults() != null && response.getTotalResults() == 1)
 			return response.getSingleResult();
 		
 		return null;
