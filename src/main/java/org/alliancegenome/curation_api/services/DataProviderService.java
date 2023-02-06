@@ -45,36 +45,33 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 
 	@Transactional
 	public DataProvider createAffiliatedModDataProvider() {
-		String affiliatedModAbbreviation = null;
 		AllianceMember member = authenticatedPerson.getAllianceMember();
 		if (member == null) {
-			affiliatedModAbbreviation = "Alliance";
-		} else {
-			affiliatedModAbbreviation = member.getAbbreviation();
-		}
+			return createAllianceDataProvider();
+		} 
 		
-		return createDataProvider(affiliatedModAbbreviation);
+		return createDataProvider(member);
 	}
 	
 	@Transactional
 	public DataProvider createAllianceDataProvider() {
-		return createDataProvider("Alliance");
-	}
-	
-	private DataProvider createDataProvider(String abbreviation) {
-		DataProvider dataProvider = new DataProvider();
-		
-		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", abbreviation);
+		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", "Alliance");
 		if (orgResponse == null || orgResponse.getSingleResult() == null)
 			return null;
+		Organization member = orgResponse.getSingleResult();
 		
-		Organization sourceOrganization = orgResponse.getSingleResult();
-		dataProvider.setSourceOrganization(sourceOrganization);
+		return createDataProvider(member);
+	}
+	
+	private DataProvider createDataProvider(Organization member) {
+		DataProvider dataProvider = new DataProvider();
+		
+		dataProvider.setSourceOrganization(member);
 	
 		CrossReference xref = new CrossReference();
-		xref.setDisplayName(abbreviation);
-		xref.setReferencedCurie(abbreviation);
-		xref.setResourceDescriptorPage(sourceOrganization.getHomepageResourceDescriptorPage());
+		xref.setDisplayName(member.getAbbreviation());
+		xref.setReferencedCurie(member.getAbbreviation());
+		xref.setResourceDescriptorPage(member.getHomepageResourceDescriptorPage());
 		dataProvider.setCrossReference(crossReferenceDAO.persist(xref));
 
 		return dataProviderDAO.persist(dataProvider);
