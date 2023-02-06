@@ -52,11 +52,8 @@ public class ReferenceSynchronisationHelper {
 		searchDetails.put("queryString", curie);
 
 		HashMap<String, Object> searchField = new HashMap<>();
-		if (curie.startsWith("AGR")) {
-			searchField.put("curie", searchDetails);
-		} else {
-			searchField.put("cross_references.curie", searchDetails);
-		}
+		searchField.put("curie.keyword", searchDetails);
+		searchField.put("cross_references.curie.keyword", searchDetails);
 
 		HashMap<String, Object> filter = new HashMap<>();
 		filter.put("curieFilter", searchField);
@@ -64,30 +61,11 @@ public class ReferenceSynchronisationHelper {
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("searchFilters", filter);
 
-		Boolean keepSearching = true;
-		int page = 0;
-		while (keepSearching) {
-			Pagination pagination = new Pagination(page, 50);
-			SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-			if (response != null) {
-				for (LiteratureReference result : response.getResults()) {
-					if (result.getCurie().equals(curie))
-						return result;
-					for (LiteratureCrossReference resultXref : result.getCross_references()) {
-						if (resultXref.getCurie().equals(curie))
-							return result;
-					}
-				}
-				if (response.getReturnedRecords() == null || response.getReturnedRecords() < 50) {
-					keepSearching = false;
-				} else {
-					page++;
-				}
-			} else {
-				keepSearching = false;
-			}
-		}
-
+		Pagination pagination = new Pagination(0, 50);
+		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
+		if (response != null && response.getTotalResults() != null && response.getTotalResults() == 1)
+			return response.getSingleResult();
+		
 		return null;
 	}
 
