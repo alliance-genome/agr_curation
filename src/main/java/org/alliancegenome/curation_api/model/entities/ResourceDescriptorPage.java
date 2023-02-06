@@ -45,7 +45,6 @@ public class ResourceDescriptorPage extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	//@JsonBackReference
 	@JsonView({ View.ResourceDescriptorPageView.class })
 	private ResourceDescriptor resourceDescriptor;
 

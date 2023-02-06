@@ -84,7 +84,6 @@ public class ResourceDescriptor extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "resourceDescriptor", cascade = CascadeType.ALL)
-	//@JsonManagedReference
 	@JsonView({ View.ResourceDescriptorView.class })
 	private List<ResourceDescriptorPage> resourcePages;
 }

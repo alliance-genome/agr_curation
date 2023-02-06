@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -50,13 +51,12 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		term.setObsolete(inTerm.getObsolete());
 		term.setNamespace(inTerm.getNamespace());
 		term.setDefinition(inTerm.getDefinition());
-		term.setCrossReferences(crossReferenceService.handleUpdate(inTerm.getCrossReferences(), term.getCrossReferences()));
-		
 
 		handleSubsets(term, inTerm);
 		handleDefinitionUrls(term, inTerm);
 		handleSecondaryIds(term, inTerm);
 		handleSynonyms(term, inTerm);
+		handleCrossReferences(term, inTerm);
 
 		if(newTerm) {
 			return dao.persist(term);
@@ -334,6 +334,31 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		});
 
+	}
+	
+	private void handleCrossReferences(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
+		List<Long> currentIds;
+		if (dbTerm.getCrossReferences() == null) {
+			currentIds = new ArrayList<>();
+		} else {
+			currentIds = dbTerm.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
+		}
+		
+		List<Long> mergedIds;
+		if (incomingTerm.getCrossReferences() == null) {
+			mergedIds = new ArrayList<>();
+			dbTerm.setCrossReferences(null);
+		} else {
+			List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
+			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
+			dbTerm.setCrossReferences(mergedCrossReferences);
+		}
+		
+		for (Long currentId : currentIds) {
+			if (!mergedIds.contains(currentId)) {
+				crossReferenceDAO.remove(currentId);
+			}
+		}
 	}
 
 }

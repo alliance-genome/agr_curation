@@ -34,7 +34,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Schema(name = "CrossReference", description = "POJO that represents the Cross Reference")
 @AGRCurationSchemaVersion(min = "1.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "crossreference_createdby_index", columnList = "createdBy_id"), @Index(name = "crossreference_updatedby_index", columnList = "updatedBy_id") })
+@Table(indexes = { @Index(name = "crossreference_createdby_index", columnList = "createdBy_id"), @Index(name = "crossreference_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "crossreference_resourcedescriptorpage_index", columnList = "resourcedescriptorpage_id")})
 public class CrossReference extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
