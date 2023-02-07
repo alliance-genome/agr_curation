@@ -56,10 +56,13 @@ public class PersonSettingController implements PersonSettingInterface {
 			setting.setUpdatedBy(person);
 			setting.setCreatedBy(person);
 			setting.setSettingsKey(settingsKey);
+			setting.setSettingsMap(settingsMap);
+			return personSettingService.create(setting);
+		} else {
+			setting.setSettingsMap(settingsMap);
+			return personSettingService.update(setting);
 		}
-		setting.setSettingsMap(settingsMap);
-
-		return personSettingService.update(setting);
+		
 	}
 
 	private PersonSetting getSetting(String settingsKey) {
