@@ -52,7 +52,7 @@ public class OntologyTerm extends CurieAuditedObject {
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView(View.FieldsOnly.class)
 	@Column(length = 2000)
-	private String name;
+	protected String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "type_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -95,14 +95,15 @@ public class OntologyTerm extends CurieAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
+	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie", name = "ontologyterm_synonym_ontologyterm_curie_index"))
 	@JsonView({ View.FieldsAndLists.class })
 	private List<Synonym> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie"), @Index(columnList = "crossreferences_curie") })
+	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie", name = "ontologyterm_crossreference_ontologyterm_curie_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_id_index") })
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 

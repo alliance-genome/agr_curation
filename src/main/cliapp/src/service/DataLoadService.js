@@ -71,7 +71,7 @@ export class DataLoadService extends BaseAuthService {
 		getBackendBulkLoadTypes(loadType) {
 				const bulkLoadTypes = {
 						BulkFMSLoad: ["MOLECULE"],
-						BulkURLLoad: ["ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
+						BulkURLLoad: ["ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION", "RESOURCE_DESCRIPTOR"],
 						BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
 				};
 				return bulkLoadTypes[loadType];

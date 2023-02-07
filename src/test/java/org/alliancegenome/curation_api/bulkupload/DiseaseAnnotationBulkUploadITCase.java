@@ -12,6 +12,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -95,11 +96,11 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 60000));
 	}
 	
-	private final String geneDaBulkPostEndpoint = "/api/gene-disease-annotation/bulk/wbAnnotationFile";
+	private final String geneDaBulkPostEndpoint = "/api/gene-disease-annotation/bulk/WB/annotationFile";
 	private final String geneDaGetEndpoint = "/api/gene-disease-annotation/findBy/";
-	private final String alleleDaBulkPostEndpoint = "/api/allele-disease-annotation/bulk/wbAnnotationFile";
+	private final String alleleDaBulkPostEndpoint = "/api/allele-disease-annotation/bulk/WB/annotationFile";
 	private final String alleleDaGetEndpoint = "/api/allele-disease-annotation/findBy/";
-	private final String agmDaBulkPostEndpoint = "/api/agm-disease-annotation/bulk/wbAnnotationFile";
+	private final String agmDaBulkPostEndpoint = "/api/agm-disease-annotation/bulk/WB/annotationFile";
 	private final String agmDaGetEndpoint = "/api/agm-disease-annotation/findBy/";
 	private final String daTestFilePath = "src/test/resources/bulk/04_disease_annotation/";
 	
@@ -131,6 +132,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		loadOrganization(dataProvider);
 		loadOrganization(dataProvider2);
 		loadOrganization("OBSOLETE");
+		ResourceDescriptor rd = createResourceDescriptor("TEST");
+		createResourceDescriptorPage("homepage", "http://test.org", rd);
 		
 		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
 		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY, false);
@@ -232,8 +235,14 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.sgdStrainBackground.curie", is(sgdBackgroundStrain)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm)).
-			body("entity.dataProvider.abbreviation", is(dataProvider)).
-			body("entity.secondaryDataProvider.abbreviation", is(dataProvider2));
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
+			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0002")).
+			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -305,10 +314,16 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm)).
-			body("entity.dataProvider.abbreviation", is(dataProvider)).
-			body("entity.secondaryDataProvider.abbreviation", is(dataProvider2)).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
+			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
 			body("entity.inferredGene.curie", is(gene)).
-			body("entity.assertedGenes[0].curie", is(gene2));
+			body("entity.assertedGenes[0].curie", is(gene2)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0002")).
+			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -380,12 +395,18 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm)).
-			body("entity.dataProvider.abbreviation", is(dataProvider)).
-			body("entity.secondaryDataProvider.abbreviation", is(dataProvider2)).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
+			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
 			body("entity.inferredGene.curie", is(gene)).
 			body("entity.assertedGenes[0].curie", is(gene2)).
 			body("entity.inferredAllele.curie", is(allele)).
-			body("entity.assertedAllele.curie", is(allele2));
+			body("entity.assertedAllele.curie", is(allele2)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0002")).
+			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 
 	@Test
@@ -458,8 +479,14 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.sgdStrainBackground.curie", is(sgdBackgroundStrain2)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2)).
-			body("entity.dataProvider.abbreviation", is(dataProvider2)).
-			body("entity.secondaryDataProvider.abbreviation", is(dataProvider));
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -531,10 +558,16 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier2)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2)).
-			body("entity.dataProvider.abbreviation", is(dataProvider2)).
-			body("entity.secondaryDataProvider.abbreviation", is(dataProvider)).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider)).
 			body("entity.inferredGene.curie", is(gene2)).
-			body("entity.assertedGenes[0].curie", is(gene));
+			body("entity.assertedGenes[0].curie", is(gene)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -606,12 +639,18 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier2)).
 			body("entity.evidenceCodes", hasSize(1)).
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2)).
-			body("entity.dataProvider.abbreviation", is(dataProvider2)).
-			body("entity.secondaryDataProvider.abbreviation", is(dataProvider)).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider)).
 			body("entity.inferredGene.curie", is(gene2)).
 			body("entity.assertedGenes[0].curie", is(gene)).
 			body("entity.inferredAllele.curie", is(allele2)).
-			body("entity.assertedAllele.curie", is(allele));
+			body("entity.assertedAllele.curie", is(allele)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0002")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.secondaryDataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.secondaryDataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -632,6 +671,11 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_11_no_condition_class.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_12_no_related_note_type.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_13_no_related_note_free_text.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_14_no_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_15_no_secondary_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_16_no_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_17_no_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MR_18_no_data_provider_cross_reference_prefix.json");
 	}
 	
 	@Test
@@ -652,6 +696,11 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_11_empty_condition_class.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_12_empty_related_note_type.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_13_empty_related_note_free_text.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_14_empty_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_15_empty_secondary_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_16_empty_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_17_empty_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "ER_18_empty_data_provider_cross_reference_prefix.json");
 	}
 	
 	@Test
@@ -693,8 +742,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_14_invalid_genetic_modifier.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_15_invalid_genetic_modifier_relation.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_16_invalid_annotation_type.json");
-		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_17_invalid_data_provider.json");
-		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_18_invalid_secondary_data_provider.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_17_invalid_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_18_invalid_secondary_data_provider_source_organization_abbreviation.json");
 		checkFailedBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "IV_19_invalid_inferred_gene_allele_annotation.json");
 		checkFailedBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "IV_20_invalid_asserted_gene_allele_annotation.json");
 		checkFailedBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "IV_21_invalid_inferred_gene_agm_annotation.json");
@@ -712,6 +761,10 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_33_invalid_condition_chemical.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_34_invalid_related_note_type.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_35_invalid_related_note_reference.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_36_invalid_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_37_invalid_secondary_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_38_invalid_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "IV_39_invalid_secondary_data_provider_cross_reference_prefix.json");
 	}
 	
 	@Test
@@ -842,7 +895,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
-			body("entity.relatedNotes[0]", not(hasKey("evidence")));
+			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
+			body("entity.dataProvider", not(hasKey("crossReference"))).
+			body("entity.secondaryDataProvider", not(hasKey("crossReference")));
 	}
 	
 	@Test

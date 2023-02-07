@@ -41,14 +41,14 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 	// The following methods are for bulk validation
 
-	public void removeNonUpdatedAnnotations(String taxonId, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
-		log.debug("runLoad: After: " + taxonId + " " + annotationIdsAfter.size());
+	public void removeNonUpdatedAnnotations(String speciesName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
+		log.debug("runLoad: After: " + speciesName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + taxonId + " " + distinctAfter.size());
+		log.debug("runLoad: Distinct: " + speciesName + " " + distinctAfter.size());
 
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + taxonId + " " + idsToRemove.size());
+		log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
 
 		for (Long id : idsToRemove) {
 			deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation");
@@ -84,7 +84,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			if (authenticatedPerson.getOktaEmail() != null) {
 				annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
 			} else {
-				String dataProviderAbbreviation = annotation.getDataProvider() != null ? annotation.getDataProvider().getAbbreviation() + " " : "";		
+				String dataProviderAbbreviation = annotation.getDataProvider() != null ? annotation.getDataProvider().getSourceOrganization().getAbbreviation() + " " : "";		
 				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataProviderAbbreviation + loadType + " bulk upload"));
 			}
 			annotation.setDateUpdated(OffsetDateTime.now());

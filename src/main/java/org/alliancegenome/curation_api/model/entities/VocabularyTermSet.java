@@ -3,8 +3,11 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -34,6 +37,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "VocabularyTermSet", description = "POJO that represents the Vocabulary Term Set")
+@Table(indexes = { @Index(name = "vocabularytermset_name_index", columnList = "name"),
+		@Index(name = "vocabularytermset_createdby_id_index", columnList = "createdby_id"),
+		@Index(name = "vocabularytermset_updatedby_id_index", columnList = "updatedby_id"),
+		@Index(name = "vocabularytermset_vocabularytermsetvocabulary_id_index", columnList = "vocabularytermsetvocabulary_id")})
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class VocabularyTermSet extends GeneratedAuditedObject {
 
@@ -51,6 +58,8 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
+	@JoinTable(indexes = { @Index(columnList = "vocabularytermsets_id", name = "vocabularytermset_vocabularyterm_vocabularytermsets_id_index"),
+			@Index(columnList = "memberterms_id", name = "vocabularytermset_vocabularyterm_memberterms_id_index") })
 	@JsonView({ View.VocabularyTermSetView.class })
 	private List<VocabularyTerm> memberTerms;
 

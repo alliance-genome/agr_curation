@@ -34,12 +34,11 @@ jobs:
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
-          distribution: 'adopt'
+          java-version: '17'
+          distribution: 'temurin'
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
       - name: Set Proper version
         run: mvn versions:set -ntp -DnewVersion=${{ github.event.release.tag_name }}
       - id: install-secret-key
@@ -48,7 +47,7 @@ jobs:
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
       - name: Publish package
-        run: mvn --batch-mode deploy
+        run: mvn --batch-mode -Dmaven.test.skip=true -Dquarkus.hibernate-search-orm.elasticsearch.version=1.2.4 deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
@@ -82,7 +81,7 @@ jobs:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v20
+      uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -109,7 +108,7 @@ jobs:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v20
+      uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

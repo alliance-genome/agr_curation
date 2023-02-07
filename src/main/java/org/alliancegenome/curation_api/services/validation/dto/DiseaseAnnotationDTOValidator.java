@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
@@ -20,10 +21,10 @@ import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
@@ -32,7 +33,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -67,6 +67,10 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 	NoteDTOValidator noteDtoValidator;
 	@Inject
 	OrganizationDAO organizationDAO;
+	@Inject
+	DataProviderDTOValidator dataProviderDtoValidator;
+	@Inject
+	DataProviderDAO dataProviderDAO;
 
 	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> daResponse = validateAuditedObjectDTO(annotation, dto);
@@ -126,25 +130,27 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		} else {
 			annotation.setWith(null);
 		}
-
-		if (StringUtils.isBlank(dto.getDataProviderName())) {
-			daResponse.addErrorMessage("data_provider_name", ValidationConstants.REQUIRED_MESSAGE);
+		
+		DataProvider dataProvider = null;
+		if (dto.getDataProviderDto() == null) {
+			daResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			SearchResponse<Organization> dpResponse = organizationDAO.findByField("abbreviation", dto.getDataProviderName());
-			if (dpResponse == null || dpResponse.getResults().size() != 1) {
-				daResponse.addErrorMessage("data_provider_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProviderName() + ")");
+			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getDataProviderDto(), annotation.getDataProvider());
+			if (dpResponse.hasErrors()) {
+				daResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				annotation.setDataProvider(dpResponse.getSingleResult());
+				dataProvider = dataProviderDAO.persist(dpResponse.getEntity());
 			}
 		}
+		annotation.setDataProvider(dataProvider);
 
-		Organization secondaryDataProvider = null;
-		if (StringUtils.isNotBlank(dto.getSecondaryDataProviderName())) {
-			SearchResponse<Organization> dpResponse = organizationDAO.findByField("abbreviation", dto.getSecondaryDataProviderName());
-			if (dpResponse == null || dpResponse.getResults().size() != 1) {
-				daResponse.addErrorMessage("secondary_data_provider_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSecondaryDataProviderName() + ")");
+		DataProvider secondaryDataProvider = null;
+		if (dto.getSecondaryDataProviderDto() != null) {
+			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getSecondaryDataProviderDto(), annotation.getSecondaryDataProvider());
+			if (dpResponse.hasErrors()) {
+				daResponse.addErrorMessage("secondary_data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				secondaryDataProvider = dpResponse.getSingleResult();
+				secondaryDataProvider = dataProviderDAO.persist(dpResponse.getEntity());
 			}
 		}
 		annotation.setSecondaryDataProvider(secondaryDataProvider);
@@ -249,6 +255,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		}
 
 		daResponse.setEntity(annotation);
+		
 		return daResponse;
 	}
 

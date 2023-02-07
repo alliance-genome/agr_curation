@@ -60,7 +60,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	}
 
 	@Override
-	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> conditions, String associationType) {
-		return super.getCurieID(subject, object, reference, null, conditions, associationType);
+	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> conditions, String associationType, String negated, String diseaseGeneticModifierRelation, String diseaseGeneticModifier) {
+		return super.getCurieID(subject, object, reference, null, conditions, associationType, null, null, null);
 	}
 }

@@ -51,7 +51,7 @@ public class Reference extends InformationContentEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsOnly.class})
-	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_curie")})
+	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_id")})
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 
@@ -61,11 +61,11 @@ public class Reference extends InformationContentEntity {
 	@Transient
 	@JsonIgnore
 	public String getReferenceID() {
-		Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getCurie().startsWith("PMID:")).findFirst();
+		Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith("PMID:")).findFirst();
 		// if no PUBMED ID try MOD ID
 		if (opt.isEmpty()) {
 			opt = getCrossReferences().stream().filter(reference -> CrossReferencePrefix.valueOf(reference.getPrefix()) != null).findFirst();
 		}
-		return opt.map(CrossReference::getCurie).orElse(null);
+		return opt.map(CrossReference::getReferencedCurie).orElse(null);
 	}
 }
