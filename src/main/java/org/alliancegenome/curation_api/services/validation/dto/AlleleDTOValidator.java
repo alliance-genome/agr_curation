@@ -39,6 +39,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AlleleSecondaryIdSlotAnn
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDTOValidator;
@@ -84,6 +85,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	AlleleSynonymSlotAnnotationDTOValidator alleleSynonymDtoValidator;
 	@Inject
 	AlleleSecondaryIdSlotAnnotationDTOValidator alleleSecondaryIdDtoValidator;
+	@Inject
+	SlotAnnotationIdentityHelper slotAnnotationIdentity;
 
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
@@ -133,44 +136,66 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			allele.setReferences(null);
 		}
 
+		Map<String, AlleleMutationTypeSlotAnnotation> existingMutationTypes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
-			allele.getAlleleMutationTypes().forEach(amt -> {
-				amt.setSingleAllele(null);
-				alleleMutationTypeDAO.remove(amt.getId());
-			});
+			for (AlleleMutationTypeSlotAnnotation existingMutationType : allele.getAlleleMutationTypes()) {
+				existingMutationTypes.put(slotAnnotationIdentity.alleleMutationTypesIdentity(existingMutationType), existingMutationType);
+			}
 		}
-
+		
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = new ArrayList<>();
+		List<String> mutationTypeIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleMutationTypeDtos())) {
 			for (AlleleMutationTypeSlotAnnotationDTO mutationTypeDTO : dto.getAlleleMutationTypeDtos()) {
-				ObjectResponse<AlleleMutationTypeSlotAnnotation> mutationTypeResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(mutationTypeDTO);
+				ObjectResponse<AlleleMutationTypeSlotAnnotation> mutationTypeResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(existingMutationTypes.get(slotAnnotationIdentity.alleleMutationTypesDtoIdentity(mutationTypeDTO)), mutationTypeDTO);
 				if (mutationTypeResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_mutation_type_dtos", mutationTypeResponse.errorMessagesString());
 				} else {
 					AlleleMutationTypeSlotAnnotation mutationType = mutationTypeResponse.getEntity();
 					mutationTypes.add(mutationType);
+					mutationTypeIdentities.add(slotAnnotationIdentity.alleleMutationTypesIdentity(mutationType));
 				}
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes())) {
-			allele.getAlleleInheritanceModes().forEach(aim -> {
-				aim.setSingleAllele(null);
-				alleleInheritanceModeDAO.remove(aim.getId());
+		if (!existingMutationTypes.isEmpty()) {
+			existingMutationTypes.forEach((k,v) -> {
+				if (!mutationTypeIdentities.contains(k)) {
+					v.setSingleAllele(null);
+					alleleMutationTypeDAO.remove(v.getId());
+				}
 			});
 		}
-
+		
+		Map<String, AlleleInheritanceModeSlotAnnotation> existingInheritanceModes = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes())) {
+			for (AlleleInheritanceModeSlotAnnotation existingInheritanceMode : allele.getAlleleInheritanceModes()) {
+				existingInheritanceModes.put(slotAnnotationIdentity.alleleInheritanceModeIdentity(existingInheritanceMode), existingInheritanceMode);
+			}
+		}
+		
 		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = new ArrayList<>();
+		List<String> inheritanceModeIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleInheritanceModeDtos())) {
 			for (AlleleInheritanceModeSlotAnnotationDTO inheritanceModeDTO : dto.getAlleleInheritanceModeDtos()) {
-				ObjectResponse<AlleleInheritanceModeSlotAnnotation> inheritanceModeResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(inheritanceModeDTO);
+				ObjectResponse<AlleleInheritanceModeSlotAnnotation> inheritanceModeResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(existingInheritanceModes.get(slotAnnotationIdentity.alleleInheritanceModeDtoIdentity(inheritanceModeDTO)), inheritanceModeDTO);
 				if (inheritanceModeResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_inheritance_mode_dtos", inheritanceModeResponse.errorMessagesString());
 				} else {
 					AlleleInheritanceModeSlotAnnotation inheritanceMode = inheritanceModeResponse.getEntity();
 					inheritanceModes.add(inheritanceMode);
+					inheritanceModeIdentities.add(slotAnnotationIdentity.alleleInheritanceModeIdentity(inheritanceMode));
 				}
 			}
+		}
+		
+		if (!existingInheritanceModes.isEmpty()) {
+			existingInheritanceModes.forEach((k,v) -> {
+				if (!inheritanceModeIdentities.contains(k)) {
+					v.setSingleAllele(null);
+					alleleInheritanceModeDAO.remove(v.getId());
+				}
+			});
 		}
 
 		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();

@@ -21,10 +21,11 @@ public class AlleleMutationTypeSlotAnnotationDTOValidator extends SlotAnnotation
 	@Inject
 	SoTermDAO soTermDAO;
 
-	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotationDTO(AlleleMutationTypeSlotAnnotationDTO dto) {
+	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotationDTO(AlleleMutationTypeSlotAnnotation annotation, AlleleMutationTypeSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleMutationTypeSlotAnnotation> amsaResponse = new ObjectResponse<AlleleMutationTypeSlotAnnotation>();
 
-		AlleleMutationTypeSlotAnnotation annotation = new AlleleMutationTypeSlotAnnotation();
+		if (annotation == null)
+			annotation = new AlleleMutationTypeSlotAnnotation();
 
 		if (CollectionUtils.isEmpty(dto.getMutationTypeCuries())) {
 			amsaResponse.addErrorMessage("mutation_type_curies", ValidationConstants.REQUIRED_MESSAGE);
