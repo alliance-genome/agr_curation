@@ -34,8 +34,8 @@ jobs:
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
-          distribution: 'adopt'
+          java-version: '17'
+          distribution: 'temurin'
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
@@ -81,7 +81,7 @@ jobs:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v20
+      uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -108,7 +108,7 @@ jobs:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v20
+      uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

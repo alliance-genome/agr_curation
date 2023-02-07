@@ -123,7 +123,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		if (CollectionUtils.isNotEmpty(term.getCrossReferences())) {
 			for (CrossReference xref : term.getCrossReferences()) {
-				if (xref.getCurie().startsWith("CHEBI:")) {
+				if (xref.getReferencedCurie().startsWith("CHEBI:")) {
 					return true;
 				}
 			}
@@ -309,7 +309,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				if (term.getCrossReferences() == null)
 					term.setCrossReferences(new ArrayList<>());
 				CrossReference ref = new CrossReference();
-				ref.setCurie(getString(annotation.getValue()));
+				ref.setReferencedCurie(getString(annotation.getValue()));
+				ref.setDisplayName(getString(annotation.getValue()));
 				term.getCrossReferences().add(ref);
 			} else if (key.equals("inSubset")) {
 				if (term.getSubsets() == null)

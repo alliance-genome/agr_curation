@@ -2,13 +2,13 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
@@ -54,6 +54,8 @@ public class GeneValidator extends GenomicEntityValidator {
 	GeneSystematicNameSlotAnnotationValidator geneSystematicNameValidator;
 	@Inject
 	GeneSynonymSlotAnnotationValidator geneSynonymValidator;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	private String errorMessage;
 
@@ -101,9 +103,23 @@ public class GeneValidator extends GenomicEntityValidator {
 			dbEntity.setSecondaryIdentifiers(null);
 		}
 
+		List<Long> currentXrefIds;
+		if (dbEntity.getCrossReferences() == null) {
+			currentXrefIds = new ArrayList<>();
+		} else {
+			currentXrefIds = dbEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
+		}
+		
 		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
 		dbEntity.setCrossReferences(crossReferences);
-
+		List<Long> mergedIds = crossReferences == null ? new ArrayList<>() :
+			crossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
+		for (Long currentXrefId : currentXrefIds) {
+			if (!mergedIds.contains(currentXrefId)) {
+				crossReferenceDAO.remove(currentXrefId);
+			}
+		}
+		
 		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
 		dbEntity.setGeneType(geneType);
 
