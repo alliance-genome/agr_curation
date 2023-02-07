@@ -1,7 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -169,17 +173,11 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		}
 
-		if (allele.getAlleleSymbol() != null) {
-			AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
-			symbol.setSingleAllele(null);
-			alleleSymbolDAO.remove(symbol.getId());
-		}
-
-		AlleleSymbolSlotAnnotation symbol = null;
+		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
 		if (dto.getAlleleSymbolDto() == null) {
 			alleleResponse.addErrorMessage("allele_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolDtoValidator.validateAlleleSymbolSlotAnnotationDTO(dto.getAlleleSymbolDto());
+			ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolDtoValidator.validateAlleleSymbolSlotAnnotationDTO(symbol, dto.getAlleleSymbolDto());
 			if (symbolResponse.hasErrors()) {
 				alleleResponse.addErrorMessage("allele_symbol_dto", symbolResponse.errorMessagesString());
 			} else {
@@ -187,33 +185,31 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		}
 
-		if (allele.getAlleleFullName() != null) {
-			AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
+		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
+		if (allele.getAlleleFullName() != null && dto.getAlleleFullNameDto() == null) {
 			fullName.setSingleAllele(null);
 			alleleFullNameDAO.remove(fullName.getId());
 		}
 
-		AlleleFullNameSlotAnnotation fullName = null;
 		if (dto.getAlleleFullNameDto() != null) {
-			ObjectResponse<AlleleFullNameSlotAnnotation> fullNameResponse = alleleFullNameDtoValidator.validateAlleleFullNameSlotAnnotationDTO(dto.getAlleleFullNameDto());
+			ObjectResponse<AlleleFullNameSlotAnnotation> fullNameResponse = alleleFullNameDtoValidator.validateAlleleFullNameSlotAnnotationDTO(fullName, dto.getAlleleFullNameDto());
 			if (fullNameResponse.hasErrors()) {
 				alleleResponse.addErrorMessage("allele_full_name_dto", fullNameResponse.errorMessagesString());
 			} else {
 				fullName = fullNameResponse.getEntity();
 			}
+		} else {
+			fullName = null;
 		}
 
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
-			allele.getAlleleSynonyms().forEach(as -> {
-				as.setSingleAllele(null);
-				alleleSynonymDAO.remove(as.getId());
-			});
-		}
-
+		Map<String, AlleleSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms()))
+			existingSynonyms = allele.getAlleleSynonyms().stream().collect(Collectors.toMap(AlleleSynonymSlotAnnotation::getFormatText, Function.identity()));
+		
 		List<AlleleSynonymSlotAnnotation> synonyms = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleSynonymDtos())) {
 			for (NameSlotAnnotationDTO synonymDTO : dto.getAlleleSynonymDtos()) {
-				ObjectResponse<AlleleSynonymSlotAnnotation> synonymResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(synonymDTO);
+				ObjectResponse<AlleleSynonymSlotAnnotation> synonymResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(existingSynonyms.get(synonymDTO.getFormatText()), synonymDTO);
 				if (synonymResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_synonym_dtos", synonymResponse.errorMessagesString());
 				} else {
@@ -222,18 +218,25 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				}
 			}
 		}
-
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSecondaryIds())) {
-			allele.getAlleleSecondaryIds().forEach(asid -> {
-				asid.setSingleAllele(null);
-				alleleSecondaryIdDAO.remove(asid.getId());
+		
+		if (!existingSynonyms.isEmpty()) {
+			List<String> synonymNames = synonyms.stream().map(AlleleSynonymSlotAnnotation::getFormatText).collect(Collectors.toList());
+			existingSynonyms.forEach((k,v) -> {
+				if (!synonymNames.contains(k)) {
+					v.setSingleAllele(null);
+					alleleSynonymDAO.remove(v.getId());
+				}
 			});
 		}
 
+		Map<String, AlleleSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(allele.getAlleleSecondaryIds()))
+			existingSecondaryIds = allele.getAlleleSecondaryIds().stream().collect(Collectors.toMap(AlleleSecondaryIdSlotAnnotation::getSecondaryId, Function.identity()));
+		
 		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleSecondaryIdDtos())) {
 			for (AlleleSecondaryIdSlotAnnotationDTO secondaryIdDTO : dto.getAlleleSecondaryIdDtos()) {
-				ObjectResponse<AlleleSecondaryIdSlotAnnotation> secondaryIdResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(secondaryIdDTO);
+				ObjectResponse<AlleleSecondaryIdSlotAnnotation> secondaryIdResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(secondaryIdDTO.getSecondaryId()), secondaryIdDTO);
 				if (secondaryIdResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_secondary_id_dtos", secondaryIdResponse.errorMessagesString());
 				} else {
@@ -241,6 +244,16 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 					secondaryIds.add(secondaryId);
 				}
 			}
+		}
+		
+		if (!existingSecondaryIds.isEmpty()) {
+			List<String> secondaryIdNames = secondaryIds.stream().map(AlleleSecondaryIdSlotAnnotation::getSecondaryId).collect(Collectors.toList());
+			existingSecondaryIds.forEach((k,v) -> {
+				if (!secondaryIdNames.contains(k)) {
+					v.setSingleAllele(null);
+					alleleSecondaryIdDAO.remove(v.getId());
+				}
+			});
 		}
 
 		if (alleleResponse.hasErrors()) {

@@ -19,10 +19,11 @@ public class AlleleSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationD
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 
-	public ObjectResponse<AlleleSynonymSlotAnnotation> validateAlleleSynonymSlotAnnotationDTO(NameSlotAnnotationDTO dto) {
+	public ObjectResponse<AlleleSynonymSlotAnnotation> validateAlleleSynonymSlotAnnotationDTO(AlleleSynonymSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleSynonymSlotAnnotation> assaResponse = new ObjectResponse<AlleleSynonymSlotAnnotation>();
 
-		AlleleSynonymSlotAnnotation annotation = new AlleleSynonymSlotAnnotation();
+		if (annotation == null)
+			annotation = new AlleleSynonymSlotAnnotation();
 
 		ObjectResponse<AlleleSynonymSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
