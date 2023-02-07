@@ -155,13 +155,31 @@ const modTableSettings = {
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
+	},
+	Default: {
+		DiseaseAnnotations: {
+			page: 0,
+			first: 0,
+			rows: 50,
+			multiSortMeta: [],
+			selectedColumnNames: [
+				"Unique ID", "MOD Annotation ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With",
+				"Related Notes", "Experiments" ,"Experimental Conditions", "Genetic Sex" ,"Disease Qualifiers", "SGD Strain Background" , "Annotation Type" ,
+				"Genetic Modifier Relation" , "Genetic Modifier" , "Inferred Gene", "Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
+				"Secondary Data Provider", "Updated By", "Date Updated", "Created By", "Date Created", "Internal", "Obsolete"
+			],
+			filters: {},
+			isFirst: false,
+			tableKeyName: "DiseaseAnnotations",
+			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
+		}
 	}
 }
 
 export function getModTableState(table){
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	return global.structuredClone(modTableSettings[mod][table]);
+	return global.structuredClone(modTableSettings[mod]? modTableSettings[mod][table] : modTableSettings['Default'][table]);
 };
 
 export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns){

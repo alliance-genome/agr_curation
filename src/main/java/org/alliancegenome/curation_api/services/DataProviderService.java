@@ -45,41 +45,33 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 
 	@Transactional
 	public DataProvider createAffiliatedModDataProvider() {
-		LoggedInPerson user = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
-
-		String affiliatedModAbbreviation = null;
-		if (user.getOktaEmail().equals("test@alliancegenome.org")) {
-			// Needed to enable local testing without missing dataProvider error
-			affiliatedModAbbreviation = "Alliance";
-		} else {
-			AllianceMember affiliatedMod = user.getAllianceMember();
-			if (affiliatedMod == null)
-				return null;
-			affiliatedModAbbreviation = affiliatedMod.getAbbreviation();
-		}
+		AllianceMember member = authenticatedPerson.getAllianceMember();
+		if (member == null) {
+			return createAllianceDataProvider();
+		} 
 		
-		return createDataProvider(affiliatedModAbbreviation);
+		return createDataProvider(member);
 	}
 	
 	@Transactional
 	public DataProvider createAllianceDataProvider() {
-		return createDataProvider("Alliance");
-	}
-	
-	private DataProvider createDataProvider(String abbreviation) {
-		DataProvider dataProvider = new DataProvider();
-		
-		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", abbreviation);
+		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", "Alliance");
 		if (orgResponse == null || orgResponse.getSingleResult() == null)
 			return null;
+		Organization member = orgResponse.getSingleResult();
 		
-		Organization sourceOrganization = orgResponse.getSingleResult();
-		dataProvider.setSourceOrganization(sourceOrganization);
+		return createDataProvider(member);
+	}
+	
+	private DataProvider createDataProvider(Organization member) {
+		DataProvider dataProvider = new DataProvider();
+		
+		dataProvider.setSourceOrganization(member);
 	
 		CrossReference xref = new CrossReference();
-		xref.setDisplayName(abbreviation);
-		xref.setReferencedCurie(abbreviation);
-		xref.setResourceDescriptorPage(sourceOrganization.getHomepageResourceDescriptorPage());
+		xref.setDisplayName(member.getAbbreviation());
+		xref.setReferencedCurie(member.getAbbreviation());
+		xref.setResourceDescriptorPage(member.getHomepageResourceDescriptorPage());
 		dataProvider.setCrossReference(crossReferenceDAO.persist(xref));
 
 		return dataProviderDAO.persist(dataProvider);
