@@ -40,7 +40,8 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "vocabulary", "vocabularyTermSets" })
-@Table(indexes = { @Index(name = "vocabularyterm_name_index", columnList = "name") })
+@Table(indexes = { @Index(name = "vocabularyterm_name_index", columnList = "name"),
+		@Index(name = "vocabularyterm_vocabulary_id_index", columnList = "vocabulary_id")})
 @Schema(name = "VocabularyTerm", description = "POJO that represents the Vocabulary Term")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class VocabularyTerm extends GeneratedAuditedObject {

@@ -95,7 +95,7 @@ public class OntologyTerm extends CurieAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
+	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie", name = "ontologyterm_synonym_ontologyterm_curie_index"))
 	@JsonView({ View.FieldsAndLists.class })
 	private List<Synonym> synonyms;
 
