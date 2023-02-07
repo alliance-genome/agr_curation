@@ -32,3 +32,11 @@ export const setupSettingsHandler = () => {
 	)
 
 }
+
+export const setupSaveSettingsHandler = () => {
+	server.use(
+		rest.put("*/api/personsettings/:settingsKey", (req, res, ctx) => {
+			return res(ctx.status(200))
+		}),
+	)
+}
