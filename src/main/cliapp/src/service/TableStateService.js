@@ -176,7 +176,7 @@ const modTableSettings = {
 	}
 }
 
-export function getModTableState(table){
+export function getModTableState(table) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
 	return global.structuredClone(modTableSettings[mod]? modTableSettings[mod][table] : modTableSettings['Default'][table]);

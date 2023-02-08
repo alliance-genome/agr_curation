@@ -3,7 +3,7 @@ import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { ConditionRelationPage } from "../index";
 import { setLocalStorage } from "../../../tools/jest/setupTests";
-import { setupSettingsHandler, setupFindHandler, setupSearchHandler } from "../../../tools/jest/commonMswhandlers";
+import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
 import { data, mockSettingsData } from "../mockData/mockData";
 
 
@@ -12,6 +12,7 @@ describe("<ConditionRelationPage />", () => {
 		setLocalStorage('ExperimentsTableSettings', mockSettingsData);
 		setupFindHandler();
 		setupSettingsHandler();
+		setupSaveSettingsHandler();
 		setupSearchHandler(data);
 	});
 

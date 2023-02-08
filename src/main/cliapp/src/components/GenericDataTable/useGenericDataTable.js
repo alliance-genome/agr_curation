@@ -313,7 +313,7 @@ export const useGenericDataTable = ({
 	};
 
 	const resetToModDefault = () => {
-		const initialTableState = getModTableState("DiseaseAnnotations");
+		const initialTableState = getModTableState(tableState.tableKeyName);
 		let _tableState = {
 			...initialTableState,
 			isFirst: false,
