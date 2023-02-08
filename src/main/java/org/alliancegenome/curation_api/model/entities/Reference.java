@@ -5,9 +5,8 @@ import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
@@ -39,8 +38,7 @@ public class Reference extends InformationContentEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
-	@JoinColumn(name="crossReferences_id")
+	@ManyToMany
 	@JsonView({View.FieldsOnly.class})
 	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_id")})
 	@EqualsAndHashCode.Include
