@@ -37,11 +37,14 @@ export const ProfileComponent = () => {
 	const globalResetHandler = () =>{
 		if(localUserInfo && localUserInfo.settings) {
 			for (let setting of localUserInfo.settings) {
-				localStorage.removeItem(setting.settingsKey);
-				personSettingsService.deleteUserSettings(setting.settingsKey);
+				personSettingsService.deleteUserSettings(setting.settingsKey).then((data) => {
+					localStorage.removeItem(setting.settingsKey);
+				});
 			}
 		}
-		window.location.reload();
+		setTimeout(() => {
+			window.location.reload();
+		}, 500);
 	};
 
 	const themeResetHandler = () => {
@@ -106,7 +109,6 @@ export const ProfileComponent = () => {
 		);
 	};
 
-	console.log(localUserInfo);
 	const userInfos = [
 		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate	 },
 		{ name: "Alliance Member", value: localUserInfo?.allianceMember?.fullName + " (" + localUserInfo?.allianceMember?.abbreviation + ")", template: textTemplate	},
