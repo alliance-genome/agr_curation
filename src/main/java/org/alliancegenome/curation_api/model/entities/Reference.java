@@ -5,15 +5,10 @@ import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.CrossReferencePrefix;
@@ -32,11 +27,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import javax.persistence.*;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 
 @Audited
 @Entity
@@ -49,7 +39,8 @@ public class Reference extends InformationContentEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
+	@OneToMany
+	@JoinColumn(name="crossReferences_id")
 	@JsonView({View.FieldsOnly.class})
 	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_id")})
 	@EqualsAndHashCode.Include
