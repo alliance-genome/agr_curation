@@ -41,9 +41,11 @@ public class GenomicEntity extends BiologicalEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = { @Index(columnList = "genomicentity_curie, crossreferences_id", name = "genomicentity_crossreference_ge_curie_xref_id_index"),
+	@JoinTable(indexes = { 
+		@Index(columnList = "genomicentity_curie, crossreferences_id", name = "genomicentity_crossreference_ge_curie_xref_id_index"),
 		@Index(columnList = "genomicentity_curie", name = "genomicentity_crossreference_genomicentity_curie_index"),
-		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_id_index") })
+		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_id_index")
+	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
