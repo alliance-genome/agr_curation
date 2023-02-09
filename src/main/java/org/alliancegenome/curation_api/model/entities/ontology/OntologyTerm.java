@@ -105,6 +105,7 @@ public class OntologyTerm extends CurieAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
+	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie", name = "ontologyterm_crossreference_ontologyterm_curie_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_id_index") })
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
