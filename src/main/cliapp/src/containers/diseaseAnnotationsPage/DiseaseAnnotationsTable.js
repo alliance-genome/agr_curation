@@ -28,7 +28,7 @@ import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
 import {NewAnnotationForm} from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import { getModTableState } from '../../service/TableStateService';
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -1463,8 +1463,7 @@ export const DiseaseAnnotationsTable = () => {
 		return col.header;
 	});
 
-
-	const initialTableState = getModTableState("DiseaseAnnotations");
+	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames);
 
 	const headerButtons = () => {
 		return (
