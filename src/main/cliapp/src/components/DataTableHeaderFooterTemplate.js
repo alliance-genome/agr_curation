@@ -16,7 +16,7 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 											{buttons}&nbsp;
 											<Button disabled={!isEnabled} onClick={tableStateConfirm}>Reset Table</Button>&nbsp;
 											{modReset && 
-												<Button disabled={!isEnabled} onClick={modResetConfirm}>Reset to MOD Default</Button>
+												<Button disabled={!isEnabled} onClick={modResetConfirm}>Set MOD Defaults</Button>
 											}
 										</SplitterPanel>
 								</Splitter>
