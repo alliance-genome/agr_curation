@@ -83,8 +83,6 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	AlleleSynonymSlotAnnotationDTOValidator alleleSynonymDtoValidator;
 	@Inject
 	AlleleSecondaryIdSlotAnnotationDTOValidator alleleSecondaryIdDtoValidator;
-	@Inject
-	SlotAnnotationIdentityHelper slotAnnotationIdentity;
 
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
@@ -137,7 +135,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		Map<String, AlleleMutationTypeSlotAnnotation> existingMutationTypes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
 			for (AlleleMutationTypeSlotAnnotation existingMutationType : allele.getAlleleMutationTypes()) {
-				existingMutationTypes.put(slotAnnotationIdentity.alleleMutationTypesIdentity(existingMutationType), existingMutationType);
+				existingMutationTypes.put(SlotAnnotationIdentityHelper.alleleMutationTypesIdentity(existingMutationType), existingMutationType);
 			}
 		}
 		
@@ -145,13 +143,13 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		List<String> mutationTypeIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleMutationTypeDtos())) {
 			for (AlleleMutationTypeSlotAnnotationDTO mutationTypeDTO : dto.getAlleleMutationTypeDtos()) {
-				ObjectResponse<AlleleMutationTypeSlotAnnotation> mutationTypeResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(existingMutationTypes.get(slotAnnotationIdentity.alleleMutationTypesDtoIdentity(mutationTypeDTO)), mutationTypeDTO);
+				ObjectResponse<AlleleMutationTypeSlotAnnotation> mutationTypeResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(existingMutationTypes.get(SlotAnnotationIdentityHelper.alleleMutationTypesDtoIdentity(mutationTypeDTO)), mutationTypeDTO);
 				if (mutationTypeResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_mutation_type_dtos", mutationTypeResponse.errorMessagesString());
 				} else {
 					AlleleMutationTypeSlotAnnotation mutationType = mutationTypeResponse.getEntity();
 					mutationTypes.add(mutationType);
-					mutationTypeIdentities.add(slotAnnotationIdentity.alleleMutationTypesIdentity(mutationType));
+					mutationTypeIdentities.add(SlotAnnotationIdentityHelper.alleleMutationTypesIdentity(mutationType));
 				}
 			}
 		}
@@ -168,7 +166,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		Map<String, AlleleInheritanceModeSlotAnnotation> existingInheritanceModes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes())) {
 			for (AlleleInheritanceModeSlotAnnotation existingInheritanceMode : allele.getAlleleInheritanceModes()) {
-				existingInheritanceModes.put(slotAnnotationIdentity.alleleInheritanceModeIdentity(existingInheritanceMode), existingInheritanceMode);
+				existingInheritanceModes.put(SlotAnnotationIdentityHelper.alleleInheritanceModeIdentity(existingInheritanceMode), existingInheritanceMode);
 			}
 		}
 		
@@ -176,13 +174,13 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		List<String> inheritanceModeIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleInheritanceModeDtos())) {
 			for (AlleleInheritanceModeSlotAnnotationDTO inheritanceModeDTO : dto.getAlleleInheritanceModeDtos()) {
-				ObjectResponse<AlleleInheritanceModeSlotAnnotation> inheritanceModeResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(existingInheritanceModes.get(slotAnnotationIdentity.alleleInheritanceModeDtoIdentity(inheritanceModeDTO)), inheritanceModeDTO);
+				ObjectResponse<AlleleInheritanceModeSlotAnnotation> inheritanceModeResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(existingInheritanceModes.get(SlotAnnotationIdentityHelper.alleleInheritanceModeDtoIdentity(inheritanceModeDTO)), inheritanceModeDTO);
 				if (inheritanceModeResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_inheritance_mode_dtos", inheritanceModeResponse.errorMessagesString());
 				} else {
 					AlleleInheritanceModeSlotAnnotation inheritanceMode = inheritanceModeResponse.getEntity();
 					inheritanceModes.add(inheritanceMode);
-					inheritanceModeIdentities.add(slotAnnotationIdentity.alleleInheritanceModeIdentity(inheritanceMode));
+					inheritanceModeIdentities.add(SlotAnnotationIdentityHelper.alleleInheritanceModeIdentity(inheritanceMode));
 				}
 			}
 		}
@@ -228,7 +226,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		Map<String, AlleleSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
 			for (AlleleSynonymSlotAnnotation existingSynonym : allele.getAlleleSynonyms()) {
-				existingSynonyms.put(slotAnnotationIdentity.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
 			}
 		}
 		
@@ -236,13 +234,13 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		List<String> synonymIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleSynonymDtos())) {
 			for (NameSlotAnnotationDTO synonymDTO : dto.getAlleleSynonymDtos()) {
-				ObjectResponse<AlleleSynonymSlotAnnotation> synonymResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(existingSynonyms.get(slotAnnotationIdentity.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
+				ObjectResponse<AlleleSynonymSlotAnnotation> synonymResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(existingSynonyms.get(SlotAnnotationIdentityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
 				if (synonymResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_synonym_dtos", synonymResponse.errorMessagesString());
 				} else {
 					AlleleSynonymSlotAnnotation synonym = synonymResponse.getEntity();
 					synonyms.add(synonym);
-					synonymIdentities.add(slotAnnotationIdentity.nameSlotAnnotationIdentity(synonym));
+					synonymIdentities.add(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(synonym));
 				}
 			}
 		}
@@ -259,7 +257,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		Map<String, AlleleSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleSecondaryIds())) {
 			for (AlleleSecondaryIdSlotAnnotation existingSecondaryId : allele.getAlleleSecondaryIds()) {
-				existingSecondaryIds.put(slotAnnotationIdentity.alleleSecondaryIdIdentity(existingSecondaryId), existingSecondaryId);
+				existingSecondaryIds.put(SlotAnnotationIdentityHelper.alleleSecondaryIdIdentity(existingSecondaryId), existingSecondaryId);
 			}
 		}
 		
@@ -267,13 +265,13 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		List<String> secondaryIdIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleSecondaryIdDtos())) {
 			for (AlleleSecondaryIdSlotAnnotationDTO secondaryIdDTO : dto.getAlleleSecondaryIdDtos()) {
-				ObjectResponse<AlleleSecondaryIdSlotAnnotation> secondaryIdResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(slotAnnotationIdentity.alleleSecondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
+				ObjectResponse<AlleleSecondaryIdSlotAnnotation> secondaryIdResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(SlotAnnotationIdentityHelper.alleleSecondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
 				if (secondaryIdResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_secondary_id_dtos", secondaryIdResponse.errorMessagesString());
 				} else {
 					AlleleSecondaryIdSlotAnnotation secondaryId = secondaryIdResponse.getEntity();
 					secondaryIds.add(secondaryId);
-					secondaryIdIdentities.add(slotAnnotationIdentity.alleleSecondaryIdIdentity(secondaryId));
+					secondaryIdIdentities.add(SlotAnnotationIdentityHelper.alleleSecondaryIdIdentity(secondaryId));
 				}
 			}
 		}

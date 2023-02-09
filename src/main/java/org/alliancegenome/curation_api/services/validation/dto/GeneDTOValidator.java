@@ -57,8 +57,6 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	GeneSystematicNameSlotAnnotationDTOValidator geneSystematicNameDtoValidator;
 	@Inject
 	GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
-	@Inject
-	SlotAnnotationIdentityHelper slotAnnotationIdentity;
 
 	@Transactional
 	public Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
@@ -130,7 +128,7 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		Map<String, GeneSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
 			for (GeneSynonymSlotAnnotation existingSynonym : gene.getGeneSynonyms()) {
-				existingSynonyms.put(slotAnnotationIdentity.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
 			}
 		}
 		
@@ -138,13 +136,13 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		List<String> synonymIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getGeneSynonymDtos())) {
 			for (NameSlotAnnotationDTO synonymDTO : dto.getGeneSynonymDtos()) {
-				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(slotAnnotationIdentity.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
+				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(SlotAnnotationIdentityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
 				if (synonymResponse.hasErrors()) {
 					geneResponse.addErrorMessage("gene_synonym_dtos", synonymResponse.errorMessagesString());
 				} else {
 					GeneSynonymSlotAnnotation synonym = synonymResponse.getEntity();
 					synonyms.add(synonym);
-					synonymIdentities.add(slotAnnotationIdentity.nameSlotAnnotationIdentity(synonym));
+					synonymIdentities.add(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(synonym));
 				}
 			}
 		}
