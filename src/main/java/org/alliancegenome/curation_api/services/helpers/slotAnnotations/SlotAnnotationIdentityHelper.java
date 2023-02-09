@@ -8,11 +8,15 @@ import javax.enterprise.context.RequestScoped;
 
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleSecondaryIdSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.SlotAnnotationDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +59,32 @@ public class SlotAnnotationIdentityHelper {
 		String phenotypeStatement = StringUtils.isBlank(dto.getPhenotypeStatement()) ? "" : dto.getPhenotypeStatement();
 
 		return StringUtils.join(List.of(inheritanceMode, phenotypeTerm, phenotypeStatement, slotAnnotationDtoIdentity(dto)), "|");
+	}
+	
+	public String nameSlotAnnotationIdentity(NameSlotAnnotation annotation) {
+		String displayText = StringUtils.isBlank(annotation.getDisplayText()) ? "" : annotation.getDisplayText();
+		String formatText = StringUtils.isBlank(annotation.getFormatText()) ? "" : annotation.getFormatText();
+		
+		return StringUtils.join(List.of(displayText, formatText, slotAnnotationIdentity(annotation)), "|");
+	}
+
+	public String nameSlotAnnotationDtoIdentity(NameSlotAnnotationDTO dto) {
+		String displayText = StringUtils.isBlank(dto.getDisplayText()) ? "" : dto.getDisplayText();
+		String formatText = StringUtils.isBlank(dto.getFormatText()) ? "" : dto.getFormatText();
+		
+		return StringUtils.join(List.of(displayText, formatText, slotAnnotationDtoIdentity(dto)), "|");
+	}
+	
+	public String alleleSecondaryIdIdentity(AlleleSecondaryIdSlotAnnotation annotation) {
+		String secondaryId = StringUtils.isBlank(annotation.getSecondaryId()) ? "" : annotation.getSecondaryId();
+		
+		return StringUtils.join(List.of(secondaryId, slotAnnotationIdentity(annotation)), "|");
+	}
+	
+	public String alleleSecondaryIdDtoIdentity(AlleleSecondaryIdSlotAnnotationDTO dto) {
+		String secondaryId = StringUtils.isBlank(dto.getSecondaryId()) ? "" : dto.getSecondaryId();
+		
+		return StringUtils.join(List.of(secondaryId, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
 	private String slotAnnotationIdentity(SlotAnnotation annotation) {
