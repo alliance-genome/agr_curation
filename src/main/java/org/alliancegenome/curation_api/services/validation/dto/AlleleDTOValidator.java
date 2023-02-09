@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -228,26 +226,30 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		Map<String, AlleleSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms()))
-			existingSynonyms = allele.getAlleleSynonyms().stream().collect(Collectors.toMap(AlleleSynonymSlotAnnotation::getFormatText, Function.identity()));
+		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
+			for (AlleleSynonymSlotAnnotation existingSynonym : allele.getAlleleSynonyms()) {
+				existingSynonyms.put(slotAnnotationIdentity.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+			}
+		}
 		
 		List<AlleleSynonymSlotAnnotation> synonyms = new ArrayList<>();
+		List<String> synonymIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleSynonymDtos())) {
 			for (NameSlotAnnotationDTO synonymDTO : dto.getAlleleSynonymDtos()) {
-				ObjectResponse<AlleleSynonymSlotAnnotation> synonymResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(existingSynonyms.get(synonymDTO.getFormatText()), synonymDTO);
+				ObjectResponse<AlleleSynonymSlotAnnotation> synonymResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(existingSynonyms.get(slotAnnotationIdentity.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
 				if (synonymResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_synonym_dtos", synonymResponse.errorMessagesString());
 				} else {
 					AlleleSynonymSlotAnnotation synonym = synonymResponse.getEntity();
 					synonyms.add(synonym);
+					synonymIdentities.add(slotAnnotationIdentity.nameSlotAnnotationIdentity(synonym));
 				}
 			}
 		}
 		
 		if (!existingSynonyms.isEmpty()) {
-			List<String> synonymNames = synonyms.stream().map(AlleleSynonymSlotAnnotation::getFormatText).collect(Collectors.toList());
 			existingSynonyms.forEach((k,v) -> {
-				if (!synonymNames.contains(k)) {
+				if (!synonymIdentities.contains(k)) {
 					v.setSingleAllele(null);
 					alleleSynonymDAO.remove(v.getId());
 				}
@@ -255,26 +257,30 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 
 		Map<String, AlleleSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSecondaryIds()))
-			existingSecondaryIds = allele.getAlleleSecondaryIds().stream().collect(Collectors.toMap(AlleleSecondaryIdSlotAnnotation::getSecondaryId, Function.identity()));
+		if (CollectionUtils.isNotEmpty(allele.getAlleleSecondaryIds())) {
+			for (AlleleSecondaryIdSlotAnnotation existingSecondaryId : allele.getAlleleSecondaryIds()) {
+				existingSecondaryIds.put(slotAnnotationIdentity.alleleSecondaryIdIdentity(existingSecondaryId), existingSecondaryId);
+			}
+		}
 		
 		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = new ArrayList<>();
+		List<String> secondaryIdIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleSecondaryIdDtos())) {
 			for (AlleleSecondaryIdSlotAnnotationDTO secondaryIdDTO : dto.getAlleleSecondaryIdDtos()) {
-				ObjectResponse<AlleleSecondaryIdSlotAnnotation> secondaryIdResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(secondaryIdDTO.getSecondaryId()), secondaryIdDTO);
+				ObjectResponse<AlleleSecondaryIdSlotAnnotation> secondaryIdResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(slotAnnotationIdentity.alleleSecondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
 				if (secondaryIdResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_secondary_id_dtos", secondaryIdResponse.errorMessagesString());
 				} else {
 					AlleleSecondaryIdSlotAnnotation secondaryId = secondaryIdResponse.getEntity();
 					secondaryIds.add(secondaryId);
+					secondaryIdIdentities.add(slotAnnotationIdentity.alleleSecondaryIdIdentity(secondaryId));
 				}
 			}
 		}
 		
 		if (!existingSecondaryIds.isEmpty()) {
-			List<String> secondaryIdNames = secondaryIds.stream().map(AlleleSecondaryIdSlotAnnotation::getSecondaryId).collect(Collectors.toList());
 			existingSecondaryIds.forEach((k,v) -> {
-				if (!secondaryIdNames.contains(k)) {
+				if (!secondaryIdIdentities.contains(k)) {
 					v.setSingleAllele(null);
 					alleleSecondaryIdDAO.remove(v.getId());
 				}

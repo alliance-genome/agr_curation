@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
@@ -26,6 +27,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDTOValidator;
@@ -55,6 +57,8 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	GeneSystematicNameSlotAnnotationDTOValidator geneSystematicNameDtoValidator;
 	@Inject
 	GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
+	@Inject
+	SlotAnnotationIdentityHelper slotAnnotationIdentity;
 
 	@Transactional
 	public Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
@@ -124,26 +128,30 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		}
 
 		Map<String, GeneSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms()))
-			existingSynonyms = gene.getGeneSynonyms().stream().collect(Collectors.toMap(GeneSynonymSlotAnnotation::getFormatText, Function.identity()));
+		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
+			for (GeneSynonymSlotAnnotation existingSynonym : gene.getGeneSynonyms()) {
+				existingSynonyms.put(slotAnnotationIdentity.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+			}
+		}
 		
 		List<GeneSynonymSlotAnnotation> synonyms = new ArrayList<>();
+		List<String> synonymIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getGeneSynonymDtos())) {
 			for (NameSlotAnnotationDTO synonymDTO : dto.getGeneSynonymDtos()) {
-				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(synonymDTO.getFormatText()), synonymDTO);
+				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(slotAnnotationIdentity.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
 				if (synonymResponse.hasErrors()) {
 					geneResponse.addErrorMessage("gene_synonym_dtos", synonymResponse.errorMessagesString());
 				} else {
 					GeneSynonymSlotAnnotation synonym = synonymResponse.getEntity();
 					synonyms.add(synonym);
+					synonymIdentities.add(slotAnnotationIdentity.nameSlotAnnotationIdentity(synonym));
 				}
 			}
 		}
 		
 		if (!existingSynonyms.isEmpty()) {
-			List<String> synonymNames = synonyms.stream().map(GeneSynonymSlotAnnotation::getFormatText).collect(Collectors.toList());
 			existingSynonyms.forEach((k,v) -> {
-				if (!synonymNames.contains(k)) {
+				if (!synonymIdentities.contains(k)) {
 					v.setSingleGene(null);
 					geneSynonymDAO.remove(v.getId());
 				}
