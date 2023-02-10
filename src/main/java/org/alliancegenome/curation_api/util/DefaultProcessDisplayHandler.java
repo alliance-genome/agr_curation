@@ -44,10 +44,13 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 		checkMemory(message, data);
 
 		if (percent > 0) {
+			sb.append(", Mem: " + df.format(memoryPercent() * 100) + "%");
+
 			int perms = (int) (diff / percent);
 			Date end = new Date(startTime + perms);
 			String expectedDuration = ProcessDisplayHandler.getHumanReadableTimeDisplay(end.getTime() - nowTime);
-			sb.append(", Mem: " + df.format(memoryPercent() * 100) + "%, ETA: " + expectedDuration + " [" + end + "]");
+			String wallTime = ProcessDisplayHandler.getHumanReadableTimeDisplay(nowTime - startTime);
+			sb.append(", Walltime: " + wallTime + ", ETA: " + expectedDuration + " [" + end + "]");
 		}
 		logInfoMessage(sb.toString());
 
