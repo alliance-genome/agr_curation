@@ -146,7 +146,7 @@ public class JobScheduler {
 
 		if(reindexSchedulingEnabled){
 			Log.info("Scheduled mass reindexing initiated.");
-			bulkLoadDAO.reindexEverything(1000, 10000, 0, 4, 14400, 1);
+			bulkLoadDAO.reindexEverything(1000, 10000, 0, 4, 7200, 1);
 		}
 		else{
 			Log.info("Scheduled mass reindexing not initiated (reindex scheduling not enabled).");
