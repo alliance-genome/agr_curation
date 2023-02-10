@@ -50,7 +50,7 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 			Date end = new Date(startTime + perms);
 			String expectedDuration = ProcessDisplayHandler.getHumanReadableTimeDisplay(end.getTime() - nowTime);
 			String wallTime = ProcessDisplayHandler.getHumanReadableTimeDisplay(nowTime - startTime);
-			sb.append(", Walltime: " + wallTime + ", ETA: " + expectedDuration + " [" + end + "]");
+			sb.append(", Wall: " + wallTime + ", ETA: " + expectedDuration + " [" + end + "]");
 		}
 		logInfoMessage(sb.toString());
 
