@@ -29,6 +29,7 @@ import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
+import org.alliancegenome.curation_api.jobs.executors.ResourceDescriptorExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.MoleculeService;
@@ -144,6 +145,8 @@ public class BulkLoadJobExecutor {
 	AgmExecutor agmExecutor;
 	@Inject
 	MoleculeExecutor moleculeExecutor;
+	@Inject
+	ResourceDescriptorExecutor resourceDescriptorExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile) throws Exception {
 
@@ -281,8 +284,10 @@ public class BulkLoadJobExecutor {
 					break;
 				default:
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
-					throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
+					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 			}
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) { 
+			resourceDescriptorExecutor.runLoad(bulkLoadFile);
 		} else {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");

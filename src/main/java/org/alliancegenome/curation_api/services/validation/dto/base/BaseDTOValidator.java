@@ -7,6 +7,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.enums.SupportedSpecies;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -91,6 +92,11 @@ public class BaseDTOValidator {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
+			} else {
+				NCBITaxonTerm taxon = taxonResponse.getEntity();
+				if (!SupportedSpecies.isSupported(taxon.getGenusSpecies())) {
+					beResponse.addErrorMessage("taxon_curie", ValidationConstants.UNSUPPORTED_MESSAGE + " (" + dto.getTaxonCurie() + ")");
+				}
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}

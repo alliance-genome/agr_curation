@@ -4,13 +4,13 @@ const modTableSettings = {
 			page: 0,
 			first: 0,
 			rows: 50,
-			multiSortMeta:[],		
+			multiSortMeta:[],
 			selectedColumnNames: [
 				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Experimental Conditions", "Disease Qualifiers", "Inferred Gene",
 				"Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By",
-				"Date Created", "Internal", "Obsolete", 
+				"Date Created", "Internal", "Obsolete",
 			],
 			filters:{
 				dataProviderFilter: {
@@ -18,7 +18,7 @@ const modTableSettings = {
 					"dataProvider.fullName": { queryString: "RGD", tokenOperator: "AND" },
 					"dataProvider.shortName": { queryString: "RGD", tokenOperator: "AND" }
 				}
-			}, 
+			},
 			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings",
@@ -73,7 +73,7 @@ const modTableSettings = {
 					"Negated", "Disease", "Reference", "Evidence Code", "Related Notes",
 					"Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation",
 					"Genetic Modifier","Data Provider", "Updated By", "Date Updated", "Created By",
-					"Date Created", "Internal", "Obsolete", 
+					"Date Created", "Internal", "Obsolete",
 			],
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
@@ -88,7 +88,7 @@ const modTableSettings = {
 					"Obsolete", "Reference", "Subject", "Negated",
 					"Disease Relation", "Disease", "Evidence Code", "Inferred Gene",
 					"Genetic Modifier Relation", "Genetic Modifier", "Related Notes", "Data Provider",
-					"Updated By", "Date Updated", "Created By", "Date Created" 
+					"Updated By", "Date Updated", "Created By", "Date Created"
 			],
 			filters: {
 				obsoleteFilter: {
@@ -161,7 +161,7 @@ const modTableSettings = {
 export function getModTableState(table){
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	return modTableSettings[mod][table]; 
+	return global.structuredClone(modTableSettings[mod][table]);
 };
 
 export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns){
@@ -176,4 +176,4 @@ export function getDefaultTableState(table, defaultColumnNames, defaultVisibleCo
 			tableKeyName: table,
 			tableSettingsKeyName: `${table}TableSettings`
 	}
-} 
+}

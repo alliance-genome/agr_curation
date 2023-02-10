@@ -69,17 +69,17 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdatedAlleles(String taxonIds, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter, String dataType) {
-		log.debug("runLoad: After: " + taxonIds + " " + alleleCuriesAfter.size());
+	public void removeOrDeprecateNonUpdatedAlleles(String speciesNames, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter, String dataType) {
+		log.debug("runLoad: After: " + speciesNames + " " + alleleCuriesAfter.size());
 
 		List<String> distinctAfter = alleleCuriesAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + taxonIds + " " + distinctAfter.size());
+		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
 
 		List<String> curiesToRemove = ListUtils.subtract(alleleCuriesBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
+		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " alleles", curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " alleles", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			Allele allele = alleleDAO.find(curie);
 			if (allele != null) {
@@ -108,8 +108,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		ph.finishProcess();
 	}
 	
-	public List<String> getCuriesByTaxonId(String taxonId) {
-		List<String> curies = alleleDAO.findAllCuriesByTaxon(taxonId);
+	public List<String> getCuriesBySpeciesName(String speciesName) {
+		List<String> curies = alleleDAO.findAllCuriesBySpeciesName(speciesName);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

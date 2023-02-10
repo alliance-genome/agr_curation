@@ -60,7 +60,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto, dto.getGeneCurie(), refCurie);
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getGenusSpecies()).getCurieID(dto, dto.getGeneCurie(), refCurie);
 				}
 
 				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationId);

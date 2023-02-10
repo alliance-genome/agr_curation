@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -72,6 +73,7 @@ public class AlleleITCase extends BaseITCase {
 	private Reference obsoleteReference;
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
+	private NCBITaxonTerm unsupportedTaxon;
 	private NCBITaxonTerm obsoleteTaxon;
 	private Person person;
 	private OffsetDateTime datetime;
@@ -116,6 +118,7 @@ public class AlleleITCase extends BaseITCase {
 		obsoleteReference = createReference("AGRKB:000010000", true);
 		taxon = getNCBITaxonTerm("NCBITaxon:10090");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
+		unsupportedTaxon = getNCBITaxonTerm("NCBITaxon:11290");
 		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");
 		person = createPerson("TEST:AllelePerson0001");
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
@@ -864,9 +867,47 @@ public class AlleleITCase extends BaseITCase {
 					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE));
 	}
-
+	
 	@Test
 	@Order(16)
+	public void createAlleleWithUnsupportedFieldValues() {
+		Allele allele = new Allele();
+		allele.setCurie("ALLELE:0016");
+		allele.setTaxon(unsupportedTaxon);
+		allele.setAlleleSymbol(alleleSymbol);
+				
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));
+	}
+	
+	@Test
+	@Order(17)
+	public void editAlleleWithUnsupportedFieldValues() {
+		Allele allele = getAllele(ALLELE);
+		
+		allele.setTaxon(unsupportedTaxon);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));	
+			
+	}
+
+	@Test
+	@Order(18)
 	public void editAlleleWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
 		Allele allele = getAllele(ALLELE);
@@ -940,7 +981,7 @@ public class AlleleITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(17)
+	@Order(19)
 	public void editAlleleWithNullNonRequiredFieldsLevel1() {
 		Allele allele = getAllele(ALLELE);
 
@@ -979,7 +1020,7 @@ public class AlleleITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(18)
+	@Order(20)
 	public void deleteAllele() {
 
 		RestAssured.given().
