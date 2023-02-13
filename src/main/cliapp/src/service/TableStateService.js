@@ -19,7 +19,7 @@ const modTableSettings = {
 					"dataProvider.sourceOrganization.shortName": { queryString: "RGD", tokenOperator: "AND" }
 				}
 			},
-			isFirst: false,
+			isFirst: true,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings",
 		}

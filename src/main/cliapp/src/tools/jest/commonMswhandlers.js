@@ -30,7 +30,6 @@ export const setupSettingsHandler = () => {
 			return res(ctx.status(200))
 		}),
 	)
-
 }
 
 export const setupSaveSettingsHandler = () => {

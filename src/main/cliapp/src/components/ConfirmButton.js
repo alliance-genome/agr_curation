@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import { Button } from 'primereact/button';
 
-export const ConfirmButton = ({ messageText, headerText, buttonText, acceptHandler, rejectHandler, buttonClassName }) => {
+export const ConfirmButton = ({ messageText, headerText, buttonText, acceptHandler, rejectHandler, buttonClassName, disabled= false}) => {
 
 	const [visible, setVisible] = useState(false);
 

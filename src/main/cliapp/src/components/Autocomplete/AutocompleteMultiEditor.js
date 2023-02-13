@@ -7,7 +7,6 @@ export const AutocompleteMultiEditor = (
 	{
 		search,
 		initialValue,
-		name,
 		rowProps,
 		classNames,
 		fieldName,
@@ -40,7 +39,8 @@ export const AutocompleteMultiEditor = (
 		<div>
 			<AutoComplete
 				ref={customRef}
-				name={name}
+				name={fieldName}
+				aria-label={fieldName}
 				multiple={true}
 				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
 				field={subField}

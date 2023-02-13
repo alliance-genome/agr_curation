@@ -59,7 +59,7 @@ export function reorderArray(array, from, to) {
 	return array;
 };
 
-export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false) {
+export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false, tableState) {
 	let initalColumnOrderObjects = [];
 	let initalColumnOrderFields = [];
 
@@ -68,18 +68,29 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, 
 			columns.find((column) => {
 				return column.header === option;
 			})
-		)
+		);
 	});
 
 	initalColumnOrderFields = initalColumnOrderObjects.map(column => column.field);
 
-	if(deletionEnabled) {
-		initalColumnOrderFields.unshift('delete');
-	}
+	if (deletionEnabled) initalColumnOrderFields.unshift('delete');
 
 	initalColumnOrderFields.unshift('rowEditor');
 
-	dataTable.current.state.columnOrder = initalColumnOrderFields
+	const newState = {
+		first: tableState.first,
+		rows: tableState.rows,
+		multisortmeta: tableState.multisortmeta,
+		filters: tableState.filters,
+		columnWidths: "",
+		tableWidth: "",
+		columnOrder: initalColumnOrderFields,
+	};
+
+	console.log(dataTable.current)
+
+	dataTable.current.restoreTableState(newState);
+	// dataTable.current.restoreState()
 }
 
 // ToDo: Create enumeration
