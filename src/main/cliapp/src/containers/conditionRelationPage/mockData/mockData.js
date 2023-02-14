@@ -78,35 +78,12 @@ export const data = {
 		totalResults: 1736
 	}
 export const mockSettingsData = {
-	"entity": {
-		"id": 14358116,
-		"settingsKey": "ExperimentalConditionsTableSettings",
-		"settingsMap": {
-			"page": 0,
-			"rows": 10,
-			"first": 0,
-			"isFirst": false,
-			"tableKeyName": "ExperimentalConditions",
-			"selectedColumnNames": [
-				"Unique ID",
-				"Summary",
-				"Class",
-				"Condition Term",
-				"Gene Ontology",
-				"Chemical",
-				"Anatomy",
-				"Condition Taxon",
-				"Quantity",
-				"Free Text",
-				"Internal"
-			],
-			"tableSettingsKeyName": "ExperimentalConditionsTableSettings",
-			"multiSortMeta": [
-				{
-					"field": "conditionClass.name",
-					"order": 1
-				}
-			]
-		}
-	}
-}
+	"page": 0,
+	"first": 0,
+	"rows": 50,
+	"multiSortMeta": [],
+	"selectedColumnNames": ["Handle", "Reference", "Relation", "Experimental Conditions"],
+	"filters": {},
+	"tableKeyName": "Experiments",
+	"tableSettingsKeyName": "ExperimentsTableSettings"
+};

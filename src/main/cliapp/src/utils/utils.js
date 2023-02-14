@@ -87,10 +87,7 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, 
 		columnOrder: initalColumnOrderFields,
 	};
 
-	console.log(dataTable.current)
-
 	dataTable.current.restoreTableState(newState);
-	// dataTable.current.restoreState()
 }
 
 // ToDo: Create enumeration
