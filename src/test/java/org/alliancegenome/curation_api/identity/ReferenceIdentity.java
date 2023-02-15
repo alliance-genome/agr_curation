@@ -1,15 +1,17 @@
-package org.alliancegenome.curation_api.model.entities;
+package org.alliancegenome.curation_api.identity;
 
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Test;
 
-class ReferenceTest {
+class ReferenceIdentity {
 
 	@Test
 	public void testUniqueness() {
@@ -30,7 +32,9 @@ class ReferenceTest {
 		Reference reference1 = new Reference();
 		reference1.setCurie(refCurie);
 		CrossReference crossReference = new CrossReference();
-		crossReference.setCurie(xrefCurie);
+		crossReference.setReferencedCurie(xrefCurie);
+		crossReference.setDisplayName(xrefCurie);
+		
 		reference1.setCrossReferences(List.of(crossReference));
 		return reference1;
 	}

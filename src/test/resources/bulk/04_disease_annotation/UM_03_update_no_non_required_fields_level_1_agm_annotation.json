@@ -3,7 +3,17 @@
     "mod_entity_id": "DATEST:Annot0003",
     "agm_curie": "DATEST:AGM0001",
     "do_term_curie": "DATEST:Disease0001",
-    "data_provider_name": "TEST",
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "TEST",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST:0001",
+        "page_area": "homepage",
+        "display_name": "TEST:0001",
+        "prefix": "TEST"
+      }
+    },
     "disease_relation_name": "is_model_of",
     "evidence_code_curies": [
       "DATEST:Evidence0001"

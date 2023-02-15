@@ -2,10 +2,10 @@ import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
-import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog, validateBioEntityFields } from '../../utils/utils';
+import { trimWhitespace, returnSorted, reorderArray, validateBioEntityFields } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { useGetUserSettings } from "../../service/useGetUserSettings";
-import {getDefaultTableState, getModTableState} from '../../service/TableStateService';
+import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
 
 
 export const useGenericDataTable = ({
@@ -140,7 +140,7 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled);
+	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState, deletionEnabled);
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
@@ -313,13 +313,13 @@ export const useGenericDataTable = ({
 	};
 
 	const resetToModDefault = () => {
-		const initialTableState = getModTableState("DiseaseAnnotations");
+		const initialTableState = getModTableState(tableState.tableKeyName);
 		let _tableState = {
 			...initialTableState,
 			isFirst: false,
 		};
 
-		setDefaultColumnOrder(columns, dataTable, initialTableState.selectedColumnNames, deletionEnabled);
+		// setDefaultColumnOrder(columns, dataTable, initialTableState.selectedColumnNames, deletionEnabled, tableState);
 		setTableState(_tableState);
 		const _columnWidths = {...columnWidths};
 
@@ -328,7 +328,7 @@ export const useGenericDataTable = ({
 		});
 
 		setColumnWidths(_columnWidths);
-		dataTable.current.el.children[1].scrollLeft = 0;
+		dataTable.current.resetScroll();
 	}
 
 	const resetTableState = () => {
@@ -339,7 +339,7 @@ export const useGenericDataTable = ({
 		};
 
 		setTableState(_tableState);
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled);
+		// setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled, _tableState);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
@@ -347,23 +347,7 @@ export const useGenericDataTable = ({
 		});
 
 		setColumnWidths(_columnWidths);
-		dataTable.current.el.children[1].scrollLeft = 0;
-	}
-
-	const tableStateConfirm = () => {
-		genericConfirmDialog({
-			header: `${tableName} Table State Reset`,
-			message: `Are you sure? This will reset the local state of the ${tableName} table.`,
-			accept: resetTableState
-		});
-	}
-
-	const modResetConfirm = () => {
-		genericConfirmDialog({
-			header: `${tableName} Table MOD Default Reset`,
-			message: `Are you sure? This will reset the local state of the ${tableName} table to the MOD default settings.`,
-			accept: resetToModDefault
-		});
+		dataTable.current.resetScroll();
 	}
 
 	const colReorderHandler = (event) => {
@@ -388,8 +372,6 @@ export const useGenericDataTable = ({
 		setSelectedColumnNames,
 		defaultColumnNames,
 		tableState,
-		tableStateConfirm,
-		modResetConfirm,
 		onFilter,
 		setColumnList,
 		columnWidths,
@@ -408,7 +390,9 @@ export const useGenericDataTable = ({
 		columnList,
 		handleDeletion,
 		exceptionDialog,
+		resetToModDefault,
+		resetTableState,
 		setExceptionDialog,
-		exceptionMessage
+		exceptionMessage,
 	};
 };

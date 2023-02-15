@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
@@ -71,6 +72,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	VocabularyTermDAO vocabularyTermDAO;
 	@Inject
 	ReferenceValidator referenceValidator;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	private String errorMessage;
 
@@ -137,8 +140,22 @@ public class AlleleValidator extends GenomicEntityValidator {
 			dbEntity.setIsExtinct(null);
 		}
 
+		List<Long> currentXrefIds;
+		if (dbEntity.getCrossReferences() == null) {
+			currentXrefIds = new ArrayList<>();
+		} else {
+			currentXrefIds = dbEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
+		}
+		
 		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
 		dbEntity.setCrossReferences(crossReferences);
+		List<Long> mergedIds = crossReferences == null ? new ArrayList<>() :
+			crossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
+		for (Long currentXrefId : currentXrefIds) {
+			if (!mergedIds.contains(currentXrefId)) {
+				crossReferenceDAO.remove(currentXrefId);
+			}
+		}
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());

@@ -14,8 +14,8 @@
 	<properties>
 		<compiler-plugin.version>3.8.1</compiler-plugin.version>
 		<maven.compiler.parameters>true</maven.compiler.parameters>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -23,7 +23,7 @@
 		<okta.version>3.0.1</okta.version>
 		<okta.authn.version>2.0.0</okta.authn.version>
 		<okta-jwt.version>0.5.1</okta-jwt.version>
-		<quarkus.platform.version>2.15.3.Final</quarkus.platform.version>
+		<quarkus.platform.version>2.16.1.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
 	</properties>
 
@@ -397,7 +397,7 @@
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
+				<version>1.6.13</version>
 				<extensions>true</extensions>
 				<configuration>
 					<serverId>ossrh</serverId>

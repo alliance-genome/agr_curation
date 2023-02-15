@@ -34,7 +34,7 @@ export const ExperimentalConditionsTable = () => {
 
 	let experimentalConditionService = new ExperimentalConditionService();
 
-	const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+	const curieAutocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
 
 	const sortMapping = {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace']

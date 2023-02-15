@@ -55,7 +55,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 //@ToString(exclude = {"genomicLocations"})
-@AGRCurationSchemaVersion(min = "1.4.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Association.class })
+@AGRCurationSchemaVersion(min = "1.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Association.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public abstract class DiseaseAnnotation extends Association {
 
@@ -147,17 +147,17 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Note> relatedNotes;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	private Organization dataProvider;
+	private DataProvider dataProvider;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	private Organization secondaryDataProvider;
+	private DataProvider secondaryDataProvider;
 
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -186,10 +186,10 @@ public abstract class DiseaseAnnotation extends Association {
 	@Transient
 	@JsonIgnore
 	public String getDataProviderString(){
-		StringBuilder builder = new StringBuilder(dataProvider.getAbbreviation());
+		StringBuilder builder = new StringBuilder(dataProvider.getSourceOrganization().getAbbreviation());
 		if(secondaryDataProvider != null){
 			builder.append(" via ");
-			builder.append(secondaryDataProvider.getAbbreviation());
+			builder.append(secondaryDataProvider.getSourceOrganization().getAbbreviation());
 		}
 		return builder.toString();
 	}

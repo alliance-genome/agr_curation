@@ -37,8 +37,12 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@Table(indexes = { @Index(name = "personsetting_createdby_index", columnList = "createdBy_id"), @Index(name = "personsetting_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "personsetting_person_index", columnList = "person_id") })
+@Table(indexes = {
+	@Index(name = "personsetting_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "personsetting_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "personsetting_person_index", columnList = "person_id"),
+	@Index(name = "personsetting_settingskey_index", columnList = "settingskey")
+})
 public class PersonSetting extends GeneratedAuditedObject {
 
 	@ManyToOne

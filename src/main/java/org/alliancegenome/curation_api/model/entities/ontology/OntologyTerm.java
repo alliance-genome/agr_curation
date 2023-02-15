@@ -45,7 +45,10 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @ToString(exclude = { "isaParents", "isaChildren", "isaAncestors", "isaDescendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets" }, callSuper = true)
 @AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"), @Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id") })
+@Table(indexes = {
+	@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id")
+})
 public class OntologyTerm extends CurieAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -95,14 +98,15 @@ public class OntologyTerm extends CurieAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
+	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie", name = "ontologyterm_synonym_ontologyterm_curie_index"))
 	@JsonView({ View.FieldsAndLists.class })
 	private List<Synonym> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie"), @Index(columnList = "crossreferences_curie") })
+	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie", name = "ontologyterm_crossreference_ontologyterm_curie_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_id_index") })
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 

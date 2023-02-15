@@ -1,10 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -12,7 +9,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
+import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -25,7 +24,6 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.MoleculeValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -39,9 +37,13 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	@Inject
 	SynonymDAO synonymDAO;
 	@Inject
+	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
+	@Inject
 	MoleculeValidator moleculeValidator;
 	@Inject
 	CrossReferenceService crossReferenceService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	@Override
 	@PostConstruct
@@ -148,53 +150,34 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			}
 
 			m.setNamespace("molecule");
-
+			
+			List<Long> currentXrefIds;
+			if (m.getCrossReferences() == null) {
+				currentXrefIds = new ArrayList<>();
+			} else {
+				currentXrefIds = m.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
+			}
+			
+			List<Long> mergedXrefIds;
+			if (molecule.getCrossReferences() == null) {
+				mergedXrefIds = new ArrayList<>();
+				m.setCrossReferences(null);
+			} else {
+				List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedFmsXrefList(molecule.getCrossReferences(), m.getCrossReferences());
+				mergedXrefIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
+				m.setCrossReferences(mergedCrossReferences);
+			}
+			
+			for (Long currentId : currentXrefIds) {
+				if (mergedXrefIds.contains(currentId)) {
+					crossReferenceDAO.remove(currentId);
+				}
+			}
+			
 			moleculeDAO.persist(m);
-
-			handleCrossReferences(molecule, m);
-		} catch (Exception e) {
+	} catch (Exception e) {
 			e.printStackTrace();
 			throw new ObjectUpdateException(molecule, e.getMessage(), e.getStackTrace());
 		}
 	}
-
-	private void handleCrossReferences(MoleculeFmsDTO moleculeFmsDTO, Molecule molecule) {
-		Map<String, CrossReference> currentIds;
-		if (molecule.getCrossReferences() == null) {
-			currentIds = new HashedMap<>();
-			molecule.setCrossReferences(new ArrayList<>());
-		} else {
-			currentIds = molecule.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
-		}
-		Map<String, CrossReferenceFmsDTO> newIds;
-		if (moleculeFmsDTO.getCrossReferences() == null) {
-			newIds = new HashedMap<>();
-		} else {
-			newIds = moleculeFmsDTO.getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceFmsDTO::getId, Function.identity(), (cr1, cr2) -> {
-				HashSet<String> pageAreas = new HashSet<>();
-				if (cr1.getPages() != null)
-					pageAreas.addAll(cr1.getPages());
-				if (cr2.getPages() != null)
-					pageAreas.addAll(cr2.getPages());
-				CrossReferenceFmsDTO newCr = new CrossReferenceFmsDTO();
-				newCr.setId(cr2.getId());
-				newCr.setPages(new ArrayList<>(pageAreas));
-				return newCr;
-			}));
-		}
-
-		newIds.forEach((k, v) -> {
-			if (!currentIds.containsKey(k)) {
-				molecule.getCrossReferences().add(crossReferenceService.processUpdate(v));
-			}
-		});
-
-		currentIds.forEach((k, v) -> {
-			if (!newIds.containsKey(k)) {
-				molecule.getCrossReferences().remove(v);
-			}
-		});
-
-	}
-
 }
