@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -43,43 +44,8 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	}
 
 	@Override
-	public APIResponse updateAlleleDiseaseAnnotations(String taxonID, List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad(taxonID, annotations);
-	}
-
-	@Override
-	public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:7955", annotations);
-	}
-
-	@Override
-	public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:10090", annotations);
-	}
-
-	@Override
-	public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:10116", annotations);
-	}
-
-	@Override
-	public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:7227", annotations);
-	}
-
-	@Override
-	public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:6239", annotations);
-	}
-
-	@Override
-	public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:9606", annotations);
-	}
-
-	@Override
-	public APIResponse updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:559292", annotations);
+	public APIResponse updateAlleleDiseaseAnnotations(String dataType, List<AlleleDiseaseAnnotationDTO> annotations) {
+		return alleleDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
 	}
 
 }

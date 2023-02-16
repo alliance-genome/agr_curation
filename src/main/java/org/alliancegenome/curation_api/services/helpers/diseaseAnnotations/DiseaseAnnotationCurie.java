@@ -48,7 +48,7 @@ public abstract class DiseaseAnnotationCurie {
 
 	public abstract String getCurieID(DiseaseAnnotation annotation);
 
-	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> conditionRelations, String associationType) {
+	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> conditionRelations, String associationType, String negated, String diseaseGeneticModifierRelation, String diseaseGeneticModifier) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
 		curie.add(subject);
 		curie.add(object);
@@ -66,6 +66,9 @@ public abstract class DiseaseAnnotationCurie {
 				return gen.getCurie();
 			}).collect(Collectors.joining(DELIMITER)));
 		}
+		curie.add(negated);
+		curie.add(diseaseGeneticModifierRelation);
+		curie.add(diseaseGeneticModifier);
 		return curie.getCurie();
 	}
 

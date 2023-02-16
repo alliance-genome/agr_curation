@@ -24,7 +24,7 @@ public class NcbiTaxonTermDAO extends BaseSQLDAO<NCBITaxonTerm> {
 	private NCBIRESTInterface api = RestProxyFactory.createProxy(NCBIRESTInterface.class, "https://eutils.ncbi.nlm.nih.gov");
 
 	public NCBITaxonTerm downloadAndSave(String taxonCurie) {
-
+		
 		Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:(\\d+)$");
 		Matcher taxonIdMatcher = taxonIdPattern.matcher(taxonCurie);
 		if (!taxonIdMatcher.find()) {

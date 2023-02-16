@@ -44,42 +44,8 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
 
 	@POST
-	@Path("/bulk/{taxonID}/annotationFile")
+	@Path("/bulk/{dataType}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAlleleDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AlleleDiseaseAnnotationDTO> annotationData);
+	public APIResponse updateAlleleDiseaseAnnotations(@PathParam("dataType") String speciesName, List<AlleleDiseaseAnnotationDTO> annotationData);
 
-	@POST
-	@Path("/bulk/zfinAnnotationFile")
-	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-
-	@POST
-	@Path("/bulk/mgiAnnotationFile")
-	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-
-	@POST
-	@Path("/bulk/rgdAnnotationFile")
-	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-
-	@POST
-	@Path("/bulk/fbAnnotationFile")
-	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-
-	@POST
-	@Path("/bulk/wbAnnotationFile")
-	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-
-	@POST
-	@Path("/bulk/humanAnnotationFile")
-	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-
-	@POST
-	@Path("/bulk/sgdAnnotationFile")
-	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
 }

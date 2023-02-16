@@ -22,6 +22,12 @@ public class View {
 
 	public static class VocabularyTermSetView extends FieldsOnly {
 	}
+	
+	public static class ResourceDescriptorView extends FieldsOnly {
+	}
+	
+	public static class ResourceDescriptorPageView extends FieldsOnly {
+	}
 
 	public static class NoteView extends FieldsAndLists {
 	}

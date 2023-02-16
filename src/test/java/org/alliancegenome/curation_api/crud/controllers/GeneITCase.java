@@ -61,6 +61,7 @@ public class GeneITCase extends BaseITCase {
 	private SOTerm obsoleteSoTerm;
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
+	private NCBITaxonTerm unsupportedTaxon;
 	private NCBITaxonTerm obsoleteTaxon;
 	private OffsetDateTime datetime;
 	private OffsetDateTime datetime2;
@@ -92,7 +93,8 @@ public class GeneITCase extends BaseITCase {
 		obsoleteSynonymScope = createVocabularyTerm(synonymScope, "obsolete", true);
 		taxon = getNCBITaxonTerm("NCBITaxon:10090");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
-		obsoleteTaxon = createNCBITaxonTerm("NCBITaxon:0000", true);
+		unsupportedTaxon = getNCBITaxonTerm("NCBITaxon:11290");
+		obsoleteTaxon = createNCBITaxonTerm("NCBITaxon:0000", "Homo sapiens obsolete", true);
 		reference = createReference("AGRKB:000010003", false);
 		reference2 = createReference("AGRKB:000010005", false);
 		obsoleteReference = createReference("AGRKB:000010007", true);
@@ -757,6 +759,44 @@ public class GeneITCase extends BaseITCase {
 	
 	@Test
 	@Order(16)
+	public void createGeneWithUnsupportedFieldValues() {
+		Gene gene = new Gene();
+		gene.setCurie("GENE:0016");
+		gene.setTaxon(unsupportedTaxon);
+		gene.setGeneSymbol(geneSymbol);
+				
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));
+	}
+	
+	@Test
+	@Order(17)
+	public void editGeneWithUnsupportedFieldValues() {
+		Gene gene = getGene(GENE);
+		
+		gene.setTaxon(unsupportedTaxon);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));	
+			
+	}
+	
+	@Test
+	@Order(18)
 	public void editGeneWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
 		Gene gene = getGene(GENE);
@@ -818,7 +858,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(17)
+	@Order(19)
 	public void editGeneWithNullNonRequiredFieldsLevel1() {
 		Gene gene = getGene(GENE);
 		
@@ -847,7 +887,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(18)
+	@Order(20)
 	public void deleteGene() {
 
 		RestAssured.given().

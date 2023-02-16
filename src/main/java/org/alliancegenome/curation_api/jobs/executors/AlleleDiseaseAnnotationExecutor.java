@@ -41,19 +41,19 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
+			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getSpeciesName());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
-			String taxonId = manual.getDataType().getTaxonId();
+			String speciesName = manual.getDataType().getSpeciesName();
 
 			if (annotations != null) {
 				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
 
 				bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(taxonId, annotations), bulkLoadFile);
+				trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
 
 			}
 
@@ -63,20 +63,20 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String taxonId, List<AlleleDiseaseAnnotationDTO> annotations) {
+	public APIResponse runLoad(String speciesName, List<AlleleDiseaseAnnotationDTO> annotations) {
 
 		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));
+		annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(speciesName));
 		annotationIdsBefore.removeIf(Objects::isNull);
 
-		log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
+		log.debug("runLoad: Before: " + speciesName + " " + annotationIdsBefore.size());
 		List<Long> annotationIdsAfter = new ArrayList<>();
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Allele Disease Annotation Update " + taxonId, annotations.size());
+		ph.startProcess("Allele Disease Annotation Update " + speciesName, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
 				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO);
@@ -92,7 +92,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 
-		diseaseAnnotationService.removeNonUpdatedAnnotations(taxonId, annotationIdsBefore, annotationIdsAfter);
+		diseaseAnnotationService.removeNonUpdatedAnnotations(speciesName, annotationIdsBefore, annotationIdsAfter);
 		return new LoadHistoryResponce(history);
 	}
 }

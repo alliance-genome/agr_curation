@@ -338,7 +338,12 @@ The general flow from coding to a production release goes something like this:
 As the code goes through the different stages, it becomes more and more stable as it gets closer to production.
 
 #### Promoting code from alpha to beta
-1. Decide on a proper release version number to be used for the new prerelease
+1. Look at the [alpha-environment dashboard](https://alpha-curation.alliancegenome.org/#/)
+    and ensure that for each Entity and Onotology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
+    investigate what caused this and fix the issue first before continuing the deployment.  
+    It may be that the scheduled mass reindexing failed (run every Sunday 00:00 UTC), in which case a successful mass-reindexing must first
+    be performed on the alpha environment, before continuing the deployment to the beta environment.
+2. Decide on a proper release version number to be used for the new prerelease
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for beta (pre)releases that means either
    *  Incrementing the release candidate version on the latest release candidate
@@ -348,17 +353,17 @@ As the code goes through the different stages, it becomes more and more stable a
    *  Incrementing the `MAJOR` or `MINOR` release numbers as appropriate when
       the previous release candidate was (or will be) promoted to a full release
       and reset to rc1 for the next release.
-2. Create a release/v`x`.`y`.`z`-rc`a` branch from alpha or use a specific commit
+3. Create a release/v`x`.`y`.`z`-rc`a` branch from alpha or use a specific commit
    from history to promote if alpha moved on since that stable state to be promoted.
    ```bash
    git pull
    git checkout -b release/vx.y.z-rca alpha
    git push origin release/vx.y.z-rca
    ```
-3. Create a pull request to merge this release branch in beta
-4. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
+4. Create a pull request to merge this release branch in beta
+5. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the beta environment.
-5. After prerelease creation and deployment, merge the beta branch back to alpha,
+6. After prerelease creation and deployment, merge the beta branch back to alpha,
    to make the (pre)release tag reachable from alpha (and report the correct version number through `git describe --tags`).
 
    To do so, create a dedicated merging branch and open a PR
@@ -378,27 +383,32 @@ As the code goes through the different stages, it becomes more and more stable a
    merged into the beta (release-candidate) branch.
 
 #### Promoting code from beta to production
-1. Decide on a proper release version number to be used for the new release
+1. Look at the [beta-environment dashboard](https://beta-curation.alliancegenome.org/#/)
+    and ensure that for each Entity and Onotology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
+    investigate what caused this and fix the issue first before continuing the deployment.  
+    It may be that the scheduled mass reindexing failed (run every Sunday 00:00 UTC), in which case a successful mass-reindexing must first
+    be performed on the beta environment, before continuing the deployment to the beta environment.
+2. Decide on a proper release version number to be used for the new release
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for production (full) releases that means removing the release-candidate extension
    from the release number used by the latest release candidate, which will be promoted to a full release here.
-2. Create a release/v`x`.`y`.`z` branch from beta or use a specific commit
+3. Create a release/v`x`.`y`.`z` branch from beta or use a specific commit
    from history to promote if a new release canidate for the next release was already added to beta.
    ```bash
    git pull
    git checkout -b release/vx.y.z beta
    ```
-3. Update the [RELEASE-NOTES.md](RELEASE-NOTES.md) file to contain
+4. Update the [RELEASE-NOTES.md](RELEASE-NOTES.md) file to contain
    a section describing all (noteworthy) changes made since the last full release,
    and include JIRA ticket and/or PR references where possible. Commit after update.
-4. Push the release branch to github
+5. Push the release branch to github
    ```bash
    git push origin release/vx.y.z
    ```
-5. Create a pull request to merge this release branch in production
-6. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
+6. Create a pull request to merge this release branch in production
+7. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the production environment.
-7. After release creation and deployment, merge the production branch back to alpha,
+8. After release creation and deployment, merge the production branch back to alpha,
    to make the release tag reachable from alpha (and report the correct version number through `git describe --tags`).
 
    To do so, create a dedicated merging branch and open a PR
@@ -432,29 +442,25 @@ the new version of the application can function in a consistent state upon and a
 3. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup
    (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
-   before the code causing it would get deployed to the production environment.
+   before the code causing it would get deployed to the production environment.  
+   To ensure users or loads can not write to the database while it is being reloaded, stop the (beta) application before
+   initiating the DB roll-down and restart it once the DB roll-down completed.
+   ```bash
+   > eb ssh curation-beta -e 'ssh -i $AGR_SSH_PEM_FILE' #Connect to relevant application server
+   > cd /var/app/current
+   > sudo docker-compose stop  #Stop the application
+   #Trigger DB roll-down locally and wait for completion
+   > sudo docker-compose start #(Re)start the application
+   ```
 4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
-5. Check the logs for the environment that you're releaseing too and make sure that the migrations complete successfully.
-6. After the migrations have completed, compare the database schemas of the environments being deployed to and from, and manually ALTER/UPDATE the schema and all corresponding
-   data if needed where schema changes were not automatically propagated correctly upon application launch.  
-   The DB schema can be obtained through the CLI by using pg_dump like so:
-   ```bash
-   pg_dump -s -h $DB_HOST -p $DB_PORT -d $DB_NAME -U $DB_USER | tee curation_DB_schema.sql
-   ```
-7. If the DB schema needed manual patching, restart the application (to allow hibernate to pick up these changes).  
-   This can be achieved by terminating the environment's running EC2 instance or (more quickly)
-   by connecting into the server as admin through ssh, and restarting the docker container:
-   ```bash
-   cd /var/app/current/
-   sudo docker-compose restart
-   ```
-8. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
-   and follow-up through log server to ensure reindexing completed successfully before executing the next.
-9. Trigger all data loads. This must be done by clicking the play putton at the load level first, wait for that action to complete
-   and if no new file (with a new md5sum) got loaded then click the play button at file level for the most recently loaded file,
-   to ensure all data gets reloaded, including any new features that may have been implemented in the release just deployed
-   (new code does not automatically trigger old files to get reloaded).
-10. After completing all above steps successfullly, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
+5. Check the logs for the environment that you're releasing too and ensure that all migrations complete successfully.
+6. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
+   System Endpoints section in the swagger UI) and follow-up through the log server to check for progress and errors.
+7. Once reindexing completed, look at the dashboard page (where you deployed to)
+    and ensure that for each Entity and Onotology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
+    investigate what caused this and fix the issue first before continuing the deployment.
+8. If code to support new ontologies was added, create the respective new data loads through the Data loads page and load the new file.
+9. After completing all above steps successfully, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
 
 
 ### Release versioning

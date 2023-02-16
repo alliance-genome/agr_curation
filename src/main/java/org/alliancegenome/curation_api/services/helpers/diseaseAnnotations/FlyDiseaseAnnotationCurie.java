@@ -28,6 +28,9 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(refCurie);
 		curie.add(StringUtils.join(annotationDTO.getEvidenceCodeCuries(), "::"));
 		curie.add(annotationDTO.getDiseaseRelationName());
+		curie.add(annotationDTO.getNegated().toString());
+		curie.add(annotationDTO.getDiseaseGeneticModifierRelationName());
+		curie.add(annotationDTO.getDiseaseGeneticModifierCurie());
 		return curie.getCurie();
 	}
 
@@ -40,12 +43,15 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes()))
 			curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
 		curie.add(annotation.getDiseaseRelation().getName());
+		curie.add(annotation.getNegated().toString());
+		curie.add(annotation.getDiseaseGeneticModifierRelation().getName());
+		curie.add(annotation.getDiseaseGeneticModifier().getCurie());
 		return curie.getCurie();
 	}
 
 	@Override
-	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
-		return super.getCurieID(subject, object, reference, null, null, associationType);
+	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType, String negated, String diseaseGeneticModifierRelation, String diseaseGeneticModifier) {
+		return super.getCurieID(subject, object, reference, null, null, associationType, negated, diseaseGeneticModifierRelation, diseaseGeneticModifier);
 	}
 
 }
