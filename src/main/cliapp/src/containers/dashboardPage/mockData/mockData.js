@@ -88,7 +88,8 @@ export const data = {
     }
 }
 
-export const mockSettingsData = {
+export const settings = {
+    "filters": {}
 }
 
 
