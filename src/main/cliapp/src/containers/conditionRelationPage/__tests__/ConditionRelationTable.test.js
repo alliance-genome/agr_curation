@@ -9,7 +9,6 @@ import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSe
 import { data, mockSettingsData } from "../mockData/mockData";
 import 'core-js/features/structured-clone';
 
-
 describe("<ConditionRelationPage />", () => {
 	beforeEach(() => {
 		setLocalStorage('ExperimentsTableSettings', mockSettingsData);
