@@ -7,6 +7,8 @@ import { ConditionRelationPage } from "../index";
 import { setLocalStorage } from "../../../tools/jest/setupTests";
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
 import { data, mockSettingsData } from "../mockData/mockData";
+import 'core-js/features/structured-clone';
+
 
 describe("<ConditionRelationPage />", () => {
 	beforeEach(() => {

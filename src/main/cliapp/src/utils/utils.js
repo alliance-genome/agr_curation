@@ -311,3 +311,50 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 		}
 	})
 }
+
+export const getInvalidFilterFields = (localStorageFilters, tableFieldsMap) => {
+	const invalidFields = [];
+
+	if (!localStorageFilters || Object.keys(localStorageFilters).length === 0) return invalidFields;
+	
+	for (let filterName in localStorageFilters) {
+		let correctFields = tableFieldsMap[filterName].sort();
+		let localStorageFields = Object.keys(localStorageFilters[filterName]).sort();
+
+		if(JSON.stringify(correctFields) !== JSON.stringify(localStorageFields)) invalidFields.push(filterName);
+	}
+
+	return invalidFields;
+}
+
+export const deleteInvalidFilters = (invalidFields, oldFilters) => {
+	const updatedFilters = global.structuredClone(oldFilters);
+
+	invalidFields.forEach(field => {
+		delete updatedFilters[field];
+	});
+
+	return updatedFilters;
+};
+
+export const getInvalidSortFields = (localStorageSorts, tableSortFieldsArray) => {
+	const invalidFields = [];
+
+	if (!localStorageSorts || localStorageSorts.length === 0) return invalidFields;
+
+	localStorageSorts.forEach((sort) => {
+		if (!tableSortFieldsArray.includes(sort.field)) invalidFields.push(sort.field);
+	})
+
+	return invalidFields;
+}
+
+export const deleteInvalidSorts = (invalidFields, oldSorts) => {
+	const updatedSorts = global.structuredClone(oldSorts);
+
+	invalidFields.forEach(field => {
+		updatedSorts.splice(updatedSorts.findIndex((sort) => sort.field === field), 1);
+	});
+
+	return updatedSorts;
+}
