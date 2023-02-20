@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
@@ -87,14 +88,14 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 			AffectedGenomicModel agm = agmDAO.find(curie);
 			if (agm != null) {
 				List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
-				Boolean anyPublicReferencingDAs = false;
+				Boolean anyReferencingDAs = false;
 				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM");
-					if (daMadePublic)
-						anyPublicReferencingDAs = true;
+					DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM", true);
+					if (referencingDA != null)
+						anyReferencingDAs = true;
 				}
 
-				if (anyPublicReferencingDAs) {
+				if (anyReferencingDAs) {
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
 					agm.setDateUpdated(OffsetDateTime.now());
 					agm.setObsolete(true);

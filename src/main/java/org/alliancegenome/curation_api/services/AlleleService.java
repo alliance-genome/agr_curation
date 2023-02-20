@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
@@ -84,14 +85,14 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 			Allele allele = alleleDAO.find(curie);
 			if (allele != null) {
 				List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
-				Boolean anyPublicReferencingDAs = false;
+				Boolean anyReferencingDAs = false;
 				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "allele");
-					if (daMadePublic)
-						anyPublicReferencingDAs = true;
+					DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "allele", true);
+					if (referencingDA != null)
+						anyReferencingDAs = true;
 				}
 				
-				if (anyPublicReferencingDAs) {
+				if (anyReferencingDAs) {
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " allele bulk upload"));
 					allele.setDateUpdated(OffsetDateTime.now());
 					allele.setObsolete(true);

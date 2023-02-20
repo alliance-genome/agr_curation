@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -91,14 +92,14 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 			Gene gene = geneDAO.find(curie);
 			if (gene != null) {
 				List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
-				Boolean anyPublicReferencingDAs = false;
+				Boolean anyReferencingDAs = false;
 				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "gene");
-					if (daMadePublic)
-						anyPublicReferencingDAs = true;
+					DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "gene", true);
+					if (referencingDA != null)
+						anyReferencingDAs = true;
 				}
 
-				if (anyPublicReferencingDAs) {
+				if (anyReferencingDAs) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
 					gene.setDateUpdated(OffsetDateTime.now());
 					gene.setObsolete(true);

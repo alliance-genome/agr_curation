@@ -51,20 +51,20 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
 
 		for (Long id : idsToRemove) {
-			deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation");
+			deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation", true);
 		}
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation");
+		deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation", false);
 		ObjectResponse<DiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	@Transactional
-	public Boolean deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadType) {
+	public DiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadType, Boolean deprecateAnnotation) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 
 		if (annotation == null) {
@@ -75,11 +75,10 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				throw new ApiErrorException(response);
 			}
 			log.error(errorMessage);
-			return false;
+			return null;
 		}
 
-		Boolean madePublic = true; // TODO: check boolean field once in place
-		if (madePublic) {
+		if (deprecateAnnotation) {
 			annotation.setObsolete(true);
 			if (authenticatedPerson.getOktaEmail() != null) {
 				annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
@@ -88,7 +87,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataProviderAbbreviation + loadType + " bulk upload"));
 			}
 			annotation.setDateUpdated(OffsetDateTime.now());
-			diseaseAnnotationDAO.persist(annotation);
+			return diseaseAnnotationDAO.persist(annotation);
 		} else {
 			List<Note> notesToDelete = annotation.getRelatedNotes();
 			diseaseAnnotationDAO.remove(id);
@@ -97,7 +96,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
 		}
 
-		return madePublic;
+		return null;
 	}
 
 }
