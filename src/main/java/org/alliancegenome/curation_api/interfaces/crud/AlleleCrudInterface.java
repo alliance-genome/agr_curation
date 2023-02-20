@@ -45,14 +45,6 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	public ObjectResponse<Allele> get(@PathParam("curie") String curie);
 
 	@Override
-	@GET
-	@Path("/reindex")
-	@Tag(name = "Reindex Endpoints")
-	public void reindex(@DefaultValue("50") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects, @DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
-		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo, @DefaultValue("1") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
-		@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout, @DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel);
-
-	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.AlleleView.class)

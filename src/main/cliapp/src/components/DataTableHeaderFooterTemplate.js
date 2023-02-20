@@ -1,9 +1,9 @@
 import React from "react";
 import { Card } from 'primereact/card';
 import { Splitter, SplitterPanel } from "primereact/splitter";
-import { Button } from 'primereact/button';
+import { ConfirmButton } from "./ConfirmButton";
 
-export function DataTableHeaderFooterTemplate({title, multiselectComponent, buttons, tableStateConfirm, isEnabled, modReset, modResetConfirm}){
+export function DataTableHeaderFooterTemplate({title, multiselectComponent, buttons, resetTableState, isEnabled, modReset, resetToModDefault}){
 
 		return (
 						<Card>
@@ -14,9 +14,21 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 										<SplitterPanel size={60} style={{textAlign: 'right'}}>
 											{multiselectComponent}&nbsp;
 											{buttons}&nbsp;
-											<Button disabled={!isEnabled} onClick={tableStateConfirm}>Reset Table</Button>&nbsp;
-											{modReset && 
-												<Button disabled={!isEnabled} onClick={modResetConfirm}>Set MOD Defaults</Button>
+											<ConfirmButton
+												buttonText="Reset Table"
+												headerText={`${title} State Reset`}
+												messageText= {`Are you sure? This will reset the local state of the ${title}.`}
+												acceptHandler={resetTableState}
+												disabled={!isEnabled}
+											/>
+											{modReset &&
+												<ConfirmButton
+													buttonText="Set MOD Defaults"
+													headerText={`${title} MOD Default Reset`}
+													messageText= {`Are you sure? This will reset the local state of the ${title} to the MOD default settings.`}
+													acceptHandler={resetToModDefault}
+													disabled={!isEnabled}
+												/>
 											}
 										</SplitterPanel>
 								</Splitter>

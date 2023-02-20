@@ -19,6 +19,7 @@ export function InputTextEditor({ rowProps, fieldName }) {
 	return (
 		<>
 			<InputText
+				aria-label={fieldName}
 				value={fieldValue}
 				onChange={(e) => onChange(e)}
 				style={{ width: '100%' }}

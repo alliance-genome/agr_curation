@@ -2,6 +2,19 @@
 
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.16.0
+ * New features
+    * Prevent loading of biological entries from non-canonical species (SCRUM-2477)
+    * Added Load Resource Descriptors file as load (SCRUM-2459)
+    * Updated subject search ordering (#879)
+ * Data updates
+    * Updated FlyBase DiseaseAnnotation uniqueId fields to better capture unique entities (SCRUM-2503)
+ * Maintenance
+    * Tackle gh-actions deprecation warnings #881
+    * enabled scheduled reindexing (SCRUM-2466)
+ * Bugfixes:
+    * SCRUM-2493 Filters issue on click og Rest to MOD button solved by @kthorat-prog in #883
+
 ## v0.14.0
  * New features
     * Added confirmation popup to data loads widget upload file UI functionality

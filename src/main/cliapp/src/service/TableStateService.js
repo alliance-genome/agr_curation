@@ -19,7 +19,6 @@ const modTableSettings = {
 					"dataProvider.sourceOrganization.shortName": { queryString: "RGD", tokenOperator: "AND" }
 				}
 			},
-			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings",
 		}
@@ -43,7 +42,6 @@ const modTableSettings = {
 					"dataProvider.sourceOrganization.shortName": { queryString: "SGD", tokenOperator: "AND" }
 				}
 			},
-			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
@@ -63,7 +61,6 @@ const modTableSettings = {
 							"dataProvider.sourceOrganization.shortName": { queryString: "WB", tokenOperator: "AND" }
 					}
 			},
-			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			multiSortMeta: [
 					{ field: "modEntityId", order: -1 }
@@ -100,7 +97,6 @@ const modTableSettings = {
 							"dataProvider.sourceOrganization.shortName": { queryString: "FB", tokenOperator: "AND" }
 					}
 			},
-			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
@@ -124,7 +120,6 @@ const modTableSettings = {
 							"dataProvider.sourceOrganization.shortName": { queryString: "ZFIN", tokenOperator: "AND" }
 					}
 			},
-			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
@@ -151,7 +146,6 @@ const modTableSettings = {
 							obsolete: { queryString: "false", tokenOperator: "OR" }
 					}
 			},
-			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
@@ -169,7 +163,6 @@ const modTableSettings = {
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By", "Date Created", "Internal", "Obsolete"
 			],
 			filters: {},
-			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
@@ -190,7 +183,6 @@ export function getDefaultTableState(table, defaultColumnNames, defaultVisibleCo
 			multiSortMeta: [],
 			selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
 			filters: {},
-			isFirst: false,
 			tableKeyName: table,
 			tableSettingsKeyName: `${table}TableSettings`
 	}

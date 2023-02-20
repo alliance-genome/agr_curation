@@ -371,8 +371,10 @@ As the code goes through the different stages, it becomes more and more stable a
 
    ```bash
    git checkout beta
-   git pull
+   git pull #Ensure the beta branch is up-to-date before creating the new PRmerge branch
    git checkout -b PRmerge/beta
+   git fetch origin alpha:alpha #Ensure to pull the latest alpha changes to your local alpha branch before merging
+   git merge alpha #Resolve merge-conflicts should any arise
    git push origin PRmerge/beta
    ```
    Now create a PR in github to merge the `PRmerge/beta` branch into the `alpha` branch.
@@ -502,10 +504,10 @@ To create a new (pre-)release and deploy to beta or production, do the following
    ```
 
 5. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
-   *  In the "Choose a tag" selection box, select the git tag you created in the previous step
-   *  Give the release a proper title ("AGR Curation `release version` Release" for full releases, "Prerelease `release version`" for prereleases)
+   * In the "Choose a tag" selection box, select the git tag you created in the previous step
+   * Give the release a proper title including the sofware name and the release number ("AGR Curation `release tag-name`")
    * let GitHub autogenerate a summary of all changes made in this release by clicking the "Auto-generate rease notes" button.
-   *  **Ensure** the "This is a pre-release" checkbox at the bottom is checked appropriately.
+   *  **Ensure** the "Set as a pre-release" checkbox at the bottom is checked appropriately.
       *  **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
       *  Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment.
 

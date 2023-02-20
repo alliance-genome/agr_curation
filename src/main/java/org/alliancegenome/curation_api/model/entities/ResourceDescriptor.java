@@ -28,7 +28,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -59,6 +58,7 @@ public class ResourceDescriptor extends GeneratedAuditedObject {
 	@EqualsAndHashCode.Include
 	private String name;
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "synoynyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JoinTable(indexes = @Index(columnList = "resourcedescriptor_id"))

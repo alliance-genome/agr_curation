@@ -12,7 +12,7 @@ import { FilterComponent } from './FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
 
-import {filterColumns, orderColumns} from '../../utils/utils';
+import { filterColumns, orderColumns } from '../../utils/utils';
 import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
@@ -28,12 +28,12 @@ export const GenericDataTable = (props) => {
 		dataKey = 'id', 
 		deprecateOption = false,
 		modReset = false 
+
 	} = props;
 
 	const {
 		setSelectedColumnNames,
 		tableStateConfirm,
-		modResetConfirm,
 		onFilter,
 		setColumnList,
 		columnWidths,
@@ -56,7 +56,9 @@ export const GenericDataTable = (props) => {
 		defaultColumnNames,
 		exceptionDialog,
 		setExceptionDialog,
-		exceptionMessage
+		resetToModDefault,
+		resetTableState,
+		exceptionMessage,
 	} = useGenericDataTable(props);
 
 	const toast_topright = useRef(null);
@@ -86,7 +88,8 @@ export const GenericDataTable = (props) => {
 				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
 				buttons = {headerButtons ? headerButtons() : undefined}
 				tableStateConfirm = {tableStateConfirm}
-				modResetConfirm = {modResetConfirm}
+				resetToModDefault = {resetToModDefault}
+				resetTableState = {resetTableState}
 				isEnabled = {isEnabled}
 				modReset={modReset}
 		/>
@@ -240,7 +243,7 @@ export const GenericDataTable = (props) => {
 					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel}
 					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange}
 					sortMode="multiple" removableSort={true} onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-					onColReorder={colReorderHandler} reorderableColumns= {true}
+					onColReorder={colReorderHandler} reorderableColumns= {true} 
 					resizableColumns= {true} columnResizeMode="expand" showGridlines= {true} onColumnResizeEnd={handleColumnResizeEnd}
 					paginator= {true} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

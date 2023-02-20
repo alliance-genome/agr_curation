@@ -2,10 +2,9 @@ import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
-import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog, validateBioEntityFields } from '../../utils/utils';
-import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
+import { trimWhitespace, returnSorted, reorderArray, validateBioEntityFields, setDefaultColumnOrder } from '../../utils/utils';
 import { useGetUserSettings } from "../../service/useGetUserSettings";
-import {getDefaultTableState, getModTableState} from '../../service/TableStateService';
+import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
 
 
 export const useGenericDataTable = ({
@@ -14,8 +13,7 @@ export const useGenericDataTable = ({
 	columns,
 	defaultColumnNames,
 	initialTableState,
-	aggregationFields,
-	curieFields,
+ 	curieFields,
 	idFields,
 	sortMapping,
 	nonNullFieldsTable,
@@ -61,23 +59,25 @@ export const useGenericDataTable = ({
 	const { toast_topleft, toast_topright } = toasts;
 	const [exceptionDialog, setExceptionDialog] = useState(false);
 	const [exceptionMessage,setExceptionMessage] = useState("");
-
-	useQuery([tableState.tableKeyName, tableState],
-		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), {
-		onSuccess: (data) => {
-			setIsEnabled(true);
-			setEntities(data.results);
-			setTotalRecords(data.totalResults);
-		},
-		onError: (error) => {
-			toast_topleft.current.show([
-				{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
-			])
-		},
-		keepPreviousData: true,
-		refetchOnWindowFocus: false,
-		enabled: !!(tableState)
-	});
+	
+	useQuery([tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
+		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), 
+		{
+			onSuccess: (data) => {
+				setIsEnabled(true);
+				setEntities(data.results);
+				setTotalRecords(data.totalResults);
+			},
+			onError: (error) => {
+				toast_topleft.current.show([
+					{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+				])
+			},
+			keepPreviousData: true,
+			refetchOnWindowFocus: false,
+			enabled: !!(tableState.rows)
+		}
+	);
 
 	useEffect(() => {
 		if (
@@ -95,15 +95,6 @@ export const useGenericDataTable = ({
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [newEntity])
-
-	const setIsFirst = (value) => {
-		let _tableState = {
-			...tableState,
-			isFirst: value,
-		};
-
-		setTableState(_tableState);
-	}
 
 	const onLazyLoad = (event) => {
 		let _tableState = {
@@ -134,6 +125,7 @@ export const useGenericDataTable = ({
 	};
 
 	const setSelectedColumnNames = (newValue) => {
+
 		let _tableState = {
 			...tableState,
 			selectedColumnNames: newValue
@@ -141,7 +133,10 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled);
+	useEffect(() => {
+		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled, tableState);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
@@ -363,13 +358,9 @@ export const useGenericDataTable = ({
 
 	const resetToModDefault = () => {
 		const initialTableState = getModTableState(tableState.tableKeyName);
-		let _tableState = {
-			...initialTableState,
-			isFirst: false,
-		};
 
-		setDefaultColumnOrder(columns, dataTable, initialTableState.selectedColumnNames, deletionEnabled);
-		setTableState(_tableState);
+		setDefaultColumnOrder(columns, dataTable, initialTableState.selectedColumnNames, deletionEnabled, initialTableState);
+		setTableState(initialTableState);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
@@ -377,18 +368,14 @@ export const useGenericDataTable = ({
 		});
 
 		setColumnWidths(_columnWidths);
-		dataTable.current.el.children[1].scrollLeft = 0;
+		dataTable.current.resetScroll();
 	}
 
 	const resetTableState = () => {
 		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames);
-		let _tableState = {
-			...defaultTableState,
-			isFirst: false,
-		};
-
-		setTableState(_tableState);
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled);
+		
+		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled, defaultTableState);
+		setTableState(defaultTableState);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
@@ -396,23 +383,7 @@ export const useGenericDataTable = ({
 		});
 
 		setColumnWidths(_columnWidths);
-		dataTable.current.el.children[1].scrollLeft = 0;
-	}
-
-	const tableStateConfirm = () => {
-		genericConfirmDialog({
-			header: `${tableName} Table State Reset`,
-			message: `Are you sure? This will reset the local state of the ${tableName} table.`,
-			accept: resetTableState
-		});
-	}
-
-	const modResetConfirm = () => {
-		genericConfirmDialog({
-			header: `${tableName} Table MOD Default Reset`,
-			message: `Are you sure? This will reset the local state of the ${tableName} table to the MOD default settings.`,
-			accept: resetToModDefault
-		});
+		dataTable.current.resetScroll();
 	}
 
 	const colReorderHandler = (event) => {
@@ -437,8 +408,6 @@ export const useGenericDataTable = ({
 		setSelectedColumnNames,
 		defaultColumnNames,
 		tableState,
-		tableStateConfirm,
-		modResetConfirm,
 		onFilter,
 		setColumnList,
 		columnWidths,
@@ -458,7 +427,9 @@ export const useGenericDataTable = ({
 		handleDeletion,
 		handleDeprecation,
 		exceptionDialog,
+		resetToModDefault,
+		resetTableState,
 		setExceptionDialog,
-		exceptionMessage
+		exceptionMessage,
 	};
 };
