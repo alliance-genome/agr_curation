@@ -1,7 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -15,6 +19,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
@@ -22,6 +27,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDTOValidator;
@@ -73,17 +79,11 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
 		gene = geResponse.getEntity();
 
-		if (gene.getGeneSymbol() != null) {
-			GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
-			symbol.setSingleGene(null);
-			geneSymbolDAO.remove(symbol.getId());
-		}
-
-		GeneSymbolSlotAnnotation symbol = null;
+		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		if (dto.getGeneSymbolDto() == null) {
 			geneResponse.addErrorMessage("gene_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<GeneSymbolSlotAnnotation> symbolResponse = geneSymbolDtoValidator.validateGeneSymbolSlotAnnotationDTO(dto.getGeneSymbolDto());
+			ObjectResponse<GeneSymbolSlotAnnotation> symbolResponse = geneSymbolDtoValidator.validateGeneSymbolSlotAnnotationDTO(symbol, dto.getGeneSymbolDto());
 			if (symbolResponse.hasErrors()) {
 				geneResponse.addErrorMessage("gene_symbol_dto", symbolResponse.errorMessagesString());
 			} else {
@@ -91,56 +91,69 @@ public class GeneDTOValidator extends BaseDTOValidator {
 			}
 		}
 
-		if (gene.getGeneFullName() != null) {
-			GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
+		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
+		if (fullName != null && dto.getGeneFullNameDto() == null) {
 			fullName.setSingleGene(null);
 			geneFullNameDAO.remove(fullName.getId());
 		}
 
-		GeneFullNameSlotAnnotation fullName = null;
 		if (dto.getGeneFullNameDto() != null) {
-			ObjectResponse<GeneFullNameSlotAnnotation> fullNameResponse = geneFullNameDtoValidator.validateGeneFullNameSlotAnnotationDTO(dto.getGeneFullNameDto());
+			ObjectResponse<GeneFullNameSlotAnnotation> fullNameResponse = geneFullNameDtoValidator.validateGeneFullNameSlotAnnotationDTO(fullName, dto.getGeneFullNameDto());
 			if (fullNameResponse.hasErrors()) {
 				geneResponse.addErrorMessage("gene_full_name_dto", fullNameResponse.errorMessagesString());
 			} else {
 				fullName = fullNameResponse.getEntity();
 			}
+		} else {
+			fullName = null;
 		}
 
-		if (gene.getGeneSystematicName() != null) {
-			GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
+		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
+		if (systematicName != null && dto.getGeneSystematicNameDto() == null) {
 			systematicName.setSingleGene(null);
 			geneSystematicNameDAO.remove(systematicName.getId());
 		}
 
-		GeneSystematicNameSlotAnnotation systematicName = null;
 		if (dto.getGeneSystematicNameDto() != null) {
-			ObjectResponse<GeneSystematicNameSlotAnnotation> systematicNameResponse = geneSystematicNameDtoValidator.validateGeneSystematicNameSlotAnnotationDTO(dto.getGeneSystematicNameDto());
+			ObjectResponse<GeneSystematicNameSlotAnnotation> systematicNameResponse = geneSystematicNameDtoValidator.validateGeneSystematicNameSlotAnnotationDTO(systematicName, dto.getGeneSystematicNameDto());
 			if (systematicNameResponse.hasErrors()) {
-				geneResponse.addErrorMessage("gene_full_name_dto", systematicNameResponse.errorMessagesString());
+				geneResponse.addErrorMessage("gene_systematic_name_dto", systematicNameResponse.errorMessagesString());
 			} else {
 				systematicName = systematicNameResponse.getEntity();
 			}
+		} else {
+			systematicName = null;
 		}
 
+		Map<String, GeneSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
-			gene.getGeneSynonyms().forEach(gs -> {
-				gs.setSingleGene(null);
-				geneSynonymDAO.remove(gs.getId());
-			});
+			for (GeneSynonymSlotAnnotation existingSynonym : gene.getGeneSynonyms()) {
+				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+			}
 		}
-
+		
 		List<GeneSynonymSlotAnnotation> synonyms = new ArrayList<>();
+		List<String> synonymIdentities = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getGeneSynonymDtos())) {
 			for (NameSlotAnnotationDTO synonymDTO : dto.getGeneSynonymDtos()) {
-				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(synonymDTO);
+				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(SlotAnnotationIdentityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
 				if (synonymResponse.hasErrors()) {
 					geneResponse.addErrorMessage("gene_synonym_dtos", synonymResponse.errorMessagesString());
 				} else {
 					GeneSynonymSlotAnnotation synonym = synonymResponse.getEntity();
 					synonyms.add(synonym);
+					synonymIdentities.add(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(synonym));
 				}
 			}
+		}
+		
+		if (!existingSynonyms.isEmpty()) {
+			existingSynonyms.forEach((k,v) -> {
+				if (!synonymIdentities.contains(k)) {
+					v.setSingleGene(null);
+					geneSynonymDAO.remove(v.getId());
+				}
+			});
 		}
 
 		if (geneResponse.hasErrors()) {

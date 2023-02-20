@@ -23,10 +23,11 @@ public class AlleleInheritanceModeSlotAnnotationDTOValidator extends SlotAnnotat
 	@Inject
 	PhenotypeTermDAO phenotypeTermDAO;
 
-	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotationDTO(AlleleInheritanceModeSlotAnnotationDTO dto) {
+	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotationDTO(AlleleInheritanceModeSlotAnnotation annotation, AlleleInheritanceModeSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleInheritanceModeSlotAnnotation> aisaResponse = new ObjectResponse<AlleleInheritanceModeSlotAnnotation>();
 
-		AlleleInheritanceModeSlotAnnotation annotation = new AlleleInheritanceModeSlotAnnotation();
+		if (annotation == null)
+			annotation = new AlleleInheritanceModeSlotAnnotation();
 
 		VocabularyTerm inheritanceMode = null;
 		if (StringUtils.isBlank(dto.getInheritanceModeName())) {

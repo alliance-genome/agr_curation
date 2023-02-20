@@ -12,9 +12,15 @@ export const useGetUserSettings = (key, defaultValue) => {
 
 	useQuery(`${key}`, () => personSettingsService.getUserSettings(key), {
 		onSuccess: (data) => {
-			const returnData = Object.keys(data).length === 0 ? defaultValue : data.entity.settingsMap;
-			localStorage.setItem(key, JSON.stringify(returnData));
-			setSettings(returnData);
+			let userSettings = defaultValue;
+			if(Object.keys(data).length === 0) {
+				console.log("New Key being Saved: " + key);
+				personSettingsService.saveUserSettings(key, userSettings);
+			} else {
+				userSettings = data.entity.settingsMap;
+			}
+			setSettings(userSettings);
+			localStorage.setItem(key, JSON.stringify(userSettings));
 		},
 		refetchOnWindowFocus: false,
 	});

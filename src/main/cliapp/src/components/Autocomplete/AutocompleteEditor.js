@@ -24,12 +24,12 @@ export const AutocompleteEditor = (
 	const op = useRef(null);
 
 	const itemTemplate = (item) => {
-		if(valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, query);
+		if (valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, query);
 
 		return (
 			<div>
 				<div onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteHoverItem)}
-					dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
+					dangerouslySetInnerHTML={{ __html: item.name + ' (' + item.curie + ') ' }} />
 			</div>
 		);
 	};
@@ -37,8 +37,9 @@ export const AutocompleteEditor = (
 	return (
 		<div>
 			<AutoComplete
+				aria-label={fieldName}
 				name={name}
-				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
+				panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
 				field={subField}
 				value={fieldValue}
 				disabled={disabled}
@@ -49,7 +50,7 @@ export const AutocompleteEditor = (
 				onChange={(e) => onValueChangeHandler(e, setFieldValue, rowProps, fieldName)}
 				className={classNames}
 			/>
-			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName}/>
+			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName} />
 		</div>
-	)
-}
+	);
+};

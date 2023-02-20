@@ -36,6 +36,8 @@ public class SlotAnnotationDTOValidator extends BaseDTOValidator {
 				evidence.add(evidenceEntity);
 			}
 			annotation.setEvidence(evidence);
+		} else {
+			annotation.setEvidence(null);
 		}
 
 		saResponse.setEntity(annotation);

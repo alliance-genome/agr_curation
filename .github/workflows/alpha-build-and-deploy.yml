@@ -47,8 +47,8 @@ jobs:
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
-          distribution: 'adopt'
+          java-version: '17'
+          distribution: 'temurin'
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
@@ -107,7 +107,7 @@ jobs:
     - name: Generate deployment package
       run: zip -r ${{ env.tagname }}.zip docker-compose.yml .ebextensions/
     - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v20
+      uses: einaregilsson/beanstalk-deploy@v21
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -118,7 +118,7 @@ jobs:
         use_existing_version_if_available: true
         region: us-east-1
     - name: Set COMMIT_MESSAGE
-      run: echo "COMMIT_MESSAGE=${{ github.event.head_commit.message }}" | tr '\n' ' ' >> $GITHUB_ENV
+      run: echo "COMMIT_MESSAGE=$(git show -s --format=%B ${{github.event.pull_request.head.sha}})" >> $GITHUB_ENV
     - name: Slack Notification
       uses: tokorom/action-slack-incoming-webhook@main
       env:

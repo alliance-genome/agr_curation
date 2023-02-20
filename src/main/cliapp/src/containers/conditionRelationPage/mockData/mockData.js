@@ -26,28 +26,28 @@ export const data = {
 							"obsolete": false,
 							"dbDateCreated": "2022-08-04T19:32:13.6516Z",
 							"dbDateUpdated": "2022-08-04T19:32:13.651602Z",
-							"curie": "DOI:10.1371/journal.pgen.1006959"
+							"referencedCurie": "DOI:10.1371/journal.pgen.1006959"
 						},
 						{
 							"internal": false,
 							"obsolete": false,
 							"dbDateCreated": "2022-08-04T19:32:13.652068Z",
 							"dbDateUpdated": "2022-08-04T19:32:13.652069Z",
-							"curie": "PMCID:PMC5570503"
+							"referencedCurie": "PMCID:PMC5570503"
 						},
 						{
 							"internal": false,
 							"obsolete": false,
 							"dbDateCreated": "2022-08-04T19:32:13.652335Z",
 							"dbDateUpdated": "2022-08-04T19:32:13.652336Z",
-							"curie": "PMID:28806732"
+							"referencedCurie": "PMID:28806732"
 						},
 						{
 							"internal": false,
 							"obsolete": false,
 							"dbDateCreated": "2022-08-04T19:32:13.652721Z",
 							"dbDateUpdated": "2022-08-04T19:32:13.652722Z",
-							"curie": "ZFIN:ZDB-PUB-170815-1"
+							"referencedCurie": "ZFIN:ZDB-PUB-170815-1"
 						}
 					]
 				},
@@ -78,35 +78,12 @@ export const data = {
 		totalResults: 1736
 	}
 export const mockSettingsData = {
-	"entity": {
-		"id": 14358116,
-		"settingsKey": "ExperimentalConditionsTableSettings",
-		"settingsMap": {
-			"page": 0,
-			"rows": 10,
-			"first": 0,
-			"isFirst": false,
-			"tableKeyName": "ExperimentalConditions",
-			"selectedColumnNames": [
-				"Unique ID",
-				"Summary",
-				"Class",
-				"Condition Term",
-				"Gene Ontology",
-				"Chemical",
-				"Anatomy",
-				"Condition Taxon",
-				"Quantity",
-				"Free Text",
-				"Internal"
-			],
-			"tableSettingsKeyName": "ExperimentalConditionsTableSettings",
-			"multiSortMeta": [
-				{
-					"field": "conditionClass.name",
-					"order": 1
-				}
-			]
-		}
-	}
-}
+	"page": 0,
+	"first": 0,
+	"rows": 50,
+	"multiSortMeta": [],
+	"selectedColumnNames": ["Handle", "Reference", "Relation", "Experimental Conditions"],
+	"filters": {},
+	"tableKeyName": "Experiments",
+	"tableSettingsKeyName": "ExperimentsTableSettings"
+};

@@ -203,7 +203,7 @@ export const AllelesTable = () => {
 	};
 
 	const taxonSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
 		const endpoint = "ncbitaxonterm";
 		const filterName = "taxonFilter";
 		setQuery(event.query);
@@ -621,7 +621,7 @@ export const AllelesTable = () => {
 			header: "References",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "referencesFilter", fields: ["references.curie", "references.crossReferences.curie"]},
+			filterElement: {type: "input", filterName: "referencesFilter", fields: ["references.curie", "references.crossReferences.referencedCurie"]},
 			body: referencesTemplate,
 			editor: (props) => referencesEditor(props)
 		},

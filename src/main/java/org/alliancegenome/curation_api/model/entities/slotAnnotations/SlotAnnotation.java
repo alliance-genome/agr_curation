@@ -43,7 +43,7 @@ public class SlotAnnotation extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = { @Index(name = "slotannotation_informationcontententity_slotannotation_id_index", columnList = "slotannotation_id"),
-		@Index(name = "slotannotation_informationcontententity_evidence_curie", columnList = "evidence_curie"),
+		@Index(name = "slotannotation_informationcontententity_evidence_curie_index", columnList = "evidence_curie"),
 
 	})
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class })

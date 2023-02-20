@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
@@ -24,5 +25,4 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 	protected void init() {
 		setSQLDao(resourceDescriptorPageDAO);
 	}
-
 }
