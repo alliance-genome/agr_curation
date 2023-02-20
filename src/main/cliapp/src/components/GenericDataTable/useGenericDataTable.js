@@ -27,6 +27,7 @@ export const useGenericDataTable = ({
 	newEntity,
 	deletionEnabled,
 	deletionMethod,
+	deprecationMethod,
 }) => {
 
 
@@ -185,7 +186,7 @@ export const useGenericDataTable = ({
 		}
 
 		let updatedRow = global.structuredClone(event.data);//deep copy
-
+		
 		if(tableName === "Disease Annotations"){
 			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors);
 		}
@@ -263,24 +264,21 @@ export const useGenericDataTable = ({
 		});
 	};
 
-	const handleDeletion = async (idToDelete, entityToDelete, deprecation) => {
-		const result = await deletionMethod(entityToDelete)
+	const handleDeletion = async (idToDelete, entityToDelete) => {
+		let result = await deletionMethod(entityToDelete);
 		if (result.isError) {
-			let action = deprecation ? 'deprecate' : 'delete';
 			toast_topright.current.show([
-				{ life: 7000, severity: 'error', summary: 'Could not ' + action + ' ' + endpoint +
+				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
 					' [' + idToDelete + ']', sticky: false }
 			]);
 			let deletionErrorMessage = result?.message ? result.message : null;
 			return deletionErrorMessage;
 		} else {
-			let action = deprecation ? 'Deprecation' : 'Deletion';
 			toast_topright.current.show([
-				{ life: 7000, severity: 'success', summary: action +' successful: ',
-					detail: action + ' of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
+				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
+					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
 			]);
 			let _entities = global.structuredClone(entities);
-
 			if (editingRows[idToDelete]) {
 				let _editingRows = { ...editingRows};
 				delete _editingRows[idToDelete];
@@ -303,6 +301,57 @@ export const useGenericDataTable = ({
 			return null;
 		}
 	}
+	const handleDeprecation = (entityToDeprecate) => {
+		areUiErrors.current = false;
+		let updatedRow = global.structuredClone(entityToDeprecate);//deep copy
+		updatedRow.obsolete = true;
+		
+		let deprecatedIndex = entities.map(function(e) {return e.id;}).indexOf(updatedRow.id);
+
+		mutation.mutate(updatedRow, {
+			onSuccess: (response, variables, context) => {
+				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Deprecated' });
+
+				let _entities = global.structuredClone(entities);
+				_entities[deprecatedIndex] = response.data.entity;
+				setEntities(_entities);
+				const errorMessagesCopy = global.structuredClone(errorMessages);
+				errorMessagesCopy[deprecatedIndex] = {};
+				setErrorMessages({ ...errorMessagesCopy });
+			},
+			onError: (error, variables, context) => {
+				setIsEnabled(false);
+				let errorMessage = "";
+				if(error.response.data.errorMessage !== undefined) {
+					errorMessage = error.response.data.errorMessage;
+					toast_topright.current.show([
+						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
+					]);
+				}
+				else if(error.response.data !== undefined) {
+					setExceptionMessage(error.response.data);
+					setExceptionDialog(true);
+				}
+
+				let _entities = global.structuredClone(entities);
+				
+				const errorMessagesCopy = global.structuredClone(errorMessages);
+				errorMessagesCopy[deprecatedIndex] = {};
+				if(error.response.data.errorMessages !== undefined) {
+					Object.keys(error.response.data.errorMessages).forEach((field) => {
+						let messageObject = {
+							severity: "error",
+							message: error.response.data.errorMessages[field]
+						};
+						errorMessagesCopy[deprecatedIndex][field] = messageObject;
+					});
+					setErrorMessages({...errorMessagesCopy});
+				}
+				setEntities(_entities);
+			},
+		});
+	};
+
 
 	const onRowEditChange = (event) => {
 		//keep the row in edit mode if there are UI validation errors
@@ -407,6 +456,7 @@ export const useGenericDataTable = ({
 		onLazyLoad,
 		columnList,
 		handleDeletion,
+		handleDeprecation,
 		exceptionDialog,
 		setExceptionDialog,
 		exceptionMessage

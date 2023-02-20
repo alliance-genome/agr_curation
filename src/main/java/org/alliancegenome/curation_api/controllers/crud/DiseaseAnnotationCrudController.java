@@ -33,5 +33,4 @@ public class DiseaseAnnotationCrudController extends BaseEntityCrudController<Di
 			return new ObjectResponse<>();
 		}
 	}
-
 }

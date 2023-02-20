@@ -48,5 +48,4 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 	public APIResponse updateAgmDiseaseAnnotations(String dataType, List<AGMDiseaseAnnotationDTO> annotations) {
 		return agmDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
 	}
-
 }

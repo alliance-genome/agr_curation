@@ -6,6 +6,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { MultiSelect } from 'primereact/multiselect';
+import { Checkbox } from 'primereact/checkbox';
 
 import { FilterComponent } from './FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
@@ -25,7 +26,7 @@ export const GenericDataTable = (props) => {
 		headerButtons, 
 		deletionEnabled, 
 		dataKey = 'id', 
-		deprecateIfPublic = false,
+		deprecateOption = false,
 		modReset = false 
 	} = props;
 
@@ -50,6 +51,7 @@ export const GenericDataTable = (props) => {
 		onLazyLoad,
 		columnList,
 		handleDeletion,
+		handleDeprecation,
 		tableState,
 		defaultColumnNames,
 		exceptionDialog,
@@ -64,6 +66,7 @@ export const GenericDataTable = (props) => {
 	const [idToDelete, setIdToDelete] = useState(null);
 	const [entityToDelete, setEntityToDelete] = useState(null);
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
+	const [allowDelete, setAllowDelete] = useState(false);
 
 	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
 		return (<MultiSelect
@@ -148,21 +151,26 @@ export const GenericDataTable = (props) => {
 		let isPublic = true; // TODO: check field in props when populated
 		setIdToDelete(_idToDelete);
 		setEntityToDelete(props);
-		if (deprecateIfPublic && isPublic) {
+		if (deprecateOption && isPublic) {
 			setDeprecateDialog(true);
 		} else {
 			setDeleteDialog(true);
 		}
 	}
 
-	const deleteRow = async (idToDelete, entityToDelete) => {
+	const deleteOrDeprecateRow = async (idToDelete, entityToDelete, deprecateOnly) => {
 		setDeleteDialog(false);
 		setDeprecateDialog(false);
-		let _deletionErrorMessage = await handleDeletion(idToDelete, entityToDelete, deprecateIfPublic);
-		setDeletionErrorMessage(_deletionErrorMessage);
-		if (_deletionErrorMessage !== null) {
-			setErrorDialog(true);
+		if (deprecateOnly) {
+			handleDeprecation(entityToDelete);
+		} else {
+			let _deletionErrorMessage = await handleDeletion(idToDelete, entityToDelete);
+			setDeletionErrorMessage(_deletionErrorMessage);
+			if (_deletionErrorMessage !== null) {
+				setErrorDialog(true);
+			}
 		}
+		setAllowDelete(false);
 	}
 
 	const deleteAction = (props) => {
@@ -174,6 +182,7 @@ export const GenericDataTable = (props) => {
 
 	const hideDeprecateDialog = () => {
 		setDeprecateDialog(false);
+		setAllowDelete(false);
 	} ;
 
 	const hideDeleteDialog = () => {
@@ -192,7 +201,7 @@ export const GenericDataTable = (props) => {
 		return (
 					<React.Fragment>
 							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
-							<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete, false)} />
+							<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteOrDeprecateRow(idToDelete, entityToDelete, false)} />
 					</React.Fragment>
 			);
 	}
@@ -201,7 +210,8 @@ export const GenericDataTable = (props) => {
 		return (
 					<React.Fragment>
 							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeprecateDialog} />
-							<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete, true)} />
+							<Button label="Deprecate" icon="pi pi-check" className="p-button-text" onClick={() => deleteOrDeprecateRow(idToDelete, entityToDelete, true)} />
+							<Button label="Delete" icon="pi pi-check" className="p-button-text" onClick={() => deleteOrDeprecateRow(idToDelete, entityToDelete, false)} disabled={!allowDelete}/>
 					</React.Fragment>
 			);
 	}
@@ -255,10 +265,13 @@ export const GenericDataTable = (props) => {
 					</div>
 				</Dialog>
 
-				<Dialog visible={deprecateDialog} style={{ width: '450px' }} header="Confirm Deprecation" modal footer={deprecateDialogFooter} onHide={hideDeprecateDialog}>
+				<Dialog visible={deprecateDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deprecateDialogFooter} onHide={hideDeprecateDialog}>
 					<div className="confirmation-content">
-						<p><i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />Warning: This object has been made public and cannot be deleted. It will be deprecated instead.</p><br/>
-						<p>Please confirm deprecation or cancel.</p>
+						<p><i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />Warning: You are about to delete this data object from the database.  This cannot be undone.  Please confirm the following information or deprecate instead:</p><br/>
+					</div>
+					<div>
+						<Checkbox onChange={e => setAllowDelete(!allowDelete)} checked={allowDelete}></Checkbox>
+						<label>  This data object has not been made public OR this data object has been made public but fits criteria for deletion from the database</label>
 					</div>
 				</Dialog>
 
