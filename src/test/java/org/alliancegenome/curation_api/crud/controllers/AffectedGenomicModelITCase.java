@@ -372,6 +372,23 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	
 	@Test
 	@Order(15)
+	public void createAGMWithOnlyRequiredFields() {
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		agm.setCurie("AGM:0015");
+		agm.setTaxon(taxon);
+		agm.setSubtype(subtype);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			post("/api/agm").
+			then().
+			statusCode(200);
+	}
+	
+	@Test
+	@Order(16)
 	public void deleteAGM() {
 
 		RestAssured.given().
