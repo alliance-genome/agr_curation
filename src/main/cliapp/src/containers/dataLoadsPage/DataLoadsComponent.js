@@ -376,9 +376,47 @@ export const DataLoadsComponent = () => {
 	};
 
 	const loadTable = (group) => {
+		let lastFileLoaded = new Map();
+		let loadsWithoutFiles = [];
+		group.loads.forEach(load => {
+			let runsStarted = [];
+			if (load.loadFiles) {
+				load.loadFiles.forEach(file => {
+					if (file.bulkloadStatus === "FINISHED" || file.bulkloadStatus === "STOPPED" || file.bulkloadStatus === "FAILED") {
+						if (file.dateLastLoaded) {
+							runsStarted.push(file.dateLastLoaded);
+						} else {
+							if (file.history) {
+								file.history.forEach(history => {
+									runsStarted.push(history.loadStarted);
+								});
+							}
+						}
+					} else {
+						runsStarted.push(new Date().toISOString());
+					}
+				});
+				if (runsStarted.length > 0) {
+					let sortedRunsStarted = runsStarted.sort(([b], [a]) => a.localeCompare(b));
+					lastFileLoaded.set(sortedRunsStarted[0], load);
+				} else {
+					loadsWithoutFiles.push(load);
+				}
+			} else {
+				loadsWithoutFiles.push(load);
+			}
+		});
+		let sortedLoads = [];
+		let sortedLastFileLoaded = new Map(Array.from(lastFileLoaded).sort(([b], [a]) => a.localeCompare(b)));
+		for (const [, value] of sortedLastFileLoaded.entries()) {
+			sortedLoads.push(value);
+		}
+		if (loadsWithoutFiles.length > 0) {
+			loadsWithoutFiles.sort((a, b) => (a.backendBulkLoadType > b.backendBulkLoadType) ? 1 : -1).forEach(lwf => {sortedLoads.push(lwf)});
+		}
 		return (
 			<div className="card">
-				<DataTable key="loadTable" value={group.loads} responsiveLayout="scroll"
+				<DataTable key="loadTable" value={sortedLoads} responsiveLayout="scroll"
 					expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
 					rowExpansionTemplate={fileTable} dataKey="id">
 					<Column expander style={{ width: '3em' }} />
