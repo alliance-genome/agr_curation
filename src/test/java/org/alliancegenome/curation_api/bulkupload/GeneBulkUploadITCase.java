@@ -323,7 +323,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 
 	@Test
 	@Order(9)
-	public void geneBulkUploadUpdateEmptyNonRequiredFieldsLevel() throws Exception {
+	public void geneBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "UE_01_update_empty_non_required_fields.json");
 		
@@ -365,5 +365,18 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSynonyms[0]", not(hasKey("updatedBy"))).
 			body("entity.geneSynonyms[0]", not(hasKey("dateCreated"))).
 			body("entity.geneSynonyms[0]", not(hasKey("dateUpdated")));
+	}
+	
+	@Test
+	@Order(10)
+	public void geneBulkUploadMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MN_01_no_non_required_fields_level_1.json");
+		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MN_02_no_non_required_fields_level_2.json");
+	}
+
+	@Test
+	@Order(11)
+	public void geneBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
+		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "EN_01_empty_non_required_fields.json");
 	}
 }

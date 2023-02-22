@@ -1023,4 +1023,22 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.relatedNotes[0]", not(hasKey("evidence")));
 	}
+	
+	@Test
+	@Order(21)
+	public void diseaseAnnotationBulkUploadMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MN_01_no_non_required_fields_level_1_gene_annotation.json");
+		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "MN_02_no_non_required_fields_level_1_allele_annotation.json");
+		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "MN_03_no_non_required_fields_level_1_agm_annotation.json");
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MN_04_no_non_required_fields_level_2.json");
+	}
+	
+	@Test
+	@Order(22)
+	public void diseaseAnnotationBulkUploadEmptyNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "EN_01_empty_non_required_fields_level_1_gene_annotation.json");
+		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "EN_02_empty_non_required_fields_level_1_allele_annotation.json");
+		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "EN_03_empty_non_required_fields_level_1_agm_annotation.json");
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "EN_04_empty_non_required_fields_level_2.json");
+	}
 }

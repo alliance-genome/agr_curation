@@ -1018,9 +1018,56 @@ public class AlleleITCase extends BaseITCase {
 			body("entity", not(hasKey("alleleSynonyms"))).
 			body("entity", not(hasKey("alleleSecondaryIds")));
 	}
-
+	
 	@Test
 	@Order(20)
+	public void createAlleleWithOnlyRequiredFieldsLevel1() {
+		Allele allele = new Allele();
+		allele.setCurie("ALLELE:0020");
+		allele.setTaxon(taxon);
+		allele.setAlleleSymbol(alleleSymbol);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200);
+	}
+	
+	@Test
+	@Order(21)
+	public void createAlleleWithOnlyRequiredFieldsLevel2() {
+		Allele allele = new Allele();
+		allele.setCurie("ALLELE:0021");
+		allele.setTaxon(taxon);
+
+		AlleleMutationTypeSlotAnnotation minimalAlleleMutationType = createAlleleMutationTypeSlotAnnotation(null, List.of(soTerm));
+		AlleleInheritanceModeSlotAnnotation minimalAlleleInheritanceMode = createAlleleInheritanceModeSlotAnnotation(null, dominantInheritanceMode, null, null);
+		AlleleSymbolSlotAnnotation minimalAlleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
+		AlleleFullNameSlotAnnotation minimalAlleleFullName = createAlleleFullNameSlotAnnotation(null, "Test name", fullNameType, null, null);
+		AlleleSynonymSlotAnnotation minimalAlleleSynonym = createAlleleSynonymSlotAnnotation(null, "Test synonym", systematicNameType, null, null);
+		AlleleSecondaryIdSlotAnnotation minimalAlleleSecondaryId = createAlleleSecondaryIdSlotAnnotation(null, "TEST:Secondary");
+		
+		allele.setAlleleSymbol(minimalAlleleSymbol);
+		allele.setAlleleFullName(minimalAlleleFullName);
+		allele.setAlleleSynonyms(List.of(minimalAlleleSynonym));
+		allele.setAlleleSecondaryIds(List.of(minimalAlleleSecondaryId));
+		allele.setAlleleMutationTypes(List.of(minimalAlleleMutationType));
+		allele.setAlleleInheritanceModes(List.of(minimalAlleleInheritanceMode));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200);
+	}
+
+	@Test
+	@Order(22)
 	public void deleteAllele() {
 
 		RestAssured.given().

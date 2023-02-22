@@ -157,4 +157,16 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}
+	
+	@Test
+	@Order(9)
+	public void agmBulkUploadMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MN_01_no_non_required_fields.json");
+	}
+
+	@Test
+	@Order(10)
+	public void agmBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "EN_01_empty_non_required_fields.json");
+	}
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -20,6 +21,12 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
@@ -107,6 +114,7 @@ public class GeneITCase extends BaseITCase {
 		geneSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), "GT.1", systematicNameType, exactSynonymScope, "https://test.org");
 		
 	}
+	
 	@Test
 	@Order(1)
 	public void createValidGene() {
@@ -888,6 +896,49 @@ public class GeneITCase extends BaseITCase {
 	
 	@Test
 	@Order(20)
+	public void createGeneWithOnlyRequiredFields() {		
+		Gene gene = new Gene();
+		gene.setCurie("GENE:0020");
+		gene.setTaxon(taxon);
+		gene.setGeneSymbol(geneSymbol);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(200);
+	}
+	
+	@Test
+	@Order(21)
+	public void createGeneWithOnlyRequiredFieldsLevel2() {
+		Gene gene = new Gene();
+		gene.setCurie("GENE:0021");
+		gene.setTaxon(taxon);
+
+		GeneSymbolSlotAnnotation minimalGeneSymbol = createGeneSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
+		GeneFullNameSlotAnnotation minimalGeneFullName = createGeneFullNameSlotAnnotation(null, "Test name", fullNameType, null, null);
+		GeneSystematicNameSlotAnnotation minimalGeneSystematicName = createGeneSystematicNameSlotAnnotation(null, "Test name", systematicNameType, null, null);
+		GeneSynonymSlotAnnotation minimalGeneSynonym = createGeneSynonymSlotAnnotation(null, "Test synonym", systematicNameType, null, null);
+		
+		gene.setGeneSymbol(minimalGeneSymbol);
+		gene.setGeneFullName(minimalGeneFullName);
+		gene.setGeneSystematicName(minimalGeneSystematicName);
+		gene.setGeneSynonyms(List.of(minimalGeneSynonym));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(200);
+	}
+	
+	@Test
+	@Order(22)
 	public void deleteGene() {
 
 		RestAssured.given().
