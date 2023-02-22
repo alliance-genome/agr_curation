@@ -72,7 +72,6 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		return agmDAO.persist(agm);
 	}
 
-	@Transactional
 	public void removeOrDeprecateNonUpdatedAgms(String speciesNames, List<String> agmCuriesBefore, List<String> agmCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + speciesNames + " " + agmCuriesAfter.size());
 
@@ -85,32 +84,37 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " AGMs", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
-			AffectedGenomicModel agm = agmDAO.find(curie);
-			if (agm != null) {
-				List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
-				Boolean anyReferencingDAs = false;
-				for (Long daId : referencingDAIds) {
-					DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM", true);
-					if (referencingDA != null)
-						anyReferencingDAs = true;
-				}
-
-				if (anyReferencingDAs) {
-					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
-					agm.setDateUpdated(OffsetDateTime.now());
-					agm.setObsolete(true);
-					agmDAO.persist(agm);
-				} else {
-					agmDAO.remove(curie);
-				}
-			} else {
-				log.error("Failed getting AGM: " + curie);
-			}
+			removeOrDeprecateNonUpdatedAgm(curie, dataType);
 			ph.progressProcess();
 		}
 		ph.finishProcess();
 	}
 
+	@Transactional
+	private void removeOrDeprecateNonUpdatedAgm(String curie, String dataType) {
+		AffectedGenomicModel agm = agmDAO.find(curie);
+		if (agm != null) {
+			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
+			Boolean anyReferencingDAs = false;
+			for (Long daId : referencingDAIds) {
+				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM", true);
+				if (referencingDA != null)
+					anyReferencingDAs = true;
+			}
+
+			if (anyReferencingDAs) {
+				agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
+				agm.setDateUpdated(OffsetDateTime.now());
+				agm.setObsolete(true);
+				agmDAO.persist(agm);
+			} else {
+				agmDAO.remove(curie);
+			}
+		} else {
+			log.error("Failed getting AGM: " + curie);
+		}
+	}
+	
 	public List<String> getCuriesBySpeciesName(String speciesName) {
 		List<String> curies = agmDAO.findAllCuriesBySpeciesName(speciesName);
 		curies.removeIf(Objects::isNull);
