@@ -339,7 +339,7 @@ As the code goes through the different stages, it becomes more and more stable a
 
 #### Promoting code from alpha to beta
 1. Look at the [alpha-environment dashboard](https://alpha-curation.alliancegenome.org/#/)
-    and ensure that for each Entity and Onotology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
+    and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
     investigate what caused this and fix the issue first before continuing the deployment.  
     It may be that the scheduled mass reindexing failed (run every Sunday 00:00 UTC), in which case a successful mass-reindexing must first
     be performed on the alpha environment, before continuing the deployment to the beta environment.
@@ -392,7 +392,7 @@ As the code goes through the different stages, it becomes more and more stable a
 
 #### Promoting code from beta to production
 1. Look at the [beta-environment dashboard](https://beta-curation.alliancegenome.org/#/)
-    and ensure that for each Entity and Onotology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
+    and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
     investigate what caused this and fix the issue first before continuing the deployment.  
     It may be that the scheduled mass reindexing failed (run every Sunday 00:00 UTC), in which case a successful mass-reindexing must first
     be performed on the beta environment, before continuing the deployment to the beta environment.
@@ -467,7 +467,7 @@ the new version of the application can function in a consistent state upon and a
 6. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
    System Endpoints section in the swagger UI) and follow-up through the log server to check for progress and errors.
 7. Once reindexing completed, look at the dashboard page (where you deployed to)
-    and ensure that for each Entity and Onotology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
+    and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
     investigate what caused this and fix the issue first before continuing the deployment.
 8. If code to support new ontologies was added, create the respective new data loads through the Data loads page and load the new file.
 9. After completing all above steps successfully, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
