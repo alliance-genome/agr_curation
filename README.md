@@ -343,7 +343,13 @@ As the code goes through the different stages, it becomes more and more stable a
     investigate what caused this and fix the issue first before continuing the deployment.  
     It may be that the scheduled mass reindexing failed (run every Sunday 00:00 UTC), in which case a successful mass-reindexing must first
     be performed on the alpha environment, before continuing the deployment to the beta environment.
-2. Decide on a proper release version number to be used for the new prerelease
+2. Decide on the exact commit to promote.
+   As active development constantly happens on the alpha branch, a stable point must be chosen to promote
+   in order to keep the amount of bugs present in the (pre)release to be created to a minimum.
+   Usually this means choosing the commit which was on alpha at the time of presenting at the past sprint review meeting.
+
+   The commit history can be visualised by browsing the github repository's [network graph page](https://github.com/alliance-genome/agr_curation/network).
+3. Decide on a proper release version number to be used for the new prerelease
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for beta (pre)releases that means either
    *  Incrementing the release candidate version on the latest release candidate
@@ -353,17 +359,17 @@ As the code goes through the different stages, it becomes more and more stable a
    *  Incrementing the `MAJOR` or `MINOR` release numbers as appropriate when
       the previous release candidate was (or will be) promoted to a full release
       and reset to rc1 for the next release.
-3. Create a release/v`x`.`y`.`z`-rc`a` branch from alpha or use a specific commit
-   from history to promote if alpha moved on since that stable state to be promoted.
+4. Create a release/v`x`.`y`.`z`-rc`a` branch from the commit on the alpha branch
+   that was chosen earlier to be promoted.
    ```bash
    git pull
-   git checkout -b release/vx.y.z-rca alpha
+   git checkout -b release/vx.y.z-rca <commit-sha>
    git push origin release/vx.y.z-rca
    ```
-4. Create a pull request to merge this release branch in beta
-5. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
+5. Create a pull request to merge this release branch into the beta branch
+6. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the beta environment.
-6. After prerelease creation and deployment, merge the beta branch back to alpha,
+7. After prerelease creation and deployment, merge the beta branch back to alpha,
    to make the (pre)release tag reachable from alpha (and report the correct version number through `git describe --tags`).
 
    To do so, create a dedicated merging branch and open a PR
@@ -407,7 +413,7 @@ As the code goes through the different stages, it becomes more and more stable a
    ```bash
    git push origin release/vx.y.z
    ```
-6. Create a pull request to merge this release branch in production
+6. Create a pull request to merge this release branch into the production branch
 7. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the production environment.
 8. After release creation and deployment, merge the production branch back to alpha,
@@ -418,8 +424,10 @@ As the code goes through the different stages, it becomes more and more stable a
 
    ```bash
    git checkout production
-   git pull
+   git pull #Ensure the beta branch is up-to-date before creating the new PRmerge branch
    git checkout -b PRmerge/production
+   git fetch origin alpha:alpha #Ensure to pull the latest alpha changes to your local alpha branch before merging
+   git merge alpha #Resolve merge-conflicts should any arise
    git push origin PRmerge/production
    ```
    Now create a PR in github to merge the `PRmerge/production` branch into the `alpha` branch.
