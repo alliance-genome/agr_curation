@@ -1,7 +1,7 @@
 ARG OVERWRITE_VERSION
 
 ### Stage 1: build UI
-FROM node:12 AS BUILD_UI_STAGE
+FROM node:16 AS BUILD_UI_STAGE
 
 WORKDIR /agr_curation
 COPY src/main/cliapp ./cliapp
@@ -9,10 +9,8 @@ COPY src/main/cliapp ./cliapp
 WORKDIR /agr_curation/cliapp
 RUN make all build
 
-
-
 ### Stage 2: build API (and include UI components)
-FROM maven:3.8-openjdk-11 as BUILD_API_STAGE
+FROM maven:3.8-eclipse-temurin-17 as BUILD_API_STAGE
 ARG OVERWRITE_VERSION
 
 # copy the src code to the container
@@ -30,10 +28,8 @@ RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
 # build the api jar
 RUN mvn -T 8 clean package -Dquarkus.package.type=uber-jar -ntp
 
-
-
 ### Stage 3: build final application image
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /agr_curation
 

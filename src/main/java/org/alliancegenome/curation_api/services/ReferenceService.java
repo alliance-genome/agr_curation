@@ -42,7 +42,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		if (curieOrXref.startsWith("AGRKB:")) {
 			reference = referenceDAO.find(curieOrXref);
 		} else {
-			SearchResponse<Reference> response = referenceDAO.findByField("crossReferences.curie", curieOrXref);
+			SearchResponse<Reference> response = referenceDAO.findByField("crossReferences.referencedCurie", curieOrXref);
 			List<Reference> nonObsoleteRefs = new ArrayList<>();
 			if (response != null && response.getReturnedRecords() > 0) {
 				response.getResults().forEach(ref -> {

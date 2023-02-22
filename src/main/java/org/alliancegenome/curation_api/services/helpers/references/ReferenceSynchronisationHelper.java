@@ -52,11 +52,8 @@ public class ReferenceSynchronisationHelper {
 		searchDetails.put("queryString", curie);
 
 		HashMap<String, Object> searchField = new HashMap<>();
-		if (curie.startsWith("AGR")) {
-			searchField.put("curie", searchDetails);
-		} else {
-			searchField.put("cross_references.curie", searchDetails);
-		}
+		searchField.put("curie.keyword", searchDetails);
+		searchField.put("cross_references.curie.keyword", searchDetails);
 
 		HashMap<String, Object> filter = new HashMap<>();
 		filter.put("curieFilter", searchField);
@@ -66,19 +63,9 @@ public class ReferenceSynchronisationHelper {
 
 		Pagination pagination = new Pagination(0, 50);
 		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-		if (response != null) {
-			for (LiteratureReference result : response.getResults()) {
-				if (result.getCurie().equals(curie))
-					return result;
-				for (LiteratureCrossReference resultXref : result.getCross_references()) {
-					if (resultXref.getCurie().equals(curie))
-						return result;
-				}
-			}
-		} else {
-			return null;
-		}
-
+		if (response != null && response.getTotalResults() != null && response.getTotalResults() == 1)
+			return response.getSingleResult();
+		
 		return null;
 	}
 
@@ -119,13 +106,17 @@ public class ReferenceSynchronisationHelper {
 
 		List<CrossReference> xrefs = new ArrayList<CrossReference>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
-			CrossReference xref = crossReferenceDAO.find(litXref.getCurie());
-			if (xref == null) {
+			SearchResponse<CrossReference> xrefResponse = crossReferenceDAO.findByField("referencedCurie", litXref.getCurie());
+			CrossReference xref;
+			if (xrefResponse == null || xrefResponse.getSingleResult() == null) {
 				xref = new CrossReference();
-				xref.setCurie(litXref.getCurie());
+				xref.setReferencedCurie(litXref.getCurie());
+				xref.setDisplayName(litXref.getCurie());
 				xref.setInternal(false);
 				xref.setObsolete(false);
 				xref = crossReferenceDAO.persist(xref);
+			} else {
+				xref = xrefResponse.getSingleResult();
 			}
 			xrefs.add(xref);
 		}
