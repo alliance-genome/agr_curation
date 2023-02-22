@@ -446,4 +446,17 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
 			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated")));
 	}
+	
+	@Test
+	@Order(10)
+	public void alleleBulkUploadMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MN_01_no_non_required_fields_level_1.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MN_02_no_non_required_fields_level_2.json");
+	}
+
+	@Test
+	@Order(11)
+	public void alleleBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "EN_01_empty_non_required_fields.json");
+	}
 }

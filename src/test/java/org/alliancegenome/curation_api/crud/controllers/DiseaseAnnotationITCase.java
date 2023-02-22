@@ -2300,4 +2300,65 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity", not(hasKey("inferredAllele"))).
 			body("entity", not(hasKey("assertedAllele")));	
 	}
+	
+	@Test
+	@Order(47)
+	public void createGeneDiseaseAnnotationWithOnlyRequiredFields() {
+		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
+		diseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
+		diseaseAnnotation.setObject(doTerm);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSubject(gene);
+		diseaseAnnotation.setEvidenceCodes(List.of(ecoTerm));
+		diseaseAnnotation.setSingleReference(reference);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/gene-disease-annotation").
+			then().
+			statusCode(200);
+	}
+	
+	@Test
+	@Order(48)
+	public void createAlleleDiseaseAnnotationWithOnlyRequiredFields() {
+		AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
+		diseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
+		diseaseAnnotation.setObject(doTerm);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSubject(allele);
+		diseaseAnnotation.setEvidenceCodes(List.of(ecoTerm));
+		diseaseAnnotation.setSingleReference(reference);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/allele-disease-annotation").
+			then().
+			statusCode(200);
+	}
+	
+	@Test
+	@Order(49)
+	public void createAgmDiseaseAnnotationWithOnlyRequiredFields() {
+		AGMDiseaseAnnotation diseaseAnnotation = new AGMDiseaseAnnotation();
+		diseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
+		diseaseAnnotation.setObject(doTerm);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSubject(agm);
+		diseaseAnnotation.setEvidenceCodes(List.of(ecoTerm));
+		diseaseAnnotation.setSingleReference(reference);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/agm-disease-annotation").
+			then().
+			statusCode(200);
+	}
+	
 }
