@@ -81,8 +81,8 @@ export const Dashboard = () => {
 				setTableData(_tableData);
 			}
 		});
-		// eslint-disable-next-line
 		return () => { isMounted = false };
+		// eslint-disable-next-line react-hooks/exhaustive-deps 
 	}, []);
 
 	const nameHyperlinkTemplate = (rowData) => {
