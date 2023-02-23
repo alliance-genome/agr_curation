@@ -397,7 +397,11 @@ export const DataLoadsComponent = () => {
 					}
 				});
 				if (runsStarted.length > 0) {
-					let sortedRunsStarted = runsStarted.sort(([b], [a]) => a.localeCompare(b));
+					let sortedRunsStarted = runsStarted.sort(function(a,b) {
+						const start1 = new Date(a);
+						const start2 = new Date(b);
+						return start2 - start1;
+					});
 					lastFileLoaded.set(sortedRunsStarted[0], load);
 				} else {
 					loadsWithoutFiles.push(load);
@@ -423,7 +427,7 @@ export const DataLoadsComponent = () => {
 					<Column body={nameBodyTemplate} header="Load Name" />
 					<Column field="type" header="Bulk Load Type" />
 					<Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
-					{dynamicColumns(group.loads)}
+					{dynamicColumns(sortedLoads)}
 					<Column field="status" body={bulkloadStatusTemplate} header="Status" />
 					<Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
