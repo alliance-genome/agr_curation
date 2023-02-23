@@ -354,11 +354,35 @@ export const DataLoadsComponent = () => {
 	};
 
 	const fileTable = (load) => {
-		const sortedLoadFiles = load.loadFiles ? load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1) : [];
-		sortedLoadFiles.forEach(file => {file.loadType = load.backendBulkLoadType});
+		let lastLoadedDates = new Map();
+		let filesWithoutDates = [];
+		let sortedFiles = [];
+		if (load.loadFiles) {
+			load.loadFiles.forEach(file => {
+				if (file.bulkloadStatus === "FINISHED" || file.bulkloadStatus === "STOPPED" || file.bulkloadStatus === "FAILED") {
+					if (file.dateLastLoaded) {
+						lastLoadedDates.set(file.dateLastLoaded, file);
+					} else {
+						filesWithoutDates.push(file);	
+					}
+				} else {
+					lastLoadedDates.set(new Date().toISOString(), file);
+				}
+			});
+			Array.from(lastLoadedDates.keys()).sort(function(a,b) {
+				const start1 = new Date(a);
+				const start2 = new Date(b);
+				return start2 - start1;
+			}).forEach(date => sortedFiles.push(lastLoadedDates.get(date)));
+			
+			if (filesWithoutDates.length > 0) {
+				filesWithoutDates.forEach(fwd => {sortedFiles.push(fwd)});
+			}
+		}
+		sortedFiles.forEach(file => {file.loadType = load.backendBulkLoadType});
 		return (
 			<div className="card">
-				<DataTable key="fileTable" value={sortedLoadFiles} responsiveLayout="scroll"
+				<DataTable key="fileTable" value={sortedFiles} responsiveLayout="scroll"
 					expandedRows={expandedFileRows} onRowToggle={(e) => setExpandedFileRows(e.data)}
 					rowExpansionTemplate={historyTable} dataKey="id">
 					<Column expander style={{ width: '3em' }} />
@@ -411,10 +435,12 @@ export const DataLoadsComponent = () => {
 			}
 		});
 		let sortedLoads = [];
-		let sortedLastFileLoaded = new Map(Array.from(lastFileLoaded).sort(([b], [a]) => a.localeCompare(b)));
-		for (const [, value] of sortedLastFileLoaded.entries()) {
-			sortedLoads.push(value);
-		}
+		Array.from(lastFileLoaded.keys()).sort(function(a,b) {
+			const start1 = new Date(a);
+			const start2 = new Date(b);
+			return start2 - start1;
+		}).forEach(date => sortedLoads.push(lastFileLoaded.get(date)));
+		
 		if (loadsWithoutFiles.length > 0) {
 			loadsWithoutFiles.sort((a, b) => (a.backendBulkLoadType > b.backendBulkLoadType) ? 1 : -1).forEach(lwf => {sortedLoads.push(lwf)});
 		}
