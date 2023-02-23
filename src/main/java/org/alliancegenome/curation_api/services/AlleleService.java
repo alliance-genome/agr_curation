@@ -88,7 +88,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	}
 	
 	@Transactional
-	private void removeOrDeprecateNonUpdatedAllele(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdatedAllele(String curie, String dataType) {
 		Allele allele = alleleDAO.find(curie);
 		if (allele != null) {
 			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
