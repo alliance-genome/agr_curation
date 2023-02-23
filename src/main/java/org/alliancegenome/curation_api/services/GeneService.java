@@ -95,7 +95,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 	
 	@Transactional
-	private void removeOrDeprecateNonUpdatedGene(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdatedGene(String curie, String dataType) {
 		Gene gene = geneDAO.find(curie);
 		if (gene != null) {
 			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
