@@ -20,9 +20,7 @@ describe("<DashboardPage />", () => {
 		act(() => {
 			result = renderWithClient(<DashboardPage />);
 		});
-		await waitFor(() => {
-			expect(result);
-		});
+		await expect(result);
 	});
 
 	it("Contains the Table Headers", async () => {
@@ -38,12 +36,4 @@ describe("<DashboardPage />", () => {
 		expect(system).toBeInTheDocument();
 	});
 
-	it("Contains some test values in the tables", async () => {
-		var result;
-		act(() => {
-			result = renderWithClient(<DashboardPage />);
-		});	
-		// const NameSlotAnnotation = await result.getByText("6828355");
-		// expect(NameSlotAnnotation).toBeInTheDocument();
-	});
 });
