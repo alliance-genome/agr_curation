@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -75,7 +76,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return geneDtoValidator.validateGeneDTO(dto);
 	}
 
-	@Transactional
 	public void removeOrDeprecateNonUpdatedGenes(String speciesNames, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + speciesNames + " " + geneCuriesAfter.size());
 
@@ -88,31 +88,36 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " genes", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
-			Gene gene = geneDAO.find(curie);
-			if (gene != null) {
-				List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
-				Boolean anyPublicReferencingDAs = false;
-				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "gene");
-					if (daMadePublic)
-						anyPublicReferencingDAs = true;
-				}
-
-				if (anyPublicReferencingDAs) {
-					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
-					gene.setDateUpdated(OffsetDateTime.now());
-					gene.setObsolete(true);
-					geneDAO.persist(gene);
-				} else {
-					deleteGeneSlotAnnotations(gene);
-					geneDAO.remove(curie);
-				}
-			} else {
-				log.error("Failed getting gene: " + curie);
-			}
+			removeOrDeprecateNonUpdatedGene(curie, dataType);
 			ph.progressProcess();
-		}
+		}	
 		ph.finishProcess();
+	}
+	
+	@Transactional
+	public void removeOrDeprecateNonUpdatedGene(String curie, String dataType) {
+		Gene gene = geneDAO.find(curie);
+		if (gene != null) {
+			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
+			Boolean anyReferencingDAs = false;
+			for (Long daId : referencingDAIds) {
+				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "gene", true);
+				if (referencingDA != null)
+					anyReferencingDAs = true;
+			}
+
+			if (anyReferencingDAs) {
+				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
+				gene.setDateUpdated(OffsetDateTime.now());
+				gene.setObsolete(true);
+				geneDAO.persist(gene);
+			} else {
+				deleteGeneSlotAnnotations(gene);
+				geneDAO.remove(curie);
+			}
+		} else {
+			log.error("Failed getting gene: " + curie);
+		}	
 	}
 
 	public List<String> getCuriesBySpeciesName(String speciesName) {

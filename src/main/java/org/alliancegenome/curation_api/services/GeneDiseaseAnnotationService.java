@@ -56,7 +56,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	@Override
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation");
+		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation", false);
 		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
