@@ -57,6 +57,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	protected SearchSession searchSession;
 	@Inject
 	protected ProcessDisplayService processDisplayService;
+	
+	private int outerBoost = 0;
+	private int innerBoost = 0;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
@@ -339,15 +342,17 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			return p.bool(b -> {
 				if (params.containsKey("searchFilters")) {
 					HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>) params.get("searchFilters");
+					outerBoost = searchFilters.keySet().size();
 					for (String filterName : searchFilters.keySet()) {
 						b.must(m -> {
 							return m.bool(s -> {
 								s.must(f -> f.bool(q -> {
-									int boost = 0;
+									innerBoost = searchFilters.get(filterName).keySet().size();
 									for (String field : searchFilters.get(filterName).keySet()) {
 										if (field.equals("nonNullFields") || field.equals("nullFields"))
 											continue;
-										float value = (float) (100 / Math.pow(10, boost));
+										float boost = (outerBoost * 10000) + (innerBoost * 1000);
+
 										String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
 										BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
 
@@ -357,21 +362,21 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 										if (queryType != null && queryType.equals("matchQuery")) {
 											BooleanPredicateClausesStep<?> clause = p.bool();
 											if (useKeywordFields != null && useKeywordFields) {
-												clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value * 10 : 10));
+												clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost + 500));
 											}
-											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value : 1));
+											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
 											q.should(clause);
 										} else { // assume simple query
 											BooleanPredicateClausesStep<?> clause = p.bool();
 											if (useKeywordFields != null && useKeywordFields) {
 												clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-													.defaultOperator(booleanOperator).boost(value >= 1 ? value * 10 : 10));
+													.defaultOperator(booleanOperator).boost(boost + 500));
 											}
 											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-												.defaultOperator(booleanOperator).boost(value >= 1 ? value : 1));
+												.defaultOperator(booleanOperator).boost(boost));
 											q.should(clause);
 										}
-										boost++;
+										innerBoost--;
 									}
 								}));
 								if (searchFilters.get(filterName).containsKey("nonNullFields")) {
@@ -388,6 +393,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 								}
 							});
 						});
+						outerBoost--;
 					}
 				}
 				if (params.containsKey("nonNullFieldsTable")) {
