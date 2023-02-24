@@ -4,10 +4,8 @@ import {BaseAuthService} from "./BaseAuthService";
 
 export class SearchService extends BaseAuthService {
 	search() {
-		console.log("in mock search")
 	}
 
 	find() {
-		console.log("in mock find")
 	}
 }

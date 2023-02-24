@@ -14,7 +14,6 @@ export const useGetUserSettings = (key, defaultValue) => {
 		onSuccess: (data) => {
 			let userSettings = defaultValue;
 			if(Object.keys(data).length === 0) {
-				console.log("New Key being Saved: " + key);
 				personSettingsService.saveUserSettings(key, userSettings);
 			} else {
 				userSettings = data.entity.settingsMap;
