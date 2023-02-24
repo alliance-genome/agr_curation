@@ -19,7 +19,7 @@ describe("<ConditionRelationPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		var result;
+		let result;
 		act(() => {
 			result = renderWithClient(<ConditionRelationPage />);
 		});	
@@ -29,7 +29,7 @@ describe("<ConditionRelationPage />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		var result;
+		let result;
 		act(() => {
 			result = renderWithClient(<ConditionRelationPage />);
 		});
@@ -41,7 +41,7 @@ describe("<ConditionRelationPage />", () => {
 	});
 
 	it("The table contains data", async () => {
-		var result;
+		let result;
 		act(() => {
 			result = renderWithClient(<ConditionRelationPage />);
 		});
@@ -65,7 +65,7 @@ describe("<ConditionRelationPage />", () => {
 			return JSON.parse(JSON.stringify(val));
 		});
 
-		var result;
+		let result;
 		act(() => {
 			result = renderWithClient(<ConditionRelationPage />);
 		});
