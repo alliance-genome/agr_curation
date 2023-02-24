@@ -1,6 +1,4 @@
 import React from "react";
-import { within, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { DashboardPage } from "../index";
 import "../../../tools/jest/setupTests";
@@ -9,14 +7,13 @@ import { data } from "../mockData/mockData";
 import { act } from "react-dom/test-utils";
 
 
-
 describe("<DashboardPage />", () => {
 	beforeEach(() => {
 		setupSiteSummaryHandler(data);
 	});
 
 	it("Renders without crashing", async () => {
-		var result;
+		let result;
 		act(() => {
 			result = renderWithClient(<DashboardPage />);
 		});
@@ -24,7 +21,7 @@ describe("<DashboardPage />", () => {
 	});
 
 	it("Contains the Table Headers", async () => {
-		var result;
+		let result;
 		act(() => {
 			result = renderWithClient(<DashboardPage />);
 		});	
@@ -35,5 +32,4 @@ describe("<DashboardPage />", () => {
 		expect(ontologies).toBeInTheDocument();
 		expect(system).toBeInTheDocument();
 	});
-
 });
