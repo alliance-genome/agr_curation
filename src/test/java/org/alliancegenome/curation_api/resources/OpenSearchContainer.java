@@ -28,7 +28,7 @@ public class OpenSearchContainer extends GenericContainer<OpenSearchContainer> {
 		setWaitStrategy((new HttpWaitStrategy())
 			.forPort(9200)
 			.forStatusCodeMatching(response -> response == 200 || response == 401)
-			.withStartupTimeout(Duration.ofSeconds(600))
+			.withStartupTimeout(Duration.ofSeconds(900))
 		);
 
 	}
