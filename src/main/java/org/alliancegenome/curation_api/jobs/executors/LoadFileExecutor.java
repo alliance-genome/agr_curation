@@ -81,33 +81,47 @@ public class LoadFileExecutor {
 		return false;
 	}
 	
+	private List<Integer> getVersionParts(String version) {
+		List<String> stringParts = new ArrayList<String>(Arrays.asList(version.split("\\.")));
+		List<Integer> intParts = new ArrayList<Integer>();
+		for (String part : stringParts) {
+			try {
+				Integer intPart = Integer.parseInt(part);
+				intParts.add(intPart);
+			} catch (NumberFormatException e) {
+				return null;
+			}
+		}
+		
+		while (intParts.size() < 3) { intParts.add(0); }
+		
+		return intParts;
+	}
+	
 	protected boolean validSchemaVersion(String submittedSchemaVersion, Class<?> dtoClass) {
 		
 		List<String> versionRange = apiVersionInfoService.getVersionRange(dtoClass.getAnnotation(AGRCurationSchemaVersion.class));
-		List<String> minVersionParts = new ArrayList<String>(Arrays.asList(versionRange.get(0).split("\\.")));
-		List<String> maxVersionParts = new ArrayList<String>(Arrays.asList(versionRange.get(1).split("\\.")));
-		List<String> fileVersionParts = new ArrayList<String>(Arrays.asList(submittedSchemaVersion.split("\\.")));
+		List<Integer> minVersionParts = getVersionParts(versionRange.get(0));
+		List<Integer> maxVersionParts = getVersionParts(versionRange.get(1));
+		List<Integer> fileVersionParts = getVersionParts(submittedSchemaVersion);
 		
-		while (fileVersionParts.size() < 3) { fileVersionParts.add("0"); }
-		
-		List<Integer> minVersionIntParts = minVersionParts.stream().map(Integer::parseInt).collect(Collectors.toList());
-		List<Integer> maxVersionIntParts = maxVersionParts.stream().map(Integer::parseInt).collect(Collectors.toList());
-		List<Integer> fileVersionIntParts = fileVersionParts.stream().map(Integer::parseInt).collect(Collectors.toList());
+		if (minVersionParts == null || maxVersionParts == null || fileVersionParts == null)
+			return false;
 		
 		// check not lower than min version
-		if (fileVersionIntParts.get(0) < minVersionIntParts.get(0)) return false;
-		if (fileVersionIntParts.get(0).equals(minVersionIntParts.get(0))) {
-			if (fileVersionIntParts.get(1) < minVersionIntParts.get(1)) return false;
-			if (fileVersionIntParts.get(1).equals(minVersionIntParts.get(1))) {
-				if (fileVersionIntParts.get(2) < minVersionIntParts.get(2)) return false;
+		if (fileVersionParts.get(0) < minVersionParts.get(0)) return false;
+		if (fileVersionParts.get(0).equals(minVersionParts.get(0))) {
+			if (fileVersionParts.get(1) < minVersionParts.get(1)) return false;
+			if (fileVersionParts.get(1).equals(minVersionParts.get(1))) {
+				if (fileVersionParts.get(2) < minVersionParts.get(2)) return false;
 			}
 		}
 		// check not higher than max version
-		if (fileVersionIntParts.get(0) > maxVersionIntParts.get(0)) return false;
-		if (fileVersionIntParts.get(0).equals(maxVersionIntParts.get(0))) {
-			if (fileVersionIntParts.get(1) > maxVersionIntParts.get(1)) return false;
-			if (fileVersionIntParts.get(1).equals(maxVersionIntParts.get(1))) {
-				if (fileVersionIntParts.get(2) > maxVersionIntParts.get(2)) return false;
+		if (fileVersionParts.get(0) > maxVersionParts.get(0)) return false;
+		if (fileVersionParts.get(0).equals(maxVersionParts.get(0))) {
+			if (fileVersionParts.get(1) > maxVersionParts.get(1)) return false;
+			if (fileVersionParts.get(1).equals(maxVersionParts.get(1))) {
+				if (fileVersionParts.get(2) > maxVersionParts.get(2)) return false;
 			}
 		}
 		
