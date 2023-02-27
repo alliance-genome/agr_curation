@@ -53,11 +53,8 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), GeneDTO.class)) {
-				bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			if (!validateSchemaVersion(bulkLoadFile, GeneDTO.class))
 				return;
-			}
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();

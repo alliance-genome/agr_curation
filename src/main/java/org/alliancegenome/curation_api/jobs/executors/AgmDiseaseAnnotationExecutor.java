@@ -47,11 +47,8 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), AGMDiseaseAnnotationDTO.class)) {
-				bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			if (!validateSchemaVersion(bulkLoadFile, AGMDiseaseAnnotationDTO.class))
 				return;
-			}
 			List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
 			String speciesName = manual.getDataType().getSpeciesName();
 

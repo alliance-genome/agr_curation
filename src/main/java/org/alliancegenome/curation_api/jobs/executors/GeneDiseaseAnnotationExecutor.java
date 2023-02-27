@@ -47,11 +47,8 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), GeneDiseaseAnnotationDTO.class)) {
-				bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			if (!validateSchemaVersion(bulkLoadFile, GeneDiseaseAnnotationDTO.class))
 				return;
-			}
 			List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();
 			String speciesName = manual.getDataType().getSpeciesName();
 
