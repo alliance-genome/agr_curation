@@ -52,9 +52,6 @@ const modTableSettings = {
 			rows: 50,
 			first: 0,
 			filters: {
-					modentityidFilter: {
-							modEntityId: { queryString: "WBDOannot ", tokenOperator: "AND" }
-					},
 					dataProviderFilter: {
 							"dataProvider.sourceOrganization.abbreviation": { queryString: "WB", tokenOperator: "AND" },
 							"dataProvider.sourceOrganization.fullName": { queryString: "WB", tokenOperator: "AND" },
@@ -63,7 +60,7 @@ const modTableSettings = {
 			},
 			tableKeyName: "DiseaseAnnotations",
 			multiSortMeta: [
-					{ field: "modEntityId", order: -1 }
+					{ field: "dateCreated", order: -1 }
 			],
 			selectedColumnNames: [
 					"MOD Annotation ID", "Subject", "Asserted Genes", "Disease Relation",
