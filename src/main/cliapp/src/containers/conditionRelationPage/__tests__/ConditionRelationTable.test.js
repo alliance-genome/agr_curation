@@ -6,6 +6,7 @@ import { ConditionRelationPage } from "../index";
 import { setLocalStorage } from "../../../tools/jest/setupTests";
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
 import { data, mockSettingsData } from "../mockData/mockData";
+import { act } from "react-dom/test-utils";
 
 
 describe("<ConditionRelationPage />", () => {
@@ -18,19 +19,32 @@ describe("<ConditionRelationPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		const result = renderWithClient(<ConditionRelationPage />);
-		expect(result);
+		let result;
+		act(() => {
+			result = renderWithClient(<ConditionRelationPage />);
+		});	
+		await waitFor(() => {
+			expect(result);
+		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		const result = renderWithClient(<ConditionRelationPage />);
-		const tableTitle = await result.getByText(/Experiments Table/i);
-		expect(tableTitle).toBeInTheDocument();
+		let result;
+		act(() => {
+			result = renderWithClient(<ConditionRelationPage />);
+		});
+
+		await waitFor(() => {
+			const tableTitle = result.getByText(/Experiments Table/i);
+			expect(tableTitle).toBeInTheDocument();
+		});	
 	});
 
 	it("The table contains data", async () => {
-		const result = renderWithClient(<ConditionRelationPage />);
-
+		let result;
+		act(() => {
+			result = renderWithClient(<ConditionRelationPage />);
+		});
 		const handleTd = await result.findByText("Standard");
 		const referenceTd = await result.findByText(/PMID:28806732/i);
 		const relationTd = await result.findByText(/has_condition/i);
@@ -51,8 +65,10 @@ describe("<ConditionRelationPage />", () => {
 			return JSON.parse(JSON.stringify(val));
 		});
 
-		renderWithClient(<ConditionRelationPage />);
-
+		let result;
+		act(() => {
+			result = renderWithClient(<ConditionRelationPage />);
+		});
 		const user = userEvent.setup();
 
 		let cell;

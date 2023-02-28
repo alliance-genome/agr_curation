@@ -64,13 +64,6 @@ export const AffectedGenomicModelTable = () => {
 			filterElement: {type: "input", filterName: "subtypeFilter", fields: ["subtype.name"]}, 
 		},
 		{
-			field: "parental_population",
-			header: "Parental Population",
-			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "parental_populationFilter", fields: ["parental_population"]},
-		},
-		{
 			field: "taxon.name",
 			header: "Taxon",
 			sortable: isEnabled,

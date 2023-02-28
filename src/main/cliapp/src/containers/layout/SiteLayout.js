@@ -253,7 +253,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Xenopus Anatomy Ontology (XBA)', icon: 'pi pi-fw pi-home', to: '/ontology/xba' },
 												{ label: 'Xenopus Developmental Stage Ontology (XBS)', icon: 'pi pi-fw pi-home', to: '/ontology/xbs' },
 												{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' },
-												{ label: 'Xenbase Experimantal Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' },
+												{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' },
 												{ label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' },
 												{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
 												{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
