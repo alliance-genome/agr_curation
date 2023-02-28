@@ -21,7 +21,7 @@ import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTab
 import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefString, multipleAutocompleteOnChange} from '../../utils/utils';
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
-
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 export const ConditionRelationTable = () => {
 
@@ -209,7 +209,7 @@ export const ConditionRelationTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: (rowData) => rowData.handle,
-			filterElement: {type: "input", filterName: "uniqueIdFilter", fields: ["handle"]},
+			filterElement: {type: "input", filterName: "handleFilter", fields: FILTER_FIELDS.handleFilter},
 			editor: (props) => handleEditor(props)
 		},
 		{
@@ -217,7 +217,7 @@ export const ConditionRelationTable = () => {
 			header: "Reference",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences.referencedCurie"]},
+			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: FILTER_FIELDS.singleReferenceFilter},
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
 		},
@@ -226,7 +226,7 @@ export const ConditionRelationTable = () => {
 			header: "Relation",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "multiselect", filterName: "conditionRelationFilter", fields: ["conditionRelationType.name"]},
+			filterElement: {type: "multiselect", filterName: "conditionRelationFilter", fields: FILTER_FIELDS.conditionRelationFilter},
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
@@ -235,7 +235,7 @@ export const ConditionRelationTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: conditionTemplate,
-			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionSummary"]},
+			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: FILTER_FIELDS.experimentalConditionFilter},
 			editor: (props) => conditionRelationTemplate(props)
 		},
 

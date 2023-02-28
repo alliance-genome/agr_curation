@@ -5,6 +5,7 @@ import { EllipsisTableCell } from "../../components/EllipsisTableCell";
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 
 export const AffectedGenomicModelTable = () => {
@@ -46,7 +47,7 @@ export const AffectedGenomicModelTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
+			filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter},
 		},
 		{
 			field: "name",
@@ -54,14 +55,14 @@ export const AffectedGenomicModelTable = () => {
 			body: nameTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
+			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter},
 		},
 		{
 			field: "subtype.name",
 			header: "Sub Type",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "subtypeFilter", fields: ["subtype.name"]}, 
+			filterElement: {type: "input", filterName: "subtypeFilter", fields: FILTER_FIELDS.subtypeFilter}, 
 		},
 		{
 			field: "taxon.name",
@@ -69,7 +70,7 @@ export const AffectedGenomicModelTable = () => {
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
+			filterElement: {type: "input", filterName: "taxonFilter", fields: FILTER_FIELDS.taxonFilter},
 		}
  ];
 

@@ -17,6 +17,7 @@ import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEdit
 import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 
 export const VocabularyTermSetTable = () => {
@@ -188,7 +189,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: (rowData) => rowData.name,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
+			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter},
 			editor: (props) => nameEditor(props)
 		},
 		{
@@ -197,7 +198,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: vocabularyTemplate,
-			filterElement: {type: "input", filterName: "vocabularyFilter", fields: ["vocabularyTermSetVocabulary.name"]},
+			filterElement: {type: "input", filterName: "vocabularyFilter", fields: FILTER_FIELDS.vocabularyFilter},
 			editor: (props) => vocabularyEditorTemplate(props)
 		},
 		{
@@ -206,7 +207,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: memberTermsTemplate,
-			filterElement: {type: "input", filterName: "memberTermsFilter", fields: ["memberTerms.name"]},
+			filterElement: {type: "input", filterName: "memberTermsFilter", fields: FILTER_FIELDS.memberTermsFilter},
 			editor: (props) => memberTermsEditorTemplate(props)
 		},
 		{
@@ -215,7 +216,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: (rowData) => rowData.vocabularyTermSetDescription,
-			filterElement: {type: "input", filterName: "vocabularyTermSetDescriptionFilter", fields: ["vocabularyTermSetDescription"]},
+			filterElement: {type: "input", filterName: "vocabularyTermSetDescriptionFilter", fields: FILTER_FIELDS.vocabularyTermSetDescriptionFilter},
 			editor: (props) => descriptionEditor(props)
 		}
 	];

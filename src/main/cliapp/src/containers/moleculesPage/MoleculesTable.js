@@ -4,6 +4,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 export const MoleculesTable = () => {
 
@@ -46,14 +47,14 @@ export const MoleculesTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+			filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter}, 
 		},
 		{
 			field: "name",
 			header: "Name",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}, 
+			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}, 
 		},
 		{
 			field: "inchi",
@@ -61,14 +62,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: inChiBodyTemplate,
-			filterElement: {type: "input", filterName: "inchiFilter", fields: ["inchi"]}, 
+			filterElement: {type: "input", filterName: "inchiFilter", fields: FILTER_FIELDS.inchiFilter}, 
 		},
 		{
 			field: "inchiKey",
 			header: "InChiKey",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "inchiKeyFilter", fields: ["inchiKey"]}, 
+			filterElement: {type: "input", filterName: "inchiKeyFilter", fields: FILTER_FIELDS.inchiKeyFilter}, 
 		},
 		{
 			field: "iupac",
@@ -76,14 +77,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: iupacBodyTemplate,
-			filterElement: {type: "input", filterName: "taxonfilter", fields: ["iupac"]}, 
+			filterElement: {type: "input", filterName: "iupacFilter", fields: FILTER_FIELDS.iupacFilter}, 
 		},
 		{
 			field: "formula",
 			header: "Formula",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "formulaFilter", fields: ["formula"]}, 
+			filterElement: {type: "input", filterName: "formulaFilter", fields: FILTER_FIELDS.formulaFilter}, 
 		},
 		{
 			field: "smiles",
@@ -91,9 +92,8 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: smilesBodyTemplate,
-			filterElement: {type: "input", filterName: "smilesFilter", fields: ["smiles"]}, 
+			filterElement: {type: "input", filterName: "smilesFilter", fields: FILTER_FIELDS.smilesFilter}, 
 		}
-
 	];
 
 	const defaultColumnNames = columns.map((col) => {

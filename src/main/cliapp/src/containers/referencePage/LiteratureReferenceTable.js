@@ -7,6 +7,7 @@ import { Card } from 'primereact/card';
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 export const LiteratureReferenceTable = () => {
 
@@ -71,35 +72,35 @@ export const LiteratureReferenceTable = () => {
 						header: "Curie",
 						sortable: { isEnabled },
 						filter: true,
-						filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+						filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter}, 
 				}, {
 						field: "cross_references.curie",
 						header: "Cross References",
 						sortable: isEnabled,
 						body: crossReferenceTemplate,
 						filter: true,
-						filterElement: {type: "input", filterName: "cross_referenceFilter", fields: ["cross_references.curie"]}, 
+						filterElement: {type: "input", filterName: "cross_referenceFilter", fields: FILTER_FIELDS.cross_referenceFilter}, 
 				}, {
 						field: "title",
 						header: "Title",
 						sortable: isEnabled,
 						filter: true,
 						body : titleTemplate,
-						filterElement: {type: "input", filterName: "titleFilter", fields: ["title"]}, 
+						filterElement: {type: "input", filterName: "titleFilter", fields: FILTER_FIELDS.titleFilter}, 
 				}, {
 						field: "abstract",
 						header: "Abstract",
 						sortable: isEnabled,
 						filter: true,
 						body : abstractTemplate,
-						filterElement: {type: "input", filterName: "abstractFilter", fields: ["abstract"]}, 
+						filterElement: {type: "input", filterName: "abstractFilter", fields: FILTER_FIELDS.abstractFilter}, 
 				}, {
 						field: "citation",
 						header: "Citation",
 						sortable: isEnabled,
 						filter: true,
 						body : citationTemplate,
-						filterElement: {type: "input", filterName: "citationFilter", fields: ["citation"]}, 
+						filterElement: {type: "input", filterName: "citationFilter", fields: FILTER_FIELDS.citationFilter}, 
 				}
 		];
 		const defaultColumnNames = columns.map((col) => {

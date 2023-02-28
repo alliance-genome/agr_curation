@@ -4,6 +4,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 export const ResourceDescriptorPagesTable = () => {
 	const [isEnabled, setIsEnabled] = useState(true);
@@ -53,25 +54,25 @@ export const ResourceDescriptorPagesTable = () => {
 			field: "resourceDescriptor.prefix", 
 			header: "Resource Descriptor", 
 			body: resourceDescriptorBodyTemplate,
-			filterElement: {type: "input", filterName: "resourceDescriptorFilter", fields: ["resourceDescriptor.prefix", "resourceDescriptor.name"]}
+			filterElement: {type: "input", filterName: "resourceDescriptorFilter", fields: FILTER_FIELDS.resourceDescriptorFilter}
 		},
 		{ 
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}
+			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}
 		},
 		{ 
 			field: "urlTemplate", 
 			header: "URL Template", 
 			body: urlTemplateBodyTemplate,
-			filterElement: {type: "input", filterName: "urlTemplateFilter", fields: ["urlTemplate"]}
+			filterElement: {type: "input", filterName: "urlTemplateFilter", fields: [FILTER_FIELDS.urlTemplateFilter]}
 		},
 		{ 
 			field: "pageDescription", 
 			header: "Page Description", 
 			body: pageDescriptionBodyTemplate,
-			filterElement: {type: "input", filterName: "pageDescriptionFilter", fields: ["pageDescription"]}
+			filterElement: {type: "input", filterName: "pageDescriptionFilter", fields: [FILTER_FIELDS.pageDescriptionFilter]}
 		}
 	]
 

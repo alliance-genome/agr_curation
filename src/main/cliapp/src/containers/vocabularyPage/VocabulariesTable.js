@@ -5,6 +5,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 export const VocabulariesTable = () => {
 
@@ -38,19 +39,19 @@ export const VocabulariesTable = () => {
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}
+			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}
 		},
 		{ 
 			field: "vocabularyDescription", 
 			header: "Description", 
 			body: descriptionBodyTemplate,
-			filterElement: {type: "input", filterName: "descriptionFilter", fields: ["vocabularyDescription"]}
+			filterElement: {type: "input", filterName: "descriptionFilter", fields: FILTER_FIELDS.descriptionFilter}
 		},
 		{ 
 			field: "obsolete", 
 			header: "Obsolete", 
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
-			filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: ["obsolete"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: FILTER_FIELDS.obsoleteFilter, options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		}
 	]
 

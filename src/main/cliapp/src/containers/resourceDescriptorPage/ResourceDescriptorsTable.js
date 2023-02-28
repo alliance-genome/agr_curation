@@ -5,6 +5,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 export const ResourceDescriptorsTable = () => {
 	const [isEnabled, setIsEnabled] = useState(true);
@@ -86,37 +87,37 @@ export const ResourceDescriptorsTable = () => {
 			field: "prefix", 
 			header: "Prefix", 
 			body: prefixBodyTemplate,
-			filterElement: {type: "input", filterName: "prefixFilter", fields: ["prefix"]}
+			filterElement: {type: "input", filterName: "prefixFilter", fields: FILTER_FIELDS.prefixFilter}
 		},
 		{ 
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}
+			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}
 		},
 		{ 
 			field: "synonyms", 
 			header: "Synonyms", 
 			body: synonymsBodyTemplate,
-			filterElement: {type: "input", filterName: "synonymsFilter", fields: ["synonyms"]}
+			filterElement: {type: "input", filterName: "synonymsFilter", fields: FILTER_FIELDS.synonymsFilter}
 		},
 		{ 
 			field: "idPattern", 
 			header: "ID Pattern", 
 			body: idPatternBodyTemplate,
-			filterElement: {type: "input", filterName: "idPatternFilter", fields: ["idPattern"]}
+			filterElement: {type: "input", filterName: "idPatternFilter", fields: FILTER_FIELDS.idPatternFilter}
 		},
 		{ 
 			field: "idExample", 
 			header: "ID Example", 
 			body: idExampleBodyTemplate,
-			filterElement: {type: "input", filterName: "idExampleFilter", fields: ["idExample"]}
+			filterElement: {type: "input", filterName: "idExampleFilter", fields: FILTER_FIELDS.idExampleFilter}
 		},
 		{ 
 			field: "defaultUrlTemplate", 
 			header: "Default URL Template", 
 			body: defaultUrlTemplateBodyTemplate,
-			filterElement: {type: "input", filterName: "defaultUrlTemplateFilter", fields: ["defaultUrlTemplate"]}
+			filterElement: {type: "input", filterName: "defaultUrlTemplateFilter", fields: FILTER_FIELDS.defaultUrlTemplateFilter}
 		}
 	]
 
