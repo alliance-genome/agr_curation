@@ -1,4 +1,6 @@
 import { confirmDialog } from 'primereact/confirmdialog';
+import { SORT_FIELDS } from '../constants/SortFields';
+import { FILTER_FIELDS } from '../constants/FilterFields';
 
 export function returnSorted(event, originalSort) {
 
@@ -312,13 +314,13 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 	})
 }
 
-export const getInvalidFilterFields = (localStorageFilters, tableFieldsMap) => {
+export const getInvalidFilterFields = (localStorageFilters) => {
 	const invalidFields = [];
 
 	if (!localStorageFilters || Object.keys(localStorageFilters).length === 0) return invalidFields;
 	
 	for (let filterName in localStorageFilters) {
-		let correctFields = tableFieldsMap[filterName].sort();
+		let correctFields = FILTER_FIELDS[filterName].sort();
 		let localStorageFields = Object.keys(localStorageFilters[filterName]).sort();
 
 		if(JSON.stringify(correctFields) !== JSON.stringify(localStorageFields)) invalidFields.push(filterName);
@@ -327,8 +329,10 @@ export const getInvalidFilterFields = (localStorageFilters, tableFieldsMap) => {
 	return invalidFields;
 }
 
-export const deleteInvalidFilters = (invalidFields, oldFilters) => {
+export const deleteInvalidFilters = (oldFilters) => {
 	const updatedFilters = global.structuredClone(oldFilters);
+	const invalidFields = getInvalidFilterFields(oldFilters);
+
 
 	invalidFields.forEach(field => {
 		delete updatedFilters[field];
@@ -337,20 +341,21 @@ export const deleteInvalidFilters = (invalidFields, oldFilters) => {
 	return updatedFilters;
 };
 
-export const getInvalidSortFields = (localStorageSorts, tableSortFieldsArray) => {
+export const getInvalidSortFields = (localStorageSorts) => {
 	const invalidFields = [];
 
 	if (!localStorageSorts || localStorageSorts.length === 0) return invalidFields;
 
 	localStorageSorts.forEach((sort) => {
-		if (!tableSortFieldsArray.includes(sort.field)) invalidFields.push(sort.field);
+		if (!SORT_FIELDS.includes(sort.field)) invalidFields.push(sort.field);
 	})
 
 	return invalidFields;
 }
 
-export const deleteInvalidSorts = (invalidFields, oldSorts) => {
+export const deleteInvalidSorts = (oldSorts) => {
 	const updatedSorts = global.structuredClone(oldSorts);
+	const invalidFields = getInvalidSortFields(oldSorts);
 
 	invalidFields.forEach(field => {
 		updatedSorts.splice(updatedSorts.findIndex((sort) => sort.field === field), 1);
