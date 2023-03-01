@@ -26,11 +26,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.XSMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFSTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 
 public enum OntologyBulkLoadType {
 	ECO(ECOTerm.class), ZFA(ZFATerm.class), DO(DOTerm.class), MA(MATerm.class), CHEBI(CHEBITerm.class), XCO(XCOTerm.class), MP(MPTerm.class), DAO(DAOTerm.class), ZECO(ZECOTerm.class),
 	WBBT(WBBTTerm.class), EMAPA(EMAPATerm.class), GO(GOTerm.class), SO(SOTerm.class), RO(ROTerm.class), WBLS(WBLSTerm.class), FBDV(FBDVTerm.class), MMUSDV(MMUSDVTerm.class), ZFS(ZFSTerm.class),
-	XBA_XBS(null), XBA(XBATerm.class), XBS(XBSTerm.class), XPO(XPOTerm.class), ATP(ATPTerm.class), XBED(XBEDTerm.class), XSMO(XSMOTerm.class), OBI(OBITerm.class);
+	XBA_XBS(null), XBA(XBATerm.class), XBS(XBSTerm.class), XPO(XPOTerm.class), ATP(ATPTerm.class), XBED(XBEDTerm.class), XSMO(XSMOTerm.class), OBI(OBITerm.class), WBPheno(WBPhenotypeTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 
