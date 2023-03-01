@@ -6,9 +6,9 @@ import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 
 @ApplicationScoped
-public class WbphenotypeTermDAO extends BaseSQLDAO<WBPhenotypeTerm> {
+public class WbPhenotypeTermDAO extends BaseSQLDAO<WBPhenotypeTerm> {
 
-	protected WbphenotypeTermDAO() {
+	protected WbPhenotypeTermDAO() {
 		super(WBPhenotypeTerm.class);
 	}
 
