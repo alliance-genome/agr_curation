@@ -14,6 +14,7 @@ export function ControlledVocabularyDropdown({ field, options, editorChange, pro
 		return (
 				<>
 						<Dropdown
+								ariaLabel={field}
 								value={selectedValue}
 								dataKey={dataKey}
 								options={options}
