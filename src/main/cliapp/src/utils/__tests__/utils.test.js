@@ -1,78 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
-import { getInvalidFilterFields, deleteInvalidFilters } from '../utils';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
+import { deleteInvalidFilters, deleteInvalidSorts } from '../utils';
 import 'core-js/features/structured-clone';
 
 
-describe('getInvalidFilterFields', () => {
-  it('All Valid fields', () => {
-    const localStorageFilters = {
-      "objectFilter": {
-        "object.name": {
-          "queryString": "j",
-          "tokenOperator": "AND"
-        },
-        "object.curie": {
-          "queryString": "j",
-          "tokenOperator": "AND"
-        }
-      },
-      "negatedFilter": {
-        "negated": {
-          "queryString": "true",
-          "tokenOperator": "OR"
-        }
-      },
-      "modentityidFilter": {
-        "modEntityId": {
-          "queryString": "s",
-          "tokenOperator": "AND"
-        }
-      }
-    };
-  ;
-    const invalidFields = getInvalidFilterFields(localStorageFilters, FILTER_FIELDS);
-    expect(invalidFields.length).toBe(0);
-  });
-
-  it('One invalid field', () => {
-    const localStorageFilters = {
-      "objectFilter": {
-        "object.invalidName": {
-          "queryString": "j",
-          "tokenOperator": "AND"
-        },
-        "object.curie": {
-          "queryString": "j",
-          "tokenOperator": "AND"
-        }
-      },
-      "negatedFilter": {
-        "negated": {
-          "queryString": "true",
-          "tokenOperator": "OR"
-        }
-      },
-      "modentityidFilter": {
-        "modEntityId": {
-          "queryString": "s",
-          "tokenOperator": "AND"
-        }
-      }
-    };
-
-    const invalidFields = getInvalidFilterFields(localStorageFilters, FILTER_FIELDS);
-    expect(invalidFields.length).toBe(1);
-  });
-
-  it('Empty filters', () => {
-    const localStorageFilters = {};
-    const invalidFields = getInvalidFilterFields(localStorageFilters, FILTER_FIELDS);
-    expect(invalidFields.length).toBe(0);
-  });
-});
-
-//tests for deleteInvalidFilters function
 describe('deleteInvalidFilters', () => {
   it('All Valid fields', () => {
     const localStorageFilters = {
@@ -99,8 +29,7 @@ describe('deleteInvalidFilters', () => {
         }
       }
     };
-    const invalidFields = [];
-    const newFilters = deleteInvalidFilters(invalidFields, localStorageFilters);
+    const newFilters = deleteInvalidFilters(localStorageFilters);
     expect(newFilters).toEqual(localStorageFilters);
   });
 
@@ -129,29 +58,123 @@ describe('deleteInvalidFilters', () => {
         }
       }
     };
-    const invalidFields = ["objectFilter"];
-    const newFilters = deleteInvalidFilters(invalidFields, localStorageFilters);
-    expect(newFilters).toEqual(
-      {
-        "negatedFilter": {
-          "negated": {
-            "queryString": "true",
-            "tokenOperator": "OR"
-          }
-        },
-        "modentityidFilter": {
-          "modEntityId": {
-            "queryString": "s",
-            "tokenOperator": "AND"
-          }
+
+    const newFilters = deleteInvalidFilters(localStorageFilters);
+    expect(newFilters).toEqual({
+      "negatedFilter": {
+        "negated": {
+          "queryString": "true",
+          "tokenOperator": "OR"
         }
-      });
+      },
+      "modentityidFilter": {
+        "modEntityId": {
+          "queryString": "s",
+          "tokenOperator": "AND"
+        }
+      }
+    });
   });
 
-  it('Empty filters', () => {
-    const localStorageFilters = {};
-    const invalidFields = [];
-    const newFilters = deleteInvalidFilters(invalidFields, localStorageFilters);
+  it('All invalid fields', () => {
+    const localStorageFilters = {
+      "objectFilter": {
+        "object.invalidName": {
+          "queryString": "j",
+          " tokenOperator": "AND"
+        },
+        "object.invalidCurie": {
+          "queryString": "j",
+          "tokenOperator": "AND"
+        }
+      },
+      "negatedFilter": {
+        "invalidNegated": {
+          "queryString": "true",
+          "tokenOperator": "OR"
+        }
+      },
+      "modentityidFilter": {
+        "invalidModEntityId": {
+          "queryString": "s",
+          "tokenOperator": "AND"
+        }
+      }
+    };
+
+    const newFilters = deleteInvalidFilters(localStorageFilters);
     expect(newFilters).toEqual({});
   });
 });
+
+describe('deleteInvalidSorts', () => {
+  it('All Valid fields', () => {
+    const localMultiSortMeta = [
+      {
+        "field": "negated",
+        "order": 1
+      },
+      {
+        "field": "object.name",
+        "order": 1
+      },
+      {
+        "field": "subject.symbol",
+        "order": 1
+      }
+    ];
+    const newSorts = deleteInvalidSorts(localMultiSortMeta);
+    expect(newSorts).toEqual(localMultiSortMeta);
+  });
+
+  it('One invalid field', () => {
+    const localMultiSortMeta = [
+      {
+        "field": "invalidNegated",
+        "order": 1
+      },
+      {
+        "field": "object.name",
+        "order": 1
+      },
+      {
+        "field": "subject.symbol",
+        "order": 1
+      }
+    ];
+
+    const newSorts = deleteInvalidSorts(localMultiSortMeta);
+    expect(newSorts).toEqual([
+      {
+        "field": "object.name",
+        "order": 1
+      },
+      {
+        "field": "subject.symbol",
+        "order": 1
+      }
+    ]);
+  });
+
+  it('All invalid fields', () => {
+    const localMultiSortMeta = [
+      {
+        "field": "invalidNegated",
+        "order": 1
+      },
+      {
+        "field": "object.invalidName",
+        "order": 1
+      },
+      {
+        "field": "subject.invalidSymbol",
+        "order": 1
+      }
+    ];
+
+    const newSorts = deleteInvalidSorts(localMultiSortMeta);
+    expect(newSorts).toEqual([]);
+  });
+});
+
+
