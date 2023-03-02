@@ -1201,24 +1201,21 @@ export const DiseaseAnnotationsTable = () => {
 		field: "uniqueId",
 		header: "Unique ID",
 		sortable: isEnabled,
-		filter: true,
 		body: uniqueIdBodyTemplate,
-		filterElement: {type: "input", filterName: "uniqueidFilter", fields: FILTER_FIELDS.uniqueidFilter},
+		filterElement: {type: "input", fieldSet: "uniqueidFieldSet"},
 	},
 	{
 		field: "modEntityId",
 		header: "MOD Annotation ID",
 		sortable: isEnabled,
-		filter: true,
 		body: modEntityIdBodyTemplate,
-		filterElement: {type: "input", filterName: "modentityidFilter", fields: FILTER_FIELDS.modentityidFilter},
+		filterElement: {type: "input", fieldSet: "modentityidFieldSet"},
 	},
 	{
 		field: "subject.symbol",
 		header: "Subject",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "subjectFilter", fields: FILTER_FIELDS.subjectFilter},
+		filterElement: {type: "input", fieldSet: "subjectFieldSet"},
 		editor: (props) => subjectEditorTemplate(props),
 		body: subjectBodyTemplate,
 	},
@@ -1226,16 +1223,14 @@ export const DiseaseAnnotationsTable = () => {
 		field: "diseaseRelation.name",
 		header: "Disease Relation",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "multiselect", filterName: "diseaseRelationFilter", fields: FILTER_FIELDS.diseaseRelationFilter},
+		filterElement: {type: "multiselect", fieldSet: "diseaseRelationFieldSet"},
 		editor: (props) => diseaseRelationEditor(props)
 	},
 	{
 		field: "negated",
 		header: "Negated",
 		body: negatedTemplate,
-		filter: true,
-		filterElement: {type: "dropdown", filterName: "negatedFilter", fields: FILTER_FIELDS.negatedFilter, options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		filterElement: {type: "dropdown", fieldSet: "negatedFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		sortable: isEnabled,
 		editor: (props) => negatedEditor(props)
 	},
@@ -1243,8 +1238,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "object.name",
 		header: "Disease",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "objectFilter", fields: FILTER_FIELDS.objectFilter},
+		filterElement: {type: "input", fieldSet: "objectFieldSet"},
 		editor: (props) => diseaseEditorTemplate(props),
 		body: diseaseBodyTemplate
 	},
@@ -1252,8 +1246,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "singleReference.curie",
 		header: "Reference",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: FILTER_FIELDS.singleReferenceFilter},
+		filterElement: {type: "input", fieldSet: "singleReferenceFieldSet"},
 		editor: (props) => referenceEditorTemplate(props),
 		body: singleReferenceBodyTemplate
 	},
@@ -1262,7 +1255,6 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Evidence Code",
 		body: evidenceTemplate,
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "evidenceCodesFilter", fields: FILTER_FIELDS.evidenceCodesFilter},
 		editor: (props) => evidenceEditorTemplate(props)
 	},
@@ -1271,8 +1263,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "With",
 		body: withTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "withFilter", fields: FILTER_FIELDS.withFilter},
+		filterElement: {type: "input", fieldSet: "withFieldSet"},
 		editor: (props) => withEditorTemplate(props)
 	},
 	{
@@ -1281,7 +1272,6 @@ export const DiseaseAnnotationsTable = () => {
 		body: relatedNotesTemplate,
 		editor: relatedNotesEditor,
 		sortable: true,
-		filter: true,
 		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: FILTER_FIELDS.relatedNotesFilter},
 	},
 	{
@@ -1290,7 +1280,6 @@ export const DiseaseAnnotationsTable = () => {
 		body: conditionRelationHandleTemplate,
 		editor: (props) => conditionRelationHandleEditor(props),
 		sortable: true,
-		filter: true,
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationHandleFilter",
@@ -1304,11 +1293,9 @@ export const DiseaseAnnotationsTable = () => {
 		body: conditionRelationsTemplate,
 		editor: (props) => conditionRelationsEditor(props),
 		sortable: true,
-		filter: true,
 		filterElement: {
 			type: "input",
-			filterName: "conditionRelationsFilter",
-			fields: FILTER_FIELDS.conditionRelationsFilter,
+			fieldSet: "conditionRelationsFieldSet",
 			nullFields: ["conditionRelations.handle"]
 		},
 	},
@@ -1316,7 +1303,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "geneticSex.name",
 		header: "Genetic Sex",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "multiselect", filterName: "geneticSexFilter", fields: FILTER_FIELDS.geneticSexFilter, useKeywordFields: true},
 		editor: (props) => geneticSexEditor(props)
 	},
@@ -1324,7 +1310,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "diseaseQualifiers.name",
 		header: "Disease Qualifiers",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "multiselect", filterName: "diseaseQualifiersFilter", fields: FILTER_FIELDS.diseaseQualifiersFilter, useKeywordFields: true},
 		editor: (props) => diseaseQualifiersEditor(props),
 		body: diseaseQualifiersBodyTemplate
@@ -1333,7 +1318,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "sgdStrainBackground.name",
 		header: "SGD Strain Background",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "sgdStrainBackgroundFilter", fields: FILTER_FIELDS.sgdStrainBackgroundFilter},
 		editor: (props) => sgdStrainBackgroundEditorSelector(props),
 		body: sgdStrainBackgroundBodyTemplate
@@ -1342,7 +1326,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "annotationType.name",
 		header: "Annotation Type",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "multiselect", filterName: "annotationTypeFilter", fields: FILTER_FIELDS.annotationTypeFilter, useKeywordFields: true},
 		editor: (props) => annotationTypeEditor(props)
 	},
@@ -1350,7 +1333,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "diseaseGeneticModifierRelation.name",
 		header: "Genetic Modifier Relation",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "multiselect", filterName: "geneticModifierRelationFilter", fields: FILTER_FIELDS.geneticModifierRelationFilter, useKeywordFields: true},
 		editor: (props) => geneticModifierRelationEditor(props)
 	},
@@ -1358,7 +1340,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "diseaseGeneticModifier.symbol",
 		header: "Genetic Modifier",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "geneticModifierFilter", fields: FILTER_FIELDS.geneticModifierFilter},
 		editor: (props) => geneticModifierEditorTemplate(props),
 		body: geneticModifierBodyTemplate
@@ -1367,7 +1348,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "inferredGene.geneSymbol.displayText",
 		header: "Inferred Gene",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "inferredGeneFilter", fields: FILTER_FIELDS.inferredGeneFilter},
 		body: inferredGeneBodyTemplate
 	},
@@ -1375,7 +1355,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "assertedGenes.geneSymbol.displayText",
 		header: "Asserted Genes",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "assertedGenesFilter", fields: FILTER_FIELDS.assertedGenesFilter},
 		editor: (props) => assertedGenesEditorTemplate(props),
 		body: assertedGenesBodyTemplate
@@ -1384,7 +1363,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "inferredAllele.alleleSymbol.displayText",
 		header: "Inferred Allele",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "inferredAlleleFilter", fields: FILTER_FIELDS.inferredAlleleFilter},
 		body: inferredAlleleBodyTemplate
 	},
@@ -1392,7 +1370,6 @@ export const DiseaseAnnotationsTable = () => {
 		field: "assertedAllele.alleleSymbol.displayText",
 		header: "Asserted Allele",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "assertedAlleleFilter", fields: FILTER_FIELDS.assertedAlleleFilter},
 		editor: (props) => assertedAlleleEditorTemplate(props),
 		body: assertedAlleleBodyTemplate
@@ -1401,51 +1378,43 @@ export const DiseaseAnnotationsTable = () => {
 		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "dataProviderFilter", fields: FILTER_FIELDS.dataProviderFilter},
 	},
 	{
 		field: "secondaryDataProvider.sourceOrganization.abbreviation",
 		header: "Secondary Data Provider",
 		sortable: isEnabled,
-		filter: true,
 		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: FILTER_FIELDS.secondaryDataProviderFilter},
 	},
 	{
 		field: "updatedBy.uniqueId",
 		header: "Updated By",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "updatedByFilter", fields: FILTER_FIELDS.updatedByFilter},
+		filterElement: {type: "input", fieldSet: "updatedByFieldSet"},
 	},
 	{
 		field: "dateUpdated",
 		header: "Date Updated",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "dateUpdatedFilter", fields: FILTER_FIELDS.dateUpdatedFilter},
+		filterElement: {type: "input", fieldSet: "dataUpdatedFieldSet"},
 	},
 	{
 		field: "createdBy.uniqueId",
 		header: "Created By",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "createdByFilter", fields: FILTER_FIELDS.createdByFilter},
+		filterElement: {type: "input", fieldSet: "createdByFieldSet"},
 	},
 	{
 		field: "dateCreated",
 		header: "Date Created",
 		sortable: isEnabled,
-		filter: true,
-		filterType: "Date",
-		filterElement: {type: "input", filterName: "dateCreatedFilter", fields: FILTER_FIELDS.dateCreatedFilter},
+		filterElement: {type: "input", fieldSet: "dataCreatedFieldSet"},
 	},
 	{
 		field: "internal",
 		header: "Internal",
 		body: internalTemplate,
-		filter: true,
-		filterElement: {type: "dropdown", filterName: "internalFilter", fields: FILTER_FIELDS.internalFilter, options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		filterElement: {type: "dropdown", fieldSet: "internalFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		sortable: isEnabled,
 		editor: (props) => internalEditor(props)
 	},
@@ -1453,8 +1422,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "obsolete",
 		header: "Obsolete",
 		body: obsoleteTemplate,
-		filter: true,
-		filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: FILTER_FIELDS.obsoleteFilter, options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		filterElement: {type: "dropdown", fieldSet: "obsoleteFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		sortable: isEnabled,
 		editor: (props) => obsoleteEditor(props)
 	}

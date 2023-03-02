@@ -87,37 +87,37 @@ export const ResourceDescriptorsTable = () => {
 			field: "prefix", 
 			header: "Prefix", 
 			body: prefixBodyTemplate,
-			filterElement: {type: "input", filterName: "prefixFilter", fields: FILTER_FIELDS.prefixFilter}
+			filterElement: {type: "input", fieldSet: "prefixFieldSet"}
 		},
 		{ 
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}
+			filterElement: {type: "input", fieldSet: "nameFieldSet"}
 		},
 		{ 
 			field: "synonyms", 
 			header: "Synonyms", 
 			body: synonymsBodyTemplate,
-			filterElement: {type: "input", filterName: "synonymsFilter", fields: FILTER_FIELDS.synonymsFilter}
+			filterElement: {type: "input", fieldSet: "synonymsFieldSet"}
 		},
 		{ 
 			field: "idPattern", 
 			header: "ID Pattern", 
 			body: idPatternBodyTemplate,
-			filterElement: {type: "input", filterName: "idPatternFilter", fields: FILTER_FIELDS.idPatternFilter}
+			filterElement: {type: "input", fieldSet: "idPatternFieldSet"}
 		},
 		{ 
 			field: "idExample", 
 			header: "ID Example", 
 			body: idExampleBodyTemplate,
-			filterElement: {type: "input", filterName: "idExampleFilter", fields: FILTER_FIELDS.idExampleFilter}
+			filterElement: {type: "input", filterName: "idExampleFieldSet"}
 		},
 		{ 
 			field: "defaultUrlTemplate", 
 			header: "Default URL Template", 
 			body: defaultUrlTemplateBodyTemplate,
-			filterElement: {type: "input", filterName: "defaultUrlTemplateFilter", fields: FILTER_FIELDS.defaultUrlTemplateFilter}
+			filterElement: {type: "input", filterName: "defaultUrlTemplateFieldSet"}
 		}
 	]
 

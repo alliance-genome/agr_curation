@@ -39,19 +39,19 @@ export const VocabulariesTable = () => {
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}
+			filterElement: {type: "input", fieldSet: "nameFieldSet",}
 		},
 		{ 
 			field: "vocabularyDescription", 
 			header: "Description", 
 			body: descriptionBodyTemplate,
-			filterElement: {type: "input", filterName: "descriptionFilter", fields: FILTER_FIELDS.descriptionFilter}
+			filterElement: {type: "input", fieldSet: "descriptionFieldSet"}
 		},
 		{ 
 			field: "obsolete", 
 			header: "Obsolete", 
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
-			filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: FILTER_FIELDS.obsoleteFilter, options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterElement: {type: "dropdown", fieldSet: "obsoleteFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		}
 	]
 

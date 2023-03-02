@@ -72,35 +72,35 @@ export const LiteratureReferenceTable = () => {
 						header: "Curie",
 						sortable: { isEnabled },
 						filter: true,
-						filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter}, 
+						filterElement: {type: "input", fieldSet: "curieFieldSet"}, 
 				}, {
 						field: "cross_references.curie",
 						header: "Cross References",
 						sortable: isEnabled,
 						body: crossReferenceTemplate,
 						filter: true,
-						filterElement: {type: "input", filterName: "cross_referenceFilter", fields: FILTER_FIELDS.cross_referenceFilter}, 
+						filterElement: {type: "input", fieldSet: "cross_referenceFieldSet"}, 
 				}, {
 						field: "title",
 						header: "Title",
 						sortable: isEnabled,
 						filter: true,
 						body : titleTemplate,
-						filterElement: {type: "input", filterName: "titleFilter", fields: FILTER_FIELDS.titleFilter}, 
+						filterElement: {type: "input", fieldSet: "titleFieldSet"}, 
 				}, {
 						field: "abstract",
 						header: "Abstract",
 						sortable: isEnabled,
 						filter: true,
 						body : abstractTemplate,
-						filterElement: {type: "input", filterName: "abstractFilter", fields: FILTER_FIELDS.abstractFilter}, 
+						filterElement: {type: "input", fieldSet: "abstractFieldSet"}, 
 				}, {
 						field: "citation",
 						header: "Citation",
 						sortable: isEnabled,
 						filter: true,
 						body : citationTemplate,
-						filterElement: {type: "input", filterName: "citationFilter", fields: FILTER_FIELDS.citationFilter}, 
+						filterElement: {type: "input", fieldSet: "citationFieldSet"}, 
 				}
 		];
 		const defaultColumnNames = columns.map((col) => {

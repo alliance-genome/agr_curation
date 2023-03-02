@@ -54,25 +54,25 @@ export const ResourceDescriptorPagesTable = () => {
 			field: "resourceDescriptor.prefix", 
 			header: "Resource Descriptor", 
 			body: resourceDescriptorBodyTemplate,
-			filterElement: {type: "input", filterName: "resourceDescriptorFilter", fields: FILTER_FIELDS.resourceDescriptorFilter}
+			filterElement: {type: "input", fieldSet: "resourceDescriptorFieldSet"}
 		},
 		{ 
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}
+			filterElement: {type: "input", fieldSet: "nameFieldSet"}
 		},
 		{ 
 			field: "urlTemplate", 
 			header: "URL Template", 
 			body: urlTemplateBodyTemplate,
-			filterElement: {type: "input", filterName: "urlTemplateFilter", fields: [FILTER_FIELDS.urlTemplateFilter]}
+			filterElement: {type: "input", fieldSet: "urlTemplateFieldSet"}
 		},
 		{ 
 			field: "pageDescription", 
 			header: "Page Description", 
 			body: pageDescriptionBodyTemplate,
-			filterElement: {type: "input", filterName: "pageDescriptionFilter", fields: [FILTER_FIELDS.pageDescriptionFilter]}
+			filterElement: {type: "input", fieldSet: "pageDescriptionFieldSet"}
 		}
 	]
 

@@ -1,7 +1,15 @@
-export const FILTER_FIELD_SETS = Object.freeze({
+export const FIELD_SETS = Object.freeze({
   abbreviationFilter: ["abbreviation"],
-  abstractFilter: ["abstract"],
 
+  abbreviationFieldSet: {
+    filterName: "abbreviationFilter",
+    fields: new Set(["abbreviation"])
+  },
+  
+  abstractFieldSet: {
+    filterName: "abstractFilter",
+    fields: new Set(["abstract"]),
+  },
 
   alleleNameFieldSet: {
     filterName: "alleleNameFilter",
@@ -11,22 +19,24 @@ export const FILTER_FIELD_SETS = Object.freeze({
     filterName: "alleleSymbolFilter",
     fields: new Set(["alleleSymbol.displayText", "alleleSymbol.formatText"])
   },
-
   alleleInheritanceModesFieldSet: {
     filterName: "alleleInheritanceModesFilter",
     fields: new Set(["alleleInheritanceModes.inheritanceMode.name", "alleleInheritanceModes.phenotypeTerm.curie", "alleleInheritanceModes.phenotypeTerm.name", "alleleInheritanceModes.phenotypeStatement", "alleleInheritanceModes.evidence.curie"])
   },
-
   alleleMutationFieldSet: {
     filterName: "alleleMutationFilter",
     fields: new Set(["alleleMutationTypes.mutationTypes.curie", "alleleMutationTypes.mutationTypes.name", "alleleMutationTypes.evidence.curie"])
   },
-
-
+  
   annotationTypeFilter: ["annotationType.name"],
   assertedAlleleFilter: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleFullName.displayText", "assertedAllele.curie"],
   assertedGenesFilter: ["assertedGenes.geneSymbol.displayText", "assertedGenes.curie"],
-  citationFilter: ["citation"],
+  
+  citationFieldSet: {
+    filterName: "citationFilter",
+    fields: ["citation"],
+  },
+
   conditionAnatomyFilter: ["conditionAnatomy.curie", "conditionAnatomy.name"],
   conditionChemicalFilter: ["conditionChemical.curie", "conditionChemical.name"],
   conditionClassFilter: ["conditionClass.name", "conditionClass.curie"],
@@ -36,79 +46,154 @@ export const FILTER_FIELD_SETS = Object.freeze({
   conditionQuantityFilter: ["conditionQuantity"],
   conditionRelationFilter: ["conditionRelationType.name"],
   conditionRelationHandleFilter: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
-  conditionRelationsFilter: ["conditionRelations.conditions.conditionSummary"],
+
+  conditionRelationsFieldSet: {
+    filterName: "conditionRelationsFilter",
+    fields: new Set(["conditionRelations.conditions.conditionSummary"])
+  },
+
   conditionSummaryFilter: ["conditionSummary"],
   conditionTaxonFilter: ["conditionTaxon.curie", "conditionTaxon.name"],
-  createdByFilter: ["createdBy.uniqueId"],
-  cross_referenceFilter: ["cross_references.curie"],
 
-
+  createdByFieldSet: {
+    filterName: "createdByFilter",
+    fields: new Set(["createdBy.uniqueId"])
+  },
+  cross_referenceFieldSet: {
+    filterName: "cross_referenceFilter",
+    fields: new Set(["cross_references.curie"]),
+  },
   curieFieldSet: {
 		filterName: "curieFilter",
 		fields: new Set(["curie"])
   },
 
-
-
   dataProviderFilter: [ "dataProvider.sourceOrganization.abbreviation", "dataProvider.sourceOrganization.fullName", "dataProvider.sourceOrganization.shortName" ],
-  dateCreatedFilter: ["dateCreated"],
-  dateUpdatedFilter: ["dateUpdated"],
-  defaultUrlTemplateFilter: ["defaultUrlTemplate"],
-  definitionFilter: ["definition"],
-  descriptionFilter: ["vocabularyDescription"],
+
+  dataCreatedFieldSet: {
+    filterName: "dateCreatedFilter",
+    fields: new Set(["dateCreated"])
+  },
+  dataUpdatedFieldSet: {
+    filterName: "dateUpdatedFilter",
+    fields: new Set(["dateUpdated"])
+  },
+  defaultUrlTemplateFieldSet: {
+    filterName: "defaultUrlTemplateFilter",
+    fields: new Set(["defaultUrlTemplate"]),
+  },
+  definitionFieldSet: {
+    filterName: "definitionFilter",
+    fields: new Set(["definition"])
+  },
+  descriptionFieldSet: {
+    filterName: "descriptionFilter",
+    fields: new Set(["vocabularyDescription"]),
+  },
+
   diseaseQualifiersFilter: ["diseaseQualifiers.name"],
-  diseaseRelationFilter: ["diseaseRelation.name"],
+
+  diseaseRelationFieldSet: {
+    filterName: "diseaseRelationFilter",
+    fields: new Set(["diseaseRelation.name"])
+  },
+
   evidenceCodesFilter: ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"],
-  experimentalConditionFilter: ["conditions.conditionSummary"],
+
+  experimentalConditionFieldSet: {
+    filterName: "experimentalConditionFilter",
+    fields: new Set(["conditions.conditionSummary"])
+  },
+
   formulaFilter: ["formula"],
   geneNameFilter: ["geneFullName.displayText", "geneFullName.formatText"],
   geneSymbolFilter: ["geneSymbol.displayText", "geneSymbol.formatText"],
   geneticModifierFilter: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"],
   geneticModifierRelationFilter: ["diseaseGeneticModifierRelation.name"],
   geneticSexFilter: ["geneticSex.name"],
-  handleFilter: ["handle"],
-  idExampleFilter: ["idExample"],
-  idPatternFilter: ["idPattern"],
+
+  handleFieldSet: {
+    filterName: "handleFilter",
+    fields: new Set(["handle"])
+  },
+  idExampleFieldSet: {
+    filterName: "idExampleFilter",
+    fields: new Set(["idExample"]),
+  },
+  idPatternFieldSet: {
+    filterName: "idPatternFilter",
+    fields: new Set(["idPattern"]),
+  },
+  
   inchiFilter: ["inchi"],
   inchiKeyFilter: ["inchiKey"],
-
 
   inCollectionFieldSet: {
     filterName: "inCollectionFilter",
     fields: new Set(["inCollection.name"])
   },
 
-
   inferredAlleleFilter: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleFullName.displayText", "inferredAllele.curie"],
   inferredGeneFilter: ["inferredGene.geneSymbol.displayText", "inferredGene.curie"],
 
-  internalFilter: ["internal"],
-  isExtinctFilter: ["isExtinct"],
+  internalFieldSet: {
+    filterName: "internalFilter",
+    fields: new Set(["internal"])
+  },
+  isExtinctFieldSet: {
+    filterName: "isExtinctFilter",
+    fields: new Set(["isExtinct"])
+  },
+
   iupacFilter: ["iupac"],
-  memberTermsFilter: ["memberTerms.name"],
-  modentityidFilter: ["modEntityId"],
 
-
+  memberTermsFieldSet: {
+    filterName: memberTermsFilter,
+    fields: Set(["memberTerms.name"]),
+  },
+  modentityidFieldSet: {
+    filterName: "modentityidFilter",
+    fields: new Set(["modEntityId"])
+  },
   nameFieldSet: {
     filterName: "nameFilter",
     fields: new Set(["name"])
   },
+  negatedFieldSet: {
+    filterName: "negatedFilter",
+    fields: new Set(["negated"])
+  },
+  objectFieldSet: {
+    filterName: "objectFilter",
+    fields: new Set(["object.curie", "object.name"])
+  },
+  obsoleteFieldSet: {
+    filterName: "obsoleteFilter",
+    fields: new Set(["obsolete"])
+  },
+  pageDescriptionFieldSet: {
+    filterName: "pageDescriptionFilter",
+    fields: new Set(["pageDescription"]),
+  },
   
-  negatedFilter: ["negated"],
-  objectFilter: ["object.curie", "object.name"],
-  obsoleteFilter: ["obsolete"],
-  pageDescriptionFilter: ["pageDescription"],
   parental_populationFilter: ["parental_population"],
-  prefixFilter: ["prefix"], 
-
+  
+  prefixFieldSet: {
+    filterName: "prefixFilter",
+    fields: new Set(["prefix"]), 
+  },
   referencesFieldSet: {
     filterName: "referencesFilter",
     fields: new Set(["references.curie", "references.crossReferences.referencedCurie"])
   },
 
-
   relatedNotesFilter: ["relatedNotes.freeText"],
-  resourceDescriptorFilter: ["resourceDescriptor.prefix", "resourceDescriptor.name"],
+  
+  resourceDescriptorFieldSet: {
+    filterName: "resourceDescriptorFilter",
+    fields: new Set(["resourceDescriptor.prefix", "resourceDescriptor.name"]),
+  },
+
   secondaryDataProviderFilter: [ "secondaryDataProvider.sourceOrganization.abbreviation", "secondaryDataProvider.sourceOrganization.fullName", "secondaryDataProvider.sourceOrganization.shortName" ],
 
   secondaryIdsFieldSet: {
@@ -117,33 +202,62 @@ export const FILTER_FIELD_SETS = Object.freeze({
   },
 
   sgdStrainBackgroundFilter: ["sgdStrainBackground.name", "sgdStrainBackground.curie"],
-  singleReferenceFilter: ["singleReference.curie", "singleReference.crossReferences.referencedCurie"],
-  smilesFilter: ["smiles"],
-  subjectFilter: ["subject.symbol", "subject.name", "subject.curie"],
 
+  singleReferenceFieldSet: {
+    filterName: "singleReferenceFilter",
+    fields: new Set(["singleReference.curie", "singleReference.crossReferences.referencedCurie"])
+  },
+
+  smilesFilter: ["smiles"],
+
+  subjectFieldSet: {
+    filterName: "subjectFilter",
+    fields: new Set(["subject.symbol", "subject.name", "subject.curie"])
+  },
   subtypeFieldSet: {
     filterName: "subtypeFilter",
     fields: new Set(["subtype.name"])
   },
-  
-  synonymsFilter: ["synonyms"],
-
+  synonymsFieldSet: {
+    filterName: "synonymsFilter",
+    fields: new Set(["synonyms"]),
+  },
   taxonFieldSet: {
     filterName: "taxonFilter",
     fields: new Set(["taxon.curie", "taxon.name"])
   },
-
-  titleFilter: ["title"],
-  uniqueidFilter: ["uniqueId"],
-  updatedByFilter: ["updatedBy.uniqueId"],
-  urlTemplateFilter: ["urlTemplate"],
+  titleFieldSet: {
+    filterName: "titleFilter",
+    fields: new Set(["title"]),
+  },
+  uniqueidFieldSet: {
+    filterName: "uniqueidFilter",
+    fields: new Set(["uniqueId"])
+  },
+  updatedByFieldSet: {
+    filterName: "updatedByFilter",
+    fields: new Set(["updatedBy.uniqueId"])
+  },
+  urlTemplateFieldSet: {
+    filterName: "urlTemplateFilter",
+    fields: new Set(["urlTemplate"]),
+  },
   vocabularyFieldSet: {
     filterName: "vocabularyFilter",
     fields: new Set(["vocabularyTermSetVocabulary.name"]),
   },
-  vocabularyNameFilter: ["vocabulary.name"],
-  vocabularyTermSetDescriptionFilter: ["vocabularyTermSetDescription"],
-  withFilter: ["with.geneSymbol.displayText", "with.geneFullName.displayText", "with.curie"],
+  vocabularyNameFieldSet: {
+    filterName: "vocabularyNameFilter",
+    fields: new Set(["vocabulary.name"])
+  },
+  vocabularyTermSetDescriptionFieldSet: {
+    filterName: "vocabularyTermSetDescriptionFilter",
+    fields: new Set(["vocabularyTermSetDescription"]),
+  },
+  withFieldSet: {
+    filterName: "withFilter",
+    fields: new Set(["with.geneSymbol.displayText", "with.geneFullName.displayText", "with.curie"])
+  }
 });
 
 

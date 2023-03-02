@@ -207,17 +207,15 @@ export const ConditionRelationTable = () => {
 			field: "handle",
 			header: "Handle",
 			sortable: isEnabled,
-			filter: true,
 			body: (rowData) => rowData.handle,
-			filterElement: {type: "input", filterName: "handleFilter", fields: FILTER_FIELDS.handleFilter},
+			filterElement: {type: "input", fieldSet: "handleFieldSet"},
 			editor: (props) => handleEditor(props)
 		},
 		{
 			field: "singleReference.curie",
 			header: "Reference",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: FILTER_FIELDS.singleReferenceFilter},
+			filterElement: {type: "input", fieldSet: "singleReferenceFieldSet"},
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
 		},
@@ -225,17 +223,15 @@ export const ConditionRelationTable = () => {
 			field: "conditionRelationType.name",
 			header: "Relation",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "multiselect", filterName: "conditionRelationFilter", fields: FILTER_FIELDS.conditionRelationFilter},
+			filterElement: {type: "multiselect", fieldSet: "conditionRelationsFieldSet"},
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
 			field: "conditions.conditionSummary",
 			header: "Experimental Conditions",
 			sortable: isEnabled,
-			filter: true,
 			body: conditionTemplate,
-			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: FILTER_FIELDS.experimentalConditionFilter},
+			filterElement: {type: "input", fieldSet: "experimentalConditionFieldSet"},
 			editor: (props) => conditionRelationTemplate(props)
 		},
 
