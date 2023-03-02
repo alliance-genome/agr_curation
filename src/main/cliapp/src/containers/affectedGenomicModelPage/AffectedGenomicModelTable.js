@@ -46,31 +46,27 @@ export const AffectedGenomicModelTable = () => {
 			field: "curie",
 			header: "Curie",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter},
+			filterElement: {type: "input", filterFieldSetName: "curieFilterFieldSet"},
 		},
 		{
 			field: "name",
 			header: "Name",
 			body: nameTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter},
+			filterElement: {type: "input", filterFieldSetName: "nameFilterFieldSet"},
 		},
 		{
 			field: "subtype.name",
 			header: "Sub Type",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "subtypeFilter", fields: FILTER_FIELDS.subtypeFilter}, 
+			filterElement: {type: "input", filterFieldSetName: "subtypeFilterFieldSet"}, 
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
-			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: FILTER_FIELDS.taxonFilter},
+			filterElement: {type: "input", filterFieldSetName: "taxonFilterFieldSet"},
 		}
  ];
 
