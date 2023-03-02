@@ -571,24 +571,21 @@ export const AllelesTable = () => {
 			field: "curie",
 			header: "Curie",
 			sortable: { isEnabled },
-			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter},
+			filterElement: {type: "input", fieldSet: "curieFieldSet"},
 		},
 		{
 			field: "alleleFullName.displayText",
 			header: "Name",
 			body: nameTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "alleleNameFilter", fields: FILTER_FIELDS.alleleNameFilter}
+			filterElement: {type: "input", fieldSet: "alleleNameFieldSet"}
 		},
 		{
 			field: "alleleSymbol.displayText",
 			header: "Symbol",
 			body: symbolTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "alleleSymbolFilter", fields: FILTER_FIELDS.alleleSymbolFilter}
+			filterElement: {type: "input", fieldSet: "alleleSymbolFieldSet"}
 		},
 		{
 			field: "alleleSecondaryIds.secondaryId",
@@ -596,16 +593,14 @@ export const AllelesTable = () => {
 			body: secondaryIdsTemplate,
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "secondaryIdsFilter", fields: FILTER_FIELDS.secondaryIdsFilter}
+			filterElement: {type: "input", fieldSet: "secondaryIdsFieldSet"}
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
 			body: taxonTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: FILTER_FIELDS.taxonFilter},
+			filterElement: {type: "input", fieldSet: "taxonFieldSet"},
 			editor: (props) => taxonEditor(props)
 		},
 		{
@@ -614,33 +609,30 @@ export const AllelesTable = () => {
 			body: mutationTypesTemplate,
 			editor: (props) => mutationTypesEditor(props),
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "mutationTypesFilter", fields: FILTER_FIELDS.mutationTypesFilter}
+			filterElement: {type: "input", fieldSet: "alleleMutationFieldSet"}
 		},
 		{
 			field: "references.curie",
 			header: "References",
-			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "referencesFilter", fields: FILTER_FIELDS.referencesFilter},
 			body: referencesTemplate,
+			sortable: isEnabled,
+			filterElement: {type: "input", fieldSet: "referencesFieldSet"},
 			editor: (props) => referencesEditor(props)
 		},
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
 			header: "Inheritance Modes",
 			body: inheritanceModesTemplate,
-			editor: (props) => inheritanceModesEditor(props),
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "inheritanceModesFilter", fields: FILTER_FIELDS.inheritanceModesFilter}
+			filterElement: {type: "input", fieldSet: "alleleInheritanceModesFieldSet"},
+			editor: (props) => inheritanceModesEditor(props),
 		},
 		{
 			field: "inCollection.name",
 			header: "In Collection",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "inCollectionFilter", fields: FILTER_FIELDS.inCollectionFilter, useKeywordFields: true},
+			filterElement: {type: "input", fieldSet: "inCollectionFieldSet", useKeywordFields: true},
 			editor: (props) => inCollectionEditor(props)
 		},
 		{

@@ -1,8 +1,28 @@
-export const FILTER_FIELDS = Object.freeze({
+export const FILTER_FIELD_SETS = Object.freeze({
   abbreviationFilter: ["abbreviation"],
   abstractFilter: ["abstract"],
-  alleleNameFilter: ["alleleFullName.displayText", "alleleFullName.formatText"],
-  alleleSymbolFilter: ["alleleSymbol.displayText", "alleleSymbol.formatText"],
+
+
+  alleleNameFieldSet: {
+    filterName: "alleleNameFilter",
+    fields: new Set(["alleleFullName.displayText", "alleleFullName.formatText"])
+  },
+  alleleSymbolFieldSet: {
+    filterName: "alleleSymbolFilter",
+    fields: new Set(["alleleSymbol.displayText", "alleleSymbol.formatText"])
+  },
+
+  alleleInheritanceModesFieldSet: {
+    filterName: "alleleInheritanceModesFilter",
+    fields: new Set(["alleleInheritanceModes.inheritanceMode.name", "alleleInheritanceModes.phenotypeTerm.curie", "alleleInheritanceModes.phenotypeTerm.name", "alleleInheritanceModes.phenotypeStatement", "alleleInheritanceModes.evidence.curie"])
+  },
+
+  alleleMutationFieldSet: {
+    filterName: "alleleMutationFilter",
+    fields: new Set(["alleleMutationTypes.mutationTypes.curie", "alleleMutationTypes.mutationTypes.name", "alleleMutationTypes.evidence.curie"])
+  },
+
+
   annotationTypeFilter: ["annotationType.name"],
   assertedAlleleFilter: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleFullName.displayText", "assertedAllele.curie"],
   assertedGenesFilter: ["assertedGenes.geneSymbol.displayText", "assertedGenes.curie"],
@@ -21,7 +41,15 @@ export const FILTER_FIELDS = Object.freeze({
   conditionTaxonFilter: ["conditionTaxon.curie", "conditionTaxon.name"],
   createdByFilter: ["createdBy.uniqueId"],
   cross_referenceFilter: ["cross_references.curie"],
-  curieFilter: ["curie"],
+
+
+  curieFieldSet: {
+		filterName: "curieFilter",
+		fields: new Set(["curie"])
+  },
+
+
+
   dataProviderFilter: [ "dataProvider.sourceOrganization.abbreviation", "dataProvider.sourceOrganization.fullName", "dataProvider.sourceOrganization.shortName" ],
   dateCreatedFilter: ["dateCreated"],
   dateUpdatedFilter: ["dateUpdated"],
@@ -43,42 +71,79 @@ export const FILTER_FIELDS = Object.freeze({
   idPatternFilter: ["idPattern"],
   inchiFilter: ["inchi"],
   inchiKeyFilter: ["inchiKey"],
-  inCollectionFilter: ["inCollection.name"],
+
+
+  inCollectionFieldSet: {
+    filterName: "inCollectionFilter",
+    fields: new Set(["inCollection.name"])
+  },
+
+
   inferredAlleleFilter: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleFullName.displayText", "inferredAllele.curie"],
   inferredGeneFilter: ["inferredGene.geneSymbol.displayText", "inferredGene.curie"],
-  inheritanceModesFilter: ["alleleInheritanceModes.inheritanceMode.name", "alleleInheritanceModes.phenotypeTerm.curie", "alleleInheritanceModes.phenotypeTerm.name", "alleleInheritanceModes.phenotypeStatement", "alleleInheritanceModes.evidence.curie"],
+
   internalFilter: ["internal"],
   isExtinctFilter: ["isExtinct"],
   iupacFilter: ["iupac"],
   memberTermsFilter: ["memberTerms.name"],
   modentityidFilter: ["modEntityId"],
-  mutationTypesFilter: ["alleleMutationTypes.mutationTypes.curie", "alleleMutationTypes.mutationTypes.name", "alleleMutationTypes.evidence.curie"],
-  nameFilter: ["name"],
+
+
+  nameFieldSet: {
+    filterName: "nameFilter",
+    fields: new Set(["name"])
+  },
+  
   negatedFilter: ["negated"],
   objectFilter: ["object.curie", "object.name"],
   obsoleteFilter: ["obsolete"],
   pageDescriptionFilter: ["pageDescription"],
   parental_populationFilter: ["parental_population"],
   prefixFilter: ["prefix"], 
-  referencesFilter: ["references.curie", "references.crossReferences.referencedCurie"],
+
+  referencesFieldSet: {
+    filterName: "referencesFilter",
+    fields: new Set(["references.curie", "references.crossReferences.referencedCurie"])
+  },
+
+
   relatedNotesFilter: ["relatedNotes.freeText"],
   resourceDescriptorFilter: ["resourceDescriptor.prefix", "resourceDescriptor.name"],
   secondaryDataProviderFilter: [ "secondaryDataProvider.sourceOrganization.abbreviation", "secondaryDataProvider.sourceOrganization.fullName", "secondaryDataProvider.sourceOrganization.shortName" ],
-  secondaryIdsFilter: ["alleleSecondaryIds.secondaryId", "alleleSecondaryIds.evidence.curie"],
+
+  secondaryIdsFieldSet: {
+    filterName: "secondaryIdsFilter",
+    fields: new Set(["alleleSecondaryIds.secondaryId", "alleleSecondaryIds.evidence.curie"])
+  },
+
   sgdStrainBackgroundFilter: ["sgdStrainBackground.name", "sgdStrainBackground.curie"],
   singleReferenceFilter: ["singleReference.curie", "singleReference.crossReferences.referencedCurie"],
   smilesFilter: ["smiles"],
   subjectFilter: ["subject.symbol", "subject.name", "subject.curie"],
-  subtypeFilter: ["subtype.name"],
+
+  subtypeFieldSet: {
+    filterName: "subtypeFilter",
+    fields: new Set(["subtype.name"])
+  },
+  
   synonymsFilter: ["synonyms"],
-  taxonFilter: ["taxon.curie", "taxon.name"],
+
+  taxonFieldSet: {
+    filterName: "taxonFilter",
+    fields: new Set(["taxon.curie", "taxon.name"])
+  },
+
   titleFilter: ["title"],
   uniqueidFilter: ["uniqueId"],
   updatedByFilter: ["updatedBy.uniqueId"],
   urlTemplateFilter: ["urlTemplate"],
-  vocabularyFilter: ["vocabularyTermSetVocabulary.name"],
+  vocabularyFieldSet: {
+    filterName: "vocabularyFilter",
+    fields: new Set(["vocabularyTermSetVocabulary.name"]),
+  },
   vocabularyNameFilter: ["vocabulary.name"],
   vocabularyTermSetDescriptionFilter: ["vocabularyTermSetDescription"],
   withFilter: ["with.geneSymbol.displayText", "with.geneFullName.displayText", "with.curie"],
 });
+
 
