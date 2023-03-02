@@ -8,7 +8,7 @@ import { Toast } from 'primereact/toast';
 import { MultiSelect } from 'primereact/multiselect';
 import { Checkbox } from 'primereact/checkbox';
 
-import { FilterComponent } from './FilterComponent'
+import { FilterComponent } from '../Filters/FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
 

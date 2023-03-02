@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
-import { SearchService } from '../service/SearchService';
+import { SearchService } from '../../service/SearchService';
 
-export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields = false, tokenOperator = "OR", filterName, currentFilters, onFilter, aggregationFields, tableState, annotationsAggregations, endpoint }) {
+export function FilterComponentMultiSelect({ isEnabled, field, useKeywordFields = false, tokenOperator = "OR", filterName, currentFilters, onFilter, aggregationFields, tableState, annotationsAggregations, endpoint }) {
 	const [selectedOptions, setSelectedOptions] = useState([]);
 	const [selectableOptions, setSelectableOptions] = useState( []);
 

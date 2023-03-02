@@ -1,7 +1,7 @@
 import React from 'react';
-import { FilterComponentInputText } from '../../components/FilterComponentInputText';
-import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
-import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
+import { FilterComponentInputText } from './FilterComponentInputText';
+import { FilterComponentDropDown } from './FilterComponentDropdown';
+import { FilterComponentMultiSelect } from './FilterComponentMultiSelect';
 
 export const FilterComponent = ({
 	type,
@@ -56,7 +56,7 @@ export const FilterComponent = ({
 		case "multiselect":
 			return (
 				<>
-				<FilterMultiSelectComponent
+				<FilterComponentMultiSelect
 					isEnabled={isEnabled}
 					field={fields[0]}
 					useKeywordFields={useKeywordFields}
