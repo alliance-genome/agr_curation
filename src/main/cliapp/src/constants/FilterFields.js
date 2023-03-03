@@ -65,7 +65,7 @@ export const FILTER_CONFIGS = Object.freeze({
     fieldSets: [FIELD_SETS.secondaryIdsFieldSet]
   },
   subjectFieldConfig: {
-    type: "input"
+    type: "input",
     fieldSets: [FIELD_SETS.subjectFieldSet]
   },
   subtypeFilterConfig: {
@@ -94,7 +94,7 @@ export const FILTER_CONFIGS = Object.freeze({
   },
   vocabularyTermSetDescriptionFieldSetFilterConfig: {
     type: "input",
-    fieldSets: 
+    fieldSets: [FIELD_SETS.vocabularyTermSetDescriptionFieldSet]
   }
   
 

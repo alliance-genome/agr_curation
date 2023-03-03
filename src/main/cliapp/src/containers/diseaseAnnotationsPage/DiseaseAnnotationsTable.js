@@ -1216,6 +1216,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "subject.symbol",
 		header: "Subject",
 		sortable: isEnabled,
+		filterC
 		filterElement: {type: "input", fieldSet: "subjectFieldSet"},
 		editor: (props) => subjectEditorTemplate(props),
 		body: subjectBodyTemplate,

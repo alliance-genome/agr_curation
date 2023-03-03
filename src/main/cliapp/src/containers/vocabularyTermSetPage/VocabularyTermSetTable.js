@@ -17,7 +17,7 @@ import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEdit
 import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
+import { FILTER_FIELDS, FILTER_CONFIGS } from '../../constants/FilterFields';
 
 
 export const VocabularyTermSetTable = () => {
@@ -189,7 +189,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: (rowData) => rowData.name,
-			filterElement: {type: "input", fieldSet: "nameFieldSet"},
+			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditor(props)
 		},
 		{
@@ -198,7 +198,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: vocabularyTemplate,
-			filterElement: {type: "input", fieldSet: "vocabularyFieldSet"},
+			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props)
 		},
 		{
@@ -207,7 +207,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: memberTermsTemplate,
-			filterElement: {type: "input", fieldSet: "memberTermsFieldSet"},
+			filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
 			editor: (props) => memberTermsEditorTemplate(props)
 		},
 		{
@@ -216,7 +216,7 @@ export const VocabularyTermSetTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: (rowData) => rowData.vocabularyTermSetDescription,
-			filterElement: {type: "input", fieldSet: "vocabularyTermSetDescriptionFieldSet"},
+			filterConfig: {type: "input", fieldSet: "vocabularyTermSetDescriptionFieldSet"},
 			editor: (props) => descriptionEditor(props)
 		}
 	];
