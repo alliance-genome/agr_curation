@@ -47,14 +47,14 @@ export const MoleculesTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter}, 
+			filterElement: {type: "input", fieldSet: "curieFieldSet"}, 
 		},
 		{
 			field: "name",
 			header: "Name",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}, 
+			filterElement: {type: "input", fieldSet: "nameFieldSet"}, 
 		},
 		{
 			field: "inchi",
@@ -62,14 +62,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: inChiBodyTemplate,
-			filterElement: {type: "input", filterName: "inchiFilter", fields: FILTER_FIELDS.inchiFilter}, 
+			filterElement: {type: "input", fieldSet: "inchiFieldSet"}, 
 		},
 		{
 			field: "inchiKey",
 			header: "InChiKey",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "inchiKeyFilter", fields: FILTER_FIELDS.inchiKeyFilter}, 
+			filterElement: {type: "input", fieldSet: "inchiKeyFieldSet"}, 
 		},
 		{
 			field: "iupac",
@@ -77,14 +77,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: iupacBodyTemplate,
-			filterElement: {type: "input", filterName: "iupacFilter", fields: FILTER_FIELDS.iupacFilter}, 
+			filterElement: {type: "input", fieldSet: "iupacFieldSet"}, 
 		},
 		{
 			field: "formula",
 			header: "Formula",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "formulaFilter", fields: FILTER_FIELDS.formulaFilter}, 
+			filterElement: {type: "input", fieldSet: "formulaFieldSet"}, 
 		},
 		{
 			field: "smiles",
@@ -92,7 +92,7 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: smilesBodyTemplate,
-			filterElement: {type: "input", filterName: "smilesFilter", fields: FILTER_FIELDS.smilesFilter}, 
+			filterElement: {type: "input", fieldSet: "smilesFieldSet"}, 
 		}
 	];
 

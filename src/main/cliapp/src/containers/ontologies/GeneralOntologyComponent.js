@@ -24,7 +24,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		{
 			field: "curie",
 			header: "Curie",
-			filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter}
+			filterElement: {type: "input", fieldSet: "curieFieldSet"}
 		}
 	);
 	columns.push(
@@ -32,7 +32,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			field: "name",
 			header: "Name",
 			body: (rowData) => <NameTemplate rowData={rowData}/>,
-			filterElement: {type: "input", filterName: "nameFilter", fields: FILTER_FIELDS.nameFilter}
+			filterElement: {type: "input", fieldSet: "nameFieldSet"}
 		},
 	);
 	if(!hideDefinition) {
@@ -41,7 +41,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 				field: "definition",
 				header: "Definition",
 				body: (rowData) => <DefinitionTemplate rowData={rowData} />,
-				filterElement: {type: "input", filterName: "definitionFilter", fields: FILTER_FIELDS.definitionFilter}
+				filterElement: {type: "input", fieldSet: "definitionFieldSet"}
 			},
 		);
 	}
@@ -50,7 +50,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "abbreviation",
 				header: "Abbreviation",
-				filterElement: {type: "input", filterName: "abbreviationFilter", fields: FILTER_FIELDS.abbreviationFilter}
+				filterElement: {type: "input", fieldSet: "abbreviationFieldSet"}
 			}
 		);
 	}
@@ -59,7 +59,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "namespace",
 				header: "Name Space",
-				filterElement: {type: "input", filterName: "abbreviationFilter", fields: FILTER_FIELDS.abbreviationFilter}
+				filterElement: {type: "input", fieldSet: "abbreviationFieldSet"}
 			}
 		);
 	}
@@ -68,7 +68,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			field: "obsolete",
 			header: "Obsolete",
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
-			filterElement: {type: "input", filterName: "obsoleteFilter", fields: FILTER_FIELDS.obsoleteFilter}
+			filterElement: {type: "input", fieldSet: "obsoleteFieldSet"}
 		}
 	);
 

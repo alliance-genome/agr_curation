@@ -104,8 +104,11 @@ export const FIELD_SETS = Object.freeze({
     filterName: "experimentalConditionFilter",
     fields: new Set(["conditions.conditionSummary"])
   },
-
-  formulaFilter: ["formula"],
+  
+  formulaFieldSet: {
+    filterName: "formulaFilter",
+    fields: ["formula"],
+  }, 
   geneNameFilter: ["geneFullName.displayText", "geneFullName.formatText"],
   geneSymbolFilter: ["geneSymbol.displayText", "geneSymbol.formatText"],
   geneticModifierFilter: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"],
@@ -125,8 +128,15 @@ export const FIELD_SETS = Object.freeze({
     fields: new Set(["idPattern"]),
   },
   
-  inchiFilter: ["inchi"],
-  inchiKeyFilter: ["inchiKey"],
+  inchiFieldSet: {
+    filterName: "inchiFilter",
+    fields: new Set(["inchi"]),
+  },
+  
+  inchiKeyFieldSet: {
+    filterName: "inchiKeyFilter",
+    fields: new Set(["inchiKey"]),
+  },
 
   inCollectionFieldSet: {
     filterName: "inCollectionFilter",
@@ -144,11 +154,14 @@ export const FIELD_SETS = Object.freeze({
     filterName: "isExtinctFilter",
     fields: new Set(["isExtinct"])
   },
-
-  iupacFilter: ["iupac"],
+  
+  iupacFieldSet: {
+    filterName: "iupacFilter",
+    fields: ["iupac"],
+  }, 
 
   memberTermsFieldSet: {
-    filterName: memberTermsFilter,
+    filterName: "memberTermsFilter",
     fields: Set(["memberTerms.name"]),
   },
   modentityidFieldSet: {
@@ -207,8 +220,11 @@ export const FIELD_SETS = Object.freeze({
     filterName: "singleReferenceFilter",
     fields: new Set(["singleReference.curie", "singleReference.crossReferences.referencedCurie"])
   },
-
-  smilesFilter: ["smiles"],
+  
+  smilesFieldSet: {
+    filterName: "smilesFilter",
+    fields: ["smiles"],
+  }, 
 
   subjectFieldSet: {
     filterName: "subjectFilter",
