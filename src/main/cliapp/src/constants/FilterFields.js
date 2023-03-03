@@ -1,3 +1,17 @@
+
+export const FILTER_CONFIGS = Object.freeze({
+
+	obsoleteFilterConfig: {
+		type: "dropdown",
+		fieldSets: ["obsoleteFieldSet"],
+	}
+
+	vocabularyDescriptionFilterConfig: { type: "input", fieldSets: ["descriptionFieldSet"] }
+	nameFilterConfig: { filterType: "input", fieldSets: ["nameFieldSet"] }
+	nameAutoCompleteFilterConfig: { filterType: "autocomplete", fieldSets: [FIELD_SETS.curieFieldSet, FIELD_SETS.geneNameFieldSet, FIELD_SETS.alleleNameFieldSet] }
+
+});
+
 export const FIELD_SETS = Object.freeze({
   abbreviationFilter: ["abbreviation"],
 
@@ -61,7 +75,7 @@ export const FIELD_SETS = Object.freeze({
   },
   cross_referenceFieldSet: {
     filterName: "cross_referenceFilter",
-    fields: new Set(["cross_references.curie"]),
+    fields: new Set(["cross_references.curie", "cross_references.name"]),
   },
   curieFieldSet: {
 		filterName: "curieFilter",
