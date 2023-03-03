@@ -243,7 +243,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: uniqueIdBodyTemplate,
-			filterElement: {type: "input", filterName: "uniqueidFilter", fields: FILTER_FIELDS.uniqueidFilter},
+			filterElement: {type: "input", fieldSet: "uniqueidFieldSet"},
 		},
 		{
 			field: "conditionSummary",
@@ -251,7 +251,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: summaryBodyTemplate,
-			filterElement: {type: "input", filterName: "conditionSummaryFilter", fields: FILTER_FIELDS.conditionSummaryFilter},
+			filterElement: {type: "input", fieldSet: "conditionSummaryFieldSet"},
 		},
 		{
 			field: "conditionClass.name",
@@ -259,7 +259,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionClassBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionClassFilter", fields: FILTER_FIELDS.conditionClassFilter},
+			filterElement: {type: "input", fieldSet: "conditionClassFieldSet"},
 			editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields)
 		},
 		{
@@ -268,7 +268,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionIdBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionIdFilter", fields: FILTER_FIELDS.conditionIdFilter},
+			filterElement: {type: "input", fieldSet: "conditionIdFieldSet"},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm", curieAutocompleteFields)
 		},
 		{
@@ -276,7 +276,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Gene Ontology",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionGeneOntologyFilter", fields: FILTER_FIELDS.conditionGeneOntologyFilter},
+			filterElement: {type: "input", fieldSet: "conditionGeneOntologyFieldSet"},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm", curieAutocompleteFields),
 			body: conditionGeneOntologyBodyTemplate
 		},
@@ -286,7 +286,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionChemicalBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionChemicalFilter", fields: FILTER_FIELDS.conditionChemicalFilter},
+			filterElement: {type: "input", fieldSet: "conditionChemicalFieldSet"},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm", curieAutocompleteFields)
 		},
 		{
@@ -295,7 +295,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionAnatomyBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionAnatomyFilter", fields: FILTER_FIELDS.conditionAnatomyFilter},
+			filterElement: {type: "input", fieldSet: "conditionAnatomyFieldSet"},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
 		},
 		{
@@ -304,7 +304,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionTaxonBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionTaxonFilter", fields: FILTER_FIELDS.conditionAnatomyFilter},
+			filterElement: {type: "input", fieldSet: "conditionTaxonFieldSet"},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
 		},
 		{
@@ -312,7 +312,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Quantity",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionQuantityFilter", fields: FILTER_FIELDS.conditionQuantityFilter},
+			filterElement: {type: "input", fieldSet: "conditionQuantityFieldSet"},
 			editor: (props) => freeTextEditor(props, "conditionQuantity")
 		}
 		,
@@ -321,7 +321,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Free Text",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionFreeTextFilter", fields: FILTER_FIELDS.conditionFreeTextFilter},
+			filterElement: {type: "input", fieldSet: "conditionFreeTextFieldSet"},
 			editor: (props) => freeTextEditor(props, "conditionFreeText")
 		},
 		{
@@ -329,7 +329,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Internal",
 			body: internalBodyTemplate,
 			filter: true,
-			filterElement: {type: "dropdown", filterName: "internalFilter", fields: FILTER_FIELDS.internalFilter, options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterElement: {type: "dropdown", fieldSet: "internalFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 			sortable: isEnabled,
 			editor: (props) => internalEditor(props)
 	},

@@ -29,7 +29,7 @@ import { NewAnnotationForm } from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
+import { FILTER_FIELDS, FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -1202,6 +1202,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Unique ID",
 		sortable: isEnabled,
 		body: uniqueIdBodyTemplate,
+		filterConfig: FILTER_CONFIGS.unquieFilterConfig,
 		filterElement: {type: "input", fieldSet: "uniqueidFieldSet"},
 	},
 	{
@@ -1230,7 +1231,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "negated",
 		header: "Negated",
 		body: negatedTemplate,
-		filterElement: {type: "dropdown", fieldSet: "negatedFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		sortable: isEnabled,
 		editor: (props) => negatedEditor(props)
 	},
@@ -1414,7 +1415,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "internal",
 		header: "Internal",
 		body: internalTemplate,
-		filterElement: {type: "dropdown", fieldSet: "internalFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		filterConfig: FILTER_CONFIGS.internalFilterConfig,
 		sortable: isEnabled,
 		editor: (props) => internalEditor(props)
 	},
@@ -1422,7 +1423,8 @@ export const DiseaseAnnotationsTable = () => {
 		field: "obsolete",
 		header: "Obsolete",
 		body: obsoleteTemplate,
-		filterElement: {type: "dropdown", fieldSet: "obsoleteFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		// filterElement: {type: "dropdown", fieldSet: "obsoleteFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		sortable: isEnabled,
 		editor: (props) => obsoleteEditor(props)
 	}

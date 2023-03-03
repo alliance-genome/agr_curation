@@ -7,7 +7,7 @@ import { BooleanTemplate } from '../../components/BooleanTemplate';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { GenericDataTree } from '../../components/GenericDataTree';
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
+import { FILTER_FIELDS, FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbbreviation, hideDefinition}) => {
 	const [isEnabled, setIsEnabled] = useState(true);
@@ -68,7 +68,8 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			field: "obsolete",
 			header: "Obsolete",
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
-			filterElement: {type: "input", fieldSet: "obsoleteFieldSet"}
+			//filterElement: {type: "input", fieldSet: "obsoleteFieldSet"}
+			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig
 		}
 	);
 

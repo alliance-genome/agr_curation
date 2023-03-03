@@ -47,7 +47,7 @@ export const GenesTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: FILTER_FIELDS.curieFilter},
+			filterElement: {type: "input", fieldSet: "curieFieldSet"}, 
 		},
 		{
 			field: "geneFullName.displayText",
@@ -55,14 +55,14 @@ export const GenesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "geneNameFilter", fields: FILTER_FIELDS.geneNameFilter},
+			filterElement: {type: "input", fieldSet: "geneNameFieldSet"},
 		},
 		{
 			field: "geneSymbol.displayText",
 			header: "Symbol",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "geneSymbolFilter", fields: FILTER_FIELDS.geneSymbolFilter},
+			filterElement: {type: "input", fieldSet: "geneSymbolFieldSet"},
 		},
 		{
 			field: "taxon.name",
@@ -70,7 +70,7 @@ export const GenesTable = () => {
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: FILTER_FIELDS.taxonFilter},
+			filterElement: {type: "input", fieldSet: "taxonFieldSet"},
 		}
 	];
 

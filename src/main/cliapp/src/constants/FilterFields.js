@@ -1,14 +1,108 @@
 
 export const FILTER_CONFIGS = Object.freeze({
+  alleleInheritanceModesFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.alleleInheritanceModesFieldSet]
+  },
+  
+  alleleMutationFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.alleleMutationFieldSet]
+  },
+  alleleNameFilterConfig: { 
+    type: "input", 
+    fieldSets: [FIELD_SETS.alleleNameFieldSet] 
+  },
+  alleleSymbolFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.alleleSymbolFieldSet]
+  },
+  inCollectionFilterConfig: {
+    type: "input", 
+    fieldSets: [FIELD_SETS.inCollectionFieldSet], 
+    useKeywordFields: true
+  },
+
+  isExtinctFilterConfig: {
+    type: "dropdown", 
+    fieldSets: [FIELD_SETS.isExtinctFieldSet], 
+    options: [{ text: "true" }, { text: "false" }], 
+    optionField: "text"
+  },
+
+  updatedByFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.updatedByFieldSet]
+  },
 
 	obsoleteFilterConfig: {
 		type: "dropdown",
-		fieldSets: ["obsoleteFieldSet"],
-	}
+		fieldSets: [FIELD_SETS.obsoleteFieldSet],
+	},
 
-	vocabularyDescriptionFilterConfig: { type: "input", fieldSets: ["descriptionFieldSet"] }
+  internalFilterConfig: {
+    type: "dropdown",
+    fieldSets: [FIELD_SETS.internalFieldSet]
+  },
+  
+  curieFilterConfig: {
+    type: "input", 
+    fieldSets: [FIELD_SETS.curieFieldSet]
+  },
+
+  referencesFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.referencesFieldSet]
+  },
+
+  negatedFilterConfig: {
+    type: "dropdown",
+    fieldSets: [FIELD_SETS.negatedFieldSet]
+  },
+  
+  secondaryIdsFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.secondaryIdsFieldSet]
+  },
+  subjectFieldConfig: {
+    type: "input"
+    fieldSets: [FIELD_SETS.subjectFieldSet]
+  },
+  subtypeFilterConfig: {
+    type: "input", 
+    fieldSets: [FIELD_SETS.subtypeFieldSet]
+  }, 
+  taxonFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.taxonFieldSet]
+  },
+  abbreviationFilterConfig: {
+    type: 'input',
+    fieldSets: [FIELD_SETS.abbreviationFieldSet]
+  },
+  definitionFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.definitionFieldSet]
+  },
+  vocabularyFieldSetFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.vocabularyFieldSet]
+  },
+  vocabularyMemberTermsFilterConfig: {
+    type: "input",
+    fieldSets: [FIELD_SETS.memberTermsFieldSet]
+  },
+  vocabularyTermSetDescriptionFieldSetFilterConfig: {
+    type: "input",
+    fieldSets: 
+  }
+  
+
+	vocabularyDescriptionFilterConfig: { type: "input", fieldSets: ["descriptionFieldSet"] },
 	nameFilterConfig: { filterType: "input", fieldSets: ["nameFieldSet"] }
-	nameAutoCompleteFilterConfig: { filterType: "autocomplete", fieldSets: [FIELD_SETS.curieFieldSet, FIELD_SETS.geneNameFieldSet, FIELD_SETS.alleleNameFieldSet] }
+	// nameAutoCompleteFilterConfig: { filterType: "autocomplete", fieldSets: [FIELD_SETS.curieFieldSet, FIELD_SETS.geneNameFieldSet, FIELD_SETS.alleleNameFieldSet] }
+
+  
 
 });
 
@@ -50,14 +144,42 @@ export const FIELD_SETS = Object.freeze({
     filterName: "citationFilter",
     fields: ["citation"],
   },
+  
+  conditionAnatomyFieldSet: {
+    filterName: "conditionAnatomyFilter",
+    fields: ["conditionAnatomy.curie", "conditionAnatomy.name"],
+  }, 
 
-  conditionAnatomyFilter: ["conditionAnatomy.curie", "conditionAnatomy.name"],
-  conditionChemicalFilter: ["conditionChemical.curie", "conditionChemical.name"],
-  conditionClassFilter: ["conditionClass.name", "conditionClass.curie"],
-  conditionFreeTextFilter: ["conditionFreeText"],
-  conditionGeneOntologyFilter: ["conditionGeneOntology.curie", "conditionGeneOntology.name"],
-  conditionIdFilter: ["conditionId.curie", "conditionId.name"],
-  conditionQuantityFilter: ["conditionQuantity"],
+  conditionChemicalFieldSet: {
+    filterName: "conditionChemicalFilter",
+    fields: new Set(["conditionChemical.curie", "conditionChemical.name"]),
+  }, 
+
+  conditionClassFieldSet: {
+    filterName: "conditionClassFilter",
+    fields: new Set(["conditionClass.name", "conditionClass.curie"]),
+  },
+  
+  conditionFreeTextFieldSet: {
+    filterName: "conditionFreeTextFilter",
+    fields: new Set(["conditionFreeText"])
+  },
+
+  conditionGeneOntologyFieldSet: {
+    filterName: "conditionGeneOntologyFilter",
+    fields: new Set(["conditionGeneOntology.curie", "conditionGeneOntology.name"]),
+  }, 
+
+  conditionIdFieldSet: {
+    filterName: "conditionIdFieldSet",
+    fields: new Set(["conditionId.curie", "conditionId.name"]),
+  },
+
+  conditionQuantityFieldSet: {
+    filterName: "conditionQuantityFilter",
+    fields: new Set(["conditionQuantity"]),
+  },
+
   conditionRelationFilter: ["conditionRelationType.name"],
   conditionRelationHandleFilter: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
 
@@ -65,9 +187,16 @@ export const FIELD_SETS = Object.freeze({
     filterName: "conditionRelationsFilter",
     fields: new Set(["conditionRelations.conditions.conditionSummary"])
   },
+  
+  conditionSummaryFieldSet: {
+    filterName: "conditionSummaryFilter",
+    fields: new Set(["conditionSummary"]),
+  }, 
 
-  conditionSummaryFilter: ["conditionSummary"],
-  conditionTaxonFilter: ["conditionTaxon.curie", "conditionTaxon.name"],
+  conditionTaxonFieldSet: {
+    filterName: "conditionTaxonFilter",
+    fields: new Set(["conditionTaxon.curie", "conditionTaxon.name"]),
+  }, 
 
   createdByFieldSet: {
     filterName: "createdByFilter",
@@ -123,8 +252,16 @@ export const FIELD_SETS = Object.freeze({
     filterName: "formulaFilter",
     fields: ["formula"],
   }, 
-  geneNameFilter: ["geneFullName.displayText", "geneFullName.formatText"],
-  geneSymbolFilter: ["geneSymbol.displayText", "geneSymbol.formatText"],
+  geneNameFieldSet: {
+    filterName: "geneNameFilter",
+    fields: ["geneFullName.displayText", "geneFullName.formatText"],
+  }, 
+  
+  geneSymbolFieldSet: {
+    filterName: "geneSymbolFilter",
+    fields: ["geneSymbol.displayText", "geneSymbol.formatText"],
+  }, 
+
   geneticModifierFilter: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"],
   geneticModifierRelationFilter: ["diseaseGeneticModifierRelation.name"],
   geneticSexFilter: ["geneticSex.name"],

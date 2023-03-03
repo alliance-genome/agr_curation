@@ -23,7 +23,7 @@ import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const AllelesTable = () => {
 
@@ -571,21 +571,21 @@ export const AllelesTable = () => {
 			field: "curie",
 			header: "Curie",
 			sortable: { isEnabled },
-			filterElement: {type: "input", fieldSet: "curieFieldSet"},
+			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
 			field: "alleleFullName.displayText",
 			header: "Name",
 			body: nameTemplate,
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "alleleNameFieldSet"}
+			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
 		},
 		{
 			field: "alleleSymbol.displayText",
 			header: "Symbol",
 			body: symbolTemplate,
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "alleleSymbolFieldSet"}
+			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
 		},
 		{
 			field: "alleleSecondaryIds.secondaryId",
@@ -593,14 +593,14 @@ export const AllelesTable = () => {
 			body: secondaryIdsTemplate,
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "secondaryIdsFieldSet"}
+			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
 			body: taxonTemplate,
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "taxonFieldSet"},
+			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => taxonEditor(props)
 		},
 		{
@@ -609,14 +609,14 @@ export const AllelesTable = () => {
 			body: mutationTypesTemplate,
 			editor: (props) => mutationTypesEditor(props),
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "alleleMutationFieldSet"}
+			filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,
 		},
 		{
 			field: "references.curie",
 			header: "References",
 			body: referencesTemplate,
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "referencesFieldSet"},
+			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			editor: (props) => referencesEditor(props)
 		},
 		{
@@ -624,28 +624,28 @@ export const AllelesTable = () => {
 			header: "Inheritance Modes",
 			body: inheritanceModesTemplate,
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "alleleInheritanceModesFieldSet"},
+			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
 			editor: (props) => inheritanceModesEditor(props),
 		},
 		{
 			field: "inCollection.name",
 			header: "In Collection",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "inCollectionFieldSet", useKeywordFields: true},
+			filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
 			editor: (props) => inCollectionEditor(props)
 		},
 		{
 			field: "isExtinct",
 			header: "Is Extinct",
 			body: isExtinctTemplate,
-			filterElement: {type: "dropdown", fieldSet: "isExtinctFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => isExtinctEditor(props)
 		},{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "updatedByFieldSet"},
+			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
