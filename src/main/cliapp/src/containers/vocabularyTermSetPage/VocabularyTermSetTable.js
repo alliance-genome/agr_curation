@@ -186,9 +186,8 @@ export const VocabularyTermSetTable = () => {
 		{
 			field: "name",
 			header: "Name",
-			sortable: isEnabled,
-			filter: true,
 			body: (rowData) => rowData.name,
+			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditor(props)
 		},
@@ -196,7 +195,6 @@ export const VocabularyTermSetTable = () => {
 			field: "vocabularyTermSetVocabulary.name",
 			header: "Vocabulary",
 			sortable: isEnabled,
-			filter: true,
 			body: vocabularyTemplate,
 			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props)
@@ -205,7 +203,6 @@ export const VocabularyTermSetTable = () => {
 			field: "memberTerms.name",
 			header: "Member Terms",
 			sortable: isEnabled,
-			filter: true,
 			body: memberTermsTemplate,
 			filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
 			editor: (props) => memberTermsEditorTemplate(props)
@@ -213,10 +210,9 @@ export const VocabularyTermSetTable = () => {
 		{
 			field: "vocabularyTermSetDescription",
 			header: "Description",
-			sortable: isEnabled,
-			filter: true,
 			body: (rowData) => rowData.vocabularyTermSetDescription,
-			filterConfig: {type: "input", fieldSet: "vocabularyTermSetDescriptionFieldSet"},
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
 			editor: (props) => descriptionEditor(props)
 		}
 	];

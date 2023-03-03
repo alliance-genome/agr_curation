@@ -241,25 +241,22 @@ export const ExperimentalConditionsTable = () => {
 			field: "uniqueId",
 			header: "Unique ID",
 			sortable: isEnabled,
-			filter: true,
 			body: uniqueIdBodyTemplate,
-			filterElement: {type: "input", fieldSet: "uniqueidFieldSet"},
+			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
 			field: "conditionSummary",
 			header: "Summary",
 			sortable: isEnabled,
-			filter: true,
 			body: summaryBodyTemplate,
-			filterElement: {type: "input", fieldSet: "conditionSummaryFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionSummaryFilterConfig,
 		},
 		{
 			field: "conditionClass.name",
 			header: "Class",
 			sortable: isEnabled,
 			body: conditionClassBodyTemplate,
-			filter: true,
-			filterElement: {type: "input", fieldSet: "conditionClassFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
 			editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields)
 		},
 		{
@@ -267,16 +264,14 @@ export const ExperimentalConditionsTable = () => {
 			header: "Condition Term",
 			sortable: isEnabled,
 			body: conditionIdBodyTemplate,
-			filter: true,
-			filterElement: {type: "input", fieldSet: "conditionIdFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm", curieAutocompleteFields)
 		},
 		{
 			field: "conditionGeneOntology.name",
 			header: "Gene Ontology",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", fieldSet: "conditionGeneOntologyFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm", curieAutocompleteFields),
 			body: conditionGeneOntologyBodyTemplate
 		},
@@ -285,8 +280,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Chemical",
 			sortable: isEnabled,
 			body: conditionChemicalBodyTemplate,
-			filter: true,
-			filterElement: {type: "input", fieldSet: "conditionChemicalFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm", curieAutocompleteFields)
 		},
 		{
@@ -294,8 +288,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Anatomy",
 			sortable: isEnabled,
 			body: conditionAnatomyBodyTemplate,
-			filter: true,
-			filterElement: {type: "input", fieldSet: "conditionAnatomyFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
 		},
 		{
@@ -303,7 +296,6 @@ export const ExperimentalConditionsTable = () => {
 			header: "Condition Taxon",
 			sortable: isEnabled,
 			body: conditionTaxonBodyTemplate,
-			filter: true,
 			filterElement: {type: "input", fieldSet: "conditionTaxonFieldSet"},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
 		},
@@ -311,7 +303,6 @@ export const ExperimentalConditionsTable = () => {
 			field: "conditionQuantity",
 			header: "Quantity",
 			sortable: isEnabled,
-			filter: true,
 			filterElement: {type: "input", fieldSet: "conditionQuantityFieldSet"},
 			editor: (props) => freeTextEditor(props, "conditionQuantity")
 		}
@@ -320,7 +311,6 @@ export const ExperimentalConditionsTable = () => {
 			field: "conditionFreeText",
 			header: "Free Text",
 			sortable: isEnabled,
-			filter: true,
 			filterElement: {type: "input", fieldSet: "conditionFreeTextFieldSet"},
 			editor: (props) => freeTextEditor(props, "conditionFreeText")
 		},
@@ -328,7 +318,6 @@ export const ExperimentalConditionsTable = () => {
 			field: "internal",
 			header: "Internal",
 			body: internalBodyTemplate,
-			filter: true,
 			filterElement: {type: "dropdown", fieldSet: "internalFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 			sortable: isEnabled,
 			editor: (props) => internalEditor(props)

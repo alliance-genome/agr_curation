@@ -1200,26 +1200,24 @@ export const DiseaseAnnotationsTable = () => {
 	const columns = [{
 		field: "uniqueId",
 		header: "Unique ID",
-		sortable: isEnabled,
 		body: uniqueIdBodyTemplate,
-		filterConfig: FILTER_CONFIGS.unquieFilterConfig,
-		filterElement: {type: "input", fieldSet: "uniqueidFieldSet"},
+		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 	},
 	{
 		field: "modEntityId",
 		header: "MOD Annotation ID",
-		sortable: isEnabled,
 		body: modEntityIdBodyTemplate,
-		filterElement: {type: "input", fieldSet: "modentityidFieldSet"},
+		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 	},
 	{
 		field: "subject.symbol",
 		header: "Subject",
+		body: subjectBodyTemplate,
 		sortable: isEnabled,
-		filterC
 		filterElement: {type: "input", fieldSet: "subjectFieldSet"},
 		editor: (props) => subjectEditorTemplate(props),
-		body: subjectBodyTemplate,
 	},
 	{
 		field: "diseaseRelation.name",
@@ -1232,25 +1230,26 @@ export const DiseaseAnnotationsTable = () => {
 		field: "negated",
 		header: "Negated",
 		body: negatedTemplate,
-		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		editor: (props) => negatedEditor(props)
 	},
 	{
 		field: "object.name",
 		header: "Disease",
+		body: diseaseBodyTemplate,
 		sortable: isEnabled,
 		filterElement: {type: "input", fieldSet: "objectFieldSet"},
 		editor: (props) => diseaseEditorTemplate(props),
-		body: diseaseBodyTemplate
 	},
 	{
 		field: "singleReference.curie",
 		header: "Reference",
+		body: singleReferenceBodyTemplate,
 		sortable: isEnabled,
 		filterElement: {type: "input", fieldSet: "singleReferenceFieldSet"},
 		editor: (props) => referenceEditorTemplate(props),
-		body: singleReferenceBodyTemplate
+		
 	},
 	{
 		field: "evidenceCodes.abbreviation",
@@ -1272,34 +1271,29 @@ export const DiseaseAnnotationsTable = () => {
 		field: "relatedNotes.freeText",
 		header: "Related Notes",
 		body: relatedNotesTemplate,
-		editor: relatedNotesEditor,
 		sortable: true,
 		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: FILTER_FIELDS.relatedNotesFilter},
+		editor: relatedNotesEditor,
 	},
 	{
 		field: "conditionRelations.handle",
 		header: "Experiments",
 		body: conditionRelationHandleTemplate,
-		editor: (props) => conditionRelationHandleEditor(props),
 		sortable: true,
-		filterElement: {
-			type: "input",
-			filterName: "conditionRelationHandleFilter",
-			fields: FILTER_FIELDS.conditionRelationHandleFilter,
-			nonNullFields: ["conditionRelations.handle"]
-		},
+		filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
+		editor: (props) => conditionRelationHandleEditor(props),
 	},
 	{
 		field: "conditionRelations.uniqueId",
 		header: "Experimental Conditions",
 		body: conditionRelationsTemplate,
-		editor: (props) => conditionRelationsEditor(props),
 		sortable: true,
 		filterElement: {
 			type: "input",
 			fieldSet: "conditionRelationsFieldSet",
 			nullFields: ["conditionRelations.handle"]
 		},
+		editor: (props) => conditionRelationsEditor(props),
 	},
 	{
 		field: "geneticSex.name",
@@ -1311,122 +1305,121 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseQualifiers.name",
 		header: "Disease Qualifiers",
+		body: diseaseQualifiersBodyTemplate,
 		sortable: isEnabled,
 		filterElement: {type: "multiselect", filterName: "diseaseQualifiersFilter", fields: FILTER_FIELDS.diseaseQualifiersFilter, useKeywordFields: true},
 		editor: (props) => diseaseQualifiersEditor(props),
-		body: diseaseQualifiersBodyTemplate
 	},
 	{
 		field: "sgdStrainBackground.name",
 		header: "SGD Strain Background",
+		body: sgdStrainBackgroundBodyTemplate,
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "sgdStrainBackgroundFilter", fields: FILTER_FIELDS.sgdStrainBackgroundFilter},
+		filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
 		editor: (props) => sgdStrainBackgroundEditorSelector(props),
-		body: sgdStrainBackgroundBodyTemplate
 	},
 	{
 		field: "annotationType.name",
 		header: "Annotation Type",
 		sortable: isEnabled,
-		filterElement: {type: "multiselect", filterName: "annotationTypeFilter", fields: FILTER_FIELDS.annotationTypeFilter, useKeywordFields: true},
+		filterConfig: FILTER_CONFIGS.annotationTypeFilterConfig,
 		editor: (props) => annotationTypeEditor(props)
 	},
 	{
 		field: "diseaseGeneticModifierRelation.name",
 		header: "Genetic Modifier Relation",
 		sortable: isEnabled,
-		filterElement: {type: "multiselect", filterName: "geneticModifierRelationFilter", fields: FILTER_FIELDS.geneticModifierRelationFilter, useKeywordFields: true},
+		filterConfig: FILTER_CONFIGS.geneticModifierRelationFilterConfig,
 		editor: (props) => geneticModifierRelationEditor(props)
 	},
 	{
 		field: "diseaseGeneticModifier.symbol",
 		header: "Genetic Modifier",
+		body: geneticModifierBodyTemplate,
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "geneticModifierFilter", fields: FILTER_FIELDS.geneticModifierFilter},
+		filterConfig: FILTER_CONFIGS.geneticModifierFilterConfig,
 		editor: (props) => geneticModifierEditorTemplate(props),
-		body: geneticModifierBodyTemplate
 	},
 	{
 		field: "inferredGene.geneSymbol.displayText",
 		header: "Inferred Gene",
+		body: inferredGeneBodyTemplate,
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "inferredGeneFilter", fields: FILTER_FIELDS.inferredGeneFilter},
-		body: inferredGeneBodyTemplate
+		filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 	},
 	{
 		field: "assertedGenes.geneSymbol.displayText",
 		header: "Asserted Genes",
+		body: assertedGenesBodyTemplate,
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "assertedGenesFilter", fields: FILTER_FIELDS.assertedGenesFilter},
+		filterConfig: FILTER_CONFIGS.assertedGenesFieldSet,
 		editor: (props) => assertedGenesEditorTemplate(props),
-		body: assertedGenesBodyTemplate
 	},
 	{
 		field: "inferredAllele.alleleSymbol.displayText",
 		header: "Inferred Allele",
+		body: inferredAlleleBodyTemplate,
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "inferredAlleleFilter", fields: FILTER_FIELDS.inferredAlleleFilter},
-		body: inferredAlleleBodyTemplate
+		fitlerConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 	},
 	{
 		field: "assertedAllele.alleleSymbol.displayText",
 		header: "Asserted Allele",
+		body: assertedAlleleBodyTemplate,
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "assertedAlleleFilter", fields: FILTER_FIELDS.assertedAlleleFilter},
+		filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
 		editor: (props) => assertedAlleleEditorTemplate(props),
-		body: assertedAlleleBodyTemplate
 	},
 	{
 		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "dataProviderFilter", fields: FILTER_FIELDS.dataProviderFilter},
+		filterConfig: FILTER_CONFIGS.dataProviderFilterConfig,
 	},
 	{
 		field: "secondaryDataProvider.sourceOrganization.abbreviation",
 		header: "Secondary Data Provider",
 		sortable: isEnabled,
-		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: FILTER_FIELDS.secondaryDataProviderFilter},
+		filterConfig: FILTER_CONFIGS.secondaryDataProviderFilterConfig,
 	},
 	{
 		field: "updatedBy.uniqueId",
 		header: "Updated By",
 		sortable: isEnabled,
-		filterElement: {type: "input", fieldSet: "updatedByFieldSet"},
+		filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 	},
 	{
 		field: "dateUpdated",
 		header: "Date Updated",
 		sortable: isEnabled,
-		filterElement: {type: "input", fieldSet: "dataUpdatedFieldSet"},
+		filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 	},
 	{
 		field: "createdBy.uniqueId",
 		header: "Created By",
 		sortable: isEnabled,
-		filterElement: {type: "input", fieldSet: "createdByFieldSet"},
+		filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 	},
 	{
 		field: "dateCreated",
 		header: "Date Created",
 		sortable: isEnabled,
-		filterElement: {type: "input", fieldSet: "dataCreatedFieldSet"},
+		filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 	},
 	{
 		field: "internal",
 		header: "Internal",
 		body: internalTemplate,
-		filterConfig: FILTER_CONFIGS.internalFilterConfig,
 		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.internalFilterConfig,
 		editor: (props) => internalEditor(props)
 	},
 	{
 		field: "obsolete",
 		header: "Obsolete",
 		body: obsoleteTemplate,
-		// filterElement: {type: "dropdown", fieldSet: "obsoleteFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
-		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		editor: (props) => obsoleteEditor(props)
 	}
 	];

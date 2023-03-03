@@ -47,14 +47,14 @@ export const MoleculesTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", fieldSet: "curieFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.curieFilterConfig, 
 		},
 		{
 			field: "name",
 			header: "Name",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", fieldSet: "nameFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.nameFilterConfig, 
 		},
 		{
 			field: "inchi",
@@ -62,14 +62,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: inChiBodyTemplate,
-			filterElement: {type: "input", fieldSet: "inchiFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.inchiFilterConfig, 
 		},
 		{
 			field: "inchiKey",
 			header: "InChiKey",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", fieldSet: "inchiKeyFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.inchiKeyFilterConfig, 
 		},
 		{
 			field: "iupac",
@@ -77,14 +77,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: iupacBodyTemplate,
-			filterElement: {type: "input", fieldSet: "iupacFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.iupacFilterConfig, 
 		},
 		{
 			field: "formula",
 			header: "Formula",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", fieldSet: "formulaFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.formulaFilterConfig, 
 		},
 		{
 			field: "smiles",
@@ -92,7 +92,7 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: smilesBodyTemplate,
-			filterElement: {type: "input", fieldSet: "smilesFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.smilesFilterConfig, 
 		}
 	];
 

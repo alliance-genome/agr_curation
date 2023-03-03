@@ -208,14 +208,14 @@ export const ConditionRelationTable = () => {
 			header: "Handle",
 			sortable: isEnabled,
 			body: (rowData) => rowData.handle,
-			filterElement: {type: "input", fieldSet: "handleFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
 			editor: (props) => handleEditor(props)
 		},
 		{
 			field: "singleReference.curie",
 			header: "Reference",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "singleReferenceFieldSet"},
+			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
 		},
@@ -223,7 +223,7 @@ export const ConditionRelationTable = () => {
 			field: "conditionRelationType.name",
 			header: "Relation",
 			sortable: isEnabled,
-			filterElement: {type: "multiselect", fieldSet: "conditionRelationsFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionRelationsFilterConfig,
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
@@ -231,7 +231,7 @@ export const ConditionRelationTable = () => {
 			header: "Experimental Conditions",
 			sortable: isEnabled,
 			body: conditionTemplate,
-			filterElement: {type: "input", fieldSet: "experimentalConditionFieldSet"},
+			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props)
 		},
 

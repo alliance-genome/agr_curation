@@ -24,7 +24,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		{
 			field: "curie",
 			header: "Curie",
-			filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			filterConfig: FILTER_CONFIGS.curieFilterConfig
 		}
 	);
 	columns.push(
@@ -32,7 +32,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			field: "name",
 			header: "Name",
 			body: (rowData) => <NameTemplate rowData={rowData}/>,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
+			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
 	);
 	if(!hideDefinition) {
@@ -41,8 +41,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 				field: "definition",
 				header: "Definition",
 				body: (rowData) => <DefinitionTemplate rowData={rowData} />,
-				filterElement: {type: "input", fieldSet: "definitionFieldSet"}
-				filterConfig: FILTER_CONFIGS.definitionFilterConfig,
+				filterConfig: FILTER_CONFIGS.definitionFilterConfig
 			},
 		);
 	}
@@ -51,7 +50,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "abbreviation",
 				header: "Abbreviation",
-				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
+				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig
 			}
 		);
 	}
@@ -60,7 +59,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "namespace",
 				header: "Name Space",
-				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
+				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig
 			}
 		);
 	}

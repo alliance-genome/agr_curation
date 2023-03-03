@@ -87,37 +87,37 @@ export const ResourceDescriptorsTable = () => {
 			field: "prefix", 
 			header: "Prefix", 
 			body: prefixBodyTemplate,
-			filterElement: {type: "input", fieldSet: "prefixFieldSet"}
+			filterConfig: FILTER_CONFIGS.prefixFilterConfig
 		},
 		{ 
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", fieldSet: "nameFieldSet"}
+			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
 		{ 
 			field: "synonyms", 
 			header: "Synonyms", 
 			body: synonymsBodyTemplate,
-			filterElement: {type: "input", fieldSet: "synonymsFieldSet"}
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig
 		},
 		{ 
 			field: "idPattern", 
 			header: "ID Pattern", 
 			body: idPatternBodyTemplate,
-			filterElement: {type: "input", fieldSet: "idPatternFieldSet"}
+			filterConfig: FILTER_CONFIGS.idPatternFilterConfig
 		},
 		{ 
 			field: "idExample", 
 			header: "ID Example", 
 			body: idExampleBodyTemplate,
-			filterElement: {type: "input", filterName: "idExampleFieldSet"}
+			filterConfig: FILTER_CONFIGS.idExampleFilterConfig
 		},
 		{ 
 			field: "defaultUrlTemplate", 
 			header: "Default URL Template", 
 			body: defaultUrlTemplateBodyTemplate,
-			filterElement: {type: "input", filterName: "defaultUrlTemplateFieldSet"}
+			filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig
 		}
 	]
 

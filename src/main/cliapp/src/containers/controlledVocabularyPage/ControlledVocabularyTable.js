@@ -13,7 +13,7 @@ import {NewTermForm} from "../../containers/controlledVocabularyPage/NewTermForm
 import {NewVocabularyForm} from "../../containers/controlledVocabularyPage/NewVocabularyForm";
 import {Button} from "primereact/button";
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const ControlledVocabularyTable = () => {
 		const newTermReducer = (state, action) => {
@@ -222,7 +222,7 @@ export const ControlledVocabularyTable = () => {
 			field: "name",
 			header: "Name",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "nameFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditorTemplate(props),
 			body: nameBodyTemplate
 		},
@@ -230,7 +230,7 @@ export const ControlledVocabularyTable = () => {
 			field: "abbreviation",
 			header: "Abbreviation",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "abbreviationFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
 			body: abbreviationBodyTemplate
 		},
@@ -238,7 +238,7 @@ export const ControlledVocabularyTable = () => {
 			field: "vocabulary.name",
 			header: "Vocabulary",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "vocabularyNameFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props),
 			body: vocabularyBodyTemplate
 		},
@@ -246,7 +246,7 @@ export const ControlledVocabularyTable = () => {
 			field: "definition",
 			header: "Definition",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "definitionFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
 			editor: (props) => definitionEditorTemplate(props),
 			body: definitionBodyTemplate
 		},
@@ -254,7 +254,7 @@ export const ControlledVocabularyTable = () => {
 			field: "obsolete",
 			header: "Obsolete",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "obsoleteFieldSet"}, 
+			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditorTemplate(props),
 			body: obsoleteBodyTemplate
 		}
