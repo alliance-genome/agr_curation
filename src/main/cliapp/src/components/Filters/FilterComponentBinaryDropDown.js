@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from "react";
 import { Dropdown } from "primereact/dropdown";
 
-export function FilterComponentDropDown({ isEnabled, field, tokenOperator= "OR" ,filterName, currentFilters, onFilter, options, optionField }) {
+export function FilterComponentBinaryDropDown({ isEnabled, field, tokenOperator= "OR" ,filterName, currentFilters, onFilter }) {
+	let options = [{ text: "true" }, { text: "false" }];
+	let optionField = "text";
+	
 		const [filterValue, setFilterValue] = useState(()=> {
 				for(let i=0; i<options.length; i++){
 						if(currentFilters && currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString){

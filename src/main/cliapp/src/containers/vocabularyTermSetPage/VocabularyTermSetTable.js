@@ -17,7 +17,7 @@ import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEdit
 import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS, FILTER_CONFIGS } from '../../constants/FilterFields';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 
 export const VocabularyTermSetTable = () => {

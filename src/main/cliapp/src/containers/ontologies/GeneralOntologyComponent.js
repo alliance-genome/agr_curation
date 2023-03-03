@@ -7,7 +7,6 @@ import { BooleanTemplate } from '../../components/BooleanTemplate';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { GenericDataTree } from '../../components/GenericDataTree';
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS, FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbbreviation, hideDefinition}) => {
 	const [isEnabled, setIsEnabled] = useState(true);

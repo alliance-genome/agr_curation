@@ -5,7 +5,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS, FILTER_CONFIGS } from '../../constants/FilterFields';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const VocabulariesTable = () => {
 

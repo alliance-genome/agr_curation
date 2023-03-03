@@ -16,7 +16,6 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { useNewConditionReducer } from './useNewConditionReducer';
 import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 
 export const ExperimentalConditionsTable = () => {
@@ -296,15 +295,14 @@ export const ExperimentalConditionsTable = () => {
 			header: "Condition Taxon",
 			sortable: isEnabled,
 			body: conditionTaxonBodyTemplate,
-			filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
-			filterElement: {type: "input", fieldSet: "conditionTaxonFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
 		},
 		{
 			field: "conditionQuantity",
 			header: "Quantity",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "conditionQuantityFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
 			editor: (props) => freeTextEditor(props, "conditionQuantity")
 		}
 		,
@@ -312,14 +310,14 @@ export const ExperimentalConditionsTable = () => {
 			field: "conditionFreeText",
 			header: "Free Text",
 			sortable: isEnabled,
-			filterElement: {type: "input", fieldSet: "conditionFreeTextFieldSet"},
+			filterConfig: FILTER_CONFIGS.conditionFreeTextFilterConfig,
 			editor: (props) => freeTextEditor(props, "conditionFreeText")
 		},
 		{
 			field: "internal",
 			header: "Internal",
 			body: internalBodyTemplate,
-			filterElement: {type: "dropdown", fieldSet: "internalFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => internalEditor(props)
 	},

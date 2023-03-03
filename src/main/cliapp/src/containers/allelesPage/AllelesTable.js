@@ -652,28 +652,28 @@ export const AllelesTable = () => {
 			header: "Date Updated",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", fieldSet: "dateUpdatedFieldSet"},
+			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", fieldSet: "createdByFieldSet"},
+			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", fieldSet: "dateCreatedFieldSet"},
+			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
 		{
 			field: "internal",
 			header: "Internal",
 			body: internalTemplate,
 			filter: true,
-			filterElement: {type: "dropdown", fieldSet: "internalFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => internalEditor(props)
 		},
@@ -682,7 +682,7 @@ export const AllelesTable = () => {
 			header: "Obsolete",
 			body: obsoleteTemplate,
 			filter: true,
-			filterElement: {type: "dropdown", fieldSet: "obsoleteFieldSet", options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => obsoleteEditor(props)
 		}

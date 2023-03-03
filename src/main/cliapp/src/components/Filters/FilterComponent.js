@@ -1,26 +1,18 @@
 import React from 'react';
 import { FilterComponentInputText } from './FilterComponentInputText';
-import { FilterComponentDropDown } from './FilterComponentDropdown';
+import { FilterComponentBinaryDropDown } from './FilterComponentBinaryDropDown';
 import { FilterComponentMultiSelect } from './FilterComponentMultiSelect';
 
 export const FilterComponent = ({
-	type,
+	filterConfig,
 	isEnabled,
-	fields,
-	nonNullFields,
-	nullFields,
-	filterName,
 	onFilter,
-	options,
-	optionField,
-	useKeywordFields = false,
 	aggregationFields,
 	tableState,
-	annotationsAggregations,
 	endpoint,
 }) => {
 
-	switch(type){
+	switch(filterConfig.type) {
 		case "input":
 			return (
 				<>
@@ -40,14 +32,12 @@ export const FilterComponent = ({
 		case "dropdown":
 			return (
 				<>
-				<FilterComponentDropDown
+				<FilterComponentBinaryDropDown
 					isEnabled={isEnabled}
 					field={fields[0]}
 					filterName={filterName}
 					currentFilters={tableState.filters}
 					onFilter={onFilter}
-					options={options}
-					optionField={optionField}
 				/>&nbsp;&nbsp;
 				<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
 				</>

@@ -214,9 +214,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "id",
 			header: "Id",
-			sortable: false,
-			showFilter: false,
-			filterElement: {type: "none"}, 
+			sortable: false
 		},
 		{
 			field: "name",

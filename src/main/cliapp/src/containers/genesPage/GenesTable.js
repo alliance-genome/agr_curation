@@ -4,7 +4,6 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Toast } from 'primereact/toast';
 import { Tooltip } from 'primereact/tooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
-import { FILTER_FIELDS } from '../../constants/FilterFields';
 
 
 export const GenesTable = () => {
