@@ -296,6 +296,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Condition Taxon",
 			sortable: isEnabled,
 			body: conditionTaxonBodyTemplate,
+			filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
 			filterElement: {type: "input", fieldSet: "conditionTaxonFieldSet"},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
 		},

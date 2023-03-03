@@ -14,6 +14,7 @@ export const FILTER_CONFIGS = Object.freeze({
   conditionIdFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionIdFieldSet] },
   conditionRelationHandleFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionRelationHandleFieldSet], nonNullFields: ["conditionRelations.handle"] },
   conditionSummaryFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionSummaryFieldSet] },
+  conditionTaxonFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionTaxonFieldSet] },
   createdByFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.createdByFieldSet] },
   curieFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.curieFieldSet] },
 
