@@ -11,8 +11,7 @@ export const FilterComponent = ({
 	tableState,
 	endpoint,
 }) => {
-
-	switch(filterConfig.type) {
+	switch(filterConfig.filterComponentType) {
 		case "input":
 			return (
 				<>
@@ -48,7 +47,6 @@ export const FilterComponent = ({
 					currentFilters={tableState.filters}
 					onFilter={onFilter}
 					aggregationFields={aggregationFields}
-					tableState={tableState}
 					endpoint={endpoint}
 				/>&nbsp;&nbsp;
 				<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>

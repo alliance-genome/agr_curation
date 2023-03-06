@@ -10,9 +10,9 @@ export const useGetUserSettings = (key, defaultValue) => {
 	const [settings, setSettings] = useState(() => {
 		const stickyValue = localStorage.getItem(key);
 		const stickyObject = stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
-		if(key !== 'themeSettings'){
-			stickyObject.filters = removeInvalidFilters(stickyObject.filters);
-			stickyObject.multiSortMeta = removeInvalidSorts(stickyObject.multiSortMeta);
+		if(key !== 'themeSettings') {
+		 	stickyObject.filters = removeInvalidFilters(stickyObject.filters);
+		 	stickyObject.multiSortMeta = removeInvalidSorts(stickyObject.multiSortMeta);
 		}
 
 		return stickyObject;
@@ -28,8 +28,8 @@ export const useGetUserSettings = (key, defaultValue) => {
 			}
 
 			if(key !== 'themeSettings'){
-				userSettings.filters = removeInvalidFilters(userSettings.filters);
-				userSettings.multiSortMeta = removeInvalidSorts(userSettings.multiSortMeta);
+			 	userSettings.filters = removeInvalidFilters(userSettings.filters);
+			 	userSettings.multiSortMeta = removeInvalidSorts(userSettings.multiSortMeta);
 			}
 
 			setSettings(userSettings)

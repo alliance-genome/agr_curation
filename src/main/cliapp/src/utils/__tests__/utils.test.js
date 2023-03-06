@@ -1,9 +1,9 @@
 import { describe, expect, it } from '@jest/globals';
-import { deleteInvalidFilters, deleteInvalidSorts } from '../utils';
+import { removeInvalidFilters, removeInvalidSorts } from '../utils';
 import 'core-js/features/structured-clone';
 
 
-describe('deleteInvalidFilters', () => {
+describe('removeInvalidFilters', () => {
   it('All Valid fields', () => {
     const localStorageFilters = {
       "objectFilter": {
@@ -29,7 +29,7 @@ describe('deleteInvalidFilters', () => {
         }
       }
     };
-    const newFilters = deleteInvalidFilters(localStorageFilters);
+    const newFilters = removeInvalidFilters(localStorageFilters);
     expect(newFilters).toEqual(localStorageFilters);
   });
 
@@ -58,9 +58,16 @@ describe('deleteInvalidFilters', () => {
         }
       }
     };
+    
+    const newFilters = removeInvalidFilters(localStorageFilters);
 
-    const newFilters = deleteInvalidFilters(localStorageFilters);
     expect(newFilters).toEqual({
+      "objectFilter": {
+        "object.curie": {
+          "queryString": "j",
+          "tokenOperator": "AND"
+        }
+      },
       "negatedFilter": {
         "negated": {
           "queryString": "true",
@@ -102,12 +109,12 @@ describe('deleteInvalidFilters', () => {
       }
     };
 
-    const newFilters = deleteInvalidFilters(localStorageFilters);
+    const newFilters = removeInvalidFilters(localStorageFilters);
     expect(newFilters).toEqual({});
   });
 });
 
-describe('deleteInvalidSorts', () => {
+describe('removeInvalidSorts', () => {
   it('All Valid fields', () => {
     const localMultiSortMeta = [
       {
@@ -123,7 +130,7 @@ describe('deleteInvalidSorts', () => {
         "order": 1
       }
     ];
-    const newSorts = deleteInvalidSorts(localMultiSortMeta);
+    const newSorts = removeInvalidSorts(localMultiSortMeta);
     expect(newSorts).toEqual(localMultiSortMeta);
   });
 
@@ -143,7 +150,7 @@ describe('deleteInvalidSorts', () => {
       }
     ];
 
-    const newSorts = deleteInvalidSorts(localMultiSortMeta);
+    const newSorts = removeInvalidSorts(localMultiSortMeta);
     expect(newSorts).toEqual([
       {
         "field": "object.name",
@@ -172,7 +179,7 @@ describe('deleteInvalidSorts', () => {
       }
     ];
 
-    const newSorts = deleteInvalidSorts(localMultiSortMeta);
+    const newSorts = removeInvalidSorts(localMultiSortMeta);
     expect(newSorts).toEqual([]);
   });
 });

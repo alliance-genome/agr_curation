@@ -82,9 +82,7 @@ export const DiseaseAnnotationsTable = () => {
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.curie']
 	};
 
-	const aggregationFields = [
-		'diseaseRelation.name', 'geneticSex.name', 'annotationType.name', 'diseaseGeneticModifierRelation.name', 'diseaseQualifiers.name'
-	];
+
 
 	const mutation = useMutation(updatedAnnotation => {
 		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
@@ -1264,7 +1262,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "With",
 		body: withTemplate,
 		sortable: isEnabled,
-		finterConfig: FILTER_CONFIGS.withFilterConfig,
+		filterConfig: FILTER_CONFIGS.withFilterConfig,
 		editor: (props) => withEditorTemplate(props)
 	},
 	{
@@ -1280,7 +1278,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Experiments",
 		body: conditionRelationHandleTemplate,
 		sortable: true,
-		filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
+		filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
 		editor: (props) => conditionRelationHandleEditor(props)
 	},
 	{
@@ -1348,7 +1346,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Asserted Genes",
 		body: assertedGenesBodyTemplate,
 		sortable: isEnabled,
-		filterConfig: FILTER_CONFIGS.assertedGenesFieldSet,
+		filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 		editor: (props) => assertedGenesEditorTemplate(props),
 	},
 	{
@@ -1356,7 +1354,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Inferred Allele",
 		body: inferredAlleleBodyTemplate,
 		sortable: isEnabled,
-		fitlerConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
+		filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 	},
 	{
 		field: "assertedAllele.alleleSymbol.displayText",
@@ -1445,7 +1443,6 @@ export const DiseaseAnnotationsTable = () => {
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
-					aggregationFields={aggregationFields}
 					isEditable={true}
 					sortMapping={sortMapping}
 					mutation={mutation}

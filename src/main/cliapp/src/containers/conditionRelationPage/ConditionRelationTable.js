@@ -55,10 +55,6 @@ export const ConditionRelationTable = () => {
 	};
 
 
-	const aggregationFields = [
-		'conditionRelationType.name'
-	];
-
 	const onConditionRelationTypeValueChange = (props, event) => {
 		let updatedConditions = [...props.props.value];
 		if (event.value || event.value === '') {
@@ -223,7 +219,7 @@ export const ConditionRelationTable = () => {
 			field: "conditionRelationType.name",
 			header: "Relation",
 			sortable: isEnabled,
-			filterConfig: FILTER_CONFIGS.conditionRelationsFilterConfig,
+			filterConfig: FILTER_CONFIGS.conditionRelationTypeFilterConfig,
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
@@ -263,7 +259,6 @@ export const ConditionRelationTable = () => {
 				columns={columns}
 				defaultColumnNames={defaultColumnNames}
 				initialTableState={initialTableState}
-				aggregationFields={aggregationFields}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}

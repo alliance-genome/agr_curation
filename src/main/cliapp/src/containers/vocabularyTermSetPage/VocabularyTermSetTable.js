@@ -50,10 +50,6 @@ export const VocabularyTermSetTable = () => {
 	};
 
 
-	const aggregationFields = [
-		'vocabularyTermSetVocabulary.name'
-	];
-
 	const vocabularyTemplate = (rowData) => {
 		if (rowData.vocabularyTermSetVocabulary) {
 			return (
@@ -243,7 +239,6 @@ export const VocabularyTermSetTable = () => {
 				columns={columns}
 				defaultColumnNames={defaultColumnNames}
 				initialTableState={initialTableState}
-				aggregationFields={aggregationFields}
 				isEditable={true}
 				idFields={["vocabularyTermSetVocabulary, memberTerms"]}
 				mutation={mutation}

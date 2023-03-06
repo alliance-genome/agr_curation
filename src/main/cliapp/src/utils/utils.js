@@ -1,7 +1,7 @@
 import { confirmDialog } from 'primereact/confirmdialog';
 import { SORT_FIELDS } from '../constants/SortFields';
 
-import { FILTER_CONFIGS, FIELD_SETS} from '../constants/FilterFields';
+import { FIELD_SETS} from '../constants/FilterFields';
 
 export function returnSorted(event, originalSort) {
 
@@ -245,7 +245,6 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 	autocompleteFields.forEach(field => {
 		filter[field] = {
 			queryString: event.query,
-			tokenOperator: "AND",
 			useKeywordFields: true
 		}
 	})
@@ -318,20 +317,37 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 
 export const removeInvalidFilters = (currentFilters) => {
 	const currentFiltersCopy = global.structuredClone(currentFilters);
-	const invalidFields = [];
 
 	if (currentFiltersCopy && Object.keys(currentFiltersCopy).length > 0) {
-		for (let filterName in currentFiltersCopy) {
+		const invalidFilters = [];
 
-			let correctFields = FIELD_SETS[filterName].sort();
-			let localStorageFields = Object.keys(currentFiltersCopy[filterName]).sort();
-	
-			if(JSON.stringify(correctFields) !== JSON.stringify(currentFilters)) invalidFields.push(filterName);
-		}
-		invalidFields.forEach(field => {
-			delete currentFiltersCopy[field];
+		let validFilters = {};
+		Object.entries(FIELD_SETS).forEach(([key, value]) => {
+			validFilters[[FIELD_SETS[key].filterName]] = value;
 		});
 
+		for (let filterName in currentFiltersCopy) {
+			if(validFilters[filterName]) {
+				let validFields = validFilters[filterName].fields;
+				const invalidFields = [];
+				for(let fieldName in currentFiltersCopy[filterName]) {
+					if(!validFields.includes(fieldName)) {
+						invalidFields.push(fieldName);
+					}
+				}
+				invalidFields.forEach(fieldName => {
+					delete currentFiltersCopy[filterName][fieldName];
+				});
+				if(Object.keys(currentFiltersCopy[filterName]).length == 0) {
+					delete currentFiltersCopy[filterName];
+				}
+			} else {
+				invalidFilters.push(filterName);
+			}
+		}
+		invalidFilters.forEach(filterName => {
+			delete currentFiltersCopy[filterName];
+		});
 	}
 
 	return currentFiltersCopy;
@@ -340,10 +356,9 @@ export const removeInvalidFilters = (currentFilters) => {
 export const removeInvalidSorts = (currentSorts) => {
 	const currentSortsCopy = global.structuredClone(currentSorts);
 
-	const invalidSorts = [];
-
+	let invalidSorts = [];
 	if (!currentSortsCopy || currentSortsCopy.length === 0) {
-		return invalidSorts;
+		return currentSortsCopy;
 	} else {
 		currentSortsCopy.forEach((sort) => {
 			if (!SORT_FIELDS.includes(sort.field)) invalidSorts.push(sort.field);

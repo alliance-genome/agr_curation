@@ -1,57 +1,58 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import { Dropdown } from "primereact/dropdown";
 
-export function FilterComponentBinaryDropDown({ isEnabled, field, tokenOperator= "OR" ,filterName, currentFilters, onFilter }) {
-	let options = [{ text: "true" }, { text: "false" }];
-	let optionField = "text";
-	
+export function FilterComponentBinaryDropDown({ isEnabled, filterConfig, currentFilters, onFilter }) {
+	const options = useRef(["true", "false"]);
+
+	const fieldSet = filterConfig.fieldSets[0];
+
 	const [filterValue, setFilterValue] = useState(() => {
-		for(let i=0; i<options.length; i++){
-			if(currentFilters && currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString){
-				return options[i];
+		
+		for(let i = 0; i < options.current.length; i++) {
+			if(currentFilters && currentFilters[fieldSet.filterName] && options.current[i] === currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString){
+				return options.current[i];
 			}
 		}
 		return null;
 	});
 
 	useEffect(() => {
-		if(currentFilters && currentFilters[filterName]) {
-			for (let i = 0; i < options.length; i++) {
-				if (currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString) {
-					setFilterValue(options[i]);
+		if(currentFilters && currentFilters[fieldSet.filterName]) {
+			for (let i = 0; i < options.current.length; i++) {
+				if (currentFilters[fieldSet.filterName] && options[i] === currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString) {
+					setFilterValue(options.current[i]);
 				}
 			}
 		} else {
 			setFilterValue(null);
 		}
-	}, [filterValue, currentFilters, field, filterName]);
+	}, [filterValue, currentFilters, fieldSet, options]);
 
 	return (
 		<Dropdown
 			disabled={!isEnabled}
 			value={filterValue}
-			options={options}
+			options={options.current}
 			showClear
-			optionLabel={optionField}
 			placeholder="Select"
 			style={{ width: '100%', display: 'inline-flex' }}
 			onChange={(e) => {
-				console.log(e.target.value);
 				setFilterValue(e.target.value);
 				let filter = {};
-				if(e.target.value && e.target.value[optionField].length !== 0) {
-					filter[field] = {
-						queryString : e.target.value[optionField],
-						tokenOperator : tokenOperator
+				if(e.target.value && e.target.value.length !== 0) {
+					filter[fieldSet.fields[0]] = {
+						queryString : e.target.value,
+						tokenOperator : "OR"
 					};
 				} else {
 					filter = null;
 				}
-				const filtersCopy = currentFilters;
+
+				const filtersCopy = currentFilters; // ? currentFilters : {};
 				if (filter === null) {
-					delete filtersCopy[filterName];
+					delete filtersCopy[fieldSet.filterName];
 				} else {
-					filtersCopy[filterName] = filter;
+					filtersCopy[fieldSet.filterName] = filter;
 				}
 				onFilter(filtersCopy);
 			}}
