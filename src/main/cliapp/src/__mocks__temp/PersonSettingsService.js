@@ -2,7 +2,7 @@
 import { BaseAuthService } from "./BaseAuthService";
 
 export class PersonSettingsService extends BaseAuthService {
-	getUserSettings(){
-		
-	}
+	getUserSettings(){ }
+
+	saveUserSettings(settingsKey, settingsMap) { }
 }
