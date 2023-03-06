@@ -338,7 +338,7 @@ export const removeInvalidFilters = (currentFilters) => {
 				invalidFields.forEach(fieldName => {
 					delete currentFiltersCopy[filterName][fieldName];
 				});
-				if(Object.keys(currentFiltersCopy[filterName]).length == 0) {
+				if(Object.keys(currentFiltersCopy[filterName]).length === 0) {
 					delete currentFiltersCopy[filterName];
 				}
 			} else {

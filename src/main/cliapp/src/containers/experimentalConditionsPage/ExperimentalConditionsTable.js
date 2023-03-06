@@ -248,7 +248,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Summary",
 			sortable: isEnabled,
 			body: summaryBodyTemplate,
-			filterConfig: FILTER_CONFIGS.conditionSummaryFilterConfig,
+			filterConfig: FILTER_CONFIGS.conditionRelationSummaryFilterConfig,
 		},
 		{
 			field: "conditionClass.name",
