@@ -11,48 +11,52 @@ export const FilterComponent = ({
 	tableState,
 	endpoint,
 }) => {
-	switch(filterConfig.filterComponentType) {
-		case "input":
-			return (
-				<>
-				<FilterComponentInputText
-					filterConfig={filterConfig}
-					isEnabled={isEnabled}
-					currentFilters={tableState.filters}
-					onFilter={onFilter}
-				/>&nbsp;&nbsp;
-				<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
-				</>
-			);
+	if(filterConfig) {
+		switch(filterConfig.filterComponentType) {
+			case "input":
+				return (
+					<>
+					<FilterComponentInputText
+						filterConfig={filterConfig}
+						isEnabled={isEnabled}
+						currentFilters={tableState.filters}
+						onFilter={onFilter}
+					/>&nbsp;&nbsp;
+					<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
+					</>
+				);
 
-		case "dropdown":
-			return (
-				<>
-				<FilterComponentBinaryDropDown
-					filterConfig={filterConfig}
-					isEnabled={isEnabled}
-					currentFilters={tableState.filters}
-					onFilter={onFilter}
-				/>&nbsp;&nbsp;
-				<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
-				</>
-			);
+			case "dropdown":
+				return (
+					<>
+					<FilterComponentBinaryDropDown
+						filterConfig={filterConfig}
+						isEnabled={isEnabled}
+						currentFilters={tableState.filters}
+						onFilter={onFilter}
+					/>&nbsp;&nbsp;
+					<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
+					</>
+				);
 
-		case "multiselect":
-			return (
-				<>
-				<FilterComponentMultiSelect
-					filterConfig={filterConfig}
-					isEnabled={isEnabled}
-					currentFilters={tableState.filters}
-					onFilter={onFilter}
-					aggregationFields={aggregationFields}
-					endpoint={endpoint}
-				/>&nbsp;&nbsp;
-				<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
-				</>
-			);
-		default:
-			return null;
-	};
+			case "multiselect":
+				return (
+					<>
+					<FilterComponentMultiSelect
+						filterConfig={filterConfig}
+						isEnabled={isEnabled}
+						currentFilters={tableState.filters}
+						onFilter={onFilter}
+						aggregationFields={aggregationFields}
+						endpoint={endpoint}
+					/>&nbsp;&nbsp;
+					<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
+					</>
+				);
+			default:
+				return null;
+		};
+	} else {
+		return null;
+	}
 }
