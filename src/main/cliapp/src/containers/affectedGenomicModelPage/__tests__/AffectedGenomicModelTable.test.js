@@ -6,6 +6,7 @@ import { AffectedGenomicModelTable } from "../AffectedGenomicModelTable";
 import { setLocalStorage } from "../../../tools/jest/setupTests";
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
 import { data } from "../mockData/mockData.js";
+import 'core-js/features/structured-clone';
 
 describe("<AffectedGenomicModelTable />", () => {
 	beforeEach(() => {
