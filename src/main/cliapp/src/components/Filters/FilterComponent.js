@@ -11,7 +11,7 @@ export const FilterComponent = ({
 	tableState,
 	endpoint,
 }) => {
-	if(filterConfig) {
+	if(filterConfig && filterConfig.filterComponentType) {
 		switch(filterConfig.filterComponentType) {
 			case "input":
 				return (
