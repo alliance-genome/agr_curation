@@ -17,11 +17,8 @@ export const FilterComponent = ({
 			return (
 				<>
 				<FilterComponentInputText
+					filterConfig={filterConfig}
 					isEnabled={isEnabled}
-					fields={fields}
-					nonNullFields={nonNullFields}
-					nullFields={nullFields}
-					filterName={filterName}
 					currentFilters={tableState.filters}
 					onFilter={onFilter}
 				/>&nbsp;&nbsp;
@@ -33,9 +30,8 @@ export const FilterComponent = ({
 			return (
 				<>
 				<FilterComponentBinaryDropDown
+					filterConfig={filterConfig}
 					isEnabled={isEnabled}
-					field={fields[0]}
-					filterName={filterName}
 					currentFilters={tableState.filters}
 					onFilter={onFilter}
 				/>&nbsp;&nbsp;
@@ -47,15 +43,12 @@ export const FilterComponent = ({
 			return (
 				<>
 				<FilterComponentMultiSelect
+					filterConfig={filterConfig}
 					isEnabled={isEnabled}
-					field={fields[0]}
-					useKeywordFields={useKeywordFields}
-					filterName={filterName}
 					currentFilters={tableState.filters}
 					onFilter={onFilter}
 					aggregationFields={aggregationFields}
 					tableState={tableState}
-					annotationsAggregations={annotationsAggregations}
 					endpoint={endpoint}
 				/>&nbsp;&nbsp;
 				<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>

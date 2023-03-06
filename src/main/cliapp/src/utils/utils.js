@@ -1,6 +1,7 @@
 import { confirmDialog } from 'primereact/confirmdialog';
 import { SORT_FIELDS } from '../constants/SortFields';
-import { FILTER_FIELDS } from '../constants/FilterFields';
+
+import { FILTER_CONFIGS, FIELD_SETS} from '../constants/FilterFields';
 
 export function returnSorted(event, originalSort) {
 
@@ -314,52 +315,43 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 	})
 }
 
-export const getInvalidFilterFields = (localStorageFilters) => {
+
+export const removeInvalidFilters = (currentFilters) => {
+	const currentFiltersCopy = global.structuredClone(currentFilters);
 	const invalidFields = [];
 
-	if (!localStorageFilters || Object.keys(localStorageFilters).length === 0) return invalidFields;
-	
-	for (let filterName in localStorageFilters) {
-		let correctFields = FILTER_FIELDS[filterName].sort();
-		let localStorageFields = Object.keys(localStorageFilters[filterName]).sort();
+	if (currentFiltersCopy && Object.keys(currentFiltersCopy).length > 0) {
+		for (let filterName in currentFiltersCopy) {
 
-		if(JSON.stringify(correctFields) !== JSON.stringify(localStorageFields)) invalidFields.push(filterName);
+			let correctFields = FIELD_SETS[filterName].sort();
+			let localStorageFields = Object.keys(currentFiltersCopy[filterName]).sort();
+	
+			if(JSON.stringify(correctFields) !== JSON.stringify(currentFilters)) invalidFields.push(filterName);
+		}
+		invalidFields.forEach(field => {
+			delete currentFiltersCopy[field];
+		});
+
 	}
 
-	return invalidFields;
+	return currentFiltersCopy;
 }
 
-export const deleteInvalidFilters = (oldFilters) => {
-	const updatedFilters = global.structuredClone(oldFilters);
-	const invalidFields = getInvalidFilterFields(oldFilters);
+export const removeInvalidSorts = (currentSorts) => {
+	const currentSortsCopy = global.structuredClone(currentSorts);
 
+	const invalidSorts = [];
 
-	invalidFields.forEach(field => {
-		delete updatedFilters[field];
-	});
+	if (!currentSortsCopy || currentSortsCopy.length === 0) {
+		return invalidSorts;
+	} else {
+		currentSortsCopy.forEach((sort) => {
+			if (!SORT_FIELDS.includes(sort.field)) invalidSorts.push(sort.field);
+		})
+		invalidSorts.forEach(field => {
+			currentSortsCopy.splice(currentSortsCopy.findIndex((sort) => sort.field === field), 1);
+		});
+	}
 
-	return updatedFilters;
-};
-
-export const getInvalidSortFields = (localStorageSorts) => {
-	const invalidFields = [];
-
-	if (!localStorageSorts || localStorageSorts.length === 0) return invalidFields;
-
-	localStorageSorts.forEach((sort) => {
-		if (!SORT_FIELDS.includes(sort.field)) invalidFields.push(sort.field);
-	})
-
-	return invalidFields;
-}
-
-export const deleteInvalidSorts = (oldSorts) => {
-	const updatedSorts = global.structuredClone(oldSorts);
-	const invalidFields = getInvalidSortFields(oldSorts);
-
-	invalidFields.forEach(field => {
-		updatedSorts.splice(updatedSorts.findIndex((sort) => sort.field === field), 1);
-	});
-
-	return updatedSorts;
+	return currentSortsCopy;
 }

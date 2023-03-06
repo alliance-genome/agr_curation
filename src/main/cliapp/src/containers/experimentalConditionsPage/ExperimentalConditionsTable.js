@@ -16,7 +16,7 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { useNewConditionReducer } from './useNewConditionReducer';
 import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 import { getDefaultTableState } from '../../service/TableStateService';
-
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const ExperimentalConditionsTable = () => {
 
