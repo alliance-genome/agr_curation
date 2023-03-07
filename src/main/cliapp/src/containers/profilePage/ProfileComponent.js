@@ -47,6 +47,16 @@ export const ProfileComponent = () => {
 		}, 500);
 	};
 
+	const resetTableState = (settingsKey) => {
+		personSettingsService.deleteUserSettings(settingsKey).then((data) => {
+			localStorage.removeItem(settingsKey);
+		});
+		setTimeout(() => {
+			window.location.reload();
+		}, 500);
+	};
+
+
 	const themeResetHandler = () => {
 		setThemeState(initialThemeState);
 		window.location.reload();
@@ -109,6 +119,22 @@ export const ProfileComponent = () => {
 		);
 	};
 
+	const tableResetTemplate = (props) => {
+		return (
+			<>
+				<Panel headerTemplate={headerTemplate} toggleable collapsed>
+					<ReactJson src={props.value} theme={themeState?.layoutColorMode === "light" ? "rjv-default" : "google"} />
+				</Panel>
+				<ConfirmButton
+					buttonText="Reset Table"
+					headerText={`${props.value.settingsKey} State Reset`}
+					messageText={`Are you sure? This will reset the local state of the ${props.name}.`}
+					acceptHandler={() => resetTableState(props.name)}
+				/>
+			</>
+		);
+	};
+
 	const userInfos = [
 		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate	 },
 		{ name: "Alliance Member", value: localUserInfo?.allianceMember?.fullName + " (" + localUserInfo?.allianceMember?.abbreviation + ")", template: textTemplate	},
@@ -120,6 +146,13 @@ export const ProfileComponent = () => {
 		{ name: "Okta Id Token Content", value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate	 },
 		{ name: "User Settings", value: localUserInfo.settings, template: jsonTemplate },
 	];
+
+	if(localUserInfo && localUserInfo.settings) {
+		for (let setting of localUserInfo.settings) {
+			if(setting.settingsKey === "themeSettings") continue;
+			userInfos.push({ name: setting.settingsKey, value: setting.settingsMap, template: tableResetTemplate });
+		}
+	}
 
 	return (
 		<div className="grid">
