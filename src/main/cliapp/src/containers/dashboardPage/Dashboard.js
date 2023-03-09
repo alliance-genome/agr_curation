@@ -48,37 +48,42 @@ export const Dashboard = () => {
 		ATPTerm: { name: "ATP", link: "/#/ontology/atp", type: 'ontology', },
 		XBEDTerm: { name: "XBED", link: "/#/ontology/xbed", type: 'ontology', },
 		OBITerm: { name: "OBI", link: "/#/ontology/obi", type: 'ontology', },
+		WBPhenotypeTerm: { name: "WBPheno", link: "/#/ontology/wbpheno", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
 	};
 
 	useEffect(() => {
+		let isMounted = true;
 		const systemService = new SystemService();
 
 		let _tableData = {};
 
 		systemService.getSiteSummary().then((res) => {
-			for (const key in res.entity){
+			if (isMounted) {
+				for (const key in res.entity){
 
-				if(!lookupMap[key]) continue;
+					if(!lookupMap[key]) continue;
 
-				const { type } = lookupMap[key];
+					const { type } = lookupMap[key];
 
-				if(!_tableData[type]){
-					_tableData[type] = [];
+					if(!_tableData[type]){
+						_tableData[type] = [];
+					}
+
+					_tableData[type].push({
+						name: lookupMap[key].name,
+						link: lookupMap[key].link,
+						dbCount: res.entity[key]["dbCount"],
+						esCount: res.entity[key]["esCount"]
+					});
 				}
-
-				_tableData[type].push({
-					name: lookupMap[key].name,
-					link: lookupMap[key].link,
-					dbCount: res.entity[key]["dbCount"],
-					esCount: res.entity[key]["esCount"]
-				});
+				setTableData(_tableData);
 			}
-			setTableData(_tableData);
 		});
-		// eslint-disable-next-line
+		return () => { isMounted = false };
+		// eslint-disable-next-line react-hooks/exhaustive-deps 
 	}, []);
 
 	const nameHyperlinkTemplate = (rowData) => {

@@ -47,5 +47,4 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	public APIResponse updateAlleleDiseaseAnnotations(String dataType, List<AlleleDiseaseAnnotationDTO> annotations) {
 		return alleleDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
 	}
-
 }

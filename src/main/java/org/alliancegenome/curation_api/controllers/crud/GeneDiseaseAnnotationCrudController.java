@@ -48,5 +48,4 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	public APIResponse updateGeneDiseaseAnnotations(String dataType, List<GeneDiseaseAnnotationDTO> annotations) {
 		return geneDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
 	}
-
 }

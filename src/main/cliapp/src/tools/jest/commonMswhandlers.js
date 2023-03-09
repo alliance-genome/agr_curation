@@ -39,3 +39,16 @@ export const setupSaveSettingsHandler = () => {
 		}),
 	)
 }
+
+export const setupSiteSummaryHandler = (override = {}) => {
+	server.use(
+		rest.get("*/api/system/sitesummary", (req, res, ctx) => {
+			return res(
+				ctx.status(200),
+				ctx.json(
+					{...override}
+				)
+			)
+		}),
+	)
+}

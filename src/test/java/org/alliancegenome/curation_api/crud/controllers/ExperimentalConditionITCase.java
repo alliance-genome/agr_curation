@@ -419,4 +419,19 @@ public class ExperimentalConditionITCase extends BaseITCase {
 			body("errorMessages", is(aMapWithSize(1))).
 			body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
 	}
+	
+	@Test
+	@Order(12)
+	public void createExperimentalConditionWithOnlyRequiredFields() {
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		experimentalCondition.setConditionClass(zecoTerm3);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(200);
+	}
 }

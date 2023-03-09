@@ -45,6 +45,8 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 			onSuccess: (res) => {
 				if(res.data.results) {
 					setHistoryExceptions(res.data.results);
+				} else {
+					setHistoryExceptions([]);
 				}
 				setTotalRecords(res.data.totalResults);
 			},
