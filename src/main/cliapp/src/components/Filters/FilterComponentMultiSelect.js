@@ -68,7 +68,7 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 			return itemTemplate(option);
 		}
 	}
-
+	
 	return (
 		<MultiSelect
 			disabled={!isEnabled}
