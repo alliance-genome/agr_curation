@@ -57,13 +57,13 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 		return (<div>{option.optionLabel}</div>);
 	};
 
-	const dataProviderItemTemplate = (option) => {
+	const upperCaseItemTemplate = (option) => {
 		return (<div>{option.optionLabel.toUpperCase()}</div>);
 	};
 
 	const templateSelector = (option) => {
 		if(fieldSet.filterName === "dataProviderFilter" || fieldSet.filterName === "secondaryDataProviderFilter") {
-			return dataProviderItemTemplate(option);
+			return upperCaseItemTemplate(option);
 		} else {
 			return itemTemplate(option);
 		}
