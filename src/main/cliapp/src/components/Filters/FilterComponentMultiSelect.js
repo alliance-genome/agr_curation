@@ -3,7 +3,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
-export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFilters, onFilter, aggregationFields, endpoint }) {
+export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFilters, onFilter, endpoint }) {
 	const [selectedOptions, setSelectedOptions] = useState([]);
 	const [selectableOptions, setSelectableOptions] = useState( []);
 
@@ -57,6 +57,18 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 		return (<div>{option.optionLabel}</div>);
 	};
 
+	const dataProviderItemTemplate = (option) => {
+		return (<div>{option.optionLabel.toUpperCase()}</div>);
+	};
+
+	const templateSelector = (option) => {
+		if(fieldSet.filterName === "dataProviderFilter" || fieldSet.filterName === "secondaryDataProviderFilter") {
+			return dataProviderItemTemplate(option);
+		} else {
+			return itemTemplate(option);
+		}
+	}
+
 	return (
 		<MultiSelect
 			disabled={!isEnabled}
@@ -66,7 +78,7 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 			display="chip"
 			optionLabel="optionLabel"
 			style={{ width: '100%', display: 'inline-flex' }}
-			itemTemplate={itemTemplate}
+			itemTemplate={templateSelector}
 			filter className={"multiselect-custom"}
 			panelFooterTemplate={panelFooterTemplate}
 			onChange={(e) => {
