@@ -59,13 +59,13 @@ public class GeneExecutor extends LoadFileExecutor {
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if (genes != null) {
-				bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			if (genes == null)
+				genes = new ArrayList<>();
+			
+			bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(speciesName, genes, dataType), bulkLoadFile);
-			}
-
+			trackHistory(runLoad(speciesName, genes, dataType), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

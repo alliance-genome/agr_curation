@@ -52,14 +52,13 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
 			String speciesName = manual.getDataType().getSpeciesName();
 
-			if (annotations != null) {
-				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			if (annotations == null)
+				annotations = new ArrayList<>();
+			
+			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
-
-			}
-
+			trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

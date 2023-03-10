@@ -59,12 +59,12 @@ public class AlleleExecutor extends LoadFileExecutor {
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if (alleles != null) {
-				bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
-				trackHistory(runLoad(speciesName, alleles, dataType), bulkLoadFile);
-			}
-
+			if (alleles == null)
+				alleles = new ArrayList<>();
+				
+			bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			trackHistory(runLoad(speciesName, alleles, dataType), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

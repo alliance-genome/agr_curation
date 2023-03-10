@@ -52,15 +52,14 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
 			String speciesName = manual.getDataType().getSpeciesName();
 
-			if (annotations != null) {
-				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
+			if (annotations == null)
+				annotations = new ArrayList<>();
+			
+			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
 
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
-
-			}
-
+			trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

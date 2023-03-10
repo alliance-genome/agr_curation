@@ -52,13 +52,12 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 			List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();
 			String speciesName = manual.getDataType().getSpeciesName();
 
-			if (annotations != null) {
-				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
-				trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
-
-			}
-
+			if (annotations == null)
+				annotations = new ArrayList<>();
+			
+			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());		
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

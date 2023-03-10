@@ -59,13 +59,13 @@ public class AgmExecutor extends LoadFileExecutor {
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if (agms != null) {
-				bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			if (agms == null)
+				agms = new ArrayList<>();
+			
+			bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(speciesName, agms, dataType), bulkLoadFile);
-			}
-
+			trackHistory(runLoad(speciesName, agms, dataType), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
