@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
@@ -29,7 +29,7 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 						 let queryStrings = currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString.split(" ");
 						 for (let i in tmp) {
 							 for(let j in queryStrings) {
-								 if (tmp[i].optionLabel === queryStrings[j]) {
+								 if (tmp[i].optionLabel === queryStrings[j].toLowerCase()) {
 									 newSelectedOptions.push(tmp[i]);
 									}
 								}
