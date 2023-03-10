@@ -110,7 +110,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		genes.forEach(geneDTO -> {
 
 			try {
-				Gene gene = geneService.upsert(geneDTO);
+				Gene gene = geneService.upsert(geneDTO, dataType);
 				history.incrementCompleted();
 				geneCuriesAfter.add(gene.getCurie());
 			} catch (ObjectUpdateException e) {

@@ -108,7 +108,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		alleles.forEach(alleleDTO -> {
 
 			try {
-				Allele allele = alleleService.upsert(alleleDTO);
+				Allele allele = alleleService.upsert(alleleDTO, dataType);
 				history.incrementCompleted();
 				alleleCuriesAfter.add(allele.getCurie());
 			} catch (ObjectUpdateException e) {

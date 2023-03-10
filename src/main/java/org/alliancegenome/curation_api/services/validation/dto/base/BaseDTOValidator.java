@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +29,8 @@ public class BaseDTOValidator {
 	PersonService personService;
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject
+	DataProviderService dataProviderService;
 
 	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO(E entity, D dto) {
 
@@ -78,7 +81,7 @@ public class BaseDTOValidator {
 		return response;
 	}
 
-	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO(E entity, D dto) {
+	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO(E entity, D dto, String dataType) {
 
 		ObjectResponse<E> beResponse = new ObjectResponse<E>();
 
@@ -100,17 +103,19 @@ public class BaseDTOValidator {
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
+		
+		entity.setDataProvider(dataProviderService.createOrganizationDataProvider(dataType));
 
 		beResponse.setEntity(entity);
 
 		return beResponse;
 	}
 
-	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO(E entity, D dto) {
+	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO(E entity, D dto, String dataType) {
 
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
 
-		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto);
+		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto, dataType);
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
 

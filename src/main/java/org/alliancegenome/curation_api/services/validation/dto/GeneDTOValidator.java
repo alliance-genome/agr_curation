@@ -56,7 +56,7 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
 
 	@Transactional
-	public Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
+	public Gene validateGeneDTO(GeneDTO dto, String dataType) throws ObjectValidationException {
 
 		ObjectResponse<Gene> geneResponse = new ObjectResponse<Gene>();
 
@@ -72,7 +72,7 @@ public class GeneDTOValidator extends BaseDTOValidator {
 
 		gene.setCurie(dto.getCurie());
 
-		ObjectResponse<Gene> geResponse = validateGenomicEntityDTO(gene, dto);
+		ObjectResponse<Gene> geResponse = validateGenomicEntityDTO(gene, dto, dataType);
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
 		gene = geResponse.getEntity();
 

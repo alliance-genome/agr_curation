@@ -85,7 +85,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	AlleleSecondaryIdSlotAnnotationDTOValidator alleleSecondaryIdDtoValidator;
 
 	@Transactional
-	public Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
+	public Allele validateAlleleDTO(AlleleDTO dto, String dataType) throws ObjectValidationException {
 
 		ObjectResponse<Allele> alleleResponse = new ObjectResponse<Allele>();
 
@@ -101,7 +101,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 
 		allele.setCurie(dto.getCurie());
 
-		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto);
+		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto, dataType);
 		alleleResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		allele = geResponse.getEntity();

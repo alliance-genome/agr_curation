@@ -54,13 +54,17 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	}
 	
 	@Transactional
-	public DataProvider createAllianceDataProvider() {
-		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", "Alliance");
+	public DataProvider createOrganizationDataProvider(String dataType) {
+		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", dataType);
 		if (orgResponse == null || orgResponse.getSingleResult() == null)
 			return null;
 		Organization member = orgResponse.getSingleResult();
 		
 		return createDataProvider(member);
+	}
+	
+	public DataProvider createAllianceDataProvider() {
+		return createOrganizationDataProvider("Alliance");
 	}
 	
 	private DataProvider createDataProvider(Organization member) {

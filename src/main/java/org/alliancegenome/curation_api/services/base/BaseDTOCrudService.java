@@ -9,6 +9,6 @@ public abstract class BaseDTOCrudService<E extends BaseEntity, T extends BaseDTO
 
 	protected abstract void init();
 
-	public abstract E upsert(T dto) throws ObjectUpdateException;
+	public abstract E upsert(T dto, String dataType) throws ObjectUpdateException;
 
 }

@@ -72,8 +72,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return new ObjectResponse<Gene>(dbEntity);
 	}
 
-	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
-		return geneDtoValidator.validateGeneDTO(dto);
+	public Gene upsert(GeneDTO dto, String dataType) throws ObjectUpdateException {
+		return geneDtoValidator.validateGeneDTO(dto, dataType);
 	}
 
 	public void removeOrDeprecateNonUpdatedGenes(String speciesNames, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {

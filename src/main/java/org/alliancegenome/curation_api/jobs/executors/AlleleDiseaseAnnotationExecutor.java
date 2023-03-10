@@ -83,7 +83,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		ph.startProcess("Allele Disease Annotation Update " + speciesName, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
-				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO);
+				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO, null);
 				history.incrementCompleted();
 				annotationIdsAfter.add(annotation.getId());
 			} catch (ObjectUpdateException e) {

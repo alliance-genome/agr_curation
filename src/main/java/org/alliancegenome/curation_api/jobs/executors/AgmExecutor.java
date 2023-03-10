@@ -109,7 +109,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		agms.forEach(agmDTO -> {
 
 			try {
-				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
+				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO, dataType);
 				history.incrementCompleted();
 				agmCuriesAfter.add(agm.getCurie());
 			} catch (ObjectUpdateException e) {

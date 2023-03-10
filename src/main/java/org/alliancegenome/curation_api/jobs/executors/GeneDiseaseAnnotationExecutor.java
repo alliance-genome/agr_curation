@@ -81,7 +81,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		annotations.forEach(annotationDTO -> {
 
 			try {
-				GeneDiseaseAnnotation annotation = geneDiseaseAnnotationService.upsert(annotationDTO);
+				GeneDiseaseAnnotation annotation = geneDiseaseAnnotationService.upsert(annotationDTO, null);
 				history.incrementCompleted();
 				annotationIdsAfter.add(annotation.getId());
 			} catch (ObjectUpdateException e) {

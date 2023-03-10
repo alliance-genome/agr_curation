@@ -65,8 +65,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		return new ObjectResponse<Allele>(dbEntity);
 	}
 
-	public Allele upsert(AlleleDTO dto) throws ObjectUpdateException {
-		return alleleDtoValidator.validateAlleleDTO(dto);
+	public Allele upsert(AlleleDTO dto, String dataType) throws ObjectUpdateException {
+		return alleleDtoValidator.validateAlleleDTO(dto, dataType);
 	}
 	
 	public void removeOrDeprecateNonUpdatedAlleles(String speciesNames, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter, String dataType) {
