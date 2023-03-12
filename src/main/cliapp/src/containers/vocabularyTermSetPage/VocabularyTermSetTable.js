@@ -17,6 +17,7 @@ import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEdit
 import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 
 export const VocabularyTermSetTable = () => {
@@ -48,10 +49,6 @@ export const VocabularyTermSetTable = () => {
 		newVocabularyTermSetDispatch({type: "OPEN_DIALOG"})
 	};
 
-
-	const aggregationFields = [
-		'vocabularyTermSetVocabulary.name'
-	];
 
 	const vocabularyTemplate = (rowData) => {
 		if (rowData.vocabularyTermSetVocabulary) {
@@ -185,37 +182,33 @@ export const VocabularyTermSetTable = () => {
 		{
 			field: "name",
 			header: "Name",
-			sortable: isEnabled,
-			filter: true,
 			body: (rowData) => rowData.name,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditor(props)
 		},
 		{
 			field: "vocabularyTermSetVocabulary.name",
 			header: "Vocabulary",
 			sortable: isEnabled,
-			filter: true,
 			body: vocabularyTemplate,
-			filterElement: {type: "input", filterName: "vocabularyFilter", fields: ["vocabularyTermSetVocabulary.name"]},
+			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props)
 		},
 		{
 			field: "memberTerms.name",
 			header: "Member Terms",
 			sortable: isEnabled,
-			filter: true,
 			body: memberTermsTemplate,
-			filterElement: {type: "input", filterName: "memberTermsFilter", fields: ["memberTerms.name"]},
+			filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
 			editor: (props) => memberTermsEditorTemplate(props)
 		},
 		{
 			field: "vocabularyTermSetDescription",
 			header: "Description",
-			sortable: isEnabled,
-			filter: true,
 			body: (rowData) => rowData.vocabularyTermSetDescription,
-			filterElement: {type: "input", filterName: "vocabularyTermSetDescriptionFilter", fields: ["vocabularyTermSetDescription"]},
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
 			editor: (props) => descriptionEditor(props)
 		}
 	];
@@ -246,7 +239,6 @@ export const VocabularyTermSetTable = () => {
 				columns={columns}
 				defaultColumnNames={defaultColumnNames}
 				initialTableState={initialTableState}
-				aggregationFields={aggregationFields}
 				isEditable={true}
 				idFields={["vocabularyTermSetVocabulary, memberTerms"]}
 				mutation={mutation}

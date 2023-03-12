@@ -4,7 +4,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Toast } from 'primereact/toast';
 import { Tooltip } from 'primereact/tooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
-
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const GenesTable = () => {
 
@@ -46,7 +46,7 @@ export const GenesTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
+			filterConfig: FILTER_CONFIGS.curieFilterConfig
 		},
 		{
 			field: "geneFullName.displayText",
@@ -54,14 +54,14 @@ export const GenesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["geneFullName.displayText", "geneFullName.formatText"]},
+			filterConfig: FILTER_CONFIGS.geneNameFilterConfig
 		},
 		{
 			field: "geneSymbol.displayText",
 			header: "Symbol",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "symbolFilter", fields: ["geneSymbol.displayText", "geneSymbol.formatText"]},
+			filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig
 		},
 		{
 			field: "taxon.name",
@@ -69,7 +69,7 @@ export const GenesTable = () => {
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
+			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		}
 	];
 

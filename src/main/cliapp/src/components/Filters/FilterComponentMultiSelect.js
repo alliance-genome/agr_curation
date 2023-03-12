@@ -1,39 +1,41 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
-import { SearchService } from '../service/SearchService';
+import { SearchService } from '../../service/SearchService';
 
-export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields = false, tokenOperator = "OR", filterName, currentFilters, onFilter, aggregationFields, tableState, annotationsAggregations, endpoint }) {
+export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFilters, onFilter, endpoint }) {
 	const [selectedOptions, setSelectedOptions] = useState([]);
-	const [selectableOptions, setSelectableOptions] = useState( []);
+	const [selectableOptions, setSelectableOptions] = useState([]);
+
+	const fieldSet = filterConfig.fieldSets[0];
 
 	const searchService = new SearchService();
-	useQuery([annotationsAggregations, aggregationFields, tableState],
-		() => searchService.search(endpoint, 0, 0, null,{},{}, aggregationFields), {
+
+	useQuery([filterConfig.aggregationFieldSet, currentFilters],
+		() => searchService.search(endpoint, 0, 0, null,{},{}, filterConfig.aggregationFieldSet.fields), {
 		 onSuccess: (data) => {
 				 let tmp = [];
 				 if(data.aggregations){
-						 for (let key in data.aggregations[field]) {
+						 for (let key in data.aggregations[fieldSet.fields[0]]) {
 								 tmp.push({
 										 optionLabel: key,
-										 optionValue: data.aggregations[field][key]
+										 optionValue: data.aggregations[fieldSet.fields[0]][key]
 								 });
 						 }
 				 };
 				 setSelectableOptions(tmp);
-				 if(currentFilters && currentFilters[filterName]) {
+				 if(currentFilters && currentFilters[fieldSet.filterName]) {
 						 let newSelectedOptions = [];
-						 let queryStrings = currentFilters[filterName][field].queryString.split(" ");
+						 let queryStrings = currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString.split(" ");
 						 for (let i in tmp) {
-								 for(let j in queryStrings) {
-										 if (tmp[i].optionLabel === queryStrings[j]) {
-												 newSelectedOptions.push(tmp[i]);
-										 }
-								 }
-						 }
-						 if(newSelectedOptions.length>0)
-								setSelectedOptions(newSelectedOptions);
-				 } else {
+							 for(let j in queryStrings) {
+								 if (tmp[i].optionLabel === queryStrings[j].toLowerCase()) {
+									 newSelectedOptions.push(tmp[i]);
+									}
+								}
+							}
+							if(newSelectedOptions.length>0) setSelectedOptions(newSelectedOptions);
+						} else {
 						 setSelectedOptions([]);
 				 }
 		},
@@ -54,6 +56,18 @@ export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields 
 		return (<div>{option.optionLabel}</div>);
 	};
 
+	const upperCaseItemTemplate = (option) => {
+		return (<div>{option.optionLabel.toUpperCase()}</div>);
+	};
+
+	const templateSelector = (option) => {
+		if(fieldSet.filterName === "dataProviderFilter" || fieldSet.filterName === "secondaryDataProviderFilter") {
+			return upperCaseItemTemplate(option);
+		} else {
+			return itemTemplate(option);
+		}
+	}
+
 	return (
 		<MultiSelect
 			disabled={!isEnabled}
@@ -63,7 +77,7 @@ export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields 
 			display="chip"
 			optionLabel="optionLabel"
 			style={{ width: '100%', display: 'inline-flex' }}
-			itemTemplate={itemTemplate}
+			itemTemplate={templateSelector}
 			filter className={"multiselect-custom"}
 			panelFooterTemplate={panelFooterTemplate}
 			onChange={(e) => {
@@ -76,19 +90,19 @@ export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields 
 									queryString += delim + e.target.value[i].optionLabel;
 									delim = " ";
 							}
-							filter[field] = {
-									useKeywordFields: useKeywordFields,
+							filter[fieldSet.fields[0]] = {
+									useKeywordFields: fieldSet.useKeywordFields,
 									queryString: queryString,
-									tokenOperator: tokenOperator
+									tokenOperator: "OR"
 							};
 					} else {
 							filter = null;
 					}
 					const filtersCopy = currentFilters ? currentFilters : {};
 					if (filter === null) {
-							delete filtersCopy[filterName];
+							delete filtersCopy[fieldSet.filterName];
 					} else {
-							filtersCopy[filterName] = filter;
+							filtersCopy[fieldSet.filterName] = filter;
 					}
 					onFilter(filtersCopy);
 			}}

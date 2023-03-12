@@ -37,10 +37,6 @@ export const InheritanceModesDialog = ({
 
 	const inheritanceModeTerms = useControlledVocabularyService('Allele inheritance mode vocabulary');
 
-	const aggregationFields = [
-		'inheritanceMode.name'
-	];
-
 	const showDialogHandler = () => {
 		let _localInheritanceModes = cloneInheritanceModes(originalInheritanceModes);
 		setLocalInheritanceModes(_localInheritanceModes);
@@ -387,7 +383,7 @@ export const InheritanceModesDialog = ({
 			<Toast ref={toast_topright} position="top-right" />
 			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
 				<h3>Inheritance Modes</h3>
-				<DataTable value={localInheritanceModes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} aggregationFields={aggregationFields}
+				<DataTable value={localInheritanceModes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} 
 						editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />

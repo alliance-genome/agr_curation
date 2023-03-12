@@ -8,7 +8,7 @@ import { Toast } from 'primereact/toast';
 import { MultiSelect } from 'primereact/multiselect';
 import { Checkbox } from 'primereact/checkbox';
 
-import { FilterComponent } from './FilterComponent'
+import { FilterComponent } from '../Filters/FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
 
@@ -96,22 +96,14 @@ export const GenericDataTable = (props) => {
 		/>
 	);
 
-	const filterComponentTemplate = ({ type, filterName, fields, nonNullFields, nullFields, options, optionField, useKeywordFields, annotationsAggregations }) => {
+	const filterComponentTemplate = (config) => {
 		return (
 			<FilterComponent
-				type={type}
-				filterName={filterName}
-				fields={fields}
-				nonNullFields={nonNullFields}
-				nullFields={nullFields}
+				filterConfig={config}
 				isEnabled={isEnabled}
 				onFilter={onFilter}
-				options={options}
-				optionField={optionField}
-				useKeywordFields = {useKeywordFields}
 				aggregationFields={aggregationFields}
 				tableState={tableState}
-				annotationsAggregations={annotationsAggregations}
 				endpoint={endpoint}
 			/>
 		);
@@ -135,7 +127,7 @@ export const GenericDataTable = (props) => {
 						filter
 						editor={col.editor}
 						showFilterMenu={false}
-						filterElement={() => filterComponentTemplate(col.filterElement)}
+						filterElement={() => filterComponentTemplate(col.filterConfig)}
 					/>;
 				} else {
 					return null;

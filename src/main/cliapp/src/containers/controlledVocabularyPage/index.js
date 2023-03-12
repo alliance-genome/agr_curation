@@ -1,3 +1,3 @@
-import { ControlledVocabularyComponent as ControlledVocabularyPage } from "./ControlledVocabularyComponent";
+import ControlledVocabularyPage from "./ControlledVocabularyPage";
 
 export { ControlledVocabularyPage };
