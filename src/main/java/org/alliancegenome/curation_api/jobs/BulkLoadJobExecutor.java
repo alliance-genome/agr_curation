@@ -75,12 +75,9 @@ public class BulkLoadJobExecutor {
 	@Inject
 	ObjectMapper mapper;
 
-	@Inject
-	XcoTermService xcoTermService;
-	@Inject
-	GoTermService goTermService;
-	@Inject
-	SoTermService soTermService;
+	@Inject XcoTermService xcoTermService;
+	@Inject GoTermService goTermService;
+	@Inject SoTermService soTermService;
 	@Inject
 	EcoTermService ecoTermService;
 	@Inject
@@ -292,7 +289,7 @@ public class BulkLoadJobExecutor {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 			}
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) { 
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
 			resourceDescriptorExecutor.runLoad(bulkLoadFile);
 		} else {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");

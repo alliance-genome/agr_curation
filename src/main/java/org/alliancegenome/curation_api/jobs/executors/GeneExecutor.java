@@ -27,6 +27,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -39,7 +40,7 @@ public class GeneExecutor extends LoadFileExecutor {
 
 	@Inject
 	GeneService geneService;
-	
+
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
@@ -57,16 +58,42 @@ public class GeneExecutor extends LoadFileExecutor {
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if (genes == null)
-				genes = new ArrayList<>();
-			
-			bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
-			bulkLoadFileDAO.merge(bulkLoadFile);
+			if (genes != null) {
+				bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
+				bulkLoadFileDAO.merge(bulkLoadFile);
 
-			trackHistory(runLoad(speciesName, genes, dataType), bulkLoadFile);
+				List<String> geneCuriesLoaded = new ArrayList<>();
+				List<String> geneCuriesBefore = geneService.getCuriesBySpeciesName(speciesName);
+				log.debug("runLoad: Before: total " + geneCuriesBefore.size());
+
+				APIResponse resp = runLoad(speciesName, genes, dataType, geneCuriesLoaded);
+				trackHistory(resp, bulkLoadFile);
+
+				runCleanup(Collections.singleton(speciesName), dataType, geneCuriesBefore, geneCuriesLoaded);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void runCleanup(Set<String> speciesNames, String dataType, List<String> geneCuriesBefore, List<String> geneCuriesLoaded) {
+		log.debug("runLoad: After: " + speciesNames + " " + geneCuriesLoaded.size());
+
+		List<String> distinctAfter = geneCuriesLoaded.stream().distinct().collect(Collectors.toList());
+		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
+
+		List<String> curiesToRemove = ListUtils.subtract(geneCuriesBefore, distinctAfter);
+		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
+
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " genes", curiesToRemove.size());
+		for (String curie : curiesToRemove) {
+			geneService.removeOrDeprecateNonUpdatedGene(curie, dataType);
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+
 	}
 
 	// Gets called from the API directly
@@ -80,26 +107,16 @@ public class GeneExecutor extends LoadFileExecutor {
 					speciesNames.add(taxon.getGenusSpecies());
 			}
 		}
-		return runLoad(speciesNames, genes, "API");
+		return runLoad(speciesNames, genes, "API", null);
 	}
 
-	public APIResponse runLoad(String speciesName, List<GeneDTO> genes, String dataType) {
+	public APIResponse runLoad(String speciesName, List<GeneDTO> genes, String dataType, List<String> curiesAdded) {
 		Set<String> speciesNames = Collections.singleton(speciesName);
-		return runLoad(speciesNames, genes, dataType);
+		return runLoad(speciesNames, genes, dataType, curiesAdded);
 	}
 
-	public APIResponse runLoad(Set<String> speciesNames, List<GeneDTO> genes, String dataType) {
+	public APIResponse runLoad(Set<String> speciesNames, List<GeneDTO> genes, String dataType, List<String> curiesAdded) {
 
-		List<String> geneCuriesBefore = new ArrayList<String>();
-		for (String speciesName : speciesNames) {
-			List<String> geneCuries = geneService.getCuriesBySpeciesName(speciesName);
-			log.debug("runLoad: Before: " + speciesName + " " + geneCuries.size());
-			geneCuriesBefore.addAll(geneCuries);
-		}
-		if (speciesNames.size() > 1)
-			log.debug("runLoad: Before: total " + geneCuriesBefore.size());
-
-		List<String> geneCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
@@ -110,7 +127,9 @@ public class GeneExecutor extends LoadFileExecutor {
 			try {
 				Gene gene = geneService.upsert(geneDTO);
 				history.incrementCompleted();
-				geneCuriesAfter.add(gene.getCurie());
+				if (curiesAdded != null) {
+					curiesAdded.add(gene.getCurie());
+				}
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
 			} catch (Exception e) {
@@ -120,8 +139,6 @@ public class GeneExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		});
 		ph.finishProcess();
-
-		geneService.removeOrDeprecateNonUpdatedGenes(speciesNames.toString(), geneCuriesBefore, geneCuriesAfter, dataType);
 
 		return new LoadHistoryResponce(history);
 	}

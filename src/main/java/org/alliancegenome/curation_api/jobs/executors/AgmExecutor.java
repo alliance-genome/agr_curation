@@ -27,6 +27,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -57,16 +58,43 @@ public class AgmExecutor extends LoadFileExecutor {
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if (agms == null)
-				agms = new ArrayList<>();
-			
-			bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
-			bulkLoadFileDAO.merge(bulkLoadFile);
+			if(agms != null) {
+				bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
+				bulkLoadFileDAO.merge(bulkLoadFile);
+				
+				List<String> amgCuriesLoaded = new ArrayList<>();
+				List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesBySpeciesName(speciesName);
+				log.debug("runLoad: Before: total " + agmCuriesBefore.size());
 
-			trackHistory(runLoad(speciesName, agms, dataType), bulkLoadFile);
+				APIResponse resp = runLoad(speciesName, agms, dataType, amgCuriesLoaded);
+				
+				trackHistory(resp, bulkLoadFile);
+
+				runCleanup(Collections.singleton(speciesName), dataType, agmCuriesBefore, amgCuriesLoaded);
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+
+	private void runCleanup(Set<String> speciesNames, String dataType, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
+		log.debug("runLoad: After: " + speciesNames + " " + agmCuriesAfter.size());
+
+		List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());
+		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
+
+		List<String> curiesToRemove = ListUtils.subtract(agmCuriesBefore, distinctAfter);
+		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
+
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " AGMs", curiesToRemove.size());
+		for (String curie : curiesToRemove) {
+			affectedGenomicModelService.removeOrDeprecateNonUpdatedAgm(curie, dataType);
+			ph.progressProcess();
+		}
+		ph.finishProcess();
 	}
 
 	// Gets called from the API directly
@@ -80,15 +108,15 @@ public class AgmExecutor extends LoadFileExecutor {
 					speciesNames.add(taxon.getGenusSpecies());
 			}
 		}
-		return runLoad(speciesNames, agms, "API");
+		return runLoad(speciesNames, agms, "API", null);
 	}
 
-	public APIResponse runLoad(String speciesName, List<AffectedGenomicModelDTO> agms, String dataType) {
+	public APIResponse runLoad(String speciesName, List<AffectedGenomicModelDTO> agms, String dataType, List<String> curiesAdded) {
 		Set<String> speciesNames = Collections.singleton(speciesName);
-		return runLoad(speciesNames, agms, dataType);
+		return runLoad(speciesNames, agms, dataType, curiesAdded);
 	}
 
-	public APIResponse runLoad(Set<String> speciesNames, List<AffectedGenomicModelDTO> agms, String dataType) {
+	public APIResponse runLoad(Set<String> speciesNames, List<AffectedGenomicModelDTO> agms, String dataType, List<String> curiesAdded) {
 
 		List<String> agmCuriesBefore = new ArrayList<String>();
 		for (String speciesName : speciesNames) {
@@ -109,7 +137,9 @@ public class AgmExecutor extends LoadFileExecutor {
 			try {
 				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
 				history.incrementCompleted();
-				agmCuriesAfter.add(agm.getCurie());
+				if(curiesAdded != null) {
+					agmCuriesAfter.add(agm.getCurie());
+				}
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
 			} catch (Exception e) {
@@ -119,8 +149,6 @@ public class AgmExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		});
 		ph.finishProcess();
-
-		affectedGenomicModelService.removeOrDeprecateNonUpdatedAgms(speciesNames.toString(), agmCuriesBefore, agmCuriesAfter, dataType);
 
 		return new LoadHistoryResponce(history);
 	}

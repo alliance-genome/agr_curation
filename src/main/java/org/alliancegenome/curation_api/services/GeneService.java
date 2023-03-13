@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -23,9 +22,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -74,24 +71,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
 		return geneDtoValidator.validateGeneDTO(dto);
-	}
-
-	public void removeOrDeprecateNonUpdatedGenes(String speciesNames, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {
-		log.debug("runLoad: After: " + speciesNames + " " + geneCuriesAfter.size());
-
-		List<String> distinctAfter = geneCuriesAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
-
-		List<String> curiesToRemove = ListUtils.subtract(geneCuriesBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " genes", curiesToRemove.size());
-		for (String curie : curiesToRemove) {
-			removeOrDeprecateNonUpdatedGene(curie, dataType);
-			ph.progressProcess();
-		}	
-		ph.finishProcess();
 	}
 	
 	@Transactional
