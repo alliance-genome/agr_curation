@@ -13,10 +13,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -59,13 +57,13 @@ public class GeneExecutor extends LoadFileExecutor {
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if (genes != null) {
-				bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			if (genes == null)
+				genes = new ArrayList<>();
+			
+			bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(speciesName, genes, dataType), bulkLoadFile);
-			}
-
+			trackHistory(runLoad(speciesName, genes, dataType), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
