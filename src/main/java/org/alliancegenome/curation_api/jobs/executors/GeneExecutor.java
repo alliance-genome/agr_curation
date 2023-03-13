@@ -58,19 +58,20 @@ public class GeneExecutor extends LoadFileExecutor {
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
+			List<String> geneCuriesLoaded = new ArrayList<>();
+			List<String> geneCuriesBefore = geneService.getCuriesBySpeciesName(speciesName);
+			
+			log.debug("runLoad: Before: total " + geneCuriesBefore.size());
+			
 			if (genes != null) {
 				bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
 				bulkLoadFileDAO.merge(bulkLoadFile);
 
-				List<String> geneCuriesLoaded = new ArrayList<>();
-				List<String> geneCuriesBefore = geneService.getCuriesBySpeciesName(speciesName);
-				log.debug("runLoad: Before: total " + geneCuriesBefore.size());
-
 				APIResponse resp = runLoad(speciesName, genes, dataType, geneCuriesLoaded);
 				trackHistory(resp, bulkLoadFile);
-
-				runCleanup(Collections.singleton(speciesName), dataType, geneCuriesBefore, geneCuriesLoaded);
 			}
+			
+			runCleanup(Collections.singleton(speciesName), dataType, geneCuriesBefore, geneCuriesLoaded);
 
 		} catch (Exception e) {
 			e.printStackTrace();
