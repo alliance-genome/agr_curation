@@ -20,7 +20,7 @@ public abstract class BaseDTOCrudController<S extends BaseDTOCrudService<E, T, D
 	}
 
 	public E upsert(T dto) throws ObjectUpdateException {
-		return service.upsert(dto);
+		return service.upsert(dto, null);
 	}
 
 }
