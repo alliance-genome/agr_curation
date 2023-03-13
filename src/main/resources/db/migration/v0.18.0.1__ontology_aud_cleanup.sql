@@ -97,13 +97,13 @@ DELETE FROM ontologyterm_definitionurls_aud
 	USING unused_ontology_rev
 	WHERE ontologyterm_definitionurls_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_is_a_ancestor_descendant_aud
+DELETE FROM ontologyterm_isa_ancestor_descendant_aud
 	USING unused_ontology_rev
-	WHERE ontologyterm_is_a_ancestor_descendant_aud.rev = unused_ontology_rev.rev;
+	WHERE ontologyterm_isa_ancestor_descendant_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_is_a_parent_children_aud
+DELETE FROM ontologyterm_isa_parent_children_aud
 	USING unused_ontology_rev
-	WHERE ontologyterm_is_a_parent_children_aud.rev = unused_ontology_rev.rev;
+	WHERE ontologyterm_isa_parent_children_aud.rev = unused_ontology_rev.rev;
 
 DELETE FROM ontologyterm_secondaryidentifiers_aud
 	USING unused_ontology_rev
