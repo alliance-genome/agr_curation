@@ -7,7 +7,6 @@ import javax.enterprise.context.ApplicationScoped;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
 @ApplicationScoped
