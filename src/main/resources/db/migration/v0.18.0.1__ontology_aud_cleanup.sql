@@ -73,32 +73,56 @@ DELETE FROM zfaterm_aud;
 INSERT INTO unused_ontology_rev (rev) SELECT rev FROM zfsterm_aud;
 DELETE FROM zfsterm_aud;
 
+CREATE INDEX unused_ontology_rev_index ON unused_ontology_rev USING btree (rev);
+
 DELETE FROM anatomicalterm_aud;
 
-DELETE FROM chemicalterm_aud WHERE rev IN (SELECT rev FROM unused_ontology_rev);
+DELETE FROM chemicalterm_aud
+	USING unused_ontology_rev
+	WHERE chemicalterm_aud.rev = unused_ontology_rev.rev;
 
 DELETE FROM experimentalconditionontologyterm_aud;
 
-DELETE FROM phenotypeterm_aud WHERE rev IN (SELECT rev FROM unused_ontology_rev);
+DELETE FROM phenotypeterm_aud
+	USING unused_ontology_rev
+	WHERE phenotypeterm_aud.rev = unused_ontology_rev.rev;
 
 DELETE FROM stageterm_aud;
 
-DELETE FROM ontologyterm_crossreference_aud WHERE rev in (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_crossreference_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_crossreference_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_definitionurls_aud WHERE rev in (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_definitionurls_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_definitionurls_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_isa_ancestor_descendant_aud WHERE rev in (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_is_a_ancestor_descendant_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_is_a_ancestor_descendant_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_isa_parent_children_aud WHERE rev in (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_is_a_parent_children_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_is_a_parent_children_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_secondaryidentifiers_aud WHERE rev in (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_secondaryidentifiers_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_secondaryidentifiers_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_subsets_aud WHERE rev in (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_subsets_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_subsets_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_synonym_aud WHERE rev in (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_synonym_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_synonym_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM ontologyterm_aud WHERE rev IN (SELECT rev FROM unused_ontology_rev);
+DELETE FROM ontologyterm_aud
+	USING unused_ontology_rev
+	WHERE ontologyterm_aud.rev = unused_ontology_rev.rev;
 
-DELETE FROM revinfo WHERE rev IN (SELECT rev FROM unused_ontology_rev);
+DELETE FROM revinfo
+	USING unused_ontology_rev
+	WHERE revinfo.rev = unused_ontology_rev.rev;
 
 DROP TABLE unused_ontology_rev;
