@@ -36,6 +36,8 @@ public class MoleculeExecutor extends LoadFileExecutor {
 			
 			runLoad(history, moleculeData);
 
+			history.finishLoad();
+			
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {

@@ -50,6 +50,7 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	public APIResponse updateGeneDiseaseAnnotations(String dataType, List<GeneDiseaseAnnotationDTO> annotations) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		geneDiseaseAnnotationExecutor.runLoad(history, BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations, null);
+		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}
 }
