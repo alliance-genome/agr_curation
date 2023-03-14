@@ -139,6 +139,10 @@ public class LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
 
+		history.setTotalDeleteRecords((long)idsToRemove.size());
+		
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
 				service.deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation", true);
@@ -147,8 +151,9 @@ public class LoadFileExecutor {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
 			}
-			
+			ph.progressProcess();
 		}
+		ph.finishProcess();
 	}
 	
 	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, Set<String> speciesNames, String dataType, List<String> curiesBefore, List<String> curiesAfter) {
@@ -160,8 +165,10 @@ public class LoadFileExecutor {
 		List<String> curiesToRemove = ListUtils.subtract(curiesBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
 
+		history.setTotalDeleteRecords((long)curiesToRemove.size());
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames, curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of primary objects " + dataType + " " + speciesNames, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
 				service.removeOrDeprecateNonUpdated(curie, dataType);
