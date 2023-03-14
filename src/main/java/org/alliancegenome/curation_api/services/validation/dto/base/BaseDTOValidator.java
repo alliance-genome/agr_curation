@@ -104,7 +104,8 @@ public class BaseDTOValidator {
 			entity.setTaxon(taxonResponse.getEntity());
 		}
 		
-		entity.setDataProvider(dataProviderService.createOrganizationDataProvider(dataType));
+		if (entity.getDataProvider() == null)
+			entity.setDataProvider(dataProviderService.createOrganizationDataProvider(dataType));
 
 		beResponse.setEntity(entity);
 
