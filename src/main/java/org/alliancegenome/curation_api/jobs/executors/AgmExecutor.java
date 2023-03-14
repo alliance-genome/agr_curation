@@ -27,11 +27,9 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections4.ListUtils;
 
-import lombok.extern.jbosslog.JBossLog;
+import io.quarkus.logging.Log;
 
-@JBossLog
 @ApplicationScoped
 public class AgmExecutor extends LoadFileExecutor {
 
@@ -48,53 +46,36 @@ public class AgmExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getSpeciesName());
+			Log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getSpeciesName());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			if (!validateSchemaVersion(bulkLoadFile, AffectedGenomicModelDTO.class))
 				return;
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
+			if (agms == null) agms = new ArrayList<>();
+			
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if(agms != null) {
-				bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
-				
-				List<String> amgCuriesLoaded = new ArrayList<>();
-				List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesBySpeciesName(speciesName);
-				log.debug("runLoad: Before: total " + agmCuriesBefore.size());
+			List<String> amgCuriesLoaded = new ArrayList<>();
+			List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesBySpeciesName(speciesName);
+			Log.debug("runLoad: Before: total " + agmCuriesBefore.size());
 
-				APIResponse resp = runLoad(speciesName, agms, dataType, amgCuriesLoaded);
-				
-				trackHistory(resp, bulkLoadFile);
+			bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			
+			BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 
-				runCleanup(Collections.singleton(speciesName), dataType, agmCuriesBefore, amgCuriesLoaded);
-			}
+			runLoad(history, Collections.singleton(speciesName), agms, dataType, amgCuriesLoaded);
+			
+			runCleanup(affectedGenomicModelService, history, Collections.singleton(speciesName), dataType, agmCuriesBefore, amgCuriesLoaded);
+			
+			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-
-	private void runCleanup(Set<String> speciesNames, String dataType, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
-		log.debug("runLoad: After: " + speciesNames + " " + agmCuriesAfter.size());
-
-		List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
-
-		List<String> curiesToRemove = ListUtils.subtract(agmCuriesBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " AGMs", curiesToRemove.size());
-		for (String curie : curiesToRemove) {
-			affectedGenomicModelService.removeOrDeprecateNonUpdatedAgm(curie, dataType);
-			ph.progressProcess();
-		}
-		ph.finishProcess();
 	}
 
 	// Gets called from the API directly
@@ -108,41 +89,30 @@ public class AgmExecutor extends LoadFileExecutor {
 					speciesNames.add(taxon.getGenusSpecies());
 			}
 		}
-		return runLoad(speciesNames, agms, "API", null);
-	}
-
-	public APIResponse runLoad(String speciesName, List<AffectedGenomicModelDTO> agms, String dataType, List<String> curiesAdded) {
-		Set<String> speciesNames = Collections.singleton(speciesName);
-		return runLoad(speciesNames, agms, dataType, curiesAdded);
-	}
-
-	public APIResponse runLoad(Set<String> speciesNames, List<AffectedGenomicModelDTO> agms, String dataType, List<String> curiesAdded) {
-
-		List<String> agmCuriesBefore = new ArrayList<String>();
-		for (String speciesName : speciesNames) {
-			List<String> agmCuries = affectedGenomicModelService.getCuriesBySpeciesName(speciesName);
-			log.debug("runLoad: Before: " + speciesName + " " + agmCuries.size());
-			agmCuriesBefore.addAll(agmCuries);
-		}
-		if (speciesNames.size() > 1)
-			log.debug("runLoad: Before: total " + agmCuriesBefore.size());
-
-		List<String> agmCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
+		
+		runLoad(history, speciesNames, agms, "API", null);
+		
+		return new LoadHistoryResponce(history);
+	}
+
+	public void runLoad(BulkLoadFileHistory history, Set<String> speciesNames, List<AffectedGenomicModelDTO> agms, String dataType, List<String> curiesAdded) {
+	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("AGM Update " + speciesNames.toString(), agms.size());
 		agms.forEach(agmDTO -> {
-
 			try {
 				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
-					agmCuriesAfter.add(agm.getCurie());
+					curiesAdded.add(agm.getCurie());
 				}
 			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(agmDTO, e.getMessage(), e.getStackTrace()));
 			}
 
@@ -150,6 +120,5 @@ public class AgmExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 
-		return new LoadHistoryResponce(history);
 	}
 }

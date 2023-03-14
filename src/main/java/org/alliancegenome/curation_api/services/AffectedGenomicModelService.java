@@ -70,7 +70,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeOrDeprecateNonUpdatedAgm(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataType) {
 		AffectedGenomicModel agm = agmDAO.find(curie);
 		if (agm != null) {
 			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
@@ -99,5 +99,6 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}
+
 
 }

@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -16,13 +18,17 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
+import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ProcessDisplayService;
+import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.quarkus.logging.Log;
 
 public class LoadFileExecutor {
 
@@ -39,10 +45,7 @@ public class LoadFileExecutor {
 	@Inject
 	APIVersionInfoService apiVersionInfoService;
 
-	protected void trackHistory(APIResponse runHistory, BulkLoadFile bulkLoadFile) {
-		LoadHistoryResponce res = (LoadHistoryResponce) runHistory;
-		BulkLoadFileHistory history = res.getHistory();
-
+	protected void trackHistory(BulkLoadFileHistory history, BulkLoadFile bulkLoadFile) {
 		history.setBulkLoadFile(bulkLoadFile);
 		bulkLoadFileHistoryDAO.persist(history);
 
@@ -52,7 +55,6 @@ public class LoadFileExecutor {
 
 		bulkLoadFile.getHistory().add(history);
 		bulkLoadFileDAO.merge(bulkLoadFile);
-
 	}
 
 	protected void addException(BulkLoadFileHistory history, ObjectUpdateExceptionData objectUpdateExceptionData) {
@@ -60,7 +62,6 @@ public class LoadFileExecutor {
 		exception.setException(objectUpdateExceptionData);
 		exception.setBulkLoadFileHistory(history);
 		history.getExceptions().add(exception);
-		history.incrementFailed();
 	}
 
 	protected String getVersionNumber(String versionString) {
@@ -125,6 +126,54 @@ public class LoadFileExecutor {
 		}
 		
 		return true;
+	}
+	
+
+	// The following methods are for bulk validation
+	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String speciesName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
+		Log.debug("runLoad: After: " + speciesName + " " + annotationIdsAfter.size());
+
+		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
+		Log.debug("runLoad: Distinct: " + speciesName + " " + distinctAfter.size());
+
+		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
+		Log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
+
+		for (Long id : idsToRemove) {
+			try {
+				service.deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation", true);
+				history.incrementDeleted();
+			} catch (Exception e) {
+				history.incrementDeleteFailed();
+				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
+			}
+			
+		}
+	}
+	
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, Set<String> speciesNames, String dataType, List<String> curiesBefore, List<String> curiesAfter) {
+		Log.debug("runLoad: After: " + speciesNames + " " + curiesAfter.size());
+
+		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
+		Log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
+
+		List<String> curiesToRemove = ListUtils.subtract(curiesBefore, distinctAfter);
+		Log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
+
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames, curiesToRemove.size());
+		for (String curie : curiesToRemove) {
+			try {
+				service.removeOrDeprecateNonUpdated(curie, dataType);
+				history.incrementDeleted();
+			} catch (Exception e) {
+				history.incrementDeleteFailed();
+				addException(history, new ObjectUpdateExceptionData("{ \"curie\": \"" + curie + "\"}", e.getMessage(), e.getStackTrace()));
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		
 	}
 
 }
