@@ -166,9 +166,8 @@ export const NewAnnotationForm = ({
 
 	const handleClear = () => {
 		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
-		if(withRef && withRef.current && withRef.current.inputRef && withRef.current.inputRef.current) withRef.current.inputRef.current.value = "";
-		if(evidenceCodesRef && evidenceCodesRef.current && evidenceCodesRef.current.inputRef && evidenceCodesRef.current.inputRef.current) evidenceCodesRef.current.inputRef.current.value = "";
-		//if(experimentsRef && experimentsRef.current) experimentsRef.current.clear(); //commented cz, clear() isn't any method
+		if(withRef.current.getInput()) withRef.current.getInput().value = "";
+		if(evidenceCodesRef.current.getInput().value) evidenceCodesRef.current.getInput().value = "";
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
 		setAsssertedAlleleEnabled(false);
