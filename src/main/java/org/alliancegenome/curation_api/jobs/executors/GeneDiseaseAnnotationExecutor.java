@@ -10,10 +10,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -52,13 +50,12 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 			List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();
 			String speciesName = manual.getDataType().getSpeciesName();
 
-			if (annotations != null) {
-				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
-				trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
-
-			}
-
+			if (annotations == null)
+				annotations = new ArrayList<>();
+			
+			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());		
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
