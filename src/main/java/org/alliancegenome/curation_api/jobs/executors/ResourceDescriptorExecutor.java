@@ -55,6 +55,8 @@ public class ResourceDescriptorExecutor extends LoadFileExecutor {
 			}
 		});
 		
+		history.finishLoad();
+		
 		resourceDescriptorService.removeNonUpdatedResourceDescriptors(rdNamesBefore, rdNamesAfter);
 		
 		log.info("Loading ResourceDescriptorFileFinished");

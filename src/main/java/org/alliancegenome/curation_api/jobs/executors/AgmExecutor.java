@@ -72,6 +72,8 @@ public class AgmExecutor extends LoadFileExecutor {
 			
 			runCleanup(affectedGenomicModelService, history, Collections.singleton(speciesName), dataType, agmCuriesBefore, amgCuriesLoaded);
 			
+			history.finishLoad();
+			
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
@@ -93,6 +95,8 @@ public class AgmExecutor extends LoadFileExecutor {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 		
 		runLoad(history, speciesNames, agms, null, null);
+		
+		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}

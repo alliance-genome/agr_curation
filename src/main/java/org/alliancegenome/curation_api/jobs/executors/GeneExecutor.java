@@ -73,6 +73,8 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			runCleanup(geneService, history, Collections.singleton(speciesName), dataType, geneCuriesBefore, geneCuriesLoaded);
 			
+			history.finishLoad();
+			
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
@@ -94,6 +96,8 @@ public class GeneExecutor extends LoadFileExecutor {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 		
 		runLoad(history, speciesNames, genes, null, null);
+		
+		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
