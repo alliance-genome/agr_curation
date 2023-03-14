@@ -80,7 +80,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		ph.startProcess("AGM Disease Annotation Update " + speciesName, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
-				AGMDiseaseAnnotation annotation = agmDiseaseService.upsert(annotationDTO, null);
+				AGMDiseaseAnnotation annotation = agmDiseaseService.upsert(annotationDTO);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
 					curiesAdded.add(annotation.getId());

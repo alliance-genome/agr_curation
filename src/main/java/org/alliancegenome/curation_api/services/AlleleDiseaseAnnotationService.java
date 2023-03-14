@@ -47,7 +47,7 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	}
 
 	@Transactional
-	public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto, String dataType) throws ObjectUpdateException {
+	public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto) throws ObjectUpdateException {
 		AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto);
 
 		return alleleDiseaseAnnotationDAO.persist(annotation);

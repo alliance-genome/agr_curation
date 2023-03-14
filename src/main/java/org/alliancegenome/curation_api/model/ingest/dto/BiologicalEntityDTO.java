@@ -20,4 +20,7 @@ public class BiologicalEntityDTO extends AuditedObjectDTO {
 	@JsonProperty("taxon_curie")
 	private String taxonCurie;
 
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("data_provider_dto")
+	private DataProviderDTO dataProviderDto;
 }

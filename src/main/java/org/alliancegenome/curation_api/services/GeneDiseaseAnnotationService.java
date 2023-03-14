@@ -47,7 +47,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	}
 
 	@Transactional
-	public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto, String dataType) throws ObjectUpdateException {
+	public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto) throws ObjectUpdateException {
 		GeneDiseaseAnnotation annotation = geneDiseaseAnnotationDtoValidator.validateGeneDiseaseAnnotationDTO(dto);
 
 		return geneDiseaseAnnotationDAO.persist(annotation);

@@ -50,7 +50,7 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	}
 
 	@Transactional
-	public AGMDiseaseAnnotation upsert(AGMDiseaseAnnotationDTO dto, String dataType) throws ObjectUpdateException {
+	public AGMDiseaseAnnotation upsert(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException {
 		AGMDiseaseAnnotation annotation = agmDiseaseAnnotationDtoValidator.validateAGMDiseaseAnnotationDTO(dto);
 
 		return agmDiseaseAnnotationDAO.persist(annotation);

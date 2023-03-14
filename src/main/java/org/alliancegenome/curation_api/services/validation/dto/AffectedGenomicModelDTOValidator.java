@@ -23,7 +23,7 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 
-	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, String dataType) throws ObjectValidationException {
+	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto) throws ObjectValidationException {
 		ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<AffectedGenomicModel>();
 
 		AffectedGenomicModel agm = null;
@@ -44,7 +44,7 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 			agm.setName(null);
 		}
 
-		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto, dataType);
+		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto);
 		agmResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		agm = geResponse.getEntity();

@@ -81,7 +81,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		ph.startProcess("Gene Disease Annotation Update " + speciesName, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
-				GeneDiseaseAnnotation annotation = geneDiseaseAnnotationService.upsert(annotationDTO, null);
+				GeneDiseaseAnnotation annotation = geneDiseaseAnnotationService.upsert(annotationDTO);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
 					curiesAdded.add(annotation.getId());

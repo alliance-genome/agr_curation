@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.ingest.dto.DataProviderDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ProcessDisplayService;
@@ -185,4 +186,14 @@ public class LoadFileExecutor {
 		
 	}
 
+	protected DataProviderDTO createDataProviderForDataType(String dataType) {
+		if (dataType == null)
+			return null;
+		
+		DataProviderDTO dto = new DataProviderDTO();
+		
+		dto.setSourceOrganizationAbbreviation(dataType);
+		
+		return dto;
+	}
 }

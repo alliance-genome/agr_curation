@@ -60,8 +60,8 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto, String dataType) throws ObjectUpdateException {
-		AffectedGenomicModel agm = agmDtoValidator.validateAffectedGenomicModelDTO(dto, dataType);
+	public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto) throws ObjectUpdateException {
+		AffectedGenomicModel agm = agmDtoValidator.validateAffectedGenomicModelDTO(dto);
 
 		if (agm == null)
 			return null;

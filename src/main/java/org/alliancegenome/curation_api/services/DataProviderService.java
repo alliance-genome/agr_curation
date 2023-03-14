@@ -54,8 +54,8 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	}
 	
 	@Transactional
-	public DataProvider createOrganizationDataProvider(String dataType) {
-		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", dataType);
+	public DataProvider createOrganizationDataProvider(String organizationAbbreviation) {
+		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", organizationAbbreviation);
 		if (orgResponse == null || orgResponse.getSingleResult() == null)
 			return null;
 		Organization member = orgResponse.getSingleResult();

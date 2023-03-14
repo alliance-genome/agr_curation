@@ -80,7 +80,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		ph.startProcess("Allele Disease Annotation Update " + speciesName, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
-				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO, null);
+				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
 					curiesAdded.add(annotation.getId());
