@@ -95,7 +95,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		}
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 		
-		runLoad(history, speciesNames, genes, "API", null);
+		runLoad(history, speciesNames, genes, null, null);
 		
 		history.finishLoad();
 		
@@ -109,6 +109,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		ph.startProcess("Gene Update " + speciesNames.toString(), genes.size());
 		genes.forEach(geneDTO -> {
 			try {
+				geneDTO.setDataProviderDto(createDataProviderForDataType(dataType));
 				Gene gene = geneService.upsert(geneDTO);
 				history.incrementCompleted();
 				if (curiesAdded != null) {

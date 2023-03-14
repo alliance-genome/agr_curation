@@ -94,7 +94,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		}
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 		
-		runLoad(history, speciesNames, alleles, "API", null);
+		runLoad(history, speciesNames, alleles, null, null);
 		
 		history.finishLoad();
 		
@@ -108,6 +108,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		ph.startProcess("Allele Update " + speciesNames.toString(), alleles.size());
 		alleles.forEach(alleleDTO -> {
 			try {
+				alleleDTO.setDataProviderDto(createDataProviderForDataType(dataType));
 				Allele allele = alleleService.upsert(alleleDTO);
 				history.incrementCompleted();
 				if (curiesAdded != null) {

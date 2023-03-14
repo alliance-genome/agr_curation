@@ -48,25 +48,29 @@ public class Gene extends GenomicEntity {
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie",
+			"displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie",
+			"displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private GeneFullNameSlotAnnotation geneFullName;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie",
+			"displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie",
+			"displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
