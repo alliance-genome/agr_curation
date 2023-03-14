@@ -50,8 +50,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validateSchemaVersion(bulkLoadFile, AlleleDTO.class))
-				return;
+			
+			if(!checkSchemaVersion(bulkLoadFile, AlleleDTO.class)) return;
 			
 			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
 			if (alleles == null) alleles = new ArrayList<>();

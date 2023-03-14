@@ -72,16 +72,6 @@ public class LoadFileExecutor {
 		return versionString;
 	}
 	
-	protected boolean validateSchemaVersion(BulkLoadFile bulkLoadFile, Class<?> dtoClass) {
-		if (validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass))
-			return true;
-		
-		bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
-		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-		bulkLoadFileDAO.merge(bulkLoadFile);
-		return false;
-	}
-	
 	private List<Integer> getVersionParts(String version) {
 		List<String> stringParts = new ArrayList<String>(Arrays.asList(version.split("\\.")));
 		List<Integer> intParts = new ArrayList<Integer>();
@@ -97,6 +87,17 @@ public class LoadFileExecutor {
 		while (intParts.size() < 3) { intParts.add(0); }
 		
 		return intParts;
+	}
+	
+
+	protected boolean checkSchemaVersion(BulkLoadFile bulkLoadFile, Class<?> dtoClass) {
+		if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass)) {
+			bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
+			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			return false;
+		}
+		return true;
 	}
 	
 	protected boolean validSchemaVersion(String submittedSchemaVersion, Class<?> dtoClass) {

@@ -51,8 +51,9 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validateSchemaVersion(bulkLoadFile, GeneDTO.class))
-				return;
+			
+			if(!checkSchemaVersion(bulkLoadFile, GeneDTO.class)) return;
+
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			if (genes == null) genes = new ArrayList<>();
 			
@@ -78,8 +79,6 @@ public class GeneExecutor extends LoadFileExecutor {
 			e.printStackTrace();
 		}
 	}
-
-
 
 	// Gets called from the API directly
 	public APIResponse runLoad(List<GeneDTO> genes) {

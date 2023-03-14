@@ -78,7 +78,7 @@ public class BulkLoadProcessor {
 			}
 			bulkLoadJobExecutor.process(bulkLoadFile);
 			JobStatus status = bulkLoadFile.getBulkloadStatus().equals(JobStatus.FAILED) ? JobStatus.FAILED : JobStatus.FINISHED;
-			endLoadFile(bulkLoadFile, "", status);
+			endLoadFile(bulkLoadFile, bulkLoadFile.getErrorMessage(), status);
 
 		} catch (Exception e) {
 			endLoadFile(bulkLoadFile, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage(), JobStatus.FAILED);
