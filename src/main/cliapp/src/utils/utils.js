@@ -315,6 +315,18 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 	})
 }
 
+export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
+	const bioEntityFieldNames = ["subject", "diseaseGeneticModifier", "sgdStrainBackground", "assertedAllele"];
+
+	bioEntityFieldNames.forEach((field) => {
+		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie")){
+			const _uiErrorMessages = {};
+			_uiErrorMessages[field] = "Must select from autosuggest";
+			setUiErrorMessages({..._uiErrorMessages});
+			areUiErrors.current = true;
+		}
+	})
+}
 
 export const removeInvalidFilters = (currentFilters) => {
 	const currentFiltersCopy = global.structuredClone(currentFilters);

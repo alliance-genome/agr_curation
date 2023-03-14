@@ -20,7 +20,7 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 												messageText= {`Are you sure? This will reset the local state of the ${title}.`}
 												acceptHandler={resetTableState}
 												disabled={!isEnabled}
-											/>
+											/>&nbsp;&nbsp;&nbsp;
 											{modReset &&
 												<ConfirmButton
 													buttonText="Set MOD Defaults"

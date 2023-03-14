@@ -19,7 +19,7 @@ import { ControlledVocabularyFormDropdown } from '../../components/ControlledVoc
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/ControlledVocabularyFormMultiSelector';
 import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
-import { autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter, validateFormBioEntityFields } from "../../utils/utils";
 import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
 import { SubjectAdditionalFieldData } from "../../components/SubjectAdditionalFieldData";
 import { AssertedAlleleAdditionalFieldData } from "../../components/AssertedAlleleAdditionalFieldData";
@@ -67,6 +67,8 @@ export const NewAnnotationForm = ({
 	const annotationTypeTerms = useControlledVocabularyService('Annotation types');
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
+	const [uiErrorMessages, setUiErrorMessages] = useState({});
+	const areUiErrors = useRef(false);
 
 	const validate = async (entities, endpoint) => {
 		const validationResultsArray = [];
@@ -90,6 +92,7 @@ export const NewAnnotationForm = ({
 		setIsEnabled(false);
 		setAsssertedAlleleEnabled(false);
 		setAsssertedGeneEnabled(false);
+		setUiErrorMessages({});
 	};
 
 	const validateTable = async (endpoint, errorType, row) => {
@@ -119,6 +122,14 @@ export const NewAnnotationForm = ({
 		newAnnotationDispatch({type: "SUBMIT"});
 		const isRelatedNotesErrors = await validateTable("note", "relatedNotesErrorMessages", newAnnotation.relatedNotes);
 		const isExConErrors = await validateTable("condition-relation", "exConErrorMessages", newAnnotation.conditionRelations);
+
+		areUiErrors.current = false;
+		validateFormBioEntityFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors);
+		if (areUiErrors.current) {
+			newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages", errorMessages: uiErrorMessages});
+			setIsEnabled(false);
+			return;
+		}
 
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
@@ -155,13 +166,13 @@ export const NewAnnotationForm = ({
 
 	const handleClear = () => {
 		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
-		withRef.current.inputRef.current.value = "";
-		evidenceCodesRef.current.inputRef.current.value = "";
-		experimentsRef.current.clear();
+		if(withRef.current.getInput()) withRef.current.getInput().value = "";
+		if(evidenceCodesRef.current.getInput().value) evidenceCodesRef.current.getInput().value = "";
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
 		setAsssertedAlleleEnabled(false);
 		setAsssertedGeneEnabled(false);
+		setUiErrorMessages({});
 	}
 
 	const handleSubmitAndAdd = (event) => {
@@ -169,6 +180,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const onSingleReferenceChange = (event) => {
+		setUiErrorMessages({});
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -211,6 +223,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const onSubjectChange = (event) => {
+		setUiErrorMessages({});
 		if (event.target && event.target.value !== '' && event.target.value != null) {
 			setIsEnabled(true);
 		} else {
@@ -394,7 +407,7 @@ export const NewAnnotationForm = ({
 		<div>
 			<Toast ref={toast_error} position="top-left" />
 			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newAnnotationDialog} style={{ width: '850px' }} header="Add Annotation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable >
+			<Dialog visible={newAnnotationDialog} style={{ width: '850px' }} header="Add Annotation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable="true" >
 				<form>
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
@@ -411,6 +424,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"subject"}/>
 							<SubjectAdditionalFieldData fieldData={newAnnotation.subject}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
@@ -447,6 +461,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.assertedAllele})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedAllele"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"assertedAllele"}/>
 							<AssertedAlleleAdditionalFieldData fieldData={newAnnotation.assertedAllele}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
@@ -623,6 +638,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.sgdStrainBackground})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"sgdStrainBackground"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"sgdStrainBackground"}/>
 							<SGDStrainBackgroundAdditionalFieldData fieldData={newAnnotation.sgdStrainBackground}/>
 						</SplitterPanel>
 					</Splitter>
@@ -656,6 +672,7 @@ export const NewAnnotationForm = ({
 								className={classNames({'p-invalid': submitted && errorMessages.diseaseGeneticModifierRelation})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseGeneticModifierRelation"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"diseaseGeneticModifierRelation"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}} size={60}>
 							<label htmlFor="diseaseGeneticModifier">Genetic Modifier</label>

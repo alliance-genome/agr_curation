@@ -43,8 +43,9 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validateSchemaVersion(bulkLoadFile, AlleleDiseaseAnnotationDTO.class))
-				return;
+			
+			if(!checkSchemaVersion(bulkLoadFile, AlleleDiseaseAnnotationDTO.class)) return;
+			
 			List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
 			if (annotations == null) annotations = new ArrayList<>();
 			

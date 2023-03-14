@@ -72,15 +72,6 @@ public class LoadFileExecutor {
 		return versionString;
 	}
 	
-	protected boolean validateSchemaVersion(BulkLoadFile bulkLoadFile, Class<?> dtoClass) {
-		if (validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass))
-			return true;
-		
-		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-		bulkLoadFileDAO.merge(bulkLoadFile);
-		return false;
-	}
-	
 	private List<Integer> getVersionParts(String version) {
 		List<String> stringParts = new ArrayList<String>(Arrays.asList(version.split("\\.")));
 		List<Integer> intParts = new ArrayList<Integer>();
@@ -96,6 +87,17 @@ public class LoadFileExecutor {
 		while (intParts.size() < 3) { intParts.add(0); }
 		
 		return intParts;
+	}
+	
+
+	protected boolean checkSchemaVersion(BulkLoadFile bulkLoadFile, Class<?> dtoClass) {
+		if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass)) {
+			bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
+			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			return false;
+		}
+		return true;
 	}
 	
 	protected boolean validSchemaVersion(String submittedSchemaVersion, Class<?> dtoClass) {
@@ -139,6 +141,10 @@ public class LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
 
+		history.setTotalDeleteRecords((long)idsToRemove.size());
+		
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
 				service.deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation", true);
@@ -147,8 +153,9 @@ public class LoadFileExecutor {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
 			}
-			
+			ph.progressProcess();
 		}
+		ph.finishProcess();
 	}
 	
 	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, Set<String> speciesNames, String dataType, List<String> curiesBefore, List<String> curiesAfter) {
@@ -160,8 +167,10 @@ public class LoadFileExecutor {
 		List<String> curiesToRemove = ListUtils.subtract(curiesBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
 
+		history.setTotalDeleteRecords((long)curiesToRemove.size());
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames, curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of primary objects " + dataType + " " + speciesNames, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
 				service.removeOrDeprecateNonUpdated(curie, dataType);

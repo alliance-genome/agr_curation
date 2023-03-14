@@ -50,8 +50,9 @@ public class AgmExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validateSchemaVersion(bulkLoadFile, AffectedGenomicModelDTO.class))
-				return;
+			
+			if(!checkSchemaVersion(bulkLoadFile, AffectedGenomicModelDTO.class)) return;
+			
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
 			if (agms == null) agms = new ArrayList<>();
 			
