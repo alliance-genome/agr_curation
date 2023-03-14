@@ -13,14 +13,9 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeMetaDataFmsDTO;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @ApplicationScoped
 public class MoleculeExecutor extends LoadFileExecutor {
 
@@ -37,7 +32,11 @@ public class MoleculeExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
-			trackHistory(runLoad(moleculeData), bulkLoadFile);
+			BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
+			
+			runLoad(history, moleculeData);
+
+			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -45,24 +44,23 @@ public class MoleculeExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(MoleculeMetaDataFmsDTO moleculeData) {
+	public void runLoad(BulkLoadFileHistory history, MoleculeMetaDataFmsDTO moleculeData) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Molecule DTO Update", moleculeData.getData().size());
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
 		for (MoleculeFmsDTO molecule : moleculeData.getData()) {
 			try {
 				moleculeService.processUpdate(molecule);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
 				addException(history, e.getData());
 			}
 			ph.progressProcess();
 		}
 		ph.finishProcess();
 
-		return new LoadHistoryResponce(history);
 	}
 
 }

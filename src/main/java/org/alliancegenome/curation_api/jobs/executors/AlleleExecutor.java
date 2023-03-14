@@ -28,9 +28,8 @@ import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-import lombok.extern.jbosslog.JBossLog;
+import io.quarkus.logging.Log;
 
-@JBossLog
 @ApplicationScoped
 public class AlleleExecutor extends LoadFileExecutor {
 
@@ -47,22 +46,34 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
+			Log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validateSchemaVersion(bulkLoadFile, AlleleDTO.class))
-				return;
+			
+			if(!checkSchemaVersion(bulkLoadFile, AlleleDTO.class)) return;
+			
 			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
+			if (alleles == null) alleles = new ArrayList<>();
+			
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
-
-			if (alleles == null)
-				alleles = new ArrayList<>();
-				
+			
+			List<String> alleleCuriesLoaded = new ArrayList<>();
+			List<String> alleleCuriesBefore = alleleService.getCuriesBySpeciesName(speciesName);
+			Log.debug("runLoad: Before: total " + alleleCuriesBefore.size());
+			
 			bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
 			bulkLoadFileDAO.merge(bulkLoadFile);
-			trackHistory(runLoad(speciesName, alleles, dataType), bulkLoadFile);
+			
+			BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+
+			runLoad(history, Collections.singleton(speciesName), alleles, dataType, alleleCuriesLoaded);
+			
+			runCleanup(alleleService, history, Collections.singleton(speciesName), dataType, alleleCuriesBefore, alleleCuriesLoaded);
+			
+			trackHistory(history, bulkLoadFile);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -79,39 +90,30 @@ public class AlleleExecutor extends LoadFileExecutor {
 					speciesNames.add(taxon.getGenusSpecies());
 			}
 		}
-		return runLoad(speciesNames, alleles, "API");
-	}
-
-	public APIResponse runLoad(String speciesName, List<AlleleDTO> alleles, String dataType) {
-		Set<String> speciesNames = Collections.singleton(speciesName);
-		return runLoad(speciesNames, alleles, dataType);
-	}
-
-	public APIResponse runLoad(Set<String> speciesNames, List<AlleleDTO> alleles, String dataType) {
-
-		List<String> alleleCuriesBefore = new ArrayList<String>();
-		for (String speciesName : speciesNames) {
-			List<String> alleleCuries = alleleService.getCuriesBySpeciesName(speciesName);
-			log.debug("runLoad: Before: " + speciesName + " " + alleleCuries.size());
-			alleleCuriesBefore.addAll(alleleCuries);
-		}
-		if (speciesNames.size() > 1)
-			log.debug("runLoad: Before: total " + alleleCuriesBefore.size());
-
-		List<String> alleleCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+		
+		runLoad(history, speciesNames, alleles, "API", null);
+		
+		return new LoadHistoryResponce(history);
+	}
+
+	public void runLoad(BulkLoadFileHistory history, Set<String> speciesNames, List<AlleleDTO> alleles, String dataType, List<String> curiesAdded) {
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Allele Update " + speciesNames.toString(), alleles.size());
 		alleles.forEach(alleleDTO -> {
-
 			try {
 				Allele allele = alleleService.upsert(alleleDTO);
 				history.incrementCompleted();
-				alleleCuriesAfter.add(allele.getCurie());
+				if (curiesAdded != null) {
+					curiesAdded.add(allele.getCurie());
+				}
 			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(alleleDTO, e.getMessage(), e.getStackTrace()));
 			}
 
@@ -119,9 +121,6 @@ public class AlleleExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 
-		alleleService.removeOrDeprecateNonUpdatedAlleles(speciesNames.toString(), alleleCuriesBefore, alleleCuriesAfter, dataType);
-
-		return new LoadHistoryResponce(history);
 	}
 
 }

@@ -39,7 +39,7 @@ public class GeneExecutor extends LoadFileExecutor {
 
 	@Inject
 	GeneService geneService;
-	
+
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
@@ -51,19 +51,30 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validateSchemaVersion(bulkLoadFile, GeneDTO.class))
-				return;
+			
+			if(!checkSchemaVersion(bulkLoadFile, GeneDTO.class)) return;
+
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
+			if (genes == null) genes = new ArrayList<>();
+			
 			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
 
-			if (genes == null)
-				genes = new ArrayList<>();
-			
+			List<String> geneCuriesLoaded = new ArrayList<>();
+			List<String> geneCuriesBefore = geneService.getCuriesBySpeciesName(speciesName);
+			log.debug("runLoad: Before: total " + geneCuriesBefore.size());
+
 			bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
-			trackHistory(runLoad(speciesName, genes, dataType), bulkLoadFile);
+			BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
+			
+			runLoad(history, Collections.singleton(speciesName), genes, dataType, geneCuriesLoaded);
+
+			runCleanup(geneService, history, Collections.singleton(speciesName), dataType, geneCuriesBefore, geneCuriesLoaded);
+			
+			trackHistory(history, bulkLoadFile);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -80,40 +91,30 @@ public class GeneExecutor extends LoadFileExecutor {
 					speciesNames.add(taxon.getGenusSpecies());
 			}
 		}
-		return runLoad(speciesNames, genes, "API");
-	}
-
-	public APIResponse runLoad(String speciesName, List<GeneDTO> genes, String dataType) {
-		Set<String> speciesNames = Collections.singleton(speciesName);
-		return runLoad(speciesNames, genes, dataType);
-	}
-
-	public APIResponse runLoad(Set<String> speciesNames, List<GeneDTO> genes, String dataType) {
-
-		List<String> geneCuriesBefore = new ArrayList<String>();
-		for (String speciesName : speciesNames) {
-			List<String> geneCuries = geneService.getCuriesBySpeciesName(speciesName);
-			log.debug("runLoad: Before: " + speciesName + " " + geneCuries.size());
-			geneCuriesBefore.addAll(geneCuries);
-		}
-		if (speciesNames.size() > 1)
-			log.debug("runLoad: Before: total " + geneCuriesBefore.size());
-
-		List<String> geneCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
+		
+		runLoad(history, speciesNames, genes, "API", null);
+		
+		return new LoadHistoryResponce(history);
+	}
+
+	public void runLoad(BulkLoadFileHistory history, Set<String> speciesNames, List<GeneDTO> genes, String dataType, List<String> curiesAdded) {
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-
 		ph.startProcess("Gene Update " + speciesNames.toString(), genes.size());
 		genes.forEach(geneDTO -> {
-
 			try {
 				Gene gene = geneService.upsert(geneDTO);
 				history.incrementCompleted();
-				geneCuriesAfter.add(gene.getCurie());
+				if (curiesAdded != null) {
+					curiesAdded.add(gene.getCurie());
+				}
 			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(geneDTO, e.getMessage(), e.getStackTrace()));
 			}
 
@@ -121,8 +122,5 @@ public class GeneExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 
-		geneService.removeOrDeprecateNonUpdatedGenes(speciesNames.toString(), geneCuriesBefore, geneCuriesAfter, dataType);
-
-		return new LoadHistoryResponce(history);
 	}
 }
