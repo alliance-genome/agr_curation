@@ -65,6 +65,8 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 			
 			runCleanup(diseaseAnnotationService, history, speciesName, annotationIdsBefore, annotationIdsLoaded);
 
+			history.finishLoad();
+			
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {

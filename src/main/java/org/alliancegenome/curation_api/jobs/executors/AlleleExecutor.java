@@ -72,6 +72,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 			runCleanup(alleleService, history, Collections.singleton(speciesName), dataType, alleleCuriesBefore, alleleCuriesLoaded);
 			
+			history.finishLoad();
+			
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
@@ -93,6 +95,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 		
 		runLoad(history, speciesNames, alleles, "API", null);
+		
+		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}

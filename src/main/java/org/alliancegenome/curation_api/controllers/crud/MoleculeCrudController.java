@@ -34,6 +34,7 @@ public class MoleculeCrudController extends BaseEntityCrudController<MoleculeSer
 	public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
 		moleculeExecutor.runLoad(history, moleculeData);
+		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}
 
