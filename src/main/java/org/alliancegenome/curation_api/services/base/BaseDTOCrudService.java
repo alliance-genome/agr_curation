@@ -11,4 +11,6 @@ public abstract class BaseDTOCrudService<E extends BaseEntity, T extends BaseDTO
 
 	public abstract E upsert(T dto, String dataType) throws ObjectUpdateException;
 
+	public abstract void removeOrDeprecateNonUpdated(String curie, String dataType);
+
 }

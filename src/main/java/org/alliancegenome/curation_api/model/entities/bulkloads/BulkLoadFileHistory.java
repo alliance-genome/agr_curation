@@ -50,7 +50,13 @@ public class BulkLoadFileHistory extends GeneratedAuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
 	private Long completedRecords = 0l;
-
+	
+	@JsonView({ View.FieldsOnly.class })
+	private Long deletedRecords = 0l;
+	
+	@JsonView({ View.FieldsOnly.class })
+	private Long deleteFailureRecords = 0l;
+	
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BulkLoadFile bulkLoadFile;
@@ -67,10 +73,20 @@ public class BulkLoadFileHistory extends GeneratedAuditedObject {
 	public void incrementCompleted() {
 		completedRecords++;
 	}
-
+	
 	@Transient
 	public void incrementFailed() {
 		failedRecords++;
+	}
+	
+	@Transient
+	public void incrementDeleted() {
+		deletedRecords++;
+	}
+
+	@Transient
+	public void incrementDeleteFailed() {
+		deleteFailureRecords++;
 	}
 
 	@Transient

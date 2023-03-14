@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -24,9 +23,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -69,26 +66,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		return alleleDtoValidator.validateAlleleDTO(dto, dataType);
 	}
 	
-	public void removeOrDeprecateNonUpdatedAlleles(String speciesNames, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter, String dataType) {
-		log.debug("runLoad: After: " + speciesNames + " " + alleleCuriesAfter.size());
-
-		List<String> distinctAfter = alleleCuriesAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
-
-		List<String> curiesToRemove = ListUtils.subtract(alleleCuriesBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " alleles", curiesToRemove.size());
-		for (String curie : curiesToRemove) {
-			removeOrDeprecateNonUpdatedAllele(curie, dataType);
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-	}
-	
 	@Transactional
-	public void removeOrDeprecateNonUpdatedAllele(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataType) {
 		Allele allele = alleleDAO.find(curie);
 		if (allele != null) {
 			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);

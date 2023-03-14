@@ -60,4 +60,7 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
+
+	@Override
+	public void removeOrDeprecateNonUpdated(String curie, String dataType) { }
 }

@@ -60,4 +60,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
+
+	@Override
+	public void removeOrDeprecateNonUpdated(String curie, String dataType) { }
 }
