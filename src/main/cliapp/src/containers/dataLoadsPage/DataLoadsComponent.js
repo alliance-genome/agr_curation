@@ -347,6 +347,10 @@ export const DataLoadsComponent = () => {
 					<Column field="completedRecords" header="Records Completed" />
 					<Column field="failedRecords" header="Records Failed" />
 					<Column field="totalRecords" header="Total Records" />
+
+					<Column field="deletedRecords" header="Deletes Completed" />
+					<Column field="deleteFailedRecords" header="Deletes Failed" />
+					<Column field="totalDeleteRecords" header="Total Deletes" />
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
 			</div>

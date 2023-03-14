@@ -295,9 +295,7 @@ public class BulkLoadJobExecutor {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 		}
-		log.info("Process Finished for: " + bulkLoadFile.getBulkLoad().
-
-			getName());
+		log.info("Process Finished for: " + bulkLoadFile.getBulkLoad().getName());
 	}
 
 	private void processTerms(BulkLoadFile bulkLoadFile, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {

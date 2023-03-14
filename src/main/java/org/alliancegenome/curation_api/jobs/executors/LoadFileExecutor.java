@@ -76,6 +76,7 @@ public class LoadFileExecutor {
 		if (validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass))
 			return true;
 		
+		bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
 		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		return false;

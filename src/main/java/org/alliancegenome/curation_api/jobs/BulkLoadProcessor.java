@@ -77,8 +77,7 @@ public class BulkLoadProcessor {
 				syncWithS3(bulkLoadFile);
 			}
 			bulkLoadJobExecutor.process(bulkLoadFile);
-			JobStatus status = bulkLoadFile.getBulkloadStatus().equals(JobStatus.FAILED) ?
-					JobStatus.FAILED : JobStatus.FINISHED;
+			JobStatus status = bulkLoadFile.getBulkloadStatus().equals(JobStatus.FAILED) ? JobStatus.FAILED : JobStatus.FINISHED;
 			endLoadFile(bulkLoadFile, "", status);
 
 		} catch (Exception e) {
