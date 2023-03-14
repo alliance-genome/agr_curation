@@ -116,6 +116,14 @@ DELETE FROM ontologyterm_subsets_aud
 DELETE FROM ontologyterm_synonym_aud
 	USING unused_ontology_rev
 	WHERE ontologyterm_synonym_aud.rev = unused_ontology_rev.rev;
+	
+DELETE FROM synonym_aud
+	USING unused_ontology_rev
+	WHERE synonym_aud.rev = unused_ontology_rev.rev;
+		
+DELETE FROM crossreference_aud
+	USING unused_ontology_rev
+	WHERE crossreference_aud.rev = unused_ontology_rev.rev;
 
 DELETE FROM ontologyterm_aud
 	USING unused_ontology_rev
