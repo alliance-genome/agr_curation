@@ -6,7 +6,6 @@ import { trimWhitespace, returnSorted, reorderArray, validateBioEntityFields, se
 import { useGetUserSettings } from "../../service/useGetUserSettings";
 import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
 
-
 export const useGenericDataTable = ({
 	endpoint,
 	tableName,
@@ -359,7 +358,6 @@ export const useGenericDataTable = ({
 	const resetToModDefault = () => {
 		const initialTableState = getModTableState(tableState.tableKeyName);
 
-		setDefaultColumnOrder(columns, dataTable, initialTableState.selectedColumnNames, deletionEnabled, initialTableState);
 		setTableState(initialTableState);
 		const _columnWidths = {...columnWidths};
 
@@ -374,7 +372,6 @@ export const useGenericDataTable = ({
 	const resetTableState = () => {
 		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames);
 		
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled, defaultTableState);
 		setTableState(defaultTableState);
 		const _columnWidths = {...columnWidths};
 

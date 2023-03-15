@@ -1,5 +1,13 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
@@ -14,13 +22,6 @@ import org.alliancegenome.curation_api.services.validation.ConditionRelationVali
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.common.collect.List;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.Optional;
 
 @RequestScoped
 public class ConditionRelationService extends BaseEntityCrudService<ConditionRelation, ConditionRelationDAO> {

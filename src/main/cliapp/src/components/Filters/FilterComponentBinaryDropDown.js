@@ -48,7 +48,8 @@ export function FilterComponentBinaryDropDown({ isEnabled, filterConfig, current
 					filter = null;
 				}
 
-				const filtersCopy = currentFilters; // ? currentFilters : {};
+				//undefined check needs to be in place. Otherwise, the else block below will throw an error 
+				const filtersCopy = currentFilters  ? currentFilters : {};
 				if (filter === null) {
 					delete filtersCopy[fieldSet.filterName];
 				} else {

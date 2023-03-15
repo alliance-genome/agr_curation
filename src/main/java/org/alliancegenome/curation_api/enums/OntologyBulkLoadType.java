@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ROTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBBTTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBLSTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.XBATerm;
 import org.alliancegenome.curation_api.model.entities.ontology.XBEDTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.XBSTerm;
@@ -26,7 +27,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.XSMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFSTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 
 public enum OntologyBulkLoadType {
 	ECO(ECOTerm.class), ZFA(ZFATerm.class), DO(DOTerm.class), MA(MATerm.class), CHEBI(CHEBITerm.class), XCO(XCOTerm.class), MP(MPTerm.class), DAO(DAOTerm.class), ZECO(ZECOTerm.class),

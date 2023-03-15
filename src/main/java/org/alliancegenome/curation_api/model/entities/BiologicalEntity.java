@@ -37,7 +37,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = { @Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"), @Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"), })
+	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"), @Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id")})
 public class BiologicalEntity extends CurieAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 2)
@@ -45,5 +45,11 @@ public class BiologicalEntity extends CurieAuditedObject {
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private NCBITaxonTerm taxon;
+	
+	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	private DataProvider dataProvider;
 
 }

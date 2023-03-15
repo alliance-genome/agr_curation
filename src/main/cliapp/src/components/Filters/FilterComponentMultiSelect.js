@@ -1,17 +1,17 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
-export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFilters, onFilter, aggregationFields, endpoint }) {
+export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFilters, onFilter, endpoint }) {
 	const [selectedOptions, setSelectedOptions] = useState([]);
-	const [selectableOptions, setSelectableOptions] = useState( []);
+	const [selectableOptions, setSelectableOptions] = useState([]);
 
 	const fieldSet = filterConfig.fieldSets[0];
 
 	const searchService = new SearchService();
 
-	useQuery([filterConfig.aggregationFieldSet],
+	useQuery([filterConfig.aggregationFieldSet, currentFilters],
 		() => searchService.search(endpoint, 0, 0, null,{},{}, filterConfig.aggregationFieldSet.fields), {
 		 onSuccess: (data) => {
 				 let tmp = [];
@@ -28,15 +28,14 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 						 let newSelectedOptions = [];
 						 let queryStrings = currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString.split(" ");
 						 for (let i in tmp) {
-								 for(let j in queryStrings) {
-										 if (tmp[i].optionLabel === queryStrings[j]) {
-												 newSelectedOptions.push(tmp[i]);
-										 }
-								 }
-						 }
-						 if(newSelectedOptions.length>0)
-								setSelectedOptions(newSelectedOptions);
-				 } else {
+							 for(let j in queryStrings) {
+								 if (tmp[i].optionLabel === queryStrings[j].toLowerCase()) {
+									 newSelectedOptions.push(tmp[i]);
+									}
+								}
+							}
+							if(newSelectedOptions.length>0) setSelectedOptions(newSelectedOptions);
+						} else {
 						 setSelectedOptions([]);
 				 }
 		},
@@ -57,6 +56,18 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 		return (<div>{option.optionLabel}</div>);
 	};
 
+	const upperCaseItemTemplate = (option) => {
+		return (<div>{option.optionLabel.toUpperCase()}</div>);
+	};
+
+	const templateSelector = (option) => {
+		if(fieldSet.filterName === "dataProviderFilter" || fieldSet.filterName === "secondaryDataProviderFilter") {
+			return upperCaseItemTemplate(option);
+		} else {
+			return itemTemplate(option);
+		}
+	}
+
 	return (
 		<MultiSelect
 			disabled={!isEnabled}
@@ -66,7 +77,7 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 			display="chip"
 			optionLabel="optionLabel"
 			style={{ width: '100%', display: 'inline-flex' }}
-			itemTemplate={itemTemplate}
+			itemTemplate={templateSelector}
 			filter className={"multiselect-custom"}
 			panelFooterTemplate={panelFooterTemplate}
 			onChange={(e) => {
