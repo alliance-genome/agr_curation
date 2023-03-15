@@ -60,7 +60,7 @@ public class JobScheduler {
 						if (bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
 							new File(bf.getLocalFilePath()).delete();
 							bf.setLocalFilePath(null);
-							bf.setErrorMessage("Failed due to server start up: Process never finshed before the server restarted");
+							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 							bf.setBulkloadStatus(JobStatus.FAILED);
 							bulkLoadFileDAO.merge(bf);
 						}
@@ -70,7 +70,7 @@ public class JobScheduler {
 						bulkLoadDAO.merge(b);
 					}
 					if (b.getBulkloadStatus().isRunning()) {
-						b.setErrorMessage("Failed due to server start up: Process never finshed before the server restarted");
+						b.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 						b.setBulkloadStatus(JobStatus.FAILED);
 						bulkLoadDAO.merge(b);
 					}
