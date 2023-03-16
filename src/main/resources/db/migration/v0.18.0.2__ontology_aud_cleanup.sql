@@ -33,9 +33,6 @@ ALTER TABLE chemicalterm_aud DROP CONSTRAINT fkieeg5x1a11dqom8dw4valm169; --
 ALTER TABLE experimentalconditionontologyterm_aud DROP CONSTRAINT fkkr4o08hq0jboq6g4ou5gmn8xd; --
 ALTER TABLE ontologyterm_aud DROP CONSTRAINT fkdxjp2u3w3xoi7p9j7huceg2ts; --
 
-
-SET session_replication_role = replica;
-
 DELETE FROM atpterm_aud;
 DELETE FROM chebiterm_aud;
 DELETE FROM daoterm_aud;
@@ -82,8 +79,6 @@ DELETE FROM ontologyterm_synonym_aud;
 
 DELETE FROM ontologyterm_aud;
 
-SET session_replication_role = 'origin';
-
 ALTER TABLE daoterm_aud ADD CONSTRAINT fkgif1cep78abowfodb5rxvoq1x FOREIGN KEY (curie, rev) REFERENCES anatomicalterm_aud(curie, rev);
 ALTER TABLE xbaterm_aud ADD CONSTRAINT fkha6obinkag86qlcpemxmgv4ly FOREIGN KEY (curie, rev) REFERENCES anatomicalterm_aud(curie, rev);
 ALTER TABLE wbbtterm_aud ADD CONSTRAINT fkhu85m34h8hf95s453u3m4ed8y FOREIGN KEY (curie, rev) REFERENCES anatomicalterm_aud(curie, rev);
@@ -125,12 +120,4 @@ ALTER TABLE xbedterm_aud ADD CONSTRAINT fkshxj981p427yuk4qgtvcirp5k FOREIGN KEY 
 ALTER TABLE ncbitaxonterm_aud ADD CONSTRAINT fkap27v3trsn5u9q93qb8ikabrf FOREIGN KEY (curie, rev) REFERENCES ontologyterm_aud(curie, rev);
 	
 ALTER TABLE ontologyterm_aud ADD CONSTRAINT fkdxjp2u3w3xoi7p9j7huceg2ts FOREIGN KEY (rev) REFERENCES revinfo(rev);
-
-
-
-
-
-
-
-
 
