@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -16,7 +15,6 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -37,22 +35,6 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	@PostConstruct
 	protected void init() {
 		setSQLDao(diseaseAnnotationDAO);
-	}
-
-	// The following methods are for bulk validation
-
-	public void removeNonUpdatedAnnotations(String speciesName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
-		log.debug("runLoad: After: " + speciesName + " " + annotationIdsAfter.size());
-
-		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + speciesName + " " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
-
-		for (Long id : idsToRemove) {
-			deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation", true);
-		}
 	}
 
 	@Override

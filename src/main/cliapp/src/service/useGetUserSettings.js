@@ -1,13 +1,21 @@
 import { useQuery, useMutation } from 'react-query';
 import { useState } from "react";
 import { PersonSettingsService } from "./PersonSettingsService";
+import { removeInvalidFilters, removeInvalidSorts } from '../utils/utils';
+
 
 export const useGetUserSettings = (key, defaultValue) => {
 
 	const personSettingsService = new PersonSettingsService();
 	const [settings, setSettings] = useState(() => {
 		const stickyValue = localStorage.getItem(key);
-		return stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
+		const stickyObject = stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
+		if(key !== 'themeSettings') {
+		 	stickyObject.filters = removeInvalidFilters(stickyObject.filters);
+		 	stickyObject.multiSortMeta = removeInvalidSorts(stickyObject.multiSortMeta);
+		}
+
+		return stickyObject;
 	});
 
 	useQuery(`${key}`, () => personSettingsService.getUserSettings(key), {
@@ -18,7 +26,13 @@ export const useGetUserSettings = (key, defaultValue) => {
 			} else {
 				userSettings = data.entity.settingsMap;
 			}
-			setSettings(userSettings);
+
+			if(key !== 'themeSettings'){
+			 	userSettings.filters = removeInvalidFilters(userSettings.filters);
+			 	userSettings.multiSortMeta = removeInvalidSorts(userSettings.multiSortMeta);
+			}
+
+			setSettings(userSettings)
 			localStorage.setItem(key, JSON.stringify(userSettings));
 		},
 		refetchOnWindowFocus: false,

@@ -13,8 +13,9 @@ import {NewTermForm} from "../../containers/controlledVocabularyPage/NewTermForm
 import {NewVocabularyForm} from "../../containers/controlledVocabularyPage/NewVocabularyForm";
 import {Button} from "primereact/button";
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
-export const ControlledVocabularyComponent = () => {
+export const ControlledVocabularyTable = () => {
 		const newTermReducer = (state, action) => {
 				switch (action.type) {
 						case 'RESET':
@@ -213,15 +214,13 @@ export const ControlledVocabularyComponent = () => {
 		{
 			field: "id",
 			header: "Id",
-			sortable: false,
-			filterElement: {type: "none"}, 
+			sortable: false
 		},
 		{
 			field: "name",
 			header: "Name",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}, 
+			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditorTemplate(props),
 			body: nameBodyTemplate
 		},
@@ -229,8 +228,7 @@ export const ControlledVocabularyComponent = () => {
 			field: "abbreviation",
 			header: "Abbreviation",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "abbreviationFilter", fields: ["abbreviation"]}, 
+			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
 			body: abbreviationBodyTemplate
 		},
@@ -238,8 +236,7 @@ export const ControlledVocabularyComponent = () => {
 			field: "vocabulary.name",
 			header: "Vocabulary",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "vocabularyNameFilter", fields: ["vocabulary.name"]}, 
+			filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props),
 			body: vocabularyBodyTemplate
 		},
@@ -247,8 +244,7 @@ export const ControlledVocabularyComponent = () => {
 			field: "definition",
 			header: "Definition",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "definitionFilter", fields: ["definition"]}, 
+			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
 			editor: (props) => definitionEditorTemplate(props),
 			body: definitionBodyTemplate
 		},
@@ -256,8 +252,7 @@ export const ControlledVocabularyComponent = () => {
 			field: "obsolete",
 			header: "Obsolete",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "isObsoleteFilter", fields: ["obsolete"]}, 
+			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditorTemplate(props),
 			body: obsoleteBodyTemplate
 		}

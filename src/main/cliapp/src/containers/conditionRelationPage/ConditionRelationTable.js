@@ -21,7 +21,7 @@ import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTab
 import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefString, multipleAutocompleteOnChange} from '../../utils/utils';
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
-
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const ConditionRelationTable = () => {
 
@@ -54,10 +54,6 @@ export const ConditionRelationTable = () => {
 		newRelationDispatch({type: "OPEN_DIALOG"})
 	};
 
-
-	const aggregationFields = [
-		'conditionRelationType.name'
-	];
 
 	const onConditionRelationTypeValueChange = (props, event) => {
 		let updatedConditions = [...props.props.value];
@@ -207,17 +203,15 @@ export const ConditionRelationTable = () => {
 			field: "handle",
 			header: "Handle",
 			sortable: isEnabled,
-			filter: true,
 			body: (rowData) => rowData.handle,
-			filterElement: {type: "input", filterName: "uniqueIdFilter", fields: ["handle"]},
+			filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
 			editor: (props) => handleEditor(props)
 		},
 		{
 			field: "singleReference.curie",
 			header: "Reference",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences.referencedCurie"]},
+			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
 		},
@@ -225,17 +219,15 @@ export const ConditionRelationTable = () => {
 			field: "conditionRelationType.name",
 			header: "Relation",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "multiselect", filterName: "conditionRelationFilter", fields: ["conditionRelationType.name"]},
+			filterConfig: FILTER_CONFIGS.conditionRelationTypeFilterConfig,
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
 			field: "conditions.conditionSummary",
 			header: "Experimental Conditions",
 			sortable: isEnabled,
-			filter: true,
 			body: conditionTemplate,
-			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionSummary"]},
+			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props)
 		},
 
@@ -267,7 +259,6 @@ export const ConditionRelationTable = () => {
 				columns={columns}
 				defaultColumnNames={defaultColumnNames}
 				initialTableState={initialTableState}
-				aggregationFields={aggregationFields}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}

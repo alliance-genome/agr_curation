@@ -165,16 +165,19 @@ public class GeneDTOValidator extends BaseDTOValidator {
 			symbol.setSingleGene(gene);
 			geneSymbolDAO.persist(symbol);
 		}
+		gene.setGeneSymbol(symbol);
 
 		if (fullName != null) {
 			fullName.setSingleGene(gene);
 			geneFullNameDAO.persist(fullName);
 		}
+		gene.setGeneFullName(fullName);
 
 		if (systematicName != null) {
 			systematicName.setSingleGene(gene);
 			geneSystematicNameDAO.persist(systematicName);
 		}
+		gene.setGeneSystematicName(systematicName);
 
 		if (CollectionUtils.isNotEmpty(synonyms)) {
 			for (GeneSynonymSlotAnnotation syn : synonyms) {
@@ -182,6 +185,7 @@ public class GeneDTOValidator extends BaseDTOValidator {
 				geneSynonymDAO.persist(syn);
 			}
 		}
+		gene.setGeneSynonyms(synonyms);
 
 		return gene;
 	}

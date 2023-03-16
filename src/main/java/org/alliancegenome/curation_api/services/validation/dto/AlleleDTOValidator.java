@@ -299,6 +299,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				alleleMutationTypeDAO.persist(mt);
 			}
 		}
+		allele.setAlleleMutationTypes(mutationTypes);
 		
 		if (CollectionUtils.isNotEmpty(inheritanceModes)) {
 			for (AlleleInheritanceModeSlotAnnotation im : inheritanceModes) {
@@ -306,16 +307,19 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				alleleInheritanceModeDAO.persist(im);
 			}
 		}
+		allele.setAlleleInheritanceModes(inheritanceModes);
 
 		if (symbol != null) {
 			symbol.setSingleAllele(allele);
 			alleleSymbolDAO.persist(symbol);
 		}
+		allele.setAlleleSymbol(symbol);
 
 		if (fullName != null) {
 			fullName.setSingleAllele(allele);
 			alleleFullNameDAO.persist(fullName);
 		}
+		allele.setAlleleFullName(fullName);
 
 		if (CollectionUtils.isNotEmpty(synonyms)) {
 			for (AlleleSynonymSlotAnnotation syn : synonyms) {
@@ -323,6 +327,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				alleleSynonymDAO.persist(syn);
 			}
 		}
+		allele.setAlleleSynonyms(synonyms);
 
 		if (CollectionUtils.isNotEmpty(secondaryIds)) {
 			for (AlleleSecondaryIdSlotAnnotation sid : secondaryIds) {
@@ -330,6 +335,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				alleleSecondaryIdDAO.persist(sid);
 			}
 		}
+		allele.setAlleleSecondaryIds(secondaryIds);
 
 		return allele;
 	}

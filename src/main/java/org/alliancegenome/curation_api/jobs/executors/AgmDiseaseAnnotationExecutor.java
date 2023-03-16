@@ -10,18 +10,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -47,34 +43,40 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (!validateSchemaVersion(bulkLoadFile, AGMDiseaseAnnotationDTO.class))
-				return;
+			
+			if(!checkSchemaVersion(bulkLoadFile, AGMDiseaseAnnotationDTO.class)) return;
+			
 			List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
+			if (annotations == null) annotations = new ArrayList<>();
+			
 			String speciesName = manual.getDataType().getSpeciesName();
 
-			if (annotations != null) {
-				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			List<Long> annotationIdsLoaded = new ArrayList<>();
+			List<Long> annotationIdsBefore = new ArrayList<>();
+			annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(speciesName));
+			annotationIdsBefore.removeIf(Objects::isNull);
+			
+			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
+			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+			
+			runLoad(history, speciesName, annotations, annotationIdsLoaded);
+			
+			runCleanup(diseaseAnnotationService, history, speciesName, annotationIdsBefore, annotationIdsLoaded);
 
-			}
+			history.finishLoad();
+			
+			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String speciesName, List<AGMDiseaseAnnotationDTO> annotations) {
-		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(speciesName));
-		annotationIdsBefore.removeIf(Objects::isNull);
+	public void runLoad(BulkLoadFileHistory history, String speciesName, List<AGMDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
-		log.debug("runLoad: Before: " + speciesName + " " + annotationIdsBefore.size());
-		List<Long> annotationIdsAfter = new ArrayList<>();
-		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("AGM Disease Annotation Update " + speciesName, annotations.size());
@@ -82,10 +84,14 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			try {
 				AGMDiseaseAnnotation annotation = agmDiseaseService.upsert(annotationDTO);
 				history.incrementCompleted();
-				annotationIdsAfter.add(annotation.getId());
+				if(curiesAdded != null) {
+					curiesAdded.add(annotation.getId());
+				}
 			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage(), e.getStackTrace()));
 			}
 
@@ -93,8 +99,6 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 
-		diseaseAnnotationService.removeNonUpdatedAnnotations(speciesName, annotationIdsBefore, annotationIdsAfter);
-		return new LoadHistoryResponce(history);
 	}
 
 }

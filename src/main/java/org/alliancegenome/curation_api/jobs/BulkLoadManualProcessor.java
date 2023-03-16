@@ -58,7 +58,6 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 		} else {
 			log.warn("BulkManualLoad not found: " + loadType);
 			endLoad(bulkManualLoad, "BulkManualLoad not found: " + loadType, JobStatus.FAILED);
-			return;
 		}
 
 	}

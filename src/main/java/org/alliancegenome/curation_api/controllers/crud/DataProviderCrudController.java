@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.interfaces.crud.DataProviderCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 

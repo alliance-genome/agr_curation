@@ -27,8 +27,6 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Exper
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
 @RequestScoped
 public class ExperimentalConditionValidator extends AuditedObjectValidator<ExperimentalCondition> {
 

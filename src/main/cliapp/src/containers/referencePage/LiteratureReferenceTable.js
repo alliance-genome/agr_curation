@@ -7,6 +7,7 @@ import { Card } from 'primereact/card';
 import { Tooltip } from "primereact/tooltip";
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const LiteratureReferenceTable = () => {
 
@@ -71,35 +72,35 @@ export const LiteratureReferenceTable = () => {
 						header: "Curie",
 						sortable: { isEnabled },
 						filter: true,
-						filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+						filterConfig: FILTER_CONFIGS.curieFilterConfig, 
 				}, {
 						field: "cross_references.curie",
 						header: "Cross References",
 						sortable: isEnabled,
 						body: crossReferenceTemplate,
 						filter: true,
-						filterElement: {type: "input", filterName: "cross_referenceFilter", fields: ["cross_references.curie"]}, 
+						filterConfig: FILTER_CONFIGS.literatureCrossReferenceFilterConfig, 
 				}, {
 						field: "title",
 						header: "Title",
 						sortable: isEnabled,
 						filter: true,
 						body : titleTemplate,
-						filterElement: {type: "input", filterName: "titleFilter", fields: ["title"]}, 
+						filterConfig: FILTER_CONFIGS.titleFilterConfig, 
 				}, {
 						field: "abstract",
 						header: "Abstract",
 						sortable: isEnabled,
 						filter: true,
 						body : abstractTemplate,
-						filterElement: {type: "input", filterName: "abstractFilter", fields: ["abstract"]}, 
+						filterConfig: FILTER_CONFIGS.abstractFilterConfig, 
 				}, {
 						field: "citation",
 						header: "Citation",
 						sortable: isEnabled,
 						filter: true,
 						body : citationTemplate,
-						filterElement: {type: "input", filterName: "citationFilter", fields: ["citation"]}, 
+						filterConfig: FILTER_CONFIGS.citationFilterConfig, 
 				}
 		];
 		const defaultColumnNames = columns.map((col) => {

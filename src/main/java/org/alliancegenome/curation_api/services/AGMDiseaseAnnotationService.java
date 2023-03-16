@@ -63,4 +63,7 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		ObjectResponse<AGMDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
+
+	@Override
+	public void removeOrDeprecateNonUpdated(String curie, String dataType) { }
 }

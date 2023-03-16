@@ -4,6 +4,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const MoleculesTable = () => {
 
@@ -46,14 +47,14 @@ export const MoleculesTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+			filterConfig: FILTER_CONFIGS.curieFilterConfig, 
 		},
 		{
 			field: "name",
 			header: "Name",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}, 
+			filterConfig: FILTER_CONFIGS.nameFilterConfig, 
 		},
 		{
 			field: "inchi",
@@ -61,14 +62,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: inChiBodyTemplate,
-			filterElement: {type: "input", filterName: "inchiFilter", fields: ["inchi"]}, 
+			filterConfig: FILTER_CONFIGS.inchiFilterConfig, 
 		},
 		{
 			field: "inchiKey",
 			header: "InChiKey",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "inchiKeyFilter", fields: ["inchiKey"]}, 
+			filterConfig: FILTER_CONFIGS.inchiKeyFilterConfig, 
 		},
 		{
 			field: "iupac",
@@ -76,14 +77,14 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: iupacBodyTemplate,
-			filterElement: {type: "input", filterName: "taxonfilter", fields: ["iupac"]}, 
+			filterConfig: FILTER_CONFIGS.iupacFilterConfig, 
 		},
 		{
 			field: "formula",
 			header: "Formula",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "formulaFilter", fields: ["formula"]}, 
+			filterConfig: FILTER_CONFIGS.formulaFilterConfig, 
 		},
 		{
 			field: "smiles",
@@ -91,9 +92,8 @@ export const MoleculesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: smilesBodyTemplate,
-			filterElement: {type: "input", filterName: "smilesFilter", fields: ["smiles"]}, 
+			filterConfig: FILTER_CONFIGS.smilesFilterConfig, 
 		}
-
 	];
 
 	const defaultColumnNames = columns.map((col) => {

@@ -12,8 +12,10 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.interfaces.crud.GeneDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
@@ -46,6 +48,9 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 
 	@Override
 	public APIResponse updateGeneDiseaseAnnotations(String dataType, List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		geneDiseaseAnnotationExecutor.runLoad(history, BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations, null);
+		history.finishLoad();
+		return new LoadHistoryResponce(history);
 	}
 }

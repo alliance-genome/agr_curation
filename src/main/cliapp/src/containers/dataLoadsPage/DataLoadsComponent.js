@@ -347,6 +347,9 @@ export const DataLoadsComponent = () => {
 					<Column field="completedRecords" header="Records Completed" />
 					<Column field="failedRecords" header="Records Failed" />
 					<Column field="totalRecords" header="Total Records" />
+					<Column field="deletedRecords" header="Deletes Completed" />
+					<Column field="deleteFailedRecords" header="Deletes Failed" />
+					<Column field="totalDeleteRecords" header="Total Deletes" />
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
 			</div>
@@ -536,9 +539,17 @@ export const DataLoadsComponent = () => {
 	const uploadConfirmDialogFooter = () => {
 		return (
 			<React.Fragment>
-				<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideUploadConfirmDialog} />
-				<FileUpload key="uploadConfirm" mode="basic" auto chooseOptions={{icon:'pi pi-check', label: 'Confirm', className:"p-button-text"}}
-						accept="*" customUpload uploadHandler={e => uploadLoadFile(e)} maxFileSize={1000000000000000} />
+				<div className="col-12">
+					<div className="grid">
+						<div className="col-6">
+							<FileUpload key="uploadConfirm" mode="basic" auto chooseOptions={{icon:'pi pi-check', label: 'Confirm', className:"p-button-text"}}
+								accept="*" customUpload uploadHandler={e => uploadLoadFile(e)} maxFileSize={1000000000000000} />
+						</div>
+						<div className="col-3">
+							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideUploadConfirmDialog} />
+						</div>
+					</div>
+				</div>
 			</React.Fragment>
 		);
 	}

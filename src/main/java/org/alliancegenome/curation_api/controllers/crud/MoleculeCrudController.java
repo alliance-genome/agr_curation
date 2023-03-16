@@ -9,8 +9,10 @@ import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.interfaces.crud.MoleculeCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
 import org.alliancegenome.curation_api.model.entities.Molecule;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeMetaDataFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.MoleculeService;
 
 @RequestScoped
@@ -30,7 +32,10 @@ public class MoleculeCrudController extends BaseEntityCrudController<MoleculeSer
 
 	@Override
 	public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData) {
-		return moleculeExecutor.runLoad(moleculeData);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
+		moleculeExecutor.runLoad(history, moleculeData);
+		history.finishLoad();
+		return new LoadHistoryResponce(history);
 	}
 
 }
