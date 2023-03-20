@@ -86,7 +86,7 @@ export const FIELD_SETS = Object.freeze({
   },
   daConditionRelationsSummaryFieldSet: {
     filterName: "conditionRelationsFilter",
-    fields: ["conditionRelations.conditions.conditionSummary"],
+    fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name"],
   },
   conditionTaxonFieldSet: {
     filterName: "conditionTaxonFilter",
