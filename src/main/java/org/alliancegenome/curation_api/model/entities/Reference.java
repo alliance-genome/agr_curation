@@ -48,12 +48,15 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */
 	@Transient
-	@JsonIgnore
+	@JsonView({View.FieldsOnly.class})
 	public String getReferenceID() {
 		Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith("PMID:")).findFirst();
 		// if no PUBMED ID try MOD ID
 		if (opt.isEmpty()) {
-			opt = getCrossReferences().stream().filter(reference -> CrossReferencePrefix.valueOf(reference.getPrefix()) != null).findFirst();
+			opt = getCrossReferences().stream().filter(reference -> {
+				CrossReferencePrefix.valueOf(reference.getPrefix());
+				return true;
+			}).findFirst();
 		}
 		return opt.map(CrossReference::getReferencedCurie).orElse(null);
 	}
