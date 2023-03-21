@@ -10,14 +10,18 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
+import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -76,6 +80,22 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
+	public APIResponse runLoad(String dataType, List<AlleleDiseaseAnnotationDTO> annotations) {
+		String dataProvider = BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType);
+		
+		List<Long> annotationIdsLoaded = new ArrayList<>();
+		List<Long> annotationIdsBefore = new ArrayList<>();
+		annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider));
+		annotationIdsBefore.removeIf(Objects::isNull);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		runLoad(history, dataType, annotations, annotationIdsLoaded);
+		runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded);
+		history.finishLoad();
+		
+		return new LoadHistoryResponce(history);
+	}
+	
 	public void runLoad(BulkLoadFileHistory history, String dataType, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);

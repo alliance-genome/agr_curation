@@ -31,7 +31,7 @@ public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterfac
 	public ObjectResponse<AffectedGenomicModel> get(@PathParam("curie") String curie);
 
 	@POST
-	@Path("/bulk/agms")
+	@Path("/bulk/{dataType}/agms")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAGMs(List<AffectedGenomicModelDTO> agmData);
+	public APIResponse updateAGMs(@PathParam("dataType") String dataType, List<AffectedGenomicModelDTO> agmData);
 }

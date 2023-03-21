@@ -31,8 +31,8 @@ public class AlleleCrudController extends BaseDTOCrudController<AlleleService, A
 	}
 
 	@Override
-	public APIResponse updateAlleles(List<AlleleDTO> alleleData) {
-		return alleleExecutor.runLoad(alleleData);
+	public APIResponse updateAlleles(String dataType, List<AlleleDTO> alleleData) {
+		return alleleExecutor.runLoad(dataType, alleleData);
 	}
 
 }

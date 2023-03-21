@@ -13,6 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -83,10 +84,15 @@ public class GeneExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(List<GeneDTO> genes) {
-		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
+	public APIResponse runLoad(String dataType, List<GeneDTO> genes) {
+		String dataProvider = BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType);
 		
-		runLoad(history, genes, null, null);
+		List<String> curiesLoaded = new ArrayList<>();
+		List<String> curiesBefore = geneService.getCuriesByDataProvider(dataProvider);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
+		runLoad(history, genes, dataType, curiesLoaded);
+		runCleanup(geneService, history, dataType, curiesBefore, curiesLoaded);
 		
 		history.finishLoad();
 		

@@ -45,7 +45,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredReference2 = "AGRKB:000000021";
 	private String requiredReferenceXref2 = "PMID:25920551";
 	
-	private final String geneBulkPostEndpoint = "/api/gene/bulk/genes";
+	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
 	private final String geneGetEndpoint = "/api/gene/";
 	private final String geneTestFilePath = "src/test/resources/bulk/01_gene/";
 	

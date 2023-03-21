@@ -32,13 +32,6 @@ public enum BackendBulkDataType {
 		return dataType.dataProviderAbbreviation;
 	}
 	
-	public static String getSpeciesNameFromDataType(String dataTypeName) {
-		BackendBulkDataType dataType = getDataType(dataTypeName);
-		if (dataType == null)
-			return null;
-		return dataType.speciesName;
-	}
-	
 	private static BackendBulkDataType getDataType(String dataTypeName) {
 		BackendBulkDataType result = null;
 		for (BackendBulkDataType dataType : values()) {

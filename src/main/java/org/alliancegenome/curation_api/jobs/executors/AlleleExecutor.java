@@ -2,24 +2,20 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -27,7 +23,6 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.codec.binary.StringUtils;
 
 import io.quarkus.logging.Log;
 
@@ -83,10 +78,15 @@ public class AlleleExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(List<AlleleDTO> alleles) {
-		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+	public APIResponse runLoad(String dataType, List<AlleleDTO> alleles) {
+		String dataProvider = BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType);
 		
-		runLoad(history, alleles, null, null);
+		List<String> curiesLoaded = new ArrayList<>();
+		List<String> curiesBefore = alleleService.getCuriesByDataProvider(dataProvider);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+		runLoad(history, alleles, dataType, curiesLoaded);
+		runCleanup(alleleService, history, dataType, curiesBefore, curiesLoaded);
 		
 		history.finishLoad();
 		

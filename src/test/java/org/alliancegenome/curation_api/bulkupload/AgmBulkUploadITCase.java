@@ -41,7 +41,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 60000));
 	}
 	
-	private final String agmBulkPostEndpoint = "/api/agm/bulk/agms";
+	private final String agmBulkPostEndpoint = "/api/agm/bulk/WB/agms";
 	private final String agmGetEndpoint = "/api/agm/";
 	private final String agmTestFilePath = "src/test/resources/bulk/03_agm/";
 

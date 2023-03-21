@@ -40,9 +40,9 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene>, BaseDTO
 	public ObjectResponse<Gene> get(@PathParam("curie") String curie);
 
 	@POST
-	@Path("/bulk/genes")
+	@Path("/bulk/{dataType}/genes")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateGenes(List<GeneDTO> geneData);
+	public APIResponse updateGenes(@PathParam("dataType") String dataType, List<GeneDTO> geneData);
 
 	@Override
 	@PUT

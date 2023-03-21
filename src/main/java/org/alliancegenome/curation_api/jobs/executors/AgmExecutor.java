@@ -2,24 +2,20 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -82,10 +78,15 @@ public class AgmExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(List<AffectedGenomicModelDTO> agms) {
-		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
+	public APIResponse runLoad(String dataType, List<AffectedGenomicModelDTO> agms) {
+		String dataProvider = BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType);
 		
-		runLoad(history, agms, null, null);
+		List<String> curiesLoaded = new ArrayList<>();
+		List<String> curiesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
+		runLoad(history, agms, dataType, curiesLoaded);
+		runCleanup(affectedGenomicModelService, history, dataType, curiesBefore, curiesLoaded);
 		
 		history.finishLoad();
 		

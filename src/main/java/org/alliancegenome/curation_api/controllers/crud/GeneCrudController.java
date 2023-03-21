@@ -37,8 +37,8 @@ public class GeneCrudController extends BaseDTOCrudController<GeneService, Gene,
 	}
 
 	@Override
-	public APIResponse updateGenes(List<GeneDTO> geneData) {
-		return geneExecutor.runLoad(geneData);
+	public APIResponse updateGenes(String dataType, List<GeneDTO> geneData) {
+		return geneExecutor.runLoad(dataType, geneData);
 	}
 
 }

@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
@@ -18,6 +19,8 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -77,6 +80,22 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
+	public APIResponse runLoad(String dataType, List<GeneDiseaseAnnotationDTO> annotations) {
+		String dataProvider = BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType);
+		
+		List<Long> annotationIdsLoaded = new ArrayList<>();
+		List<Long> annotationIdsBefore = new ArrayList<>();
+		annotationIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider));
+		annotationIdsBefore.removeIf(Objects::isNull);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		runLoad(history, dataType, annotations, annotationIdsLoaded);
+		runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded);
+		history.finishLoad();
+		
+		return new LoadHistoryResponce(history);
+	}
+	
 	public void runLoad(BulkLoadFileHistory history, String dataType, List<GeneDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);

@@ -48,7 +48,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 60000));
 	}
 
-	private final String alleleBulkPostEndpoint = "/api/allele/bulk/alleles";
+	private final String alleleBulkPostEndpoint = "/api/allele/bulk/WB/alleles";
 	private final String alleleGetEndpoint = "/api/allele/";
 	private final String alleleTestFilePath = "src/test/resources/bulk/02_allele/";
 

@@ -32,8 +32,8 @@ public class AffectedGenomicModelCrudController extends BaseDTOCrudController<Af
 	}
 
 	@Override
-	public APIResponse updateAGMs(List<AffectedGenomicModelDTO> agmData) {
-		return agmExecutor.runLoad(agmData);
+	public APIResponse updateAGMs(String dataType, List<AffectedGenomicModelDTO> agmData) {
+		return agmExecutor.runLoad(dataType, agmData);
 	}
 
 }
