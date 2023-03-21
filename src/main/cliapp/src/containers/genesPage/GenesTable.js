@@ -27,6 +27,18 @@ export const GenesTable = () => {
 		}
 	};
 
+	const symbolBodyTemplate = (rowData) => {
+		if (rowData?.geneFullName) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+						{rowData.geneFullName.displayText}
+					</EllipsisTableCell>
+				</>
+			)
+		}
+	};
+
 	const taxonBodyTemplate = (rowData) => {
 			if (rowData.taxon) {
 					return (
@@ -60,6 +72,7 @@ export const GenesTable = () => {
 			field: "geneSymbol.displayText",
 			header: "Symbol",
 			sortable: isEnabled,
+			body: symbolBodyTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig
 		},
