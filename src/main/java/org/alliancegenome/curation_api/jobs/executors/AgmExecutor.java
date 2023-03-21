@@ -108,7 +108,6 @@ public class AgmExecutor extends LoadFileExecutor {
 		ph.startProcess("AGM Update " + speciesNames.toString(), agms.size());
 		agms.forEach(agmDTO -> {
 			try {
-				agmDTO.setDataProviderDto(createDataProviderForDataType(dataType));
 				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
 				history.incrementCompleted();
 				if(curiesAdded != null) {

@@ -185,15 +185,4 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 		
 	}
-
-	protected DataProviderDTO createDataProviderForDataType(String dataType) {
-		if (dataType == null)
-			return null;
-		
-		DataProviderDTO dto = new DataProviderDTO();
-		
-		dto.setSourceOrganizationAbbreviation(dataType);
-		
-		return dto;
-	}
 }

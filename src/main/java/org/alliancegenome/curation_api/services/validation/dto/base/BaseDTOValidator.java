@@ -113,8 +113,7 @@ public class BaseDTOValidator {
 		
 		DataProvider dataProvider = null;
 		if (dto.getDataProviderDto() == null) {
-			// TODO: Uncomment once ready to require submission by DQMs and new LinkML release created
-			// beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
+			beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getDataProviderDto(), entity.getDataProvider());
 			if (dpResponse.hasErrors()) {

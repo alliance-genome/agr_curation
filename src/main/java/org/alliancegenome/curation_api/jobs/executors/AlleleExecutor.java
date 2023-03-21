@@ -108,7 +108,6 @@ public class AlleleExecutor extends LoadFileExecutor {
 		ph.startProcess("Allele Update " + speciesNames.toString(), alleles.size());
 		alleles.forEach(alleleDTO -> {
 			try {
-				alleleDTO.setDataProviderDto(createDataProviderForDataType(dataType));
 				Allele allele = alleleService.upsert(alleleDTO);
 				history.incrementCompleted();
 				if (curiesAdded != null) {
