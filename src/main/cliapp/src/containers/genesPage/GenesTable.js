@@ -19,7 +19,7 @@ export const GenesTable = () => {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-						{rowData.geneFullName.displayText}
+						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
 					</EllipsisTableCell>
 					<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.geneFullName.displayText} />
 				</>
@@ -32,7 +32,7 @@ export const GenesTable = () => {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-						{rowData.geneFullName.displayText}
+						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
 					</EllipsisTableCell>
 				</>
 			)
