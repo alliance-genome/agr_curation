@@ -15,9 +15,9 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 		super(AlleleDiseaseAnnotation.class);
 	}
 
-	public List<Long> findAllAnnotationIds(String speciesName) {
-		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM AlleleDiseaseAnnotation annotation WHERE annotation.subject.taxon.name LIKE CONCAT(:speciesName, '%')");
-		jpqlQuery.setParameter("speciesName", speciesName);
+	public List<Long> findAllAnnotationIdsByDataProvider(String dataProvider) {
+		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM AlleleDiseaseAnnotation annotation WHERE annotation.dataProvider.abbreviation = :dataProvider");
+		jpqlQuery.setParameter("dataProvider", dataProvider);
 		return (List<Long>) jpqlQuery.getResultList();
 	}
 

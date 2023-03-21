@@ -94,8 +94,8 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		}
 	}
 	
-	public List<String> getCuriesBySpeciesName(String speciesName) {
-		List<String> curies = agmDAO.findAllCuriesBySpeciesName(speciesName);
+	public List<String> getCuriesByDataProvider(String dataProvider) {
+		List<String> curies = agmDAO.findAllCuriesByDataProvider(dataProvider);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

@@ -159,19 +159,19 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, Set<String> speciesNames, String dataType, List<String> curiesBefore, List<String> curiesAfter) {
-		Log.debug("runLoad: After: " + speciesNames + " " + curiesAfter.size());
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataType, List<String> curiesBefore, List<String> curiesAfter) {
+		Log.debug("runLoad: After: " + dataType + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
+		Log.debug("runLoad: Distinct: " + dataType + " " + distinctAfter.size());
 
 		List<String> curiesToRemove = ListUtils.subtract(curiesBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
+		Log.debug("runLoad: Remove: " + dataType + " " + curiesToRemove.size());
 
 		history.setTotalDeleteRecords((long)curiesToRemove.size());
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of primary objects " + dataType + " " + speciesNames, curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of primary objects " + dataType, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
 				service.removeOrDeprecateNonUpdated(curie, dataType);

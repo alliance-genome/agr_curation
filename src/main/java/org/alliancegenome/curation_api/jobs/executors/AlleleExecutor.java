@@ -27,6 +27,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.codec.binary.StringUtils;
 
 import io.quarkus.logging.Log;
 
@@ -56,11 +57,11 @@ public class AlleleExecutor extends LoadFileExecutor {
 			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
 			if (alleles == null) alleles = new ArrayList<>();
 			
-			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
+			String dataProvider = manual.getDataType().getDataProviderAbbreviation();
 			
 			List<String> alleleCuriesLoaded = new ArrayList<>();
-			List<String> alleleCuriesBefore = alleleService.getCuriesBySpeciesName(speciesName);
+			List<String> alleleCuriesBefore = alleleService.getCuriesByDataProvider(dataProvider);
 			Log.debug("runLoad: Before: total " + alleleCuriesBefore.size());
 			
 			bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
@@ -68,9 +69,9 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 			BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 
-			runLoad(history, Collections.singleton(speciesName), alleles, dataType, alleleCuriesLoaded);
+			runLoad(history, alleles, dataType, alleleCuriesLoaded);
 			
-			runCleanup(alleleService, history, Collections.singleton(speciesName), dataType, alleleCuriesBefore, alleleCuriesLoaded);
+			runCleanup(alleleService, history, dataType, alleleCuriesBefore, alleleCuriesLoaded);
 			
 			history.finishLoad();
 			
@@ -83,29 +84,20 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 	// Gets called from the API directly
 	public APIResponse runLoad(List<AlleleDTO> alleles) {
-		List<String> taxonIds = alleles.stream().map(alleleDTO -> alleleDTO.getTaxonCurie()).distinct().collect(Collectors.toList());
-		Set<String> speciesNames = new HashSet<String>();
-		for (String taxonId : taxonIds) {
-			if (taxonId != null) {
-				NCBITaxonTerm taxon = ncbiTaxonTermService.get(taxonId).getEntity();
-				if (taxon != null)
-					speciesNames.add(taxon.getGenusSpecies());
-			}
-		}
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 		
-		runLoad(history, speciesNames, alleles, null, null);
+		runLoad(history, alleles, null, null);
 		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, Set<String> speciesNames, List<AlleleDTO> alleles, String dataType, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<AlleleDTO> alleles, String dataType, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Allele Update " + speciesNames.toString(), alleles.size());
+		ph.startProcess("Allele Update " + dataType, alleles.size());
 		alleles.forEach(alleleDTO -> {
 			try {
 				Allele allele = alleleService.upsert(alleleDTO);

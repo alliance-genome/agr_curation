@@ -49,7 +49,7 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 	@Override
 	public APIResponse updateAgmDiseaseAnnotations(String dataType, List<AGMDiseaseAnnotationDTO> annotations) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		agmDiseaseAnnotationExecutor.runLoad(history, BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations, null);
+		agmDiseaseAnnotationExecutor.runLoad(history, BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType), annotations, null);
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}

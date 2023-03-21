@@ -49,11 +49,12 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
 			if (annotations == null) annotations = new ArrayList<>();
 			
-			String speciesName = manual.getDataType().getSpeciesName();
+			String dataType = manual.getDataType().name();
+			String dataProvider = manual.getDataType().getDataProviderAbbreviation();
 
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = new ArrayList<>();
-			annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(speciesName));
+			annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider));
 			annotationIdsBefore.removeIf(Objects::isNull);
 
 			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
@@ -61,9 +62,9 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 			
-			runLoad(history, speciesName, annotations, annotationIdsLoaded);
+			runLoad(history, dataType, annotations, annotationIdsLoaded);
 			
-			runCleanup(diseaseAnnotationService, history, speciesName, annotationIdsBefore, annotationIdsLoaded);
+			runCleanup(diseaseAnnotationService, history, dataType, annotationIdsBefore, annotationIdsLoaded);
 
 			history.finishLoad();
 			
@@ -75,11 +76,11 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public void runLoad(BulkLoadFileHistory history, String speciesName, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, String dataType, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Allele Disease Annotation Update " + speciesName, annotations.size());
+		ph.startProcess("Allele Disease Annotation Update " + dataType, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
 				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO);

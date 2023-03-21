@@ -57,11 +57,11 @@ public class GeneExecutor extends LoadFileExecutor {
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			if (genes == null) genes = new ArrayList<>();
 			
-			String speciesName = manual.getDataType().getSpeciesName();
 			String dataType = manual.getDataType().name();
-
+			String dataProvider = manual.getDataType().getDataProviderAbbreviation();
+			
 			List<String> geneCuriesLoaded = new ArrayList<>();
-			List<String> geneCuriesBefore = geneService.getCuriesBySpeciesName(speciesName);
+			List<String> geneCuriesBefore = geneService.getCuriesByDataProvider(dataProvider);
 			log.debug("runLoad: Before: total " + geneCuriesBefore.size());
 
 			bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
@@ -69,9 +69,9 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 			
-			runLoad(history, Collections.singleton(speciesName), genes, dataType, geneCuriesLoaded);
+			runLoad(history, genes, dataType, geneCuriesLoaded);
 
-			runCleanup(geneService, history, Collections.singleton(speciesName), dataType, geneCuriesBefore, geneCuriesLoaded);
+			runCleanup(geneService, history, dataType, geneCuriesBefore, geneCuriesLoaded);
 			
 			history.finishLoad();
 			
@@ -84,29 +84,20 @@ public class GeneExecutor extends LoadFileExecutor {
 
 	// Gets called from the API directly
 	public APIResponse runLoad(List<GeneDTO> genes) {
-		List<String> taxonIds = genes.stream().map(geneDTO -> geneDTO.getTaxonCurie()).distinct().collect(Collectors.toList());
-		Set<String> speciesNames = new HashSet<String>();
-		for (String taxonId : taxonIds) {
-			if (taxonId != null) {
-				NCBITaxonTerm taxon = ncbiTaxonTermService.get(taxonId).getEntity();
-				if (taxon != null)
-					speciesNames.add(taxon.getGenusSpecies());
-			}
-		}
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 		
-		runLoad(history, speciesNames, genes, null, null);
+		runLoad(history, genes, null, null);
 		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, Set<String> speciesNames, List<GeneDTO> genes, String dataType, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataType, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Gene Update " + speciesNames.toString(), genes.size());
+		ph.startProcess("Gene Update " + dataType, genes.size());
 		genes.forEach(geneDTO -> {
 			try {
 				Gene gene = geneService.upsert(geneDTO);

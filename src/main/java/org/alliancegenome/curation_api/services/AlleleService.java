@@ -92,8 +92,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		}
 	}
 	
-	public List<String> getCuriesBySpeciesName(String speciesName) {
-		List<String> curies = alleleDAO.findAllCuriesBySpeciesName(speciesName);
+	public List<String> getCuriesByDataProvider(String dataProvider) {
+		List<String> curies = alleleDAO.findAllCuriesByDataProvider(dataProvider);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

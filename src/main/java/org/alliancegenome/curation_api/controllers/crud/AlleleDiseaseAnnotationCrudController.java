@@ -48,7 +48,7 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	@Override
 	public APIResponse updateAlleleDiseaseAnnotations(String dataType, List<AlleleDiseaseAnnotationDTO> annotations) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		alleleDiseaseAnnotationExecutor.runLoad(history, BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations, null);
+		alleleDiseaseAnnotationExecutor.runLoad(history, BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType), annotations, null);
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}

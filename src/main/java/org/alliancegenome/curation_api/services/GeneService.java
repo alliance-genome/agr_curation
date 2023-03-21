@@ -99,8 +99,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		}	
 	}
 
-	public List<String> getCuriesBySpeciesName(String speciesName) {
-		List<String> curies = geneDAO.findAllCuriesBySpeciesName(speciesName);
+	public List<String> getCuriesByDataProvider(String dataProvider) {
+		List<String> curies = geneDAO.findAllCuriesByDataProvider(dataProvider);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}
