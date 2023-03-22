@@ -35,7 +35,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "1.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = { @Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"), @Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
 	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"), @Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id")})
 public class BiologicalEntity extends CurieAuditedObject {
