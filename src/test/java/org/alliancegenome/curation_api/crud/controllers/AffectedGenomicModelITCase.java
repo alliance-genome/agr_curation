@@ -12,6 +12,8 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -46,6 +48,10 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	private VocabularyTerm subtype;
 	private VocabularyTerm subtype2;
 	private VocabularyTerm obsoleteSubtype;
+	private DataProvider dataProvider;
+	private DataProvider dataProvider2;
+	private DataProvider obsoleteDataProvider;
+	private Organization nonPersistedOrganization;
 	
 	private void loadRequiredEntities() {
 		taxon = getNCBITaxonTerm("NCBITaxon:10090");
@@ -59,6 +65,11 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		obsoleteSubtype = createVocabularyTerm(subtypeVocabulary, "obsolete", true);
 		unsupportedTaxon = getNCBITaxonTerm("NCBITaxon:11290");
 		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");
+		dataProvider = createDataProvider("TEST", false);
+		dataProvider2 = createDataProvider("TEST2", false);
+		obsoleteDataProvider = createDataProvider("ODP", true);
+		nonPersistedOrganization = new Organization();
+		nonPersistedOrganization.setAbbreviation("INV");
 	}
 	
 	@Test
@@ -71,7 +82,8 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		agm.setTaxon(taxon);
 		agm.setName("Test AGM");
 		agm.setDateCreated(datetime);
-		agm.setSubtype(subtype);;
+		agm.setSubtype(subtype);
+		agm.setDataProvider(dataProvider);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -94,7 +106,8 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			body("entity.obsolete", is(false)).
 			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));
 	}
 
 	@Test
@@ -108,6 +121,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		agm.setDateCreated(datetime2);
 		agm.setCreatedBy(person);
 		agm.setSubtype(subtype2);
+		agm.setDataProvider(dataProvider2);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -130,7 +144,8 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
-			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation()));
 	}
 	
 	@Test
@@ -174,6 +189,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setTaxon(null);
 		agm.setSubtype(null);
+		agm.setDataProvider(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -182,9 +198,10 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			put("/api/agm").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.subtype", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.subtype", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -230,11 +247,14 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
 		VocabularyTerm nonPersistedTerm = new VocabularyTerm();
 		nonPersistedTerm.setName("invalid");
+		DataProvider invalidDataProvider = new DataProvider();
+		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		AffectedGenomicModel agm = new AffectedGenomicModel();
 		agm.setCurie("AGM:0008");
 		agm.setTaxon(nonPersistedTaxon);
 		agm.setSubtype(nonPersistedTerm);
+		agm.setDataProvider(invalidDataProvider);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -243,9 +263,10 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			post("/api/agm").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.subtype", is(ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.subtype", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -255,10 +276,13 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		nonPersistedTaxon.setCurie("NCBITaxon:Invalid");
 		VocabularyTerm nonPersistedTerm = new VocabularyTerm();
 		nonPersistedTerm.setName("invalid");
+		DataProvider invalidDataProvider = new DataProvider();
+		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setTaxon(nonPersistedTaxon);
 		agm.setSubtype(nonPersistedTerm);
+		agm.setDataProvider(invalidDataProvider);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -267,9 +291,10 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			put("/api/agm").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.subtype", is(ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.subtype", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -279,6 +304,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		agm.setCurie("AGM:0010");
 		agm.setTaxon(obsoleteTaxon);
 		agm.setSubtype(obsoleteSubtype);
+		agm.setDataProvider(obsoleteDataProvider);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -287,9 +313,10 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			post("/api/agm").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.subtype", is(ValidationConstants.OBSOLETE_MESSAGE));
+			body("errorMessages.subtype", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -298,6 +325,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setTaxon(obsoleteTaxon);
 		agm.setSubtype(obsoleteSubtype);
+		agm.setDataProvider(obsoleteDataProvider);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -306,9 +334,10 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 			put("/api/agm").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.subtype", is(ValidationConstants.OBSOLETE_MESSAGE));
+			body("errorMessages.subtype", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test

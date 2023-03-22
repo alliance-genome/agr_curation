@@ -53,7 +53,8 @@ public class BiologicalEntityValidator extends CurieAuditedObjectValidator {
 	public DataProvider validateDataProvider(BiologicalEntity uiEntity, BiologicalEntity dbEntity) {
 		String field = "dataProvider";
 		if (uiEntity.getDataProvider() == null) {
-			uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
+			if (dbEntity.getDataProvider() == null)
+				uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
 			if (uiEntity.getDataProvider() == null) {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 				return null;

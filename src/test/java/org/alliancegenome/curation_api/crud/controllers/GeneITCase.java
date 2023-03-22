@@ -13,8 +13,10 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -80,6 +82,10 @@ public class GeneITCase extends BaseITCase {
 	private GeneFullNameSlotAnnotation geneFullName;
 	private GeneSynonymSlotAnnotation geneSynonym;
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
+	private DataProvider dataProvider;
+	private DataProvider dataProvider2;
+	private DataProvider obsoleteDataProvider;
+	private Organization nonPersistedOrganization;
 	
 	private void loadRequiredEntities() {
 
@@ -112,6 +118,11 @@ public class GeneITCase extends BaseITCase {
 		geneFullName = createGeneFullNameSlotAnnotation(List.of(reference), "Gene test 1", fullNameType, exactSynonymScope, "https://test.org");
 		geneSynonym = createGeneSynonymSlotAnnotation(List.of(reference), "Gene test synonym 1", symbolNameType, exactSynonymScope, "https://test.org");
 		geneSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), "GT.1", systematicNameType, exactSynonymScope, "https://test.org");
+		dataProvider = createDataProvider("TEST", false);
+		dataProvider2 = createDataProvider("TEST2", false);
+		obsoleteDataProvider = createDataProvider("ODP", true);
+		nonPersistedOrganization = new Organization();
+		nonPersistedOrganization.setAbbreviation("INV");
 		
 	}
 	
@@ -129,6 +140,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setGeneFullName(geneFullName);
 		gene.setGeneSynonyms(List.of(geneSynonym));
 		gene.setGeneSystematicName(geneSystematicName);
+		gene.setDataProvider(dataProvider);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -174,19 +186,21 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneSystematicName.nameType.name", is(geneSystematicName.getNameType().getName())).
 			body("entity.geneSystematicName.synonymScope.name", is(geneSystematicName.getSynonymScope().getName())).
 			body("entity.geneSystematicName.synonymUrl", is(geneSystematicName.getSynonymUrl())).
-			body("entity.geneSystematicName.evidence[0].curie", is(geneSystematicName.getEvidence().get(0).getCurie()));
+			body("entity.geneSystematicName.evidence[0].curie", is(geneSystematicName.getEvidence().get(0).getCurie())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));
 	}
 
 	@Test
 	@Order(2)
 	public void editGene() {
-		Gene gene = getGene("GENE:0001");
+		Gene gene = getGene(GENE);
 		gene.setTaxon(taxon2);
 		gene.setGeneType(soTerm2);
 		gene.setInternal(true);
 		gene.setObsolete(true);
 		gene.setDateCreated(datetime2);
 		gene.setCreatedBy(person);
+		gene.setDataProvider(dataProvider2);
 		
 		GeneSymbolSlotAnnotation editedSymbol = gene.getGeneSymbol();
 		editedSymbol.setNameType(systematicNameType);
@@ -266,7 +280,8 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneSystematicName.nameType.name", is(editedSystematicName.getNameType().getName())).
 			body("entity.geneSystematicName.synonymScope.name", is(editedSystematicName.getSynonymScope().getName())).
 			body("entity.geneSystematicName.synonymUrl", is(editedSystematicName.getSynonymUrl())).
-			body("entity.geneSystematicName.evidence[0].curie", is(editedSystematicName.getEvidence().get(0).getCurie()));
+			body("entity.geneSystematicName.evidence[0].curie", is(editedSystematicName.getEvidence().get(0).getCurie())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation()));
 	}
 	
 	@Test
@@ -311,6 +326,7 @@ public class GeneITCase extends BaseITCase {
 		Gene gene = getGene(GENE);
 		gene.setTaxon(null);
 		gene.setGeneSymbol(null);
+		gene.setDataProvider(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -319,9 +335,10 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -554,11 +571,14 @@ public class GeneITCase extends BaseITCase {
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		SOTerm nonPersistedSoTerm = new SOTerm();
 		nonPersistedSoTerm.setCurie("SO:Invalid");
+		DataProvider invalidDataProvider = new DataProvider();
+		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Gene gene = new Gene();
 		gene.setCurie("GENE:0012");
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
+		gene.setDataProvider(invalidDataProvider);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(List.of(nonPersistedReference), "Test symbol", fullNameType, fullNameType, "https://test.org");
 		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, fullNameType, "https://test.org");
@@ -577,7 +597,7 @@ public class GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(7))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -595,7 +615,8 @@ public class GeneITCase extends BaseITCase {
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
-					"synonymScope - " + ValidationConstants.INVALID_MESSAGE))));
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -607,10 +628,13 @@ public class GeneITCase extends BaseITCase {
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		SOTerm nonPersistedSoTerm = new SOTerm();
 		nonPersistedSoTerm.setCurie("SO:Invalid");
+		DataProvider invalidDataProvider = new DataProvider();
+		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Gene gene = getGene(GENE);
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
+		gene.setDataProvider(invalidDataProvider);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = gene.getGeneSymbol();
 		invalidSymbol.setEvidence(List.of(nonPersistedReference));
@@ -641,7 +665,7 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(7))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -659,7 +683,8 @@ public class GeneITCase extends BaseITCase {
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
-					"synonymScope - " + ValidationConstants.INVALID_MESSAGE))));
+					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -669,6 +694,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setCurie("GENE:0014");
 		gene.setTaxon(obsoleteTaxon);
 		gene.setGeneType(obsoleteSoTerm);
+		gene.setDataProvider(obsoleteDataProvider);
 		
 		GeneSymbolSlotAnnotation obsoleteSymbol = createGeneSymbolSlotAnnotation(List.of(obsoleteReference), "Test symbol", obsoleteSymbolNameType, obsoleteSynonymScope, "https://test.org");
 		GeneFullNameSlotAnnotation obsoleteFullName = createGeneFullNameSlotAnnotation(List.of(obsoleteReference), "Test name", obsoleteFullNameType, obsoleteSynonymScope, "https://test.org");
@@ -687,7 +713,7 @@ public class GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(7))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -705,7 +731,8 @@ public class GeneITCase extends BaseITCase {
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE))));
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -714,6 +741,7 @@ public class GeneITCase extends BaseITCase {
 		Gene gene = getGene(GENE);
 		gene.setTaxon(obsoleteTaxon);
 		gene.setGeneType(obsoleteSoTerm);
+		gene.setDataProvider(obsoleteDataProvider);
 		
 		GeneSymbolSlotAnnotation obsoleteSymbol = gene.getGeneSymbol();
 		obsoleteSymbol.setEvidence(List.of(obsoleteReference));
@@ -744,7 +772,7 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(7))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -762,7 +790,8 @@ public class GeneITCase extends BaseITCase {
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE))));
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
