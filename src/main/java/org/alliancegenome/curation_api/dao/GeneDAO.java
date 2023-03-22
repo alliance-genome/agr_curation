@@ -21,7 +21,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	}
 
 	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT gene.curie FROM Gene gene WHERE gene.dataProvider.abbreviation = :dataProvider");
+		Query jpqlQuery = entityManager.createQuery("SELECT gene.curie FROM Gene gene WHERE gene.dataProvider.sourceOrganization.abbreviation = :dataProvider");
 		jpqlQuery.setParameter("dataProvider", dataProvider);
 		return (List<String>) jpqlQuery.getResultList();
 	}

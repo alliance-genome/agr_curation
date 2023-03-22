@@ -85,8 +85,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	private String reference = "AGRKB:000000002";
 	private String referenceXref = "PMID:25920554";
 	private String reference2 = "AGRKB:000000021";
-	private String dataProvider = "TEST";
-	private String dataProvider2 = "TEST2";
+	private String dataProvider = "WB";
+	private String dataProvider2 = "RGD";
 	
 	@BeforeEach
 	public void init() {
@@ -129,11 +129,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		loadAffectedGenomicModel(sgdBackgroundStrain, "Test SGD AGM", "NCBITaxon:559292", "strain");
 		loadAffectedGenomicModel(sgdBackgroundStrain2, "Test SGD AGM2", "NCBITaxon:559292", "strain");
 		loadReference(reference, referenceXref);
-		loadOrganization(dataProvider);
-		loadOrganization(dataProvider2);
 		loadOrganization("OBSOLETE");
-		ResourceDescriptor rd = createResourceDescriptor("TEST");
-		createResourceDescriptorPage("homepage", "http://test.org", rd);
 		
 		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
 		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY, false);

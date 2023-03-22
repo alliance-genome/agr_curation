@@ -16,7 +16,7 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 	}
 
 	public List<Long> findAllAnnotationIdsByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM AlleleDiseaseAnnotation annotation WHERE annotation.dataProvider.abbreviation = :dataProvider");
+		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM AlleleDiseaseAnnotation annotation WHERE annotation.dataProvider.sourceOrganization.abbreviation = :dataProvider");
 		jpqlQuery.setParameter("dataProvider", dataProvider);
 		return (List<Long>) jpqlQuery.getResultList();
 	}

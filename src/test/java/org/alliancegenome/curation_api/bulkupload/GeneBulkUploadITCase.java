@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,6 +45,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredReferenceXref = "PMID:25920550";
 	private String requiredReference2 = "AGRKB:000000021";
 	private String requiredReferenceXref2 = "PMID:25920551";
+	private String requiredDataProvider = "WB";
 	
 	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
 	private final String geneGetEndpoint = "/api/gene/";
@@ -52,6 +54,10 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		loadReference(requiredReference, requiredReferenceXref);
 		loadReference(requiredReference2, requiredReferenceXref2);
+		ResourceDescriptor rd = createResourceDescriptor("TEST");
+		createResourceDescriptorPage("homepage", "http://test.org", rd);
+		ResourceDescriptor rd2 = createResourceDescriptor("TEST2");
+		createResourceDescriptorPage("homepage2", "http://test2.org", rd2);
 	}
 
 	@Test

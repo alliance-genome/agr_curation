@@ -16,7 +16,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 	}
 
 	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT agm.curie FROM AffectedGenomicModel agm WHERE agm.dataProvider.abbreviation = :dataProvider");
+		Query jpqlQuery = entityManager.createQuery("SELECT agm.curie FROM AffectedGenomicModel agm WHERE agm.dataProvider.sourceOrganization.abbreviation = :dataProvider");
 		jpqlQuery.setParameter("dataProvider", dataProvider);
 		return (List<String>) jpqlQuery.getResultList();
 	}

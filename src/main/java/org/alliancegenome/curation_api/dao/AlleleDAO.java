@@ -16,7 +16,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 	}
 
 	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT allele.curie FROM Allele allele WHERE allele.dataProvider.abbreviation = :dataProvider");
+		Query jpqlQuery = entityManager.createQuery("SELECT allele.curie FROM Allele allele WHERE allele.dataProvider.sourceOrganization.abbreviation = :dataProvider");
 		jpqlQuery.setParameter("dataProvider", dataProvider);
 		return (List<String>) jpqlQuery.getResultList();
 	}

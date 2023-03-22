@@ -12,37 +12,37 @@ UPDATE biologicalentity
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.curie LIKE 'FB:%' AND organization.abbreviation = 'FB';
+	WHERE dataprovider.tmp_curie LIKE 'FB:%' AND organization.abbreviation = 'FB';
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.curie LIKE 'WB:%' AND organization.abbreviation = 'WB';
+	WHERE dataprovider.tmp_curie LIKE 'WB:%' AND organization.abbreviation = 'WB';
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.curie LIKE 'MGI:%' AND organization.abbreviation = 'MGI';
+	WHERE dataprovider.tmp_curie LIKE 'MGI:%' AND organization.abbreviation = 'MGI';
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.curie LIKE 'RGD:%' AND organization.abbreviation = 'RGD';
+	WHERE dataprovider.tmp_curie LIKE 'RGD:%' AND organization.abbreviation = 'RGD';
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.curie LIKE 'SGD:%' AND organization.abbreviation = 'SGD';
+	WHERE dataprovider.tmp_curie LIKE 'SGD:%' AND organization.abbreviation = 'SGD';
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.curie LIKE 'ZFIN:%' AND organization.abbreviation = 'ZFIN';
+	WHERE dataprovider.tmp_curie LIKE 'ZFIN:%' AND organization.abbreviation = 'ZFIN';
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.curie LIKE 'HGNC:%' AND organization.abbreviation = 'OMIM';
+	WHERE dataprovider.tmp_curie LIKE 'HGNC:%' AND organization.abbreviation = 'OMIM';
 	
 ALTER TABLE dataprovider
 	DROP COLUMN tmp_curie;
