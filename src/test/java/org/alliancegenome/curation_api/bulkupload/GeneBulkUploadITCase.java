@@ -46,6 +46,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredReference2 = "AGRKB:000000021";
 	private String requiredReferenceXref2 = "PMID:25920551";
 	private String requiredDataProvider = "WB";
+	private String requiredDataProvider2 = "RGD";
 	
 	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
 	private final String geneGetEndpoint = "/api/gene/";
@@ -128,7 +129,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -197,7 +202,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -218,6 +227,12 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_13_no_gene_full_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_14_no_gene_systematic_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_15_no_gene_synonym_name_type.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_16_no_data_provider.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_17_no_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_18_no_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_19_no_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_20_no_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_21_no_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -237,6 +252,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_12_empty_gene_full_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_13_empty_gene_systematic_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_14_empty_gene_synonym_name_type.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_15_empty_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_16_empty_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_17_empty_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_18_empty_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_19_empty_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -257,6 +277,9 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_13_invalid_gene_full_name_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_14_invalid_gene_systematic_name_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_15_invalid_gene_synonym_evidence.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_16_invalid_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_17_invalid_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_18_invalid_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
