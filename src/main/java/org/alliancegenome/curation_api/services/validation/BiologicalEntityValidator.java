@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.enums.SupportedSpecies;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
