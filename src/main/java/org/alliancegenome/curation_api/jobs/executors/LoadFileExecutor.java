@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -18,7 +17,6 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.ingest.dto.DataProviderDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ProcessDisplayService;
@@ -159,22 +157,22 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataType, List<String> curiesBefore, List<String> curiesAfter) {
-		Log.debug("runLoad: After: " + dataType + " " + curiesAfter.size());
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProvider, List<String> curiesBefore, List<String> curiesAfter) {
+		Log.debug("runLoad: After: " + dataProvider + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataType + " " + distinctAfter.size());
+		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
 
 		List<String> curiesToRemove = ListUtils.subtract(curiesBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataType + " " + curiesToRemove.size());
+		Log.debug("runLoad: Remove: " + dataProvider + " " + curiesToRemove.size());
 
 		history.setTotalDeleteRecords((long)curiesToRemove.size());
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of primary objects " + dataType, curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of primary objects " + dataProvider, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				service.removeOrDeprecateNonUpdated(curie, dataType);
+				service.removeOrDeprecateNonUpdated(curie, dataProvider);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();

@@ -74,7 +74,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider) {
 		Gene gene = geneDAO.find(curie);
 		if (gene != null) {
 			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
@@ -86,7 +86,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 			}
 
 			if (anyReferencingDAs) {
-				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
+				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataProvider + " gene bulk upload"));
 				gene.setDateUpdated(OffsetDateTime.now());
 				gene.setObsolete(true);
 				geneDAO.persist(gene);

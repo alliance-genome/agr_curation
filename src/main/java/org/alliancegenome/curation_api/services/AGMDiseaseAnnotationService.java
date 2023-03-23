@@ -65,5 +65,5 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataType) { }
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider) { }
 }

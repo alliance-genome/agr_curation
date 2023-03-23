@@ -43,7 +43,7 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	}
 
 	@Override
-	public APIResponse updateGeneDiseaseAnnotations(String dataType, List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad(dataType, annotations);
+	public APIResponse updateGeneDiseaseAnnotations(String dataProvider, List<GeneDiseaseAnnotationDTO> annotations) {
+		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 }
