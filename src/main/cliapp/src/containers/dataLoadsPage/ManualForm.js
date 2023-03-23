@@ -5,20 +5,20 @@ import { Dropdown } from "primereact/dropdown";
 export const ManualForm = ({ hideManual, newBulkLoad, onChange }) => {
 	const dataLoadService = new DataLoadService();
 
-	const dataTypes = dataLoadService.getDataTypes();
+	const dataProviders = dataLoadService.getDataProviders();
 	return (
 		<>
 			{!hideManual.current && (
 				<div className="field">
-					<label htmlFor="fmsDataType">FMS Data Type</label>
+					<label htmlFor="dataProvider">Data Provider</label>
 					<Dropdown
-						id="dataType"
-						value={newBulkLoad.dataType}
-						options={dataTypes}
+						id="dataProvider"
+						value={newBulkLoad.dataProvider}
+						options={dataProviders}
 						onChange={onChange}
-						placeholder={"Select Data Type"}
+						placeholder={"Select Data Provider"}
 						className='p-col-12'
-						name='dataType'
+						name='dataProvider'
 					/>
 				</div>
 			)}
