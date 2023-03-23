@@ -15,9 +15,9 @@ public class AGMDiseaseAnnotationDAO extends BaseSQLDAO<AGMDiseaseAnnotation> {
 		super(AGMDiseaseAnnotation.class);
 	}
 
-	public List<Long> findAllAnnotationIds(String speciesName) {
-		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM AGMDiseaseAnnotation annotation WHERE annotation.subject.taxon.name LIKE CONCAT(:speciesName, '%')");
-		jpqlQuery.setParameter("speciesName", speciesName);
+	public List<Long> findAllAnnotationIdsByDataProvider(String dataProvider) {
+		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM AGMDiseaseAnnotation annotation WHERE annotation.dataProvider.sourceOrganization.abbreviation = :dataProvider");
+		jpqlQuery.setParameter("dataProvider", dataProvider);
 		return (List<Long>) jpqlQuery.getResultList();
 	}
 

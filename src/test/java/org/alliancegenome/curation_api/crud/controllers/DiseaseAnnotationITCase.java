@@ -114,7 +114,6 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	private Reference obsoleteReference;
 	private DataProvider dataProvider;
 	private DataProvider dataProvider2;
-	private DataProvider obsoleteDataProvider;
 	private Vocabulary nameTypeVocabulary;
 	private VocabularyTerm symbolNameType;
 	private DOTerm nonPersistedDoTerm;
@@ -190,9 +189,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		conditionRelationType2 = getVocabularyTerm(conditionRelationTypeVocabulary, "induced_by");
 		obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
 		conditionRelation = createConditionRelation("test_handle", reference, conditionRelationType, List.of(experimentalCondition));
-		dataProvider = createDataProvider("TEST", false);
-		dataProvider2 = createDataProvider("TEST2", false);
-		obsoleteDataProvider = createDataProvider("ODP", true);
+		dataProvider = createDataProvider("WB", false);
+		dataProvider2 = createDataProvider("RGD", false);
 		
 		nonPersistedDoTerm = new DOTerm();
 		nonPersistedDoTerm.setCurie("DO:Invalid");
@@ -1611,11 +1609,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	@Test
 	@Order(31)
 	public void createGeneDiseaseAnnotationWithObsoleteFields() {
+		dataProvider.setObsolete(true);
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(obsoleteGeneDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider);
 		diseaseAnnotation.setSubject(obsoleteGene);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1675,8 +1674,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(obsoleteAlleleDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider);
 		diseaseAnnotation.setSubject(obsoleteAllele);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1738,8 +1737,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AGMDiseaseAnnotation diseaseAnnotation = new AGMDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(obsoleteAgmDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider);
 		diseaseAnnotation.setSubject(obsoleteAgm);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1802,11 +1801,13 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	@Test
 	@Order(34)
 	public void editGeneDiseaseAnnotationWithObsoleteFields() {
+		dataProvider2.setObsolete(true);
+		
 		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDiseaseRelation(obsoleteGeneDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider2);
 		diseaseAnnotation.setSubject(obsoleteGene);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1864,8 +1865,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AlleleDiseaseAnnotation diseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDiseaseRelation(obsoleteAlleleDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider2);
 		diseaseAnnotation.setSubject(obsoleteAllele);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1925,8 +1926,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AGMDiseaseAnnotation diseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDiseaseRelation(obsoleteAgmDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider2);
 		diseaseAnnotation.setSubject(obsoleteAgm);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1982,6 +1983,9 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
+		
+		dataProvider.setObsolete(false);
+		dataProvider2.setObsolete(false);
 	}
 	
 	@Test
