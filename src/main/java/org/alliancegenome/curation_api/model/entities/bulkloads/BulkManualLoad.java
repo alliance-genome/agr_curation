@@ -5,7 +5,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -30,5 +30,5 @@ public class BulkManualLoad extends BulkLoad {
 
 	@JsonView({ View.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
-	private BackendBulkDataType dataType;
+	private BackendBulkDataProvider dataProvider;
 }

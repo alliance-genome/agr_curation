@@ -18,8 +18,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 
 @RequestScoped
-public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AGMDiseaseAnnotationService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO>
-	implements AGMDiseaseAnnotationCrudInterface {
+public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AGMDiseaseAnnotationService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> implements AGMDiseaseAnnotationCrudInterface {
 
 	@Inject
 	AGMDiseaseAnnotationService agmDiseaseAnnotationService;
@@ -43,7 +42,7 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 	}
 
 	@Override
-	public APIResponse updateAgmDiseaseAnnotations(String dataType, List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad(dataType, annotations);
+	public APIResponse updateAgmDiseaseAnnotations(String dataProvider, List<AGMDiseaseAnnotationDTO> annotations) {
+		return agmDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 }

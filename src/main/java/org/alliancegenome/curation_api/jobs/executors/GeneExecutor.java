@@ -2,25 +2,19 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -48,7 +42,7 @@ public class GeneExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
+			log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -58,9 +52,8 @@ public class GeneExecutor extends LoadFileExecutor {
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			if (genes == null) genes = new ArrayList<>();
 			
-			String dataType = manual.getDataType().name();
-			String dataProvider = manual.getDataType().getDataProviderAbbreviation();
-			
+			String dataProvider = manual.getDataProvider().name();
+
 			List<String> geneCuriesLoaded = new ArrayList<>();
 			List<String> geneCuriesBefore = geneService.getCuriesByDataProvider(dataProvider);
 			log.debug("runLoad: Before: total " + geneCuriesBefore.size());
@@ -70,9 +63,9 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 			
-			runLoad(history, genes, dataType, geneCuriesLoaded);
+			runLoad(history, genes, dataProvider, geneCuriesLoaded);
 
-			runCleanup(geneService, history, dataType, geneCuriesBefore, geneCuriesLoaded);
+			runCleanup(geneService, history, dataProvider, geneCuriesBefore, geneCuriesLoaded);
 			
 			history.finishLoad();
 			
@@ -84,26 +77,25 @@ public class GeneExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataType, List<GeneDTO> genes) {
-		String dataProvider = BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType);
-		
+	public APIResponse runLoad(String dataProvider, List<GeneDTO> genes) {
+
 		List<String> curiesLoaded = new ArrayList<>();
 		List<String> curiesBefore = geneService.getCuriesByDataProvider(dataProvider);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-		runLoad(history, genes, dataType, curiesLoaded);
-		runCleanup(geneService, history, dataType, curiesBefore, curiesLoaded);
+		runLoad(history, genes, dataProvider, curiesLoaded);
+		runCleanup(geneService, history, dataProvider, curiesBefore, curiesLoaded);
 		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataType, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Gene Update " + dataType, genes.size());
+		ph.startProcess("Gene Update for: " + dataProvider, genes.size());
 		genes.forEach(geneDTO -> {
 			try {
 				Gene gene = geneService.upsert(geneDTO);

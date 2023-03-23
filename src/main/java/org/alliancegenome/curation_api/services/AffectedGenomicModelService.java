@@ -70,7 +70,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider) {
 		AffectedGenomicModel agm = agmDAO.find(curie);
 		if (agm != null) {
 			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
@@ -82,7 +82,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 			}
 
 			if (anyReferencingDAs) {
-				agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
+				agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataProvider + " AGM bulk upload"));
 				agm.setDateUpdated(OffsetDateTime.now());
 				agm.setObsolete(true);
 				agmDAO.persist(agm);

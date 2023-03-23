@@ -62,5 +62,5 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataType) { }
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider) { }
 }
