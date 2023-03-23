@@ -9,7 +9,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -42,7 +41,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			Log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
+			Log.info("Running with: " + manual.getDataType().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -52,8 +51,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
 			if (alleles == null) alleles = new ArrayList<>();
 			
-			String dataType = manual.getDataType().name();
-			String dataProvider = manual.getDataType().getDataProviderAbbreviation();
+			String dataProvider = manual.getDataType().name();
 			
 			List<String> alleleCuriesLoaded = new ArrayList<>();
 			List<String> alleleCuriesBefore = alleleService.getCuriesByDataProvider(dataProvider);
@@ -64,9 +62,9 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 			BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 
-			runLoad(history, alleles, dataType, alleleCuriesLoaded);
+			runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
 			
-			runCleanup(alleleService, history, dataType, alleleCuriesBefore, alleleCuriesLoaded);
+			runCleanup(alleleService, history, dataProvider, alleleCuriesBefore, alleleCuriesLoaded);
 			
 			history.finishLoad();
 			
@@ -78,26 +76,25 @@ public class AlleleExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataType, List<AlleleDTO> alleles) {
-		String dataProvider = BackendBulkDataType.getDataProviderAbbreviationFromDataType(dataType);
-		
+	public APIResponse runLoad(String dataProvider, List<AlleleDTO> alleles) {
+
 		List<String> curiesLoaded = new ArrayList<>();
 		List<String> curiesBefore = alleleService.getCuriesByDataProvider(dataProvider);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
-		runLoad(history, alleles, dataType, curiesLoaded);
-		runCleanup(alleleService, history, dataType, curiesBefore, curiesLoaded);
+		runLoad(history, alleles, dataProvider, curiesLoaded);
+		runCleanup(alleleService, history, dataProvider, curiesBefore, curiesLoaded);
 		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<AlleleDTO> alleles, String dataType, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<AlleleDTO> alleles, String dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Allele Update " + dataType, alleles.size());
+		ph.startProcess("Allele Update for: " + dataProvider, alleles.size());
 		alleles.forEach(alleleDTO -> {
 			try {
 				Allele allele = alleleService.upsert(alleleDTO);
