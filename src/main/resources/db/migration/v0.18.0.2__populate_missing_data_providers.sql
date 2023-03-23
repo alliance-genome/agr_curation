@@ -47,7 +47,7 @@ UPDATE dataprovider
 ALTER TABLE dataprovider
 	DROP COLUMN tmp_curie;
 
-UPDATE bulkmanualload SET datatype = "OMIN" WHERE datatype = "HUMAN"
+UPDATE bulkmanualload SET datatype = 'OMIN' WHERE datatype = 'HUMAN';
 	
 ALTER TABLE bulkmanualload
 	RENAME COLUMN datatype TO dataprovider;
