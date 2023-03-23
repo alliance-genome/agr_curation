@@ -6,6 +6,7 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
@@ -99,6 +100,8 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				ECOTerm ecoTerm = ecoTermDAO.find(ecoCurie);
 				if (ecoTerm == null) {
 					daResponse.addErrorMessage("evidence_code_curies", ValidationConstants.INVALID_MESSAGE + " (" + ecoCurie + ")");
+				} else if (!ecoTerm.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
+					daResponse.addErrorMessage("evidence_code_curies", ValidationConstants.UNSUPPORTED_MESSAGE + " (" + ecoCurie + ")");
 				} else {
 					ecoTerms.add(ecoTerm);
 				}

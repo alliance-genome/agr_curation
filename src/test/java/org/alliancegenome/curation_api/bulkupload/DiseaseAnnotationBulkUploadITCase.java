@@ -50,6 +50,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	private String doTerm2 = "DATEST:Disease0002";
 	private String ecoTerm = "DATEST:Evidence0001";
 	private String ecoTerm2 = "DATEST:Evidence0002";
+	private String unsupportedEcoTerm = "DATEST:NonAgrEvidence";
 	private String goTerm = "DATEST:GOTerm0001";
 	private String goTerm2 = "DATEST:GOTerm0002";
 	private String anatomyTerm = "DATEST:AnatomyTerm0001";
@@ -107,8 +108,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		loadDOTerm(doTerm, "Test DOTerm");
 		loadDOTerm(doTerm2, "Test DOTerm 2");
-		loadECOTerm(ecoTerm, "Test ECOTerm");
-		loadECOTerm(ecoTerm2, "Test ECOTerm 2");
+		createEcoTerm(ecoTerm, "Test ECOTerm", false, true);
+		createEcoTerm(ecoTerm2, "Test ECOTerm 2", false, true);
+		createEcoTerm(unsupportedEcoTerm, "Test unsupported ECOTerm", false, false);
 		loadGOTerm(goTerm, "Test GOTerm");
 		loadGOTerm(goTerm2, "Test GOTerm 2");
 		loadExperimentalConditionTerm(expCondTerm, "Test ExperimentalConditionOntologyTerm");
@@ -765,13 +767,19 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	
 	@Test
 	@Order(12)
+	public void diseaseAnnotationBulkUploadUnsupportedFields() throws Exception {
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "US_01_unsupported_evidence_code.json");
+	}
+	
+	@Test
+	@Order(13)
 	public void diseaseAnnotationReferenceMismatches() throws Exception {
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MM_01_mismatched_note_reference.json");
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MM_02_mismatched_condition_relation_reference.json");
 	}
 	
 	@Test
-	@Order(13)
+	@Order(14)
 	public void geneDiseaseAnnotationUpdateMissingNonRequiredFieldsLevel1() throws Exception {
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "AF_01_all_fields_gene_annotation.json");
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "UM_01_update_no_non_required_fields_level_1_gene_annotation.json");
@@ -799,7 +807,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(14)
+	@Order(15)
 	public void alleleDiseaseAnnotationUpdateMissingNonRequiredFieldsLevel1() throws Exception {
 		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "AF_02_all_fields_allele_annotation.json");
 		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "UM_02_update_no_non_required_fields_level_1_allele_annotation.json");
@@ -828,7 +836,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(15)
+	@Order(16)
 	public void agmDiseaseAnnotationUpdateMissingNonRequiredFieldsLevel1() throws Exception {
 		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "AF_03_all_fields_agm_annotation.json");
 		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "UM_03_update_no_non_required_fields_level_1_agm_annotation.json");
@@ -859,7 +867,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(16)
+	@Order(17)
 	public void diseaseAnnotationUpdateMissingNonRequiredFieldsLevel2() throws Exception {
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "AF_01_all_fields_gene_annotation.json");
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "UM_04_update_no_non_required_fields_level_2.json");
@@ -897,7 +905,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(17)
+	@Order(18)
 	public void geneDiseaseAnnotationUpdateEmptyNonRequiredFieldsLevel1() throws Exception {
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "AF_01_all_fields_gene_annotation.json");
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "UE_01_update_empty_non_required_fields_level_1_gene_annotation.json");
@@ -925,7 +933,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(18)
+	@Order(19)
 	public void alleleDiseaseAnnotationUpdateEmptyNonRequiredFieldsLevel1() throws Exception {
 		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "AF_02_all_fields_allele_annotation.json");
 		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "UE_02_update_empty_non_required_fields_level_1_allele_annotation.json");
@@ -954,7 +962,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(19)
+	@Order(20)
 	public void agmDiseaseAnnotationUpdateEmptyNonRequiredFieldsLevel1() throws Exception {
 		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "AF_03_all_fields_agm_annotation.json");
 		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "UE_03_update_empty_non_required_fields_level_1_agm_annotation.json");
@@ -985,7 +993,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(20)
+	@Order(21)
 	public void diseaseAnnotationUpdateEmptyNonRequiredFieldsLevel2() throws Exception {
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "AF_01_all_fields_gene_annotation.json");
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "UE_04_update_empty_non_required_fields_level_2.json");
@@ -1021,7 +1029,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(21)
+	@Order(22)
 	public void diseaseAnnotationBulkUploadMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MN_01_no_non_required_fields_level_1_gene_annotation.json");
 		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "MN_02_no_non_required_fields_level_1_allele_annotation.json");
@@ -1030,7 +1038,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(22)
+	@Order(23)
 	public void diseaseAnnotationBulkUploadEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "EN_01_empty_non_required_fields_level_1_gene_annotation.json");
 		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "EN_02_empty_non_required_fields_level_1_allele_annotation.json");

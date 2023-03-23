@@ -249,12 +249,14 @@ public class BaseITCase {
 		return doTerm;
 	}
 
-	public ECOTerm createEcoTerm(String curie, String name, Boolean obsolete) {
+	public ECOTerm createEcoTerm(String curie, String name, Boolean obsolete, Boolean inAgrSubset) {
 		ECOTerm ecoTerm = new ECOTerm();
 		ecoTerm.setCurie(curie);
 		ecoTerm.setName(name);
 		ecoTerm.setObsolete(obsolete);
-
+		if (inAgrSubset)
+			ecoTerm.setSubsets(List.of(OntologyConstants.AGR_ECO_TERM_SUBSET));
+		
 		RestAssured.given().
 				contentType("application/json").
 				body(ecoTerm).
@@ -980,21 +982,6 @@ public class BaseITCase {
 			statusCode(200);
 	}
 
-	public void loadECOTerm(String curie, String name) throws Exception {
-		ECOTerm ecoTerm = new ECOTerm();
-		ecoTerm.setCurie(curie);
-		ecoTerm.setName(name);
-		ecoTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(ecoTerm).
-			when().
-			put("/api/ecoterm").
-			then().
-			statusCode(200);
-	}
-	
 	public void loadExperimentalConditionTerm(String curie, String name) throws Exception {
 		ExperimentalConditionOntologyTerm ecTerm = new ExperimentalConditionOntologyTerm();
 		ecTerm.setCurie(curie);
