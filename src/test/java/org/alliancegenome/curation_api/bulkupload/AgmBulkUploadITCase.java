@@ -138,15 +138,9 @@ public class AgmBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_06_invalid_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_07_invalid_data_provider_cross_reference_page_area.json");
 	}
-	
-	@Test
-	@Order(6)
-	public void agmBulkUploadUnsupportedFields() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "US_01_unsupported_taxon.json");
-	}
 
 	@Test
-	@Order(7)
+	@Order(6)
 	public void agmBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UM_01_update_no_non_required_fields.json");
@@ -165,7 +159,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void agmBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UE_01_update_empty_non_required_fields.json");
@@ -184,13 +178,13 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(9)
+	@Order(8)
 	public void agmBulkUploadMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MN_01_no_non_required_fields.json");
 	}
 
 	@Test
-	@Order(10)
+	@Order(9)
 	public void agmBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "EN_01_empty_non_required_fields.json");
 	}

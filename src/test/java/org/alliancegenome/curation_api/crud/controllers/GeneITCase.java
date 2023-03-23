@@ -12,7 +12,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
@@ -23,12 +22,6 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
@@ -70,7 +63,6 @@ public class GeneITCase extends BaseITCase {
 	private SOTerm obsoleteSoTerm;
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
-	private NCBITaxonTerm unsupportedTaxon;
 	private NCBITaxonTerm obsoleteTaxon;
 	private OffsetDateTime datetime;
 	private OffsetDateTime datetime2;
@@ -106,7 +98,6 @@ public class GeneITCase extends BaseITCase {
 		obsoleteSynonymScope = createVocabularyTerm(synonymScope, "obsolete", true);
 		taxon = getNCBITaxonTerm("NCBITaxon:10090");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
-		unsupportedTaxon = getNCBITaxonTerm("NCBITaxon:11290");
 		obsoleteTaxon = createNCBITaxonTerm("NCBITaxon:0000", "Homo sapiens obsolete", true);
 		reference = createReference("AGRKB:000010003", false);
 		reference2 = createReference("AGRKB:000010005", false);
@@ -796,44 +787,6 @@ public class GeneITCase extends BaseITCase {
 	
 	@Test
 	@Order(16)
-	public void createGeneWithUnsupportedFieldValues() {
-		Gene gene = new Gene();
-		gene.setCurie("GENE:0016");
-		gene.setTaxon(unsupportedTaxon);
-		gene.setGeneSymbol(geneSymbol);
-				
-		RestAssured.given().
-			contentType("application/json").
-			body(gene).
-			when().
-			post("/api/gene").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));
-	}
-	
-	@Test
-	@Order(17)
-	public void editGeneWithUnsupportedFieldValues() {
-		Gene gene = getGene(GENE);
-		
-		gene.setTaxon(unsupportedTaxon);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(gene).
-			when().
-			put("/api/gene").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.taxon", is(ValidationConstants.UNSUPPORTED_MESSAGE));	
-			
-	}
-	
-	@Test
-	@Order(18)
 	public void editGeneWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
 		Gene gene = getGene(GENE);
@@ -895,7 +848,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(19)
+	@Order(17)
 	public void editGeneWithNullNonRequiredFieldsLevel1() {
 		Gene gene = getGene(GENE);
 		
@@ -924,7 +877,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(20)
+	@Order(18)
 	public void createGeneWithOnlyRequiredFields() {		
 		Gene gene = new Gene();
 		gene.setCurie("GENE:0020");
@@ -941,7 +894,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(21)
+	@Order(19)
 	public void createGeneWithOnlyRequiredFieldsLevel2() {
 		Gene gene = new Gene();
 		gene.setCurie("GENE:0021");
@@ -967,7 +920,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(22)
+	@Order(20)
 	public void deleteGene() {
 
 		RestAssured.given().

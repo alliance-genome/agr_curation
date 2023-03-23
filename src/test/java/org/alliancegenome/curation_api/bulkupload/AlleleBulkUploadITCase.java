@@ -333,12 +333,6 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	
 	@Test
 	@Order(6)
-	public void agmBulkUploadUnsupportedFields() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "US_01_unsupported_taxon.json");
-	}
-
-	@Test
-	@Order(7)
 	public void alleleBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_01_update_no_non_required_fields_level_1.json");
@@ -363,7 +357,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void alleleBulkUploadUpdateMissingNonRequiredFieldsLevel2() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_02_update_no_non_required_fields_level_2.json");
@@ -414,7 +408,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(9)
+	@Order(8)
 	public void alleleBulkUploadUpdateEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UE_01_update_empty_non_required_fields.json");
@@ -472,14 +466,14 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(10)
+	@Order(9)
 	public void alleleBulkUploadMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MN_01_no_non_required_fields_level_1.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MN_02_no_non_required_fields_level_2.json");
 	}
 
 	@Test
-	@Order(11)
+	@Order(10)
 	public void alleleBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "EN_01_empty_non_required_fields.json");
 	}
