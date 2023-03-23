@@ -47,3 +47,5 @@ UPDATE dataprovider
 ALTER TABLE dataprovider
 	DROP COLUMN tmp_curie;
 	
+ALTER TABLE bulkmanualload
+	RENAME COLUMN datatype TO dataprovider;
