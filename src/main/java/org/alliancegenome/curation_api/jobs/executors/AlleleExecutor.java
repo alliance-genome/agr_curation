@@ -79,11 +79,9 @@ public class AlleleExecutor extends LoadFileExecutor {
 	public APIResponse runLoad(String dataProvider, List<AlleleDTO> alleles) {
 
 		List<String> curiesLoaded = new ArrayList<>();
-		List<String> curiesBefore = alleleService.getCuriesByDataProvider(dataProvider);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 		runLoad(history, alleles, dataProvider, curiesLoaded);
-		runCleanup(alleleService, history, dataProvider, curiesBefore, curiesLoaded);
 		
 		history.finishLoad();
 		

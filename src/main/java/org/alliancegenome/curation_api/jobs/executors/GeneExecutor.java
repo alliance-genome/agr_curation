@@ -80,12 +80,9 @@ public class GeneExecutor extends LoadFileExecutor {
 	public APIResponse runLoad(String dataProvider, List<GeneDTO> genes) {
 
 		List<String> curiesLoaded = new ArrayList<>();
-		List<String> curiesBefore = geneService.getCuriesByDataProvider(dataProvider);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 		runLoad(history, genes, dataProvider, curiesLoaded);
-		runCleanup(geneService, history, dataProvider, curiesBefore, curiesLoaded);
-		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);

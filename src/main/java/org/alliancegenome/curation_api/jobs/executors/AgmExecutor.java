@@ -79,12 +79,8 @@ public class AgmExecutor extends LoadFileExecutor {
 	public APIResponse runLoad(String dataProvider, List<AffectedGenomicModelDTO> agms) {
 
 		List<String> curiesLoaded = new ArrayList<>();
-		List<String> curiesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider);
-		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 		runLoad(history, agms, dataProvider, curiesLoaded);
-		runCleanup(affectedGenomicModelService, history, dataProvider, curiesBefore, curiesLoaded);
-		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);

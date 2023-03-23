@@ -80,13 +80,9 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	public APIResponse runLoad(String dataProvider, List<AGMDiseaseAnnotationDTO> annotations) {
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
-		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider));
-		annotationIdsBefore.removeIf(Objects::isNull);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
-		runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
