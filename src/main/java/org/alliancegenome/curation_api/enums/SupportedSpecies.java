@@ -32,13 +32,6 @@ public enum SupportedSpecies {
 		return species.annotationCurie;
 	}
 	
-	public static Boolean isSupported(String speciesName) {
-		SupportedSpecies species = getSpeciesFromName(speciesName);
-		if (species == null)
-			return false;
-		return true;
-	}
-	
 	private static SupportedSpecies getSpeciesFromName(String speciesName) {
 		speciesName = speciesName.replace(" ", "_");
 		SupportedSpecies result = null;

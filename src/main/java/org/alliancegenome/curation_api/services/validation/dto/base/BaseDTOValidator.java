@@ -102,11 +102,6 @@ public class BaseDTOValidator {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
-			} else {
-				NCBITaxonTerm taxon = taxonResponse.getEntity();
-				if (!SupportedSpecies.isSupported(taxon.getGenusSpecies())) {
-					beResponse.addErrorMessage("taxon_curie", ValidationConstants.UNSUPPORTED_MESSAGE + " (" + dto.getTaxonCurie() + ")");
-				}
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}

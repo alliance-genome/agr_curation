@@ -37,11 +37,6 @@ public class BiologicalEntityValidator extends CurieAuditedObjectValidator {
 			return null;
 		}
 		
-		if (!SupportedSpecies.isSupported(taxon.getGenusSpecies())) {
-			addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
-			return null;
-		}
-		
 		if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
