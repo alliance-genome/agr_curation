@@ -20,9 +20,9 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		return find(id);
 	}
 
-	public List<String> findAllCuriesBySpeciesName(String speciesName) {
-		Query jpqlQuery = entityManager.createQuery("SELECT gene.curie FROM Gene gene WHERE gene.taxon.name LIKE CONCAT(:speciesName, '%')");
-		jpqlQuery.setParameter("speciesName", speciesName);
+	public List<String> findAllCuriesByDataProvider(String dataProvider) {
+		Query jpqlQuery = entityManager.createQuery("SELECT gene.curie FROM Gene gene WHERE gene.dataProvider.sourceOrganization.abbreviation = :dataProvider");
+		jpqlQuery.setParameter("dataProvider", dataProvider);
 		return (List<String>) jpqlQuery.getResultList();
 	}
 

@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -114,6 +115,9 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
+		
+		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
+		dbEntity.setDataProvider(dataProvider);
 
 		List<String> previousReferenceCuries = new ArrayList<String>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))

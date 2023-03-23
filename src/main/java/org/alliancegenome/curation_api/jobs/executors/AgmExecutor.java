@@ -2,11 +2,7 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -19,7 +15,6 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -46,7 +41,7 @@ public class AgmExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			Log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getSpeciesName());
+			Log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -56,11 +51,10 @@ public class AgmExecutor extends LoadFileExecutor {
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
 			if (agms == null) agms = new ArrayList<>();
 			
-			String speciesName = manual.getDataType().getSpeciesName();
-			String dataType = manual.getDataType().name();
+			String dataProvider = manual.getDataProvider().name();
 
 			List<String> amgCuriesLoaded = new ArrayList<>();
-			List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesBySpeciesName(speciesName);
+			List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider);
 			Log.debug("runLoad: Before: total " + agmCuriesBefore.size());
 
 			bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
@@ -68,9 +62,9 @@ public class AgmExecutor extends LoadFileExecutor {
 			
 			BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 
-			runLoad(history, Collections.singleton(speciesName), agms, dataType, amgCuriesLoaded);
+			runLoad(history, agms, dataProvider, amgCuriesLoaded);
 			
-			runCleanup(affectedGenomicModelService, history, Collections.singleton(speciesName), dataType, agmCuriesBefore, amgCuriesLoaded);
+			runCleanup(affectedGenomicModelService, history, dataProvider, agmCuriesBefore, amgCuriesLoaded);
 			
 			history.finishLoad();
 			
@@ -82,33 +76,23 @@ public class AgmExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(List<AffectedGenomicModelDTO> agms) {
-		List<String> taxonIds = agms.stream().map(agmDTO -> agmDTO.getTaxonCurie()).distinct().collect(Collectors.toList());
-		Set<String> speciesNames = new HashSet<String>();
-		for (String taxonId : taxonIds) {
-			if (taxonId != null) {
-				NCBITaxonTerm taxon = ncbiTaxonTermService.get(taxonId).getEntity();
-				if (taxon != null)
-					speciesNames.add(taxon.getGenusSpecies());
-			}
-		}
+	public APIResponse runLoad(String dataProvider, List<AffectedGenomicModelDTO> agms) {
+
+		List<String> curiesLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
-		
-		runLoad(history, speciesNames, agms, null, null);
-		
+		runLoad(history, agms, dataProvider, curiesLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, Set<String> speciesNames, List<AffectedGenomicModelDTO> agms, String dataType, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, String dataProvider, List<String> curiesAdded) {
 	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("AGM Update " + speciesNames.toString(), agms.size());
+		ph.startProcess("AGM Update for: " + dataProvider, agms.size());
 		agms.forEach(agmDTO -> {
 			try {
-				agmDTO.setDataProviderDto(createDataProviderForDataType(dataType));
 				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
 				history.incrementCompleted();
 				if(curiesAdded != null) {

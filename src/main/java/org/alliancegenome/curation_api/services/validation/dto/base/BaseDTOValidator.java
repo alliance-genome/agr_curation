@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.enums.SupportedSpecies;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
@@ -102,19 +101,13 @@ public class BaseDTOValidator {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
-			} else {
-				NCBITaxonTerm taxon = taxonResponse.getEntity();
-				if (!SupportedSpecies.isSupported(taxon.getGenusSpecies())) {
-					beResponse.addErrorMessage("taxon_curie", ValidationConstants.UNSUPPORTED_MESSAGE + " (" + dto.getTaxonCurie() + ")");
-				}
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
 		
 		DataProvider dataProvider = null;
 		if (dto.getDataProviderDto() == null) {
-			// TODO: Uncomment once ready to require submission by DQMs and new LinkML release created
-			// beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
+			beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getDataProviderDto(), entity.getDataProvider());
 			if (dpResponse.hasErrors()) {

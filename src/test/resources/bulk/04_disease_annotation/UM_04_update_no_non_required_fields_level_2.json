@@ -12,12 +12,12 @@
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,
-      "source_organization_abbreviation": "TEST"
+      "source_organization_abbreviation": "WB"
     },
     "secondary_data_provider_dto": {
       "internal": false,
       "obsolete": false,
-      "source_organization_abbreviation": "TEST2"
+      "source_organization_abbreviation": "RGD"
     },
     "negated": true,
     "disease_relation_name": "is_implicated_in",

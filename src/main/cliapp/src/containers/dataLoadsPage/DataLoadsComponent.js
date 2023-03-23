@@ -193,7 +193,7 @@ export const DataLoadsComponent = () => {
 
 	const showUploadConfirmDialog = (rowData) => {
 		setUploadLoadType(rowData.backendBulkLoadType);
-		setUploadSubType(rowData.dataType);
+		setUploadSubType(rowData.dataProvider);
 		setUploadConfirmDialog(true);
 		//setUploadFile(event.files[0]);
 	}

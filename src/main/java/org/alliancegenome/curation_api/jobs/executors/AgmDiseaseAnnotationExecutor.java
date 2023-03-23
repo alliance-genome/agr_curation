@@ -18,6 +18,8 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -39,7 +41,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getSpeciesName());
+			log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -49,11 +51,11 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
 			if (annotations == null) annotations = new ArrayList<>();
 			
-			String speciesName = manual.getDataType().getSpeciesName();
+			String dataProvider = manual.getDataProvider().name();
 
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = new ArrayList<>();
-			annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(speciesName));
+			annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider));
 			annotationIdsBefore.removeIf(Objects::isNull);
 			
 			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
@@ -61,9 +63,9 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 			
-			runLoad(history, speciesName, annotations, annotationIdsLoaded);
+			runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 			
-			runCleanup(diseaseAnnotationService, history, speciesName, annotationIdsBefore, annotationIdsLoaded);
+			runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded);
 
 			history.finishLoad();
 			
@@ -75,11 +77,22 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public void runLoad(BulkLoadFileHistory history, String speciesName, List<AGMDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public APIResponse runLoad(String dataProvider, List<AGMDiseaseAnnotationDTO> annotations) {
+
+		List<Long> annotationIdsLoaded = new ArrayList<>();
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
+		history.finishLoad();
+		
+		return new LoadHistoryResponce(history);
+	}
+	
+	public void runLoad(BulkLoadFileHistory history, String dataProvider, List<AGMDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("AGM Disease Annotation Update " + speciesName, annotations.size());
+		ph.startProcess("AGM Disease Annotation Update for: " + dataProvider, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
 				AGMDiseaseAnnotation annotation = agmDiseaseService.upsert(annotationDTO);
