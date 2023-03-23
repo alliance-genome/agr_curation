@@ -41,7 +41,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name());
+			log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -51,7 +51,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 			List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();
 			if (annotations == null) annotations = new ArrayList<>();
 			
-			String dataProvider = manual.getDataType().name();
+			String dataProvider = manual.getDataProvider().name();
 
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = new ArrayList<>();

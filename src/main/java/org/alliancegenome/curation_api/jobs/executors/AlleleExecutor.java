@@ -41,7 +41,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			Log.info("Running with: " + manual.getDataType().name());
+			Log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -51,7 +51,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
 			if (alleles == null) alleles = new ArrayList<>();
 			
-			String dataProvider = manual.getDataType().name();
+			String dataProvider = manual.getDataProvider().name();
 			
 			List<String> alleleCuriesLoaded = new ArrayList<>();
 			List<String> alleleCuriesBefore = alleleService.getCuriesByDataProvider(dataProvider);

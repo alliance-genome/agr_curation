@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.enums;
 
-public enum BackendBulkDataType {
+public enum BackendBulkDataProvider {
 	RGD,
 	MGI,
 	SGD,

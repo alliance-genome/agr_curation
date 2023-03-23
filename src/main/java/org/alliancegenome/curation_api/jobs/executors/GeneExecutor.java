@@ -42,7 +42,7 @@ public class GeneExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name());
+			log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -52,7 +52,7 @@ public class GeneExecutor extends LoadFileExecutor {
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			if (genes == null) genes = new ArrayList<>();
 			
-			String dataProvider = manual.getDataType().name();
+			String dataProvider = manual.getDataProvider().name();
 
 			List<String> geneCuriesLoaded = new ArrayList<>();
 			List<String> geneCuriesBefore = geneService.getCuriesByDataProvider(dataProvider);
@@ -91,11 +91,11 @@ public class GeneExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataType, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Gene Update " + dataType, genes.size());
+		ph.startProcess("Gene Update for: " + dataProvider, genes.size());
 		genes.forEach(geneDTO -> {
 			try {
 				Gene gene = geneService.upsert(geneDTO);

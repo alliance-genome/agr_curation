@@ -41,7 +41,7 @@ public class AgmExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			Log.info("Running with: " + manual.getDataType().name());
+			Log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -51,7 +51,7 @@ public class AgmExecutor extends LoadFileExecutor {
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
 			if (agms == null) agms = new ArrayList<>();
 			
-			String dataProvider = manual.getDataType().name();
+			String dataProvider = manual.getDataProvider().name();
 
 			List<String> amgCuriesLoaded = new ArrayList<>();
 			List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider);

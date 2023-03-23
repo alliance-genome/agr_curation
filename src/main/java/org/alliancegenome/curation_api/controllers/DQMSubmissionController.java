@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.controllers;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.interfaces.DQMSubmissionInterface;
 import org.alliancegenome.curation_api.jobs.BulkLoadManualProcessor;
@@ -19,11 +19,11 @@ public class DQMSubmissionController implements DQMSubmissionInterface {
 			String separator = "_";
 			int sepPos = key.lastIndexOf(separator);
 			BackendBulkLoadType loadType = BackendBulkLoadType.valueOf(key.substring(0, sepPos));
-			BackendBulkDataType dataType = BackendBulkDataType.valueOf(key.substring(sepPos + 1));
-			if (loadType == null || dataType == null) {
+			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(key.substring(sepPos + 1));
+			if (loadType == null || dataProvider == null) {
 				return "FAIL";
 			} else {
-				bulkLoadManualProcessor.processBulkManualLoadFromDQM(input, loadType, dataType);
+				bulkLoadManualProcessor.processBulkManualLoadFromDQM(input, loadType, dataProvider);
 			}
 		}
 
