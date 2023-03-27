@@ -56,11 +56,11 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@Override
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation", false);
+		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "Allele disease annotation DELETE API call", false);
 		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataProvider) { }
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) { }
 }

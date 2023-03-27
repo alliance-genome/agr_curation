@@ -40,13 +40,13 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	@Override
 	@Transactional
 	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation", false);
+		deprecateOrDeleteAnnotationAndNotes(id, true, "Disease annotation DELETE API call", false);
 		ObjectResponse<DiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	@Transactional
-	public DiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadType, Boolean deprecateAnnotation) {
+	public DiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecateAnnotation) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 
 		if (annotation == null) {
@@ -61,15 +61,18 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		}
 
 		if (deprecateAnnotation) {
-			annotation.setObsolete(true);
-			if (authenticatedPerson.getOktaEmail() != null) {
-				annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+			if (!annotation.getObsolete()) {
+				annotation.setObsolete(true);
+				if (authenticatedPerson.getOktaEmail() != null) {
+					annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+				} else {
+					annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+				}
+				annotation.setDateUpdated(OffsetDateTime.now());
+				return diseaseAnnotationDAO.persist(annotation);
 			} else {
-				String dataProviderAbbreviation = annotation.getDataProvider() != null ? annotation.getDataProvider().getSourceOrganization().getAbbreviation() + " " : "";		
-				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataProviderAbbreviation + loadType + " bulk upload"));
+				return annotation;
 			}
-			annotation.setDateUpdated(OffsetDateTime.now());
-			return diseaseAnnotationDAO.persist(annotation);
 		} else {
 			List<Note> notesToDelete = annotation.getRelatedNotes();
 			diseaseAnnotationDAO.remove(id);
