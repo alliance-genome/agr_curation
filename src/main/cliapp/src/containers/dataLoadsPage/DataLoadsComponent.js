@@ -317,7 +317,7 @@ export const DataLoadsComponent = () => {
 			}
 		}
 		if (showManualLoad) {
-			ret.push(<Column key="fmsDataType2" field="fmsDataType" header="Load Data Type" />);
+			ret.push(<Column key="fmsDataType2" field="dataProvider" header="Load Data Provider" />);
 		}
 
 		return ret;

@@ -131,7 +131,7 @@ public class LoadFileExecutor {
 	
 
 	// The following methods are for bulk validation
-	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProvider, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
+	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProvider, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
 		Log.debug("runLoad: After: " + dataProvider + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
@@ -146,7 +146,7 @@ public class LoadFileExecutor {
 		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + dataProvider, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
-				String loadDescription = dataProvider + " disease annotation bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
+				String loadDescription = dataProvider + " disease annotation bulk load (" + md5sum + ")";
 				service.deprecateOrDeleteAnnotationAndNotes(id, false, loadDescription, true);
 				history.incrementDeleted();
 			} catch (Exception e) {
@@ -158,7 +158,7 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProvider, List<String> curiesBefore, List<String> curiesAfter) {
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProvider, List<String> curiesBefore, List<String> curiesAfter, String md5sum) {
 		Log.debug("runLoad: After: " + dataProvider + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
@@ -173,7 +173,7 @@ public class LoadFileExecutor {
 		ph.startProcess("Deletion/deprecation of primary objects " + dataProvider, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				service.removeOrDeprecateNonUpdated(curie, dataProvider, history.getBulkLoadFile().getMd5Sum());
+				service.removeOrDeprecateNonUpdated(curie, dataProvider, md5sum);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();

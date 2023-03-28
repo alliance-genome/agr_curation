@@ -65,7 +65,7 @@ public class GeneExecutor extends LoadFileExecutor {
 			
 			runLoad(history, genes, dataProvider, geneCuriesLoaded);
 
-			runCleanup(geneService, history, dataProvider, geneCuriesBefore, geneCuriesLoaded);
+			runCleanup(geneService, history, dataProvider, geneCuriesBefore, geneCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			
