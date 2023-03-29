@@ -7,6 +7,7 @@ import { DataLoadService } from '../../service/DataLoadService';
 import { useOktaAuth } from '@okta/okta-react';
 
 import { useMutation, useQueryClient } from 'react-query';
+import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) => {
 
@@ -75,12 +76,14 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 	return (
 		<div>
 			<Dialog visible={bulkLoadGroupDialog} style={{ width: '450px' }} header="Group Details" modal className="p-fluid" footer={groupDialogFooter} onHide={hideDialog}>
-				<div className="field">
-					<label htmlFor="name">Group Name</label>
+				<ErrorBoundary>
+					<div className="field">
+						<label htmlFor="name">Group Name</label>
 
-					<InputText id="name" value={group.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !group.name })} />
-					{submitted && !group.name && <small className="p-error">Name is required.</small>}
-				</div>
+						<InputText id="name" value={group.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !group.name })} />
+						{submitted && !group.name && <small className="p-error">Name is required.</small>}
+					</div>
+				</ErrorBoundary>
 			</Dialog>
 		</div>
 	);

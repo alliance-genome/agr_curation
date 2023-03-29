@@ -11,6 +11,7 @@ import { classNames } from "primereact/utils";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
+import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
 
 export const NewVocabularyTermSetForm = ({
@@ -132,69 +133,72 @@ export const NewVocabularyTermSetForm = ({
 
 	return(
 		<div>
-			<Toast ref={toast_error} position="top-left" />
-			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newVocabularyTermSetDialog} style={{ width: '450px' }} header="Add Vocabulary Term Set" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable >
-				<div className='p-justify-center'>
-					<form>
-						<div className="field">
-							<label htmlFor="name"><font color={'red'}>*</font>Name</label>
-							<InputText
-								id="name"
-								name="name"
-								value={newVocabularyTermSet.name}
-								onChange={onNameChange}
-								required
-								className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.name })}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"name"}/>
+				<Toast ref={toast_error} position="top-left" />
+				<Toast ref={toast_success} position="top-right" />
+				<Dialog visible={newVocabularyTermSetDialog} style={{ width: '450px' }} header="Add Vocabulary Term Set" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable >
+					<ErrorBoundary>
+						<div className='p-justify-center'>
+							<form>
+								<div className="field">
+									<label htmlFor="name"><font color={'red'}>*</font>Name</label>
+									<InputText
+										id="name"
+										name="name"
+										value={newVocabularyTermSet.name}
+										onChange={onNameChange}
+										required
+										className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.name })}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"name"}/>
+								</div>
+								<div className="field">
+									<label htmlFor="vocabularyTermSetVocabulary"><font color={'red'}>*</font>Vocabulary</label>
+									<AutocompleteEditor
+										name="vocabularyTermSetVocabulary"
+										label="Vocabulary"
+										fieldName='vocabularyTermSetVocabulary'
+										subField={"name"}
+										initialValue={newVocabularyTermSet?.vocabularyTermSetVocabulary?.name}
+										search={vocabularySearch}
+										onValueChangeHandler={onVocabularyChange}
+										classNames={classNames({'p-invalid': submitted && errorMessages?.vocabularyTermSetVocabulary})}
+										valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+											<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyTermSetVocabulary"}/>
+								</div>
+								<div className="field">
+									<label htmlFor="vocabularyTermSetDescription">Description</label>
+									<InputText
+										id="vocabularyTermSetDescription"
+										name="vocabularyTermSetDescription"
+										//placeholder={"Description"}
+										value={newVocabularyTermSet.vocabularyTermSetDescription}
+										onChange={onDescriptionChange}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyTermSetDescription"}/>
+								</div>
+								<div className="field">
+									<label htmlFor="memberTerms">Vocabulary Terms</label>
+									<AutocompleteMultiEditor
+										name="memberTerms"
+										fieldName='memberTerms'
+										subField='name'
+										isEnabled={isMemberTermsEnabled()}
+										initialValue={newVocabularyTermSet.memberTerms}
+										search={memberTermSearch}
+										onValueChangeHandler={onMemberTermsChange}
+										valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+											<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+										classNames={classNames({'p-invalid': submitted && errorMessages?.memberTerms})}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"memberTerms"}/>
+								</div>
+							</form>
 						</div>
-						<div className="field">
-							<label htmlFor="vocabularyTermSetVocabulary"><font color={'red'}>*</font>Vocabulary</label>
-							<AutocompleteEditor
-								name="vocabularyTermSetVocabulary"
-								label="Vocabulary"
-								fieldName='vocabularyTermSetVocabulary'
-								subField={"name"}
-								initialValue={newVocabularyTermSet?.vocabularyTermSetVocabulary?.name}
-								search={vocabularySearch}
-								onValueChangeHandler={onVocabularyChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.vocabularyTermSetVocabulary})}
-								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-									<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyTermSetVocabulary"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="vocabularyTermSetDescription">Description</label>
-							<InputText
-								id="vocabularyTermSetDescription"
-								name="vocabularyTermSetDescription"
-								//placeholder={"Description"}
-								value={newVocabularyTermSet.vocabularyTermSetDescription}
-								onChange={onDescriptionChange}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyTermSetDescription"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="memberTerms">Vocabulary Terms</label>
-							<AutocompleteMultiEditor
-								name="memberTerms"
-								fieldName='memberTerms'
-								subField='name'
-								isEnabled={isMemberTermsEnabled()}
-								initialValue={newVocabularyTermSet.memberTerms}
-								search={memberTermSearch}
-								onValueChangeHandler={onMemberTermsChange}
-								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-									<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.memberTerms})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"memberTerms"}/>
-						</div>
-					</form>
-				</div>
-			</Dialog>
-		</div>
+					</ErrorBoundary>
+				</Dialog>
+			</div>
+
 	);
 }

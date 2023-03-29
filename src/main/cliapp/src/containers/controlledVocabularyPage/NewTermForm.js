@@ -6,6 +6,7 @@ import {Dropdown} from "primereact/dropdown";
 import {Toast} from "primereact/toast";
 import {useMutation, useQueryClient} from "react-query";
 import {classNames} from "primereact/utils";
+import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
 export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermDispatch, vocabularies, obsoleteTerms, vocabularyService}) => {
 		const queryClient = useQueryClient();
@@ -67,10 +68,11 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
 		);
 
 		return(
-				<div>
+			<div>
 						<Toast ref={toast_error} position="top-left" />
 						<Toast ref={toast_success} position="top-right" />
 						<Dialog visible={newTermDialog} style={{ width: '450px' }} header="Add Term" modal className="p-fluid" footer={newTermDialogFooter} onHide={hideTermDialog} resizeable >
+							<ErrorBoundary>
 								<div className='p-justify-center'>
 										<form>
 												<div className="field">
@@ -136,7 +138,9 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
 												</div>
 										</form>
 								</div>
+							</ErrorBoundary>
 						</Dialog>
 				</div>
+
 		);
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-//perhaps we should consider replacing moment with another data/time library. Their documentation recomends
+//perhaps we should consider replacing moment with another date/time library. Their documentation recomends
 //against using it in new projects
 import Moment from 'react-moment';
 import { DialogCard } from './DialogCard';
