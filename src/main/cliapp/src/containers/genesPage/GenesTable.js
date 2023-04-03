@@ -21,7 +21,7 @@ export const GenesTable = () => {
 					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
 						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
 					</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.geneFullName.displayText} />
+					<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.geneFullName.invalidField.displayText} />
 				</>
 			)
 		}
