@@ -47,11 +47,11 @@ export function filterColumns(columns, selectedColumnNames) {
 	return filteredColumns;
 };
 
-export function orderColumns(columns, selectedColumnNames) {
+export function orderColumns(columns, orderedColumnNames) {
+	if(!orderedColumnNames) return columns;
 	let orderedColumns = [];
-	if(!selectedColumnNames) return orderedColumns;
-	selectedColumnNames.forEach((columnName) => {
-		orderedColumns.push(columns.filter(col => col.header === columnName)[0]);
+	orderedColumnNames.forEach((columnName) => {
+		orderedColumns.push(columns.find(col => col.header === columnName));
 	});
 	return orderedColumns;
 };
