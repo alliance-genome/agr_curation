@@ -64,7 +64,7 @@ public class AgmExecutor extends LoadFileExecutor {
 
 			runLoad(history, agms, dataProvider, amgCuriesLoaded);
 			
-			runCleanup(affectedGenomicModelService, history, dataProvider, agmCuriesBefore, amgCuriesLoaded);
+			runCleanup(affectedGenomicModelService, history, dataProvider, agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			
