@@ -11,6 +11,7 @@ import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEd
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
+import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
 
 export const NewConditionForm = ({
@@ -160,124 +161,126 @@ export const NewConditionForm = ({
 			<Toast ref={toast_error} position="top-left" />
 			<Toast ref={toast_success} position="top-right" />
 			<Dialog visible={newConditionDialog} style={{ width: '450px' }} header="Add Relation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable >
-				<div className='p-justify-center'>
-					<form>
-						<div className="field">
-							<label htmlFor="conditionClass">Condition Class</label>
-							<AutocompleteEditor
-								name="conditionClass"
-								search={conditionClassSearch}
-								initialValue={newCondition.conditionClass.curie}
-								fieldName="conditionClass"
-								onValueChangeHandler={onCurieFieldChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.conditionClass})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionClass"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="conditionId">Condition Term</label>
-							<AutocompleteEditor
-								name="conditionId"
-								search={conditionIdSearch}
-								initialValue={newCondition.conditionId.curie}
-								fieldname={"conditionId"}
-								onValueChangeHandler={onCurieFieldChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.conditionId})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionId"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="conditionGeneOntology">Gene Ontology</label>
-							<AutocompleteEditor
-								name="conditionGeneOntology"
-								search={conditionGeneOntologySearch}
-								initialValue={newCondition.conditionGeneOntology.curie}
-								onValueChangeHandler={onCurieFieldChange}
-								fieldname={"conditionGeneOntology"}
-								classNames={classNames({'p-invalid': submitted && errorMessages.conditionGeneOntology})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionGeneOntology"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="conditionChemical">Chemical</label>
-							<AutocompleteEditor
-								name="conditionChemical"
-								search={conditionChemicalSearch}
-								initialValue={newCondition.conditionChemical.curie}
-								fieldname={"conditionChemical"}
-								classNames={classNames({'p-invalid': submitted && errorMessages.conditionChemical})}
-								onValueChangeHandler={onCurieFieldChange}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionChemical"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="conditionAnatomy">Anatomy</label>
-							<AutocompleteEditor
-								name="conditionAnatomy"
-								initialValue={newCondition.conditionAnatomy.curie}
-								search={conditionAnatomySearch}
-								onValueChangeHandler={onCurieFieldChange}
-								fieldname={"conditionAnatomy"}
-								classNames={classNames({'p-invalid': submitted && errorMessages.conditionAnatomy})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionAnatomy"}/>
-						</div>
+				<ErrorBoundary>
+					<div className='p-justify-center'>
+						<form>
+							<div className="field">
+								<label htmlFor="conditionClass">Condition Class</label>
+								<AutocompleteEditor
+									name="conditionClass"
+									search={conditionClassSearch}
+									initialValue={newCondition.conditionClass.curie}
+									fieldName="conditionClass"
+									onValueChangeHandler={onCurieFieldChange}
+									classNames={classNames({'p-invalid': submitted && errorMessages.conditionClass})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionClass"}/>
+							</div>
+							<div className="field">
+								<label htmlFor="conditionId">Condition Term</label>
+								<AutocompleteEditor
+									name="conditionId"
+									search={conditionIdSearch}
+									initialValue={newCondition.conditionId.curie}
+									fieldname={"conditionId"}
+									onValueChangeHandler={onCurieFieldChange}
+									classNames={classNames({'p-invalid': submitted && errorMessages.conditionId})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionId"}/>
+							</div>
+							<div className="field">
+								<label htmlFor="conditionGeneOntology">Gene Ontology</label>
+								<AutocompleteEditor
+									name="conditionGeneOntology"
+									search={conditionGeneOntologySearch}
+									initialValue={newCondition.conditionGeneOntology.curie}
+									onValueChangeHandler={onCurieFieldChange}
+									fieldname={"conditionGeneOntology"}
+									classNames={classNames({'p-invalid': submitted && errorMessages.conditionGeneOntology})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionGeneOntology"}/>
+							</div>
+							<div className="field">
+								<label htmlFor="conditionChemical">Chemical</label>
+								<AutocompleteEditor
+									name="conditionChemical"
+									search={conditionChemicalSearch}
+									initialValue={newCondition.conditionChemical.curie}
+									fieldname={"conditionChemical"}
+									classNames={classNames({'p-invalid': submitted && errorMessages.conditionChemical})}
+									onValueChangeHandler={onCurieFieldChange}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionChemical"}/>
+							</div>
+							<div className="field">
+								<label htmlFor="conditionAnatomy">Anatomy</label>
+								<AutocompleteEditor
+									name="conditionAnatomy"
+									initialValue={newCondition.conditionAnatomy.curie}
+									search={conditionAnatomySearch}
+									onValueChangeHandler={onCurieFieldChange}
+									fieldname={"conditionAnatomy"}
+									classNames={classNames({'p-invalid': submitted && errorMessages.conditionAnatomy})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionAnatomy"}/>
+							</div>
 
-						<div className="field">
-							<label htmlFor="conditionTaxon">Taxon</label>
-							<AutocompleteEditor
-								name="conditionTaxon"
-								initialValue={newCondition.conditionTaxon.curie}
-								search={conditionTaxonSearch}
-								onValueChangeHandler={onCurieFieldChange}
-								fieldname={"conditionTaxon"}
-								classNames={classNames({'p-invalid': submitted && errorMessages.conditionTaxon})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionTaxon"}/>
-						</div>
+							<div className="field">
+								<label htmlFor="conditionTaxon">Taxon</label>
+								<AutocompleteEditor
+									name="conditionTaxon"
+									initialValue={newCondition.conditionTaxon.curie}
+									search={conditionTaxonSearch}
+									onValueChangeHandler={onCurieFieldChange}
+									fieldname={"conditionTaxon"}
+									classNames={classNames({'p-invalid': submitted && errorMessages.conditionTaxon})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionTaxon"}/>
+							</div>
 
-						<div className="field">
-							<label htmlFor="conditionQuantity">Quantity</label>
-							<InputText
-								id="conditionQuantity"
-								name="conditionQuantity"
-								value={newCondition.conditionQuantity}
-								onChange={onTextChange}
-								className={classNames({'p-invalid': submitted && errorMessages.conditionQuantity})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionQuantity"}/>
-						</div>
+							<div className="field">
+								<label htmlFor="conditionQuantity">Quantity</label>
+								<InputText
+									id="conditionQuantity"
+									name="conditionQuantity"
+									value={newCondition.conditionQuantity}
+									onChange={onTextChange}
+									className={classNames({'p-invalid': submitted && errorMessages.conditionQuantity})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionQuantity"}/>
+							</div>
 
 
-						<div className="field">
-							<label htmlFor="internal">Internal</label>
-							<Dropdown
-								id="internal"
-								name="internal"
-								value={newCondition.internal}
-								options={[
-									{ label: 'true', value: true },
-									{ label: 'false', value: false }
-								]}
-								onChange={onInternalChange}
-								className={classNames({'p-invalid': submitted && errorMessages.internal})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
-						</div>
+							<div className="field">
+								<label htmlFor="internal">Internal</label>
+								<Dropdown
+									id="internal"
+									name="internal"
+									value={newCondition.internal}
+									options={[
+										{ label: 'true', value: true },
+										{ label: 'false', value: false }
+									]}
+									onChange={onInternalChange}
+									className={classNames({'p-invalid': submitted && errorMessages.internal})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
+							</div>
 
-						<div className="field">
-							<label htmlFor="conditionFreeText">Free Text</label>
-							<InputTextarea
-								id="conditionFreeText"
-								name="conditionFreeText"
-								value={newCondition.conditionFreeText}
-								onChange={onTextChange}
-								className={classNames({'p-invalid': submitted && errorMessages.conditionFreeText})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionFreeText"}/>
-						</div>
-					</form>
-				</div>
+							<div className="field">
+								<label htmlFor="conditionFreeText">Free Text</label>
+								<InputTextarea
+									id="conditionFreeText"
+									name="conditionFreeText"
+									value={newCondition.conditionFreeText}
+									onChange={onTextChange}
+									className={classNames({'p-invalid': submitted && errorMessages.conditionFreeText})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionFreeText"}/>
+							</div>
+						</form>
+					</div>
+				</ErrorBoundary>
 			</Dialog>
 		</div>
 	);

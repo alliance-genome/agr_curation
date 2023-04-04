@@ -31,59 +31,61 @@ import { SiteLayout } from './containers/layout/SiteLayout';
 import { GeneralOntologyComponent } from './containers/ontologies/GeneralOntologyComponent';
 import { ResourceDescriptorsPage } from './containers/resourceDescriptorPage';
 import { ResourceDescriptorPagesPage } from './containers/resourceDescriptorPagePage';
+import ErrorBoundary from './components/Error/ErrorBoundary';
 
 export default (
 	<SiteLayout>
-		<SecureRoute exact path="/" render={() => <DashboardPage />} />
-		<SecureRoute path="/profile" render={() => <ProfilePage />} />
-		<SecureRoute path="/dataloads" render={() => <DataLoadsPage />} />
-		<SecureRoute path="/reports" render={() => <ReportsPage />} />
-		<SecureRoute path="/diseaseAnnotations" render={() => <DiseaseAnnotationsPage />} />
-		<SecureRoute path="/experimentalConditions" render={() => <ExperimentalConditionsPage />} />
-		<SecureRoute path="/conditionRelations" render={() => <ConditionRelationPage />} />
-		<SecureRoute path="/genes" render={() => <GenesPage />} />
-		<SecureRoute path="/alleles" render={() => <AllelesPage />} />
-		<SecureRoute path="/molecules" render={() => <MoleculesPage />} />
-		<SecureRoute path="/references" render={() => <ReferencePage />} />
-		<SecureRoute path="/vocabterms" render={() => <ControlledVocabularyPage />} />
-		<SecureRoute path="/vocabularies" render={() => <VocabulariesPage />} />
-		<SecureRoute path="/vocabularytermsets" render={() => <VocabularyTermSetPage />} />
-		<SecureRoute path="/resourcedescriptors" render={() => <ResourceDescriptorsPage />} />
-		<SecureRoute path="/resourcedescriptorpages" render={() => <ResourceDescriptorPagesPage />} />
+		<SecureRoute exact path="/" render={() => <ErrorBoundary><DashboardPage /></ErrorBoundary>} />
+		<SecureRoute path="/profile" render={() => <ErrorBoundary><ProfilePage /></ErrorBoundary>} />
+		<SecureRoute path="/dataloads" render={() => <ErrorBoundary><DataLoadsPage /></ErrorBoundary>} />
+		<SecureRoute path="/reports" render={() => <ErrorBoundary><ReportsPage /></ErrorBoundary>} />
+		<SecureRoute path="/diseaseAnnotations" render={() => <ErrorBoundary><DiseaseAnnotationsPage /></ErrorBoundary>} />
+		<SecureRoute path="/experimentalConditions" render={() => <ErrorBoundary><ExperimentalConditionsPage /></ErrorBoundary>} />
+		<SecureRoute path="/conditionRelations" render={() => <ErrorBoundary><ConditionRelationPage /></ErrorBoundary>} />
+		<SecureRoute path="/genes" render={() => <ErrorBoundary><GenesPage /></ErrorBoundary>} />
+		<SecureRoute path="/alleles" render={() => <ErrorBoundary><AllelesPage /></ErrorBoundary>} />
+		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />
+		<SecureRoute path="/references" render={() => <ErrorBoundary><ReferencePage /></ErrorBoundary>} />
+		<SecureRoute path="/vocabterms" render={() => <ErrorBoundary><ControlledVocabularyPage /></ErrorBoundary>} />
+		<SecureRoute path="/vocabularies" render={() => <ErrorBoundary><VocabulariesPage /></ErrorBoundary>} />
+		<SecureRoute path="/vocabularytermsets" render={() => <ErrorBoundary><VocabularyTermSetPage /></ErrorBoundary>} />
+		<SecureRoute path="/resourcedescriptors" render={() => <ErrorBoundary><ResourceDescriptorsPage /></ErrorBoundary>} />
+		<SecureRoute path="/resourcedescriptorpages" render={() => <ErrorBoundary><ResourceDescriptorPagesPage /></ErrorBoundary>} />
 
-		<SecureRoute path="/ontology/eco" render={() => <GeneralOntologyComponent showAbbreviation={true} name="ECO" endpoint="ecoterm" />} />
+		<SecureRoute path="/ontology/eco" render={() => <ErrorBoundary><GeneralOntologyComponent showAbbreviation={true} name="ECO" endpoint="ecoterm" /></ErrorBoundary>} />
 
-		<SecureRoute path="/ontology/go" render={() => <GeneralOntologyComponent showNamespace={true} name="GO" endpoint="goterm" />} />
-		<SecureRoute path="/ontology/so" render={() => <GeneralOntologyComponent showNamespace={true} name="SO" endpoint="soterm" />} />
+		<SecureRoute path="/ontology/go" render={() => <ErrorBoundary><GeneralOntologyComponent showNamespace={true} name="GO" endpoint="goterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/so" render={() => <ErrorBoundary><GeneralOntologyComponent showNamespace={true} name="SO" endpoint="soterm" /></ErrorBoundary>} />
 
-		<SecureRoute path="/ontology/ncbitaxon" render={() => <GeneralOntologyComponent hideDefinition={true} name="NCBITaxon" endpoint="ncbitaxonterm" />} />
+		<SecureRoute path="/ontology/ncbitaxon" render={() => <ErrorBoundary><GeneralOntologyComponent hideDefinition={true} name="NCBITaxon" endpoint="ncbitaxonterm" /></ErrorBoundary>} />
 
-		<SecureRoute path="/ontology/chebi"	 render={() => <GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />} />
-		<SecureRoute path="/ontology/do"		 render={() => <GeneralOntologyComponent name="Diseases" endpoint="doterm" />} />
-		<SecureRoute path="/ontology/ma"		 render={() => <GeneralOntologyComponent name="MA" endpoint="materm" />} />
-		<SecureRoute path="/ontology/zfa"		 render={() => <GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />} />
-		<SecureRoute path="/ontology/mp"		 render={() => <GeneralOntologyComponent name="MP" endpoint="mpterm" />} />
-		<SecureRoute path="/ontology/dao"		 render={() => <GeneralOntologyComponent name="DAO" endpoint="daoterm" />} />
-		<SecureRoute path="/ontology/emapa"	 render={() => <GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />} />
-		<SecureRoute path="/ontology/wbbt"	 render={() => <GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />} />
-		<SecureRoute path="/ontology/xco"		 render={() => <GeneralOntologyComponent name="XCO" endpoint="xcoterm" />} />
-		<SecureRoute path="/ontology/ro"			 render={() => <GeneralOntologyComponent name="RO" endpoint="roterm" />} />
-		<SecureRoute path="/ontology/zeco"	 render={() => <GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />} />
-		<SecureRoute path="/ontology/wbls"	 render={() => <GeneralOntologyComponent name="WBls" endpoint="wblsterm" />} />
-		<SecureRoute path="/ontology/fbdv"	 render={() => <GeneralOntologyComponent name="FBdv" endpoint="fbdvterm" />} />
-		<SecureRoute path="/ontology/mmusdv" render={() => <GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />} />
-		<SecureRoute path="/ontology/zfs"		 render={() => <GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />} />
-		<SecureRoute path="/ontology/xba"		 render={() => <GeneralOntologyComponent name="XBA" endpoint="xbaterm" />} />
-		<SecureRoute path="/ontology/xbs"		 render={() => <GeneralOntologyComponent name="XBS" endpoint="xbsterm" />} />
-		<SecureRoute path="/ontology/xpo"		 render={() => <GeneralOntologyComponent name="XPO" endpoint="xpoterm" />} />
-		<SecureRoute path="/ontology/atp"		 render={() => <GeneralOntologyComponent name="ATP" endpoint="atpterm" />} />
-		<SecureRoute path="/ontology/xbed"	 render={() => <GeneralOntologyComponent name="XBED" endpoint="xbedterm" />} />
-		<SecureRoute path="/ontology/xsmo"	 render={() => <GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />} />
-		<SecureRoute path="/ontology/obi"	 render={() => <GeneralOntologyComponent name="OBI" endpoint="obiterm" />} />
-		<SecureRoute path="/ontology/wbpheno"	 render={() => <GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />} />
+		<SecureRoute path="/ontology/chebi"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/do"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="Diseases" endpoint="doterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/ma"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="MA" endpoint="materm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/zfa"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="ZFA" endpoint="zfaterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/mp"		 render={() =><ErrorBoundary> <GeneralOntologyComponent name="MP" endpoint="mpterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/dao"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="DAO" endpoint="daoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/emapa"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/wbbt"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/xco"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="XCO" endpoint="xcoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/ro"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="RO" endpoint="roterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/zeco"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="ZECO" endpoint="zecoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/wbls"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="WBls" endpoint="wblsterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/fbdv"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="FBdv" endpoint="fbdvterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/mmusdv" render={() => <ErrorBoundary><GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/zfs"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="ZFS" endpoint="zfsterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/xba"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="XBA" endpoint="xbaterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/xbs"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="XBS" endpoint="xbsterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/xpo"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="XPO" endpoint="xpoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/atp"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="ATP" endpoint="atpterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/xbed"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="XBED" endpoint="xbedterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/xsmo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/obi"	 	 render={() => <ErrorBoundary><GeneralOntologyComponent name="OBI" endpoint="obiterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/wbpheno"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" /></ErrorBoundary>} />
 
-		<SecureRoute path="/fmspage" render={() => <FMSComponent />} />
-		<SecureRoute path="/metricspage" render={() =><MetricsComponent />} />
-		<SecureRoute path="/agms" render={() => <AffectedGenomicModelPage />} />
+		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
+		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
+		<SecureRoute path="/agms" render={() => <ErrorBoundary><AffectedGenomicModelPage /></ErrorBoundary>} />
+		
 	</SiteLayout>
 )

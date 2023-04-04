@@ -9,6 +9,7 @@ import { FMSForm } from './FMSForm';
 import { URLForm } from './URLForm';
 import { ManualForm } from './ManualForm';
 import { useOktaAuth } from '@okta/okta-react';
+import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, newBulkLoad, bulkLoadDispatch, disableFormFields, setDisableFormFields, dataLoadService }) => {
 
@@ -119,100 +120,102 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 
 	return (
 		<Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" footer={newBulkLoadDialogFooter} onHide={hideDialog} resizeable >
-			<div className='p-justify-center'>
-				<form>
+			<ErrorBoundary>
+				<div className='p-justify-center'>
+					<form>
 
-					<div className="field">
-						<label htmlFor="name">Name</label>
-						<InputText
-							id="name"
-							name="name"
-							placeholder={"Name"}
-							value={newBulkLoad.name}
+						<div className="field">
+							<label htmlFor="name">Name</label>
+							<InputText
+								id="name"
+								name="name"
+								placeholder={"Name"}
+								value={newBulkLoad.name}
+								onChange={onChange}
+							/>
+						</div>
+
+						<div className="field">
+							<label htmlFor="group">Group Name</label>
+							<Dropdown
+								id="group"
+								options={groups}
+								value={newBulkLoad.group}
+								onChange={onChange}
+								placeholder={"Select Group"}
+								className='p-col-12'
+								name='group'
+								optionLabel='name'
+								optionValue='id'
+							/>
+						</div>
+
+						<div className="field">
+							<label htmlFor="type">Load Type</label>
+							<Dropdown
+								id="type"
+								value={newBulkLoad.type}
+								options={getService().getLoadTypes()}
+								onChange={onChange}
+								placeholder={"Select Load Type"}
+								className='p-col-12'
+								name='type'
+								disabled={disableFormFields}
+							/>
+						</div>
+
+						<div className="field">
+							<label htmlFor="fileExtension">File Extension</label>
+							<InputText
+								id="bulkLoadFileExtension"
+								value={newBulkLoad.fileExtension}
+								onChange={onChange}
+								placeholder={"Select Bulk Load File Extension"}
+								name='fileExtension'
+								disabled={disableFormFields}
+							/>
+						</div>
+						
+						<div className="field">
+							<label htmlFor="backendBulkLoadType">Backend Bulk Load Type</label>
+							<Dropdown
+								id="backendBulkLoadType"
+								value={newBulkLoad.backendBulkLoadType}
+								options={backendBulkLoadTypes}
+								onChange={onChange}
+								placeholder={"Select Backend Bulk Load Type"}
+								className='p-col-12'
+								name='backendBulkLoadType'
+								disabled={disableFormFields}
+							/>
+						</div>
+				
+						<FMSForm
+							hideFMS={hideFMS}
+							newBulkLoad={newBulkLoad}
 							onChange={onChange}
+							disableFormFields={disableFormFields}
 						/>
-					</div>
 
-					<div className="field">
-						<label htmlFor="group">Group Name</label>
-						<Dropdown
-							id="group"
-							options={groups}
-							value={newBulkLoad.group}
+						<URLForm
+							hideURL={hideURL}
+							hideOntology={hideOntology}
+							newBulkLoad={newBulkLoad}
 							onChange={onChange}
-							placeholder={"Select Group"}
-							className='p-col-12'
-							name='group'
-							optionLabel='name'
-							optionValue='id'
+							disableFormFields={disableFormFields}
 						/>
-					</div>
 
-					<div className="field">
-						<label htmlFor="type">Load Type</label>
-						<Dropdown
-							id="type"
-							value={newBulkLoad.type}
-							options={getService().getLoadTypes()}
+
+						<ManualForm
+							hideManual={hideManual}
+							newBulkLoad={newBulkLoad}
 							onChange={onChange}
-							placeholder={"Select Load Type"}
-							className='p-col-12'
-							name='type'
-							disabled={disableFormFields}
+							disableFormFields={disableFormFields}
 						/>
-					</div>
 
-					<div className="field">
-						<label htmlFor="fileExtension">File Extension</label>
-						<InputText
-							id="bulkLoadFileExtension"
-							value={newBulkLoad.fileExtension}
-							onChange={onChange}
-							placeholder={"Select Bulk Load File Extension"}
-							name='fileExtension'
-							disabled={disableFormFields}
-						/>
-					</div>
-					
-					<div className="field">
-						<label htmlFor="backendBulkLoadType">Backend Bulk Load Type</label>
-						<Dropdown
-							id="backendBulkLoadType"
-							value={newBulkLoad.backendBulkLoadType}
-							options={backendBulkLoadTypes}
-							onChange={onChange}
-							placeholder={"Select Backend Bulk Load Type"}
-							className='p-col-12'
-							name='backendBulkLoadType'
-							disabled={disableFormFields}
-						/>
-					</div>
-			
-					<FMSForm
-						hideFMS={hideFMS}
-						newBulkLoad={newBulkLoad}
-						onChange={onChange}
-						disableFormFields={disableFormFields}
-					/>
-
-					<URLForm
-						hideURL={hideURL}
-						hideOntology={hideOntology}
-						newBulkLoad={newBulkLoad}
-						onChange={onChange}
-						disableFormFields={disableFormFields}
-					/>
-
-
-					<ManualForm
-						hideManual={hideManual}
-						newBulkLoad={newBulkLoad}
-						onChange={onChange}
-						disableFormFields={disableFormFields}
-					/>
-
-				</form>
-			</div>
+					</form>
+				</div>
+			</ErrorBoundary>
 		</Dialog>
 	);
 };

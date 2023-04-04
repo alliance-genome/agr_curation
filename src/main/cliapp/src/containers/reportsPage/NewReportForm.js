@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import { useMutation, useQueryClient } from 'react-query';
 import { ReportService } from '../../service/ReportService';
 import { InputText } from 'primereact/inputtext';
+import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, newReport, reportDispatch, reportService }) => {
 
@@ -63,50 +64,52 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 
 	return (
 		<Dialog visible={newReportDialog} style={{ width: '450px' }} header="Add Report" modal className="p-fluid" footer={newReportDialogFooter} onHide={hideDialog} resizeable >
-			<div className='p-justify-center'>
-				<form>
-					<div className="field">
-						<label htmlFor="group">Group Name</label>
-						<Dropdown
-							id="group"
-							options={groups}
-							value={newReport.curationReportGroup}
-							onChange={onChange}
-							placeholder={"Select Group"}
-							className='p-col-12'
-							name='curationReportGroup'
-							optionLabel='name'
-							optionValue='id'
-						/>
-					</div>
-					<div className="field">
-						<label htmlFor="name">Name</label>
-						<InputText
-							id="name"
-							name="name"
-							placeholder={"Name"}
-							value={newReport.name}
-							onChange={onChange}
-						/>
-					</div>
+			<ErrorBoundary>
+				<div className='p-justify-center'>
+					<form>
+						<div className="field">
+							<label htmlFor="group">Group Name</label>
+							<Dropdown
+								id="group"
+								options={groups}
+								value={newReport.curationReportGroup}
+								onChange={onChange}
+								placeholder={"Select Group"}
+								className='p-col-12'
+								name='curationReportGroup'
+								optionLabel='name'
+								optionValue='id'
+							/>
+						</div>
+						<div className="field">
+							<label htmlFor="name">Name</label>
+							<InputText
+								id="name"
+								name="name"
+								placeholder={"Name"}
+								value={newReport.name}
+								onChange={onChange}
+							/>
+						</div>
 
-					<div className="field">
-						<label htmlFor="birtReportFilePath">BIRT Report File Path</label>
-						<InputText
-							id="birtReportFilePath"
-							name="birtReportFilePath"
-							placeholder={"BIRT Report File Path (sample_report.rptdesign)"}
-							value={newReport.birtReportFilePath}
-							onChange={onChange}
-						/>
-					</div>
+						<div className="field">
+							<label htmlFor="birtReportFilePath">BIRT Report File Path</label>
+							<InputText
+								id="birtReportFilePath"
+								name="birtReportFilePath"
+								placeholder={"BIRT Report File Path (sample_report.rptdesign)"}
+								value={newReport.birtReportFilePath}
+								onChange={onChange}
+							/>
+						</div>
 
-					<CronFields
-							newItem={newReport}
-							onChange={onChange}
-					/>
-				</form>
-			</div>
+						<CronFields
+								newItem={newReport}
+								onChange={onChange}
+						/>
+					</form>
+				</div>
+			</ErrorBoundary>
 		</Dialog>
 	);
 };
