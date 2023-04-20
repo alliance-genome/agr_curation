@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,14 +45,20 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredReferenceXref = "PMID:25920550";
 	private String requiredReference2 = "AGRKB:000000021";
 	private String requiredReferenceXref2 = "PMID:25920551";
+	private String requiredDataProvider = "WB";
+	private String requiredDataProvider2 = "RGD";
 	
-	private final String geneBulkPostEndpoint = "/api/gene/bulk/genes";
+	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
 	private final String geneGetEndpoint = "/api/gene/";
 	private final String geneTestFilePath = "src/test/resources/bulk/01_gene/";
 	
 	private void loadRequiredEntities() throws Exception {
 		loadReference(requiredReference, requiredReferenceXref);
 		loadReference(requiredReference2, requiredReferenceXref2);
+		ResourceDescriptor rd = createResourceDescriptor("TEST");
+		createResourceDescriptorPage("homepage", "http://test.org", rd);
+		ResourceDescriptor rd2 = createResourceDescriptor("TEST2");
+		createResourceDescriptorPage("homepage2", "http://test2.org", rd2);
 	}
 
 	@Test
@@ -122,7 +129,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -191,7 +202,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -212,6 +227,12 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_13_no_gene_full_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_14_no_gene_systematic_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_15_no_gene_synonym_name_type.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_16_no_data_provider.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_17_no_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_18_no_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_19_no_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_20_no_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_21_no_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -231,6 +252,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_12_empty_gene_full_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_13_empty_gene_systematic_name_name_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_14_empty_gene_synonym_name_type.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_15_empty_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_16_empty_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_17_empty_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_18_empty_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_19_empty_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -251,16 +277,13 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_13_invalid_gene_full_name_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_14_invalid_gene_systematic_name_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_15_invalid_gene_synonym_evidence.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_16_invalid_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_17_invalid_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_18_invalid_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
 	@Order(6)
-	public void agmBulkUploadUnsupportedFields() throws Exception {
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "US_01_unsupported_taxon.json");
-	}
-
-	@Test
-	@Order(7)
 	public void geneBulkUploadUpdateMissingNonRequiredFieldsLevel1() throws Exception {
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "UM_01_update_no_non_required_fields_level_1.json");
@@ -281,7 +304,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void geneBulkUploadUpdateMissingNonRequiredFieldsLevel2() throws Exception {
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "UM_02_update_no_non_required_fields_level_2.json");
@@ -322,7 +345,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(9)
+	@Order(8)
 	public void geneBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "UE_01_update_empty_non_required_fields.json");
@@ -368,14 +391,14 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(10)
+	@Order(9)
 	public void geneBulkUploadMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MN_01_no_non_required_fields_level_1.json");
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MN_02_no_non_required_fields_level_2.json");
 	}
 
 	@Test
-	@Order(11)
+	@Order(10)
 	public void geneBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "EN_01_empty_non_required_fields.json");
 	}

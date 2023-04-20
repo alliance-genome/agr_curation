@@ -58,6 +58,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	private ECOTerm ecoTerm;
 	private ECOTerm ecoTerm2;
 	private ECOTerm obsoleteEcoTerm;
+	private ECOTerm unsupportedEcoTerm;
 	private Gene gene;
 	private Gene gene2;
 	private Gene obsoleteGene;
@@ -114,7 +115,6 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	private Reference obsoleteReference;
 	private DataProvider dataProvider;
 	private DataProvider dataProvider2;
-	private DataProvider obsoleteDataProvider;
 	private Vocabulary nameTypeVocabulary;
 	private VocabularyTerm symbolNameType;
 	private DOTerm nonPersistedDoTerm;
@@ -134,9 +134,10 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		doTerm = createDoTerm("DOID:da0001", false);
 		doTerm2 = createDoTerm("DOID:da0002", false);
 		obsoleteDoTerm = createDoTerm("DOID:da0003", true);
-		ecoTerm = createEcoTerm("ECO:da0001", "Test evidence code", false);
-		ecoTerm2 = createEcoTerm("ECO:da0002", "Test evidence code2", false);
-		obsoleteEcoTerm = createEcoTerm("ECO:da0003", "Test obsolete evidence code", true);
+		ecoTerm = createEcoTerm("ECO:da00001", "Test evidence code", false, true);
+		ecoTerm2 = createEcoTerm("ECO:da00002", "Test evidence code2", false, true);
+		obsoleteEcoTerm = createEcoTerm("ECO:da00003", "Test obsolete evidence code", true, true);
+		unsupportedEcoTerm = createEcoTerm("ECO:da00004", "Test unsupported evidence code", false, false);
 		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		gene = createGene("GENE:da0001", "NCBITaxon:9606", false, symbolNameType);
@@ -190,9 +191,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		conditionRelationType2 = getVocabularyTerm(conditionRelationTypeVocabulary, "induced_by");
 		obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
 		conditionRelation = createConditionRelation("test_handle", reference, conditionRelationType, List.of(experimentalCondition));
-		dataProvider = createDataProvider("TEST", false);
-		dataProvider2 = createDataProvider("TEST2", false);
-		obsoleteDataProvider = createDataProvider("ODP", true);
+		dataProvider = createDataProvider("WB", false);
+		dataProvider2 = createDataProvider("RGD", false);
 		
 		nonPersistedDoTerm = new DOTerm();
 		nonPersistedDoTerm.setCurie("DO:Invalid");
@@ -1611,11 +1611,12 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	@Test
 	@Order(31)
 	public void createGeneDiseaseAnnotationWithObsoleteFields() {
+		dataProvider.setObsolete(true);
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(obsoleteGeneDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider);
 		diseaseAnnotation.setSubject(obsoleteGene);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1675,8 +1676,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(obsoleteAlleleDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider);
 		diseaseAnnotation.setSubject(obsoleteAllele);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1738,8 +1739,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AGMDiseaseAnnotation diseaseAnnotation = new AGMDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(obsoleteAgmDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider);
 		diseaseAnnotation.setSubject(obsoleteAgm);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1802,11 +1803,13 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	@Test
 	@Order(34)
 	public void editGeneDiseaseAnnotationWithObsoleteFields() {
+		dataProvider2.setObsolete(true);
+		
 		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDiseaseRelation(obsoleteGeneDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider2);
 		diseaseAnnotation.setSubject(obsoleteGene);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1864,8 +1867,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AlleleDiseaseAnnotation diseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDiseaseRelation(obsoleteAlleleDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider2);
 		diseaseAnnotation.setSubject(obsoleteAllele);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1925,8 +1928,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		AGMDiseaseAnnotation diseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDiseaseRelation(obsoleteAgmDiseaseRelation);
 		diseaseAnnotation.setObject(obsoleteDoTerm);
-		diseaseAnnotation.setDataProvider(obsoleteDataProvider);
-		diseaseAnnotation.setSecondaryDataProvider(obsoleteDataProvider);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setSecondaryDataProvider(dataProvider2);
 		diseaseAnnotation.setSubject(obsoleteAgm);
 		diseaseAnnotation.setEvidenceCodes(List.of(obsoleteEcoTerm));
 		diseaseAnnotation.setSingleReference(obsoleteReference);
@@ -1982,10 +1985,52 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
+		
+		dataProvider.setObsolete(false);
+		dataProvider2.setObsolete(false);
 	}
 	
 	@Test
 	@Order(37)
+	public void createDiseaseAnnotationWithUnsupportedFields() {
+		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
+		diseaseAnnotation.setSubject(gene);
+		diseaseAnnotation.setObject(doTerm);
+		diseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		diseaseAnnotation.setEvidenceCodes(List.of(unsupportedEcoTerm));
+		diseaseAnnotation.setSingleReference(reference);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/gene-disease-annotation").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.evidenceCodes", is(ValidationConstants.UNSUPPORTED_MESSAGE));
+	}
+	
+	@Test
+	@Order(38)
+	public void editDiseaseAnnotationWithUnsupportedFields() {
+		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
+		diseaseAnnotation.setEvidenceCodes(List.of(unsupportedEcoTerm));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			put("/api/gene-disease-annotation").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.evidenceCodes", is(ValidationConstants.UNSUPPORTED_MESSAGE));
+	}
+	
+	@Test
+	@Order(39)
 	public void createDiseaseAnnotationWithMissingDependentFields() {
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
 		diseaseAnnotation.setSubject(gene);
@@ -2023,7 +2068,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(38)
+	@Order(40)
 	public void editDiseaseAnnotationWithMissingDependentFields() {
 		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDiseaseGeneticModifierRelation(null);
@@ -2054,7 +2099,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(39)
+	@Order(41)
 	public void createDiseaseAnnotationConditionRelationWithHandleWithoutReference() {
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
 		diseaseAnnotation.setSubject(gene);
@@ -2082,7 +2127,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(40)
+	@Order(42)
 	public void editDiseaseAnnotationConditionRelationWithHandleWithoutReference() {
 		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		
@@ -2102,7 +2147,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(41)
+	@Order(43)
 	public void createDiseaseAnnotationWithConditionRelationReferenceMismatch() {
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
 		diseaseAnnotation.setSubject(gene);
@@ -2130,7 +2175,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(42)
+	@Order(44)
 	public void editDiseaseAnnotationWithConditionRelationReferenceMismatch() {
 		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		ConditionRelation editedRelation = diseaseAnnotation.getConditionRelations().get(0);
@@ -2149,7 +2194,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(43)
+	@Order(45)
 	public void removeHandleFromDiseaseAnnotationConditionRelation() {
 		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		ConditionRelation editedRelation = diseaseAnnotation.getConditionRelations().get(0);
@@ -2168,7 +2213,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(44)
+	@Order(46)
 	public void editGeneDiseaseAnnotationWithNullNonRequiredFieldsLevel() {
 		GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDateCreated(null);
@@ -2210,7 +2255,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(45)
+	@Order(47)
 	public void editAlleleDiseaseAnnotationWithNullNonRequiredFieldsLevel() {
 		AlleleDiseaseAnnotation diseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDateCreated(null);
@@ -2254,7 +2299,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(46)
+	@Order(48)
 	public void editAgmDiseaseAnnotationWithNullNonRequiredFieldsLevel() {
 		AGMDiseaseAnnotation diseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		diseaseAnnotation.setDateCreated(null);
@@ -2302,7 +2347,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(47)
+	@Order(49)
 	public void createGeneDiseaseAnnotationWithOnlyRequiredFields() {
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
@@ -2322,7 +2367,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(48)
+	@Order(50)
 	public void createAlleleDiseaseAnnotationWithOnlyRequiredFields() {
 		AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
@@ -2342,7 +2387,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(49)
+	@Order(51)
 	public void createAgmDiseaseAnnotationWithOnlyRequiredFields() {
 		AGMDiseaseAnnotation diseaseAnnotation = new AGMDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);

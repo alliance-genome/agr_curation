@@ -13,6 +13,7 @@ import { FormErrorMessageComponent } from "../../components/FormErrorMessageComp
 import { classNames } from "primereact/utils";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
 
 export const NewRelationForm = ({
@@ -125,71 +126,73 @@ export const NewRelationForm = ({
 		</>
 	);
 
-	return(
+	return (
 		<div>
-			<Toast ref={toast_error} position="top-left" />
-			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newRelationDialog} style={{ width: '450px' }} header="Add Relation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable >
-				<div className='p-justify-center'>
-					<form>
-						<div className="field">
-							<label htmlFor="handle">Handle</label>
-							<InputText
-								id="handle"
-								name="handle"
-								value={newRelation.handle}
-								onChange={onHandleChange}
-								className={classNames({'p-invalid': submitted && errorMessages.handle})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"handle"}/>
+				<Toast ref={toast_error} position="top-left" />
+				<Toast ref={toast_success} position="top-right" />
+				<Dialog visible={newRelationDialog} style={{ width: '450px' }} header="Add Relation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable >
+					<ErrorBoundary>
+						<div className='p-justify-center'>
+							<form>
+								<div className="field">
+									<label htmlFor="handle">Handle</label>
+									<InputText
+										id="handle"
+										name="handle"
+										value={newRelation.handle}
+										onChange={onHandleChange}
+										className={classNames({ 'p-invalid': submitted && errorMessages.handle })}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"handle"} />
+								</div>
+								<div className="field">
+									<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
+									<AutocompleteEditor
+										search={referenceSearch}
+										name="singleReference"
+										label="Reference"
+										fieldName='singleReference'
+										initialValue={newRelation.singleReference}
+										onValueChangeHandler={onReferenceChange}
+										classNames={classNames({ 'p-invalid': submitted && errorMessages.singleReference })}
+										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+											<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"} />
+								</div>
+								<div className="field">
+									<label htmlFor="relation">Relation</label>
+									<Dropdown
+										options={conditionRelationTypeTerms}
+										value={newRelation.conditionRelationType.name}
+										placeholder={"Select Relation"}
+										name="conditionRelationType"
+										optionLabel='name'
+										optionValue='name'
+										onChange={onRelationChange}
+										required
+										className={classNames({ 'p-invalid': submitted && errorMessages.conditionRelationType })}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelationType"} />
+								</div>
+								<div className="field">
+									<label htmlFor="conditions">Conditions</label>
+									<AutocompleteMultiEditor
+										search={conditionSearch}
+										initialValue={newRelation.conditions}
+										fieldName='conditions'
+										subField='conditionSummary'
+										name="conditions"
+										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+											<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
+										onValueChangeHandler={onConditionsChange}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditions"} />
+								</div>
+							</form>
 						</div>
-						<div className="field">
-							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
-							<AutocompleteEditor
-								search={referenceSearch}
-								name="singleReference"
-								label="Reference"
-								fieldName='singleReference'
-								initialValue={newRelation.singleReference}
-								onValueChangeHandler={onReferenceChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
-								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-									<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="relation">Relation</label>
-							<Dropdown
-									options={conditionRelationTypeTerms}
-									value={newRelation.conditionRelationType.name}
-									placeholder={"Select Relation"}
-									name="conditionRelationType"
-									optionLabel='name'
-									optionValue='name'
-									onChange={onRelationChange}
-									required
-									className={classNames({'p-invalid': submitted && errorMessages.conditionRelationType})}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelationType"}/>
-						</div>
-						<div className="field">
-							<label htmlFor="conditions">Conditions</label>
-							<AutocompleteMultiEditor
-								search={conditionSearch}
-								initialValue={newRelation.conditions}
-								fieldName='conditions'
-								subField='conditionSummary'
-								name="conditions"
-								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-									<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-								onValueChangeHandler={onConditionsChange}
-							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditions"}/>
-						</div>
-					</form>
-				</div>
-			</Dialog>
-		</div>
+					</ErrorBoundary>
+				</Dialog>
+			</div>
 	);
 }

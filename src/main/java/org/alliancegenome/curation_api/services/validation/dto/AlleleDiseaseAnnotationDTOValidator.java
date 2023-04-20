@@ -57,7 +57,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getGenusSpecies()).getCurieID(dto, dto.getAlleleCurie(), refCurie);
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(allele.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getAlleleCurie(), refCurie);
 				}
 
 				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);

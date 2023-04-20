@@ -16,8 +16,7 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
 @RequestScoped
-public class AffectedGenomicModelCrudController extends BaseDTOCrudController<AffectedGenomicModelService, AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO>
-	implements AffectedGenomicModelCrudInterface {
+public class AffectedGenomicModelCrudController extends BaseDTOCrudController<AffectedGenomicModelService, AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> implements AffectedGenomicModelCrudInterface {
 
 	@Inject
 	AffectedGenomicModelService affectedGenomicModelService;
@@ -32,8 +31,8 @@ public class AffectedGenomicModelCrudController extends BaseDTOCrudController<Af
 	}
 
 	@Override
-	public APIResponse updateAGMs(List<AffectedGenomicModelDTO> agmData) {
-		return agmExecutor.runLoad(agmData);
+	public APIResponse updateAGMs(String dataProvider, List<AffectedGenomicModelDTO> agmData) {
+		return agmExecutor.runLoad(dataProvider, agmData);
 	}
 
 }

@@ -67,22 +67,25 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) {
 		Allele allele = alleleDAO.find(curie);
+		String loadDescription = dataProvider + " Allele bulk load (" + md5sum + ")"; 
 		if (allele != null) {
 			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
 			Boolean anyReferencingDAs = false;
 			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "allele", true);
+				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
 					anyReferencingDAs = true;
 			}
 			
 			if (anyReferencingDAs) {
-				allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " allele bulk upload"));
-				allele.setDateUpdated(OffsetDateTime.now());
-				allele.setObsolete(true);
-				alleleDAO.persist(allele);
+				if (!allele.getObsolete()) {
+					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+					allele.setDateUpdated(OffsetDateTime.now());
+					allele.setObsolete(true);
+					alleleDAO.persist(allele);
+				}
 			} else {
 				deleteAlleleSlotAnnotations(allele);
 				alleleDAO.remove(curie);
@@ -92,8 +95,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		}
 	}
 	
-	public List<String> getCuriesBySpeciesName(String speciesName) {
-		List<String> curies = alleleDAO.findAllCuriesBySpeciesName(speciesName);
+	public List<String> getCuriesByDataProvider(String dataProvider) {
+		List<String> curies = alleleDAO.findAllCuriesByDataProvider(dataProvider);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

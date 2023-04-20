@@ -8,14 +8,11 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
@@ -25,14 +22,14 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	implements AlleleDiseaseAnnotationCrudInterface {
 
 	@Inject
-	AlleleDiseaseAnnotationService annotationService;
+	AlleleDiseaseAnnotationService alleleDiseaseAnnotationService;
 	@Inject
 	AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setService(annotationService);
+		setService(alleleDiseaseAnnotationService);
 	}
 
 	@Override
@@ -46,10 +43,7 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	}
 
 	@Override
-	public APIResponse updateAlleleDiseaseAnnotations(String dataType, List<AlleleDiseaseAnnotationDTO> annotations) {
-		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		alleleDiseaseAnnotationExecutor.runLoad(history, BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations, null);
-		history.finishLoad();
-		return new LoadHistoryResponce(history);
+	public APIResponse updateAlleleDiseaseAnnotations(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
+		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 }

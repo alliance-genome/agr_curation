@@ -59,11 +59,11 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	@Override
 	@Transactional
 	public ObjectResponse<AGMDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation", false);
+		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "AGM disease annotation DELETE API call", false);
 		ObjectResponse<AGMDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataType) { }
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) { }
 }

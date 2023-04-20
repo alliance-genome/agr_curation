@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -72,6 +73,9 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
+		
+		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
+		dbEntity.setDataProvider(dataProvider);
 		
 		VocabularyTerm subtype = validateSubtype(uiEntity, dbEntity);
 		dbEntity.setSubtype(subtype);

@@ -5,7 +5,7 @@ export function AssertedGenesAdditionalFieldData({ fieldData }) {
 	if (fieldData && fieldData.length >0) {
 		for(let i=0; i< fieldData.length; i++){
 			if (fieldData[i]["curie"] !== '' && fieldData[i]["type"] === "Gene")
-				ret.push(<div key={i} className="p-info"> {fieldData[i]["geneSymbol"]["displayText"]} </div>);
+				ret.push(<div key={i} className="p-info" dangerouslySetInnerHTML={{__html: fieldData[i]["geneSymbol"]["displayText"]}}></div>);
 		}
 	}
 	return ret;

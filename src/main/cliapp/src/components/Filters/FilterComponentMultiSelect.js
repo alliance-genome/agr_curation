@@ -61,7 +61,7 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 	};
 
 	const templateSelector = (option) => {
-		if(fieldSet.filterName === "dataProviderFilter" || fieldSet.filterName === "secondaryDataProviderFilter") {
+		if(fieldSet.filterName === "dataProviderFilter" || fieldSet.filterName === "secondaryDataProviderFilter" || fieldSet.filterName === "evidenceCodesFilter") {
 			return upperCaseItemTemplate(option);
 		} else {
 			return itemTemplate(option);

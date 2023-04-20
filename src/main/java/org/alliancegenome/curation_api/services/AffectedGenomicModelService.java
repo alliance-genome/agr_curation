@@ -70,22 +70,25 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataType) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) {
 		AffectedGenomicModel agm = agmDAO.find(curie);
+		String loadDescription = dataProvider + " AGM bulk load (" + md5sum + ")"; 
 		if (agm != null) {
 			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
 			Boolean anyReferencingDAs = false;
 			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM", true);
+				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
 					anyReferencingDAs = true;
 			}
 
 			if (anyReferencingDAs) {
-				agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
-				agm.setDateUpdated(OffsetDateTime.now());
-				agm.setObsolete(true);
-				agmDAO.persist(agm);
+				if (!agm.getObsolete()) {
+					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+					agm.setDateUpdated(OffsetDateTime.now());
+					agm.setObsolete(true);
+					agmDAO.persist(agm);
+				}
 			} else {
 				agmDAO.remove(curie);
 			}
@@ -94,8 +97,8 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		}
 	}
 	
-	public List<String> getCuriesBySpeciesName(String speciesName) {
-		List<String> curies = agmDAO.findAllCuriesBySpeciesName(speciesName);
+	public List<String> getCuriesByDataProvider(String dataProvider) {
+		List<String> curies = agmDAO.findAllCuriesByDataProvider(dataProvider);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

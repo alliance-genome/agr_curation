@@ -17,6 +17,17 @@
       "updated_by_curie": "GENETEST:Person0002",
       "date_created": "2022-03-09T22:10:12+00:00",
       "date_updated": "2022-03-09T22:10:12+00:00"
+    },
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "WB",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST:0001",
+        "page_area": "homepage",
+        "display_name": "TEST:0001",
+        "prefix": "TEST"
+      }
     }
   }
 ]

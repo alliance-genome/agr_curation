@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
@@ -130,13 +131,16 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			if (evidenceCode == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
-			} else if (evidenceCode.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidenceCodes()) || !dbEntity.getEvidenceCodes().contains(evidenceCode))) {
+			}
+			if (evidenceCode.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidenceCodes()) || !dbEntity.getEvidenceCodes().contains(evidenceCode))) {
 				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}
-
+			if (!evidenceCode.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
+				addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
+				return null;
+			}
 			validEvidenceCodes.add(evidenceCode);
-
 		}
 		return validEvidenceCodes;
 	}
@@ -419,7 +423,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		} else if (StringUtils.isBlank(uiEntity.getSubjectCurie()) || StringUtils.isBlank(uiEntity.getSubjectTaxonCurie()) || uiEntity.getObject() == null || uiEntity.getSingleReference() == null) {
 			return null;
 		} else {
-			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubjectSpeciesName()).getCurieID(uiEntity);
+			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(uiEntity.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(uiEntity);
 		}
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {

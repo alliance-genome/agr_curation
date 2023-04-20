@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -18,7 +17,6 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.ingest.dto.DataProviderDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ProcessDisplayService;
@@ -133,22 +131,23 @@ public class LoadFileExecutor {
 	
 
 	// The following methods are for bulk validation
-	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String speciesName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
-		Log.debug("runLoad: After: " + speciesName + " " + annotationIdsAfter.size());
+	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProvider, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
+		Log.debug("runLoad: After: " + dataProvider + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + speciesName + " " + distinctAfter.size());
+		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
 
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
+		Log.debug("runLoad: Remove: " + dataProvider + " " + idsToRemove.size());
 
 		history.setTotalDeleteRecords((long)idsToRemove.size());
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesName, idsToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + dataProvider, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
-				service.deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation", true);
+				String loadDescription = dataProvider + " disease annotation bulk load (" + md5sum + ")";
+				service.deprecateOrDeleteAnnotationAndNotes(id, false, loadDescription, true);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
@@ -159,22 +158,22 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, Set<String> speciesNames, String dataType, List<String> curiesBefore, List<String> curiesAfter) {
-		Log.debug("runLoad: After: " + speciesNames + " " + curiesAfter.size());
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProvider, List<String> curiesBefore, List<String> curiesAfter, String md5sum) {
+		Log.debug("runLoad: After: " + dataProvider + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
+		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
 
 		List<String> curiesToRemove = ListUtils.subtract(curiesBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
+		Log.debug("runLoad: Remove: " + dataProvider + " " + curiesToRemove.size());
 
 		history.setTotalDeleteRecords((long)curiesToRemove.size());
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of primary objects " + dataType + " " + speciesNames, curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of primary objects " + dataProvider, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				service.removeOrDeprecateNonUpdated(curie, dataType);
+				service.removeOrDeprecateNonUpdated(curie, dataProvider, md5sum);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
@@ -184,16 +183,5 @@ public class LoadFileExecutor {
 		}
 		ph.finishProcess();
 		
-	}
-
-	protected DataProviderDTO createDataProviderForDataType(String dataType) {
-		if (dataType == null)
-			return null;
-		
-		DataProviderDTO dto = new DataProviderDTO();
-		
-		dto.setSourceOrganizationAbbreviation(dataType);
-		
-		return dto;
 	}
 }

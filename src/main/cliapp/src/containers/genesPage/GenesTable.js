@@ -19,9 +19,21 @@ export const GenesTable = () => {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-						{rowData.geneFullName.displayText}
+						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
 					</EllipsisTableCell>
 					<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.geneFullName.displayText} />
+				</>
+			)
+		}
+	};
+
+	const symbolBodyTemplate = (rowData) => {
+		if (rowData?.geneFullName) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
+					</EllipsisTableCell>
 				</>
 			)
 		}
@@ -60,6 +72,7 @@ export const GenesTable = () => {
 			field: "geneSymbol.displayText",
 			header: "Symbol",
 			sortable: isEnabled,
+			body: symbolBodyTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig
 		},
