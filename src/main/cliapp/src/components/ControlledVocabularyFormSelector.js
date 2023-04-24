@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dropdown } from "primereact/dropdown"
 
-export function ControlledVocabularyFormDropdown({name, value, field, options, editorChange, style}) {
+export function ControlledVocabularyFormDropdown({name, value, field, options, editorChange}) {
 	return (
 		<>
 			<Dropdown
@@ -10,7 +10,7 @@ export function ControlledVocabularyFormDropdown({name, value, field, options, e
 				options={options}
 				onChange={(e) => editorChange(e)}
 				optionLabel="name"
-				style={style ? style : {width: '100%' } }
+				style={{ width: '100%' }}
 			/>
 		</>
 	)

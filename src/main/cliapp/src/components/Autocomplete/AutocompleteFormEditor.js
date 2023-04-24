@@ -34,7 +34,7 @@ export const AutocompleteFormEditor = (
 	};
 
 	return (
-		<div style={{width: '300px'}}>
+		<div>
 			<AutoComplete
 				name={name}
 				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}

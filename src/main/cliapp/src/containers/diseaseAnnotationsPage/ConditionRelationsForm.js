@@ -151,7 +151,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 				</DataTable>
 			}
 			<div className={`${showConditionRelations ? "pt-3" : ""} p-field p-col`}>
-				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} style={{width:"50%"}} disabled={buttonIsDisabled} style={{width: '300px', padding: '5px'}}/>
+				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} style={{width:"50%"}} disabled={buttonIsDisabled}/>
 			</div>
 		</div>
 	);

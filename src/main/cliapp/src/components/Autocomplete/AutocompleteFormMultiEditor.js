@@ -35,7 +35,7 @@ export const AutocompleteFormMultiEditor = (
 	};
 
 	return (
-		<div style={{width: '300px'}}>
+		<div>
 			<AutoComplete
 				ref={customRef}
 				name={name}

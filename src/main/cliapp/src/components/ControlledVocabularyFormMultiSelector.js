@@ -1,7 +1,7 @@
 import React from 'react';
 import { MultiSelect } from "primereact/multiselect"
 
-export function ControlledVocabularyFormMultiSelectDropdown({ name, value, options, editorChange, placeholderText, style }) {
+export function ControlledVocabularyFormMultiSelectDropdown({ name, value, options, editorChange, placeholderText }) {
 	return (
 		<>
 			<MultiSelect
@@ -12,7 +12,7 @@ export function ControlledVocabularyFormMultiSelectDropdown({ name, value, optio
 				display="chip"
 				optionLabel="name"
 				placeholder={placeholderText}
-				style={style ? style : {width: '100%'} }
+				style={{ width: '100%' }}
 			/>
 		</>
 	)

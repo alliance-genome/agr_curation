@@ -116,7 +116,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 				</DataTable>
 			}
 			<div className={`w-2 ${showRelatedNotes ? "pt-3" : ""} p-field p-col`}>
-				<Button label="Add Note" onClick={createNewNoteHandler} style={{width: '150px', padding: '5px'}}/>
+				<Button label="Add Note" onClick={createNewNoteHandler}/>
 			</div>
 		</div>
 	);

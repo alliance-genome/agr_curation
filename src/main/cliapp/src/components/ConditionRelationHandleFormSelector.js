@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dropdown } from "primereact/dropdown"
 import { ExperimentsSearchService } from '../service/ExperimentsSearchService';
 
-export function ConditionRelationHandleFormDropdown({ editorChange, referenceCurie, value, name, showClear, placeholderText, isEnabled, customRef, style }) {
+export function ConditionRelationHandleFormDropdown({ editorChange, referenceCurie, value, name, showClear, placeholderText, isEnabled, customRef }) {
 	const [selectedValue, setSelectedValue] = useState(value);
 	const experimentsSearchService = new ExperimentsSearchService();
 	const [handles, setHandles] = useState(null);
@@ -40,7 +40,7 @@ export function ConditionRelationHandleFormDropdown({ editorChange, referenceCur
 				optionLabel="handle"
 				showClear={showClear}
 				placeholder={placeholderText}
-				style= { style ? style : { width: '100%' } }
+				style={{ width: '100%' }}
 			/>
 		</>
 	)
