@@ -31,6 +31,7 @@ import { AssertedGenesAdditionalFieldData } from "../../components/AssertedGenes
 import { EvidenceCodesAdditionalFieldData } from "../../components/EvidenceCodesAdditionalFieldData";
 import { WithAdditionalFieldData } from "../../components/WithAdditionalFieldData";
 import { GeneticModifierAdditionalFieldData } from "../../components/GeneticModifierAdditionalFieldData";
+import ErrorBoundary from "../../components/Error/ErrorBoundary";
 import { ConfirmButton } from "../../components/ConfirmButton";
 
 export const NewAnnotationForm = ({
@@ -448,6 +449,7 @@ export const NewAnnotationForm = ({
 			<Toast ref={toast_error} position="top-left" />
 			<Toast ref={toast_success} position="top-right" />
 			<Dialog visible={newAnnotationDialog} style={{ width: '900px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable="true" >
+				<ErrorBoundary>
 				<form>
 					<div className="grid">
 						<div className={labelColumnSize}>
@@ -850,6 +852,7 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 				</form>
+				</ErrorBoundary>
 			</Dialog>
 		</div>
 	);
