@@ -4,7 +4,7 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
-import { MultiSelect } from 'primereact/multiselect';
+// import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from "react-query";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
@@ -32,7 +32,7 @@ import { EvidenceCodesAdditionalFieldData } from "../../components/EvidenceCodes
 import { WithAdditionalFieldData } from "../../components/WithAdditionalFieldData";
 import { GeneticModifierAdditionalFieldData } from "../../components/GeneticModifierAdditionalFieldData";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
-import { ConfirmButton } from "../../components/ConfirmButton";
+// import { ConfirmButton } from "../../components/ConfirmButton";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -51,7 +51,7 @@ export const NewAnnotationForm = ({
 	const assertedAlleleRef = useRef(null);
 	const evidenceCodesRef = useRef(null);
 	const experimentsRef = useRef(null);
-	const [selectedFields, setSelectedFields] = useState([]);
+	// const [selectedFields, setSelectedFields] = useState([]);
 	const {
 		newAnnotation,
 		errorMessages,
@@ -407,9 +407,9 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
-	const defaultFields = (["Subject", "Asserted Genes", "Asserted Allele", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With", "Related Notes",
-		"Experimental Conditions", "Experiments", "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation",
-		"Genetic Modifier", "Internal"]);
+	// const defaultFields = (["Subject", "Asserted Genes", "Asserted Allele", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With", "Related Notes",
+	// 	"Experimental Conditions", "Experiments", "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation",
+	// 	"Genetic Modifier", "Internal"]);
 
 	const dialogHeader = (
 	<>

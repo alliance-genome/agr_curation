@@ -36,7 +36,6 @@ export const GenericDataTable = (props) => {
 		tableStateConfirm,
 		onFilter,
 		setColumnList,
-		columnWidths,
 		entities,
 		dataTable,
 		editingRows,
@@ -56,7 +55,7 @@ export const GenericDataTable = (props) => {
 		defaultColumnNames,
 		exceptionDialog,
 		setExceptionDialog,
-		resetToModDefault,
+		setToModDefault,
 		resetTableState,
 		exceptionMessage,
 	} = useGenericDataTable(props);
@@ -75,7 +74,16 @@ export const GenericDataTable = (props) => {
 				aria-label='columnToggle'
 				value={tableState.selectedColumnNames}
 				options={defaultColumnNames}
-				onChange={e => setSelectedColumnNames(e.value)}
+				filter
+				resetFilterOnHide
+				onChange={e => {
+					let orderedSelectedColumnNames = tableState.orderedColumnNames.filter((columnName) => {
+						return e.value.some(selectedColumn => selectedColumn === columnName);
+					});
+
+					setSelectedColumnNames(orderedSelectedColumnNames)
+				}
+			}
 				style={{ width: '20em', textAlign: 'center' }}
 				disabled={!isEnabled}
 		/>);
@@ -89,7 +97,7 @@ export const GenericDataTable = (props) => {
 				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
 				buttons = {headerButtons ? headerButtons() : undefined}
 				tableStateConfirm = {tableStateConfirm}
-				resetToModDefault = {resetToModDefault}
+				setToModDefault = {setToModDefault}
 				resetTableState = {resetTableState}
 				isEnabled = {isEnabled}
 				modReset={modReset}
@@ -108,15 +116,17 @@ export const GenericDataTable = (props) => {
 			/>
 		);
 	};
+	//This is needed so column order is tracked properly
+	useEffect(() => dataTable.current.resetColumnOrder() );
 
 	useEffect(() => {
-		const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
-		const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-		setColumnList(
-			orderedColumns.map((col) => {
+		const orderedColumns = orderColumns(columns, tableState.orderedColumnNames);
+		const filteredColumns = filterColumns(orderedColumns, tableState.selectedColumnNames);
+		setColumnList(() => {
+			return filteredColumns.map((col) => {
 				if(col){
 					return <Column
-						style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
+						style={{'minWidth':`${tableState.columnWidths[col.field]}vw`, 'maxWidth': `${tableState.columnWidths[col.field]}vw`}}
 						headerClassName='surface-0'
 						columnKey={col.field}
 						key={col.field}
@@ -132,11 +142,10 @@ export const GenericDataTable = (props) => {
 				} else {
 					return null;
 				}
-
 			})
-		);
+		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tableState, isEnabled, columnWidths]);
+	}, [tableState, isEnabled]);
 
 	const rowEditorFilterNameHeader = (options) => {
 		return <div className="p-column-header-content"><span className="p-column-title">Filters</span></div>
@@ -296,3 +305,5 @@ export const GenericDataTable = (props) => {
 			</div>
 	)
 }
+
+

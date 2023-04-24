@@ -125,8 +125,13 @@ export const ResourceDescriptorsTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("ResourceDescriptors", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 20;
+	});
+
+	const initialTableState = getDefaultTableState("ResourceDescriptors", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
@@ -142,8 +147,8 @@ export const ResourceDescriptorsTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={20}
 					errorObject = {{errorMessages, setErrorMessages}}
+					widthsObject={widthsObject}
 				/>
 			</div>
 	)
