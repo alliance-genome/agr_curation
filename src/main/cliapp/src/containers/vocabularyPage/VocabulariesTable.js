@@ -59,8 +59,13 @@ export const VocabulariesTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("Vocabularies", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 20;
+	});
+
+	const initialTableState = getDefaultTableState("Vocabularies", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
@@ -76,8 +81,8 @@ export const VocabulariesTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={20}
 					errorObject = {{errorMessages, setErrorMessages}}
+					widthsObject={widthsObject}
 				/>
 			</div>
 	)

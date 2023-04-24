@@ -9,6 +9,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 
 export const AffectedGenomicModelTable = () => {
+	//does this still need to be here? List is the same as columns
 	const defaultVisibleColumns = ["Curie", "Name", "Sub Type", "Taxon"];
 
 	const [isEnabled, setIsEnabled] = useState(true);
@@ -73,9 +74,14 @@ export const AffectedGenomicModelTable = () => {
 	const defaultColumnNames = columns.map((col) => {
 		return col.header;
 	});
+	const widthsObject = {};
 
+	columns.forEach((col) => {
+		widthsObject[col.field] = 100 / columns.length;
+	});
 
-	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames);
+	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames, defaultVisibleColumns, widthsObject);
+
 
 	return (
 			<div className="card">
@@ -91,9 +97,8 @@ export const AffectedGenomicModelTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={100 / columns.length}
-					defaultVisibleColumns={defaultVisibleColumns}
 					errorObject = {{errorMessages, setErrorMessages}}
+					widthsObject={widthsObject}
 				/>
 			</div>
 	)

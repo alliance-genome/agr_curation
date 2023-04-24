@@ -217,8 +217,13 @@ export const VocabularyTermSetTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("VocabularyTermSets", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 15;
+	});
+
+	const initialTableState = getDefaultTableState("VocabularyTermSets", defaultColumnNames, undefined, widthsObject);
 
 	const headerButtons = () => {
 		return (
@@ -245,12 +250,12 @@ export const VocabularyTermSetTable = () => {
 				isEnabled={isEnabled}
 				setIsEnabled={setIsEnabled}
 				toasts={{toast_topleft, toast_topright }}
-				initialColumnWidth={15}
 				errorObject={{errorMessages, setErrorMessages}}
 				headerButtons={headerButtons}
 				newEntity={newVocabularyTermSet}
 				deletionEnabled={true}
 				deletionMethod={vocabularyTermSetService.deleteVocabularyTermSet}
+				widthsObject={widthsObject}
 			/>
 			<NewVocabularyTermSetForm
 				newVocabularyTermSetState={newVocabularyTermSetState}
