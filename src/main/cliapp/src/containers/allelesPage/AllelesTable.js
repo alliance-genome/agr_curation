@@ -828,8 +828,13 @@ export const AllelesTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("Alleles", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 10;
+	});
+
+	const initialTableState = getDefaultTableState("Alleles", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -848,8 +853,8 @@ export const AllelesTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={10}
 					errorObject = {{errorMessages, setErrorMessages}}
+					widthsObject={widthsObject}
 				/>
 			</div>
 			<SymbolDialog
