@@ -8,13 +8,13 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { InputTextEditor } from '../../components/InputTextEditor';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { ValidationService } from '../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
+import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../components/NameSlotAnnotationComponent';
 
 export const SymbolDialog = ({
 													originalSymbolData,
@@ -236,54 +236,6 @@ export const SymbolDialog = ({
 		);
 	};
 
-	const displayTextTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.displayText}</EllipsisTableCell>;
-	};
-
-	const displayTextEditorTemplate = (props) => {
-		return (
-			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={"displayText"}
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"displayText"} />
-			</>
-		);
-	};
-
-	const formatTextTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.formatText}</EllipsisTableCell>;
-	};
-
-	const formatTextEditorTemplate = (props) => {
-		return (
-			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={"formatText"}
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"formatText"} />
-			</>
-		);
-	};
-
-	const synonymUrlTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.synonymUrl}</EllipsisTableCell>;
-	};
-
-	const synonymUrlEditorTemplate = (props) => {
-		return (
-			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={"synonymUrl"}
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"synonymUrl"} />
-			</>
-		);
-	};
-
 	const onSynonymScopeEditorValueChange = (props, event) => {
 		let _localSymbols = [...localSymbols];
 		_localSymbols[props.rowIndex].synonymScope = event.value;
@@ -305,10 +257,6 @@ export const SymbolDialog = ({
 		);
 	};
 
-	const synonymScopeTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.synonymScope?.name}</EllipsisTableCell>;
-	};
-
 	const onNameTypeEditorValueChange = (props, event) => {
 		let _localSymbols = [...localSymbols];
 		_localSymbols[props.rowIndex].nameType = event.value;
@@ -328,10 +276,6 @@ export const SymbolDialog = ({
 				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"nameType"} />
 			</>
 		);
-	};
-
-	const nameTypeTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.nameType?.name}</EllipsisTableCell>;
 	};
 
 	const footerTemplate = () => {
@@ -369,11 +313,11 @@ export const SymbolDialog = ({
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={displayTextEditorTemplate} field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate}/>
-					<Column editor={formatTextEditorTemplate} field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate}/>
+					<Column editor={(props) => displayTextEditorTemplate(props, errorMessages)} field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate}/>
+					<Column editor={(props) => formatTextEditorTemplate(props, errorMessages)} field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate}/>
 					<Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate}/>
 					<Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate}/>
-					<Column editor={synonymUrlEditorTemplate} field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate}/>
+					<Column editor={(props) => synonymUrlEditorTemplate(props, errorMessages)} field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 				</DataTable>
