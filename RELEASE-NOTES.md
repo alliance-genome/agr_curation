@@ -2,6 +2,34 @@
 
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.17.0
+ * New features
+    * Improved reporting of bulk load deprecation events (SCRUM-2761)
+    * Implemented error boundaries for better error handling in UI (SCRUM-2587)
+    * Prevented loading of annotations referencing ECOTerms not in AGR subset (SCRUM-2748)
+    * Enabled loading of biological entities with non-canonical species (SCRUM-2679)
+    * Enabled filtering of experimental conditions by relation type in disease annotation table (SCRUM-2718)
+    * Improved filtering of evidence codes (SCRUM-189)
+    * Implemented autopopulated dataProvider field for biological entities (SCRUM-2711)
+    * Improved error reporting for post-load processing of data load files (SCRUM-2455)
+    * Implemented multi-select picklist for data provider in diseaes annotations table (SCRUM-2509)
+    * Enabled users to delete local storage entries in their profile page (SCRUM-2654)
+    * Implemented first non-trivial tests in UI testing framework (SCRUM-2282)
+    * Loaded WBPhenotype ontology (SCRUM-2446)
+    * Prevented loading of data files formatted to unsupported LinkML schema versions (SCRUM-2627)
+    * Implemented consistent ordering of data loads (SCRUM-2593)
+    * Enabled deletion of disease annotations from persistent store with appropriate constraints (SCRUM-1907)
+ * Fixes & maintenance
+    * Rendering of boolean filter selections after table reset bug fixed (SCRUM-2757)
+    * Rendering of gene name and symbol superscripts fixed (SCRUM-2678)
+    * Forced selection from dropdown for biological entity fields (SCRUM-2698)
+    * Implemented cleanup of non-submitted ingest sets in data loads (SCRUM-2696)
+    * Created centralised store for sort and filter fields for each table (SCRUM-2650)
+    * Fixed indexing of slot annotation fields upon insert (SCRUM-2658)
+    * Added check for valid fields in users' local storage (SCRUM-2526)
+    * Added integration tests for creation of objects with only required fields (SCRUM-2601)
+    * Fixed data loads exception popup refresh when no exceptions present (SCRUM-2594) 
+
 ## v0.16.0
  * New features
     * Prevent loading of biological entries from non-canonical species (SCRUM-2477)
