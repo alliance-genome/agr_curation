@@ -333,6 +333,8 @@ export const FullNameDialog = ({
 					<Column header="Synonym URL" />
 					<Column header="Internal" />
 					<Column header="Evidence" />
+					<Column header="Updated By" />
+					<Column header="Date Updated" />
 				</Row>
 			</ColumnGroup>;
 
@@ -353,6 +355,8 @@ export const FullNameDialog = ({
 					<Column editor={(props) => synonymUrlEditorTemplate(props, errorMessages)} field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+					<Column field="updatedBy.uniqueId" header="Updated By" />
+					<Column field="dateUpdated" header="Date Updated" />
 				</DataTable>
 			</Dialog>
 		</div>
