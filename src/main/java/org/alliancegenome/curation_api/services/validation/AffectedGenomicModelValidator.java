@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -8,10 +10,12 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -24,6 +28,8 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 	
 	private String errorMessage;
 
@@ -68,6 +74,9 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
 		
+		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
+		dbEntity.setDataProvider(dataProvider);
+		
 		VocabularyTerm subtype = validateSubtype(uiEntity, dbEntity);
 		dbEntity.setSubtype(subtype);
 
@@ -77,8 +86,22 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 			dbEntity.setSecondaryIdentifiers(null);
 		}
 
+		List<Long> currentXrefIds;
+		if (dbEntity.getCrossReferences() == null) {
+			currentXrefIds = new ArrayList<>();
+		} else {
+			currentXrefIds = dbEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
+		}
+		
 		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
 		dbEntity.setCrossReferences(crossReferences);
+		List<Long> mergedIds = crossReferences == null ? new ArrayList<>() :
+			crossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
+		for (Long currentXrefId : currentXrefIds) {
+			if (!mergedIds.contains(currentXrefId)) {
+				crossReferenceDAO.remove(currentXrefId);
+			}
+		}
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);

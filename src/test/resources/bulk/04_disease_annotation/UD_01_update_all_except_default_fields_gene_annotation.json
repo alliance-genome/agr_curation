@@ -7,8 +7,32 @@
     "date_updated": "2022-03-20T22:10:12+00:00",
     "gene_curie": "DATEST:Gene0002",
     "do_term_curie": "DATEST:Disease0002",
-    "data_provider_name": "TEST2",
-    "secondary_data_provider_name": "TEST",
+    "secondary_data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "WB",
+      "cross_reference_dto": {
+        "internal": false,
+        "obsolete": false,
+        "referenced_curie": "TEST:0001",
+        "page_area": "homepage",
+        "display_name": "TEST:0001",
+        "prefix": "TEST"
+      }
+    },
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "RGD",
+      "cross_reference_dto": {
+        "internal": false,
+        "obsolete": false,
+        "referenced_curie": "TEST:0002",
+        "page_area": "homepage",
+        "display_name": "TEST:0002",
+        "prefix": "TEST"
+      }
+    },
     "disease_relation_name": "is_marker_for",
     "genetic_sex_name": "female",
     "evidence_code_curies": [

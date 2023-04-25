@@ -2,11 +2,9 @@ import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
-import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog, validateBioEntityFields } from '../../utils/utils';
-import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
+import { trimWhitespace, returnSorted, reorderArray, validateBioEntityFields, setDefaultColumnOrder } from '../../utils/utils';
 import { useGetUserSettings } from "../../service/useGetUserSettings";
-import {getDefaultTableState, getModTableState} from '../../service/TableStateService';
-
+import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
 
 export const useGenericDataTable = ({
 	endpoint,
@@ -14,8 +12,7 @@ export const useGenericDataTable = ({
 	columns,
 	defaultColumnNames,
 	initialTableState,
-	aggregationFields,
-	curieFields,
+ 	curieFields,
 	idFields,
 	sortMapping,
 	nonNullFieldsTable,
@@ -27,6 +24,7 @@ export const useGenericDataTable = ({
 	newEntity,
 	deletionEnabled,
 	deletionMethod,
+	deprecationMethod,
 }) => {
 
 
@@ -60,23 +58,25 @@ export const useGenericDataTable = ({
 	const { toast_topleft, toast_topright } = toasts;
 	const [exceptionDialog, setExceptionDialog] = useState(false);
 	const [exceptionMessage,setExceptionMessage] = useState("");
-
-	useQuery([tableState.tableKeyName, tableState],
-		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), {
-		onSuccess: (data) => {
-			setIsEnabled(true);
-			setEntities(data.results);
-			setTotalRecords(data.totalResults);
-		},
-		onError: (error) => {
-			toast_topleft.current.show([
-				{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
-			])
-		},
-		keepPreviousData: true,
-		refetchOnWindowFocus: false,
-		enabled: !!(tableState)
-	});
+	
+	useQuery([tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
+		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), 
+		{
+			onSuccess: (data) => {
+				setIsEnabled(true);
+				setEntities(data.results);
+				setTotalRecords(data.totalResults);
+			},
+			onError: (error) => {
+				toast_topleft.current.show([
+					{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+				])
+			},
+			keepPreviousData: true,
+			refetchOnWindowFocus: false,
+			enabled: !!(tableState.rows)
+		}
+	);
 
 	useEffect(() => {
 		if (
@@ -94,15 +94,6 @@ export const useGenericDataTable = ({
 		})
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [newEntity])
-
-	const setIsFirst = (value) => {
-		let _tableState = {
-			...tableState,
-			isFirst: value,
-		};
-
-		setTableState(_tableState);
-	}
 
 	const onLazyLoad = (event) => {
 		let _tableState = {
@@ -133,6 +124,7 @@ export const useGenericDataTable = ({
 	};
 
 	const setSelectedColumnNames = (newValue) => {
+
 		let _tableState = {
 			...tableState,
 			selectedColumnNames: newValue
@@ -140,7 +132,10 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled);
+	useEffect(() => {
+		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled, tableState);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
@@ -185,7 +180,7 @@ export const useGenericDataTable = ({
 		}
 
 		let updatedRow = global.structuredClone(event.data);//deep copy
-
+		
 		if(tableName === "Disease Annotations"){
 			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors);
 		}
@@ -263,24 +258,21 @@ export const useGenericDataTable = ({
 		});
 	};
 
-	const handleDeletion = async (idToDelete, entityToDelete, deprecation) => {
-		const result = await deletionMethod(entityToDelete)
+	const handleDeletion = async (idToDelete, entityToDelete) => {
+		let result = await deletionMethod(entityToDelete);
 		if (result.isError) {
-			let action = deprecation ? 'deprecate' : 'delete';
 			toast_topright.current.show([
-				{ life: 7000, severity: 'error', summary: 'Could not ' + action + ' ' + endpoint +
+				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
 					' [' + idToDelete + ']', sticky: false }
 			]);
 			let deletionErrorMessage = result?.message ? result.message : null;
 			return deletionErrorMessage;
 		} else {
-			let action = deprecation ? 'Deprecation' : 'Deletion';
 			toast_topright.current.show([
-				{ life: 7000, severity: 'success', summary: action +' successful: ',
-					detail: action + ' of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
+				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
+					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
 			]);
 			let _entities = global.structuredClone(entities);
-
 			if (editingRows[idToDelete]) {
 				let _editingRows = { ...editingRows};
 				delete _editingRows[idToDelete];
@@ -303,6 +295,57 @@ export const useGenericDataTable = ({
 			return null;
 		}
 	}
+	const handleDeprecation = (entityToDeprecate) => {
+		areUiErrors.current = false;
+		let updatedRow = global.structuredClone(entityToDeprecate);//deep copy
+		updatedRow.obsolete = true;
+		
+		let deprecatedIndex = entities.map(function(e) {return e.id;}).indexOf(updatedRow.id);
+
+		mutation.mutate(updatedRow, {
+			onSuccess: (response, variables, context) => {
+				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Deprecated' });
+
+				let _entities = global.structuredClone(entities);
+				_entities[deprecatedIndex] = response.data.entity;
+				setEntities(_entities);
+				const errorMessagesCopy = global.structuredClone(errorMessages);
+				errorMessagesCopy[deprecatedIndex] = {};
+				setErrorMessages({ ...errorMessagesCopy });
+			},
+			onError: (error, variables, context) => {
+				setIsEnabled(false);
+				let errorMessage = "";
+				if(error.response.data.errorMessage !== undefined) {
+					errorMessage = error.response.data.errorMessage;
+					toast_topright.current.show([
+						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
+					]);
+				}
+				else if(error.response.data !== undefined) {
+					setExceptionMessage(error.response.data);
+					setExceptionDialog(true);
+				}
+
+				let _entities = global.structuredClone(entities);
+				
+				const errorMessagesCopy = global.structuredClone(errorMessages);
+				errorMessagesCopy[deprecatedIndex] = {};
+				if(error.response.data.errorMessages !== undefined) {
+					Object.keys(error.response.data.errorMessages).forEach((field) => {
+						let messageObject = {
+							severity: "error",
+							message: error.response.data.errorMessages[field]
+						};
+						errorMessagesCopy[deprecatedIndex][field] = messageObject;
+					});
+					setErrorMessages({...errorMessagesCopy});
+				}
+				setEntities(_entities);
+			},
+		});
+	};
+
 
 	const onRowEditChange = (event) => {
 		//keep the row in edit mode if there are UI validation errors
@@ -313,14 +356,9 @@ export const useGenericDataTable = ({
 	};
 
 	const resetToModDefault = () => {
-		const initialTableState = getModTableState("DiseaseAnnotations");
-		let _tableState = {
-			...initialTableState,
-			isFirst: false,
-		};
+		const initialTableState = getModTableState(tableState.tableKeyName);
 
-		setDefaultColumnOrder(columns, dataTable, initialTableState.selectedColumnNames, deletionEnabled);
-		setTableState(_tableState);
+		setTableState(initialTableState);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
@@ -328,18 +366,13 @@ export const useGenericDataTable = ({
 		});
 
 		setColumnWidths(_columnWidths);
-		dataTable.current.el.children[1].scrollLeft = 0;
+		dataTable.current.resetScroll();
 	}
 
 	const resetTableState = () => {
 		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames);
-		let _tableState = {
-			...defaultTableState,
-			isFirst: false,
-		};
-
-		setTableState(_tableState);
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled);
+		
+		setTableState(defaultTableState);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
@@ -347,23 +380,7 @@ export const useGenericDataTable = ({
 		});
 
 		setColumnWidths(_columnWidths);
-		dataTable.current.el.children[1].scrollLeft = 0;
-	}
-
-	const tableStateConfirm = () => {
-		genericConfirmDialog({
-			header: `${tableName} Table State Reset`,
-			message: `Are you sure? This will reset the local state of the ${tableName} table.`,
-			accept: resetTableState
-		});
-	}
-
-	const modResetConfirm = () => {
-		genericConfirmDialog({
-			header: `${tableName} Table MOD Default Reset`,
-			message: `Are you sure? This will reset the local state of the ${tableName} table to the MOD default settings.`,
-			accept: resetToModDefault
-		});
+		dataTable.current.resetScroll();
 	}
 
 	const colReorderHandler = (event) => {
@@ -388,8 +405,6 @@ export const useGenericDataTable = ({
 		setSelectedColumnNames,
 		defaultColumnNames,
 		tableState,
-		tableStateConfirm,
-		modResetConfirm,
 		onFilter,
 		setColumnList,
 		columnWidths,
@@ -407,8 +422,11 @@ export const useGenericDataTable = ({
 		onLazyLoad,
 		columnList,
 		handleDeletion,
+		handleDeprecation,
 		exceptionDialog,
+		resetToModDefault,
+		resetTableState,
 		setExceptionDialog,
-		exceptionMessage
+		exceptionMessage,
 	};
 };

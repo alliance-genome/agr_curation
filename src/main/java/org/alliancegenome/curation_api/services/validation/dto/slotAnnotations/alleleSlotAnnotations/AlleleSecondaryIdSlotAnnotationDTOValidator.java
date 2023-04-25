@@ -12,10 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class AlleleSecondaryIdSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIdSlotAnnotationDTO(AlleleSecondaryIdSlotAnnotationDTO dto) {
+	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIdSlotAnnotationDTO(AlleleSecondaryIdSlotAnnotation annotation, AlleleSecondaryIdSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleSecondaryIdSlotAnnotation> asidResponse = new ObjectResponse<AlleleSecondaryIdSlotAnnotation>();
 
-		AlleleSecondaryIdSlotAnnotation annotation = new AlleleSecondaryIdSlotAnnotation();
+		if (annotation == null)
+			annotation = new AlleleSecondaryIdSlotAnnotation();
 
 		if (StringUtils.isBlank(dto.getSecondaryId())) {
 			asidResponse.addErrorMessage("secondary_id", ValidationConstants.REQUIRED_MESSAGE);

@@ -46,6 +46,11 @@
       {
         "secondary_id": "TEST:Secondary"
       }
-    ]
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "WB"
+    }
   }
 ]

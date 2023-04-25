@@ -7,6 +7,7 @@ import {Button} from "primereact/button";
 import {useMutation,useQueryClient} from "react-query";
 import { Toast } from 'primereact/toast';
 import {VocabularyService} from "../../service/VocabularyService";
+import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
 export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog }) => {
 		const { authState } = useOktaAuth();
@@ -74,16 +75,18 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
 		);
 
 		return (
-				<div>
+			<div>
 						<Toast ref={toast_error} position="top-left" />
 						<Toast ref={toast_success} position="top-right" />
 						<Dialog visible={newVocabularyDialog} style={{ width: '450px' }} header="Add Vocabulary" modal className="p-fluid" footer={newVocabularyDialogFooter} onHide={hideVocabularyDialog}>
+							<ErrorBoundary>
 								<div className="field">
 										<label htmlFor="name">Vocabulary Name</label>
 
 										<InputText id="name" value={vocabulary.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !vocabulary.name })} />
 										{submitted && !vocabulary.name && <small className="p-error">Vocabulary is required.</small>}
 								</div>
+							</ErrorBoundary>
 						</Dialog>
 				</div>
 		);

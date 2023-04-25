@@ -7,8 +7,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.enums.SupportedSpecies;
+import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
@@ -17,8 +18,10 @@ import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -28,6 +31,12 @@ public class BaseDTOValidator {
 	PersonService personService;
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject
+	DataProviderService dataProviderService;
+	@Inject
+	DataProviderDTOValidator dataProviderDtoValidator;
+	@Inject
+	DataProviderDAO dataProviderDAO;
 
 	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO(E entity, D dto) {
 
@@ -92,15 +101,23 @@ public class BaseDTOValidator {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
-			} else {
-				NCBITaxonTerm taxon = taxonResponse.getEntity();
-				if (!SupportedSpecies.isSupported(taxon.getGenusSpecies())) {
-					beResponse.addErrorMessage("taxon_curie", ValidationConstants.UNSUPPORTED_MESSAGE + " (" + dto.getTaxonCurie() + ")");
-				}
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
-
+		
+		DataProvider dataProvider = null;
+		if (dto.getDataProviderDto() == null) {
+			beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getDataProviderDto(), entity.getDataProvider());
+			if (dpResponse.hasErrors()) {
+				beResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
+			} else {
+				dataProvider = dataProviderDAO.persist(dpResponse.getEntity());
+			}
+		}
+		entity.setDataProvider(dataProvider);
+		
 		beResponse.setEntity(entity);
 
 		return beResponse;

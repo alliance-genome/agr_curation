@@ -23,12 +23,13 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
-import {getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from '../../utils/utils';
-import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
-import {NewAnnotationForm} from "./NewAnnotationForm";
+import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange } from '../../utils/utils';
+import { useNewAnnotationReducer } from "./useNewAnnotaionReducer";
+import { NewAnnotationForm } from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import { getModTableState } from '../../service/TableStateService';
+import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -81,9 +82,7 @@ export const DiseaseAnnotationsTable = () => {
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.curie']
 	};
 
-	const aggregationFields = [
-		'diseaseRelation.name', 'geneticSex.name', 'annotationType.name', 'diseaseGeneticModifierRelation.name', 'diseaseQualifiers.name'
-	];
+
 
 	const mutation = useMutation(updatedAnnotation => {
 		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
@@ -712,7 +711,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const getSubjectAutocompleteFields = (props) => {
-		let subjectFields = ["curie", "crossReferences.curie", "secondaryIdentifiers"];
+		let subjectFields = ["curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
 		if (props.rowData.type === "AGMDiseaseAnnotation") {
 			subjectFields.push("name");
 		} else if (props.rowData.type === "AlleleDiseaseAnnotation") {
@@ -727,7 +726,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers"];
+		const autocompleteFields = ["name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
 		const endpoint = "agm";
 		const filterName = "sgdStrainBackgroundFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -772,7 +771,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifierSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "geneSynonyms.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.curie", "secondaryIdentifiers"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "geneSynonyms.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifierFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -809,7 +808,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const assertedAlleleSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "alleleSynonyms.displayText"];
+		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "alleleSynonyms.displayText"];
 		const endpoint = "allele";
 		const filterName = "assertedAlleleFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -850,7 +849,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const diseaseSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
 		const endpoint = "doterm";
 		const filterName = "diseaseFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -888,7 +887,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "assertedGenesFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -926,7 +925,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -1199,70 +1198,63 @@ export const DiseaseAnnotationsTable = () => {
 	const columns = [{
 		field: "uniqueId",
 		header: "Unique ID",
-		sortable: isEnabled,
-		filter: true,
 		body: uniqueIdBodyTemplate,
-		filterElement: {type: "input", filterName: "uniqueidFilter", fields: ["uniqueId"]},
+		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 	},
 	{
 		field: "modEntityId",
 		header: "MOD Annotation ID",
-		sortable: isEnabled,
-		filter: true,
 		body: modEntityIdBodyTemplate,
-		filterElement: {type: "input", filterName: "modentityidFilter", fields: ["modEntityId"]},
+		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 	},
 	{
 		field: "subject.symbol",
 		header: "Subject",
-		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "subjectFilter", fields: ["subject.symbol", "subject.name", "subject.curie"]},
-		editor: (props) => subjectEditorTemplate(props),
 		body: subjectBodyTemplate,
+		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.subjectFieldConfig,
+		editor: (props) => subjectEditorTemplate(props),
 	},
 	{
 		field: "diseaseRelation.name",
 		header: "Disease Relation",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "multiselect", filterName: "diseaseRelationFilter", fields: ["diseaseRelation.name"]},
+		filterConfig: FILTER_CONFIGS.diseaseRelationFilterConfig,
 		editor: (props) => diseaseRelationEditor(props)
 	},
 	{
 		field: "negated",
 		header: "Negated",
 		body: negatedTemplate,
-		filter: true,
-		filterElement: {type: "dropdown", filterName: "negatedFilter", fields: ["negated"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		editor: (props) => negatedEditor(props)
 	},
 	{
 		field: "object.name",
 		header: "Disease",
+		body: diseaseBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "objectFilter", fields: ["object.curie", "object.name"]},
+		filterConfig: FILTER_CONFIGS.objectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
-		body: diseaseBodyTemplate
 	},
 	{
 		field: "singleReference.curie",
 		header: "Reference",
+		body: singleReferenceBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences.curie"]},
+		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 		editor: (props) => referenceEditorTemplate(props),
-		body: singleReferenceBodyTemplate
+		
 	},
 	{
 		field: "evidenceCodes.abbreviation",
 		header: "Evidence Code",
 		body: evidenceTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "evidenceCodesFilter", fields: ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]},
+		filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 		editor: (props) => evidenceEditorTemplate(props)
 	},
 	{
@@ -1270,191 +1262,158 @@ export const DiseaseAnnotationsTable = () => {
 		header: "With",
 		body: withTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "withFilter", fields: ["with.geneSymbol.displayText", "with.geneFullName.displayText", "with.curie"]},
+		filterConfig: FILTER_CONFIGS.withFilterConfig,
 		editor: (props) => withEditorTemplate(props)
 	},
 	{
 		field: "relatedNotes.freeText",
 		header: "Related Notes",
 		body: relatedNotesTemplate,
-		editor: relatedNotesEditor,
 		sortable: true,
-		filter: true,
-		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: ["relatedNotes.freeText"]},
+		filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+		editor: relatedNotesEditor
 	},
 	{
 		field: "conditionRelations.handle",
 		header: "Experiments",
 		body: conditionRelationHandleTemplate,
-		editor: (props) => conditionRelationHandleEditor(props),
 		sortable: true,
-		filter: true,
-		filterElement: {
-			type: "input",
-			filterName: "conditionRelationHandleFilter",
-			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
-			nonNullFields: ["conditionRelations.handle"]
-		},
+		filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
+		editor: (props) => conditionRelationHandleEditor(props)
 	},
 	{
 		field: "conditionRelations.uniqueId",
 		header: "Experimental Conditions",
 		body: conditionRelationsTemplate,
-		editor: (props) => conditionRelationsEditor(props),
 		sortable: true,
-		filter: true,
-		filterElement: {
-			type: "input",
-			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionSummary" ],
-			nullFields: ["conditionRelations.handle"]
-		},
+		filterConfig: FILTER_CONFIGS.daConditionRelationsSummaryFilterConfig,
+		editor: (props) => conditionRelationsEditor(props)
 	},
 	{
 		field: "geneticSex.name",
 		header: "Genetic Sex",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "multiselect", filterName: "geneticSexFilter", fields: ["geneticSex.name"], useKeywordFields: true},
+		filterConfig: FILTER_CONFIGS.geneticSexFilterConfig,
 		editor: (props) => geneticSexEditor(props)
 	},
 	{
 		field: "diseaseQualifiers.name",
 		header: "Disease Qualifiers",
+		body: diseaseQualifiersBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "multiselect", filterName: "diseaseQualifiersFilter", fields: ["diseaseQualifiers.name"], useKeywordFields: true},
-		editor: (props) => diseaseQualifiersEditor(props),
-		body: diseaseQualifiersBodyTemplate
+		filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
+		editor: (props) => diseaseQualifiersEditor(props)
 	},
 	{
 		field: "sgdStrainBackground.name",
 		header: "SGD Strain Background",
+		body: sgdStrainBackgroundBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "sgdStrainBackgroundFilter", fields: ["sgdStrainBackground.name", "sgdStrainBackground.curie"]},
-		editor: (props) => sgdStrainBackgroundEditorSelector(props),
-		body: sgdStrainBackgroundBodyTemplate
+		filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
+		editor: (props) => sgdStrainBackgroundEditorSelector(props)
 	},
 	{
 		field: "annotationType.name",
 		header: "Annotation Type",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "multiselect", filterName: "annotationTypeFilter", fields: ["annotationType.name"], useKeywordFields: true},
+		filterConfig: FILTER_CONFIGS.annotationTypeFilterConfig,
 		editor: (props) => annotationTypeEditor(props)
 	},
 	{
 		field: "diseaseGeneticModifierRelation.name",
 		header: "Genetic Modifier Relation",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "multiselect", filterName: "geneticModifierRelationFilter", fields: ["diseaseGeneticModifierRelation.name"], useKeywordFields: true},
+		filterConfig: FILTER_CONFIGS.geneticModifierRelationFilterConfig,
 		editor: (props) => geneticModifierRelationEditor(props)
 	},
 	{
 		field: "diseaseGeneticModifier.symbol",
 		header: "Genetic Modifier",
+		body: geneticModifierBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "geneticModifierFilter", fields: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]},
+		filterConfig: FILTER_CONFIGS.geneticModifierFilterConfig,
 		editor: (props) => geneticModifierEditorTemplate(props),
-		body: geneticModifierBodyTemplate
 	},
 	{
 		field: "inferredGene.geneSymbol.displayText",
 		header: "Inferred Gene",
+		body: inferredGeneBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "inferredGeneFilter", fields: ["inferredGene.geneSymbol.displayText", "inferredGene.curie"]},
-		body: inferredGeneBodyTemplate
+		filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 	},
 	{
 		field: "assertedGenes.geneSymbol.displayText",
 		header: "Asserted Genes",
+		body: assertedGenesBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "assertedGenesFilter", fields: ["assertedGenes.geneSymbol.displayText", "assertedGenes.curie"]},
+		filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 		editor: (props) => assertedGenesEditorTemplate(props),
-		body: assertedGenesBodyTemplate
 	},
 	{
 		field: "inferredAllele.alleleSymbol.displayText",
 		header: "Inferred Allele",
+		body: inferredAlleleBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "inferredAlleleFilter", fields: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleFullName.displayText", "inferredAllele.curie"]},
-		body: inferredAlleleBodyTemplate
+		filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 	},
 	{
 		field: "assertedAllele.alleleSymbol.displayText",
 		header: "Asserted Allele",
+		body: assertedAlleleBodyTemplate,
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "assertedAlleleFilter", fields: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleFullName.displayText", "assertedAllele.curie"]},
+		filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
 		editor: (props) => assertedAlleleEditorTemplate(props),
-		body: assertedAlleleBodyTemplate
 	},
 	{
-		field: "dataProvider.abbreviation",
+		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "dataProviderFilter", fields: ["dataProvider.abbreviation", "dataProvider.fullName", "dataProvider.shortName"]},
+		filterConfig: FILTER_CONFIGS.dataProviderFilterConfig,
 	},
 	{
-		field: "secondaryDataProvider.abbreviation",
+		field: "secondaryDataProvider.sourceOrganization.abbreviation",
 		header: "Secondary Data Provider",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider.abbreviation", "secondaryDataProvider.fullName", "secondaryDataProvider.shortName"]},
+		filterConfig: FILTER_CONFIGS.secondaryDataProviderFilterConfig,
 	},
 	{
 		field: "updatedBy.uniqueId",
 		header: "Updated By",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "updatedByFilter", fields: ["updatedBy.uniqueId"]},
+		filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 	},
 	{
 		field: "dateUpdated",
 		header: "Date Updated",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "dateUpdatedFilter", fields: ["dateUpdated"]},
+		filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 	},
 	{
 		field: "createdBy.uniqueId",
 		header: "Created By",
 		sortable: isEnabled,
-		filter: true,
-		filterElement: {type: "input", filterName: "createdByFilter", fields: ["createdBy.uniqueId"]},
+		filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 	},
 	{
 		field: "dateCreated",
 		header: "Date Created",
 		sortable: isEnabled,
-		filter: true,
-		filterType: "Date",
-		filterElement: {type: "input", filterName: "dateCreatedFilter", fields: ["dataCreated"]},
+		filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 	},
 	{
 		field: "internal",
 		header: "Internal",
 		body: internalTemplate,
-		filter: true,
-		filterElement: {type: "dropdown", filterName: "internalFilter", fields: ["internal"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.internalFilterConfig,
 		editor: (props) => internalEditor(props)
 	},
 	{
 		field: "obsolete",
 		header: "Obsolete",
 		body: obsoleteTemplate,
-		filter: true,
-		filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: ["obsolete"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		editor: (props) => obsoleteEditor(props)
 	}
 	];
@@ -1463,8 +1422,7 @@ export const DiseaseAnnotationsTable = () => {
 		return col.header;
 	});
 
-
-	const initialTableState = getModTableState("DiseaseAnnotations");
+	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames);
 
 	const headerButtons = () => {
 		return (
@@ -1485,7 +1443,6 @@ export const DiseaseAnnotationsTable = () => {
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
-					aggregationFields={aggregationFields}
 					isEditable={true}
 					sortMapping={sortMapping}
 					mutation={mutation}
@@ -1498,7 +1455,8 @@ export const DiseaseAnnotationsTable = () => {
 					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
-					deprecateIfPublic={true}
+					deprecationMethod={diseaseAnnotationService.deprecateDiseaseAnnotation}
+					deprecateOption={true}
 					modReset={true}
 				/>
 			</div>

@@ -33,6 +33,9 @@ import io.restassured.config.RestAssuredConfig;
 @Order(3)
 public class AgmBulkUploadITCase extends BaseITCase {
 	
+	private String dataProvider = "WB";
+	private String dataProvider2 = "RGD";
+	
 	@BeforeEach
 	public void init() {
 		RestAssured.config = RestAssuredConfig.config()
@@ -41,7 +44,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 60000));
 	}
 	
-	private final String agmBulkPostEndpoint = "/api/agm/bulk/agms";
+	private final String agmBulkPostEndpoint = "/api/agm/bulk/WB/agms";
 	private final String agmGetEndpoint = "/api/agm/";
 	private final String agmTestFilePath = "src/test/resources/bulk/03_agm/";
 
@@ -64,7 +67,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -86,7 +93,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0002")).
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -95,6 +106,12 @@ public class AgmBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_01_no_curie.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_02_no_taxon.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_03_no_subtype.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_04_no_data_provider.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_05_no_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_06_no_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_07_no_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_08_no_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_09_no_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -103,6 +120,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_01_empty_curie.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_02_empty_taxon.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_03_empty_subtype.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_04_empty_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_05_empty_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_06_empty_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_07_empty_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_08_empty_data_provider_cross_reference_page_area.json");
 	}
 		
 	@Test
@@ -112,16 +134,13 @@ public class AgmBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_02_invalid_date_updated.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_03_invalid_taxon.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_04_invalid_subtype.json");
-	}
-	
-	@Test
-	@Order(6)
-	public void agmBulkUploadUnsupportedFields() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "US_01_unsupported_taxon.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_05_invalid_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_06_invalid_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_07_invalid_data_provider_cross_reference_page_area.json");
 	}
 
 	@Test
-	@Order(7)
+	@Order(6)
 	public void agmBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UM_01_update_no_non_required_fields.json");
@@ -140,7 +159,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void agmBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UE_01_update_empty_non_required_fields.json");
@@ -156,5 +175,17 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated")));
+	}
+	
+	@Test
+	@Order(8)
+	public void agmBulkUploadMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MN_01_no_non_required_fields.json");
+	}
+
+	@Test
+	@Order(9)
+	public void agmBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "EN_01_empty_non_required_fields.json");
 	}
 }

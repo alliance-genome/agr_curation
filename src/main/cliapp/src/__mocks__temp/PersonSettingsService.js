@@ -2,7 +2,7 @@
 import { BaseAuthService } from "./BaseAuthService";
 
 export class PersonSettingsService extends BaseAuthService {
-	getUserSettings(){
-		console.log("in mock person settings service")
-	}
+	getUserSettings(){ }
+
+	saveUserSettings(settingsKey, settingsMap) { }
 }

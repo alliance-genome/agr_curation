@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class })
+@AGRCurationSchemaVersion(min = "1.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class })
 public class BiologicalEntityDTO extends AuditedObjectDTO {
 
 	@JsonView({ View.FieldsOnly.class })
@@ -20,4 +20,7 @@ public class BiologicalEntityDTO extends AuditedObjectDTO {
 	@JsonProperty("taxon_curie")
 	private String taxonCurie;
 
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("data_provider_dto")
+	private DataProviderDTO dataProviderDto;
 }

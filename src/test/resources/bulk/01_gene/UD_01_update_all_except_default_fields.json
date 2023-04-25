@@ -63,6 +63,17 @@
         "date_created": "2022-03-19T22:10:12+00:00",
         "date_updated": "2022-03-20T22:10:12+00:00"
       }
-    ]
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "RGD",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST2:0001",
+        "page_area": "homepage2",
+        "display_name": "TEST2:0001",
+        "prefix": "TEST2"
+      }
+    }
   }
 ]

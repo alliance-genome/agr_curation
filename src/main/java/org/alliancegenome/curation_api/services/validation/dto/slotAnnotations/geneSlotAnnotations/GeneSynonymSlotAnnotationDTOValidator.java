@@ -19,10 +19,11 @@ public class GeneSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTO
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 
-	public ObjectResponse<GeneSynonymSlotAnnotation> validateGeneSynonymSlotAnnotationDTO(NameSlotAnnotationDTO dto) {
+	public ObjectResponse<GeneSynonymSlotAnnotation> validateGeneSynonymSlotAnnotationDTO(GeneSynonymSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
 		ObjectResponse<GeneSynonymSlotAnnotation> gssaResponse = new ObjectResponse<GeneSynonymSlotAnnotation>();
 
-		GeneSynonymSlotAnnotation annotation = new GeneSynonymSlotAnnotation();
+		if (annotation == null)
+			annotation = new GeneSynonymSlotAnnotation();
 
 		ObjectResponse<GeneSynonymSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();

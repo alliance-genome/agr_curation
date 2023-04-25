@@ -5,7 +5,19 @@
     "obsolete": false,
     "gene_curie": "DATEST:Gene0001",
     "do_term_curie": "DATEST:Disease0001",
-    "secondary_data_provider_name": "TEST2",
+    "secondary_data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "RGD",
+      "cross_reference_dto": {
+        "internal": false,
+        "obsolete": false,
+        "referenced_curie": "TEST:0002",
+        "page_area": "homepage",
+        "display_name": "TEST:0002",
+        "prefix": "TEST"
+      }
+    },
     "negated": true,
     "disease_relation_name": "is_implicated_in",
     "genetic_sex_name": "male",

@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -23,14 +22,14 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	implements AlleleDiseaseAnnotationCrudInterface {
 
 	@Inject
-	AlleleDiseaseAnnotationService annotationService;
+	AlleleDiseaseAnnotationService alleleDiseaseAnnotationService;
 	@Inject
 	AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setService(annotationService);
+		setService(alleleDiseaseAnnotationService);
 	}
 
 	@Override
@@ -44,8 +43,7 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	}
 
 	@Override
-	public APIResponse updateAlleleDiseaseAnnotations(String dataType, List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
+	public APIResponse updateAlleleDiseaseAnnotations(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
+		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
-
 }

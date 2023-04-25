@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
@@ -30,7 +30,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 		// endLoad(bulkManualLoad, null, BulkLoadStatus.FINISHED);
 	}
 
-	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataType dataType) { // Triggered by the API
+	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataProvider dataProvider) { // Triggered by the API
 		Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		if (form.containsKey(loadType)) {
@@ -42,7 +42,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("backendBulkLoadType", loadType);
-		params.put("dataType", dataType);
+		params.put("dataProvider", dataProvider);
 		SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByParams(null, params);
 		if (load != null && load.getTotalResults() == 1) {
 			bulkManualLoad = load.getResults().get(0);
@@ -50,7 +50,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 			startLoad(bulkManualLoad);
 
-			String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataType().toString());
+			String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataProvider().toString());
 			String localFilePath = fileHelper.compressInputFile(filePath);
 			processFilePath(bulkManualLoad, localFilePath);
 
@@ -58,7 +58,6 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 		} else {
 			log.warn("BulkManualLoad not found: " + loadType);
 			endLoad(bulkManualLoad, "BulkManualLoad not found: " + loadType, JobStatus.FAILED);
-			return;
 		}
 
 	}

@@ -44,8 +44,10 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 			curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
 		curie.add(annotation.getDiseaseRelation().getName());
 		curie.add(annotation.getNegated().toString());
-		curie.add(annotation.getDiseaseGeneticModifierRelation().getName());
-		curie.add(annotation.getDiseaseGeneticModifier().getCurie());
+		if (annotation.getDiseaseGeneticModifierRelation() != null)
+			curie.add(annotation.getDiseaseGeneticModifierRelation().getName());
+		if (annotation.getDiseaseGeneticModifier() != null)
+			curie.add(annotation.getDiseaseGeneticModifier().getCurie());
 		return curie.getCurie();
 	}
 

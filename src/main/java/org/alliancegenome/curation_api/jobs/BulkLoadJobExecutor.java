@@ -50,6 +50,7 @@ import org.alliancegenome.curation_api.services.ontology.MpTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.ontology.RoTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
 import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
 import org.alliancegenome.curation_api.services.ontology.WblsTermService;
 import org.alliancegenome.curation_api.services.ontology.XbaTermService;
@@ -74,12 +75,9 @@ public class BulkLoadJobExecutor {
 	@Inject
 	ObjectMapper mapper;
 
-	@Inject
-	XcoTermService xcoTermService;
-	@Inject
-	GoTermService goTermService;
-	@Inject
-	SoTermService soTermService;
+	@Inject XcoTermService xcoTermService;
+	@Inject GoTermService goTermService;
+	@Inject SoTermService soTermService;
 	@Inject
 	EcoTermService ecoTermService;
 	@Inject
@@ -124,6 +122,8 @@ public class BulkLoadJobExecutor {
 	RoTermService roTermService;
 	@Inject
 	ObiTermService obiTermService;
+	@Inject
+	WbPhenotypeTermService wbPhenotypeTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -282,19 +282,20 @@ public class BulkLoadJobExecutor {
 					config.setLoadOnlyIRIPrefix("OBI");
 					processTerms(bulkLoadFile, obiTermService, config);
 					break;
+				case WBPheno:
+					processTerms(bulkLoadFile, wbPhenotypeTermService, config);
+					break;
 				default:
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 			}
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) { 
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
 			resourceDescriptorExecutor.runLoad(bulkLoadFile);
 		} else {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 		}
-		log.info("Process Finished for: " + bulkLoadFile.getBulkLoad().
-
-			getName());
+		log.info("Process Finished for: " + bulkLoadFile.getBulkLoad().getName());
 	}
 
 	private void processTerms(BulkLoadFile bulkLoadFile, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {

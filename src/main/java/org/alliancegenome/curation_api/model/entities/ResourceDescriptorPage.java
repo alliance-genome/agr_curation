@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -24,7 +22,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -36,16 +33,17 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "resourceDescriptor" })
+@ToString()
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "resourcedescriptorpage_resourcedescriptor_id_index", columnList = "resourcedescriptor_id"), })
+@Table(indexes = { @Index(name = "resourcedescriptorpage_resourcedescriptor_id_index", columnList = "resourcedescriptor_id"),
+		@Index(name = "resourcedescriptorpage_createdby_id_index", columnList = "createdby_id"),
+		@Index(name = "resourcedescriptorpage_updatedby_id_index", columnList = "updatedby_id")})
 @Schema(name = "ResourceDescriptorPage", description = "Annotation class representing a resource descriptor page")
 public class ResourceDescriptorPage extends GeneratedAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	//@JsonBackReference
 	@JsonView({ View.ResourceDescriptorPageView.class })
 	private ResourceDescriptor resourceDescriptor;
 

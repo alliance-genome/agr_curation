@@ -23,6 +23,7 @@ import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const AllelesTable = () => {
 
@@ -203,7 +204,7 @@ export const AllelesTable = () => {
 	};
 
 	const taxonSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
 		const endpoint = "ncbitaxonterm";
 		const filterName = "taxonFilter";
 		setQuery(event.query);
@@ -570,24 +571,21 @@ export const AllelesTable = () => {
 			field: "curie",
 			header: "Curie",
 			sortable: { isEnabled },
-			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
+			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
 			field: "alleleFullName.displayText",
 			header: "Name",
 			body: nameTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["alleleFullName.displayText", "alleleFullName.formatText"]}
+			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
 		},
 		{
 			field: "alleleSymbol.displayText",
 			header: "Symbol",
 			body: symbolTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "symbolFilter", fields: ["alleleSymbol.displayText", "alleleSymbol.formatText"]}
+			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
 		},
 		{
 			field: "alleleSecondaryIds.secondaryId",
@@ -595,16 +593,14 @@ export const AllelesTable = () => {
 			body: secondaryIdsTemplate,
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "secondaryIdsFilter", fields: ["alleleSecondaryIds.secondaryId", "alleleSecondaryIds.evidence.curie"]}
+			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
 			body: taxonTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
+			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => taxonEditor(props)
 		},
 		{
@@ -613,78 +609,71 @@ export const AllelesTable = () => {
 			body: mutationTypesTemplate,
 			editor: (props) => mutationTypesEditor(props),
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "mutationTypesFilter", fields: ["alleleMutationTypes.mutationTypes.curie", "alleleMutationTypes.mutationTypes.name", "alleleMutationTypes.evidence.curie"]}
+			filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,
 		},
 		{
 			field: "references.curie",
 			header: "References",
-			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "referencesFilter", fields: ["references.curie", "references.crossReferences.curie"]},
 			body: referencesTemplate,
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			editor: (props) => referencesEditor(props)
 		},
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
 			header: "Inheritance Modes",
 			body: inheritanceModesTemplate,
-			editor: (props) => inheritanceModesEditor(props),
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "inheritanceModesFilter", fields: ["alleleInheritanceModes.inheritanceMode.name", "alleleInheritanceModes.phenotypeTerm.curie", "alleleInheritanceModes.phenotypeTerm.name", "alleleInheritanceModes.phenotypeStatement", "alleleInheritanceModes.evidence.curie"]}
+			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
+			editor: (props) => inheritanceModesEditor(props),
 		},
 		{
 			field: "inCollection.name",
 			header: "In Collection",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "inCollectionFilter", fields: ["inCollection.name"], useKeywordFields: true},
+			filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
 			editor: (props) => inCollectionEditor(props)
 		},
 		{
 			field: "isExtinct",
 			header: "Is Extinct",
 			body: isExtinctTemplate,
-			filter: true,
-			filterElement: {type: "dropdown", filterName: "isExtinctFilter", fields: ["isExtinct"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => isExtinctEditor(props)
 		},{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "updatedByFilter", fields: ["updatedBy.uniqueId"]},
+			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "dateUpdatedFilter", fields: ["dateUpdated"]},
+			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "createdByFilter", fields: ["createdBy.uniqueId"]},
+			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
 			sortable: isEnabled,
 			filter: true,
-			filterType: "Date",
-			filterElement: {type: "input", filterName: "dateCreatedFilter", fields: ["dataCreated"]},
+			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
 		{
 			field: "internal",
 			header: "Internal",
 			body: internalTemplate,
 			filter: true,
-			filterElement: {type: "dropdown", filterName: "internalFilter", fields: ["internal"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => internalEditor(props)
 		},
@@ -693,7 +682,7 @@ export const AllelesTable = () => {
 			header: "Obsolete",
 			body: obsoleteTemplate,
 			filter: true,
-			filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: ["obsolete"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => obsoleteEditor(props)
 		}

@@ -5,6 +5,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const ResourceDescriptorsTable = () => {
 	const [isEnabled, setIsEnabled] = useState(true);
@@ -86,37 +87,37 @@ export const ResourceDescriptorsTable = () => {
 			field: "prefix", 
 			header: "Prefix", 
 			body: prefixBodyTemplate,
-			filterElement: {type: "input", filterName: "prefixFilter", fields: ["prefix"]}
+			filterConfig: FILTER_CONFIGS.prefixFilterConfig
 		},
 		{ 
 			field: "name", 
 			header: "Name", 
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}
+			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
 		{ 
 			field: "synonyms", 
 			header: "Synonyms", 
 			body: synonymsBodyTemplate,
-			filterElement: {type: "input", filterName: "synonymsFilter", fields: ["synonyms"]}
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig
 		},
 		{ 
 			field: "idPattern", 
 			header: "ID Pattern", 
 			body: idPatternBodyTemplate,
-			filterElement: {type: "input", filterName: "idPatternFilter", fields: ["idPattern"]}
+			filterConfig: FILTER_CONFIGS.idPatternFilterConfig
 		},
 		{ 
 			field: "idExample", 
 			header: "ID Example", 
 			body: idExampleBodyTemplate,
-			filterElement: {type: "input", filterName: "idExampleFilter", fields: ["idExample"]}
+			filterConfig: FILTER_CONFIGS.idExampleFilterConfig
 		},
 		{ 
 			field: "defaultUrlTemplate", 
 			header: "Default URL Template", 
 			body: defaultUrlTemplateBodyTemplate,
-			filterElement: {type: "input", filterName: "defaultUrlTemplateFilter", fields: ["defaultUrlTemplate"]}
+			filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig
 		}
 	]
 

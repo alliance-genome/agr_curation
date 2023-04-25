@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -16,7 +15,6 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -39,32 +37,16 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		setSQLDao(diseaseAnnotationDAO);
 	}
 
-	// The following methods are for bulk validation
-
-	public void removeNonUpdatedAnnotations(String speciesName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter) {
-		log.debug("runLoad: After: " + speciesName + " " + annotationIdsAfter.size());
-
-		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + speciesName + " " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + speciesName + " " + idsToRemove.size());
-
-		for (Long id : idsToRemove) {
-			deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation");
-		}
-	}
-
 	@Override
 	@Transactional
 	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation");
+		deprecateOrDeleteAnnotationAndNotes(id, true, "Disease annotation DELETE API call", false);
 		ObjectResponse<DiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	@Transactional
-	public Boolean deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadType) {
+	public DiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecateAnnotation) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 
 		if (annotation == null) {
@@ -75,20 +57,22 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				throw new ApiErrorException(response);
 			}
 			log.error(errorMessage);
-			return false;
+			return null;
 		}
 
-		Boolean madePublic = true; // TODO: check boolean field once in place
-		if (madePublic) {
-			annotation.setObsolete(true);
-			if (authenticatedPerson.getOktaEmail() != null) {
-				annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+		if (deprecateAnnotation) {
+			if (!annotation.getObsolete()) {
+				annotation.setObsolete(true);
+				if (authenticatedPerson.getOktaEmail() != null) {
+					annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+				} else {
+					annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+				}
+				annotation.setDateUpdated(OffsetDateTime.now());
+				return diseaseAnnotationDAO.persist(annotation);
 			} else {
-				String dataProviderAbbreviation = annotation.getDataProvider() != null ? annotation.getDataProvider().getAbbreviation() + " " : "";		
-				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataProviderAbbreviation + loadType + " bulk upload"));
+				return annotation;
 			}
-			annotation.setDateUpdated(OffsetDateTime.now());
-			diseaseAnnotationDAO.persist(annotation);
 		} else {
 			List<Note> notesToDelete = annotation.getRelatedNotes();
 			diseaseAnnotationDAO.remove(id);
@@ -97,7 +81,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
 		}
 
-		return madePublic;
+		return null;
 	}
 
 }

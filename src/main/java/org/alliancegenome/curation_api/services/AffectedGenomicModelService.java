@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -14,13 +13,12 @@ import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AffectedGenomicModelDTOValidator;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -72,48 +70,38 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeOrDeprecateNonUpdatedAgms(String speciesNames, List<String> agmCuriesBefore, List<String> agmCuriesAfter, String dataType) {
-		log.debug("runLoad: After: " + speciesNames + " " + agmCuriesAfter.size());
+	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) {
+		AffectedGenomicModel agm = agmDAO.find(curie);
+		String loadDescription = dataProvider + " AGM bulk load (" + md5sum + ")"; 
+		if (agm != null) {
+			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
+			Boolean anyReferencingDAs = false;
+			for (Long daId : referencingDAIds) {
+				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
+				if (referencingDA != null)
+					anyReferencingDAs = true;
+			}
 
-		List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
-
-		List<String> curiesToRemove = ListUtils.subtract(agmCuriesBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " AGMs", curiesToRemove.size());
-		for (String curie : curiesToRemove) {
-			AffectedGenomicModel agm = agmDAO.find(curie);
-			if (agm != null) {
-				List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
-				Boolean anyPublicReferencingDAs = false;
-				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM");
-					if (daMadePublic)
-						anyPublicReferencingDAs = true;
-				}
-
-				if (anyPublicReferencingDAs) {
-					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
+			if (anyReferencingDAs) {
+				if (!agm.getObsolete()) {
+					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 					agm.setDateUpdated(OffsetDateTime.now());
 					agm.setObsolete(true);
 					agmDAO.persist(agm);
-				} else {
-					agmDAO.remove(curie);
 				}
 			} else {
-				log.error("Failed getting AGM: " + curie);
+				agmDAO.remove(curie);
 			}
-			ph.progressProcess();
+		} else {
+			log.error("Failed getting AGM: " + curie);
 		}
-		ph.finishProcess();
 	}
-
-	public List<String> getCuriesBySpeciesName(String speciesName) {
-		List<String> curies = agmDAO.findAllCuriesBySpeciesName(speciesName);
+	
+	public List<String> getCuriesByDataProvider(String dataProvider) {
+		List<String> curies = agmDAO.findAllCuriesByDataProvider(dataProvider);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}
+
 
 }

@@ -39,6 +39,8 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	private String requiredSoTerm2 = "SO:00002";
 	private String requiredMpTerm = "MP:00001";
 	private String requiredMpTerm2 = "MP:00002";
+	private String requiredDataProvider = "WB";
+	private String requiredDataProvider2 = "RGD";
 	
 	@BeforeEach
 	public void init() {
@@ -48,7 +50,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 60000));
 	}
 
-	private final String alleleBulkPostEndpoint = "/api/allele/bulk/alleles";
+	private final String alleleBulkPostEndpoint = "/api/allele/bulk/WB/alleles";
 	private final String alleleGetEndpoint = "/api/allele/";
 	private final String alleleTestFilePath = "src/test/resources/bulk/02_allele/";
 
@@ -148,7 +150,11 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -240,7 +246,11 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
+			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -261,6 +271,12 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_13_no_allele_synonym_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_14_no_allele_secondary_id_secondary_id.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_15_no_allele_inheritance_mode_inheritance_mode.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_16_no_data_provider.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_17_no_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_18_no_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_19_no_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_20_no_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_21_no_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -280,6 +296,11 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_12_empty_allele_synonym_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_13_empty_allele_secondary_id_secondary_id.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_14_empty_allele_inheritance_mode_inheritance_mode.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_15_empty_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_16_empty_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_17_empty_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_18_empty_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_19_empty_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -305,16 +326,13 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_18_invalid_allele_inheritance_mode_inheritance_mode.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_19_invalid_allele_inheritance_mode_phenotype_term.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_20_invalid_allele_inheritance_mode_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_21_invalid_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_22_invalid_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_23_invalid_data_provider_cross_reference_page_area.json");
 	}
 	
 	@Test
 	@Order(6)
-	public void agmBulkUploadUnsupportedFields() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "US_01_unsupported_taxon.json");
-	}
-
-	@Test
-	@Order(7)
 	public void alleleBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_01_update_no_non_required_fields_level_1.json");
@@ -339,7 +357,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void alleleBulkUploadUpdateMissingNonRequiredFieldsLevel2() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_02_update_no_non_required_fields_level_2.json");
@@ -390,7 +408,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(9)
+	@Order(8)
 	public void alleleBulkUploadUpdateEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UE_01_update_empty_non_required_fields.json");
@@ -445,5 +463,18 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
 			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
 			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated")));
+	}
+	
+	@Test
+	@Order(9)
+	public void alleleBulkUploadMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MN_01_no_non_required_fields_level_1.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MN_02_no_non_required_fields_level_2.json");
+	}
+
+	@Test
+	@Order(10)
+	public void alleleBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "EN_01_empty_non_required_fields.json");
 	}
 }

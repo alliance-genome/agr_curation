@@ -2,15 +2,16 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
@@ -21,16 +22,17 @@ import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
@@ -71,6 +73,12 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject
 	OrganizationDAO organizationDAO;
+	@Inject
+	DataProviderService dataProviderService;
+	@Inject
+	DataProviderValidator dataProviderValidator;
+	@Inject
+	DataProviderDAO dataProviderDAO;
 
 	public DOTerm validateObject(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "object";
@@ -123,13 +131,16 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			if (evidenceCode == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
-			} else if (evidenceCode.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidenceCodes()) || !dbEntity.getEvidenceCodes().contains(evidenceCode))) {
+			}
+			if (evidenceCode.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidenceCodes()) || !dbEntity.getEvidenceCodes().contains(evidenceCode))) {
 				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}
-
+			if (!evidenceCode.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
+				addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
+				return null;
+			}
 			validEvidenceCodes.add(evidenceCode);
-
 		}
 		return validEvidenceCodes;
 	}
@@ -157,36 +168,49 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		return validWithGenes;
 	}
 
-	public Organization validateDataProvider(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity, Boolean isPrimary) {
+	
+	public DataProvider validateDataProvider(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity, Boolean isPrimary) {
 		String field = isPrimary ? "dataProvider" : "secondaryDataProvider";
 		if (isPrimary) {
 			if (uiEntity.getDataProvider() == null) {
-				// TODO: re-enable error response once field can be automatically populated
-				// addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-				return null;
+				if (dbEntity.getId() == null)
+					uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
+				if (uiEntity.getDataProvider() == null) {
+					addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+					return null;
+				}
 			}
 		} else {
-			if (uiEntity.getSecondaryDataProvider() == null)
-				return null;
+			if (uiEntity.getSecondaryDataProvider() == null) {
+				if (dbEntity.getId() == null) {
+					uiEntity.setSecondaryDataProvider(dataProviderService.createAllianceDataProvider());
+					if (uiEntity.getSecondaryDataProvider() == null)
+						return null;
+				} else {
+					return null;
+				}
+			}
 		}
-
-		String dataProviderAbbrv = isPrimary ? uiEntity.getDataProvider().getAbbreviation() : uiEntity.getSecondaryDataProvider().getAbbreviation();
-
-		Organization dataProvider;
-		SearchResponse<Organization> dpResponse = organizationDAO.findByField("abbreviation", dataProviderAbbrv);
-		if (dpResponse == null || dpResponse.getResults().size() != 1) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+		
+		DataProvider uiDataProvider = isPrimary ? uiEntity.getDataProvider() : uiEntity.getSecondaryDataProvider();
+		DataProvider dbDataProvider = isPrimary ? dbEntity.getDataProvider() : dbEntity.getSecondaryDataProvider();
+		
+		ObjectResponse<DataProvider> dpResponse = dataProviderValidator.validateDataProvider(uiDataProvider, dbDataProvider, false);
+		if (dpResponse.hasErrors()) {
+			addMessageResponse(field, dpResponse.errorMessagesString());
 			return null;
 		}
-		dataProvider = dpResponse.getSingleResult();
-
-		Organization dbDataProvider = isPrimary ? dbEntity.getDataProvider() : dbEntity.getSecondaryDataProvider();
-		if (dataProvider.getObsolete() && (dbDataProvider == null || !dataProvider.getAbbreviation().equals(dbDataProvider.getAbbreviation()))) {
+		
+		DataProvider validatedDataProvider = dpResponse.getEntity();
+		if (validatedDataProvider.getObsolete() && (dbDataProvider == null || !validatedDataProvider.getId().equals(dbDataProvider.getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-
-		return dataProvider;
+		
+		if (validatedDataProvider.getId() == null)
+			validatedDataProvider = dataProviderDAO.persist(validatedDataProvider);
+		
+		return validatedDataProvider;
 	}
 
 	public BiologicalEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -399,7 +423,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		} else if (StringUtils.isBlank(uiEntity.getSubjectCurie()) || StringUtils.isBlank(uiEntity.getSubjectTaxonCurie()) || uiEntity.getObject() == null || uiEntity.getSingleReference() == null) {
 			return null;
 		} else {
-			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubjectSpeciesName()).getCurieID(uiEntity);
+			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(uiEntity.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(uiEntity);
 		}
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
@@ -443,10 +467,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		VocabularyTerm geneticSex = validateGeneticSex(uiEntity, dbEntity);
 		dbEntity.setGeneticSex(geneticSex);
 
-		Organization dataProvider = validateDataProvider(uiEntity, dbEntity, true);
+		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity, true);
 		dbEntity.setDataProvider(dataProvider);
 
-		Organization secondaryDataProvider = validateDataProvider(uiEntity, dbEntity, false);
+		DataProvider secondaryDataProvider = validateDataProvider(uiEntity, dbEntity, false);
 		dbEntity.setSecondaryDataProvider(secondaryDataProvider);
 
 		BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity, dbEntity);

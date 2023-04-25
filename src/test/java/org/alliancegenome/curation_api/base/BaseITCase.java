@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
@@ -26,6 +27,8 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
@@ -211,6 +214,26 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public DataProvider createDataProvider(String organizationAbbreviation, Boolean obsolete) {
+		DataProvider dataProvider = new DataProvider();
+		Organization sourceOrganization = getOrganization(organizationAbbreviation);
+		if (sourceOrganization == null)
+			sourceOrganization = createOrganization(organizationAbbreviation, organizationAbbreviation, false);
+		dataProvider.setSourceOrganization(sourceOrganization);
+		dataProvider.setObsolete(obsolete);
+		
+		ObjectResponse<DataProvider> response = RestAssured.given().
+			contentType("application/json").
+			body(dataProvider).
+			when().
+			post("/api/dataprovider").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefDataProvider());
+		
+		return response.getEntity();
+	}
+	
 	public DOTerm createDoTerm(String curie, Boolean obsolete) {
 		DOTerm doTerm = new DOTerm();
 		doTerm.setCurie(curie);
@@ -226,12 +249,14 @@ public class BaseITCase {
 		return doTerm;
 	}
 
-	public ECOTerm createEcoTerm(String curie, String name, Boolean obsolete) {
+	public ECOTerm createEcoTerm(String curie, String name, Boolean obsolete, Boolean inAgrSubset) {
 		ECOTerm ecoTerm = new ECOTerm();
 		ecoTerm.setCurie(curie);
 		ecoTerm.setName(name);
 		ecoTerm.setObsolete(obsolete);
-
+		if (inAgrSubset)
+			ecoTerm.setSubsets(List.of(OntologyConstants.AGR_ECO_TERM_SUBSET));
+		
 		RestAssured.given().
 				contentType("application/json").
 				body(ecoTerm).
@@ -394,6 +419,40 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefReference());
+			
+		return response.getEntity();
+	}
+	
+	public ResourceDescriptor createResourceDescriptor(String prefix) {
+		ResourceDescriptor rd = new ResourceDescriptor();
+		rd.setPrefix(prefix);
+		
+		ObjectResponse<ResourceDescriptor> response = RestAssured.given().
+			contentType("application/json").
+			body(rd).
+			when().
+			post("/api/resourcedescriptor").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefResourceDescriptor());
+			
+		return response.getEntity();
+	}
+	
+	public ResourceDescriptorPage createResourceDescriptorPage(String name, String urlTemplate, ResourceDescriptor rd) {
+		ResourceDescriptorPage rdPage = new ResourceDescriptorPage();
+		rdPage.setResourceDescriptor(rd);
+		rdPage.setUrlTemplate(urlTemplate);
+		rdPage.setName(name);
+		
+		ObjectResponse<ResourceDescriptorPage> response = RestAssured.given().
+			contentType("application/json").
+			body(rdPage).
+			when().
+			post("/api/resourcedescriptorpage").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefResourceDescriptorPage());
 			
 		return response.getEntity();
 	}
@@ -648,7 +707,7 @@ public class BaseITCase {
 	}
 
 	public TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
-		return new TypeRef<>() {
+		return new TypeRef<ObjectResponse<ConditionRelation>>() {
 		};
 	}
 	
@@ -656,8 +715,13 @@ public class BaseITCase {
 		return new TypeRef<ObjectResponse <CrossReference>>() { };
 	}
 
+	private TypeRef<ObjectResponse<DataProvider>> getObjectResponseTypeRefDataProvider() {
+		return new TypeRef<ObjectResponse<DataProvider>>() {
+		};
+	}
+
 	private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRefExperimentalCondition() {
-		return new TypeRef<>() {
+		return new TypeRef<ObjectResponse<ExperimentalCondition>>() {
 		};
 	}
 
@@ -695,6 +759,16 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
 		return new TypeRef<ObjectResponse <Reference>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<ResourceDescriptor>> getObjectResponseTypeRefResourceDescriptor() {
+		return new TypeRef<ObjectResponse <ResourceDescriptor>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<ResourceDescriptorPage>> getObjectResponseTypeRefResourceDescriptorPage() {
+		return new TypeRef<ObjectResponse <ResourceDescriptorPage>>() {
 		};
 	}
 
@@ -908,21 +982,6 @@ public class BaseITCase {
 			statusCode(200);
 	}
 
-	public void loadECOTerm(String curie, String name) throws Exception {
-		ECOTerm ecoTerm = new ECOTerm();
-		ecoTerm.setCurie(curie);
-		ecoTerm.setName(name);
-		ecoTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(ecoTerm).
-			when().
-			put("/api/ecoterm").
-			then().
-			statusCode(200);
-	}
-	
 	public void loadExperimentalConditionTerm(String curie, String name) throws Exception {
 		ExperimentalConditionOntologyTerm ecTerm = new ExperimentalConditionOntologyTerm();
 		ecTerm.setCurie(curie);
@@ -1013,14 +1072,15 @@ public class BaseITCase {
 	public void loadReference(String curie, String xrefCurie) throws Exception {
 			
 		CrossReference xref = new CrossReference();
-		xref.setCurie(xrefCurie);
+		xref.setReferencedCurie(xrefCurie);
+		xref.setDisplayName(xrefCurie);
 		
 		ObjectResponse<CrossReference> response = 
 			RestAssured.given().
 				contentType("application/json").
 				body(xref).
 				when().
-				put("/api/cross-reference").
+				post("/api/cross-reference").
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefCrossReference());
@@ -1034,7 +1094,7 @@ public class BaseITCase {
 			contentType("application/json").
 			body(reference).
 			when().
-			put("/api/reference").
+			post("/api/reference").
 			then().
 			statusCode(200);
 	}

@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.interfaces.crud.GeneDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
@@ -23,15 +22,14 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	implements GeneDiseaseAnnotationCrudInterface {
 
 	@Inject
-	GeneDiseaseAnnotationService annotationService;
-
+	GeneDiseaseAnnotationService geneDiseaseAnnotationService;
 	@Inject
 	GeneDiseaseAnnotationExecutor geneDiseaseAnnotationExecutor;
-
+	
 	@Override
 	@PostConstruct
 	protected void init() {
-		setService(annotationService);
+		setService(geneDiseaseAnnotationService);
 	}
 
 	@Override
@@ -45,8 +43,7 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	}
 
 	@Override
-	public APIResponse updateGeneDiseaseAnnotations(String dataType, List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad(BackendBulkDataType.getSpeciesNameFromDataType(dataType), annotations);
+	public APIResponse updateGeneDiseaseAnnotations(String dataProvider, List<GeneDiseaseAnnotationDTO> annotations) {
+		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
-
 }

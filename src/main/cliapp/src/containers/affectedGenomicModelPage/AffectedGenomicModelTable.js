@@ -5,6 +5,7 @@ import { EllipsisTableCell } from "../../components/EllipsisTableCell";
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 
 export const AffectedGenomicModelTable = () => {
@@ -45,38 +46,27 @@ export const AffectedGenomicModelTable = () => {
 			field: "curie",
 			header: "Curie",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
+			filterConfig: FILTER_CONFIGS.curieFilterConfig
 		},
 		{
 			field: "name",
 			header: "Name",
 			body: nameTemplate,
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
+			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
-		{
+		{ 	
 			field: "subtype.name",
 			header: "Sub Type",
 			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "subtypeFilter", fields: ["subtype.name"]}, 
-		},
-		{
-			field: "parental_population",
-			header: "Parental Population",
-			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "input", filterName: "parental_populationFilter", fields: ["parental_population"]},
+			filterConfig: FILTER_CONFIGS.subtypeFilterConfig
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
-			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
+			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		}
  ];
 

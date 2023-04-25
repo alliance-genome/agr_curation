@@ -29,6 +29,11 @@
         "format_text": "Test gene synonym <sup>1</sup>",
         "name_type_name": "unspecified"
       }
-    ]
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "WB"
+    }
   }
 ]

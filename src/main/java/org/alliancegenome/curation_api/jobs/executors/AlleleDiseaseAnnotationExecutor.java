@@ -41,21 +41,35 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getSpeciesName());
+			log.info("Running with: " + manual.getDataProvider().name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			
+			if(!checkSchemaVersion(bulkLoadFile, AlleleDiseaseAnnotationDTO.class)) return;
+			
 			List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
-			String speciesName = manual.getDataType().getSpeciesName();
+			if (annotations == null) annotations = new ArrayList<>();
+			
+			String dataProvider = manual.getDataProvider().name();
 
-			if (annotations != null) {
-				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
+			List<Long> annotationIdsLoaded = new ArrayList<>();
+			List<Long> annotationIdsBefore = new ArrayList<>();
+			annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider));
+			annotationIdsBefore.removeIf(Objects::isNull);
 
-				bulkLoadFileDAO.merge(bulkLoadFile);
+			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFileDAO.merge(bulkLoadFile);
 
-				trackHistory(runLoad(speciesName, annotations), bulkLoadFile);
+			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+			
+			runLoad(history, dataProvider, annotations, annotationIdsLoaded);
+			
+			runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
 
-			}
+			history.finishLoad();
+			
+			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -63,28 +77,34 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String speciesName, List<AlleleDiseaseAnnotationDTO> annotations) {
+	public APIResponse runLoad(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
 
-		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(speciesName));
-		annotationIdsBefore.removeIf(Objects::isNull);
-
-		log.debug("runLoad: Before: " + speciesName + " " + annotationIdsBefore.size());
-		List<Long> annotationIdsAfter = new ArrayList<>();
-
+		List<Long> annotationIdsLoaded = new ArrayList<>();
+		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
+		history.finishLoad();
+		
+		return new LoadHistoryResponce(history);
+	}
+	
+	public void runLoad(BulkLoadFileHistory history, String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Allele Disease Annotation Update " + speciesName, annotations.size());
+		ph.startProcess("Allele Disease Annotation Update for: " + dataProvider, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
 				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO);
 				history.incrementCompleted();
-				annotationIdsAfter.add(annotation.getId());
+				if(curiesAdded != null) {
+					curiesAdded.add(annotation.getId());
+				}
 			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage(), e.getStackTrace()));
 			}
 
@@ -92,7 +112,5 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 
-		diseaseAnnotationService.removeNonUpdatedAnnotations(speciesName, annotationIdsBefore, annotationIdsAfter);
-		return new LoadHistoryResponce(history);
 	}
 }

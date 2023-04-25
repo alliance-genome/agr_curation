@@ -1,4 +1,7 @@
 import { confirmDialog } from 'primereact/confirmdialog';
+import { SORT_FIELDS } from '../constants/SortFields';
+
+import { FIELD_SETS} from '../constants/FilterFields';
 
 export function returnSorted(event, originalSort) {
 
@@ -59,7 +62,7 @@ export function reorderArray(array, from, to) {
 	return array;
 };
 
-export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false) {
+export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false, tableState) {
 	let initalColumnOrderObjects = [];
 	let initalColumnOrderFields = [];
 
@@ -68,18 +71,26 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, 
 			columns.find((column) => {
 				return column.header === option;
 			})
-		)
+		);
 	});
 
 	initalColumnOrderFields = initalColumnOrderObjects.map(column => column.field);
 
-	if(deletionEnabled) {
-		initalColumnOrderFields.unshift('delete');
-	}
+	if (deletionEnabled) initalColumnOrderFields.unshift('delete');
 
 	initalColumnOrderFields.unshift('rowEditor');
 
-	dataTable.current.state.columnOrder = initalColumnOrderFields
+	const newState = {
+		first: tableState.first,
+		rows: tableState.rows,
+		multisortmeta: tableState.multisortmeta,
+		filters: tableState.filters,
+		columnWidths: "",
+		tableWidth: "",
+		columnOrder: initalColumnOrderFields,
+	};
+
+	dataTable.current.restoreTableState(newState);
 }
 
 // ToDo: Create enumeration
@@ -114,7 +125,7 @@ export function getRefString(referenceItem) {
 	if (referenceItem.cross_references) {
 		referenceItem.cross_references.forEach((x,i) => xrefCuries.push(x.curie));
 	} else {
-		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.curie));
+		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.referencedCurie));
 	}
 
 	if (xrefCuries.length === 1)
@@ -181,7 +192,7 @@ export function filterDropDownObject(inputValue, object){
 	if (_object.crossReferences?.length > 0) {
 		const { crossReferences } = _object;
 		const filteredCrossReferences = crossReferences.filter((crossReference) => {
-			return crossReference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+			return crossReference.referencedCurie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
 		});
 		_object = { ..._object, crossReferences: filteredCrossReferences }
 	}
@@ -302,4 +313,73 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 			})
 		}
 	})
+}
+
+export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
+	const bioEntityFieldNames = ["subject", "diseaseGeneticModifier", "sgdStrainBackground", "assertedAllele"];
+
+	bioEntityFieldNames.forEach((field) => {
+		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie")){
+			const _uiErrorMessages = {};
+			_uiErrorMessages[field] = "Must select from autosuggest";
+			setUiErrorMessages({..._uiErrorMessages});
+			areUiErrors.current = true;
+		}
+	})
+}
+
+export const removeInvalidFilters = (currentFilters) => {
+	const currentFiltersCopy = global.structuredClone(currentFilters);
+
+	if (currentFiltersCopy && Object.keys(currentFiltersCopy).length > 0) {
+		const invalidFilters = [];
+
+		let validFilters = {};
+		Object.entries(FIELD_SETS).forEach(([key, value]) => {
+			validFilters[[FIELD_SETS[key].filterName]] = value;
+		});
+
+		for (let filterName in currentFiltersCopy) {
+			if(validFilters[filterName]) {
+				let validFields = validFilters[filterName].fields;
+				const invalidFields = [];
+				for(let fieldName in currentFiltersCopy[filterName]) {
+					if(!validFields.includes(fieldName)) {
+						invalidFields.push(fieldName);
+					}
+				}
+				invalidFields.forEach(fieldName => {
+					delete currentFiltersCopy[filterName][fieldName];
+				});
+				if(Object.keys(currentFiltersCopy[filterName]).length === 0) {
+					delete currentFiltersCopy[filterName];
+				}
+			} else {
+				invalidFilters.push(filterName);
+			}
+		}
+		invalidFilters.forEach(filterName => {
+			delete currentFiltersCopy[filterName];
+		});
+	}
+
+	return currentFiltersCopy;
+}
+
+export const removeInvalidSorts = (currentSorts) => {
+	const currentSortsCopy = global.structuredClone(currentSorts);
+
+	let invalidSorts = [];
+	if (!currentSortsCopy || currentSortsCopy.length === 0) {
+		return currentSortsCopy;
+	} else {
+		currentSortsCopy.forEach((sort) => {
+			if (!SORT_FIELDS.includes(sort.field)) invalidSorts.push(sort.field);
+		})
+		invalidSorts.forEach(field => {
+			currentSortsCopy.splice(currentSortsCopy.findIndex((sort) => sort.field === field), 1);
+		});
+	}
+
+	return currentSortsCopy;
 }
