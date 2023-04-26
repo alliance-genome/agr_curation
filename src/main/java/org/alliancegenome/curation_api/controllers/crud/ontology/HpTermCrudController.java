@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermControll
 import org.alliancegenome.curation_api.dao.ontology.HpTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.HpTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.HPTerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.HpTermService;
 
 @RequestScoped
@@ -19,7 +20,8 @@ public class HpTermCrudController extends BaseOntologyTermController<HpTermServi
 	@Override
 	@PostConstruct
 	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.setLoadOnlyIRIPrefix("HP");
 		setService(hpTermService, HPTerm.class);
 	}
-
 }
