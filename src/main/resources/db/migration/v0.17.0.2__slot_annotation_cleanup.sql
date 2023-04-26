@@ -13,7 +13,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -27,7 +27,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -41,7 +41,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -55,7 +55,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -69,7 +69,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -83,7 +83,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -97,7 +97,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -111,7 +111,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -125,7 +125,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
@@ -141,7 +141,7 @@ DELETE FROM slotannotation_informationcontententity_aud USING null_ids slotannot
 DELETE FROM slotannotation_informationcontententity USING null_ids slotannotation_informationcontententity.id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids slotannotation.id = null_ids.id;
-DELETE FROM null_ids
+DELETE FROM null_ids;
 
 ---
 
