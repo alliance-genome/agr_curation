@@ -1,5 +1,5 @@
 CREATE TABLE null_ids ( id integer NOT NULL );
-CREATE INDEX null_id_index on null_ids (id);
+ALTER TABLE null_ids ADD PRIMARY KEY (id);
 
 ---
 
@@ -9,8 +9,8 @@ DELETE FROM genefullnameslotannotation WHERE singlegene_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -23,8 +23,8 @@ DELETE FROM genesymbolslotannotation WHERE singlegene_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -37,8 +37,8 @@ DELETE FROM genesynonymslotannotation WHERE singlegene_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -51,8 +51,8 @@ DELETE FROM genesystematicnameslotannotation WHERE singlegene_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -65,8 +65,8 @@ DELETE FROM allelefullnameslotannotation WHERE singleallele_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -79,8 +79,8 @@ DELETE FROM allelesymbolslotannotation WHERE singleallele_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -93,8 +93,8 @@ DELETE FROM allelesynonymslotannotation WHERE singleallele_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -107,8 +107,8 @@ DELETE FROM allelesecondaryidslotannotation WHERE singleallele_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -121,8 +121,8 @@ DELETE FROM alleleinheritancemodeslotannotation WHERE singleallele_curie IS NULL
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
@@ -137,8 +137,8 @@ DELETE FROM allelemutationtypeslotannotation WHERE singleallele_curie IS NULL;
 
 DELETE FROM nameslotannotation_aud USING null_ids WHERE nameslotannotation_aud.id = null_ids.id;
 DELETE FROM nameslotannotation USING null_ids WHERE nameslotannotation.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.id = null_ids.id;
-DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity_aud USING null_ids WHERE slotannotation_informationcontententity_aud.slotannotation_id = null_ids.id;
+DELETE FROM slotannotation_informationcontententity USING null_ids WHERE slotannotation_informationcontententity.slotannotation_id = null_ids.id;
 DELETE FROM slotannotation_aud USING null_ids WHERE slotannotation_aud.id = null_ids.id;
 DELETE FROM slotannotation USING null_ids WHERE slotannotation.id = null_ids.id;
 DELETE FROM null_ids;
