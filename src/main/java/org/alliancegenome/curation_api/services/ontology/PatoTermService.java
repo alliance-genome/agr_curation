@@ -11,13 +11,13 @@ import javax.inject.Inject;
 @RequestScoped
 public class PatoTermService extends BaseOntologyTermService<PATOTerm, PatoTermDAO> {
 
-    @Inject
-    PatoTermDAO patoTermDAO;
+	@Inject
+	PatoTermDAO patoTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(patoTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(patoTermDAO);
+	}
 
 }
