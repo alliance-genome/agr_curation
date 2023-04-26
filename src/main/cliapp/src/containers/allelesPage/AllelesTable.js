@@ -11,6 +11,8 @@ import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { InheritanceModesDialog } from './InheritanceModesDialog';
+import { SymbolDialog } from './SymbolDialog';
+import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
@@ -31,6 +33,22 @@ export const AllelesTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
+
+	const [symbolData, setSymbolData] = useState({
+		displayText: "",
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+	
+	const [fullNameData, setFullNameData] = useState({
+		displayText: "",
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
 
 	const [mutationTypesData, setMutationTypesData] = useState({
 		mutationTypes: [],
@@ -69,18 +87,6 @@ export const AllelesTable = () => {
 		}
 		return alleleService.saveAllele(updatedAllele);
 	});
-
-	const symbolTemplate = (rowData) => {
-		if (rowData?.alleleSymbol) {
-			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />
-		}
-	}
-
-	const nameTemplate = (rowData) => {
-		if (rowData?.alleleFullName) {
-			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleFullName.displayText }} />
-		}
-	}
 
 	const taxonTemplate = (rowData) => {
 		if (rowData?.taxon) {
@@ -295,6 +301,134 @@ export const AllelesTable = () => {
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"isExtinct"} />
 			</>
 		);
+	};
+
+	const symbolTemplate = (rowData) => {
+		return (
+			<>
+				<Button className="p-button-text"
+					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />								
+				</Button>
+			</>
+		);
+	};
+
+	const symbolEditor = (props) => {
+		return (
+			<>
+			<div>
+				<Button className="p-button-text"
+					onClick={(event) => { handleSymbolOpenInEdit(event, props, true) }} >
+					<span style={{ textDecoration: 'underline' }}>
+						{<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: props.rowData.alleleSymbol.displayText }} />}
+						<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+					</span>&nbsp;&nbsp;&nbsp;&nbsp;
+					<EditMessageTooltip/>
+				</Button>
+			</div>
+			<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSymbol"} style={{ 'fontSize': '1em' }}/>
+			</>
+		)
+	};
+
+	const handleSymbolOpen = (event, rowData, isInEdit) => {
+		let _symbolData = {};
+		_symbolData["originalSymbols"] = [rowData.alleleSymbol];
+		_symbolData["dialog"] = true;
+		_symbolData["isInEdit"] = isInEdit;
+		setSymbolData(() => ({
+			..._symbolData
+		}));
+	};
+
+	const handleSymbolOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _symbolData = {};
+		_symbolData["originalSymbols"] = [rowProps.rowData.alleleSymbol];
+		_symbolData["dialog"] = true;
+		_symbolData["isInEdit"] = isInEdit;
+		_symbolData["rowIndex"] = index;
+		_symbolData["mainRowProps"] = rowProps;
+		setSymbolData(() => ({
+			..._symbolData
+		}));
+	};
+	
+	const fullNameTemplate = (rowData) => {
+		if (rowData?.alleleFullName) {
+			return (
+				<>
+					<Button className="p-button-text"
+						onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
+						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleFullName.displayText }} />								
+					</Button>
+				</>
+			);
+		}
+	};
+
+	const fullNameEditor = (props) => {
+		if (props?.rowData?.alleleFullName) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleFullNameOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: props.rowData.alleleFullName.displayText }} />}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<EditMessageTooltip/>
+					</Button>
+				</div>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleFullName"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleFullNameOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Full Name
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<EditMessageTooltip/>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleFullName"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+	const handleFullNameOpen = (event, rowData, isInEdit) => {
+		let _fullNameData = {};
+		_fullNameData["originalFullNames"] = [rowData.alleleFullName];
+		_fullNameData["dialog"] = true;
+		_fullNameData["isInEdit"] = isInEdit;
+		setFullNameData(() => ({
+			..._fullNameData
+		}));
+	};
+
+	const handleFullNameOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _fullNameData = {};
+		_fullNameData["originalFullNames"] = [rowProps.rowData.alleleFullName];
+		_fullNameData["dialog"] = true;
+		_fullNameData["isInEdit"] = isInEdit;
+		_fullNameData["rowIndex"] = index;
+		_fullNameData["mainRowProps"] = rowProps;
+		setFullNameData(() => ({
+			..._fullNameData
+		}));
 	};
 
 	const inheritanceModesTemplate = (rowData) => {
@@ -576,7 +710,8 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFullName.displayText",
 			header: "Name",
-			body: nameTemplate,
+			body: fullNameTemplate,
+			editor: (props) => fullNameEditor(props),
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
 		},
@@ -584,6 +719,7 @@ export const AllelesTable = () => {
 			field: "alleleSymbol.displayText",
 			header: "Symbol",
 			body: symbolTemplate,
+			editor: (props) => symbolEditor(props),
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
 		},
@@ -721,6 +857,18 @@ export const AllelesTable = () => {
 					widthsObject={widthsObject}
 				/>
 			</div>
+			<SymbolDialog
+				originalSymbolData={symbolData}
+				setOriginalSymbolData={setSymbolData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<FullNameDialog
+				originalFullNameData={fullNameData}
+				setOriginalFullNameData={setFullNameData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<MutationTypesDialog
 				originalMutationTypesData={mutationTypesData}
 				setOriginalMutationTypesData={setMutationTypesData}
