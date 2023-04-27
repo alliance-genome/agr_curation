@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -26,6 +25,7 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog

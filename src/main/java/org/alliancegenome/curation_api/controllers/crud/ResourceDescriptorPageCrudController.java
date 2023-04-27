@@ -1,8 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
@@ -10,6 +8,9 @@ import org.alliancegenome.curation_api.interfaces.crud.ResourceDescriptorPageCru
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class ResourceDescriptorPageCrudController extends BaseEntityCrudController<ResourceDescriptorPageService, ResourceDescriptorPage, ResourceDescriptorPageDAO> implements ResourceDescriptorPageCrudInterface {

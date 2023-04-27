@@ -1,14 +1,15 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class DiseaseAnnotationUniqueIdUpdateHelper {

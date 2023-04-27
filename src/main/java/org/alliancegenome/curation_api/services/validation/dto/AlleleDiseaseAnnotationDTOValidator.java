@@ -3,8 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -24,6 +23,8 @@ import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {

@@ -3,8 +3,7 @@ package org.alliancegenome.curation_api.services.validation.slotAnnotations.alle
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
@@ -16,6 +15,8 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationValidator<AlleleMutationTypeSlotAnnotation> {

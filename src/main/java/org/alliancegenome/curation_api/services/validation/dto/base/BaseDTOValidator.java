@@ -3,8 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
@@ -23,6 +22,8 @@ import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class BaseDTOValidator {

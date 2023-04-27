@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
@@ -11,6 +10,8 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.NameSlotAnnotationValidator;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class GeneSystematicNameSlotAnnotationValidator extends NameSlotAnnotationValidator<GeneSystematicNameSlotAnnotation> {

@@ -1,14 +1,15 @@
 package org.alliancegenome.curation_api.services;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.model.event.EndProcessingEvent;
 import org.alliancegenome.curation_api.model.event.ProcessingEvent;
 import org.alliancegenome.curation_api.model.event.ProgressProcessingEvent;
 import org.alliancegenome.curation_api.model.event.StartProcessingEvent;
 import org.alliancegenome.curation_api.util.ProcessDisplayHandler;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
 
 @ApplicationScoped
 public class ProcessDisplayService implements ProcessDisplayHandler {

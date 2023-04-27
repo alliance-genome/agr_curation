@@ -1,8 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
@@ -14,6 +12,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeIngestFmsDTO
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.MoleculeService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class MoleculeCrudController extends BaseEntityCrudController<MoleculeService, Molecule, MoleculeDAO> implements MoleculeCrudInterface {

@@ -3,9 +3,7 @@ package org.alliancegenome.curation_api.controllers.person;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.interfaces.person.PersonSettingInterface;
@@ -16,6 +14,9 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.PersonSettingService;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class PersonSettingController implements PersonSettingInterface {

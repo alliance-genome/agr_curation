@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.controllers;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;

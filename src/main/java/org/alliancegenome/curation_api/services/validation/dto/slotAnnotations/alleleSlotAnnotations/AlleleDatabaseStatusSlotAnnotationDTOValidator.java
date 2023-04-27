@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -12,6 +11,8 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.SlotAnnotationDTOValidator;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class AlleleDatabaseStatusSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {

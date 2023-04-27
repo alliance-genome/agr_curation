@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.jobs;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportGroupDAO;

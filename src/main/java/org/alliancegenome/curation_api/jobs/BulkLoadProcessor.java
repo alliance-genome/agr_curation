@@ -4,7 +4,7 @@ import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.BulkFMSLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;

@@ -4,10 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
@@ -20,6 +17,9 @@ import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AffectedGenomicModelDTOValidator;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog

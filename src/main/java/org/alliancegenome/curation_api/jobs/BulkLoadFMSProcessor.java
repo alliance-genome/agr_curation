@@ -2,14 +2,13 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.fms.DataFile;
 
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.Message;
+import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog

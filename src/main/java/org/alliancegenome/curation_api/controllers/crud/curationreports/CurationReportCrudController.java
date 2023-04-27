@@ -1,8 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud.curationreports;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
@@ -10,6 +8,9 @@ import org.alliancegenome.curation_api.interfaces.curationreports.CurationReport
 import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.curationreports.CurationReportService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class CurationReportCrudController extends BaseEntityCrudController<CurationReportService, CurationReport, CurationReportDAO> implements CurationReportCrudInterface {
