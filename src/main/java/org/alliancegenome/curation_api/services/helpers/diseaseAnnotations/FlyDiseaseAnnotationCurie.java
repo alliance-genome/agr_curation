@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
@@ -30,7 +31,7 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotationDTO.getDiseaseRelationName());
 		curie.add(annotationDTO.getNegated().toString());
 		curie.add(annotationDTO.getDiseaseGeneticModifierRelationName());
-		curie.add(annotationDTO.getDiseaseGeneticModifierCurie());
+		curie.add(StringUtils.join(annotationDTO.getDiseaseGeneticModifierCuries(), "::"));
 		return curie.getCurie();
 	}
 
@@ -46,8 +47,8 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotation.getNegated().toString());
 		if (annotation.getDiseaseGeneticModifierRelation() != null)
 			curie.add(annotation.getDiseaseGeneticModifierRelation().getName());
-		if (annotation.getDiseaseGeneticModifier() != null)
-			curie.add(annotation.getDiseaseGeneticModifier().getCurie());
+		if (CollectionUtils.isNotEmpty(annotation.getDiseaseGeneticModifiers()))
+			curie.add(StringUtils.join(annotation.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getCurie).collect(Collectors.toList()), "::"));
 		return curie.getCurie();
 	}
 

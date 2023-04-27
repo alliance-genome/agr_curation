@@ -61,15 +61,25 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			if (agm == null) {
 				adaResponse.addErrorMessage("agm_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmCurie() + ")");
 			} else {
-				String annotationId = dto.getModEntityId();
-				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(agm.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getAgmCurie(), refCurie);
+				String annotationId;
+				String identifyingField;
+				annotation.setUniqueId(DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(agm.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getAgmCurie(), refCurie));
+				
+				if (StringUtils.isNotBlank(dto.getModEntityId())) {
+					annotationId = dto.getModEntityId();
+					annotation.setModEntityId(annotationId);
+					identifyingField = "modEntityId";
+				} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
+					annotationId = dto.getModInternalId();
+					annotation.setModInternalId(annotationId);
+					identifyingField = "modInternalId";
+				} else {
+					annotationId = annotation.getUniqueId();
+					identifyingField = "uniqueId";
 				}
 
-				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
-				if (annotationList == null || annotationList.getResults().size() == 0) {
-					annotation.setUniqueId(annotationId);
-				} else {
+				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
+				if (annotationList != null && annotationList.getResults().size() > 0) {
 					annotation = annotationList.getResults().get(0);
 				}
 				annotation.setSubject(agm);

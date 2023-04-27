@@ -54,8 +54,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-//@ToString(exclude = {"genomicLocations"})
-@AGRCurationSchemaVersion(min = "1.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Association.class })
+@AGRCurationSchemaVersion(min = "1.7.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Association.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public abstract class DiseaseAnnotation extends Association {
 
@@ -78,6 +77,13 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String modEntityId;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "modInternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true)
+	@JsonView({ View.FieldsOnly.class })
+	@EqualsAndHashCode.Include
+	private String modInternalId;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -159,14 +165,11 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({ View.FieldsOnly.class })
 	private DataProvider secondaryDataProvider;
 
-	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
+	@ManyToMany
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier")))
+	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifiers")))
 	@JsonView({ View.FieldsOnly.class })
-	// @JoinColumn(name = "diseasegeneticmodifier_curie", referencedColumnName =
-	// "curie")
-	private BiologicalEntity diseaseGeneticModifier;
+	private List<BiologicalEntity> diseaseGeneticModifiers;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
