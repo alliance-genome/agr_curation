@@ -309,7 +309,7 @@ export const SymbolDialog = ({
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
+			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
 				<h3>Symbol</h3>
 				<DataTable value={localSymbols} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
