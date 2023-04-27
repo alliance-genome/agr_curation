@@ -21,7 +21,7 @@ public class PatoTermCrudController extends BaseOntologyTermController<PatoTermS
 	@PostConstruct
 	public void init() {
 		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-		config.setLoadOnlyIRIPrefix("FBbt");
+		config.setLoadOnlyIRIPrefix("PATO");
 		setService(patoTermService, PATOTerm.class, config);
 	}
 
