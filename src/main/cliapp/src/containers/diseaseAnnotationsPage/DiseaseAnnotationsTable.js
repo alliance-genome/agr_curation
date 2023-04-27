@@ -766,38 +766,38 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	const onGeneticModifierValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "diseaseGeneticModifier", setFieldValue);
+	const onGeneticModifiersValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "diseaseGeneticModifiers", setFieldValue);
 	};
 
-	const geneticModifierSearch = (event, setFiltered, setQuery) => {
+	const geneticModifiersSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "geneSynonyms.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
 		const endpoint = "biologicalentity";
-		const filterName = "geneticModifierFilter";
+		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
+		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
-	const geneticModifierEditorTemplate = (props) => {
+	const geneticModifiersEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
-					search={geneticModifierSearch}
-					initialValue={props.rowData.diseaseGeneticModifier?.curie}
+				<AutocompleteMultiEditor
+					search={geneticModifiersSearch}
+					initialValue={props.rowData.diseaseGeneticModifiers}
 					rowProps={props}
-					fieldName='diseaseGeneticModifier'
+					fieldName='diseaseGeneticModifiers'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-					onValueChangeHandler={onGeneticModifierValueChange}
+					onValueChangeHandler={onGeneticModifiersValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"diseaseGeneticModifier"}
+					errorField={"diseaseGeneticModifiers"}
 				/>
 				<ErrorMessageComponent
 					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={"diseaseGeneticModifier"}
+					errorField={"diseaseGeneticModifiers"}
 				/>
 			</>
 		);
@@ -1108,24 +1108,37 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const geneticModifierBodyTemplate = (rowData) => {
-		if (rowData.diseaseGeneticModifier) {
-			if (rowData.diseaseGeneticModifier.geneSymbol || rowData.diseaseGeneticModifier.alleleSymbol) {
-				let symbolValue = rowData.diseaseGeneticModifier.geneSymbol ? rowData.diseaseGeneticModifier.geneSymbol.displayText : rowData.diseaseGeneticModifier.alleleSymbol.displayText;
-				return <div className='overflow-hidden text-overflow-ellipsis'
-					dangerouslySetInnerHTML={{
-						__html: symbolValue + ' (' + rowData.diseaseGeneticModifier.curie + ')'
-					}}
-				/>;
-			} else if (rowData.diseaseGeneticModifier.name) {
-				return <div className='overflow-hidden text-overflow-ellipsis'
-					dangerouslySetInnerHTML={{
-						__html: rowData.diseaseGeneticModifier.name + ' (' + rowData.diseaseGeneticModifier.curie + ')'
-					}}
-				/>;
-			} else {
-				return <div className='overflow-hidden text-overflow-ellipsis' >{rowData.diseaseGeneticModifier.curie}</div>;
-			}
+	const geneticModifiersBodyTemplate = (rowData) => {
+		if (rowData?.diseaseGeneticModifiers && rowData.diseaseGeneticModifiers.length > 0) {
+			const diseaseGeneticModifierStrings = [];
+			for (dgm in rowData.diseaseGeneticModifiers) {
+				if (dgm.geneSymbol || dgm.alleleSymbol) {
+					let symbolValue = dgm.geneSymbol ? dgm.geneSymbol.displayText : dgm.alleleSymbol.displayText;
+					diseaseGeneticModifierStrings.push(symbolValue + ' (' + dgm.curie + ')');
+				} else if (dgm.name) {
+					diseaseGeneticModifierStrings.push(dgm.name + ' (' + dgm.curie + ')');
+				} else {
+					diseaseGeneticModifierStrings.push(dgm.curie);
+				}
+			};
+			const sortedDiseaseGeneticModifierStrings = diseaseGeneticModifierStrings.sort();
+			const listTemplate = (dgmString) => {
+				return (
+					<EllipsisTableCell>
+						dangerouslySetInnerHTML={{_html: dgmString}}
+					</EllipsisTableCell>
+				)
+			};
+			return (
+				<>
+					<div className={`a${rowData.id}${rowData.diseaseGeneticModifiers[0].curie.replace(':', '')}`}>
+						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
+					</div>
+					<Tooltip target={`.a${rowData.id}${rowData.diseaseGeneticModifiers[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
+					</Tooltip>
+				</>
+			);
 		}
 	};
 
@@ -1186,6 +1199,18 @@ export const DiseaseAnnotationsTable = () => {
 		)
 	};
 
+	const modInternalIdBodyTemplate = (rowData) => {
+		return (
+			//the 'a' at the start is a hack since css selectors can't start with a number
+			<>
+				<EllipsisTableCell otherClasses={`a${rowData.id}`}>
+					{rowData.modInternalId}
+				</EllipsisTableCell>
+				<Tooltip target={`.a${rowData.id}`} content={rowData.modInternalId} />
+			</>
+		)
+	};
+
 	const sgdStrainBackgroundEditorSelector = (props) => {
 		if (props.rowData.type === "GeneDiseaseAnnotation") {
 			return sgdStrainBackgroundEditorTemplate(props);
@@ -1208,6 +1233,13 @@ export const DiseaseAnnotationsTable = () => {
 		body: modEntityIdBodyTemplate,
 		sortable: isEnabled,
 		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+	},
+	{
+		field: "modInternalId",
+		header: "MOD Internal ID",
+		body: modInternalIdBodyTemplate,
+		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 	},
 	{
 		field: "subject.symbol",
@@ -1329,10 +1361,10 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseGeneticModifier.symbol",
 		header: "Genetic Modifier",
-		body: geneticModifierBodyTemplate,
+		body: geneticModifiersBodyTemplate,
 		sortable: isEnabled,
-		filterConfig: FILTER_CONFIGS.geneticModifierFilterConfig,
-		editor: (props) => geneticModifierEditorTemplate(props),
+		filterConfig: FILTER_CONFIGS.geneticModifiersFilterConfig,
+		editor: (props) => geneticModifiersEditorTemplate(props),
 	},
 	{
 		field: "inferredGene.geneSymbol.displayText",

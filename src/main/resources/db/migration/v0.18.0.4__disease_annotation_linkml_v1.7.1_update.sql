@@ -55,3 +55,15 @@ UPDATE diseaseannotation d
 	SET uniqueid = concat(subject_curie, '|', object_curie, '|', singlereference_curie)
 	FROM allelediseaseannotation a
 	WHERE a.id = d.id AND uniqueid LIKE 'WBDOannot%';
+	
+ALTER TABLE vocabularyterm_textsynonyms
+	RENAME TO vocabularyterm_synonyms;
+	
+ALTER TABLE vocabularyterm_textsynonyms_aud
+	RENAME TO vocabularyterm_synonyms_aud;
+	
+ALTER TABLE vocabularyterm_synonyms
+	RENAME COLUMN textsynonyms TO synonyms;
+	
+ALTER TABLE vocabularyterm_synonyms_aud
+	RENAME COLUMN textsynonyms TO synonyms;

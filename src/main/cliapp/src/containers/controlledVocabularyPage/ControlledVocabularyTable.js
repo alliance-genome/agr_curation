@@ -210,6 +210,29 @@ export const ControlledVocabularyTable = () => {
 			}
 	};
 
+	const synonymsBodyTemplate = (rowData) => {
+		if (rowData?.synonyms && rowData.synonyms.length > 0) {
+			const sortedSynonyms = rowData.synonyms.sort();
+			const listTemplate = (synonym) => {
+				return (
+					<EllipsisTableCell>
+						dangerouslySetInnerHTML={{_html: synonym}}
+					</EllipsisTableCell>
+				)
+			};
+			return (
+				<>
+					<div className={`a${rowData.id}${rowData.synonyms[0]}`}>
+						<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+					</div>
+					<Tooltip target={`.a${rowData.id}${rowData.synonyms[0]}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+					</Tooltip>
+				</>
+			);
+		}
+	};
+
 	const columns = [
 		{
 			field: "id",
@@ -231,6 +254,14 @@ export const ControlledVocabularyTable = () => {
 			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
 			body: abbreviationBodyTemplate
+		},
+		{
+			field: "synonyms",
+			header: "Synonyms",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+			editor: (props) => synonymsEditorTemplate(props),
+			body: synonymsBodyTemplate
 		},
 		{
 			field: "vocabulary.name",

@@ -66,10 +66,10 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 		Vocabulary vocabulary = validateVocabulary(uiEntity, dbEntity);
 		dbEntity.setVocabulary(vocabulary);
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getTextSynonyms())) {
-			dbEntity.setTextSynonyms(uiEntity.getTextSynonyms());
+		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
+			dbEntity.setSynonyms(uiEntity.getSynonyms());
 		} else {
-			dbEntity.setTextSynonyms(null);
+			dbEntity.setSynonyms(null);
 		}
 
 		if (response.hasErrors()) {

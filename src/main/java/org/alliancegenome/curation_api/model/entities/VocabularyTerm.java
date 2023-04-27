@@ -79,7 +79,7 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsAndLists.class, View.VocabularyTermView.class })
 	@JoinTable(indexes = @Index(columnList = "vocabularyterm_id"))
 	@Column(columnDefinition = "TEXT")
-	private List<String> textSynonyms;
+	private List<String> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
