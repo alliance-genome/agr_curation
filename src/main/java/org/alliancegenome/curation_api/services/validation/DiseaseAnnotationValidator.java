@@ -225,7 +225,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 
 		List<BiologicalEntity> validModifiers = new ArrayList<>();
 		List<String> previousCuries = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getWith()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getDiseaseGeneticModifiers()))
 			previousCuries = dbEntity.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getCurie).collect(Collectors.toList());
 		for (BiologicalEntity modifier : uiEntity.getDiseaseGeneticModifiers()) {
 			BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(modifier.getCurie());

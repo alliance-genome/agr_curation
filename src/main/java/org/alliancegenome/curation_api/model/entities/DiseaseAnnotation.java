@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
@@ -16,7 +15,6 @@ import javax.persistence.Transient;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.bridges.BiologicalEntityListPropertyBinder;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
@@ -27,14 +25,11 @@ import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.PropertyBinderRef;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
-import org.hibernate.search.mapper.pojo.common.annotation.Param;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyBinding;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -59,7 +54,7 @@ public abstract class DiseaseAnnotation extends Association {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true, length = 2000)
+	@Column(length = 2000)
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
@@ -164,8 +159,9 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({ View.FieldsOnly.class })
 	private DataProvider secondaryDataProvider;
 
-	@ElementCollection
-	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityListPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifiers")))
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<BiologicalEntity> diseaseGeneticModifiers;
 

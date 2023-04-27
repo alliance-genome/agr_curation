@@ -25,12 +25,19 @@ public class DiseaseAnnotationCrudController extends BaseEntityCrudController<Di
 	}
 
 	@Override
-	public ObjectResponse<DiseaseAnnotation> get(String uniqueId) {
-		SearchResponse<DiseaseAnnotation> ret = findByField("uniqueId", uniqueId);
-		if (ret != null && ret.getTotalResults() == 1) {
-			return new ObjectResponse<>(ret.getResults().get(0));
-		} else {
-			return new ObjectResponse<>();
-		}
+	public ObjectResponse<DiseaseAnnotation> get(String identifier) {
+		SearchResponse<DiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modInternalId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("uniqueId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
+				
+		return new ObjectResponse<DiseaseAnnotation>();
 	}
 }

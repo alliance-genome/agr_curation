@@ -32,13 +32,20 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 	}
 
 	@Override
-	public ObjectResponse<AGMDiseaseAnnotation> get(String uniqueId) {
-		SearchResponse<AGMDiseaseAnnotation> ret = findByField("uniqueId", uniqueId);
-		if (ret != null && ret.getTotalResults() == 1) {
-			return new ObjectResponse<>(ret.getResults().get(0));
-		} else {
-			return new ObjectResponse<>();
-		}
+	public ObjectResponse<AGMDiseaseAnnotation> get(String identifier) {
+		SearchResponse<AGMDiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modInternalId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("uniqueId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+				
+		return new ObjectResponse<AGMDiseaseAnnotation>();
 	}
 
 	@Override

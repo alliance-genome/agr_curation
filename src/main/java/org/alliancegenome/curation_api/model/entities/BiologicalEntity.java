@@ -34,7 +34,7 @@ import lombok.ToString;
 	@JsonSubTypes.Type(value = Gene.class, name = "Gene") })
 @Audited
 @Entity
-//@TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
+@TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)

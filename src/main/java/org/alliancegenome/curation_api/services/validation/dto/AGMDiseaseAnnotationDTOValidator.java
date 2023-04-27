@@ -63,7 +63,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			} else {
 				String annotationId;
 				String identifyingField;
-				annotation.setUniqueId(DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(agm.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getAgmCurie(), refCurie));
+				String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(agm.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getAgmCurie(), refCurie);
 				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
@@ -74,7 +74,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 					annotation.setModInternalId(annotationId);
 					identifyingField = "modInternalId";
 				} else {
-					annotationId = annotation.getUniqueId();
+					annotationId = uniqueId;
 					identifyingField = "uniqueId";
 				}
 
@@ -82,6 +82,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				if (annotationList != null && annotationList.getResults().size() > 0) {
 					annotation = annotationList.getResults().get(0);
 				}
+				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(agm);
 			}
 		}

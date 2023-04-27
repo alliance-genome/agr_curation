@@ -81,7 +81,7 @@ public class BiologicalEntityTypeBridge implements TypeBinder {
 			target.addValue(this.symbolField, symbol);
 			target.addValue(this.nameField, name);
 			target.addValue(this.symbolKeywordField, symbol);
-			target.addValue(this.nameKeywordField, name);x
+			target.addValue(this.nameKeywordField, name);
 		}
 
 	}

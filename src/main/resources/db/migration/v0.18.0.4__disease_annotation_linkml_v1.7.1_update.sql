@@ -29,6 +29,9 @@ ALTER TABLE diseaseannotation_biologicalentity_aud
 	ADD CONSTRAINT diseaseannotation_biologicalentity_aud_rev_fk
 	FOREIGN KEY (rev) REFERENCES revinfo(rev);
 	
+ALTER TABLE diseaseannotation
+	DROP CONSTRAINT uk_7hierauo01uy17h3g1okxfbhd;
+	
 INSERT INTO diseaseannotation_biologicalentity (diseaseannotation_id, diseasegeneticmodifiers_curie)
 	SELECT id, diseasegeneticmodifier_curie FROM diseaseannotation WHERE diseasegeneticmodifier_curie IS NOT NULL;
 		

@@ -59,7 +59,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			} else {
 				String annotationId;
 				String identifyingField;
-				annotation.setUniqueId(DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(gene.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getGeneCurie(), refCurie));
+				String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(gene.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getGeneCurie(), refCurie);
 				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
@@ -70,7 +70,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 					annotation.setModInternalId(annotationId);
 					identifyingField = "modInternalId";
 				} else {
-					annotationId = annotation.getUniqueId();
+					annotationId = uniqueId;
 					identifyingField = "uniqueId";
 				}
 
@@ -78,9 +78,11 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				if (annotationList != null && annotationList.getResults().size() > 0) {
 					annotation = annotationList.getResults().get(0);
 				}
+				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(gene);
 			}
 		}
+		
 		annotation.setSingleReference(validatedReference);
 
 		AffectedGenomicModel sgdStrainBackground = null;

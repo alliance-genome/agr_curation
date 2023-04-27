@@ -82,6 +82,12 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		} else {
 			annotation.setModEntityId(null);
 		}
+		
+		if (StringUtils.isNotBlank(dto.getModInternalId())) {
+			annotation.setModInternalId(dto.getModInternalId());
+		} else {
+			annotation.setModInternalId(null);
+		}
 
 		if (StringUtils.isBlank(dto.getDoTermCurie())) {
 			daResponse.addErrorMessage("do_term_curie", ValidationConstants.REQUIRED_MESSAGE);

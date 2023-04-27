@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AGMDiseaseAnnotation>, BaseDTOCrudControllerInterface<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO> {
 
 	@GET
-	@Path("/findBy/{uniqueId}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AGMDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
+	public ObjectResponse<AGMDiseaseAnnotation> get(@PathParam("identifier") String identifier);
 
 	@PUT
 	@Path("/")
