@@ -4,12 +4,12 @@ ALTER TABLE diseaseannotation
 ALTER TABLE diseaseannotation_aud
 	ADD COLUMN modinternalid varchar(255);
 	
-CREATE TABLE diseaseannotation_biogicalentity (
+CREATE TABLE diseaseannotation_biologicalentity (
 	diseaseannotation_id bigint,
 	diseasegeneticmodifiers_curie varchar(255)
 	);
 	
-CREATE TABLE diseaseannotation_biogicalentity_aud (
+CREATE TABLE diseaseannotation_biologicalentity_aud (
 	rev integer,
 	diseaseannotation_id bigint,
 	diseasegeneticmodifiers_curie varchar(255),
@@ -22,7 +22,7 @@ ALTER TABLE diseaseannotation_biologicalentity
 	FOREIGN KEY (diseaseannotation_id) REFERENCES diseaseannotation(id);
 	
 ALTER TABLE diseaseannotation_biologicalentity
-	ADD CONSTRAINT diseaseannotation_biologicalentity_diseasegeneticmodifiers_curie_fk
+	ADD CONSTRAINT diseaseannotation_biologicalentity_dgm_curie_fk
 	FOREIGN KEY (diseasegeneticmodifiers_curie) REFERENCES biologicalentity(curie);
 		
 ALTER TABLE diseaseannotation_biologicalentity_aud

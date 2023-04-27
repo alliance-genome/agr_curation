@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
@@ -15,14 +16,12 @@ import javax.persistence.Transient;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.bridges.BiologicalEntityPropertyBinder;
+import org.alliancegenome.curation_api.model.bridges.BiologicalEntityListPropertyBinder;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -165,10 +164,9 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({ View.FieldsOnly.class })
 	private DataProvider secondaryDataProvider;
 
-	@ManyToMany
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifiers")))
-	@JsonView({ View.FieldsOnly.class })
+	@ElementCollection
+	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityListPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifiers")))
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<BiologicalEntity> diseaseGeneticModifiers;
 
 	@IndexedEmbedded(includeDepth = 1)

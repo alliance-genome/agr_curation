@@ -6,16 +6,15 @@ import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.hibernate.search.engine.backend.document.DocumentElement;
 import org.hibernate.search.engine.backend.document.IndexFieldReference;
-import org.hibernate.search.engine.backend.document.IndexObjectFieldReference;
 import org.hibernate.search.engine.backend.document.model.dsl.IndexSchemaElement;
 import org.hibernate.search.engine.backend.types.IndexFieldType;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.bridge.PropertyBridge;
+import org.hibernate.search.mapper.pojo.bridge.TypeBridge;
 import org.hibernate.search.mapper.pojo.bridge.binding.TypeBindingContext;
 import org.hibernate.search.mapper.pojo.bridge.mapping.programmatic.TypeBinder;
-import org.hibernate.search.mapper.pojo.bridge.runtime.PropertyBridgeWriteContext;
+import org.hibernate.search.mapper.pojo.bridge.runtime.TypeBridgeWriteContext;
 
 public class BiologicalEntityTypeBridge implements TypeBinder {
 
@@ -31,56 +30,35 @@ public class BiologicalEntityTypeBridge implements TypeBinder {
 		context.bridge(BiologicalEntity.class, new Bridge(
 				schemaElement.field("name", type).toReference(),
 				schemaElement.field("symbol", type).toReference(),
-				schemaElement.field("taxon", type).toReference(),
-				schemaElement.field("curie", type).toReference(),
 				schemaElement.field("name_keyword", keywordType).toReference(),
-				schemaElement.field("symbol_keyword", keywordType).toReference(),
-				schemaElement.field("taxon_keyword", keywordType).toReference(),
-				schemaElement.field("curie_keyword", keywordType).toReference()
+				schemaElement.field("symbol_keyword", keywordType).toReference()
 				));
 	}
 
-	@SuppressWarnings("rawtypes")
 	private static class Bridge implements TypeBridge<BiologicalEntity> {
 
 		private final IndexFieldReference<String> nameField;
 		private final IndexFieldReference<String> symbolField;
-		private final IndexFieldReference<String> taxonField;
-		private final IndexFieldReference<String> curieField;
 		private final IndexFieldReference<String> nameKeywordField;
 		private final IndexFieldReference<String> symbolKeywordField;
-		private final IndexFieldReference<String> taxonKeywordField;
-		private final IndexFieldReference<String> curieKeywordField;
 		
 		private Bridge(IndexFieldReference<String> nameField, IndexFieldReference<String> symbolField,
-			IndexFieldReference<String> taxonField, IndexFieldReference<String> curieField, IndexFieldReference<String> nameKeywordField, IndexFieldReference<String> symbolKeywordField,
-			IndexFieldReference<String> taxonKeywordField, IndexFieldReference<String> curieKeywordField) {
+			IndexFieldReference<String> nameKeywordField, IndexFieldReference<String> symbolKeywordField) {
 			this.nameField = nameField;
 			this.symbolField = symbolField;
-			this.taxonField = taxonField;
-			this.curieField = curieField;
 			this.nameKeywordField = nameKeywordField;
 			this.symbolKeywordField = symbolKeywordField;
-			this.taxonKeywordField = taxonKeywordField;
-			this.curieKeywordField = curieKeywordField;
 		}
 
 		@Override
 		public void write(DocumentElement target, BiologicalEntity bridgedElement, TypeBridgeWriteContext context) {
-			@SuppressWarnings("unchecked")
 			String symbol;
 			String name;
-			String curie;
-			String taxon;
 
 			if (bridgedElement == null) {
 				symbol = null;
-				taxon = null;
 				name = null;
-				curie = null;
 			} else {
-				curie = bridgedElement.getCurie();
-				taxon = bridgedElement.getTaxon().getCurie();
 
 				if (bridgedElement instanceof Gene) {
 					Gene gene = (Gene) bridgedElement;
@@ -102,12 +80,8 @@ public class BiologicalEntityTypeBridge implements TypeBinder {
 			
 			target.addValue(this.symbolField, symbol);
 			target.addValue(this.nameField, name);
-			target.addValue(this.taxonField, taxon);
-			target.addValue(this.curieField, curie);
 			target.addValue(this.symbolKeywordField, symbol);
-			target.addValue(this.nameKeywordField, name);
-			target.addValue(this.taxonKeywordField, taxon);
-			target.addValue(this.curieKeywordField, curie);
+			target.addValue(this.nameKeywordField, name);x
 		}
 
 	}
