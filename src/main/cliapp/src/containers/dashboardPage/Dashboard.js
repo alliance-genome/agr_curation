@@ -49,6 +49,7 @@ export const Dashboard = () => {
 		XBEDTerm: { name: "XBED", link: "/#/ontology/xbed", type: 'ontology', },
 		OBITerm: { name: "OBI", link: "/#/ontology/obi", type: 'ontology', },
 		WBPhenotypeTerm: { name: "WBPheno", link: "/#/ontology/wbpheno", type: 'ontology', },
+		PATOTerm: { name: "PATO", link: "/#/ontology/pato", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
