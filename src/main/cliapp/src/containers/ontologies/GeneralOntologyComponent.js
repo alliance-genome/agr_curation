@@ -76,8 +76,13 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState(name, defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 17;
+	});
+
+	const initialTableState = getDefaultTableState(name, defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -95,8 +100,8 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 						isEnabled={isEnabled}
 						setIsEnabled={setIsEnabled}
 						toasts={{toast_topleft, toast_topright }}
-						initialColumnWidth={17}
 						errorObject = {{errorMessages, setErrorMessages}}
+						widthsObject={widthsObject}
 					/>
 			    </TabPanel>
 			    <TabPanel header="Tree View">

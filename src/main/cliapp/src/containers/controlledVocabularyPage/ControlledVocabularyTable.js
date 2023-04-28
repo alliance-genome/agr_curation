@@ -262,8 +262,13 @@ export const ControlledVocabularyTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("ControlledVocabularyTerms", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 13;
+	});
+
+	const initialTableState = getDefaultTableState("ControlledVocabularyTerms", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
@@ -280,11 +285,11 @@ export const ControlledVocabularyTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={13}
 					errorObject = {{errorMessages, setErrorMessages}}
 					headerButtons={createButtons}
 					deletionEnabled={true}
 					deletionMethod={vocabularyService.deleteTerm}
+					widthsObject={widthsObject}
 				/>
 				<NewTermForm
 					newTermDialog = {newTermDialog}
