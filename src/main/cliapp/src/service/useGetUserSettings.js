@@ -13,11 +13,13 @@ export const useGetUserSettings = (key, defaultValue) => {
 		if(key !== 'themeSettings') {
 		 	stickyObject.filters = removeInvalidFilters(stickyObject.filters);
 		 	stickyObject.multiSortMeta = removeInvalidSorts(stickyObject.multiSortMeta);
+			if(!stickyObject.orderedColumnNames) stickyObject.orderedColumnNames = defaultValue.selectedColumnNames;
+			if(!stickyObject.columnWidths) stickyObject.columnWidths = defaultValue.columnWidths;
 		}
-
+		
 		return stickyObject;
 	});
-
+	
 	useQuery(`${key}`, () => personSettingsService.getUserSettings(key), {
 		onSuccess: (data) => {
 			let userSettings = defaultValue;
@@ -26,10 +28,12 @@ export const useGetUserSettings = (key, defaultValue) => {
 			} else {
 				userSettings = data.entity.settingsMap;
 			}
-
+			
 			if(key !== 'themeSettings'){
-			 	userSettings.filters = removeInvalidFilters(userSettings.filters);
-			 	userSettings.multiSortMeta = removeInvalidSorts(userSettings.multiSortMeta);
+				userSettings.filters = removeInvalidFilters(userSettings.filters);
+				userSettings.multiSortMeta = removeInvalidSorts(userSettings.multiSortMeta);
+				if(!userSettings.orderedColumnNames) userSettings.orderedColumnNames = defaultValue.selectedColumnNames;
+				if(!userSettings.columnWidths) userSettings.columnWidths = defaultValue.columnWidths;
 			}
 
 			setSettings(userSettings)

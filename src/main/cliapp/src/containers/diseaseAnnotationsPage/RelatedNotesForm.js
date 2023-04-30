@@ -100,7 +100,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<h3>Related Notes</h3>
+			{/*<h3>Related Notes</h3>*/}
 			{showRelatedNotes &&
 				<DataTable value={relatedNotes} dataKey="dataKey" showGridlines editMode='row'
 						   editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
@@ -116,7 +116,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 				</DataTable>
 			}
 			<div className={`w-2 ${showRelatedNotes ? "pt-3" : ""} p-field p-col`}>
-				<Button label="Add Note" onClick={createNewNoteHandler} />
+				<Button label="Add Note" onClick={createNewNoteHandler}/>
 			</div>
 		</div>
 	);

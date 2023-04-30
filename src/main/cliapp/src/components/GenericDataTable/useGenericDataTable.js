@@ -2,14 +2,13 @@ import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
-import { trimWhitespace, returnSorted, reorderArray, validateBioEntityFields, setDefaultColumnOrder } from '../../utils/utils';
+import { trimWhitespace, returnSorted, validateBioEntityFields } from '../../utils/utils';
 import { useGetUserSettings } from "../../service/useGetUserSettings";
 import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
 
 export const useGenericDataTable = ({
 	endpoint,
 	tableName,
-	columns,
 	defaultColumnNames,
 	initialTableState,
  	curieFields,
@@ -19,12 +18,10 @@ export const useGenericDataTable = ({
 	mutation,
 	setIsEnabled,
 	toasts,
-	initialColumnWidth,
 	errorObject,
 	newEntity,
-	deletionEnabled,
 	deletionMethod,
-	deprecationMethod,
+	widthsObject
 }) => {
 
 
@@ -35,17 +32,6 @@ export const useGenericDataTable = ({
 	const [originalRows, setOriginalRows] = useState([]);
 	const [columnList, setColumnList] = useState([]);
 	const [editingRows, setEditingRows] = useState({});
-	const [columnWidths, setColumnWidths] = useState(() => {
-		const width = initialColumnWidth;
-
-		const widthsObject = {};
-
-		columns.forEach((col) => {
-			widthsObject[col.field] = width;
-		});
-
-		return widthsObject;
-	});
 
 	const searchService = new SearchService();
 
@@ -58,7 +44,7 @@ export const useGenericDataTable = ({
 	const { toast_topleft, toast_topright } = toasts;
 	const [exceptionDialog, setExceptionDialog] = useState(false);
 	const [exceptionMessage,setExceptionMessage] = useState("");
-	
+
 	useQuery([tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), 
 		{
@@ -132,10 +118,23 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useEffect(() => {
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled, tableState);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	const setOrderedColumnNames = (newValue) => {
+		let _tableState = {
+			...tableState,
+			orderedColumnNames: newValue
+		};
+		setTableState(_tableState);
+	};
+
+	const setColumnWidths= (newValue) => {
+		let _tableState = {
+			...tableState,
+			columnWidths: newValue
+		};
+		setTableState(_tableState);
+	};
+
+
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
@@ -355,38 +354,28 @@ export const useGenericDataTable = ({
 		setEditingRows(event.data);
 	};
 
-	const resetToModDefault = () => {
-		const initialTableState = getModTableState(tableState.tableKeyName);
-
-		setTableState(initialTableState);
-		const _columnWidths = {...columnWidths};
-
-		Object.keys(_columnWidths).map((key) => {
-			return _columnWidths[key] = initialColumnWidth;
-		});
-
-		setColumnWidths(_columnWidths);
+	const setToModDefault = () => {
+		const modTableState = getModTableState(tableState.tableKeyName, widthsObject, defaultColumnNames);
+		setTableState(modTableState);
 		dataTable.current.resetScroll();
 	}
-
+	
 	const resetTableState = () => {
-		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames);
+		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames, undefined, widthsObject);
 		
 		setTableState(defaultTableState);
-		const _columnWidths = {...columnWidths};
-
-		Object.keys(_columnWidths).map((key) => {
-			return _columnWidths[key] = initialColumnWidth;
-		});
-
-		setColumnWidths(_columnWidths);
 		dataTable.current.resetScroll();
 	}
 
 	const colReorderHandler = (event) => {
-		let _columnNames = [...tableState.selectedColumnNames];
-		_columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
-		setSelectedColumnNames(_columnNames);
+		const columnNames = event.columns.filter(column => column.props.field !== 'rowEditor' && column.props.field !== 'delete').map(column => column.props.header);
+
+		for(let i = 0; i < tableState.orderedColumnNames.length; i++) {
+			if(!columnNames.includes(tableState.orderedColumnNames[i])) {
+				columnNames.splice(i, 0, tableState.orderedColumnNames[i]);
+			}
+		}
+		setOrderedColumnNames(columnNames);
 	};
 
 	const handleColumnResizeEnd = (event) => {
@@ -395,7 +384,7 @@ export const useGenericDataTable = ({
 		const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
 		const field = event.column.props.field;
 
-		const _columnWidths = {...columnWidths};
+		const _columnWidths = {...tableState.columnWidths};
 
 		_columnWidths[field] = newWidth;
 		setColumnWidths(_columnWidths);
@@ -403,11 +392,11 @@ export const useGenericDataTable = ({
 
 	return {
 		setSelectedColumnNames,
+		setOrderedColumnNames,
 		defaultColumnNames,
 		tableState,
 		onFilter,
 		setColumnList,
-		columnWidths,
 		entities,
 		dataTable,
 		editingRows,
@@ -424,7 +413,7 @@ export const useGenericDataTable = ({
 		handleDeletion,
 		handleDeprecation,
 		exceptionDialog,
-		resetToModDefault,
+		setToModDefault,
 		resetTableState,
 		setExceptionDialog,
 		exceptionMessage,
