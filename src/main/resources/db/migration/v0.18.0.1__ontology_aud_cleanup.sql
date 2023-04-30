@@ -328,6 +328,102 @@ DELETE FROM ontologyterm_synonym_aud
 	USING unused_stageterm_rev
 	WHERE ontologyterm_synonym_aud.rev = unused_stageterm_rev.rev;
 	
+DELETE FROM synonym_aud
+	USING unused_ontologyterm_rev1
+	WHERE synonym_aud.rev = unused_ontologyterm_rev1.rev;
+
+DELETE FROM synonym_aud
+	USING unused_ontologyterm_rev2
+	WHERE synonym_aud.rev = unused_ontologyterm_rev2.rev;
+
+DELETE FROM synonym_aud
+	USING unused_ontologyterm_rev3
+	WHERE synonym_aud.rev = unused_ontologyterm_rev3.rev;
+
+DELETE FROM synonym_aud
+	USING unused_anatomicalterm_rev
+	WHERE synonym_aud.rev = unused_anatomicalterm_rev.rev;
+
+DELETE FROM synonym_aud
+	USING unused_chemicalterm_rev
+	WHERE synonym_aud.rev = unused_chemicalterm_rev.rev;
+
+DELETE FROM synonym_aud
+	USING unused_experimentalconditionontologyterm_rev
+	WHERE synonym_aud.rev = unused_experimentalconditionontologyterm_rev.rev;
+
+DELETE FROM synonym_aud
+	USING unused_phenotypeterm_rev
+	WHERE synonym_aud.rev = unused_phenotypeterm_rev.rev;
+
+DELETE FROM synonym_aud
+	USING unused_stageterm_rev
+	WHERE synonym_aud.rev = unused_stageterm_rev.rev;
+	
+DELETE FROM reference_aud
+	USING unused_ontologyterm_rev1
+	WHERE reference_aud.rev = unused_ontologyterm_rev1.rev;
+
+DELETE FROM reference_aud
+	USING unused_ontologyterm_rev2
+	WHERE reference_aud.rev = unused_ontologyterm_rev2.rev;
+
+DELETE FROM reference_aud
+	USING unused_ontologyterm_rev3
+	WHERE reference_aud.rev = unused_ontologyterm_rev3.rev;
+
+DELETE FROM reference_aud
+	USING unused_anatomicalterm_rev
+	WHERE reference_aud.rev = unused_anatomicalterm_rev.rev;
+
+DELETE FROM reference_aud
+	USING unused_chemicalterm_rev
+	WHERE reference_aud.rev = unused_chemicalterm_rev.rev;
+
+DELETE FROM reference_aud
+	USING unused_experimentalconditionontologyterm_rev
+	WHERE reference_aud.rev = unused_experimentalconditionontologyterm_rev.rev;
+
+DELETE FROM reference_aud
+	USING unused_phenotypeterm_rev
+	WHERE reference_aud.rev = unused_phenotypeterm_rev.rev;
+
+DELETE FROM reference_aud
+	USING unused_stageterm_rev
+	WHERE reference_aud.rev = unused_stageterm_rev.rev;
+	
+DELETE FROM informationcontententity_aud
+	USING unused_ontologyterm_rev1
+	WHERE informationcontententity_aud.rev = unused_ontologyterm_rev1.rev;
+
+DELETE FROM informationcontententity_aud
+	USING unused_ontologyterm_rev2
+	WHERE informationcontententity_aud.rev = unused_ontologyterm_rev2.rev;
+
+DELETE FROM informationcontententity_aud
+	USING unused_ontologyterm_rev3
+	WHERE informationcontententity_aud.rev = unused_ontologyterm_rev3.rev;
+
+DELETE FROM informationcontententity_aud
+	USING unused_anatomicalterm_rev
+	WHERE informationcontententity_aud.rev = unused_anatomicalterm_rev.rev;
+
+DELETE FROM informationcontententity_aud
+	USING unused_chemicalterm_rev
+	WHERE informationcontententity_aud.rev = unused_chemicalterm_rev.rev;
+
+DELETE FROM informationcontententity_aud
+	USING unused_experimentalconditionontologyterm_rev
+	WHERE informationcontententity_aud.rev = unused_experimentalconditionontologyterm_rev.rev;
+
+DELETE FROM informationcontententity_aud
+	USING unused_phenotypeterm_rev
+	WHERE informationcontententity_aud.rev = unused_phenotypeterm_rev.rev;
+
+DELETE FROM informationcontententity_aud
+	USING unused_stageterm_rev
+	WHERE informationcontententity_aud.rev = unused_stageterm_rev.rev;
+	
 DELETE FROM ontologyterm_aud
 	USING unused_ontologyterm_rev1
 	WHERE ontologyterm_aud.rev = unused_ontologyterm_rev1.rev;
