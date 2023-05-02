@@ -343,6 +343,7 @@ export const InheritanceModesDialog = ({
 		const _localInheritanceModes = global.structuredClone(localInheritanceModes);
 		_localInheritanceModes.push({
 			dataKey : cnt,
+			internal : false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
