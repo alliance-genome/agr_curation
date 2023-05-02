@@ -1,3 +1,6 @@
+drop table if exists public.hpterm;
+drop table if exists public.hpterm_aud;
+
 CREATE TABLE public.hpterm (
     curie character varying(255) NOT NULL
 );
