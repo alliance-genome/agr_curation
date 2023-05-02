@@ -289,6 +289,7 @@ export const MutationTypesDialog = ({
 		const _localMutationTypes = global.structuredClone(localMutationTypes);
 		_localMutationTypes.push({
 			dataKey : cnt,
+			internal : false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);

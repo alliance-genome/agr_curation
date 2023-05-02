@@ -249,7 +249,7 @@ export const SymbolDialog = ({
 					options={synonymScopeTerms}
 					editorChange={onSynonymScopeEditorValueChange}
 					props={props}
-					showClear={false}
+					showClear={true}
 					dataKey='id'
 				/>
 				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"synonymScope"} />
