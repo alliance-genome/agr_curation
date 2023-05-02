@@ -1111,7 +1111,7 @@ export const DiseaseAnnotationsTable = () => {
 	const geneticModifiersBodyTemplate = (rowData) => {
 		if (rowData?.diseaseGeneticModifiers && rowData.diseaseGeneticModifiers.length > 0) {
 			const diseaseGeneticModifierStrings = [];
-			for (dgm in rowData.diseaseGeneticModifiers) {
+			rowData.diseaseGeneticModifiers.forEach((dgm) => {
 				if (dgm.geneSymbol || dgm.alleleSymbol) {
 					let symbolValue = dgm.geneSymbol ? dgm.geneSymbol.displayText : dgm.alleleSymbol.displayText;
 					diseaseGeneticModifierStrings.push(symbolValue + ' (' + dgm.curie + ')');
@@ -1120,12 +1120,12 @@ export const DiseaseAnnotationsTable = () => {
 				} else {
 					diseaseGeneticModifierStrings.push(dgm.curie);
 				}
-			};
+			});
 			const sortedDiseaseGeneticModifierStrings = diseaseGeneticModifierStrings.sort();
 			const listTemplate = (dgmString) => {
 				return (
 					<EllipsisTableCell>
-						dangerouslySetInnerHTML={{_html: dgmString}}
+						<div dangerouslySetInnerHTML={{__html: dgmString}}/>
 					</EllipsisTableCell>
 				)
 			};
@@ -1179,10 +1179,10 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
 			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>
+				<EllipsisTableCell otherClasses={`c${rowData.id}`}>
 					{rowData.uniqueId}
 				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
+				<Tooltip target={`.c${rowData.id}`} content={rowData.uniqueId} />
 			</>
 		)
 	};
@@ -1203,10 +1203,10 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
 			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>
+				<EllipsisTableCell otherClasses={`b${rowData.id}`}>
 					{rowData.modInternalId}
 				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.modInternalId} />
+				<Tooltip target={`.b${rowData.id}`} content={rowData.modInternalId} />
 			</>
 		)
 	};
@@ -1359,8 +1359,8 @@ export const DiseaseAnnotationsTable = () => {
 		editor: (props) => geneticModifierRelationEditor(props)
 	},
 	{
-		field: "diseaseGeneticModifier.symbol",
-		header: "Genetic Modifier",
+		field: "diseaseGeneticModifiers.symbol",
+		header: "Genetic Modifiers",
 		body: geneticModifiersBodyTemplate,
 		sortable: isEnabled,
 		filterConfig: FILTER_CONFIGS.geneticModifiersFilterConfig,
