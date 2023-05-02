@@ -50,6 +50,7 @@ export const Dashboard = () => {
 		OBITerm: { name: "OBI", link: "/#/ontology/obi", type: 'ontology', },
 		WBPhenotypeTerm: { name: "WBPheno", link: "/#/ontology/wbpheno", type: 'ontology', },
 		PATOTerm: { name: "PATO", link: "/#/ontology/pato", type: 'ontology', },
+		HPTerm: { name: "HP", link: "/#/ontology/hp", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
@@ -84,7 +85,7 @@ export const Dashboard = () => {
 			}
 		});
 		return () => { isMounted = false };
-		// eslint-disable-next-line react-hooks/exhaustive-deps 
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const nameHyperlinkTemplate = (rowData) => {

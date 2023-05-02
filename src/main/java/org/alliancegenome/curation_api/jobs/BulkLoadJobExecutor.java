@@ -68,6 +68,8 @@ public class BulkLoadJobExecutor {
 	@Inject
 	DoTermService doTermService;
 	@Inject
+	HpTermService hpTermService;
+	@Inject
 	WbbtTermService wbbtTermService;
 	@Inject
 	MpTermService mpTermService;
@@ -238,6 +240,7 @@ public class BulkLoadJobExecutor {
 				}
 				case WBPheno -> processTerms(bulkLoadFile, wbPhenotypeTermService, config);
 				case PATO -> processTerms(bulkLoadFile, patoTermService, config);
+				case HP ->processTerms(bulkLoadFile, hpTermService, config);
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
