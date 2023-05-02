@@ -28,11 +28,11 @@ export const GenesTable = () => {
 	};
 
 	const symbolBodyTemplate = (rowData) => {
-		if (rowData?.geneFullName) {
+		if (rowData?.geneSymbol) {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
+						<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.displayText}}></div>
 					</EllipsisTableCell>
 				</>
 			)
