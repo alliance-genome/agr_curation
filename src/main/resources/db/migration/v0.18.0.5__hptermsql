@@ -7,9 +7,9 @@ CREATE TABLE public.hpterm_aud (
     rev integer NOT NULL
 );
 
-ALTER TABLE ONLY public.obiterm
+ALTER TABLE ONLY public.hpterm
     ADD CONSTRAINT hpterm_pkey PRIMARY KEY (curie);
-ALTER TABLE ONLY public.obiterm
+ALTER TABLE ONLY public.hpterm
     ADD CONSTRAINT hpterm_curie_fk FOREIGN KEY (curie) REFERENCES public.phenotypeterm(curie);
 
 ALTER TABLE ONLY public.hpterm_aud
