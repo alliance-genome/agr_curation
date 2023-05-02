@@ -18,4 +18,4 @@ ALTER TABLE ONLY public.hpterm
 ALTER TABLE ONLY public.hpterm_aud
     ADD CONSTRAINT hpterm_aud_pkey PRIMARY KEY (curie, rev);
 ALTER TABLE ONLY public.hpterm_aud
-    ADD CONSTRAINT hpterm_aud_curie_rev_fk FOREIGN KEY (curie, rev) REFERENCES public.phenotypetologyterm_aud(curie, rev);
+    ADD CONSTRAINT hpterm_aud_curie_rev_fk FOREIGN KEY (curie, rev) REFERENCES public.phenotypeterm_aud(curie, rev);
