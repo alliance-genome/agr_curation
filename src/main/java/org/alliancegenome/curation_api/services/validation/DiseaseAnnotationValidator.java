@@ -423,16 +423,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 
 	public String validateUniqueId(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String uniqueId;
-		if (!StringUtils.isBlank(uiEntity.getModEntityId())) {
-			uniqueId = uiEntity.getModEntityId();
-		} else if (!StringUtils.isBlank(dbEntity.getModEntityId())) {
-			uniqueId = dbEntity.getModEntityId();
-		} else if (StringUtils.isBlank(uiEntity.getSubjectCurie()) || StringUtils.isBlank(uiEntity.getSubjectTaxonCurie()) || uiEntity.getObject() == null || uiEntity.getSingleReference() == null) {
+		if (dbEntity.getDataProvider() == null)
 			return null;
-		} else {
-			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(uiEntity.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(uiEntity);
-		}
+		
+		String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(uiEntity.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(uiEntity);
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
 			SearchResponse<DiseaseAnnotation> response = diseaseAnnotationDAO.findByField("uniqueId", uniqueId);
