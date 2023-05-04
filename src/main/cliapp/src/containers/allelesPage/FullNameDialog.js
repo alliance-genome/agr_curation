@@ -251,7 +251,7 @@ export const FullNameDialog = ({
 					options={synonymScopeTerms}
 					editorChange={onSynonymScopeEditorValueChange}
 					props={props}
-					showClear={false}
+					showClear={true}
 					dataKey='id'
 				/>
 				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"synonymScope"} />
@@ -298,6 +298,8 @@ export const FullNameDialog = ({
 		const _localFullNames = global.structuredClone(localFullNames);
 		_localFullNames.push({
 			dataKey : cnt,
+			internal : false,
+			nameType : fullNameTypeTerms[0]
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);

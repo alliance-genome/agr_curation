@@ -258,8 +258,9 @@ export const SiteLayout = (props) => {
 												{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
 												{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
 												{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
-												{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/patotaxon' },
-												{ label: 'C. elegans Phenotype Ontology (WBPhenotype)', icon: 'pi pi-fw pi-home', to: '/ontology/wbpheno' }
+												{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },
+												{ label: 'C. elegans Phenotype Ontology (WBPhenotype)', icon: 'pi pi-fw pi-home', to: '/ontology/wbpheno' },
+												{ label: 'Human Phenotype Ontology (HP)', icon: 'pi pi-fw pi-home', to: '/ontology/hp' }
 										]
 								},
 								{

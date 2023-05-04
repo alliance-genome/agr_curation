@@ -35,7 +35,6 @@ export const AllelesTable = () => {
 	errorMessagesRef.current = errorMessages;
 
 	const [symbolData, setSymbolData] = useState({
-		displayText: "",
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -43,7 +42,6 @@ export const AllelesTable = () => {
 	});
 	
 	const [fullNameData, setFullNameData] = useState({
-		displayText: "",
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -67,7 +65,6 @@ export const AllelesTable = () => {
 	});
 
 	const [secondaryIdsData, setSecondaryIdsData] = useState({
-		secondaryId: "",
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
