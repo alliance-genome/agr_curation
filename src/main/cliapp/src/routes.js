@@ -82,10 +82,12 @@ export default (
 		<SecureRoute path="/ontology/xsmo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/obi"	 	 render={() => <ErrorBoundary><GeneralOntologyComponent name="OBI" endpoint="obiterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/wbpheno"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/pato"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="PATO" endpoint="patoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/hp"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="HP" endpoint="hpterm" /></ErrorBoundary>} />
 
 		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
 		<SecureRoute path="/agms" render={() => <ErrorBoundary><AffectedGenomicModelPage /></ErrorBoundary>} />
-		
+
 	</SiteLayout>
 )

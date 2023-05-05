@@ -1422,7 +1422,13 @@ export const DiseaseAnnotationsTable = () => {
 		return col.header;
 	});
 
-	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames);
+	const widthsObject = {};
+
+	columns.forEach((col) => {
+		widthsObject[col.field] = 10;
+	});
+
+	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames, undefined, widthsObject);
 
 	const headerButtons = () => {
 		return (
@@ -1449,7 +1455,6 @@ export const DiseaseAnnotationsTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={10}
 					errorObject={{errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages}}
 					headerButtons={headerButtons}
 					newEntity={newDiseaseAnnotation}
@@ -1458,6 +1463,7 @@ export const DiseaseAnnotationsTable = () => {
 					deprecationMethod={diseaseAnnotationService.deprecateDiseaseAnnotation}
 					deprecateOption={true}
 					modReset={true}
+					widthsObject={widthsObject}
 				/>
 			</div>
 			<NewAnnotationForm
