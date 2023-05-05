@@ -66,7 +66,7 @@ UPDATE dataprovider
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
 	FROM organization
-	WHERE dataprovider.tmp_id LIKE 'WB:%' AND organization.abbreviation = 'WB';
+	WHERE dataprovider.tmp_id LIKE 'WB%' AND organization.abbreviation = 'WB';
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
