@@ -140,7 +140,6 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			annotation.setWith(null);
 		}
 		
-		DataProvider dataProvider = null;
 		if (dto.getDataProviderDto() == null) {
 			daResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -148,10 +147,9 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			if (dpResponse.hasErrors()) {
 				daResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				dataProvider = dataProviderDAO.persist(dpResponse.getEntity());
+				annotation.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
-		annotation.setDataProvider(dataProvider);
 
 		DataProvider secondaryDataProvider = null;
 		if (dto.getSecondaryDataProviderDto() != null) {

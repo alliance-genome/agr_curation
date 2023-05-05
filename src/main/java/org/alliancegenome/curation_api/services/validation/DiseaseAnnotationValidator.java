@@ -423,6 +423,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 
 	public String validateUniqueId(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+		
 		if (dbEntity.getDataProvider() == null)
 			return null;
 		
