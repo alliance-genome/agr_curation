@@ -54,9 +54,9 @@ INSERT INTO dataprovider (id, tmp_id)
 	SELECT nextval('hibernate_sequence'), uniqueid FROM diseaseannotation WHERE dataprovider_id IS NULL;
 	
 UPDATE diseaseannotation
-	SET dataprovider_id = id 
+	SET dataprovider_id = dataprovider.id 
 	FROM dataprovider 
-	WHERE biologicalentity.dataprovider_id IS NULL AND diseaseannotation.uniqueid = dataprovider.tmp_id;
+	WHERE diseaseannotation.dataprovider_id IS NULL AND diseaseannotation.uniqueid = dataprovider.tmp_id;
 	
 UPDATE dataprovider
 	SET sourceorganization_id = organization.id
