@@ -105,7 +105,6 @@ public class BaseDTOValidator {
 			entity.setTaxon(taxonResponse.getEntity());
 		}
 		
-		DataProvider dataProvider = null;
 		if (dto.getDataProviderDto() == null) {
 			beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -113,10 +112,9 @@ public class BaseDTOValidator {
 			if (dpResponse.hasErrors()) {
 				beResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				dataProvider = dataProviderDAO.persist(dpResponse.getEntity());
+				entity.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
-		entity.setDataProvider(dataProvider);
 		
 		beResponse.setEntity(entity);
 
