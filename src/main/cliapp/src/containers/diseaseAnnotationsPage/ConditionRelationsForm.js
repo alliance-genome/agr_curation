@@ -140,7 +140,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<h3>Experimental Conditions</h3>
+			{/*<h3>Experimental Conditions</h3>*/}
 			{showConditionRelations &&
 				<DataTable value={conditionRelations} dataKey="dataKey" showGridlines editMode='row'
 							 editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>

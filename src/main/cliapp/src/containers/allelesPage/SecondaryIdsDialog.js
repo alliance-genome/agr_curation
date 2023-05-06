@@ -245,6 +245,7 @@ export const SecondaryIdsDialog = ({
 		const _localSecondaryIds = global.structuredClone(localSecondaryIds);
 		_localSecondaryIds.push({
 			dataKey : cnt,
+			internal : false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);

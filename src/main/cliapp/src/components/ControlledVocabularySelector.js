@@ -4,7 +4,7 @@ import { Dropdown } from "primereact/dropdown"
 export function ControlledVocabularyDropdown({ field, options, editorChange, props, showClear, placeholderText, dataKey}) {
 		const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
 		const onShow = () => {
-				setSelectedValue(props.rowData[field])
+			setSelectedValue(props.rowData[field]);
 		}
 		const onChange = (e) => {
 				setSelectedValue(e.value)

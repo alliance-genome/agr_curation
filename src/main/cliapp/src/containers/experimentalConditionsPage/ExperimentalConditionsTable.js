@@ -327,8 +327,14 @@ export const ExperimentalConditionsTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("ExperimentalConditions", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 10;
+	});
+
+	const initialTableState = getDefaultTableState("ExperimentalConditions", defaultColumnNames, undefined, widthsObject);
+
 
 	const headerButtons = () => {
 		return (
@@ -356,11 +362,11 @@ export const ExperimentalConditionsTable = () => {
 					setIsEnabled={setIsEnabled}
 					headerButtons={headerButtons}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={10}
 					errorObject = {{errorMessages, setErrorMessages}}
 					newEntity={newExperimentalCondition}
 					deletionEnabled={true}
 					deletionMethod={experimentalConditionService.deleteExperimentalCondition}
+					widthsObject={widthsObject}
 				/>
 				<NewConditionForm
 					newConditionState={newConditionState}
