@@ -34,8 +34,10 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	public String getCurieID(DiseaseAnnotation annotation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
 		curie.add(annotation.getSubjectCurie());
-		curie.add(annotation.getObject().getCurie());
-		curie.add(annotation.getSingleReference().getCurie());
+		if (annotation.getObject() != null)
+			curie.add(annotation.getObject().getCurie());
+		if (annotation.getSingleReference() != null)
+			curie.add(annotation.getSingleReference().getCurie());
 		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes()))
 			curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
 		return curie.getCurie();
