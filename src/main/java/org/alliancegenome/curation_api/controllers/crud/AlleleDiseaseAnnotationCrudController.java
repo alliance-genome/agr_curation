@@ -13,8 +13,6 @@ import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExe
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
 
 @RequestScoped
