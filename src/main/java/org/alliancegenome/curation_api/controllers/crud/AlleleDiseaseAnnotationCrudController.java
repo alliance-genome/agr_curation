@@ -33,23 +33,6 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	}
 
 	@Override
-	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifier) {
-		SearchResponse<AlleleDiseaseAnnotation> ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-				
-		return new ObjectResponse<AlleleDiseaseAnnotation>();
-	}
-
-	@Override
 	public APIResponse updateAlleleDiseaseAnnotations(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
 		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}

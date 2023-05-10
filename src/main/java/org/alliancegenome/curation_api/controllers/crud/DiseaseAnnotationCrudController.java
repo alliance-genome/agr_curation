@@ -23,21 +23,4 @@ public class DiseaseAnnotationCrudController extends BaseEntityCrudController<Di
 	protected void init() {
 		setService(diseaseAnnotationService);
 	}
-
-	@Override
-	public ObjectResponse<DiseaseAnnotation> get(String identifier) {
-		SearchResponse<DiseaseAnnotation> ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
-				
-		return new ObjectResponse<DiseaseAnnotation>();
-	}
 }

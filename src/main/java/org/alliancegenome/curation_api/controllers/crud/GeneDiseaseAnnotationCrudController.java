@@ -33,23 +33,6 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	}
 
 	@Override
-	public ObjectResponse<GeneDiseaseAnnotation> get(String identifier) {
-		SearchResponse<GeneDiseaseAnnotation> ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
-				
-		return new ObjectResponse<GeneDiseaseAnnotation>();
-	}
-
-	@Override
 	public APIResponse updateGeneDiseaseAnnotations(String dataProvider, List<GeneDiseaseAnnotationDTO> annotations) {
 		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
