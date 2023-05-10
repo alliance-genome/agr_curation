@@ -19,10 +19,10 @@ export const GenesTable = () => {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
+						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.formatText}}></div>
 					</EllipsisTableCell>
 					<Tooltip target={`.a${rowData.curie.replace(':', '')}`}>
-						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}/>
+						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.formatText}}/>
 					</Tooltip>
 
 						
@@ -35,9 +35,12 @@ export const GenesTable = () => {
 		if (rowData?.geneSymbol) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-						<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.displayText}}></div>
+					<EllipsisTableCell otherClasses={`b${rowData.curie.replace(':', '')}`}>
+						<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.formatText}}></div>
 					</EllipsisTableCell>
+					<Tooltip target={`.b${rowData.curie.replace(':', '')}`}>
+						<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.formatText}}/>
+					</Tooltip>
 				</>
 			)
 		}

@@ -151,11 +151,11 @@ export const useGenericDataTable = ({
 			setIsEnabled(true);
 		}
 
-		closeRowRef.current[event.index] = true;
+		closeRowRef.current[index] = true;
 
 		let _entities = [...entities];
 		_entities[index] = originalRows[index];
-		delete originalRows[event.index];
+		delete originalRows[index];
 		setOriginalRows(originalRows);
 		setEntities(_entities);
 
@@ -170,11 +170,12 @@ export const useGenericDataTable = ({
 		}
 
 	};
-
+	
 	//Todo: at some point it may make sense to refactor this function into a set of smaller utility functions and pass them down from the calling components
 	const onRowEditSave = (event) => {
+		const index = event.index % tableState.rows;
 		areUiErrors.current = false;
-		closeRowRef.current[event.index] = true;
+		closeRowRef.current[index] = true;
 		const rowsInEdit = Object.keys(editingRows).length - 1;
 		if (rowsInEdit === 0) {
 			setIsEnabled(true);
@@ -187,7 +188,7 @@ export const useGenericDataTable = ({
 		}
 
 		if (areUiErrors.current) {
-			closeRowRef.current[event.index] = false;
+			closeRowRef.current[index] = false;
 			return;
 		}
 
@@ -216,10 +217,10 @@ export const useGenericDataTable = ({
 				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
 				let _entities = global.structuredClone(entities);
-				_entities[event.index] = response.data.entity;
+				_entities[index] = response.data.entity;
 				setEntities(_entities);
 				const errorMessagesCopy = global.structuredClone(errorMessages);
-				errorMessagesCopy[event.index] = {};
+				errorMessagesCopy[index] = {};
 				setErrorMessages({ ...errorMessagesCopy });
 			},
 			onError: (error, variables, context) => {
@@ -239,20 +240,20 @@ export const useGenericDataTable = ({
 				let _entities = global.structuredClone(entities);
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
-				errorMessagesCopy[event.index] = {};
+				errorMessagesCopy[index] = {};
 				if(error.response.data.errorMessages !== undefined) {
 					Object.keys(error.response.data.errorMessages).forEach((field) => {
 						let messageObject = {
 							severity: "error",
 							message: error.response.data.errorMessages[field]
 						};
-						errorMessagesCopy[event.index][field] = messageObject;
+						errorMessagesCopy[index][field] = messageObject;
 					});
 					setErrorMessages({...errorMessagesCopy});
 				}
 
 				setEntities(_entities);
-				let key = _entities[event.index].id ? _entities[event.index].id : _entities[event.index].curie;
+				let key = _entities[index].id ? _entities[index].id : _entities[index].curie;
 				let _editingRows = { ...editingRows, ...{ [`${key}`]: true } };
 				setEditingRows(_editingRows);
 			},
@@ -349,8 +350,10 @@ export const useGenericDataTable = ({
 
 
 	const onRowEditChange = (event) => {
+		const index = event.index % tableState.rows;
+
 		//keep the row in edit mode if there are UI validation errors
-		if(closeRowRef.current[event.index] === false){
+		if(closeRowRef.current[index] === false){
 			return;
 		}
 		setEditingRows(event.data);
