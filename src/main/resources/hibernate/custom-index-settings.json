@@ -2,7 +2,7 @@
   "number_of_shards": "4",
   "number_of_replicas": "0",
   "max_ngram_diff": "29",
-  "max_result_window": 3000000,
+  "max_result_window": 5000000,
   "translog.sync_interval": "60s",
   "translog.flush_threshold_size": "4096mb",
   "translog.durability": "async",
