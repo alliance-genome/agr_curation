@@ -255,7 +255,7 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 
 export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField="curie") {
 	
-	const index = rowProps.rowIndex % rowProps.props.rows;
+	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
 	
 	let updatedRows = [...rowProps.props.value];
 	
@@ -277,8 +277,7 @@ export function defaultAutocompleteOnChange(rowProps, event, fieldName, setField
 
 export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
 	let updatedRows = [...rowProps.props.value];
-	const index = rowProps.rowIndex % rowProps.props.rows;
-
+	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
 	if (!event.target.value) {
 		updatedRows[index][fieldName] = null;
 		setFieldValue('');
