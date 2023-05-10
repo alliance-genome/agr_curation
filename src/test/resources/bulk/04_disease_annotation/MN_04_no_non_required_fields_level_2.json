@@ -35,7 +35,9 @@
         ]
       }
     ],
-    "disease_genetic_modifier_curie": "DATEST:Gene0002",
+    "disease_genetic_modifier_curies": [
+      "DATEST:Gene0002"
+    ],
     "disease_genetic_modifier_relation_name": "ameliorated_by",
     "with_gene_curies": [
       "HGNC:0001"

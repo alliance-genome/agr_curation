@@ -30,7 +30,7 @@ import { SGDStrainBackgroundAdditionalFieldData } from "../../components/SGDStra
 import { AssertedGenesAdditionalFieldData } from "../../components/AssertedGenesAdditionalFieldData";
 import { EvidenceCodesAdditionalFieldData } from "../../components/EvidenceCodesAdditionalFieldData";
 import { WithAdditionalFieldData } from "../../components/WithAdditionalFieldData";
-import { GeneticModifierAdditionalFieldData } from "../../components/GeneticModifierAdditionalFieldData";
+import { GeneticModifiersAdditionalFieldData } from "../../components/GeneticModifiersAdditionalFieldData";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 // import { ConfirmButton } from "../../components/ConfirmButton";
 
@@ -217,10 +217,10 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	}
 
-	const geneticModifierSearch = (event, setFiltered, setQuery) => {
+	const geneticModifiersSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
 		const endpoint = "biologicalentity";
-		const filterName = "geneticModifierFilter";
+		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -409,7 +409,7 @@ export const NewAnnotationForm = ({
 
 	// const defaultFields = (["Subject", "Asserted Genes", "Asserted Allele", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With", "Related Notes",
 	// 	"Experimental Conditions", "Experiments", "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation",
-	// 	"Genetic Modifier", "Internal"]);
+	// 	"Genetic Modifiers", "Internal"]);
 
 	const dialogHeader = (
 	<>
@@ -812,23 +812,23 @@ export const NewAnnotationForm = ({
 
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="diseaseGeneticModifier">Genetic Modifier</label>
+							<label htmlFor="diseaseGeneticModifier">Genetic Modifiers</label>
 						</div>
 						<div className={widgetColumnSize}>
-							<AutocompleteFormEditor
-								search={geneticModifierSearch}
-								initialValue={newAnnotation.diseaseGeneticModifier}
-								fieldName='diseaseGeneticModifier'
-								name="diseaseGeneticModifier"
+							<AutocompleteFormMultiEditor
+								search={geneticModifiersSearch}
+								initialValue={newAnnotation.diseaseGeneticModifiers}
+								fieldName='diseaseGeneticModifiers'
+								name="diseaseGeneticModifiers"
 								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-								onValueChangeHandler={onSingleReferenceChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseGeneticModifier})}
+								onValueChangeHandler={onArrayFieldChange}
+								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseGeneticModifiers})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseGeneticModifier"}/>
-							<GeneticModifierAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifier}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseGeneticModifiers"}/>
+							<GeneticModifiersAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifiers}/>
 						</div>
 					</div>
 

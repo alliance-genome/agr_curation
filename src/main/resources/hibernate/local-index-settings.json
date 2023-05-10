@@ -2,5 +2,6 @@
   "number_of_shards": "1",
   "number_of_replicas": "0",
   "max_ngram_diff": "29",
-  "max_result_window": 300000
+  "max_result_window": 5000000,
+  "mapping.total_fields.limit": 2000
 }

@@ -16,7 +16,7 @@ export const SORT_FIELDS = Object.freeze([
   "sgdStrainBackground.name",
   "annotationType.name",
   "diseaseGeneticModifierRelation.name",
-  "diseaseGeneticModifier.symbol",
+  "diseaseGeneticModifiers.symbol",
   "inferredGene.geneSymbol.displayText",
   "assertedGenes.geneSymbol.displayText",
   "inferredAllele.alleleSymbol.displayText",

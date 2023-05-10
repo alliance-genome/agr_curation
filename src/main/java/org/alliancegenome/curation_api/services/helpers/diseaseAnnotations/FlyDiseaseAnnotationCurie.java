@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
@@ -30,7 +31,7 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotationDTO.getDiseaseRelationName());
 		curie.add(annotationDTO.getNegated().toString());
 		curie.add(annotationDTO.getDiseaseGeneticModifierRelationName());
-		curie.add(annotationDTO.getDiseaseGeneticModifierCurie());
+		curie.add(StringUtils.join(annotationDTO.getDiseaseGeneticModifierCuries(), "::"));
 		return curie.getCurie();
 	}
 
@@ -38,16 +39,19 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	public String getCurieID(DiseaseAnnotation annotation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
 		curie.add(annotation.getSubjectCurie());
-		curie.add(annotation.getObject().getCurie());
-		curie.add(annotation.getSingleReference().getCurie());
+		if (annotation.getObject() != null)
+			curie.add(annotation.getObject().getCurie());
+		if (annotation.getSingleReference() != null)
+			curie.add(annotation.getSingleReference().getCurie());
 		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes()))
 			curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
-		curie.add(annotation.getDiseaseRelation().getName());
+		if (annotation.getDiseaseRelation() != null)
+			curie.add(annotation.getDiseaseRelation().getName());
 		curie.add(annotation.getNegated().toString());
 		if (annotation.getDiseaseGeneticModifierRelation() != null)
 			curie.add(annotation.getDiseaseGeneticModifierRelation().getName());
-		if (annotation.getDiseaseGeneticModifier() != null)
-			curie.add(annotation.getDiseaseGeneticModifier().getCurie());
+		if (CollectionUtils.isNotEmpty(annotation.getDiseaseGeneticModifiers()))
+			curie.add(StringUtils.join(annotation.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getCurie).collect(Collectors.toList()), "::"));
 		return curie.getCurie();
 	}
 

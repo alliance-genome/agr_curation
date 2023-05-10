@@ -896,7 +896,7 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public void loadAffectedGenomicModel(String curie, String name, String taxonCurie, String subtypeName) throws Exception {
+	public void loadAffectedGenomicModel(String curie, String name, String taxonCurie, String subtypeName, DataProvider dataProvider) throws Exception {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 		
@@ -905,7 +905,7 @@ public class BaseITCase {
 		agm.setTaxon(getNCBITaxonTerm(taxonCurie));
 		agm.setName(name);
 		agm.setSubtype(subtype);
-		
+		agm.setDataProvider(dataProvider);		
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).
@@ -915,11 +915,12 @@ public class BaseITCase {
 			statusCode(200);
 	}
 
-	public void loadAllele(String curie, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm) throws Exception {
+	public void loadAllele(String curie, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) throws Exception {
 		Allele allele = new Allele();
 		allele.setCurie(curie);
 		allele.setTaxon(getNCBITaxonTerm(taxonCurie));
 		allele.setInternal(false);
+		allele.setDataProvider(dataProvider);
 		
 		AlleleSymbolSlotAnnotation alleleSymbol = new AlleleSymbolSlotAnnotation();
 		alleleSymbol.setNameType(symbolNameTerm);
@@ -997,10 +998,11 @@ public class BaseITCase {
 			statusCode(200);
 	}
 	
-	public void loadGene(String curie, String taxonCurie, VocabularyTerm symbolNameTerm) {
+	public void loadGene(String curie, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) {
 			Gene gene = new Gene();
 			gene.setCurie(curie);
 			gene.setTaxon(getNCBITaxonTerm(taxonCurie));
+			gene.setDataProvider(dataProvider);
 			
 			GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
 			symbol.setNameType(symbolNameTerm);
@@ -1018,9 +1020,9 @@ public class BaseITCase {
 					statusCode(200);
 	}
 	
-	public void loadGenes(List<String> curies, String taxonCurie, VocabularyTerm symbolNameTerm) throws Exception {
+	public void loadGenes(List<String> curies, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) throws Exception {
 		for (String curie : curies) {
-			loadGene(curie, taxonCurie, symbolNameTerm);
+			loadGene(curie, taxonCurie, symbolNameTerm, dataProvider);
 		}
 	}
 

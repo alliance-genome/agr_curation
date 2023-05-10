@@ -160,11 +160,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "geneSymbolFilter",
     fields: ["geneSymbol.displayText", "geneSymbol.formatText"],
   },
-  geneticModifierFieldSet: {
-    filterName: "geneticModifierFilter",
-    fields: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"],
+  geneticModifiersFieldSet: {
+    filterName: "geneticModifiersFilter",
+    fields: ["diseaseGeneticModifiers.symbol", "diseaseGeneticModifiers.name", "diseaseGeneticModifiers.curie"],
   },
-
   geneticModifierRelationFieldSet: {
     filterName: "geneticModifierRelationFilter",
     fields: ["diseaseGeneticModifierRelation.name"],
@@ -224,6 +223,10 @@ export const FIELD_SETS = Object.freeze({
   modentityidFieldSet: {
     filterName: "modentityidFilter",
     fields: ["modEntityId"],
+  },
+  modinternalidFieldSet: {
+    filterName: "modinternalidFilter",
+    fields: ["modInternalId"],
   },
   nameFieldSet: {
     filterName: "nameFilter",
@@ -365,7 +368,7 @@ export const FILTER_CONFIGS = Object.freeze({
   formulaFilterConfig:                      { filterComponentType: "input", fieldSets: [FIELD_SETS.formulaFieldSet] },
   geneNameFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.geneNameFieldSet] },
   geneSymbolFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.geneSymbolFieldSet] },
-  geneticModifierFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.geneticModifierFieldSet] },
+  geneticModifiersFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.geneticModifiersFieldSet] },
   idExampleFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.idExampleFieldSet] },
   idPatternFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.idPatternFieldSet] },
   inchiFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.inchiFieldSet] },
@@ -376,6 +379,7 @@ export const FILTER_CONFIGS = Object.freeze({
   iupacFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.iupacFieldSet] },
   literatureCrossReferenceFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.literatureCrossReferenceFieldSet] },
   modentityidFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.modentityidFieldSet] },
+  modinternalidFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.modinternalidFieldSet] },
   nameFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.nameFieldSet] },
   objectFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.objectFieldSet] },
   pageDescriptionFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },

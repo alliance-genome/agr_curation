@@ -24,7 +24,7 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange } from '../../utils/utils';
-import { useNewAnnotationReducer } from "./useNewAnnotaionReducer";
+import { useNewAnnotationReducer } from "./useNewAnnotationReducer";
 import { NewAnnotationForm } from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
@@ -766,38 +766,38 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	const onGeneticModifierValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "diseaseGeneticModifier", setFieldValue);
+	const onGeneticModifiersValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "diseaseGeneticModifiers", setFieldValue);
 	};
 
-	const geneticModifierSearch = (event, setFiltered, setQuery) => {
+	const geneticModifiersSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "geneSynonyms.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
 		const endpoint = "biologicalentity";
-		const filterName = "geneticModifierFilter";
+		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
+		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
-	const geneticModifierEditorTemplate = (props) => {
+	const geneticModifiersEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
-					search={geneticModifierSearch}
-					initialValue={props.rowData.diseaseGeneticModifier?.curie}
+				<AutocompleteMultiEditor
+					search={geneticModifiersSearch}
+					initialValue={props.rowData.diseaseGeneticModifiers}
 					rowProps={props}
-					fieldName='diseaseGeneticModifier'
+					fieldName='diseaseGeneticModifiers'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-					onValueChangeHandler={onGeneticModifierValueChange}
+					onValueChangeHandler={onGeneticModifiersValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"diseaseGeneticModifier"}
+					errorField={"diseaseGeneticModifiers"}
 				/>
 				<ErrorMessageComponent
 					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={"diseaseGeneticModifier"}
+					errorField={"diseaseGeneticModifiers"}
 				/>
 			</>
 		);
@@ -1108,24 +1108,37 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const geneticModifierBodyTemplate = (rowData) => {
-		if (rowData.diseaseGeneticModifier) {
-			if (rowData.diseaseGeneticModifier.geneSymbol || rowData.diseaseGeneticModifier.alleleSymbol) {
-				let symbolValue = rowData.diseaseGeneticModifier.geneSymbol ? rowData.diseaseGeneticModifier.geneSymbol.displayText : rowData.diseaseGeneticModifier.alleleSymbol.displayText;
-				return <div className='overflow-hidden text-overflow-ellipsis'
-					dangerouslySetInnerHTML={{
-						__html: symbolValue + ' (' + rowData.diseaseGeneticModifier.curie + ')'
-					}}
-				/>;
-			} else if (rowData.diseaseGeneticModifier.name) {
-				return <div className='overflow-hidden text-overflow-ellipsis'
-					dangerouslySetInnerHTML={{
-						__html: rowData.diseaseGeneticModifier.name + ' (' + rowData.diseaseGeneticModifier.curie + ')'
-					}}
-				/>;
-			} else {
-				return <div className='overflow-hidden text-overflow-ellipsis' >{rowData.diseaseGeneticModifier.curie}</div>;
-			}
+	const geneticModifiersBodyTemplate = (rowData) => {
+		if (rowData?.diseaseGeneticModifiers && rowData.diseaseGeneticModifiers.length > 0) {
+			const diseaseGeneticModifierStrings = [];
+			rowData.diseaseGeneticModifiers.forEach((dgm) => {
+				if (dgm.geneSymbol || dgm.alleleSymbol) {
+					let symbolValue = dgm.geneSymbol ? dgm.geneSymbol.displayText : dgm.alleleSymbol.displayText;
+					diseaseGeneticModifierStrings.push(symbolValue + ' (' + dgm.curie + ')');
+				} else if (dgm.name) {
+					diseaseGeneticModifierStrings.push(dgm.name + ' (' + dgm.curie + ')');
+				} else {
+					diseaseGeneticModifierStrings.push(dgm.curie);
+				}
+			});
+			const sortedDiseaseGeneticModifierStrings = diseaseGeneticModifierStrings.sort();
+			const listTemplate = (dgmString) => {
+				return (
+					<EllipsisTableCell>
+						<div dangerouslySetInnerHTML={{__html: dgmString}}/>
+					</EllipsisTableCell>
+				)
+			};
+			return (
+				<>
+					<div className={`a${rowData.id}${rowData.diseaseGeneticModifiers[0].curie.replace(':', '')}`}>
+						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
+					</div>
+					<Tooltip target={`.a${rowData.id}${rowData.diseaseGeneticModifiers[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
+					</Tooltip>
+				</>
+			);
 		}
 	};
 
@@ -1166,10 +1179,10 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
 			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>
+				<EllipsisTableCell otherClasses={`c${rowData.id}`}>
 					{rowData.uniqueId}
 				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
+				<Tooltip target={`.c${rowData.id}`} content={rowData.uniqueId} />
 			</>
 		)
 	};
@@ -1182,6 +1195,18 @@ export const DiseaseAnnotationsTable = () => {
 					{rowData.modEntityId}
 				</EllipsisTableCell>
 				<Tooltip target={`.a${rowData.id}`} content={rowData.modEntityId} />
+			</>
+		)
+	};
+
+	const modInternalIdBodyTemplate = (rowData) => {
+		return (
+			//the 'a' at the start is a hack since css selectors can't start with a number
+			<>
+				<EllipsisTableCell otherClasses={`b${rowData.id}`}>
+					{rowData.modInternalId}
+				</EllipsisTableCell>
+				<Tooltip target={`.b${rowData.id}`} content={rowData.modInternalId} />
 			</>
 		)
 	};
@@ -1208,6 +1233,13 @@ export const DiseaseAnnotationsTable = () => {
 		body: modEntityIdBodyTemplate,
 		sortable: isEnabled,
 		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+	},
+	{
+		field: "modInternalId",
+		header: "MOD Internal ID",
+		body: modInternalIdBodyTemplate,
+		sortable: isEnabled,
+		filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 	},
 	{
 		field: "subject.symbol",
@@ -1327,12 +1359,12 @@ export const DiseaseAnnotationsTable = () => {
 		editor: (props) => geneticModifierRelationEditor(props)
 	},
 	{
-		field: "diseaseGeneticModifier.symbol",
-		header: "Genetic Modifier",
-		body: geneticModifierBodyTemplate,
+		field: "diseaseGeneticModifiers.symbol",
+		header: "Genetic Modifiers",
+		body: geneticModifiersBodyTemplate,
 		sortable: isEnabled,
-		filterConfig: FILTER_CONFIGS.geneticModifierFilterConfig,
-		editor: (props) => geneticModifierEditorTemplate(props),
+		filterConfig: FILTER_CONFIGS.geneticModifiersFilterConfig,
+		editor: (props) => geneticModifiersEditorTemplate(props),
 	},
 	{
 		field: "inferredGene.geneSymbol.displayText",

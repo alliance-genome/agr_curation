@@ -13,8 +13,6 @@ import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExe
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
 
 @RequestScoped
@@ -30,16 +28,6 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	@PostConstruct
 	protected void init() {
 		setService(alleleDiseaseAnnotationService);
-	}
-
-	@Override
-	public ObjectResponse<AlleleDiseaseAnnotation> get(String uniqueId) {
-		SearchResponse<AlleleDiseaseAnnotation> ret = findByField("uniqueId", uniqueId);
-		if (ret != null && ret.getTotalResults() == 1) {
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-		} else {
-			return new ObjectResponse<AlleleDiseaseAnnotation>();
-		}
 	}
 
 	@Override

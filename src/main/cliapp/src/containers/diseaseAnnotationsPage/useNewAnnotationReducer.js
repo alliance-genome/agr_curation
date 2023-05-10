@@ -26,7 +26,7 @@ const initialNewAnnotationState = {
 		sgdStrainBackground: null,
 		annotationType: null,
 		diseaseGeneticModifierRelation: null,
-		diseaseGeneticModifier: null,
+		diseaseGeneticModifiers: [],
 		internal: false
 	},
 	errorMessages: {},

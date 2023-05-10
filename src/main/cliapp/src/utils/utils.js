@@ -290,7 +290,7 @@ export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFiel
 }
 
 export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "diseaseGeneticModifier", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
 		if(updatedRow[field] && Object.keys(updatedRow[field]).length === 1){
@@ -319,7 +319,7 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 }
 
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "diseaseGeneticModifier", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
 		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie")){

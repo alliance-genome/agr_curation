@@ -13,8 +13,6 @@ import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecut
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 
 @RequestScoped
@@ -29,16 +27,6 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 	@PostConstruct
 	protected void init() {
 		setService(agmDiseaseAnnotationService);
-	}
-
-	@Override
-	public ObjectResponse<AGMDiseaseAnnotation> get(String uniqueId) {
-		SearchResponse<AGMDiseaseAnnotation> ret = findByField("uniqueId", uniqueId);
-		if (ret != null && ret.getTotalResults() == 1) {
-			return new ObjectResponse<>(ret.getResults().get(0));
-		} else {
-			return new ObjectResponse<>();
-		}
 	}
 
 	@Override

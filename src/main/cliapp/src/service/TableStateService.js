@@ -66,7 +66,7 @@ const modTableSettings = {
 					"MOD Annotation ID", "Subject", "Asserted Genes", "Disease Relation",
 					"Negated", "Disease", "Reference", "Evidence Code", "Related Notes",
 					"Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation",
-					"Genetic Modifier","Data Provider", "Updated By", "Date Updated", "Created By",
+					"Genetic Modifiers","Data Provider", "Updated By", "Date Updated", "Created By",
 					"Date Created", "Internal", "Obsolete",
 			],
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
@@ -81,7 +81,7 @@ const modTableSettings = {
 			selectedColumnNames: [
 					"Obsolete", "Reference", "Subject", "Negated",
 					"Disease Relation", "Disease", "Evidence Code", "Inferred Gene",
-					"Genetic Modifier Relation", "Genetic Modifier", "Related Notes", "Data Provider",
+					"Genetic Modifier Relation", "Genetic Modifiers", "Related Notes", "Data Provider",
 					"Updated By", "Date Updated", "Created By", "Date Created"
 			],
 			filters: {
@@ -156,7 +156,7 @@ const modTableSettings = {
 			selectedColumnNames: [
 				"Unique ID", "MOD Annotation ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With",
 				"Related Notes", "Experiments" ,"Experimental Conditions", "Genetic Sex" ,"Disease Qualifiers", "SGD Strain Background" , "Annotation Type" ,
-				"Genetic Modifier Relation" , "Genetic Modifier" , "Inferred Gene", "Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
+				"Genetic Modifier Relation" , "Genetic Modifiers" , "Inferred Gene", "Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By", "Date Created", "Internal", "Obsolete"
 			],
 			filters: {},
