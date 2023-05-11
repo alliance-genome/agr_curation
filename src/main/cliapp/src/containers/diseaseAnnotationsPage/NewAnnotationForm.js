@@ -202,7 +202,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
+		const autocompleteFields = ["name", "curie", "crossReferences.referencedCurie"];
 		const endpoint = "agm";
 		const filterName = "sgdStrainBackgroundFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -218,7 +218,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const geneticModifiersSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -262,7 +262,7 @@ export const NewAnnotationForm = ({
 			"geneSynonyms.displayText",
 			"curie",
 			"crossReferences.referencedCurie",
-			"secondaryIdentifiers",
+			"alleleSecondaryIds.secondaryId",
 		];
 		const endpoint = "biologicalentity";
 		const filterName = "subjectFilter";
@@ -356,7 +356,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -390,7 +390,7 @@ export const NewAnnotationForm = ({
 	);
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "assertedGenesFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -399,7 +399,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const assertedAlleleSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "alleleSynonyms.displayText"];
+		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "alleleSynonyms.displayText"];
 		const endpoint = "allele";
 		const filterName = "assertedAlleleFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
