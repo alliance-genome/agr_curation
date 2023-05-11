@@ -38,7 +38,7 @@ describe("<ConditionRelationPage />", () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it("The table contains data", async () => {
+	it("The table contains correct data", async () => {
 		let result;
 		act(() => {
 			result = renderWithClient(<ConditionRelationPage />);
