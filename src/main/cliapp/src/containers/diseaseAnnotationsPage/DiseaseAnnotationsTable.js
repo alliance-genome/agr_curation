@@ -711,11 +711,11 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const getSubjectAutocompleteFields = (props) => {
-		let subjectFields = ["curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
+		let subjectFields = ["curie", "crossReferences.referencedCurie"];
 		if (props.rowData.type === "AGMDiseaseAnnotation") {
 			subjectFields.push("name");
 		} else if (props.rowData.type === "AlleleDiseaseAnnotation") {
-			subjectFields.push("alleleFullName.displayText", "alleleSymbol.displayText", "alleleSynonyms.displayText");
+			subjectFields.push("alleleFullName.displayText", "alleleSymbol.displayText", "alleleSynonyms.displayText", "alleleSecondaryIds.secondaryId");
 		} else if (props.rowData.type === "GeneDiseaseAnnotation") {
 			subjectFields.push("geneFullName.displayText", "geneSymbol.displayText", "geneSynonyms.displayText");
 		}
@@ -726,7 +726,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
+		const autocompleteFields = ["name", "curie", "crossReferences.referencedCurie"];
 		const endpoint = "agm";
 		const filterName = "sgdStrainBackgroundFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -771,7 +771,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifiersSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "geneSynonyms.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "geneSynonyms.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -808,7 +808,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const assertedAlleleSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "alleleSynonyms.displayText"];
+		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "alleleSynonyms.displayText"];
 		const endpoint = "allele";
 		const filterName = "assertedAlleleFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -887,7 +887,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "assertedGenesFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -925,7 +925,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
