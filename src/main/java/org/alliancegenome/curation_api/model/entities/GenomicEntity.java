@@ -34,7 +34,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "crossReferences", "secondaryIdentifiers" }, callSuper = true)
+@ToString(exclude = { "crossReferences" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BiologicalEntity.class })
 public class GenomicEntity extends BiologicalEntity {
 
@@ -48,12 +48,5 @@ public class GenomicEntity extends BiologicalEntity {
 	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
-
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
-	@JoinTable(indexes = @Index(columnList = "genomicentity_curie"))
-	@JsonView({ View.FieldsAndLists.class })
-	private List<String> secondaryIdentifiers;
 
 }
