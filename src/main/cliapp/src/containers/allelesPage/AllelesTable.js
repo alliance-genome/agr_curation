@@ -312,7 +312,8 @@ export const AllelesTable = () => {
 		return (
 			<>
 				<Button className="p-button-text"
-					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.formatText }} />								
+					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
+						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />								
 				</Button>
 			</>
 		);
