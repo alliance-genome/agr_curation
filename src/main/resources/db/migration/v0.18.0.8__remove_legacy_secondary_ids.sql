@@ -1,0 +1,3 @@
+DROP TABLE genomicentity_secondaryidentifiers_aud;
+
+DROP TABLE genomicentity_secondaryidentifiers;

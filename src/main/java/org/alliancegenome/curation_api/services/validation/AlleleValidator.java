@@ -161,12 +161,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			}
 		}
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
-			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
-		} else {
-			dbEntity.setSecondaryIdentifiers(null);
-		}
-
 		removeUnusedSlotAnnotations(uiEntity, dbEntity);
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);

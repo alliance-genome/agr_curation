@@ -101,12 +101,6 @@ public class GeneValidator extends GenomicEntityValidator {
 		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
 		dbEntity.setDataProvider(dataProvider);
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
-			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
-		} else {
-			dbEntity.setSecondaryIdentifiers(null);
-		}
-
 		List<Long> currentXrefIds;
 		if (dbEntity.getCrossReferences() == null) {
 			currentXrefIds = new ArrayList<>();
