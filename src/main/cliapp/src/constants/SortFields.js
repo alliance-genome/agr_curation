@@ -36,6 +36,7 @@ export const SORT_FIELDS = Object.freeze([
   "parental_population",
   "alleleFullName.displayText",
   "alleleSymbol.displayText",
+  "alleleSynonyms.displayText",
   "alleleSecondaryIds.secondaryId",
   "alleleMutationTypes.mutationTypes.name",
   "references.curie",

@@ -16,6 +16,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "alleleSymbolFilter",
     fields: ["alleleSymbol.displayText", "alleleSymbol.formatText"],
   },
+  alleleSynonymsFieldSet: {
+    filterName: "alleleSynonymsFilter",
+    fields: ["alleleSynonyms.displayText", "alleleSynonyms.formatText"],
+  },
   alleleInheritanceModesFieldSet: {
     filterName: "alleleInheritanceModesFilter",
     fields: ["alleleInheritanceModes.inheritanceMode.name", "alleleInheritanceModes.phenotypeTerm.curie", "alleleInheritanceModes.phenotypeTerm.name", "alleleInheritanceModes.phenotypeStatement", "alleleInheritanceModes.evidence.curie"],
@@ -341,6 +345,7 @@ export const FILTER_CONFIGS = Object.freeze({
   alleleMutationFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleMutationFieldSet] },
   alleleNameFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleNameFieldSet] },
   alleleSymbolFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
+  alleleSynonymsFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
   assertedAlleleFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.assertedAlleleFieldSet] },
   assertedGenesFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.assertedGenesFieldSet] },
   citationFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.citationFieldSet]},
