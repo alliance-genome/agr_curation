@@ -12,21 +12,25 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDTOValidator;
@@ -47,6 +51,8 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	@Inject
 	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
 	@Inject
+	GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
+	@Inject
 	GeneSymbolSlotAnnotationDTOValidator geneSymbolDtoValidator;
 	@Inject
 	GeneFullNameSlotAnnotationDTOValidator geneFullNameDtoValidator;
@@ -54,6 +60,8 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	GeneSystematicNameSlotAnnotationDTOValidator geneSystematicNameDtoValidator;
 	@Inject
 	GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
+	@Inject
+	GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
 
 	@Transactional
 	public Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
@@ -153,6 +161,37 @@ public class GeneDTOValidator extends BaseDTOValidator {
 			});
 		}
 
+		Map<String, GeneSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(gene.getGeneSecondaryIds())) {
+			for (GeneSecondaryIdSlotAnnotation existingSecondaryId : gene.getGeneSecondaryIds()) {
+				existingSecondaryIds.put(SlotAnnotationIdentityHelper.secondaryIdIdentity(existingSecondaryId), existingSecondaryId);
+			}
+		}
+		
+		List<GeneSecondaryIdSlotAnnotation> secondaryIds = new ArrayList<>();
+		List<String> secondaryIdIdentities = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getGeneSecondaryIdDtos())) {
+			for (SecondaryIdSlotAnnotationDTO secondaryIdDTO : dto.getGeneSecondaryIdDtos()) {
+				ObjectResponse<GeneSecondaryIdSlotAnnotation> secondaryIdResponse = geneSecondaryIdDtoValidator.validateGeneSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(SlotAnnotationIdentityHelper.secondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
+				if (secondaryIdResponse.hasErrors()) {
+					geneResponse.addErrorMessage("gene_secondary_id_dtos", secondaryIdResponse.errorMessagesString());
+				} else {
+					GeneSecondaryIdSlotAnnotation secondaryId = secondaryIdResponse.getEntity();
+					secondaryIds.add(secondaryId);
+					secondaryIdIdentities.add(SlotAnnotationIdentityHelper.secondaryIdIdentity(secondaryId));
+				}
+			}
+		}
+		
+		if (!existingSecondaryIds.isEmpty()) {
+			existingSecondaryIds.forEach((k,v) -> {
+				if (!secondaryIdIdentities.contains(k)) {
+					v.setSingleGene(null);
+					geneSecondaryIdDAO.remove(v.getId());
+				}
+			});
+		}
+
 		if (geneResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, geneResponse.errorMessagesString());
 		}
@@ -186,6 +225,14 @@ public class GeneDTOValidator extends BaseDTOValidator {
 			}
 		}
 		gene.setGeneSynonyms(synonyms);
+
+		if (CollectionUtils.isNotEmpty(secondaryIds)) {
+			for (GeneSecondaryIdSlotAnnotation sid : secondaryIds) {
+				sid.setSingleGene(gene);
+				geneSecondaryIdDAO.persist(sid);
+			}
+		}
+		gene.setGeneSecondaryIds(secondaryIds);
 
 		return gene;
 	}
