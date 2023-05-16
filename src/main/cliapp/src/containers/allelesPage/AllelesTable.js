@@ -329,7 +329,7 @@ export const AllelesTable = () => {
 						{<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: props.rowData.alleleSymbol.displayText }} />}
 						<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 					</span>&nbsp;&nbsp;&nbsp;&nbsp;
-					<EditMessageTooltip/>
+					<EditMessageTooltip object="allele"/>
 				</Button>
 			</div>
 			<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSymbol"} style={{ 'fontSize': '1em' }}/>
@@ -386,7 +386,7 @@ export const AllelesTable = () => {
 							{<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: props.rowData.alleleFullName.displayText }} />}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleFullName"} style={{ 'fontSize': '1em' }}/>
@@ -403,7 +403,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleFullName"} style={{ 'fontSize': '1em' }}/>
@@ -475,7 +475,7 @@ export const AllelesTable = () => {
 							{`Synonyms(${props.rowData.alleleSynonyms.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSynonyms"} style={{ 'fontSize': '1em' }}/>
@@ -492,7 +492,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSynonyms"} style={{ 'fontSize': '1em' }}/>
@@ -566,7 +566,7 @@ export const AllelesTable = () => {
 							{`Inheritance Modes(${props.rowData.alleleInheritanceModes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleInheritanceModes"} style={{ 'fontSize': '1em' }}/>
@@ -583,7 +583,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleInheritanceModes"} style={{ 'fontSize': '1em' }}/>
@@ -661,7 +661,7 @@ export const AllelesTable = () => {
 							{`Mutation Types(${props.rowData.alleleMutationTypes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
@@ -678,7 +678,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
@@ -743,7 +743,7 @@ export const AllelesTable = () => {
 							{`Secondary IDs(${props.rowData.alleleSecondaryIds.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
@@ -759,7 +759,7 @@ export const AllelesTable = () => {
 								Add Secondary ID
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
