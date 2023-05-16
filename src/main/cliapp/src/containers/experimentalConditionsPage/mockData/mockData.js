@@ -27,7 +27,6 @@ export const data = {
 			},
 			"oktaId": "00u39w2teyeZUB8cN5d7",
 			"oktaEmail": "agibsonmcw@gmail.com",
-			"apiToken": "cec50d3a-26f1-450a-b3dc-d3a9c77442de"
 	},
 	"dateUpdated": "2023-05-11T21:10:23.055725Z",
 	"internal": false,

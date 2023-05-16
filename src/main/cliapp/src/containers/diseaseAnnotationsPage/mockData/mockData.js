@@ -188,7 +188,6 @@ export const data = {
 					},
 					"oktaId": "00u347gob7EQ6WsMz5d7",
 					"oktaEmail": "chris@wormbase.org",
-					"apiToken": "9df20f1f-f1dc-4d8d-8ba5-3daedc69cb9f"
 			},
 			"dateUpdated": "2023-05-10T21:04:13.711711Z",
 			"internal": false,
