@@ -343,7 +343,7 @@ export const SynonymsDialog = ({
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
 			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
-				<h3>Full Name</h3>
+				<h3>Synonyms</h3>
 				<DataTable value={localSynonyms} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
