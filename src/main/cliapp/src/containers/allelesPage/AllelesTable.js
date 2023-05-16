@@ -312,7 +312,8 @@ export const AllelesTable = () => {
 		return (
 			<>
 				<Button className="p-button-text"
-					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.formatText }} />								
+					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
+						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.formatText }} />								
 				</Button>
 			</>
 		);
@@ -831,7 +832,7 @@ export const AllelesTable = () => {
 			body: secondaryIdsTemplate,
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: isEnabled,
-			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
+			filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
 		},
 		{
 			field: "taxon.name",
