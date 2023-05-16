@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
@@ -22,11 +23,13 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationValidator;
@@ -48,6 +51,8 @@ public class GeneValidator extends GenomicEntityValidator {
 	@Inject
 	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
 	@Inject
+	GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
+	@Inject
 	GeneSymbolSlotAnnotationValidator geneSymbolValidator;
 	@Inject
 	GeneFullNameSlotAnnotationValidator geneFullNameValidator;
@@ -55,6 +60,8 @@ public class GeneValidator extends GenomicEntityValidator {
 	GeneSystematicNameSlotAnnotationValidator geneSystematicNameValidator;
 	@Inject
 	GeneSynonymSlotAnnotationValidator geneSynonymValidator;
+	@Inject
+	GeneSecondaryIdSlotAnnotationValidator geneSecondaryIdValidator;
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 
@@ -128,6 +135,8 @@ public class GeneValidator extends GenomicEntityValidator {
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(uiEntity, dbEntity);
 		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(uiEntity, dbEntity);
 
+		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
+		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
@@ -160,6 +169,14 @@ public class GeneValidator extends GenomicEntityValidator {
 			}
 		}
 		dbEntity.setGeneSynonyms(synonyms);
+		
+		if (secondaryIds != null) {
+			for (GeneSecondaryIdSlotAnnotation sid : secondaryIds) {
+				sid.setSingleGene(dbEntity);
+				geneSecondaryIdDAO.persist(sid);
+			}
+		}
+		dbEntity.setGeneSecondaryIds(secondaryIds);
 
 		return dbEntity;
 	}
@@ -248,6 +265,28 @@ public class GeneValidator extends GenomicEntityValidator {
 		return validatedSynonyms;
 	}
 
+	private List<GeneSecondaryIdSlotAnnotation> validateGeneSecondaryIds(Gene uiEntity, Gene dbEntity) {
+		String field = "geneSecondaryIds";
+
+		List<GeneSecondaryIdSlotAnnotation> validatedSecondaryIds = new ArrayList<GeneSecondaryIdSlotAnnotation>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getGeneSecondaryIds())) {
+			for (GeneSecondaryIdSlotAnnotation sid : uiEntity.getGeneSecondaryIds()) {
+				ObjectResponse<GeneSecondaryIdSlotAnnotation> sidResponse = geneSecondaryIdValidator.validateGeneSecondaryIdSlotAnnotation(sid);
+				if (sidResponse.getEntity() == null) {
+					addMessageResponse(field, sidResponse.errorMessagesString());
+					return null;
+				}
+				sid = sidResponse.getEntity();
+				validatedSecondaryIds.add(sid);
+			}
+		}
+
+		if (CollectionUtils.isEmpty(validatedSecondaryIds))
+			return null;
+
+		return validatedSecondaryIds;
+	}
+
 	private void removeUnusedSlotAnnotations(Gene uiEntity, Gene dbEntity) {
 		if (dbEntity.getGeneSymbol() != null)
 			removeUnusedGeneSymbol(uiEntity, dbEntity);
@@ -260,6 +299,9 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		if (CollectionUtils.isNotEmpty(dbEntity.getGeneSynonyms()))
 			removeUnusedGeneSynonyms(uiEntity, dbEntity);
+
+		if (CollectionUtils.isNotEmpty(dbEntity.getGeneSecondaryIds()))
+			removeUnusedGeneSecondaryIds(uiEntity, dbEntity);
 	}
 
 	private void removeUnusedGeneSymbol(Gene uiEntity, Gene dbEntity) {
@@ -302,6 +344,21 @@ public class GeneValidator extends GenomicEntityValidator {
 				if (!reusedIds.contains(previousSynonym.getId())) {
 					previousSynonym.setSingleGene(null);
 					geneSynonymDAO.remove(previousSynonym.getId());
+				}
+			}
+		}
+	}
+
+	private void removeUnusedGeneSecondaryIds(Gene uiEntity, Gene dbEntity) {
+		List<Long> reusedIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getGeneSecondaryIds()))
+			reusedIds = uiEntity.getGeneSecondaryIds().stream().map(GeneSecondaryIdSlotAnnotation::getId).collect(Collectors.toList());
+
+		if (CollectionUtils.isNotEmpty(dbEntity.getGeneSecondaryIds())) {
+			for (GeneSecondaryIdSlotAnnotation previousSecondaryId : dbEntity.getGeneSecondaryIds()) {
+				if (!reusedIds.contains(previousSecondaryId.getId())) {
+					previousSecondaryId.setSingleGene(null);
+					geneSecondaryIdDAO.remove(previousSecondaryId.getId());
 				}
 			}
 		}

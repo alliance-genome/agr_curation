@@ -64,6 +64,20 @@
         "date_updated": "2022-03-20T22:10:12+00:00"
       }
     ],
+    "gene_secondary_id_dtos": [
+      {
+        "secondary_id": "TEST:Secondary2",
+        "evidence_curies": [
+          "PMID:25920551"
+        ],
+        "internal": false,
+        "obsolete": false,
+        "created_by_curie": "GENETEST:Person0002",
+        "updated_by_curie": "GENETEST:Person0001",
+        "date_created": "2022-03-19T22:10:12+00:00",
+        "date_updated": "2022-03-20T22:10:12+00:00"
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,

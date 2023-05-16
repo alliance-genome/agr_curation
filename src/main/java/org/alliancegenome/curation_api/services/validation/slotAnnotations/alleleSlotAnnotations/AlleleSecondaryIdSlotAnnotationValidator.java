@@ -3,17 +3,15 @@ package org.alliancegenome.curation_api.services.validation.slotAnnotations.alle
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
-import org.apache.commons.lang3.StringUtils;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.SecondaryIdSlotAnnotationValidator;
 
 @RequestScoped
-public class AlleleSecondaryIdSlotAnnotationValidator extends SlotAnnotationValidator<AlleleSecondaryIdSlotAnnotation> {
+public class AlleleSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnnotationValidator<AlleleSecondaryIdSlotAnnotation> {
 
 	@Inject
 	AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
@@ -44,15 +42,12 @@ public class AlleleSecondaryIdSlotAnnotationValidator extends SlotAnnotationVali
 			newEntity = true;
 		}
 
-		dbEntity = (AlleleSecondaryIdSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
+		dbEntity = (AlleleSecondaryIdSlotAnnotation) validateSecondaryIdSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateAllele) {
 			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
-
-		String secondaryId = validateSecondaryId(uiEntity, dbEntity);
-		dbEntity.setSecondaryId(secondaryId);
 
 		if (response.hasErrors()) {
 			if (throwError) {
@@ -64,15 +59,6 @@ public class AlleleSecondaryIdSlotAnnotationValidator extends SlotAnnotationVali
 		}
 
 		return dbEntity;
-	}
-
-	private String validateSecondaryId(AlleleSecondaryIdSlotAnnotation uiEntity, AlleleSecondaryIdSlotAnnotation dbEntity) {
-		String field = "secondaryId";
-		if (StringUtils.isBlank(uiEntity.getSecondaryId())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		return uiEntity.getSecondaryId();
 	}
 
 }

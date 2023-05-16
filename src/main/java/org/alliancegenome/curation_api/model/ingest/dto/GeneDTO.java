@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntityDTO.class, NameSlotAnnotationDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "1.7.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntityDTO.class, NameSlotAnnotationDTO.class }, submitted = true)
 public class GeneDTO extends GenomicEntityDTO {
 
 	@JsonView({ View.FieldsOnly.class })
@@ -30,4 +30,8 @@ public class GeneDTO extends GenomicEntityDTO {
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("gene_synonym_dtos")
 	private List<NameSlotAnnotationDTO> geneSynonymDtos;
+
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("gene_secondary_id_dtos")
+	private List<SecondaryIdSlotAnnotationDTO> geneSecondaryIdDtos;
 }
