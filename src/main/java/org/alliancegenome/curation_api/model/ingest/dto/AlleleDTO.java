@@ -52,4 +52,8 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonProperty("allele_secondary_id_dtos")
 	private List<SecondaryIdSlotAnnotationDTO> alleleSecondaryIdDtos;
 
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("allele_functional_impact_dtos")
+	private List<AlleleFunctionalImpactSlotAnnotationDTO> alleleFunctionalImpactDtos;
+
 }

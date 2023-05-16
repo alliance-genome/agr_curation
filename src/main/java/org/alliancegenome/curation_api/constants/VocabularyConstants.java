@@ -15,6 +15,7 @@ public final class VocabularyConstants {
 	public static final String AGM_DISEASE_RELATION_VOCABULARY_TERM_SET = "AGM disease relations";
 
 	public static final String ALLELE_INHERITANCE_MODE_VOCABULARY = "Allele inheritance mode vocabulary";
+	public static final String ALLELE_FUNCTIONAL_IMPACT_VOCABULARY = "Allele Functional Impact";
 	public static final String ALLELE_COLLECTION_VOCABULARY = "Allele collection vocabulary";
 	public static final String SEQUENCING_STATUS_VOCABULARY = "Sequencing status vocabulary";
 

@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
@@ -26,6 +27,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
@@ -33,6 +35,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationValidator;
@@ -58,6 +61,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	@Inject
 	AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
 	@Inject
+	AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
+	@Inject
 	AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
 	@Inject
 	AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
@@ -69,6 +74,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	AlleleSynonymSlotAnnotationValidator alleleSynonymValidator;
 	@Inject
 	AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
+	@Inject
+	AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	@Inject
@@ -172,6 +179,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		List<AlleleSynonymSlotAnnotation> synonyms = validateAlleleSynonyms(uiEntity, dbEntity);
 		
 		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = validateAlleleSecondaryIds(uiEntity, dbEntity);
+		
+		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
@@ -223,6 +232,14 @@ public class AlleleValidator extends GenomicEntityValidator {
 			}
 		}
 		dbEntity.setAlleleSecondaryIds(secondaryIds);
+
+		if (functionalImpacts != null) {
+			for (AlleleFunctionalImpactSlotAnnotation fi : functionalImpacts) {
+				fi.setSingleAllele(dbEntity);
+				alleleFunctionalImpactDAO.persist(fi);
+			}
+		}
+		dbEntity.setAlleleFunctionalImpacts(functionalImpacts);
 
 		return dbEntity;
 	}
@@ -336,6 +353,21 @@ public class AlleleValidator extends GenomicEntityValidator {
 				if (!reusedIds.contains(previousSecondaryId.getId())) {
 					previousSecondaryId.setSingleAllele(null);
 					alleleSecondaryIdDAO.remove(previousSecondaryId.getId());
+				}
+			}
+		}
+	}
+
+	private void removeUnusedAlleleFunctionalImpacts(Allele uiEntity, Allele dbEntity) {
+		List<Long> reusedIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleFunctionalImpacts()))
+			reusedIds = uiEntity.getAlleleFunctionalImpacts().stream().map(AlleleFunctionalImpactSlotAnnotation::getId).collect(Collectors.toList());
+
+		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleFunctionalImpacts())) {
+			for (AlleleFunctionalImpactSlotAnnotation previousFunctionalImpact : dbEntity.getAlleleFunctionalImpacts()) {
+				if (!reusedIds.contains(previousFunctionalImpact.getId())) {
+					previousFunctionalImpact.setSingleAllele(null);
+					alleleFunctionalImpactDAO.remove(previousFunctionalImpact.getId());
 				}
 			}
 		}
@@ -461,6 +493,28 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return validatedSecondaryIds;
 	}
 
+	private List<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpacts(Allele uiEntity, Allele dbEntity) {
+		String field = "alleleFunctionalImpacts";
+
+		List<AlleleFunctionalImpactSlotAnnotation> validatedFunctionalImpacts = new ArrayList<AlleleFunctionalImpactSlotAnnotation>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleFunctionalImpacts())) {
+			for (AlleleFunctionalImpactSlotAnnotation fi : uiEntity.getAlleleFunctionalImpacts()) {
+				ObjectResponse<AlleleFunctionalImpactSlotAnnotation> fiResponse = alleleFunctionalImpactValidator.validateAlleleFunctionalImpactSlotAnnotation(fi);
+				if (fiResponse.getEntity() == null) {
+					addMessageResponse(field, fiResponse.errorMessagesString());
+					return null;
+				}
+				fi = fiResponse.getEntity();
+				validatedFunctionalImpacts.add(fi);
+			}
+		}
+
+		if (CollectionUtils.isEmpty(validatedFunctionalImpacts))
+			return null;
+
+		return validatedFunctionalImpacts;
+	}
+
 	private void removeUnusedSlotAnnotations(Allele uiEntity, Allele dbEntity) {
 		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleMutationTypes()))
 			removeUnusedAlleleMutationTypes(uiEntity, dbEntity);
@@ -479,5 +533,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		
 		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleInheritanceModes()))
 			removeUnusedAlleleInheritanceModes(uiEntity, dbEntity);
+		
+		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleFunctionalImpacts()))
+			removeUnusedAlleleFunctionalImpacts(uiEntity, dbEntity);
 	}
 }
