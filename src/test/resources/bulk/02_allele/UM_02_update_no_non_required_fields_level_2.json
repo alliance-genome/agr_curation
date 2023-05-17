@@ -47,6 +47,13 @@
         "secondary_id": "TEST:Secondary"
       }
     ],
+    "allele_functional_impact_dtos": [
+      {
+        "functional_impact_names": [
+          "cold_sensitive_hypermorphic"
+        ]
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,
