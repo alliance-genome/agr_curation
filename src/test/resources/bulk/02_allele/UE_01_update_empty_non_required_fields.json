@@ -80,6 +80,20 @@
         "date_updated": ""
       }
     ],
+    "allele_functional_impact_dtos": [
+      {
+        "functional_impact_names": [
+          "cold_sensitive_hypermorphic"
+        ],
+        "phenotype_term_curie": "",
+        "phenotype_statement": "",
+        "created_by_curie": "",
+        "updated_by_curie": "",
+        "date_created": "",
+        "date_updated": "",
+        "evidence_curies": []
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,

@@ -7,13 +7,16 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.RequestScoped;
 
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleFunctionalImpactSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleGermlineTransmissionStatusSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
@@ -55,7 +58,34 @@ public class SlotAnnotationIdentityHelper {
 	
 	public static String alleleGermlineTransmissionStatusDtoIdentity(AlleleGermlineTransmissionStatusSlotAnnotationDTO dto) {
 		String gts = StringUtils.isBlank(dto.getGermlineTransmissionStatusName()) ? "" : dto.getGermlineTransmissionStatusName();
+	
 		return StringUtils.join(List.of(gts, slotAnnotationDtoIdentity(dto)), "|");
+	}
+	
+	public static String alleleFunctionalImpactsIdentity(AlleleFunctionalImpactSlotAnnotation annotation) {
+		String functionalImpactNameString = "";
+		if (CollectionUtils.isNotEmpty(annotation.getFunctionalImpacts())) {
+			List<String> functionalImpactNames = annotation.getFunctionalImpacts().stream().map(VocabularyTerm::getName).collect(Collectors.toList());
+			Collections.sort(functionalImpactNames);
+			functionalImpactNameString = StringUtils.join(functionalImpactNames, ":");
+		}
+		String phenotypeTerm = annotation.getPhenotypeTerm() == null ? "" : annotation.getPhenotypeTerm().getCurie();
+		String phenotypeStatement = StringUtils.isBlank(annotation.getPhenotypeStatement()) ? "" : annotation.getPhenotypeStatement();
+
+		return StringUtils.join(List.of(functionalImpactNameString, phenotypeTerm, phenotypeStatement, slotAnnotationIdentity(annotation)), "|");
+	}
+	
+	public static String alleleFunctionalImpactsDtoIdentity(AlleleFunctionalImpactSlotAnnotationDTO dto) {
+		String functionalImpactNameString = "";
+		List<String> functionalImpactNames = dto.getFunctionalImpactNames();
+		if (CollectionUtils.isNotEmpty(functionalImpactNames)) {
+			Collections.sort(functionalImpactNames);
+			functionalImpactNameString = StringUtils.join(functionalImpactNames, ":");
+		}
+		String phenotypeTerm = StringUtils.isBlank(dto.getPhenotypeTermCurie()) ? "" : dto.getPhenotypeTermCurie();
+		String phenotypeStatement = StringUtils.isBlank(dto.getPhenotypeStatement()) ? "" : dto.getPhenotypeStatement();
+
+		return StringUtils.join(List.of(functionalImpactNameString, phenotypeTerm, phenotypeStatement, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
 	public static String alleleInheritanceModeIdentity(AlleleInheritanceModeSlotAnnotation annotation) {
