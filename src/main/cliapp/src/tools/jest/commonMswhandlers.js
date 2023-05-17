@@ -15,6 +15,17 @@ export const setupSearchHandler = (override = {}) => {
 	)
 }
 
+export const setupVocabularyHandler = () => {
+	server.use(
+		rest.post("*/api/vocabulary/find?limit=100", (req, res, ctx) => {
+			return res(
+				ctx.status(200),
+			)
+		}),
+
+	)
+}
+
 export const setupFindHandler = () => {
 	server.use(
 		rest.post("*/api/:endpoint/find", (req, res, ctx) => {
