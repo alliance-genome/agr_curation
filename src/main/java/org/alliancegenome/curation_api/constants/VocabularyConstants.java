@@ -17,6 +17,7 @@ public final class VocabularyConstants {
 	public static final String ALLELE_INHERITANCE_MODE_VOCABULARY = "Allele inheritance mode vocabulary";
 	public static final String ALLELE_COLLECTION_VOCABULARY = "Allele collection vocabulary";
 	public static final String SEQUENCING_STATUS_VOCABULARY = "Sequencing status vocabulary";
+	public static final String GERMLINE_TRANSMISSION_STATUS_VOCABULARY = "Allele Germline Transmission Status";
 
 	public static final String FULL_NAME_TYPE_TERM_SET = "Full name types";
 	public static final String SYSTEMATIC_NAME_TYPE_TERM_SET = "Systematic name types";

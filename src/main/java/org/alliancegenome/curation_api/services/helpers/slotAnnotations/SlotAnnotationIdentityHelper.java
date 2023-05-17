@@ -11,8 +11,10 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleGermlineTransmissionStatusSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
@@ -43,6 +45,17 @@ public class SlotAnnotationIdentityHelper {
 		}
 		
 		return identity + "|" + slotAnnotationDtoIdentity(dto);
+	}
+	
+	public static String alleleGermlineTransmissionStatusIdentity(AlleleGermlineTransmissionStatusSlotAnnotation annotation) {
+		String gts = annotation.getGermlineTransmissionStatus() == null ? "" : annotation.getGermlineTransmissionStatus().getName();
+		
+		return StringUtils.join(List.of(gts, slotAnnotationIdentity(annotation)), "|");
+	}
+	
+	public static String alleleGermlineTransmissionStatusDtoIdentity(AlleleGermlineTransmissionStatusSlotAnnotationDTO dto) {
+		String gts = StringUtils.isBlank(dto.getGermlineTransmissionStatusName()) ? "" : dto.getGermlineTransmissionStatusName();
+		return StringUtils.join(List.of(gts, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
 	public static String alleleInheritanceModeIdentity(AlleleInheritanceModeSlotAnnotation annotation) {

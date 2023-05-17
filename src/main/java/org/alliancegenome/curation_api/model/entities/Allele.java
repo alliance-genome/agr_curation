@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanAndNullValueBridge;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
@@ -46,7 +47,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleInheritanceModes" }, callSuper = true)
+@ToString(exclude = { "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleInheritanceModes", "alleleGermlineTransmissionStatus" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "allele_inCollection_index", columnList = "inCollection_id"), })
 public class Allele extends GenomicEntity {
@@ -113,4 +114,11 @@ public class Allele extends GenomicEntity {
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleSecondaryIdSlotAnnotation> alleleSecondaryIds;
+	
+	@IndexedEmbedded(includePaths = { "germlineTransmissionStatus.name", "evidence.curie",
+			"germlineTransmissionStatus.name_keyword", "evidence.curie_keyword"})
+	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	@JsonView({ View.FieldsOnly.class })
+	private AlleleGermlineTransmissionStatusSlotAnnotation alleleGermlineTransmissionStatus;
 }
