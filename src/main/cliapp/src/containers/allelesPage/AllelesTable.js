@@ -59,7 +59,6 @@ export const AllelesTable = () => {
 	});
 
 	const [functionalImpactsData, setFunctionalImpactsData] = useState({
-		functionalImpacts: [],
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,

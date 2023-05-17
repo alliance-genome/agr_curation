@@ -166,10 +166,10 @@ export const FunctionalImpactsDialog = ({
 		setLocalFunctionalImpacts(_localFunctionalImpacts);
 	};
 
-	const validateFunctionalImpact = async (im) => {
-		let _im = global.structuredClone(im);
-		delete _im.dataKey;
-		const result = await validationService.validate('alleleinheritancemodeslotannotation', _im);
+	const validateFunctionalImpact = async (fi) => {
+		let _fi = global.structuredClone(fi);
+		delete _fi.dataKey;
+		const result = await validationService.validate('allelefunctionalimpactslotannotation', _fi);
 		return result;
 	};
 
@@ -236,7 +236,7 @@ export const FunctionalImpactsDialog = ({
 		_localFunctionalImpacts[props.rowIndex].internal = event.value.name;
 	}
 
-	const onFunctionalImpactsValueChange = (props, setFieldValue, event) => {
+	const onFunctionalImpactsValueChange = (event, setFieldValue, props) => {
 		multipleAutocompleteOnChange(props, event, "functionalImpacts", setFieldValue);
 	};
 
@@ -419,7 +419,7 @@ export const FunctionalImpactsDialog = ({
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={(props) => functionalImpactsEditor(props)} field="functionalImpacts.name" header="Functional Impacts" headerClassName='surface-0' body={functionalImpactsTemplate}/>
+					<Column editor={functionalImpactsEditor} field="functionalImpacts.name" header="Functional Impacts" headerClassName='surface-0' body={functionalImpactsTemplate}/>
 					<Column editor={phenotypeTermEditorTemplate} field="phenotypeTerm.curie" header="Phenotype Term" headerClassName='surface-0' body={phenotypeTermTemplate}/>
 					<Column
 						editor={(props) => phenotypeStatementEditor(props, errorMessages)}
