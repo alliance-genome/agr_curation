@@ -12,6 +12,7 @@ import { SearchService } from '../../service/SearchService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './InheritanceModesDialog';
+import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDialog';
 import { SymbolDialog } from './SymbolDialog';
 import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
@@ -59,6 +60,13 @@ export const AllelesTable = () => {
 	});
 
 	const [functionalImpactsData, setFunctionalImpactsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [germlineTransmissionStatusData, setGermlineTransmissionStatusData] = useState({
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -625,6 +633,83 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	const germlineTransmissionStatusTemplate = (rowData) => {
+		if (rowData?.alleleGermlineTransmissionStatus) {
+			return (
+				<>
+					<Button className="p-button-text"
+						onClick={(event) => { handleGermlineTransmissionStatusOpen(event, rowData, false) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`${rowData.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name}`}
+						</span>								
+					</Button>
+				</>
+			);
+		}
+	};
+
+	const germlineTransmissionStatusEditor = (props) => {
+		if (props?.rowData?.alleleGermlineTransmissionStatus) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleGermlineTransmissionStatusOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`${props.rowData.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name}`}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<EditMessageTooltip object="allele"/>
+					</Button>
+				</div>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleGermlineTransmissionStatus"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleGermlineTransmissionStatusOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Germline Transmission Status
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<EditMessageTooltip object="allele"/>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleGermlineTransmissionStatus"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+	const handleGermlineTransmissionStatusOpen = (event, rowData, isInEdit) => {
+		let _germlineTransmissionStatusData = {};
+		_germlineTransmissionStatusData["originalGermlineTransmissionStatuses"] = [rowData.alleleGermlineTransmissionStatus];
+		_germlineTransmissionStatusData["dialog"] = true;
+		_germlineTransmissionStatusData["isInEdit"] = isInEdit;
+		setGermlineTransmissionStatusData(() => ({
+			..._germlineTransmissionStatusData
+		}));
+	};
+
+	const handleGermlineTransmissionStatusOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _germlineTransmissionStatusData = {};
+		_germlineTransmissionStatusData["originalGermlineTransmissionStatuses"] = [rowProps.rowData.alleleGermlineTransmissionStatus];
+		_germlineTransmissionStatusData["dialog"] = true;
+		_germlineTransmissionStatusData["isInEdit"] = isInEdit;
+		_germlineTransmissionStatusData["rowIndex"] = index;
+		_germlineTransmissionStatusData["mainRowProps"] = rowProps;
+		setGermlineTransmissionStatusData(() => ({
+			..._germlineTransmissionStatusData
+		}));
+	};
+
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
@@ -962,6 +1047,14 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.alleleFunctionalImpactsFilterConfig,
 		},
 		{
+			field: "alleleGermlineTransmissionStatus.germlineTransmissionStatus.name",
+			header: "Germline Transmission Status",
+			body: germlineTransmissionStatusTemplate,
+			editor: (props) => germlineTransmissionStatusEditor(props),
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
+		},
+		{
 			field: "references.curie",
 			header: "References",
 			body: referencesTemplate,
@@ -1110,6 +1203,12 @@ export const AllelesTable = () => {
 			<FunctionalImpactsDialog
 				originalFunctionalImpactsData={functionalImpactsData}
 				setOriginalFunctionalImpactsData={setFunctionalImpactsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<GermlineTransmissionStatusDialog
+				originalGermlineTransmissionStatusData={germlineTransmissionStatusData}
+				setOriginalGermlineTransmissionStatusData={setGermlineTransmissionStatusData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
