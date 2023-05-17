@@ -219,6 +219,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> gtsResponse = alleleGermlineTransmissionStatusDtoValidator.validateAlleleGermlineTransmissionStatusSlotAnnotationDTO(germlineTransmissionStatus, dto.getAlleleGermlineTransmissionStatusDto());
 			if (gtsResponse.hasErrors()) {
 				alleleResponse.addErrorMessage("allele_germline_transmission_status_dto", gtsResponse.errorMessagesString());
+			} else {
+				germlineTransmissionStatus = gtsResponse.getEntity();
 			}
 		} else {
 			germlineTransmissionStatus = null;

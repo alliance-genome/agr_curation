@@ -443,6 +443,9 @@ public class AlleleValidator extends GenomicEntityValidator {
 	}
 	
 	private AlleleGermlineTransmissionStatusSlotAnnotation validateAlleleGermlineTransmissionStatus(Allele uiEntity, Allele dbEntity) {
+		if (uiEntity.getAlleleGermlineTransmissionStatus() == null)
+			return null;
+		
 		String field = "alleleGermlineTransmissionStatus";
 		
 		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> agtsResponse = alleleGermlineTransmissionStatusValidator.validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity.getAlleleGermlineTransmissionStatus());

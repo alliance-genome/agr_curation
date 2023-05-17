@@ -33,7 +33,7 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator extends 
 			VocabularyTerm gts = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, dto.getGermlineTransmissionStatusName());
 			if (gts == null)
 				agtsResponse.addErrorMessage("germline_transmission_status_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGermlineTransmissionStatusName() + ")");
-			annotation.setGermlineTransmissionStatus(gts);;
+			annotation.setGermlineTransmissionStatus(gts);
 		} else {
 			agtsResponse.addErrorMessage("germline_transmission_status_name", ValidationConstants.REQUIRED_MESSAGE);
 		}

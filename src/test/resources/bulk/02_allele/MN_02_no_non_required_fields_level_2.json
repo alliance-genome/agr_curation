@@ -54,6 +54,9 @@
         ]
       }
     ],
+    "allele_germline_transmission_status_dto": {
+      "germline_transmission_status_name": "cell_line"
+    },
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,
