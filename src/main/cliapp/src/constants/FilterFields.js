@@ -8,6 +8,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "abstractFilter",
     fields: ["abstract"],
   },
+  alleleFunctionalImpactsFieldSet: {
+    filterName: "alleleFunctionalImpactsFilter",
+    fields: ["alleleFunctionalImpacts.functionalImpacts.name", "alleleFunctionalImpacts.phenotypeTerm.curie", "alleleFunctionalImpacts.phenotypeTerm.name", "alleleFunctionalImpacts.phenotypeStatement", "alleleFunctionalImpacts.evidence.curie"],
+  },
   alleleNameFieldSet: {
     filterName: "alleleNameFilter",
     fields: ["alleleFullName.displayText", "alleleFullName.formatText"],
@@ -353,6 +357,7 @@ export const FIELD_SETS = Object.freeze({
 export const FILTER_CONFIGS = Object.freeze({
   abbreviationFilterConfig:                 { filterComponentType: 'input', fieldSets: [FIELD_SETS.abbreviationFieldSet] },
   abstractFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.abstractFieldSet]},
+  alleleFunctionalImpactsFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleFunctionalImpactsFieldSet] },
   alleleInheritanceModesFilterConfig:       { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleInheritanceModesFieldSet] },
   alleleMutationFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleMutationFieldSet] },
   alleleNameFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleNameFieldSet] },
