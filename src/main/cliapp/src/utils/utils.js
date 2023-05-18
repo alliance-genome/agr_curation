@@ -276,7 +276,6 @@ export function defaultAutocompleteOnChange(rowProps, event, fieldName, setField
 }
 
 export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
-	console.log(rowProps)
 	let updatedRows = [...rowProps.props.value];
 	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
 	if (!event.target.value) {
