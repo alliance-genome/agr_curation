@@ -19,7 +19,7 @@ CREATE TABLE allelegermlinetransmissionstatusslotannotation_aud (
 
 ALTER TABLE allelegermlinetransmissionstatusslotannotation_aud ADD PRIMARY KEY (id, rev);
 
-ALTER TABLE allelegermlinetransmissionstatusslotannotation_aud ADD CONSTRAINT allelegermlinetransmissionstatusslotannotation_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES slotannotation_aud (id, rev);
+ALTER TABLE allelegermlinetransmissionstatusslotannotation_aud ADD CONSTRAINT allelegermlinetransmissionstatus_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES slotannotation_aud (id, rev);
 
 INSERT INTO vocabulary (id, name) VALUES (nextval('hibernate_sequence'), 'Allele Germline Transmission Status');
 	
