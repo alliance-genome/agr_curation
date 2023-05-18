@@ -8,7 +8,7 @@ ALTER TABLE allelegermlinetransmissionstatusslotannotation ADD CONSTRAINT allele
 ALTER TABLE allelegermlinetransmissionstatusslotannotation ADD CONSTRAINT allelegermlinetransmissionstatus_status_id_fk FOREIGN KEY (germlinetransmissionstatus_id) REFERENCES vocabularyterm (id);
 
 CREATE INDEX allelegermlinetransmissionstatus_singleallele_curie_index ON allelegermlinetransmissionstatusslotannotation USING btree (singleallele_curie);
-CREATE INDEX allelegermlinetransmissionstatus_germlinetransmissionstatus_id_index ON allelegermlinetransmissionstatusslotannotation USING btree (germlinetransmissionstatus_id);
+CREATE INDEX allelegermlinetransmissionstatus_status_id_index ON allelegermlinetransmissionstatusslotannotation USING btree (germlinetransmissionstatus_id);
 
 CREATE TABLE allelegermlinetransmissionstatusslotannotation_aud (
     id bigint NOT NULL,
