@@ -17,6 +17,7 @@ import { SymbolDialog } from './SymbolDialog';
 import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
 import { SynonymsDialog } from './SynonymsDialog';
+import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
@@ -36,7 +37,15 @@ export const AllelesTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
-
+	
+	const [relatedNotesData, setRelatedNotesData] = useState({
+		relatedNotes: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+	
 	const [symbolData, setSymbolData] = useState({
 		isInEdit: false,
 		dialog: false,
@@ -322,6 +331,80 @@ export const AllelesTable = () => {
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"isExtinct"} />
 			</>
 		);
+	};
+
+	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+		let _relatedNotesData = {};
+		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
+		_relatedNotesData["dialog"] = true;
+		_relatedNotesData["isInEdit"] = isInEdit;
+		setRelatedNotesData(() => ({
+			..._relatedNotesData
+		}));
+	};
+
+	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _relatedNotesData = {};
+		_relatedNotesData["originalRelatedNotes"] = rowProps.rowData.relatedNotes;
+		_relatedNotesData["dialog"] = true;
+		_relatedNotesData["isInEdit"] = isInEdit;
+		_relatedNotesData["rowIndex"] = index;
+		_relatedNotesData["mainRowProps"] = rowProps;
+		setRelatedNotesData(() => ({
+			..._relatedNotesData
+		}));
+	};
+
+	const relatedNotesTemplate = (rowData) => {
+		if (rowData?.relatedNotes) {
+			return (
+				<Button className="p-button-text"
+					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
+					<span style={{ textDecoration: 'underline' }}>
+						{`Notes(${rowData.relatedNotes.length})`}
+					</span>
+				</Button>
+			)
+		}
+	};
+
+	const relatedNotesEditor = (props) => {
+		if (props?.rowData?.relatedNotes) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`Notes(${props.rowData.relatedNotes.length}) `}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<EditMessageTooltip/>
+					</Button>
+				</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Note
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<EditMessageTooltip/>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
 	};
 
 	const symbolTemplate = (rowData) => {
@@ -1084,7 +1167,16 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => isExtinctEditor(props)
-		},{
+		},
+		{
+			field: "relatedNotes.freeText",
+			header: "Related Notes",
+			body: relatedNotesTemplate,
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+			editor: relatedNotesEditor
+		},
+		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
 			sortable: isEnabled,
@@ -1209,6 +1301,12 @@ export const AllelesTable = () => {
 			<GermlineTransmissionStatusDialog
 				originalGermlineTransmissionStatusData={germlineTransmissionStatusData}
 				setOriginalGermlineTransmissionStatusData={setGermlineTransmissionStatusData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<RelatedNotesDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>

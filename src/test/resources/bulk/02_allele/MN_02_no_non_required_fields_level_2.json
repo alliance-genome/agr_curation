@@ -57,6 +57,12 @@
     "allele_germline_transmission_status_dto": {
       "germline_transmission_status_name": "cell_line"
     },
+    "note_dtos": [
+      {
+        "free_text": "Test note",
+        "note_type_name": "comment"
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,

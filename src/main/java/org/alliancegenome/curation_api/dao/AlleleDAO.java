@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.dao;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.persistence.Query;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -10,6 +11,9 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
+	
+	@Inject
+	NoteDAO noteDAO;
 
 	protected AlleleDAO() {
 		super(Allele.class);
@@ -35,6 +39,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		results.addAll((List<Long>) jpqlQuery.getResultList());
 
 		return results;
+	}
+
+	public void deleteAttachedNote(Long id) {
+		Query jpqlQuery = entityManager.createNativeQuery("DELETE FROM allele_note WHERE relatednotes_id = '" + id + "'");
+		jpqlQuery.executeUpdate();
+
+		noteDAO.remove(id);
 	}
 
 }

@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDAO;
@@ -24,6 +25,8 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -45,6 +48,7 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 
 @RequestScoped
 public class AlleleValidator extends GenomicEntityValidator {
@@ -68,6 +72,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	@Inject
 	AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
 	@Inject
+	NoteDAO noteDAO;
+	@Inject
 	AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
 	@Inject
 	AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
@@ -83,6 +89,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
 	@Inject
 	AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
+	@Inject
+	NoteValidator noteValidator;
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	@Inject
@@ -157,6 +165,9 @@ public class AlleleValidator extends GenomicEntityValidator {
 		} else {
 			dbEntity.setIsExtinct(null);
 		}
+		
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
+		dbEntity.setRelatedNotes(relatedNotes);
 
 		List<Long> currentXrefIds;
 		if (dbEntity.getCrossReferences() == null) {
@@ -291,6 +302,43 @@ public class AlleleValidator extends GenomicEntityValidator {
 			return null;
 		}
 		return inCollection;
+	}
+
+	public List<Note> validateRelatedNotes(Allele uiEntity, Allele dbEntity) {
+		String field = "relatedNotes";
+
+		List<Note> validatedNotes = new ArrayList<Note>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
+			for (Note note : uiEntity.getRelatedNotes()) {
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
+				if (noteResponse.getEntity() == null) {
+					addMessageResponse(field, noteResponse.errorMessagesString());
+					return null;
+				}
+				validatedNotes.add(noteResponse.getEntity());
+			}
+		}
+
+		List<Long> previousNoteIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes()))
+			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
+		List<Long> validatedNoteIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(validatedNotes))
+			validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
+		for (Note validatedNote : validatedNotes) {
+			if (!previousNoteIds.contains(validatedNote.getId())) {
+				noteDAO.persist(validatedNote);
+			}
+		}
+		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
+		for (Long id : idsToRemove) {
+			alleleDAO.deleteAttachedNote(id);
+		}
+
+		if (CollectionUtils.isEmpty(validatedNotes))
+			return null;
+
+		return validatedNotes;
 	}
 
 	private void removeUnusedAlleleMutationTypes(Allele uiEntity, Allele dbEntity) {

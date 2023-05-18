@@ -1,13 +1,13 @@
 [
   {
-    "curie": "ALLELETEST:ER06",
+    "curie": "ALLELETEST:IV29",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
-    "obsolete": false,
+    "obsolete": true,
     "created_by_curie": "ALLELETEST:Person0001",
     "updated_by_curie": "ALLELETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
-    "date_updated": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-10T22:10:12+00:00",
     "is_extinct": false,
     "in_collection_name": "Million_mutations_project",
     "reference_curies": [
@@ -20,7 +20,13 @@
         ],
         "mutation_type_curies": [
           "SO:00001"
-        ]
+        ],
+        "internal": true,
+        "obsolete": true,
+        "created_by_curie": "ALLELETEST:Person0001",
+        "updated_by_curie": "ALLELETEST:Person0002",
+        "date_created": "2022-03-09T22:10:12+00:00",
+        "date_updated": "2022-03-10T22:10:12+00:00"
       }
     ],
     "allele_inheritance_mode_dtos": [
@@ -47,7 +53,13 @@
       "name_type_name": "nomenclature_symbol",
       "evidence_curies": [
         "PMID:25920550"
-      ]
+      ],
+      "internal": true,
+      "obsolete": true,
+      "created_by_curie": "ALLELETEST:Person0001",
+      "updated_by_curie": "ALLELETEST:Person0002",
+      "date_created": "2022-03-09T22:10:12+00:00",
+      "date_updated": "2022-03-10T22:10:12+00:00"
     },
     "allele_full_name_dto": {
       "display_text": "Test allele 1",
@@ -57,18 +69,30 @@
       "name_type_name": "full_name",
       "evidence_curies": [
         "PMID:25920550"
-      ]
+      ],
+      "internal": true,
+      "obsolete": true,
+      "created_by_curie": "ALLELETEST:Person0001",
+      "updated_by_curie": "ALLELETEST:Person0002",
+      "date_created": "2022-03-09T22:10:12+00:00",
+      "date_updated": "2022-03-10T22:10:12+00:00"
     },
     "allele_synonym_dtos": [
       {
-        "display_text": "",
+        "display_text": "Test allele synonym 1",
         "format_text": "Test allele synonym <sup>1</sup>",
         "synonym_scope_name": "exact",
         "synonym_url": "https://alliancegenome.org/test",
         "name_type_name": "unspecified",
         "evidence_curies": [
           "PMID:25920550"
-        ]
+        ],
+        "internal": true,
+        "obsolete": true,
+        "created_by_curie": "ALLELETEST:Person0001",
+        "updated_by_curie": "ALLELETEST:Person0002",
+        "date_created": "2022-03-09T22:10:12+00:00",
+        "date_updated": "2022-03-10T22:10:12+00:00"
       }
     ],
     "allele_secondary_id_dtos": [
@@ -76,7 +100,13 @@
         "secondary_id": "TEST:Secondary",
         "evidence_curies": [
           "PMID:25920550"
-        ]
+        ],
+        "internal": true,
+        "obsolete": true,
+        "created_by_curie": "ALLELETEST:Person0001",
+        "updated_by_curie": "ALLELETEST:Person0002",
+        "date_created": "2022-03-09T22:10:12+00:00",
+        "date_updated": "2022-03-10T22:10:12+00:00"
       }
     ],
     "allele_functional_impact_dtos": [
@@ -112,7 +142,7 @@
     "note_dtos": [
       {
         "free_text": "Test note",
-        "note_type_name": "comment",
+        "note_type_name": "invalid_note_type",
         "internal": true,
         "obsolete": true,
         "created_by_curie": "DATEST:Person0001",

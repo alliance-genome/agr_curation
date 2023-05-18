@@ -14,7 +14,7 @@ import lombok.Data;
 @Data
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class,
 	NameSlotAnnotationDTO.class, SecondaryIdSlotAnnotationDTO.class, AlleleInheritanceModeSlotAnnotationDTO.class, AlleleFunctionalImpactSlotAnnotationDTO.class, 
-	AlleleGermlineTransmissionStatusSlotAnnotationDTO.class }, submitted = true)
+	AlleleGermlineTransmissionStatusSlotAnnotationDTO.class, NoteDTO.class }, submitted = true)
 public class AlleleDTO extends GenomicEntityDTO {
 
 	@JsonView({ View.FieldsAndLists.class })
@@ -60,5 +60,9 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("allele_functional_impact_dtos")
 	private List<AlleleFunctionalImpactSlotAnnotationDTO> alleleFunctionalImpactDtos;
+
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("note_dtos")
+	private List<NoteDTO> noteDtos;
 
 }

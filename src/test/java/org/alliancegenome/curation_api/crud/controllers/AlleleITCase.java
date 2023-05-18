@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.crud.controllers;
 
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -15,6 +16,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -33,6 +35,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.eclipse.birt.report.model.core.ReferencableStyledElement;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -58,6 +61,7 @@ public class AlleleITCase extends BaseITCase {
 	private Vocabulary nameTypeVocabulary;
 	private Vocabulary synonymScopeVocabulary;
 	private Vocabulary functionalImpactVocabulary;
+	private Vocabulary noteTypeVocabulary;
 	private VocabularyTerm dominantInheritanceMode;
 	private VocabularyTerm recessiveInheritanceMode;
 	private VocabularyTerm obsoleteInheritanceModeTerm;
@@ -79,6 +83,9 @@ public class AlleleITCase extends BaseITCase {
 	private VocabularyTerm cellLineGTS;
 	private VocabularyTerm germlineGTS;
 	private VocabularyTerm obsoleteGTS;
+	private VocabularyTerm noteType;
+	private VocabularyTerm noteType2;
+	private VocabularyTerm obsoleteNoteType;
 	private Reference reference;
 	private Reference reference2;
 	private Reference obsoleteReference;
@@ -94,6 +101,7 @@ public class AlleleITCase extends BaseITCase {
 	private MPTerm mpTerm;
 	private MPTerm mpTerm2;
 	private MPTerm obsoleteMpTerm;
+	private Note relatedNote;
 	private AlleleMutationTypeSlotAnnotation alleleMutationType;
 	private AlleleInheritanceModeSlotAnnotation alleleInheritanceMode;
 	private AlleleGermlineTransmissionStatusSlotAnnotation alleleGermlineTransmissionStatus;
@@ -115,6 +123,7 @@ public class AlleleITCase extends BaseITCase {
 		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScopeVocabulary = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
 		functionalImpactVocabulary = getVocabulary(VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY);
+		noteTypeVocabulary = getVocabulary(VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
 		dominantInheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
 		recessiveInheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "recessive");
 		obsoleteInheritanceModeTerm = createVocabularyTerm(inheritanceModeVocabulary, "obsolete_mode", true);
@@ -152,6 +161,10 @@ public class AlleleITCase extends BaseITCase {
 		mpTerm = getMpTerm("MP:00001");
 		mpTerm2 = getMpTerm("MP:00002");
 		obsoleteMpTerm = createMpTerm("MP:00000", true);
+		noteType = getVocabularyTerm(noteTypeVocabulary, "comment");
+		noteType2 = getVocabularyTerm(noteTypeVocabulary, "user_submitted_note");
+		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
+		relatedNote = createNote(noteType, "Test text", false, reference);
 		alleleMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), List.of(soTerm));
 		alleleGermlineTransmissionStatus = createAlleleGermlineTransmissionStatusSlotAnnotation(List.of(reference), cellLineGTS);
 		alleleInheritanceMode = createAlleleInheritanceModeSlotAnnotation(List.of(reference), dominantInheritanceMode, mpTerm, "Phenotype statement");
@@ -188,6 +201,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleSecondaryIds(List.of(alleleSecondaryId));
 		allele.setAlleleFunctionalImpacts(List.of(alleleFunctionalImpact));
 		allele.setDataProvider(dataProvider);
+		allele.setRelatedNotes(List.of(relatedNote));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -212,6 +226,11 @@ public class AlleleITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].noteType.name", is(relatedNote.getNoteType().getName())).
+			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].references[0].curie", is(reference.getCurie())).
 			body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
 			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
 			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(reference.getCurie())).
@@ -261,6 +280,13 @@ public class AlleleITCase extends BaseITCase {
 		allele.setObsolete(true);
 		allele.setDateCreated(datetime2);
 		allele.setDataProvider(dataProvider2);
+		
+		Note editedNote = allele.getRelatedNotes().get(0);
+		editedNote.setNoteType(noteType2);
+		editedNote.setFreeText("Edited text");
+		editedNote.setInternal(true);
+		editedNote.setReferences(List.of(reference2));
+		allele.setRelatedNotes(List.of(editedNote));
 		
 		AlleleMutationTypeSlotAnnotation editedMutationType = allele.getAlleleMutationTypes().get(0);
 		editedMutationType.setMutationTypes(List.of(soTerm2));
@@ -341,6 +367,11 @@ public class AlleleITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.isExtinct", is(true)).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].noteType.name", is(editedNote.getNoteType().getName())).
+			body("entity.relatedNotes[0].freeText", is(editedNote.getFreeText())).
+			body("entity.relatedNotes[0].internal", is(true)).
+			body("entity.relatedNotes[0].references[0].curie", is(reference2.getCurie())).
 			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
 			body("entity.alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
 			body("entity.alleleGermlineTransmissionStatus.evidence[0].curie", is(reference2.getCurie())).
@@ -494,6 +525,7 @@ public class AlleleITCase extends BaseITCase {
 		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = new AlleleSecondaryIdSlotAnnotation();
 		AlleleGermlineTransmissionStatusSlotAnnotation invalidGTS = new AlleleGermlineTransmissionStatusSlotAnnotation();
 		AlleleFunctionalImpactSlotAnnotation invalidFunctionalImpact = new AlleleFunctionalImpactSlotAnnotation();
+		Note invalidNote = new Note();
 		
 		allele.setAlleleMutationTypes(List.of(invalidMutationType));
 		allele.setAlleleInheritanceModes(List.of(invalidInheritanceMode));
@@ -503,6 +535,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleSynonyms(List.of(invalidSynonym));
 		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
 		allele.setAlleleFunctionalImpacts(List.of(invalidFunctionalImpact));
+		allele.setRelatedNotes(List.of(invalidNote));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -511,7 +544,7 @@ public class AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(8))).
+			body("errorMessages", is(aMapWithSize(9))).
 			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleInheritanceModes", is("inheritanceMode - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
@@ -528,7 +561,10 @@ public class AlleleITCase extends BaseITCase {
 					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleFunctionalImpacts", is("functionalImpacts - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleGermlineTransmissionStatus", is("germlineTransmissionStatus - " + ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.alleleGermlineTransmissionStatus", is("germlineTransmissionStatus - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
+					"freeText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"noteType - " + ValidationConstants.REQUIRED_MESSAGE))));
 	}
 	
 	@Test
@@ -558,6 +594,10 @@ public class AlleleITCase extends BaseITCase {
 		invalidFunctionalImpact.setFunctionalImpacts(null);
 		AlleleGermlineTransmissionStatusSlotAnnotation invalidGTS = allele.getAlleleGermlineTransmissionStatus();
 		invalidGTS.setGermlineTransmissionStatus(null);
+		Note invalidNote = allele.getRelatedNotes().get(0);
+		invalidNote.setNoteType(null);
+		invalidNote.setFreeText(null);
+		allele.setRelatedNotes(List.of(invalidNote));
 		
 		allele.setAlleleMutationTypes(List.of(invalidMutationType));
 		allele.setAlleleSymbol(invalidSymbol);
@@ -566,6 +606,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
 		allele.setAlleleFunctionalImpacts(List.of(invalidFunctionalImpact));
 		allele.setAlleleGermlineTransmissionStatus(invalidGTS);
+		allele.setRelatedNotes(List.of(invalidNote));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -574,7 +615,7 @@ public class AlleleITCase extends BaseITCase {
 			put("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(8))).
+			body("errorMessages", is(aMapWithSize(9))).
 			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleInheritanceModes", is("inheritanceMode - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
@@ -591,7 +632,10 @@ public class AlleleITCase extends BaseITCase {
 					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleFunctionalImpacts", is("functionalImpacts - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleGermlineTransmissionStatus", is("germlineTransmissionStatus - " + ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.alleleGermlineTransmissionStatus", is("germlineTransmissionStatus - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
+					"freeText - " + ValidationConstants.REQUIRED_MESSAGE,
+					"noteType - " + ValidationConstants.REQUIRED_MESSAGE))));
 	}
 	
 	@Test
@@ -606,6 +650,11 @@ public class AlleleITCase extends BaseITCase {
 		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(null, "", systematicNameType, null, null);
 		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(null, "");
 		
+		Note invalidNote = new Note();
+		invalidNote.setNoteType(noteType);
+		invalidNote.setFreeText("");
+		allele.setRelatedNotes(List.of(invalidNote));
+		
 		allele.setAlleleSymbol(invalidSymbol);
 		allele.setAlleleFullName(invalidFullName);
 		allele.setAlleleSynonyms(List.of(invalidSynonym));
@@ -618,7 +667,7 @@ public class AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -628,7 +677,8 @@ public class AlleleITCase extends BaseITCase {
 			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -647,11 +697,14 @@ public class AlleleITCase extends BaseITCase {
 		invalidSynonym.setFormatText("");
 		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
 		invalidSecondaryId.setSecondaryId("");
+		Note invalidNote = allele.getRelatedNotes().get(0);
+		invalidNote.setFreeText("");
 		
 		allele.setAlleleSymbol(invalidSymbol);
 		allele.setAlleleFullName(invalidFullName);
 		allele.setAlleleSynonyms(List.of(invalidSynonym));
 		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
+		allele.setRelatedNotes(List.of(invalidNote));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -660,7 +713,7 @@ public class AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -670,7 +723,8 @@ public class AlleleITCase extends BaseITCase {
 			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
@@ -687,6 +741,11 @@ public class AlleleITCase extends BaseITCase {
 		DataProvider invalidDataProvider = new DataProvider();
 		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
+		Note invalidNote = new Note();
+		invalidNote.setNoteType(dominantInheritanceMode);
+		invalidNote.setReferences(List.of(nonPersistedReference));
+		invalidNote.setFreeText("Invalid");
+		
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0012");
 		allele.setTaxon(nonPersistedTaxon);
@@ -695,6 +754,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setIsExtinct(false);
 		allele.setDateCreated(datetime);
 		allele.setDataProvider(invalidDataProvider);
+		allele.setRelatedNotes(List.of(invalidNote));
 		
 		AlleleMutationTypeSlotAnnotation invalidMutationType = createAlleleMutationTypeSlotAnnotation(List.of(nonPersistedReference), List.of(nonPersistedSoTerm));
 		AlleleInheritanceModeSlotAnnotation invalidInheritanceMode = createAlleleInheritanceModeSlotAnnotation(List.of(nonPersistedReference), fullNameType, nonPersistedMpTerm, "Invalid");
@@ -721,7 +781,7 @@ public class AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(12))).
+			body("errorMessages", is(aMapWithSize(13))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
@@ -752,7 +812,10 @@ public class AlleleITCase extends BaseITCase {
 					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"germlineTransmissionStatus - " + ValidationConstants.INVALID_MESSAGE))));
+					"germlineTransmissionStatus - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
+					"noteType - " + ValidationConstants.INVALID_MESSAGE,
+					"references - " + ValidationConstants.INVALID_MESSAGE))));
 	}
 
 	@Test
@@ -806,6 +869,10 @@ public class AlleleITCase extends BaseITCase {
 		invalidGTS.setEvidence(List.of(nonPersistedReference));
 		invalidGTS.setGermlineTransmissionStatus(dominantInheritanceMode);
 		
+		Note invalidNote = allele.getRelatedNotes().get(0);
+		invalidNote.setReferences(List.of(nonPersistedReference));
+		invalidNote.setNoteType(mmpInCollection);
+		
 		allele.setAlleleMutationTypes(List.of(invalidMutationType));
 		allele.setAlleleInheritanceModes(List.of(invalidInheritanceMode));
 		allele.setAlleleSymbol(invalidSymbol);
@@ -814,6 +881,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleSecondaryIds(List.of(invalidSecondaryId));
 		allele.setAlleleFunctionalImpacts(List.of(invalidFunctionalImpact));
 		allele.setAlleleGermlineTransmissionStatus(invalidGTS);
+		allele.setRelatedNotes(List.of(invalidNote));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -822,7 +890,7 @@ public class AlleleITCase extends BaseITCase {
 			put("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(12))).
+			body("errorMessages", is(aMapWithSize(13))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
@@ -853,7 +921,10 @@ public class AlleleITCase extends BaseITCase {
 					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"germlineTransmissionStatus - " + ValidationConstants.INVALID_MESSAGE))));
+					"germlineTransmissionStatus - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
+					"noteType - " + ValidationConstants.INVALID_MESSAGE,
+					"references - " + ValidationConstants.INVALID_MESSAGE))));
 	}
 
 	@Test
@@ -865,6 +936,12 @@ public class AlleleITCase extends BaseITCase {
 		allele.setInCollection(obsoleteCollection);
 		allele.setReferences(List.of(obsoleteReference));
 		allele.setDataProvider(obsoleteDataProvider);
+		
+		Note obsoleteNote = new Note();
+		obsoleteNote.setNoteType(obsoleteNoteType);
+		obsoleteNote.setReferences(List.of(obsoleteReference));
+		obsoleteNote.setFreeText("Obsolete");
+		allele.setRelatedNotes(List.of(obsoleteNote));
 		
 		AlleleMutationTypeSlotAnnotation obsoleteMutationType = createAlleleMutationTypeSlotAnnotation(List.of(obsoleteReference), List.of(obsoleteSoTerm));
 		AlleleInheritanceModeSlotAnnotation obsoleteInheritanceMode = createAlleleInheritanceModeSlotAnnotation(List.of(obsoleteReference), obsoleteInheritanceModeTerm, obsoleteMpTerm, "Obsolete");
@@ -891,7 +968,7 @@ public class AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(12))).
+			body("errorMessages", is(aMapWithSize(13))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
@@ -922,7 +999,10 @@ public class AlleleITCase extends BaseITCase {
 					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"germlineTransmissionStatus - " + ValidationConstants.OBSOLETE_MESSAGE))));
+					"germlineTransmissionStatus - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
+					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
 	}
 
 	@Test
@@ -933,6 +1013,11 @@ public class AlleleITCase extends BaseITCase {
 		allele.setInCollection(obsoleteCollection);
 		allele.setReferences(List.of(obsoleteReference));
 		allele.setDataProvider(obsoleteDataProvider);
+		
+		Note obsoleteNote = allele.getRelatedNotes().get(0);
+		obsoleteNote.setNoteType(obsoleteNoteType);
+		obsoleteNote.setReferences(List.of(obsoleteReference));
+		allele.setRelatedNotes(List.of(obsoleteNote));
 		
 		AlleleMutationTypeSlotAnnotation obsoleteMutationType = allele.getAlleleMutationTypes().get(0);
 		obsoleteMutationType.setEvidence(List.of(obsoleteReference));
@@ -978,7 +1063,7 @@ public class AlleleITCase extends BaseITCase {
 			put("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(12))).
+			body("errorMessages", is(aMapWithSize(13))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
@@ -1009,7 +1094,10 @@ public class AlleleITCase extends BaseITCase {
 					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"germlineTransmissionStatus - " + ValidationConstants.OBSOLETE_MESSAGE))));
+					"germlineTransmissionStatus - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
+					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
 	}
 
 	@Test
@@ -1052,6 +1140,9 @@ public class AlleleITCase extends BaseITCase {
 		AlleleGermlineTransmissionStatusSlotAnnotation editedGTS = allele.getAlleleGermlineTransmissionStatus();
 		editedGTS.setEvidence(null);
 		
+		Note editedNote = allele.getRelatedNotes().get(0);
+		editedNote.setReferences(null);
+		
 		allele.setAlleleMutationTypes(List.of(editedMutationType));
 		allele.setAlleleInheritanceModes(List.of(editedInheritanceMode));
 		allele.setAlleleSymbol(editedSymbol);
@@ -1060,6 +1151,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleSecondaryIds(List.of(editedSecondaryId));
 		allele.setAlleleFunctionalImpacts(List.of(editedFunctionalImpact));
 		allele.setAlleleGermlineTransmissionStatus(editedGTS);
+		allele.setRelatedNotes(List.of(editedNote));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1097,7 +1189,8 @@ public class AlleleITCase extends BaseITCase {
 			body("entity.alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
 			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
 			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
-			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence")));
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence"))).
+			body("entity.relatedNotes[0]", not(hasKey("references")));
 	}
 
 	@Test
@@ -1116,6 +1209,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleInheritanceModes(null);
 		allele.setAlleleFunctionalImpacts(null);
 		allele.setAlleleGermlineTransmissionStatus(null);
+		allele.setRelatedNotes(null);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1140,7 +1234,8 @@ public class AlleleITCase extends BaseITCase {
 			body("entity", not(hasKey("alleleSynonyms"))).
 			body("entity", not(hasKey("alleleSecondaryIds"))).
 			body("entity", not(hasKey("alleleFunctionalImpacts"))).
-			body("entity", not(hasKey("alleleGermlineTransmissionStatus")));
+			body("entity", not(hasKey("alleleGermlineTransmissionStatus"))).
+			body("entity", not(hasKey("relatedNotes")));
 	}
 	
 	@Test
@@ -1176,6 +1271,8 @@ public class AlleleITCase extends BaseITCase {
 		AlleleFunctionalImpactSlotAnnotation minimalFunctionalImpact = createAlleleFunctionalImpactSlotAnnotation(null, List.of(hypermorphicFunctionalImpact), null, null);
 		AlleleGermlineTransmissionStatusSlotAnnotation minimalGTS = createAlleleGermlineTransmissionStatusSlotAnnotation(null, cellLineGTS);
 		
+		Note minimalNote = createNote(noteType, "Test text", false, null);
+		
 		allele.setAlleleSymbol(minimalAlleleSymbol);
 		allele.setAlleleFullName(minimalAlleleFullName);
 		allele.setAlleleSynonyms(List.of(minimalAlleleSynonym));
@@ -1184,6 +1281,7 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleInheritanceModes(List.of(minimalAlleleInheritanceMode));
 		allele.setAlleleFunctionalImpacts(List.of(minimalFunctionalImpact));
 		allele.setAlleleGermlineTransmissionStatus(minimalGTS);
+		allele.setRelatedNotes(List.of(minimalNote));
 		
 		RestAssured.given().
 			contentType("application/json").

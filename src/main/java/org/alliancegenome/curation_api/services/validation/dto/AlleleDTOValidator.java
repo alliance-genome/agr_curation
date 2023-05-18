@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
@@ -24,6 +25,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
@@ -39,6 +41,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AlleleFunctionalImpactSl
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
@@ -81,6 +84,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	@Inject
 	ReferenceDAO referenceDAO;
 	@Inject
+	NoteDAO noteDAO;
+	@Inject
 	ReferenceService referenceService;
 	@Inject
 	AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
@@ -98,6 +103,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	AlleleSecondaryIdSlotAnnotationDTOValidator alleleSecondaryIdDtoValidator;
 	@Inject
 	AlleleFunctionalImpactSlotAnnotationDTOValidator alleleFunctionalImpactDtoValidator;
+	@Inject
+	NoteDTOValidator noteDtoValidator;
 
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
@@ -145,6 +152,26 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			allele.setReferences(references);
 		} else {
 			allele.setReferences(null);
+		}
+		
+		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
+			allele.getRelatedNotes().forEach(note -> {
+				alleleDAO.deleteAttachedNote(note.getId());
+			});
+		}
+		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
+			List<Note> notes = new ArrayList<>();
+			for (NoteDTO noteDTO : dto.getNoteDtos()) {
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
+				if (noteResponse.hasErrors()) {
+					alleleResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
+					break;
+				}
+				notes.add(noteDAO.persist(noteResponse.getEntity()));
+			}
+			allele.setRelatedNotes(notes);
+		} else {
+			allele.setRelatedNotes(null);
 		}
 
 		Map<String, AlleleMutationTypeSlotAnnotation> existingMutationTypes = new HashMap<>();
