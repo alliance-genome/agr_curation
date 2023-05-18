@@ -85,6 +85,16 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.isExtinct", is(false)).
 			body("entity.references", hasSize(1)).
 			body("entity.references[0].curie", is(requiredReference)).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(false)).
+			body("entity.relatedNotes[0].obsolete", is(true)).
+			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
+			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].freeText", is("Test note")).
+			body("entity.relatedNotes[0].noteType.name", is("comment")).
+			body("entity.relatedNotes[0].references[0].curie", is(requiredReference)).
 			body("entity.alleleSymbol.displayText", is("Ta1")).
 			body("entity.alleleSymbol.formatText", is("Ta<sup>1</sup>")).
 			body("entity.alleleSymbol.synonymScope.name", is("exact")).
@@ -151,6 +161,24 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFunctionalImpacts", hasSize(1)).
+			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(requiredReference)).
+			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is("cold_sensitive_hypermorphic")).
+			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(requiredMpTerm)).
+			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
+			body("entity.alleleFunctionalImpacts[0].internal", is(true)).
+			body("entity.alleleFunctionalImpacts[0].obsolete", is(true)).
+			body("entity.alleleFunctionalImpacts[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleFunctionalImpacts[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleFunctionalImpacts[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFunctionalImpacts[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is("cell_line")).
+			body("entity.alleleGermlineTransmissionStatus.internal", is(true)).
+			body("entity.alleleGermlineTransmissionStatus.obsolete", is(true)).
+			body("entity.alleleGermlineTransmissionStatus.createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleGermlineTransmissionStatus.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleGermlineTransmissionStatus.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleGermlineTransmissionStatus.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
@@ -181,6 +209,16 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.isExtinct", is(true)).
 			body("entity.references", hasSize(1)).
 			body("entity.references[0].curie", is(requiredReference2)).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].internal", is(true)).
+			body("entity.relatedNotes[0].obsolete", is(false)).
+			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0001")).
+			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0002")).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].freeText", is("Test note")).
+			body("entity.relatedNotes[0].noteType.name", is("indel_verification")).
+			body("entity.relatedNotes[0].references[0].curie", is(requiredReference2)).
 			body("entity.alleleSymbol.displayText", is("Ta1a")).
 			body("entity.alleleSymbol.formatText", is("Ta<sup>1a</sup>")).
 			body("entity.alleleSymbol.synonymScope.name", is("broad")).
@@ -247,6 +285,24 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFunctionalImpacts", hasSize(1)).
+			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(requiredReference2)).
+			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is("cold_sensitive_neomorphic")).
+			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(requiredMpTerm2)).
+			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement 2")).
+			body("entity.alleleFunctionalImpacts[0].internal", is(false)).
+			body("entity.alleleFunctionalImpacts[0].obsolete", is(false)).
+			body("entity.alleleFunctionalImpacts[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleFunctionalImpacts[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleFunctionalImpacts[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFunctionalImpacts[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is("germline")).
+			body("entity.alleleGermlineTransmissionStatus.internal", is(false)).
+			body("entity.alleleGermlineTransmissionStatus.obsolete", is(false)).
+			body("entity.alleleGermlineTransmissionStatus.createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleGermlineTransmissionStatus.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleGermlineTransmissionStatus.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleGermlineTransmissionStatus.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
@@ -277,6 +333,10 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_19_no_data_provider_cross_reference_display_name.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_20_no_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_21_no_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_22_no_allele_functional_impacts_functional_impacts.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_23_no_allele_germline_transmission_status_germline_transmission_status.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_24_no_related_notes_note_type_name.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_25_no_related_notes_free_text.json");
 	}
 	
 	@Test
@@ -301,6 +361,10 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_17_empty_data_provider_cross_reference_display_name.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_18_empty_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_19_empty_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_20_empty_allele_functional_impacts_functional_impacts.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_21_empty_allele_germline_transmission_status_germline_transmission_status.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_22_empty_related_notes_note_type_name.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_23_empty_related_notes_free_text.json");
 	}
 	
 	@Test
@@ -329,6 +393,13 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_21_invalid_data_provider_source_organization_abbreviation.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_22_invalid_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_23_invalid_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_24_invalid_allele_functional_impacts_functional_impacts.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_25_invalid_allele_functional_impacts_phenotype_term.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_26_invalid_allele_functional_impacts_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_27_invalid_allele_germline_transmission_status_germline_transmission_status.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_28_invalid_allele_germline_transmission_status_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_29_invalid_related_notes_note_type_name.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_30_invalid_related_notes_evidence.json");
 	}
 	
 	@Test
@@ -349,11 +420,14 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("inCollection"))).
 			body("entity", not(hasKey("references"))).
+			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("alleleMutationTypes"))).
 			body("entity", not(hasKey("alleleFullName"))).
 			body("entity", not(hasKey("alleleSynonyms"))).
 			body("entity", not(hasKey("alleleSecondaryIds"))).
-			body("entity", not(hasKey("alleleInheritanceModes")));
+			body("entity", not(hasKey("alleleInheritanceModes"))).
+			body("entity", not(hasKey("alleleFunctionalImpacts"))).
+			body("entity", not(hasKey("alleleGermlineTransmissionStatus")));
 	}
 
 	@Test
@@ -367,6 +441,11 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
 			statusCode(200).
 			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
+			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
 			body("entity.alleleMutationTypes[0]", not(hasKey("createdBy"))).
 			body("entity.alleleMutationTypes[0]", not(hasKey("updatedBy"))).
@@ -404,7 +483,19 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleInheritanceModes[0]", not(hasKey("createdBy"))).
 			body("entity.alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
 			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated")));
+			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("createdBy"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("createdBy"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("updatedBy"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("dateCreated"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("dateUpdated")));
 	}
 	
 	@Test
@@ -425,6 +516,11 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("inheritanceMode"))).
 			body("entity", not(hasKey("inCollection"))).
 			body("entity", not(hasKey("references"))).
+			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
+			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
 			body("entity.alleleMutationTypes[0]", not(hasKey("createdBy"))).
 			body("entity.alleleMutationTypes[0]", not(hasKey("updatedBy"))).
@@ -462,7 +558,19 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleInheritanceModes[0]", not(hasKey("createdBy"))).
 			body("entity.alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
 			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated")));
+			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("createdBy"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("createdBy"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("updatedBy"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("dateCreated"))).
+			body("entity.alleleGermlineTransmissionStatus", not(hasKey("dateUpdated")));
 	}
 	
 	@Test

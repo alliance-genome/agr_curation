@@ -33,7 +33,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
-import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.apache.commons.collections.CollectionUtils;
@@ -61,8 +60,6 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	ReferenceValidator referenceValidator;
 	@Inject
 	NoteValidator noteValidator;
-	@Inject
-	NoteService noteService;
 	@Inject
 	NoteDAO noteDAO;
 	@Inject
