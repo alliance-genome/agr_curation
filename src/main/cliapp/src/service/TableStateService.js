@@ -166,19 +166,24 @@ const modTableSettings = {
 	}
 }
 
-export function getModTableState(table) {
+export function getModTableState(table, widthsObject, defaultColumnNames) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	return global.structuredClone(modTableSettings[mod]? modTableSettings[mod][table] : modTableSettings['Default'][table]);
+	const modTableState = global.structuredClone(modTableSettings[mod]? modTableSettings[mod][table] : modTableSettings['Default'][table]);
+	modTableState.columnWidths = widthsObject;
+	modTableState.orderedColumnNames = defaultColumnNames;
+	return modTableState;
 };
 
-export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns){
+export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns, widthsObject){
 	return {
 			page: 0,
 			first: 0,
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
+			orderedColumnNames: defaultColumnNames,
+			columnWidths: widthsObject,
 			filters: {},
 			tableKeyName: table,
 			tableSettingsKeyName: `${table}TableSettings`

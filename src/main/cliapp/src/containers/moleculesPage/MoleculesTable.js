@@ -100,9 +100,13 @@ export const MoleculesTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("Molecule", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 13;
+	});
 
+	const initialTableState = getDefaultTableState("Molecule", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
@@ -118,8 +122,8 @@ export const MoleculesTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={13}
 					errorObject = {{errorMessages, setErrorMessages}}
+					widthsObject={widthsObject}
 				/>
 			</div>
 	)

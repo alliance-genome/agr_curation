@@ -237,8 +237,13 @@ export const ConditionRelationTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("Experiments", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 10;
+	});
+
+	const initialTableState = getDefaultTableState("Experiments", defaultColumnNames, undefined, widthsObject);
 
 	const headerButtons = () => {
 		return (
@@ -266,12 +271,12 @@ export const ConditionRelationTable = () => {
 				isEnabled={isEnabled}
 				setIsEnabled={setIsEnabled}
 				toasts={{toast_topleft, toast_topright }}
-				initialColumnWidth={10}
 				errorObject={{errorMessages, setErrorMessages}}
 				headerButtons={headerButtons}
 				newEntity={newConditionRelation}
 				deletionEnabled={true}
 				deletionMethod={conditionRelationService.deleteConditionRelation}
+				widthsObject={widthsObject}
 			/>
 			<NewRelationForm
 				newRelationState={newRelationState}

@@ -36,32 +36,7 @@ import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
-import org.alliancegenome.curation_api.services.ontology.AtpTermService;
-import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
-import org.alliancegenome.curation_api.services.ontology.DaoTermService;
-import org.alliancegenome.curation_api.services.ontology.DoTermService;
-import org.alliancegenome.curation_api.services.ontology.EcoTermService;
-import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
-import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
-import org.alliancegenome.curation_api.services.ontology.GoTermService;
-import org.alliancegenome.curation_api.services.ontology.MaTermService;
-import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
-import org.alliancegenome.curation_api.services.ontology.MpTermService;
-import org.alliancegenome.curation_api.services.ontology.ObiTermService;
-import org.alliancegenome.curation_api.services.ontology.RoTermService;
-import org.alliancegenome.curation_api.services.ontology.SoTermService;
-import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
-import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
-import org.alliancegenome.curation_api.services.ontology.WblsTermService;
-import org.alliancegenome.curation_api.services.ontology.XbaTermService;
-import org.alliancegenome.curation_api.services.ontology.XbedTermService;
-import org.alliancegenome.curation_api.services.ontology.XbsTermService;
-import org.alliancegenome.curation_api.services.ontology.XcoTermService;
-import org.alliancegenome.curation_api.services.ontology.XpoTermService;
-import org.alliancegenome.curation_api.services.ontology.XsmoTermService;
-import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
-import org.alliancegenome.curation_api.services.ontology.ZfaTermService;
-import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
+import org.alliancegenome.curation_api.services.ontology.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -93,6 +68,8 @@ public class BulkLoadJobExecutor {
 	@Inject
 	DoTermService doTermService;
 	@Inject
+	HpTermService hpTermService;
+	@Inject
 	WbbtTermService wbbtTermService;
 	@Inject
 	MpTermService mpTermService;
@@ -122,6 +99,8 @@ public class BulkLoadJobExecutor {
 	RoTermService roTermService;
 	@Inject
 	ObiTermService obiTermService;
+	@Inject
+	PatoTermService patoTermService;
 	@Inject
 	WbPhenotypeTermService wbPhenotypeTermService;
 
@@ -187,107 +166,85 @@ public class BulkLoadJobExecutor {
 			OntologyBulkLoadType ontologyType = bulkLoadFile.getBulkLoad().getOntologyType();
 
 			switch (ontologyType) {
-				case ZECO:
+				case ZECO -> {
 					config.setLoadOnlyIRIPrefix("ZECO");
 					service = zecoTermService;
 					processTerms(bulkLoadFile, zecoTermService, config);
-					break;
-				case EMAPA:
+				}
+				case EMAPA -> {
 					config.getAltNameSpaces().add("anatomical_structure");
 					service = emapaTermService;
 					processTerms(bulkLoadFile, emapaTermService, config);
-					break;
-				case GO:
+				}
+				case GO -> {
 					config.getAltNameSpaces().add("biological_process");
 					config.getAltNameSpaces().add("molecular_function");
 					config.getAltNameSpaces().add("cellular_component");
 					service = goTermService;
 					processTerms(bulkLoadFile, goTermService, config);
-					break;
-				case SO:
-					processTerms(bulkLoadFile, soTermService, config);
-					break;
-				case XCO:
-					processTerms(bulkLoadFile, xcoTermService, config);
-					break;
-				case ECO:
+				}
+				case SO -> processTerms(bulkLoadFile, soTermService, config);
+				case XCO -> processTerms(bulkLoadFile, xcoTermService, config);
+				case ECO -> {
 					processTerms(bulkLoadFile, ecoTermService, config);
 					ecoTermService.updateAbbreviations();
-					break;
-				case CHEBI:
-					processTerms(bulkLoadFile, chebiTermService, config);
-					break;
-				case ZFA:
+				}
+				case CHEBI -> processTerms(bulkLoadFile, chebiTermService, config);
+				case ZFA -> {
 					config.getAltNameSpaces().add("zebrafish_anatomy");
 					processTerms(bulkLoadFile, zfaTermService, config);
-					break;
-				case DO:
-					processTerms(bulkLoadFile, doTermService, config);
-					break;
-				case MP:
+				}
+				case DO -> processTerms(bulkLoadFile, doTermService, config);
+				case MP -> {
 					config.setLoadOnlyIRIPrefix("MP");
 					processTerms(bulkLoadFile, mpTermService, config);
-					break;
-				case RO:
+				}
+				case RO ->
 					// config.setLoadOnlyIRIPrefix("RO");
 					processTerms(bulkLoadFile, roTermService, config);
-					break;
-				case MA:
-					processTerms(bulkLoadFile, maTermService, config);
-					break;
-				case WBBT:
-					processTerms(bulkLoadFile, wbbtTermService, config);
-					break;
-				case DAO:
+				case MA -> processTerms(bulkLoadFile, maTermService, config);
+				case WBBT -> processTerms(bulkLoadFile, wbbtTermService, config);
+				case DAO -> {
 					config.setLoadOnlyIRIPrefix("FBbt");
 					processTerms(bulkLoadFile, daoTermService, config);
-					break;
-				case WBLS:
-					processTerms(bulkLoadFile, wblsTermService, config);
-					break;
-				case FBDV:
-					processTerms(bulkLoadFile, fbdvTermService, config);
-					break;
-				case MMUSDV:
+				}
+				case WBLS -> processTerms(bulkLoadFile, wblsTermService, config);
+				case FBDV -> processTerms(bulkLoadFile, fbdvTermService, config);
+				case MMUSDV -> {
 					config.getAltNameSpaces().add("mouse_developmental_stage");
 					config.getAltNameSpaces().add("mouse_stages_ontology");
 					processTerms(bulkLoadFile, mmusdvTermService, config);
-					break;
-				case ZFS:
-					processTerms(bulkLoadFile, zfsTermService, config);
-					break;
-				case XBA_XBS:
+				}
+				case ZFS -> processTerms(bulkLoadFile, zfsTermService, config);
+				case XBA_XBS -> {
 					config.getAltNameSpaces().add("xenopus_anatomy");
 					config.getAltNameSpaces().add("xenopus_anatomy_in_vitro");
 					processTerms(bulkLoadFile, OntologyBulkLoadType.XBA, xbaTermService, config);
 					GenericOntologyLoadConfig config2 = new GenericOntologyLoadConfig();
 					config2.getAltNameSpaces().add("xenopus_developmental_stage");
 					processTerms(bulkLoadFile, OntologyBulkLoadType.XBS, xbsTermService, config2);
-					break;
-				case XPO:
+				}
+				case XPO -> {
 					config.setLoadOnlyIRIPrefix("XPO");
 					processTerms(bulkLoadFile, xpoTermService, config);
-					break;
-				case ATP:
+				}
+				case ATP -> {
 					config.setLoadOnlyIRIPrefix("ATP");
 					processTerms(bulkLoadFile, atpTermService, config);
-					break;
-				case XBED:
-					processTerms(bulkLoadFile, xbedTermService, config);
-					break;
-				case XSMO:
-					processTerms(bulkLoadFile, xsmoTermService, config);
-					break;
-				case OBI:
+				}
+				case XBED -> processTerms(bulkLoadFile, xbedTermService, config);
+				case XSMO -> processTerms(bulkLoadFile, xsmoTermService, config);
+				case OBI -> {
 					config.setLoadOnlyIRIPrefix("OBI");
 					processTerms(bulkLoadFile, obiTermService, config);
-					break;
-				case WBPheno:
-					processTerms(bulkLoadFile, wbPhenotypeTermService, config);
-					break;
-				default:
+				}
+				case WBPheno -> processTerms(bulkLoadFile, wbPhenotypeTermService, config);
+				case PATO -> processTerms(bulkLoadFile, patoTermService, config);
+				case HP ->processTerms(bulkLoadFile, hpTermService, config);
+				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
+				}
 			}
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
 			resourceDescriptorExecutor.runLoad(bulkLoadFile);

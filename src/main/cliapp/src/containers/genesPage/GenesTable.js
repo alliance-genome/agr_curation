@@ -28,11 +28,11 @@ export const GenesTable = () => {
 	};
 
 	const symbolBodyTemplate = (rowData) => {
-		if (rowData?.geneFullName) {
+		if (rowData?.geneSymbol) {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-						<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.displayText}}></div>
+						<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.displayText}}></div>
 					</EllipsisTableCell>
 				</>
 			)
@@ -90,8 +90,13 @@ export const GenesTable = () => {
 		return col.header;
 	});
 
+	const widthsObject = {};
 
-	const initialTableState = getDefaultTableState("Genes", defaultColumnNames);
+	columns.forEach((col) => {
+		widthsObject[col.field] = 20;
+	});
+
+	const initialTableState = getDefaultTableState("Genes", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
@@ -107,8 +112,8 @@ export const GenesTable = () => {
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
-					initialColumnWidth={20}
 					errorObject = {{errorMessages, setErrorMessages}}
+					widthsObject={widthsObject}
 				/>
 			</div>
 	)

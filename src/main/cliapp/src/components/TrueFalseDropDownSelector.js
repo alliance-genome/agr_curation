@@ -5,7 +5,7 @@ export function TrueFalseDropdown({ field, options, showClear = false, editorCha
 		const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
 
 		const onShow = () => {
-				setSelectedValue(props.rowData[field])
+			setSelectedValue(props.rowData[field]);
 		}
 
 		const onChange = (e) => {

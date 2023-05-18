@@ -106,9 +106,13 @@ export const LiteratureReferenceTable = () => {
 		const defaultColumnNames = columns.map((col) => {
 			return col.header;
 		});
+		const widthsObject = {};
 
-
-		const initialTableState = getDefaultTableState("LiteratureReferences", defaultColumnNames);
+		columns.forEach((col) => {
+			widthsObject[col.field] = 20;
+		});
+	
+		const initialTableState = getDefaultTableState("LiteratureReferences", defaultColumnNames, undefined, widthsObject);
 
 		return (
 						<Card>
@@ -124,8 +128,8 @@ export const LiteratureReferenceTable = () => {
 									isEnabled={isEnabled}
 									setIsEnabled={setIsEnabled}
 									toasts={{toast_topleft, toast_topright }}
-									initialColumnWidth={20}
 									errorObject = {{errorMessages, setErrorMessages}}
+									widthsObject={widthsObject}
 								/>
 						</Card>
 		);
