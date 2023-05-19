@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import ControlledVocabularyPage from "../ControlledVocabularyPage";
@@ -18,10 +17,7 @@ describe.skip("<ControlledVocabularyPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ControlledVocabularyPage />);
-		});
+		let result = await renderWithClient(<ControlledVocabularyPage />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -30,19 +26,14 @@ describe.skip("<ControlledVocabularyPage />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ControlledVocabularyPage />);
-		});
+		let result = await renderWithClient(<ControlledVocabularyPage />);
+
 		const tableTitle = await result.findByText(/Controlled Vocabulary Terms Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it("Contains Correct Table Data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ControlledVocabularyPage />);
-		});
+		let result = await renderWithClient(<ControlledVocabularyPage />);
 
 		const idTd = await result.findByText(/6363427/i);
 		const nameTd = await result.findByText(/ECO:0007014/i);
