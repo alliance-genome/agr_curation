@@ -178,7 +178,8 @@ export const RelatedNotesDialog = ({
 			dataKey : cnt,
 			noteType: {
 				name : ""
-			}
+			},
+			internal : false
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -252,7 +253,7 @@ export const RelatedNotesDialog = ({
 			<>
 				<ControlledVocabularyDropdown
 					field="noteType"
-					options={noteTypeTerms}
+					options={noteTypeTerms.sort((a, b) => (a.name > b.name) ? 1 : -1)}
 					editorChange={onNoteTypeEditorValueChange}
 					props={props}
 					showClear={false}
