@@ -894,9 +894,7 @@ export const AllelesTable = () => {
 			for(var i = 0; i < rowData.alleleFunctionalImpacts.length; i++){
 				if (rowData.alleleFunctionalImpacts[i].functionalImpacts) {
 					for(var j = 0; j < rowData.alleleFunctionalImpacts[i].functionalImpacts.length; j++) {
-						let mtString = rowData.alleleFunctionalImpacts[i].functionalImpacts[j].name + ' (' +
-							rowData.alleleFunctionalImpacts[i].functionalImpacts[j].curie + ')';
-						functionalImpactSet.add(mtString);
+						functionalImpactSet.add(rowData.alleleFunctionalImpacts[i].functionalImpacts[j].name);
 					}
 				}
 			}
