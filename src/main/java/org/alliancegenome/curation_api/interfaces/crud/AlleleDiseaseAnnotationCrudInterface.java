@@ -29,9 +29,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AlleleDiseaseAnnotation>, BaseDTOCrudControllerInterface<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO> {
 
 	@GET
-	@Path("/findBy/{uniqueId}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
+	public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("identifier") String identifier);
 
 	@PUT
 	@Path("/")

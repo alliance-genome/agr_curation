@@ -55,17 +55,28 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			if (allele == null) {
 				adaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ")");
 			} else {
-				String annotationId = dto.getModEntityId();
-				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(allele.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getAlleleCurie(), refCurie);
+				String annotationId;
+				String identifyingField;
+				String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(allele.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getAlleleCurie(), refCurie);
+				
+				if (StringUtils.isNotBlank(dto.getModEntityId())) {
+					annotationId = dto.getModEntityId();
+					annotation.setModEntityId(annotationId);
+					identifyingField = "modEntityId";
+				} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
+					annotationId = dto.getModInternalId();
+					annotation.setModInternalId(annotationId);
+					identifyingField = "modInternalId";
+				} else {
+					annotationId = uniqueId;
+					identifyingField = "uniqueId";
 				}
 
-				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
-				if (annotationList == null || annotationList.getResults().size() == 0) {
-					annotation.setUniqueId(annotationId);
-				} else {
+				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
+				if (annotationList != null && annotationList.getResults().size() > 0) {
 					annotation = annotationList.getResults().get(0);
 				}
+				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(allele);
 			}
 		}

@@ -15,12 +15,16 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.4.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class, DataProviderDTO.class })
+@AGRCurationSchemaVersion(min = "1.7.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class, DataProviderDTO.class })
 public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("mod_entity_id")
 	private String modEntityId;
+	
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("mod_internal_id")
+	private String modInternalId;
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("do_term_curie")
@@ -54,8 +58,8 @@ public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 	private List<ConditionRelationDTO> conditionRelationDtos;
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("disease_genetic_modifier_curie")
-	private String diseaseGeneticModifierCurie;
+	@JsonProperty("disease_genetic_modifier_curies")
+	private List<String> diseaseGeneticModifierCuries;
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("disease_genetic_modifier_relation_name")

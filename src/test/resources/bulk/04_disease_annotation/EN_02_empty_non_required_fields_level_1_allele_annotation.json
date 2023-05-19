@@ -24,7 +24,7 @@
       "DATEST:Evidence0001"
     ],
     "condition_relation_dtos": [],
-    "disease_genetic_modifier_curie": "",
+    "disease_genetic_modifier_curies": [],
     "disease_genetic_modifier_relation_name": "",
     "with_gene_curies": [],
     "reference_curie": "PMID:25920554",

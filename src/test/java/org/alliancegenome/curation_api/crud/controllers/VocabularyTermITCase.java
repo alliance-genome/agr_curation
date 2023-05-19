@@ -81,7 +81,7 @@ public class VocabularyTermITCase extends BaseITCase {
 		editedTerm.setObsolete(false);
 		editedTerm.setAbbreviation("ABRV");
 		editedTerm.setDefinition("Test definition");
-		editedTerm.setTextSynonyms(synonyms);
+		editedTerm.setSynonyms(synonyms);
 		editedTerm.setInternal(true);
 		editedTerm.setVocabulary(testVocabulary2);
 		
@@ -103,7 +103,7 @@ public class VocabularyTermITCase extends BaseITCase {
 				body("entity.internal", is(true)).
 				body("entity.abbreviation", is("ABRV")).
 				body("entity.definition", is("Test definition")).
-				body("entity.textSynonyms[0]", is("VocabularyTerm synonym")).
+				body("entity.synonyms[0]", is("VocabularyTerm synonym")).
 				body("entity.vocabulary.name", is("VocabularyTerm test vocabulary 2"));
 	}
 

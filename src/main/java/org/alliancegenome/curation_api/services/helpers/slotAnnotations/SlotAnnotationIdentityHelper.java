@@ -9,14 +9,14 @@ import javax.enterprise.context.RequestScoped;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.AlleleSecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.SlotAnnotationDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -75,13 +75,13 @@ public class SlotAnnotationIdentityHelper {
 		return StringUtils.join(List.of(displayText, formatText, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
-	public static String alleleSecondaryIdIdentity(AlleleSecondaryIdSlotAnnotation annotation) {
+	public static String secondaryIdIdentity(SecondaryIdSlotAnnotation annotation) {
 		String secondaryId = StringUtils.isBlank(annotation.getSecondaryId()) ? "" : annotation.getSecondaryId();
 		
 		return StringUtils.join(List.of(secondaryId, slotAnnotationIdentity(annotation)), "|");
 	}
 	
-	public static String alleleSecondaryIdDtoIdentity(AlleleSecondaryIdSlotAnnotationDTO dto) {
+	public static String secondaryIdDtoIdentity(SecondaryIdSlotAnnotationDTO dto) {
 		String secondaryId = StringUtils.isBlank(dto.getSecondaryId()) ? "" : dto.getSecondaryId();
 		
 		return StringUtils.join(List.of(secondaryId, slotAnnotationDtoIdentity(dto)), "|");

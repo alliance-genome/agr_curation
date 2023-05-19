@@ -64,6 +64,18 @@
         "date_updated": ""
       }
     ],
+    "gene_secondary_id_dtos": [
+      {
+        "secondary_id": "TEST:Secondary",
+        "evidence_curies": [],
+        "internal": true,
+        "obsolete": true,
+        "created_by_curie": "",
+        "updated_by_curie": "",
+        "date_created": "",
+        "date_updated": ""
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,

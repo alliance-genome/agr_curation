@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AGMDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AGMDiseaseAnnotationDTOValidator;
@@ -33,6 +34,23 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	@PostConstruct
 	protected void init() {
 		setSQLDao(agmDiseaseAnnotationDAO);
+	}
+
+	@Override
+	public ObjectResponse<AGMDiseaseAnnotation> get(String identifier) {
+		SearchResponse<AGMDiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modInternalId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("uniqueId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+				
+		return new ObjectResponse<AGMDiseaseAnnotation>();
 	}
 
 	@Override
