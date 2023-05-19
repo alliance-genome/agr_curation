@@ -33,7 +33,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
-import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.apache.commons.collections.CollectionUtils;
@@ -61,8 +60,6 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	ReferenceValidator referenceValidator;
 	@Inject
 	NoteValidator noteValidator;
-	@Inject
-	NoteService noteService;
 	@Inject
 	NoteDAO noteDAO;
 	@Inject
@@ -213,28 +210,36 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		return validatedDataProvider;
 	}
 
-	public BiologicalEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		if (uiEntity.getDiseaseGeneticModifier() == null) {
+	public List<BiologicalEntity> validateDiseaseGeneticModifiers(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+		if (CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifiers())) {
 			return null;
 		}
 
 		if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
-			addMessageResponse("diseaseGeneticModifier", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation");
+			addMessageResponse("diseaseGeneticModifiers", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation");
 			return null;
 		}
 
-		BiologicalEntity modifier = biologicalEntityDAO.find(uiEntity.getDiseaseGeneticModifier().getCurie());
-		if (modifier == null) {
-			addMessageResponse("diseaseGeneticModifier", ValidationConstants.INVALID_MESSAGE);
-			return null;
+		List<BiologicalEntity> validModifiers = new ArrayList<>();
+		List<String> previousCuries = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getDiseaseGeneticModifiers()))
+			previousCuries = dbEntity.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getCurie).collect(Collectors.toList());
+		for (BiologicalEntity modifier : uiEntity.getDiseaseGeneticModifiers()) {
+			BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(modifier.getCurie());
+		
+			if (diseaseGeneticModifier == null) {
+				addMessageResponse("diseaseGeneticModifiers", ValidationConstants.INVALID_MESSAGE);
+				return null;
+			}
+
+			if (diseaseGeneticModifier.getObsolete() && !previousCuries.contains(diseaseGeneticModifier.getCurie())) {
+				addMessageResponse("diseaseGeneticModifiers", ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
+			validModifiers.add(diseaseGeneticModifier);
 		}
 
-		if (modifier.getObsolete() && (dbEntity.getDiseaseGeneticModifier() == null || !modifier.getCurie().equals(dbEntity.getDiseaseGeneticModifier().getCurie()))) {
-			addMessageResponse("diseaseGeneticModifier", ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return modifier;
+		return validModifiers;
 	}
 
 	public VocabularyTerm validateDiseaseGeneticModifierRelation(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -243,8 +248,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 
-		if (uiEntity.getDiseaseGeneticModifier() == null) {
-			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifier");
+		if (CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifiers())) {
+			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifiers");
 			return null;
 		}
 
@@ -415,19 +420,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 
 	public String validateUniqueId(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		if (uiEntity.getDataProvider() == null)
+		
+		if (dbEntity.getDataProvider() == null)
 			return null;
 		
-		String uniqueId;
-		if (!StringUtils.isBlank(uiEntity.getModEntityId())) {
-			uniqueId = uiEntity.getModEntityId();
-		} else if (!StringUtils.isBlank(dbEntity.getModEntityId())) {
-			uniqueId = dbEntity.getModEntityId();
-		} else if (StringUtils.isBlank(uiEntity.getSubjectCurie()) || StringUtils.isBlank(uiEntity.getSubjectTaxonCurie()) || uiEntity.getObject() == null || uiEntity.getSingleReference() == null) {
-			return null;
-		} else {
-			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(uiEntity.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(uiEntity);
-		}
+		String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(uiEntity.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(uiEntity);
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
 			SearchResponse<DiseaseAnnotation> response = diseaseAnnotationDAO.findByField("uniqueId", uniqueId);
@@ -476,9 +473,9 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		DataProvider secondaryDataProvider = validateDataProvider(uiEntity, dbEntity, false);
 		dbEntity.setSecondaryDataProvider(secondaryDataProvider);
 
-		BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity, dbEntity);
+		List<BiologicalEntity> diseaseGeneticModifiers = validateDiseaseGeneticModifiers(uiEntity, dbEntity);
 		VocabularyTerm dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity, dbEntity);
-		dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
+		dbEntity.setDiseaseGeneticModifiers(diseaseGeneticModifiers);
 		dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
 
 		List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity, dbEntity);

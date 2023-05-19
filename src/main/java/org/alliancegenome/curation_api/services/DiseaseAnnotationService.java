@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -36,7 +37,24 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	protected void init() {
 		setSQLDao(diseaseAnnotationDAO);
 	}
-
+	
+	@Override
+	public ObjectResponse<DiseaseAnnotation> get(String identifier) {
+		SearchResponse<DiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modInternalId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("uniqueId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
+				
+		return new ObjectResponse<DiseaseAnnotation>();
+	}
+	
 	@Override
 	@Transactional
 	public ObjectResponse<DiseaseAnnotation> delete(Long id) {

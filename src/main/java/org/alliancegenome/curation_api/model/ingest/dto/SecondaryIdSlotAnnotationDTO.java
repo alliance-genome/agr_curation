@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AGRCurationSchemaVersion(min = "1.3.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotationDTO.class })
-public class AlleleSecondaryIdSlotAnnotationDTO extends SlotAnnotationDTO {
+public class SecondaryIdSlotAnnotationDTO extends SlotAnnotationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("secondary_id")

@@ -1,4 +1,3 @@
-import {useOktaAuth} from "@okta/okta-react";
 import React, {useRef, useState} from "react";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
@@ -10,7 +9,6 @@ import {VocabularyService} from "../../service/VocabularyService";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
 export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog }) => {
-		const { authState } = useOktaAuth();
 		const queryClient = useQueryClient();
 		const [vocabulary, setVocabulary] = useState({});
 		const [submitted, setSubmitted] = useState(false);
@@ -33,7 +31,7 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
 
 		const getService = () => {
 				if(!vocabularyService) {
-						vocabularyService = new VocabularyService(authState);
+						vocabularyService = new VocabularyService();
 				}
 				return vocabularyService;
 		};

@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnnotationDTOValidator;
@@ -30,6 +31,23 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@PostConstruct
 	protected void init() {
 		setSQLDao(alleleDiseaseAnnotationDAO);
+	}
+
+	@Override
+	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifier) {
+		SearchResponse<AlleleDiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modInternalId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("uniqueId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
+				
+		return new ObjectResponse<AlleleDiseaseAnnotation>();
 	}
 
 	@Override

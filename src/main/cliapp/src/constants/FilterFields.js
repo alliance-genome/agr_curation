@@ -8,13 +8,29 @@ export const FIELD_SETS = Object.freeze({
     filterName: "abstractFilter",
     fields: ["abstract"],
   },
+  alleleFunctionalImpactsFieldSet: {
+    filterName: "alleleFunctionalImpactsFilter",
+    fields: ["alleleFunctionalImpacts.functionalImpacts.name", "alleleFunctionalImpacts.phenotypeTerm.curie", "alleleFunctionalImpacts.phenotypeTerm.name", "alleleFunctionalImpacts.phenotypeStatement", "alleleFunctionalImpacts.evidence.curie"],
+  },
   alleleNameFieldSet: {
     filterName: "alleleNameFilter",
     fields: ["alleleFullName.displayText", "alleleFullName.formatText"],
   },
+  alleleSecondaryIdsFieldSet: {
+    filterName: "alleleSecondaryIdsFilter",
+    fields: ["alleleSecondaryIds.secondaryId", "alleleSecondaryIds.evidence.curie"],
+  },
   alleleSymbolFieldSet: {
     filterName: "alleleSymbolFilter",
     fields: ["alleleSymbol.displayText", "alleleSymbol.formatText"],
+  },
+  alleleSynonymsFieldSet: {
+    filterName: "alleleSynonymsFilter",
+    fields: ["alleleSynonyms.displayText", "alleleSynonyms.formatText"],
+  },
+  alleleGermlineTransmissionStatusFieldSet: {
+    filterName: "alleleGermlineTransmissionStatusFilter",
+    fields: ["alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", "alleleGermlineTransmissionStatus.evidence.curie"]
   },
   alleleInheritanceModesFieldSet: {
     filterName: "alleleInheritanceModesFilter",
@@ -30,11 +46,11 @@ export const FIELD_SETS = Object.freeze({
   },
   assertedAlleleFieldSet: {
     filterName: "assertedAlleleFilter",
-    fields: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleFullName.displayText", "assertedAllele.curie"],
+    fields: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleSymbol.formatText", "assertedAllele.alleleFullName.displayText", "assertedAllele.alleleFullName.formatText", "assertedAllele.curie", "assertedAllele.alleleSynonyms.displayText", "assertedAllele.alleleSynonyms.formatText", "assertedAllele.alleleSecondaryIds.secondaryId"],
   },
   assertedGenesFieldSet: {
     filterName: "assertedGenesFilter",
-    fields: ["assertedGenes.geneSymbol.displayText", "assertedGenes.curie"],
+    fields: ["assertedGenes.geneSymbol.displayText", "assertedGenes.geneSymbol.formatText", "assertedGenes.geneFullName.displayText", "assertedGenes.geneFullName.formatText", "assertedGenes.curie", "assertedGenes.geneSynonyms.displayText", "assertedGenes.geneSynonyms.formatText", "assertedGenes.geneSystematicName.displayText", "assertedGenes.geneSystematicName.formatText"],
   },
   citationFieldSet: {
     filterName: "citationFilter",
@@ -156,15 +172,26 @@ export const FIELD_SETS = Object.freeze({
     filterName: "geneNameFilter",
     fields: ["geneFullName.displayText", "geneFullName.formatText"],
   },
+  geneSecondaryIdsFieldSet: {
+    filterName: "geneSecondaryIdsFilter",
+    fields: ["geneSecondaryIds.secondaryId", "geneSecondaryIds.evidence.curie"],
+  },
   geneSymbolFieldSet: {
     filterName: "geneSymbolFilter",
     fields: ["geneSymbol.displayText", "geneSymbol.formatText"],
   },
-  geneticModifierFieldSet: {
-    filterName: "geneticModifierFilter",
-    fields: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"],
+  geneSynonymsFieldSet: {
+    filterName: "geneSynonymsFilter",
+    fields: ["geneSynonyms.displayText", "geneSynonyms.formatText"],
   },
-
+  geneSystematicNameFieldSet: {
+    filterName: "geneSystematicNameFilter",
+    fields: ["geneSystematicName.displayText", "geneSystematicName.formatText"],
+  },
+  geneticModifiersFieldSet: {
+    filterName: "geneticModifiersFilter",
+    fields: ["diseaseGeneticModifiers.symbol", "diseaseGeneticModifiers.name", "diseaseGeneticModifiers.curie"],
+  },
   geneticModifierRelationFieldSet: {
     filterName: "geneticModifierRelationFilter",
     fields: ["diseaseGeneticModifierRelation.name"],
@@ -199,11 +226,11 @@ export const FIELD_SETS = Object.freeze({
   },
   inferredAlleleFieldSet: {
     filterName: "inferredAlleleFilter",
-    fields: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleFullName.displayText", "inferredAllele.curie"],
+    fields: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleSymbol.formatText", "inferredAllele.alleleFullName.displayText", "inferredAllele.alleleFullName.formatText", "inferredAllele.curie",  "inferredAllele.alleleSynonyms.displayText", "inferredAllele.alleleSynonyms.formatText", "inferredAllele.alleleSecondaryIds.secondaryId"],
   },
   inferredGeneFieldSet: {
     filterName: "inferredGeneFilter",
-    fields: ["inferredGene.geneSymbol.displayText", "inferredGene.curie"]
+    fields: ["inferredGene.geneSymbol.displayText", "inferredGene.geneSymbol.formatText", "inferredGene.geneFullName.displayText", "inferredGene.geneFullName.formatText", "inferredGene.curie", "inferredGene.geneSynonyms.displayText", "inferredGene.geneSynonyms.formatText", "inferredGene.geneSystematicName.displayText", "inferredGene.geneSystematicName.formatText"]
   },
   internalFieldSet: {
     filterName: "internalFilter",
@@ -224,6 +251,10 @@ export const FIELD_SETS = Object.freeze({
   modentityidFieldSet: {
     filterName: "modentityidFilter",
     fields: ["modEntityId"],
+  },
+  modinternalidFieldSet: {
+    filterName: "modinternalidFilter",
+    fields: ["modInternalId"],
   },
   nameFieldSet: {
     filterName: "nameFilter",
@@ -264,10 +295,6 @@ export const FIELD_SETS = Object.freeze({
   secondaryDataProviderFieldSet: {
     filterName: "secondaryDataProviderFilter",
     fields: [ "secondaryDataProvider.sourceOrganization.abbreviation", "secondaryDataProvider.sourceOrganization.fullName", "secondaryDataProvider.sourceOrganization.shortName" ],
-  },
-  secondaryIdsFieldSet: {
-    filterName: "secondaryIdsFilter",
-    fields: ["alleleSecondaryIds.secondaryId", "alleleSecondaryIds.evidence.curie"],
   },
   sgdStrainBackgroundFieldSet: {
     filterName: "sgdStrainBackgroundFilter",
@@ -327,17 +354,21 @@ export const FIELD_SETS = Object.freeze({
   },
   withFieldSet: {
     filterName: "withFilter",
-    fields: ["with.geneSymbol.displayText", "with.geneFullName.displayText", "with.curie"],
+    fields: ["with.geneSymbol.displayText", "with.geneSymbol.formatText", "with.geneFullName.displayText", "with.geneFullName.formatText", "with.curie", "with.geneSynonyms.displayText", "with.geneSynonyms.formatText", "with.geneSystematicName.displayText", "with.geneSystematicName.formatText"],
   }
 });
 
 export const FILTER_CONFIGS = Object.freeze({
   abbreviationFilterConfig:                 { filterComponentType: 'input', fieldSets: [FIELD_SETS.abbreviationFieldSet] },
   abstractFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.abstractFieldSet]},
+  alleleFunctionalImpactsFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleFunctionalImpactsFieldSet] },
+  alleleGermlineTransmissionStatusFilterConfig: {filterComponentType: "input", fieldSets: [FIELD_SETS.alleleGermlineTransmissionStatusFieldSet]},
   alleleInheritanceModesFilterConfig:       { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleInheritanceModesFieldSet] },
   alleleMutationFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleMutationFieldSet] },
   alleleNameFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleNameFieldSet] },
+  alleleSecondaryIdsFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSecondaryIdsFieldSet] },
   alleleSymbolFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
+  alleleSynonymsFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
   assertedAlleleFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.assertedAlleleFieldSet] },
   assertedGenesFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.assertedGenesFieldSet] },
   citationFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.citationFieldSet]},
@@ -364,8 +395,11 @@ export const FILTER_CONFIGS = Object.freeze({
   experimentalConditionFilterConfig:        { filterComponentType: "input", fieldSets: [FIELD_SETS.experimentalConditionFieldSet] },
   formulaFilterConfig:                      { filterComponentType: "input", fieldSets: [FIELD_SETS.formulaFieldSet] },
   geneNameFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.geneNameFieldSet] },
+  geneSecondaryIdsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.geneSecondaryIdsFieldSet] },
   geneSymbolFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.geneSymbolFieldSet] },
-  geneticModifierFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.geneticModifierFieldSet] },
+  geneSynonymsFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.geneSynonymsFieldSet] },
+  geneSystematicNameFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.geneSystematicNameFieldSet] },
+  geneticModifiersFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.geneticModifiersFieldSet] },
   idExampleFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.idExampleFieldSet] },
   idPatternFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.idPatternFieldSet] },
   inchiFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.inchiFieldSet] },
@@ -376,6 +410,7 @@ export const FILTER_CONFIGS = Object.freeze({
   iupacFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.iupacFieldSet] },
   literatureCrossReferenceFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.literatureCrossReferenceFieldSet] },
   modentityidFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.modentityidFieldSet] },
+  modinternalidFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.modinternalidFieldSet] },
   nameFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.nameFieldSet] },
   objectFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.objectFieldSet] },
   pageDescriptionFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },
@@ -383,7 +418,6 @@ export const FILTER_CONFIGS = Object.freeze({
   referencesFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.referencesFieldSet] },
   relatedNotesFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.relatedNotesFieldSet] },
   resourceDescriptorFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.resourceDescriptorFieldSet] },
-  secondaryIdsFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.secondaryIdsFieldSet] },
   sgdStrainBackgroundFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.sgdStrainBackgroundFieldSet], },
   singleReferenceFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.singleReferenceFieldSet] },
   smilesFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.smilesFieldSet] },
