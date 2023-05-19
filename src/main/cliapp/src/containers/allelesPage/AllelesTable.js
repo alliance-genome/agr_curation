@@ -382,7 +382,7 @@ export const AllelesTable = () => {
 							{`Notes(${props.rowData.relatedNotes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+					<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
