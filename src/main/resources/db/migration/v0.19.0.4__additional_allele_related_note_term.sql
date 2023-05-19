@@ -1,0 +1,1 @@
+INSERT INTO vocabularyterm (id, name, vocabulary_id, definition) SELECT nextval('hibernate_sequence'), 'molecular_mutation_note', id, 'Description of the molecular changes/mutation of the allele' FROM vocabulary WHERE name = 'Allele note types';
