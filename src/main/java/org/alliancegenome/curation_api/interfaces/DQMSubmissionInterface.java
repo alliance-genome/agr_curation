@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.interfaces;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -17,6 +19,8 @@ public interface DQMSubmissionInterface {
 	@POST
 	@Path("/submit")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public String update(MultipartFormDataInput input);
+	public String update(MultipartFormDataInput input, 
+		@DefaultValue("false")
+		@QueryParam("cleanUp") Boolean cleanUp);
 
 }
