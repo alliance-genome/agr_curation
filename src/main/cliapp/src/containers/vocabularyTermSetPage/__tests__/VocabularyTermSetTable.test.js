@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { VocabularyTermSetPage } from "../index";
@@ -17,38 +16,33 @@ describe("<VocabularyTermSetPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<VocabularyTermSetPage />);
-		});
+		let result = await renderWithClient(<VocabularyTermSetPage />);
 		
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
-	//skipping for now
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<VocabularyTermSetPage />);
-		});
+		let result = await renderWithClient(<VocabularyTermSetPage />);
 
 		const tableTitle = await result.findByText(/Vocabulary Term Sets Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	//skipping 
-	it.skip("The table contains correct data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<VocabularyTermSetPage />);
-		});
+	it("The table contains correct data", async () => {
+		let result = await renderWithClient(<VocabularyTermSetPage />);
 		
-		const nameTd = await result.findByText(/AGM disease relations/i);
+		const nameTd = await result.findByText(/Symbol name types/i);
+		const vocabularyTd = await result.findByText("Name type");
+		const memberTermsTd = await result.findByText(/nomenclature_symbol/i);
+		const descriptionTd = await result.findByText(/Name types that are valid for symbols/i);
+
 		await waitFor(() => {
 			expect(nameTd).toBeInTheDocument();
-
+			expect(vocabularyTd).toBeInTheDocument();
+			expect(memberTermsTd).toBeInTheDocument();
+			expect(descriptionTd).toBeInTheDocument();
 		});
 	});
 });
