@@ -133,7 +133,7 @@ public class BulkLoadProcessor {
 		log.info("Syncing with S3 Finished");
 	}
 
-	protected void processFilePath(BulkLoad bulkLoad, String localFilePath) {
+	protected void processFilePath(BulkLoad bulkLoad, String localFilePath, Boolean cleanUp) {
 		String md5Sum = fileHelper.getMD5SumOfGzipFile(localFilePath);
 		log.info("processFilePath: MD5 Sum: " + md5Sum);
 

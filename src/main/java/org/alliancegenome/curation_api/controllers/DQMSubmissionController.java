@@ -14,7 +14,7 @@ public class DQMSubmissionController implements DQMSubmissionInterface {
 	BulkLoadManualProcessor bulkLoadManualProcessor;
 
 	@Override
-	public String update(MultipartFormDataInput input) {
+	public String update(MultipartFormDataInput input, Boolean cleanUp) {
 		for (String key : input.getFormDataMap().keySet()) {
 			String separator = "_";
 			int sepPos = key.lastIndexOf(separator);
@@ -23,7 +23,7 @@ public class DQMSubmissionController implements DQMSubmissionInterface {
 			if (loadType == null || dataProvider == null) {
 				return "FAIL";
 			} else {
-				bulkLoadManualProcessor.processBulkManualLoadFromDQM(input, loadType, dataProvider);
+				bulkLoadManualProcessor.processBulkManualLoadFromDQM(input, loadType, dataProvider, cleanUp);
 			}
 		}
 
