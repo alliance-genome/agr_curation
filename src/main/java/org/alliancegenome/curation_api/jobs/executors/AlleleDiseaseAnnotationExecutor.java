@@ -37,7 +37,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
@@ -65,7 +65,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			
 			runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 			
-			runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
 
 			history.finishLoad();
 			

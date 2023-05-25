@@ -29,7 +29,7 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 				String s3Url = df.getS3Url();
 				String filePath = fileHelper.saveIncomingURLFile(s3Url);
 				String localFilePath = fileHelper.compressInputFile(filePath);
-				processFilePath(bulkFMSLoad, localFilePath, false);
+				processFilePath(bulkFMSLoad, localFilePath);
 				endLoad(bulkFMSLoad, null, JobStatus.FINISHED);
 			} else {
 				log.warn("Files: " + files);
