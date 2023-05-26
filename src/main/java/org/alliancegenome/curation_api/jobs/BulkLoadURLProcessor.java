@@ -21,7 +21,7 @@ public class BulkLoadURLProcessor extends BulkLoadProcessor {
 		if (bulkURLLoad.getBulkloadUrl() != null && bulkURLLoad.getBulkloadUrl().length() > 0) {
 			String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getBulkloadUrl());
 			String localFilePath = fileHelper.compressInputFile(filePath);
-			processFilePath(bulkURLLoad, localFilePath, false);
+			processFilePath(bulkURLLoad, localFilePath);
 			endLoad(bulkURLLoad, null, JobStatus.FINISHED);
 		} else {
 			log.info("Load: " + bulkURLLoad.getName() + " failed: URL is missing");
