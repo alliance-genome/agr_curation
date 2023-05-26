@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AffectedGenomicModelTable } from "../AffectedGenomicModelTable";
@@ -17,10 +16,7 @@ describe("<AffectedGenomicModelTable />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<AffectedGenomicModelTable />);
-		});
+		let result = await renderWithClient(<AffectedGenomicModelTable />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -29,19 +25,13 @@ describe("<AffectedGenomicModelTable />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<AffectedGenomicModelTable />);
-		});
+		let result = await renderWithClient(<AffectedGenomicModelTable />);
 		const tableTitle = await result.findByText(/Affected Genomic Models Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it("Contains Correct Table Data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<AffectedGenomicModelTable />);
-		});
+		let result = await renderWithClient(<AffectedGenomicModelTable />);
 		const curie = await result.findByText(/WB:WBStrain00051221/i);
 		expect(curie).toBeInTheDocument();
 	});

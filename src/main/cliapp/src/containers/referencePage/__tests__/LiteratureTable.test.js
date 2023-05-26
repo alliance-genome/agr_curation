@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { setLocalStorage } from "../../../tools/jest/setupTests";
 import { renderWithClient } from '../../../tools/jest/utils';
@@ -17,10 +16,7 @@ describe("<ReferencePage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ReferencePage />);
-		});
+		let result = await renderWithClient(<ReferencePage />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -28,27 +24,20 @@ describe("<ReferencePage />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ReferencePage />);
-		});
+		let result = await renderWithClient(<ReferencePage />);
 
 		const tableTitle = await result.findByText(/Literature References Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	//skip this test for now, as it is not working
-	it.skip("The table contains correct data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ReferencePage />);
-		});
-		
+	it("The table contains correct data", async () => {
+		let result = await renderWithClient(<ReferencePage />);
+
 		const curieTd = await result.findByText(/AGRKB:101000000822386/i);
 		const crossReferencesTd = await result.findByText(/MGI:62147/i);
-		const titleTd = await result.findByText(/Typing of 27 polymorphic loci for 33 strains/i);
+		const titleTd = await result.findByText("Typing of 27 polymorphic loci for 33 strains");
 		const abstractTd = await result.findByText(/Full text of MNL contribution/i);
-		const citationTd = await result.findByText(/Typing of 27 polymorphic loci for 33 strains/i);
+		const citationTd = await result.findByText(/(1984)/i);
 		
 		await waitFor(() => {
 			expect(curieTd).toBeInTheDocument();
@@ -56,7 +45,6 @@ describe("<ReferencePage />", () => {
 			expect(titleTd).toBeInTheDocument();
 			expect(abstractTd).toBeInTheDocument();
 			expect(citationTd).toBeInTheDocument();
-
 		});
 	});
 });
