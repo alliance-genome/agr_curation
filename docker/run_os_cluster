@@ -1,0 +1,4 @@
+docker rm -f os01 os02 os03 os04
+
+docker run -it --rm --net curation -p 9200:9200 -p 9300:9300 -e plugins.security.disabled=true -e cluster.initial_master_nodes=os01,os02 -e discovery.seed_hosts=os01,os02 -e node.name=os01 --name os01 opensearchproject/opensearch:1.2.4
+docker run -it --rm --net curation -p 9201:9200 -p 9301:9300 -e plugins.security.disabled=true -e cluster.initial_master_nodes=os01,os02 -e discovery.seed_hosts=os01,os02 -e node.name=os02 --name os02 opensearchproject/opensearch:1.2.4
