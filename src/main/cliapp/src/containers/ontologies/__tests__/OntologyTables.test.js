@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { GeneralOntologyComponent } from "../GeneralOntologyComponent";
@@ -16,21 +15,15 @@ describe("ChEBI", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />);
 
 		const tableTitle = await result.findByText(/ChEBI Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -46,21 +39,15 @@ describe("Diseases", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="Diseases" endpoint="doterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="Diseases" endpoint="doterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="Diseases" endpoint="doterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="Diseases" endpoint="doterm" />);
 
 		const tableTitle = await result.findByText(/Diseases Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -76,21 +63,15 @@ describe("MA", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="MA" endpoint="materm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="MA" endpoint="materm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="MA" endpoint="materm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="MA" endpoint="materm" />);
 
 		const tableTitle = await result.findByText(/MA Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -106,21 +87,15 @@ describe("ZFA", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />);
 
 		const tableTitle = await result.findByText(/ZFA Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -136,21 +111,15 @@ describe("MP", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="MP" endpoint="mpterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="MP" endpoint="mpterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="MP" endpoint="mpterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="MP" endpoint="mpterm" />);
 
 		const tableTitle = await result.findByText(/MP Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -166,21 +135,15 @@ describe("DAO", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="DAO" endpoint="daoterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="DAO" endpoint="daoterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="DAO" endpoint="daoterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="DAO" endpoint="daoterm" />);
 
 		const tableTitle = await result.findByText(/DAO Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -196,21 +159,15 @@ describe("EMAPA", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />);
 
 		const tableTitle = await result.findByText(/EMAPA Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -226,21 +183,15 @@ describe("WBbt", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />);
 
 		const tableTitle = await result.findByText(/WBbt Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -256,21 +207,15 @@ describe("XCO", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XCO" endpoint="xcoterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="XCO" endpoint="xcoterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XCO" endpoint="xcoterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="XCO" endpoint="xcoterm" />);
 
 		const tableTitle = await result.findByText(/XCO Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -286,21 +231,15 @@ describe("RO", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="RO" endpoint="roterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="RO" endpoint="roterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="RO" endpoint="roterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="RO" endpoint="roterm" />);
 
 		const tableTitle = await result.findByText(/RO Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -316,21 +255,15 @@ describe("ZECO", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />);
 
 		const tableTitle = await result.findByText(/ZECO Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -346,21 +279,15 @@ describe("WBls", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="WBls" endpoint="wblsterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="WBls" endpoint="wblsterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="WBls" endpoint="wblsterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="WBls" endpoint="wblsterm" />);
 
 		const tableTitle = await result.findByText(/WBls Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -376,21 +303,15 @@ describe("MmusDv", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />);
 
 		const tableTitle = await result.findByText(/MmusDv Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -406,21 +327,15 @@ describe("ZFS", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />);
 
 		const tableTitle = await result.findByText(/ZFS Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -436,21 +351,15 @@ describe("XBA", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XBA" endpoint="xbaterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="XBA" endpoint="xbaterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XBA" endpoint="xbaterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="XBA" endpoint="xbaterm" />);
 
 		const tableTitle = await result.findByText(/XBA Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -466,21 +375,15 @@ describe("XBS", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XBS" endpoint="xbsterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="XBS" endpoint="xbsterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XBS" endpoint="xbsterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="XBS" endpoint="xbsterm" />);
 
 		const tableTitle = await result.findByText(/XBS Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -496,21 +399,15 @@ describe("XPO", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XPO" endpoint="xpoterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="XPO" endpoint="xpoterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XPO" endpoint="xpoterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="XPO" endpoint="xpoterm" />);
 
 		const tableTitle = await result.findByText(/XPO Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -526,21 +423,15 @@ describe("ATP", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ATP" endpoint="atpterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="ATP" endpoint="atpterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="ATP" endpoint="atpterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="ATP" endpoint="atpterm" />);
 
 		const tableTitle = await result.findByText(/ATP Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -556,21 +447,15 @@ describe("XBED", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XBED" endpoint="xbedterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="XBED" endpoint="xbedterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XBED" endpoint="xbedterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="XBED" endpoint="xbedterm" />);
 
 		const tableTitle = await result.findByText(/XBED Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -586,21 +471,15 @@ describe("XSMO", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />);
 
 		const tableTitle = await result.findByText(/XSMO Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -616,21 +495,15 @@ describe("OBI", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="OBI" endpoint="obiterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="OBI" endpoint="obiterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="OBI" endpoint="obiterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="OBI" endpoint="obiterm" />);
 
 		const tableTitle = await result.findByText(/OBI Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -646,21 +519,15 @@ describe("WBPhenotype", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />);
 
 		const tableTitle = await result.findByText(/WBPhenotype Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -676,21 +543,15 @@ describe("PATO", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="PATO" endpoint="patoterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="PATO" endpoint="patoterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="PATO" endpoint="patoterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="PATO" endpoint="patoterm" />);
 
 		const tableTitle = await result.findByText(/PATO Table/i);
 		expect(tableTitle).toBeInTheDocument();
@@ -706,21 +567,15 @@ describe("HP", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="HP" endpoint="hpterm" />);
-		});
-		
+		let result = await renderWithClient(<GeneralOntologyComponent name="HP" endpoint="hpterm" />);
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GeneralOntologyComponent name="HP" endpoint="hpterm" />);
-		});
+		let result = await renderWithClient(<GeneralOntologyComponent name="HP" endpoint="hpterm" />);
 
 		const tableTitle = await result.findByText(/HP Table/i);
 		expect(tableTitle).toBeInTheDocument();

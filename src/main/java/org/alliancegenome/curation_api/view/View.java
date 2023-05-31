@@ -65,4 +65,7 @@ public class View {
 	public static class PersonSettingView {
 	}
 
+	public static class PrivateOnlyView {
+	}
+
 }
