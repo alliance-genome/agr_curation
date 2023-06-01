@@ -2,6 +2,7 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+<<<<<<< HEAD
 ## v0.19.0
  * New features
     * Synchronizes to LinkML v1.7.1 release (SCRUM-2836)
