@@ -1,8 +1,7 @@
 # AGR curation release notes
- 
+
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
-<<<<<<< HEAD
 ## v0.19.0
  * New features
     * Synchronizes to LinkML v1.7.1 release (SCRUM-2836)
@@ -10,7 +9,7 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * Loading of gene secondary IDs and display of gene slot annotation fields (SCRUM-2800)
     * Sort out display/format text in UI code (SCRUM-2890)
     * Display and enable editing of allele synonyms (SCRUM-2342)
-    * added HP Ontology (SCRUM-2449) 
+    * added HP Ontology (SCRUM-2449)
  * Fixes & maintenance
     * Remove deprecated secondaryId index references (SCRUM-2841)
     * Added basic component tests to most data tables (SCRUM-2877)
@@ -128,7 +127,6 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * Added indexes to allele touching tables 
 
 ## v0.11.0
-
  * New Features
     * Enable creation of disease annotation; 1st & 2nd iteration pop-up (SCRUM-1709, SCRUM-1903)
     * Enabled simple deletion of disease annotations (SCRUM-1890)
