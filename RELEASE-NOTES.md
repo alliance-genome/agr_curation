@@ -2,8 +2,29 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.19.0
+ * New features
+    * Synchronizes to LinkML v1.7.1 release (SCRUM-2836)
+    * Enable specification of object type in pending edit tooltip (SCRUM-2891)
+    * Loading of gene secondary IDs and display of gene slot annotation fields (SCRUM-2800)
+    * Sort out display/format text in UI code (SCRUM-2890)
+    * Display and enable editing of allele synonyms (SCRUM-2342)
+    * added HP Ontology (SCRUM-2449)
+ * Fixes & maintenance
+    * Remove deprecated secondaryId index references (SCRUM-2841)
+    * Added basic component tests to most data tables (SCRUM-2877)
+    * Fix table name (SCRUM-2342)
+    * Remove legacy secondary IDs (SCRUM-2841)
+    * Fix geneticModifiers autocomplete (SCRUM-28236)
+    * Fix popup dialog autocomplete selection bug (SCRUM-2885)
+    * updated row index for Autocomplete editors (SCRUM-2838)
+    * Fix gene table tooltips (SCRUM-2870)
+    * Fixed row cancel error (SCRUM-2838)
+    * Fixed tooltip superscripts on GenesTable (SCRUM-2773)
+    * Migration to populate null data providers (SCRUM-2830)
+
 ## v0.18.0
- * New feature
+ * New features
     * Rearrange "New Annotation" pop-up fields for disease annotations (SCRUM-2754)
     * Re-enable editing of allele symbol and name (SCRUM-2383)
     * Load Phenotype and Trait Ontology (PATO) into the persistent store (SCRUM-2450)
@@ -106,7 +127,6 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * Added indexes to allele touching tables 
 
 ## v0.11.0
-
  * New Features
     * Enable creation of disease annotation; 1st & 2nd iteration pop-up (SCRUM-1709, SCRUM-1903)
     * Enabled simple deletion of disease annotations (SCRUM-1890)
