@@ -447,8 +447,8 @@ the new version of the application can function in a consistent state upon and a
    *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
    *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
    *  Removed variables should be cleaned up **after** successfull deployment
-2. Connect to the Environment's Elastic search domain by entering its domain endpoint in Cerebro, and delete all indexes.
-   The domain endpoint URL can be found through the [Amazon OpenSearch console](https://console.aws.amazon.com/esv3/home?region=us-east-1#opensearch/domains), the cerebro UI is available on the application server through HTTP at port 9000.
+2. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
+   Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
 3. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup
    (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
