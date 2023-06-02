@@ -37,7 +37,7 @@ public class AgmExecutor extends LoadFileExecutor {
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
@@ -64,7 +64,7 @@ public class AgmExecutor extends LoadFileExecutor {
 
 			runLoad(history, agms, dataProvider, amgCuriesLoaded);
 			
-			runCleanup(affectedGenomicModelService, history, dataProvider, agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(affectedGenomicModelService, history, dataProvider, agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			

@@ -37,7 +37,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
@@ -64,7 +64,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 			runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
 			
-			runCleanup(alleleService, history, dataProvider, alleleCuriesBefore, alleleCuriesLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(alleleService, history, dataProvider, alleleCuriesBefore, alleleCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			

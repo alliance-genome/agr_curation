@@ -5,8 +5,11 @@ import java.util.List;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -38,6 +41,7 @@ import lombok.ToString;
 @AttributeOverride(name = "internal", column = @Column(columnDefinition = "boolean default true", nullable = false))
 @Schema(name = "Note", description = "POJO that represents the Note")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = { @Index(name = "Note_noteType_index", columnList = "noteType_id"), @Index(name = "Note_createdby_index", columnList = "createdBy_id"), @Index(name = "Note_updatedby_index", columnList = "updatedBy_id"),})
 public class Note extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -55,6 +59,7 @@ public class Note extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.NoteView.class })
+	@JsonView({ View.FieldsAndLists.class, View.NoteView.class, View.AlleleView.class })
+	@JoinTable(indexes = { @Index(columnList = "note_id"), @Index(columnList = "references_curie")})
 	private List<Reference> references;
 }

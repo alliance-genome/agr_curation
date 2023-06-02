@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { MoleculesPage } from "../index";
@@ -17,10 +16,7 @@ describe("<MoleculesPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<MoleculesPage />);
-		});
+		let result = await renderWithClient(<MoleculesPage />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -28,20 +24,14 @@ describe("<MoleculesPage />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<MoleculesPage />);
-		});
+		let result = await renderWithClient(<MoleculesPage />);
 
 		const tableTitle = await result.findByText(/Molecule Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it("The table contains correct data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<MoleculesPage />);
-		});
+		let result = await renderWithClient(<MoleculesPage />);
 
 		const curieTd = await result.findByText(/WB:WBMol:00007937/i);
 		const nameTd = await result.findByText(/frondoside A/i);

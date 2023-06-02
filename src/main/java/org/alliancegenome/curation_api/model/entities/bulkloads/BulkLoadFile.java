@@ -14,6 +14,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.BulkLoadCleanUp;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
@@ -51,6 +52,10 @@ public class BulkLoadFile extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private JobStatus bulkloadStatus;
+	
+	@JsonView({ View.FieldsOnly.class })
+	@Enumerated(EnumType.STRING)
+	private BulkLoadCleanUp bulkloadCleanUp;
 
 	@JsonView({ View.FieldsOnly.class })
 	@Column(unique = true)

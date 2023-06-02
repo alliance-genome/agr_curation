@@ -1,6 +1,17 @@
 # AGR curation release notes
-
+ 
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
+
+## v0.18.0
+ * New feature
+    * Rearrange "New Annotation" pop-up fields for disease annotations (SCRUM-2754)
+    * Re-enable editing of allele symbol and name (SCRUM-2383)
+    * Load Phenotype and Trait Ontology (PATO) into the persistent store (SCRUM-2450)
+    * Load Human Phenotype Ontology (HP) into the persistent store (SCRUM-2449)
+ * Fixes & maintenance
+    * Fix some table state persistence bugs (SCRUM-2754)
+    * Fix column reordering persistence (SCRUM-2457)
+    * Fix Gene names being displayed in symbol field (SCRUM-2840)
 
 ## v0.17.0
  * New features

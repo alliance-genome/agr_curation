@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { GenesPage } from "../index";
@@ -19,10 +18,7 @@ describe.skip("<GenesPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GenesPage />);
-		});
+		let result = await renderWithClient(<GenesPage />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -30,20 +26,14 @@ describe.skip("<GenesPage />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GenesPage />);
-		});
+		let result = await renderWithClient(<GenesPage />);
 
 		const tableTitle = await result.findByText(/Genes Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it("The table contains correct data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<GenesPage />);
-		});
+		let result = await renderWithClient(<GenesPage />);
 
 		const curieTd = await result.findByText(/WB:WBGene00002975/i);
 		const nameTd = await result.findByText(/LEVamisole resistant 8/i);
