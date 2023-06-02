@@ -10,8 +10,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-
-import io.micrometer.core.instrument.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
