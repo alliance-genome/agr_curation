@@ -75,11 +75,12 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	private Vocabulary vocabulary;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class, View.VocabularyTermView.class })
 	@JoinTable(indexes = @Index(columnList = "vocabularyterm_id"))
 	@Column(columnDefinition = "TEXT")
-	private List<String> textSynonyms;
+	private List<String> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

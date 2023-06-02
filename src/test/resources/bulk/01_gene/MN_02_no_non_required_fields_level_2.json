@@ -30,6 +30,11 @@
         "name_type_name": "unspecified"
       }
     ],
+    "gene_secondary_id_dtos": [
+      {
+        "secondary_id": "TEST:Secondary"
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,

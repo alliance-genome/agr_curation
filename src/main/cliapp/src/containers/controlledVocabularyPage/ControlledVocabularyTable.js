@@ -3,15 +3,18 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { useMutation, useQuery} from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
-import {VocabularyService} from "../../service/VocabularyService";
-import {TrueFalseDropdown} from "../../components/TrueFalseDropDownSelector";
-import {ErrorMessageComponent} from "../../components/ErrorMessageComponent";
-import {InputTextEditor} from "../../components/InputTextEditor";
-import {ControlledVocabularyDropdown} from "../../components/ControlledVocabularySelector";
-import {NewTermForm} from "../../containers/controlledVocabularyPage/NewTermForm";
-import {NewVocabularyForm} from "../../containers/controlledVocabularyPage/NewVocabularyForm";
-import {Button} from "primereact/button";
+import { Tooltip } from 'primereact/tooltip';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { ListTableCell } from '../../components/ListTableCell';
+import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
+import { VocabularyService } from "../../service/VocabularyService";
+import { TrueFalseDropdown } from "../../components/TrueFalseDropDownSelector";
+import { ErrorMessageComponent } from "../../components/ErrorMessageComponent";
+import { InputTextEditor } from "../../components/InputTextEditor";
+import { ControlledVocabularyDropdown } from "../../components/ControlledVocabularySelector";
+import { NewTermForm } from "../../containers/controlledVocabularyPage/NewTermForm";
+import { NewVocabularyForm } from "../../containers/controlledVocabularyPage/NewVocabularyForm";
+import { Button } from "primereact/button";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
@@ -210,6 +213,30 @@ export const ControlledVocabularyTable = () => {
 			}
 	};
 
+	const synonymsBodyTemplate = (rowData) => {
+		if (rowData?.synonyms && rowData.synonyms.length > 0) {
+			const sortedSynonyms = rowData.synonyms.sort();
+			console.log(sortedSynonyms)
+			const listTemplate = (synonym) => {
+				return (
+					<EllipsisTableCell>
+						<div dangerouslySetInnerHTML={{__html: synonym}}/>
+					</EllipsisTableCell>
+				)
+			};
+			return (
+				<>
+					<div className={`a${rowData.id}${rowData.synonyms[0]}`}>
+						<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+					</div>
+					<Tooltip target={`.a${rowData.id}${rowData.synonyms[0]}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+					</Tooltip>
+				</>
+			);
+		}
+	};
+
 	const columns = [
 		{
 			field: "id",
@@ -231,6 +258,13 @@ export const ControlledVocabularyTable = () => {
 			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
 			body: abbreviationBodyTemplate
+		},
+		{
+			field: "synonyms",
+			header: "Synonyms",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+			body: synonymsBodyTemplate
 		},
 		{
 			field: "vocabulary.name",

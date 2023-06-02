@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotation;
@@ -74,6 +75,7 @@ public class GeneITCase extends BaseITCase {
 	private GeneFullNameSlotAnnotation geneFullName;
 	private GeneSynonymSlotAnnotation geneSynonym;
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
+	private GeneSecondaryIdSlotAnnotation geneSecondaryId;
 	private DataProvider dataProvider;
 	private DataProvider dataProvider2;
 	private DataProvider obsoleteDataProvider;
@@ -109,6 +111,7 @@ public class GeneITCase extends BaseITCase {
 		geneFullName = createGeneFullNameSlotAnnotation(List.of(reference), "Gene test 1", fullNameType, exactSynonymScope, "https://test.org");
 		geneSynonym = createGeneSynonymSlotAnnotation(List.of(reference), "Gene test synonym 1", symbolNameType, exactSynonymScope, "https://test.org");
 		geneSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), "GT.1", systematicNameType, exactSynonymScope, "https://test.org");
+		geneSecondaryId = createGeneSecondaryIdSlotAnnotation(List.of(reference), "SecondaryTest");
 		dataProvider = createDataProvider("TEST", false);
 		dataProvider2 = createDataProvider("TEST2", false);
 		obsoleteDataProvider = createDataProvider("ODP", true);
@@ -131,6 +134,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setGeneFullName(geneFullName);
 		gene.setGeneSynonyms(List.of(geneSynonym));
 		gene.setGeneSystematicName(geneSystematicName);
+		gene.setGeneSecondaryIds(List.of(geneSecondaryId));
 		gene.setDataProvider(dataProvider);
 		
 		RestAssured.given().
@@ -178,6 +182,8 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneSystematicName.synonymScope.name", is(geneSystematicName.getSynonymScope().getName())).
 			body("entity.geneSystematicName.synonymUrl", is(geneSystematicName.getSynonymUrl())).
 			body("entity.geneSystematicName.evidence[0].curie", is(geneSystematicName.getEvidence().get(0).getCurie())).
+			body("entity.geneSecondaryIds[0].secondaryId", is(geneSecondaryId.getSecondaryId())).
+			body("entity.geneSecondaryIds[0].evidence[0].curie", is(geneSecondaryId.getEvidence().get(0).getCurie())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));
 	}
 
@@ -226,6 +232,10 @@ public class GeneITCase extends BaseITCase {
 		editedSystematicName.setSynonymUrl("https://test2.org");
 		editedSystematicName.setEvidence(List.of(reference2));
 		gene.setGeneSystematicName(editedSystematicName);
+		
+		GeneSecondaryIdSlotAnnotation editedSecondaryId = gene.getGeneSecondaryIds().get(0);
+		editedSecondaryId.setSecondaryId("SecondaryTest2");
+		editedSecondaryId.setEvidence(List.of(reference2));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -272,6 +282,8 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneSystematicName.synonymScope.name", is(editedSystematicName.getSynonymScope().getName())).
 			body("entity.geneSystematicName.synonymUrl", is(editedSystematicName.getSynonymUrl())).
 			body("entity.geneSystematicName.evidence[0].curie", is(editedSystematicName.getEvidence().get(0).getCurie())).
+			body("entity.geneSecondaryIds[0].secondaryId", is(editedSecondaryId.getSecondaryId())).
+			body("entity.geneSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation()));
 	}
 	
@@ -381,11 +393,13 @@ public class GeneITCase extends BaseITCase {
 		GeneFullNameSlotAnnotation invalidFullName = new GeneFullNameSlotAnnotation();
 		GeneSynonymSlotAnnotation invalidSynonym = new GeneSynonymSlotAnnotation();
 		GeneSystematicNameSlotAnnotation invalidSystematicName = new GeneSystematicNameSlotAnnotation();
+		GeneSecondaryIdSlotAnnotation invalidSecondaryId = new GeneSecondaryIdSlotAnnotation();
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
 		gene.setGeneSynonyms(List.of(invalidSynonym));
 		gene.setGeneSystematicName(invalidSystematicName);
+		gene.setGeneSecondaryIds(List.of(invalidSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -394,7 +408,7 @@ public class GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
@@ -410,7 +424,8 @@ public class GeneITCase extends BaseITCase {
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"nameType - " + ValidationConstants.REQUIRED_MESSAGE))));
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -435,11 +450,14 @@ public class GeneITCase extends BaseITCase {
 		invalidSystematicName.setDisplayText(null);
 		invalidSystematicName.setFormatText(null);
 		invalidSystematicName.setNameType(null);
+		GeneSecondaryIdSlotAnnotation invalidSecondaryId = gene.getGeneSecondaryIds().get(0);
+		invalidSecondaryId.setSecondaryId(null);
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
 		gene.setGeneSynonyms(List.of(invalidSynonym));
 		gene.setGeneSystematicName(invalidSystematicName);
+		gene.setGeneSecondaryIds(List.of(invalidSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -448,7 +466,7 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
@@ -464,7 +482,8 @@ public class GeneITCase extends BaseITCase {
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"nameType - " + ValidationConstants.REQUIRED_MESSAGE))));
+					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -479,11 +498,13 @@ public class GeneITCase extends BaseITCase {
 		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(null, "", fullNameType, null, null);
 		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(null, "", symbolNameType, null, null);
 		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(null, "", systematicNameType, null, null);
+		GeneSecondaryIdSlotAnnotation invalidSecondaryId = createGeneSecondaryIdSlotAnnotation(null, "");
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
 		gene.setGeneSynonyms(List.of(invalidSynonym));
 		gene.setGeneSystematicName(invalidSystematicName);
+		gene.setGeneSecondaryIds(List.of(invalidSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -492,7 +513,7 @@ public class GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -504,7 +525,8 @@ public class GeneITCase extends BaseITCase {
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE))));
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -525,11 +547,14 @@ public class GeneITCase extends BaseITCase {
 		GeneSystematicNameSlotAnnotation invalidSystematicName = gene.getGeneSystematicName();
 		invalidSystematicName.setDisplayText("");
 		invalidSystematicName.setFormatText("");
+		GeneSecondaryIdSlotAnnotation invalidSecondaryId = gene.getGeneSecondaryIds().get(0);
+		invalidSecondaryId.setSecondaryId("");
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
 		gene.setGeneSynonyms(List.of(invalidSynonym));
 		gene.setGeneSystematicName(invalidSystematicName);
+		gene.setGeneSecondaryIds(List.of(invalidSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -538,7 +563,7 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -550,7 +575,8 @@ public class GeneITCase extends BaseITCase {
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE))));
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -575,11 +601,13 @@ public class GeneITCase extends BaseITCase {
 		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, fullNameType, "https://test.org");
 		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(List.of(nonPersistedReference), "Test synonym", exactSynonymScope, fullNameType, "https://test.org");
 		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, fullNameType, "https://test.org");
-
+		GeneSecondaryIdSlotAnnotation invalidSecondaryId = createGeneSecondaryIdSlotAnnotation(List.of(nonPersistedReference), "SecondaryTest");
+		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
 		gene.setGeneSynonyms(List.of(invalidSynonym));
 		gene.setGeneSystematicName(invalidSystematicName);
+		gene.setGeneSecondaryIds(List.of(invalidSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -588,7 +616,7 @@ public class GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(7))).
+			body("errorMessages", is(aMapWithSize(8))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -607,6 +635,7 @@ public class GeneITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
 					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
@@ -643,11 +672,14 @@ public class GeneITCase extends BaseITCase {
 		invalidSystematicName.setEvidence(List.of(nonPersistedReference));
 		invalidSystematicName.setNameType(symbolNameType);
 		invalidSystematicName.setSynonymScope(fullNameType);
+		GeneSecondaryIdSlotAnnotation invalidSecondaryId = gene.getGeneSecondaryIds().get(0);
+		invalidSecondaryId.setEvidence(List.of(nonPersistedReference));
 
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
 		gene.setGeneSynonyms(List.of(invalidSynonym));
 		gene.setGeneSystematicName(invalidSystematicName);
+		gene.setGeneSecondaryIds(List.of(invalidSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -656,7 +688,7 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(7))).
+			body("errorMessages", is(aMapWithSize(8))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -675,6 +707,7 @@ public class GeneITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
 					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
@@ -691,11 +724,13 @@ public class GeneITCase extends BaseITCase {
 		GeneFullNameSlotAnnotation obsoleteFullName = createGeneFullNameSlotAnnotation(List.of(obsoleteReference), "Test name", obsoleteFullNameType, obsoleteSynonymScope, "https://test.org");
 		GeneSynonymSlotAnnotation obsoleteSynonym = createGeneSynonymSlotAnnotation(List.of(obsoleteReference), "Test synonym", obsoleteNameType, obsoleteSynonymScope, "https://test.org");
 		GeneSystematicNameSlotAnnotation obsoleteSystematicName = createGeneSystematicNameSlotAnnotation(List.of(obsoleteReference), "Test name", obsoleteSystematicNameType, obsoleteSynonymScope, "https://test.org");
+		GeneSecondaryIdSlotAnnotation obsoleteSecondaryId = createGeneSecondaryIdSlotAnnotation(List.of(obsoleteReference), "SecondaryTest");
 
 		gene.setGeneSymbol(obsoleteSymbol);
 		gene.setGeneFullName(obsoleteFullName);
 		gene.setGeneSynonyms(List.of(obsoleteSynonym));
 		gene.setGeneSystematicName(obsoleteSystematicName);
+		gene.setGeneSecondaryIds(List.of(obsoleteSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -704,7 +739,7 @@ public class GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(7))).
+			body("errorMessages", is(aMapWithSize(8))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -723,6 +758,7 @@ public class GeneITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
@@ -750,11 +786,14 @@ public class GeneITCase extends BaseITCase {
 		obsoleteSystematicName.setEvidence(List.of(obsoleteReference));
 		obsoleteSystematicName.setNameType(obsoleteSystematicNameType);
 		obsoleteSystematicName.setSynonymScope(obsoleteSynonymScope);
+		GeneSecondaryIdSlotAnnotation obsoleteSecondaryId = gene.getGeneSecondaryIds().get(0);
+		obsoleteSecondaryId.setEvidence(List.of(obsoleteReference));
 		
 		gene.setGeneSymbol(obsoleteSymbol);
 		gene.setGeneFullName(obsoleteFullName);
 		gene.setGeneSynonyms(List.of(obsoleteSynonym));
 		gene.setGeneSystematicName(obsoleteSystematicName);
+		gene.setGeneSecondaryIds(List.of(obsoleteSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -763,7 +802,7 @@ public class GeneITCase extends BaseITCase {
 			put("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(7))).
+			body("errorMessages", is(aMapWithSize(8))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
@@ -782,6 +821,7 @@ public class GeneITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
@@ -811,10 +851,14 @@ public class GeneITCase extends BaseITCase {
 		editedSystematicName.setSynonymScope(null);
 		editedSystematicName.setSynonymUrl(null);
 		
+		GeneSecondaryIdSlotAnnotation editedSecondaryId = gene.getGeneSecondaryIds().get(0);
+		editedSecondaryId.setEvidence(null);
+		
 		gene.setGeneSymbol(editedSymbol);
 		gene.setGeneFullName(editedFullName);
 		gene.setGeneSynonyms(List.of(editedSynonym));
 		gene.setGeneSystematicName(editedSystematicName);
+		gene.setGeneSecondaryIds(List.of(editedSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -844,7 +888,8 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneSynonyms[0]", not(hasKey("synonymUrl"))).
 			body("entity.geneSystematicName", not(hasKey("evidence"))).
 			body("entity.geneSystematicName", not(hasKey("synonymScope"))).
-			body("entity.geneSystematicName", not(hasKey("synonymUrl")));
+			body("entity.geneSystematicName", not(hasKey("synonymUrl"))).
+			body("entity.geneSecondaryIds[0]", not(hasKey("evidence")));
 	}
 	
 	@Test
@@ -856,6 +901,7 @@ public class GeneITCase extends BaseITCase {
 		gene.setGeneFullName(null);
 		gene.setGeneSynonyms(null);
 		gene.setGeneSystematicName(null);
+		gene.setGeneSecondaryIds(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -873,7 +919,8 @@ public class GeneITCase extends BaseITCase {
 			body("entity", not(hasKey("geneType"))).
 			body("entity", not(hasKey("geneFullName"))).
 			body("entity", not(hasKey("geneSynonyms"))).
-			body("entity", not(hasKey("geneSystematicName")));
+			body("entity", not(hasKey("geneSystematicName"))).
+			body("entity", not(hasKey("geneSecondaryIds")));
 	}
 	
 	@Test
@@ -904,11 +951,13 @@ public class GeneITCase extends BaseITCase {
 		GeneFullNameSlotAnnotation minimalGeneFullName = createGeneFullNameSlotAnnotation(null, "Test name", fullNameType, null, null);
 		GeneSystematicNameSlotAnnotation minimalGeneSystematicName = createGeneSystematicNameSlotAnnotation(null, "Test name", systematicNameType, null, null);
 		GeneSynonymSlotAnnotation minimalGeneSynonym = createGeneSynonymSlotAnnotation(null, "Test synonym", systematicNameType, null, null);
+		GeneSecondaryIdSlotAnnotation minimalGeneSecondaryId = createGeneSecondaryIdSlotAnnotation(null, "SecondaryMinimal");
 		
 		gene.setGeneSymbol(minimalGeneSymbol);
 		gene.setGeneFullName(minimalGeneFullName);
 		gene.setGeneSystematicName(minimalGeneSystematicName);
 		gene.setGeneSynonyms(List.of(minimalGeneSynonym));
+		gene.setGeneSecondaryIds(List.of(minimalGeneSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -976,6 +1025,14 @@ public class GeneITCase extends BaseITCase {
 		systematicName.setSynonymUrl(synonymUrl);
 		
 		return systematicName;
+	}
+	
+	private GeneSecondaryIdSlotAnnotation createGeneSecondaryIdSlotAnnotation(List<InformationContentEntity> evidence, String secondaryId) {
+		GeneSecondaryIdSlotAnnotation secondaryIdAnnotation = new GeneSecondaryIdSlotAnnotation();
+		secondaryIdAnnotation.setEvidence(evidence);
+		secondaryIdAnnotation.setSecondaryId(secondaryId);
+		
+		return secondaryIdAnnotation;
 	}
 
 }

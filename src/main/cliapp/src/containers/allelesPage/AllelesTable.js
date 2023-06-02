@@ -14,6 +14,7 @@ import { InheritanceModesDialog } from './InheritanceModesDialog';
 import { SymbolDialog } from './SymbolDialog';
 import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
+import { SynonymsDialog } from './SynonymsDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
@@ -65,6 +66,13 @@ export const AllelesTable = () => {
 	});
 
 	const [secondaryIdsData, setSecondaryIdsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [synonymsData, setSynonymsData] = useState({
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -304,7 +312,8 @@ export const AllelesTable = () => {
 		return (
 			<>
 				<Button className="p-button-text"
-					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />								
+					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
+						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />
 				</Button>
 			</>
 		);
@@ -320,7 +329,7 @@ export const AllelesTable = () => {
 						{<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: props.rowData.alleleSymbol.displayText }} />}
 						<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 					</span>&nbsp;&nbsp;&nbsp;&nbsp;
-					<EditMessageTooltip/>
+					<EditMessageTooltip object="allele"/>
 				</Button>
 			</div>
 			<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSymbol"} style={{ 'fontSize': '1em' }}/>
@@ -377,7 +386,7 @@ export const AllelesTable = () => {
 							{<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: props.rowData.alleleFullName.displayText }} />}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleFullName"} style={{ 'fontSize': '1em' }}/>
@@ -394,7 +403,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleFullName"} style={{ 'fontSize': '1em' }}/>
@@ -425,6 +434,95 @@ export const AllelesTable = () => {
 		_fullNameData["mainRowProps"] = rowProps;
 		setFullNameData(() => ({
 			..._fullNameData
+		}));
+	};
+
+	const synonymsTemplate = (rowData) => {
+		if (rowData?.alleleSynonyms) {
+			const synonymSet = new Set();
+			for(var i = 0; i < rowData.alleleSynonyms.length; i++){
+				if (rowData.alleleSynonyms[i].displayText) {
+					synonymSet.add(rowData.alleleSynonyms[i].displayText);
+				}
+			}
+			if (synonymSet.size > 0) {
+				const sortedSynonyms = Array.from(synonymSet).sort();
+				const listTemplate = (item) => {
+					return (
+						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: item }} />	
+					);
+				};
+				return (
+					<>
+						<Button className="p-button-text"
+							onClick={(event) => { handleSynonymsOpen(event, rowData, false) }} >
+							<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+						</Button>
+					</>
+				);
+			}
+		}
+	};
+
+	const synonymsEditor = (props) => {
+		if (props?.rowData?.alleleSynonyms) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleSynonymsOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`Synonyms(${props.rowData.alleleSynonyms.length}) `}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<EditMessageTooltip object="allele"/>
+					</Button>
+				</div>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSynonyms"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleSynonymsOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Synonym
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<EditMessageTooltip object="allele"/>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSynonyms"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+	const handleSynonymsOpen = (event, rowData, isInEdit) => {
+		let _synonymsData = {};
+		_synonymsData["originalSynonyms"] = rowData.alleleSynonyms;
+		_synonymsData["dialog"] = true;
+		_synonymsData["isInEdit"] = isInEdit;
+		setSynonymsData(() => ({
+			..._synonymsData
+		}));
+	};
+
+	const handleSynonymsOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _synonymsData = {};
+		_synonymsData["originalSynonyms"] = rowProps.rowData.alleleSynonyms;
+		_synonymsData["dialog"] = true;
+		_synonymsData["isInEdit"] = isInEdit;
+		_synonymsData["rowIndex"] = index;
+		_synonymsData["mainRowProps"] = rowProps;
+		setSynonymsData(() => ({
+			..._synonymsData
 		}));
 	};
 
@@ -468,7 +566,7 @@ export const AllelesTable = () => {
 							{`Inheritance Modes(${props.rowData.alleleInheritanceModes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleInheritanceModes"} style={{ 'fontSize': '1em' }}/>
@@ -485,7 +583,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleInheritanceModes"} style={{ 'fontSize': '1em' }}/>
@@ -563,7 +661,7 @@ export const AllelesTable = () => {
 							{`Mutation Types(${props.rowData.alleleMutationTypes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
@@ -580,7 +678,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
@@ -645,7 +743,7 @@ export const AllelesTable = () => {
 							{`Secondary IDs(${props.rowData.alleleSecondaryIds.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip/>
+						<EditMessageTooltip object="allele"/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
@@ -661,7 +759,7 @@ export const AllelesTable = () => {
 								Add Secondary ID
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip/>
+							<EditMessageTooltip object="allele"/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
@@ -721,12 +819,20 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
 		},
 		{
+			field: "alleleSynonyms.displayText",
+			header: "Synonyms",
+			body: synonymsTemplate,
+			editor: (props) => synonymsEditor(props),
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.alleleSynonymsFilterConfig,
+		},
+		{
 			field: "alleleSecondaryIds.secondaryId",
 			header: "Secondary IDs",
 			body: secondaryIdsTemplate,
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: isEnabled,
-			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
+			filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
 		},
 		{
 			field: "taxon.name",
@@ -863,6 +969,12 @@ export const AllelesTable = () => {
 			<FullNameDialog
 				originalFullNameData={fullNameData}
 				setOriginalFullNameData={setFullNameData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<SynonymsDialog
+				originalSynonymsData={synonymsData}
+				setOriginalSynonymsData={setSynonymsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>

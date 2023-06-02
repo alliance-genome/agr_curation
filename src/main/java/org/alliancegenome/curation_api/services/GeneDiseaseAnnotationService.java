@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.GeneDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDiseaseAnnotationDTOValidator;
@@ -30,6 +31,23 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneDiseaseAnnotationDAO);
+	}
+
+	@Override
+	public ObjectResponse<GeneDiseaseAnnotation> get(String identifier) {
+		SearchResponse<GeneDiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modInternalId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("uniqueId", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
+				
+		return new ObjectResponse<GeneDiseaseAnnotation>();
 	}
 
 	@Override

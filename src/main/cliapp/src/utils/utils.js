@@ -254,40 +254,42 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 }
 
 export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField="curie") {
-
+	
+	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
+	
 	let updatedRows = [...rowProps.props.value];
-
+	
 	if (!event.target.value) {
-		updatedRows[rowProps.rowIndex][fieldName] = null;
+		updatedRows[index][fieldName] = null;
 		setFieldValue('');
 		return;
 	}
-
+	
 	if (typeof event.target.value === "object") {
-		updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
+		updatedRows[index][fieldName] = event.target.value;
 		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
 	} else {
-		updatedRows[rowProps.rowIndex][fieldName] = {};
-		updatedRows[rowProps.rowIndex][fieldName][subField] = event.target.value;
-		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
+		updatedRows[index][fieldName] = {};
+		updatedRows[index][fieldName][subField] = event.target.value;
+		setFieldValue(updatedRows[index][fieldName]?.[subField]);
 	}
 }
 
 export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
 	let updatedRows = [...rowProps.props.value];
-
+	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
 	if (!event.target.value) {
-		updatedRows[rowProps.rowIndex][fieldName] = null;
+		updatedRows[index][fieldName] = null;
 		setFieldValue('');
 		return;
 	}
 
-	updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
-	setFieldValue(updatedRows[rowProps.rowIndex][fieldName]);
+	updatedRows[index][fieldName] = event.target.value;
+	setFieldValue(updatedRows[index][fieldName]);
 }
 
 export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "diseaseGeneticModifier", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
 		if(updatedRow[field] && Object.keys(updatedRow[field]).length === 1){
@@ -316,7 +318,7 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 }
 
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "diseaseGeneticModifier", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
 		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie")){
