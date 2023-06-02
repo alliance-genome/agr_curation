@@ -19,10 +19,7 @@ describe("<ConditionRelationPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ConditionRelationPage />);
-		});
+		let result = await renderWithClient(<ConditionRelationPage />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -30,19 +27,15 @@ describe("<ConditionRelationPage />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ConditionRelationPage />);
-		});
+		let result = await renderWithClient(<ConditionRelationPage />);
+
 		const tableTitle = await result.findByText(/Experiments Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it("The table contains correct data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ConditionRelationPage />);
-		});
+		let result = await renderWithClient(<ConditionRelationPage />);
+
 
 		const handleTd = await result.findByText("Standard");
 		const referenceTd = await result.findByText(/PMID:28806732/i);

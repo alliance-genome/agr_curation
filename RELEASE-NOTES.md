@@ -1,5 +1,5 @@
 # AGR curation release notes
-
+ 
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
 ## v0.19.0

@@ -47,6 +47,22 @@
         "secondary_id": "TEST:Secondary"
       }
     ],
+    "allele_functional_impact_dtos": [
+      {
+        "functional_impact_names": [
+          "cold_sensitive_hypermorphic"
+        ]
+      }
+    ],
+    "allele_germline_transmission_status_dto": {
+      "germline_transmission_status_name": "germline"
+    },
+    "note_dtos": [
+      {
+        "free_text": "Test note",
+        "note_type_name": "comment"
+      }
+    ],
     "data_provider_dto": {
       "internal": false,
       "obsolete": false,

@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AllelesTable } from "../AllelesTable";
@@ -23,10 +22,7 @@ describe.skip("<AllelesTable />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<AllelesTable />);
-		});
+		let result = await renderWithClient(<AllelesTable />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -35,19 +31,15 @@ describe.skip("<AllelesTable />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<AllelesTable />);
-		});
+		let result = await renderWithClient(<AllelesTable />);
+
 		const tableTitle = await result.findByText(/Alleles Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it("Contains Correct Table Data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<AllelesTable />);
-		});
+		let result = await renderWithClient(<AllelesTable />);
+
 
 		const curieTd = await result.findByText(/FB:FBal0196303/i);
 		const nameTd = await result.findByText(/Saccharomyces cerevisiae UAS construct a of Stefancsik/i);
@@ -62,7 +54,6 @@ describe.skip("<AllelesTable />", () => {
 		const internalTd = await result.findByText(/false/i);
 		const obsoleteTd = await result.findByText(/false/i);
 
-		result.debug(undefined, Infinity)
 		await waitFor(() => {
 			expect(curieTd).toBeInTheDocument();
 			expect(nameTd).toBeInTheDocument();

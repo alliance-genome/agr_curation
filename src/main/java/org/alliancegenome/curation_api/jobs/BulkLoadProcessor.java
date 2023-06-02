@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkManualLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkURLLoadDAO;
+import org.alliancegenome.curation_api.enums.BulkLoadCleanUp;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
@@ -76,7 +77,7 @@ public class BulkLoadProcessor {
 			if (bulkLoadFile.getLocalFilePath() == null || bulkLoadFile.getS3Path() == null) {
 				syncWithS3(bulkLoadFile);
 			}
-			bulkLoadJobExecutor.process(bulkLoadFile);
+			bulkLoadJobExecutor.process(bulkLoadFile, bulkLoadFile.getBulkloadCleanUp() == BulkLoadCleanUp.YES);
 			JobStatus status = bulkLoadFile.getBulkloadStatus().equals(JobStatus.FAILED) ? JobStatus.FAILED : JobStatus.FINISHED;
 			endLoadFile(bulkLoadFile, bulkLoadFile.getErrorMessage(), status);
 
@@ -132,8 +133,12 @@ public class BulkLoadProcessor {
 		}
 		log.info("Syncing with S3 Finished");
 	}
-
+	
 	protected void processFilePath(BulkLoad bulkLoad, String localFilePath) {
+		processFilePath(bulkLoad, localFilePath, false);
+	}
+
+	protected void processFilePath(BulkLoad bulkLoad, String localFilePath, Boolean cleanUp) {
 		String md5Sum = fileHelper.getMD5SumOfGzipFile(localFilePath);
 		log.info("processFilePath: MD5 Sum: " + md5Sum);
 
@@ -163,6 +168,7 @@ public class BulkLoadProcessor {
 			log.info(load.getBulkloadStatus());
 
 			bulkLoadFile.setLocalFilePath(localFilePath);
+			if(cleanUp) bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
 			bulkLoadFileDAO.persist(bulkLoadFile);
 		} else if (load.getBulkloadStatus().isForced()) {
 			bulkLoadFile = bulkLoadFiles.getResults().get(0);
@@ -185,6 +191,7 @@ public class BulkLoadProcessor {
 		if (!load.getLoadFiles().contains(bulkLoadFile)) {
 			load.getLoadFiles().add(bulkLoadFile);
 		}
+		if(cleanUp) bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		bulkLoadDAO.merge(load);
 	}

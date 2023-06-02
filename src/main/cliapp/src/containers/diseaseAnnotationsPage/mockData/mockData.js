@@ -1,516 +1,460 @@
 export const data = {
-	"type": "AGMDiseaseAnnotation",
-	"createdBy": {
-			"internal": false,
-			"obsolete": false,
-			"dbDateCreated": "2022-09-08T13:13:22.60487Z",
-			"dbDateUpdated": "2022-09-08T13:13:22.604883Z",
-			"id": 10975050,
-			"uniqueId": "WB:WBPerson324"
-	},
-	"dateCreated": "2017-05-22T21:41:16Z",
-	"dateUpdated": "2017-05-18T00:00:00Z",
-	"internal": false,
-	"obsolete": false,
-	"dbDateUpdated": "2023-05-10T21:10:07.902263Z",
-	"id": 7823872,
-	"uniqueId": "WB:WBStrain00024340|DOID:11723|AGRKB:101000000624376",
-	"modEntityId": "WBDOannot00000430",
-	"object": {
-			"internal": false,
-			"obsolete": false,
-			"dbDateUpdated": "2023-04-02T22:01:27.833619Z",
-			"curie": "DOID:11723",
-			"name": "Duchenne muscular dystrophy",
-			"namespace": "disease_ontology",
-			"definition": "A muscular dystrophy that has_material_basis_in X-linked mutations in the DMD gene found on the X chromosome. It is characterized by rapidly progressing muscle weakness and muscle atrophy initially involving the lower extremities and eventually affecting the whole body. It affects males whereas females can be carriers. The symptoms start before the age of six and may appear at infancy.",
-			"definitionUrls": [
-					"url:http://omim.org/entry/300377",
-					"url:http://www.genome.gov/19518854",
-					"url:http://en.wikipedia.org/wiki/Duchenne_muscular_dystrophy"
-			],
-			"subsets": [
-					"DO_FlyBase_slim",
-					"NCIthesaurus",
-					"DO_rare_slim"
-			],
-			"synonyms": [
-					{
-							"internal": false,
-							"obsolete": false,
-							"id": 12272324,
-							"name": "Muscular dystrophy, Duchenne"
-					}
-			]
-	},
-	"negated": false,
-	"diseaseRelation": {
-			"dateCreated": "2022-01-26T09:40:54.020724Z",
-			"dateUpdated": "2022-01-26T09:40:54.020726Z",
-			"internal": false,
-			"obsolete": false,
-			"id": 6363603,
-			"name": "is_model_of",
-			"definition": "is_model_of"
-	},
-	"evidenceCodes": [
-			{
-					"internal": false,
-					"obsolete": false,
-					"dbDateUpdated": "2023-04-09T22:01:36.106481Z",
-					"curie": "ECO:0000315",
-					"name": "mutant phenotype evidence used in manual assertion",
-					"namespace": "eco",
-					"definition": "A type of mutant phenotype evidence that is used in a manual assertion.",
-					"definitionUrls": [
-							"ECO:MCC",
-							"GOECO:IMP"
-					],
-					"subsets": [
-							"valid_with_protein_complex",
-							"valid_with_protein",
-							"valid_with_chemical_entity",
-							"valid_with_gene",
-							"agr_eco_terms"
-					],
-					"synonyms": [
-							{
-									"internal": false,
-									"obsolete": false,
-									"id": 3224780,
-									"name": "IMP"
-							},
-							{
-									"internal": false,
-									"obsolete": false,
-									"id": 12272371,
-									"name": "inferred from mutant phenotype"
-							}
-					],
-					"abbreviation": "IMP"
+	"results": [
+		{
+			"type": "AGMDiseaseAnnotation",
+			"modInternalId": "mockModInternalId",
+			"createdBy": {
+				"dateCreated": "2022-07-25T21:18:13.558556Z",
+				"dateUpdated": "2022-07-25T21:18:13.558556Z",
+				"internal": false,
+				"obsolete": false,
+				"id": 10740932,
+				"uniqueId": "MGI:curation_staff"
 			},
-			{
+			"relatedNotes": [
+				{
 					"internal": false,
 					"obsolete": false,
-					"dbDateUpdated": "2023-04-09T22:01:36.10941Z",
-					"curie": "ECO:0007013",
-					"name": "combinatorial experimental and author inference evidence used in manual assertion",
-					"namespace": "eco",
-					"definition": "A type of combinatorial evidence from author knowledge and experimental evidence that is used in a manual assertion.",
-					"definitionUrls": [
-							"ECO:RCT"
-					],
-					"subsets": [
-							"agr_eco_terms"
-					],
-					"synonyms": [
-							{
-									"internal": false,
-									"obsolete": false,
-									"id": 12275783,
-									"name": "combinatorial evidence from author knowledge and experimental evidence used in manual assertion"
-							}
-					],
-					"abbreviation": "CEA"
-			}
-	],
-	"conditionRelations": [
-			{
-					"internal": false,
-					"obsolete": false,
-					"dbDateCreated": "2022-11-18T19:15:44.372919Z",
-					"dbDateUpdated": "2023-05-10T21:10:07.896665Z",
-					"id": 18559617,
-					"uniqueId": "ameliorated_by|ZECO:0000111|WB:WBMol:00004976",
-					"conditionRelationType": {
-							"internal": false,
-							"obsolete": false,
-							"id": 7662733,
-							"name": "ameliorated_by"
-					},
-					"conditions": [
-							{
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2022-10-17T20:04:57.855012Z",
-									"dbDateUpdated": "2023-05-10T21:10:07.897199Z",
-									"id": 13586399,
-									"uniqueId": "ZECO:0000111|WB:WBMol:00004976",
-									"conditionClass": {
-											"internal": false,
-											"obsolete": false,
-											"curie": "ZECO:0000111",
-											"name": "chemical treatment",
-											"definition": "Experimental condition in which the fish is treated with a chemical substance. This treatment could be administered by adding the chemical substance to the tank water, injections, or by consumption.",
-											"subsets": [
-													"ZECO_0000267"
-											]
-									},
-									"conditionSummary": "chemical treatment:Methazolamide",
-									"conditionChemical": {
-											"internal": false,
-											"obsolete": false,
-											"dbDateUpdated": "2023-02-13T00:01:11.299345Z",
-											"curie": "WB:WBMol:00004976",
-											"name": "Methazolamide",
-											"namespace": "molecule"
-									}
-							}
-					]
-			}
-	],
-	"singleReference": {
-			"updatedBy": {
-					"dateCreated": "2022-05-03T18:33:16.445309Z",
-					"dateUpdated": "2022-05-03T18:33:16.445322Z",
-					"internal": false,
-					"obsolete": false,
-					"id": 7685810,
-					"uniqueId": "Chris|Grove|chris@wormbase.org",
-					"firstName": "Chris",
-					"lastName": "Grove",
-					"allianceMember": {
-							"internal": false,
-							"obsolete": false,
-							"id": 20308683,
-							"uniqueId": "WB",
-							"abbreviation": "WB",
-							"fullName": "WormBase",
-							"homepageResourceDescriptorPage": {
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-02-20T09:26:39.609757Z",
-									"dbDateUpdated": "2023-05-04T22:00:09.611705Z",
-									"id": 41750788,
-									"name": "homepage",
-									"urlTemplate": "https://www.wormbase.org/"
-							}
-					},
-					"oktaId": "00u347gob7EQ6WsMz5d7",
-					"oktaEmail": "chris@wormbase.org",
-			},
-			"dateUpdated": "2023-05-10T21:04:13.711711Z",
-			"internal": false,
-			"obsolete": false,
-			"dbDateCreated": "2022-11-18T19:15:43.96129Z",
-			"dbDateUpdated": "2023-05-10T21:04:13.714669Z",
-			"curie": "AGRKB:101000000624376",
-			"crossReferences": [
-					{
-							"internal": false,
-							"obsolete": false,
-							"id": 74009206,
-							"referencedCurie": "WB:WBPaper00035094",
-							"displayName": "WB:WBPaper00035094"
-					},
-					{
-							"internal": false,
-							"obsolete": false,
-							"id": 74009205,
-							"referencedCurie": "PMID:19648295",
-							"displayName": "PMID:19648295"
-					},
-					{
-							"internal": false,
-							"obsolete": false,
-							"id": 74009204,
-							"referencedCurie": "DOI:10.1093/hmg/ddp358",
-							"displayName": "DOI:10.1093/hmg/ddp358"
-					}
-			]
-	},
-	"annotationType": {
-			"internal": false,
-			"obsolete": false,
-			"id": 7662755,
-			"name": "manually_curated"
-	},
-	"geneticSex": {
-			"internal": false,
-			"obsolete": false,
-			"id": 7662743,
-			"name": "hermaphrodite"
-	},
-	"relatedNotes": [
-			{
-					"internal": false,
-					"obsolete": false,
-					"dbDateCreated": "2023-05-10T21:10:07.88597Z",
-					"dbDateUpdated": "2023-05-10T21:10:07.885972Z",
-					"id": 79682347,
-					"freeText": "RNAi-mediated knockdown of cah-4 (carbonic anhydrase) in conjunction with the drug Methazolamide (MTZ) significantly reduced the muscle degeneration in dys-1; hlh-1 double mutants which model Duchenne muscular dystrophy.",
+					"dbDateCreated": "2023-05-22T21:20:00.253489Z",
+					"dbDateUpdated": "2023-05-22T21:20:00.25349Z",
+					"id": 82884270,
+					"freeText": "Yeast GRS1 is homologous to human GARS1, and has been used to study Charcot-Marie-Tooth disease type 2D and severe infantile-onset spinal muscular atrophy",
 					"noteType": {
-							"internal": false,
-							"obsolete": false,
-							"id": 7662728,
-							"name": "disease_summary"
+						"internal": false,
+						"obsolete": false,
+						"id": 7662728,
+						"name": "disease_summary"
 					}
-			}
-	],
-	"dataProvider": {
-			"updatedBy": {
-					"dateCreated": "2022-05-03T18:33:16.445309Z",
-					"dateUpdated": "2022-05-03T18:33:16.445322Z",
-					"internal": false,
-					"obsolete": false,
-					"id": 7685810,
-					"uniqueId": "Chris|Grove|chris@wormbase.org",
-					"firstName": "Chris",
-					"lastName": "Grove",
-					"allianceMember": {
-							"internal": false,
-							"obsolete": false,
-							"id": 20308683,
-							"uniqueId": "WB",
-							"abbreviation": "WB",
-							"fullName": "WormBase",
-							"homepageResourceDescriptorPage": {
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-02-20T09:26:39.609757Z",
-									"dbDateUpdated": "2023-05-04T22:00:09.611705Z",
-									"id": 41750788,
-									"name": "homepage",
-									"urlTemplate": "https://www.wormbase.org/"
-							}
-					},
-					"oktaId": "00u347gob7EQ6WsMz5d7",
-					"oktaEmail": "chris@wormbase.org",
-			},
-			"dateUpdated": "2023-05-11T13:02:13.870496Z",
-			"internal": false,
-			"obsolete": false,
-			"dbDateUpdated": "2023-05-11T13:02:13.902999Z",
-			"id": 75083701,
-			"sourceOrganization": {
-					"internal": false,
-					"obsolete": false,
-					"id": 20308683,
-					"uniqueId": "WB",
-					"abbreviation": "WB",
-					"fullName": "WormBase",
-					"homepageResourceDescriptorPage": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-02-20T09:26:39.609757Z",
-							"dbDateUpdated": "2023-05-04T22:00:09.611705Z",
-							"id": 41750788,
-							"name": "homepage",
-							"urlTemplate": "https://www.wormbase.org/"
-					}
-			},
-			"crossReference": {
-					"internal": false,
-					"obsolete": false,
-					"dbDateCreated": "2023-05-10T21:11:40.718605Z",
-					"dbDateUpdated": "2023-05-11T13:02:13.902006Z",
-					"id": 79683607,
-					"referencedCurie": "DOID:162",
-					"displayName": "DOID:162",
-					"resourceDescriptorPage": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-02-20T09:26:39.841702Z",
-							"dbDateUpdated": "2023-05-04T22:00:09.990079Z",
-							"id": 41750841,
-							"name": "disease/wb",
-							"urlTemplate": "https://www.wormbase.org/resources/disease/[%s]"
-					}
-			}
-	},
-	"diseaseGeneticModifiers": [
-			{
-					"type": "Gene",
-					"createdBy": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2022-09-08T13:13:22.467843Z",
-							"dbDateUpdated": "2022-09-08T13:13:22.467853Z",
-							"id": 10975049,
-							"uniqueId": "WB:curator"
-					},
-					"updatedBy": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2022-09-08T13:13:22.467843Z",
-							"dbDateUpdated": "2022-09-08T13:13:22.467853Z",
-							"id": 10975049,
-							"uniqueId": "WB:curator"
-					},
-					"internal": false,
-					"obsolete": false,
-					"dbDateUpdated": "2023-05-16T12:27:55.919419Z",
-					"curie": "WB:WBGene00000282",
-					"taxon": {
-							"internal": false,
-							"obsolete": false,
-							"curie": "NCBITaxon:6239",
-							"name": "Caenorhabditis elegans"
-					},
-					"dataProvider": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateUpdated": "2023-05-16T12:27:55.918864Z",
-							"id": 75799694,
-							"sourceOrganization": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308683,
-									"uniqueId": "WB",
-									"abbreviation": "WB",
-									"fullName": "WormBase",
-									"homepageResourceDescriptorPage": {
-											"internal": false,
-											"obsolete": false,
-											"dbDateCreated": "2023-02-20T09:26:39.609757Z",
-											"dbDateUpdated": "2023-05-04T22:00:09.611705Z",
-											"id": 41750788,
-											"name": "homepage",
-											"urlTemplate": "https://www.wormbase.org/"
-									}
-							},
-							"crossReference": {
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-05-16T12:27:55.91828Z",
-									"dbDateUpdated": "2023-05-16T12:27:55.918282Z",
-									"id": 79685390,
-									"referencedCurie": "WB:WBGene00000282",
-									"displayName": "WBGene00000282",
-									"resourceDescriptorPage": {
-											"internal": false,
-											"obsolete": false,
-											"dbDateCreated": "2023-02-20T09:26:39.602562Z",
-											"dbDateUpdated": "2023-05-04T22:00:09.592619Z",
-											"id": 41750773,
-											"name": "gene",
-											"urlTemplate": "https://www.wormbase.org/db/get?name=[%s];class=Gene"
-									}
-							}
-					},
-					"geneType": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateUpdated": "2023-02-19T22:00:41.015903Z",
-							"curie": "SO:0001217",
-							"name": "protein_coding_gene",
-							"namespace": "sequence",
-							"definition": "A gene that codes for an RNA that can be translated into a protein.",
-							"subsets": [
-									"Alliance_of_Genome_Resources"
-							],
-							"synonyms": [
-									{
-											"internal": false,
-											"obsolete": false,
-											"id": 12304001,
-											"name": "protein coding gene"
-									}
-							]
-					},
+				}
+			],
+			"conditionRelations": [{ "handle": "condition relations handle test" }],
+			"with": [
+				{
+					"curie": "with_test_curie",
 					"geneSymbol": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:24:38.263833Z",
-							"dbDateUpdated": "2023-05-16T12:27:55.946102Z",
-							"id": 27209548,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308690,
-									"name": "nomenclature_symbol",
-									"definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
-							},
-							"formatText": "cah-4",
-							"displayText": "cah-4",
-							"synonymScope": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308698,
-									"name": "exact"
-							}
-					},
-					"geneFullName": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:24:38.264351Z",
-							"dbDateUpdated": "2023-05-16T12:27:55.945003Z",
-							"id": 27209549,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308691,
-									"name": "full_name",
-									"definition": "The full length name of an entity: e.g., broad angular dumpy."
-							},
-							"formatText": "Carbonic AnHydrase 4",
-							"displayText": "Carbonic AnHydrase 4"
-					},
-					"geneSystematicName": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:24:38.26478Z",
-							"dbDateUpdated": "2023-05-16T12:27:55.948689Z",
-							"id": 27209550,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308692,
-									"name": "systematic_name",
-									"definition": "A systematic name: e.g., CG4889<sup>1</sup>."
-							},
-							"formatText": "R01E6.3",
-							"displayText": "R01E6.3",
-							"synonymScope": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308698,
-									"name": "exact"
-							}
-					},
-					"geneSynonyms": [
-							{
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-01-31T00:24:38.265213Z",
-									"dbDateUpdated": "2023-05-16T12:27:55.947112Z",
-									"id": 27209551,
-									"nameType": {
-											"internal": false,
-											"obsolete": false,
-											"id": 20308697,
-											"name": "unspecified",
-											"definition": "Unclassified name"
-									},
-									"formatText": "CELE_R01E6.3",
-									"displayText": "CELE_R01E6.3"
-							}
-					]
-			}
-	],
-	"diseaseGeneticModifierRelation": {
+						"displayText": "with_test_symbol"
+					}
+				}
+			],
+			"secondaryDataProvider": {
+				"sourceOrganization": {
+					"abbreviation": "test provider"
+				}
+			},
+			"geneticSex": {
+				"name": "genetic sex test"
+			},
+			"updatedBy": {
+				"dateCreated": "2022-07-25T21:18:13.558556Z",
+				"dateUpdated": "2022-07-25T21:18:13.558556Z",
+				"internal": false,
+				"obsolete": false,
+				"id": 10740932,
+				"uniqueId": "MGI:curation_staff"
+			},
+			"diseaseGeneticModifierRelation": {"name": "disease genetic modifier relation test"},
+			"sgdStrainBackground": {
+				"curie": "sgd test curie",
+				"name": "SGD Strain Background test"
+			}, 
+			"diseaseGeneticModifiers": {"symbol": "disease genetic modifier test"},
+			"diseaseQualifiers": [{"name": "disease qualifiers test"}],
+			"dateCreated": "2017-06-08T14:15:35Z",
+			"dateUpdated": "2017-06-08T14:15:35Z",
 			"internal": false,
 			"obsolete": false,
-			"id": 7662744,
-			"name": "ameliorated_by"
-	},
-	"subject": {
-			"type": "AffectedGenomicModel",
-			"internal": false,
-			"obsolete": false,
-			"dbDateUpdated": "2023-01-31T01:04:28.075722Z",
-			"curie": "WB:WBStrain00024340",
-			"taxon": {
+			"dbDateCreated": "2022-11-18T16:33:33.683726Z",
+			"dbDateUpdated": "2023-03-16T15:24:38.954678Z",
+			"id": 18394375,
+			"uniqueId": "MGI:5560505|DOID:0050545|AGRKB:101000000827851",
+			"object": {
+				"internal": false,
+				"obsolete": false,
+				"dbDateUpdated": "2023-04-02T22:02:52.730635Z",
+				"curie": "DOID:0050545",
+				"name": "visceral heterotaxy",
+				"namespace": "disease_ontology",
+				"definition": "A physical disorder characterized by the abnormal distribution of the major visceral organs within the chest and abdomen.",
+				"definitionUrls": [
+					"url:http://en.wikipedia.org/wiki/Situs_ambiguus"
+				],
+				"subsets": [
+					"DO_rare_slim"
+				],
+				"synonyms": [
+					{
+						"internal": false,
+						"obsolete": false,
+						"id": 12282324,
+						"name": "heterotaxia"
+					},
+					{
+						"internal": false,
+						"obsolete": false,
+						"id": 12282325,
+						"name": "situs ambiguus"
+					}
+				]
+			},
+			"negated": false,
+			"diseaseRelation": {
+				"dateCreated": "2022-01-26T09:40:54.020724Z",
+				"dateUpdated": "2022-01-26T09:40:54.020726Z",
+				"internal": false,
+				"obsolete": false,
+				"id": 6363603,
+				"name": "is_model_of",
+				"definition": "is_model_of"
+			},
+			"evidenceCodes": [
+				{
 					"internal": false,
 					"obsolete": false,
-					"curie": "NCBITaxon:6239",
-					"name": "Caenorhabditis elegans"
+					"dbDateUpdated": "2023-04-09T22:01:36.100471Z",
+					"curie": "ECO:0000033",
+					"name": "author statement supported by traceable reference",
+					"namespace": "eco",
+					"definition": "A type of author statement in which the author makes a statement that is not supported by information in that particular publication, but rather can be traced to a reference cited by that publication.",
+					"definitionUrls": [
+						"GO:TAS",
+						"ECO:RCT"
+					],
+					"subsets": [
+						"agr_eco_terms"
+					],
+					"synonyms": [
+						{
+							"internal": false,
+							"obsolete": false,
+							"id": 12272565,
+							"name": "traceable author statement"
+						}
+					],
+					"abbreviation": "TAS"
+				}
+			],
+			"singleReference": {
+				"internal": false,
+				"obsolete": false,
+				"dbDateUpdated": "2022-11-18T16:33:21.46375Z",
+				"curie": "AGRKB:101000000827851",
+				"crossReferences": [
+					{
+						"internal": false,
+						"obsolete": false,
+						"id": 74063345,
+						"referencedCurie": "MGI:5284969",
+						"displayName": "MGI:5284969"
+					}
+				]
+			},
+			"annotationType": {
+				"internal": false,
+				"obsolete": false,
+				"id": 7662755,
+				"name": "manually_curated"
 			},
 			"dataProvider": {
+				"internal": false,
+				"obsolete": false,
+				"id": 75083698,
+				"sourceOrganization": {
 					"internal": false,
 					"obsolete": false,
-					"id": 75643867,
+					"id": 20308680,
+					"uniqueId": "MGI",
+					"abbreviation": "MGI",
+					"fullName": "Mouse Genome Informatics",
+					"homepageResourceDescriptorPage": {
+						"internal": false,
+						"obsolete": false,
+						"dbDateCreated": "2023-02-20T09:26:39.240245Z",
+						"dbDateUpdated": "2023-05-11T22:00:03.831263Z",
+						"id": 41750686,
+						"name": "homepage",
+						"urlTemplate": "http://www.informatics.jax.org/"
+					}
+				}
+			},
+			"subject": {
+				"type": "AffectedGenomicModel",
+				"internal": false,
+				"obsolete": false,
+				"dbDateUpdated": "2023-05-17T12:33:39.453344Z",
+				"curie": "MGI:5560505",
+				"taxon": {
+					"internal": false,
+					"obsolete": false,
+					"curie": "NCBITaxon:10090",
+					"name": "Mus musculus"
+				},
+				"dataProvider": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateUpdated": "2023-05-17T12:33:39.451734Z",
+					"id": 75611693,
 					"sourceOrganization": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308680,
+						"uniqueId": "MGI",
+						"abbreviation": "MGI",
+						"fullName": "Mouse Genome Informatics",
+						"homepageResourceDescriptorPage": {
+							"internal": false,
+							"obsolete": false,
+							"dbDateCreated": "2023-02-20T09:26:39.240245Z",
+							"dbDateUpdated": "2023-05-11T22:00:03.831263Z",
+							"id": 41750686,
+							"name": "homepage",
+							"urlTemplate": "http://www.informatics.jax.org/"
+						}
+					},
+					"crossReference": {
+						"internal": false,
+						"obsolete": false,
+						"dbDateCreated": "2023-05-17T12:33:39.450658Z",
+						"dbDateUpdated": "2023-05-17T12:33:39.450659Z",
+						"id": 80324218,
+						"referencedCurie": "MGI:5560505",
+						"displayName": "MGI:5560505",
+						"resourceDescriptorPage": {
+							"internal": false,
+							"obsolete": false,
+							"dbDateCreated": "2023-02-20T09:26:39.239734Z",
+							"dbDateUpdated": "2023-05-11T22:00:03.830784Z",
+							"id": 41750685,
+							"name": "genotype",
+							"urlTemplate": "http://www.informatics.jax.org/allele/genoview/MGI:[%s]"
+						}
+					}
+				},
+				"name": "Rfx3<sup>b2b1213Clo</sup>/Rfx3<sup>b2b1213Clo</sup>  [background:] C57BL/6J-Rfx3<sup>b2b1213Clo</sup>",
+				"subtype": {
+					"internal": false,
+					"obsolete": false,
+					"id": 40545169,
+					"name": "genotype"
+				}
+			},
+			"inferredGene": {
+				"type": "Gene",
+				"createdBy": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateCreated": "2023-05-17T10:04:44.939207Z",
+					"dbDateUpdated": "2023-05-17T10:04:44.939209Z",
+					"id": 80081033,
+					"uniqueId": "MGI"
+				},
+				"updatedBy": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateCreated": "2023-05-17T10:04:44.939207Z",
+					"dbDateUpdated": "2023-05-17T10:04:44.939209Z",
+					"id": 80081033,
+					"uniqueId": "MGI"
+				},
+				"internal": false,
+				"obsolete": false,
+				"dbDateUpdated": "2023-05-17T10:05:06.055796Z",
+				"curie": "MGI:106582",
+				"taxon": {
+					"internal": false,
+					"obsolete": false,
+					"curie": "NCBITaxon:10090",
+					"name": "Mus musculus"
+				},
+				"dataProvider": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateUpdated": "2023-05-17T10:05:06.055328Z",
+					"id": 75132764,
+					"sourceOrganization": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308680,
+						"uniqueId": "MGI",
+						"abbreviation": "MGI",
+						"fullName": "Mouse Genome Informatics",
+						"homepageResourceDescriptorPage": {
+							"internal": false,
+							"obsolete": false,
+							"dbDateCreated": "2023-02-20T09:26:39.240245Z",
+							"dbDateUpdated": "2023-05-11T22:00:03.831263Z",
+							"id": 41750686,
+							"name": "homepage",
+							"urlTemplate": "http://www.informatics.jax.org/"
+						}
+					},
+					"crossReference": {
+						"internal": false,
+						"obsolete": false,
+						"dbDateCreated": "2023-05-17T10:05:06.054841Z",
+						"dbDateUpdated": "2023-05-17T10:05:06.054842Z",
+						"id": 80081812,
+						"referencedCurie": "MGI:106582",
+						"displayName": "MGI:106582",
+						"resourceDescriptorPage": {
+							"internal": false,
+							"obsolete": false,
+							"dbDateCreated": "2023-02-20T09:26:39.235386Z",
+							"dbDateUpdated": "2023-05-11T22:00:03.81929Z",
+							"id": 41750677,
+							"name": "gene",
+							"urlTemplate": "http://www.informatics.jax.org/marker/MGI:[%s]"
+						}
+					}
+				},
+				"geneType": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateUpdated": "2023-02-19T22:00:41.015903Z",
+					"curie": "SO:0001217",
+					"name": "protein_coding_gene",
+					"namespace": "sequence",
+					"definition": "A gene that codes for an RNA that can be translated into a protein.",
+					"subsets": [
+						"Alliance_of_Genome_Resources"
+					],
+					"synonyms": [
+						{
+							"internal": false,
+							"obsolete": false,
+							"id": 12304001,
+							"name": "protein coding gene"
+						}
+					]
+				},
+				"geneSymbol": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateCreated": "2023-03-03T20:23:28.769215Z",
+					"dbDateUpdated": "2023-05-17T10:05:06.06461Z",
+					"id": 51339916,
+					"nameType": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308690,
+						"name": "nomenclature_symbol",
+						"definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
+					},
+					"formatText": "Rfx3",
+					"displayText": "Rfx3"
+				},
+				"geneFullName": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateCreated": "2023-03-03T20:23:28.77077Z",
+					"dbDateUpdated": "2023-05-17T10:05:06.063304Z",
+					"id": 51339917,
+					"nameType": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308691,
+						"name": "full_name",
+						"definition": "The full length name of an entity: e.g., broad angular dumpy."
+					},
+					"formatText": "regulatory factor X, 3 (influences HLA class II expression)",
+					"displayText": "regulatory factor X, 3 (influences HLA class II expression)"
+				}
+			},
+			"inferredAllele": {
+				"type": "Allele",
+				"internal": false,
+				"obsolete": false,
+				"dbDateUpdated": "2023-04-14T21:55:23.136544Z",
+				"curie": "MGI:5560494",
+				"taxon": {
+					"internal": false,
+					"obsolete": false,
+					"curie": "NCBITaxon:10090",
+					"name": "Mus musculus"
+				},
+				"dataProvider": {
+					"internal": false,
+					"obsolete": false,
+					"id": 75738124,
+					"sourceOrganization": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308680,
+						"uniqueId": "MGI",
+						"abbreviation": "MGI",
+						"fullName": "Mouse Genome Informatics",
+						"homepageResourceDescriptorPage": {
+							"internal": false,
+							"obsolete": false,
+							"dbDateCreated": "2023-02-20T09:26:39.240245Z",
+							"dbDateUpdated": "2023-05-11T22:00:03.831263Z",
+							"id": 41750686,
+							"name": "homepage",
+							"urlTemplate": "http://www.informatics.jax.org/"
+						}
+					}
+				},
+				"references": [
+					{
+						"internal": false,
+						"obsolete": false,
+						"dbDateUpdated": "2022-11-18T16:33:21.46375Z",
+						"curie": "AGRKB:101000000827851",
+						"crossReferences": [
+							{
+								"internal": false,
+								"obsolete": false,
+								"id": 74063345,
+								"referencedCurie": "MGI:5284969",
+								"displayName": "MGI:5284969"
+							}
+						]
+					},
+					{
+						"internal": false,
+						"obsolete": false,
+						"dbDateCreated": "2022-11-28T18:50:49.104161Z",
+						"dbDateUpdated": "2022-11-28T18:50:49.104162Z",
+						"curie": "AGRKB:101000000284070",
+						"crossReferences": [
+							{
+								"internal": false,
+								"obsolete": false,
+								"id": 74907086,
+								"referencedCurie": "PMID:25807483",
+								"displayName": "PMID:25807483"
+							},
+							{
+								"internal": false,
+								"obsolete": false,
+								"id": 74907085,
+								"referencedCurie": "PMCID:PMC4617540",
+								"displayName": "PMCID:PMC4617540"
+							},
+							{
+								"internal": false,
+								"obsolete": false,
+								"id": 74907083,
+								"referencedCurie": "DOI:10.1038/nature14269",
+								"displayName": "DOI:10.1038/nature14269"
+							},
+							{
+								"internal": false,
+								"obsolete": false,
+								"id": 74907084,
+								"referencedCurie": "MGI:5644076",
+								"displayName": "MGI:5644076"
+							}
+						]
+					}
+				],
+				"inCollection": {
+					"createdBy": {
+						"dateCreated": "2022-05-06T12:26:36.696662Z",
+						"dateUpdated": "2022-05-06T12:26:36.696665Z",
+						"internal": false,
+						"obsolete": false,
+						"id": 7825552,
+						"allianceMember": {
 							"internal": false,
 							"obsolete": false,
 							"id": 20308683,
@@ -518,370 +462,86 @@ export const data = {
 							"abbreviation": "WB",
 							"fullName": "WormBase",
 							"homepageResourceDescriptorPage": {
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-02-20T09:26:39.609757Z",
-									"dbDateUpdated": "2023-05-04T22:00:09.611705Z",
-									"id": 41750788,
-									"name": "homepage",
-									"urlTemplate": "https://www.wormbase.org/"
+								"internal": false,
+								"obsolete": false,
+								"dbDateCreated": "2023-02-20T09:26:39.609757Z",
+								"dbDateUpdated": "2023-05-11T22:00:04.659745Z",
+								"id": 41750788,
+								"name": "homepage",
+								"urlTemplate": "https://www.wormbase.org/"
 							}
-					}
-			},
-			"name": "LS587"
-	},
-	"assertedGenes": [
-			{
-					"type": "Gene",
-					"createdBy": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2022-09-08T13:13:22.467843Z",
-							"dbDateUpdated": "2022-09-08T13:13:22.467853Z",
-							"id": 10975049,
-							"uniqueId": "WB:curator"
+						},
 					},
 					"updatedBy": {
+						"dateCreated": "2022-05-06T12:26:36.696662Z",
+						"dateUpdated": "2022-05-06T12:26:36.696665Z",
+						"internal": false,
+						"obsolete": false,
+						"id": 7825552,
+						"allianceMember": {
 							"internal": false,
 							"obsolete": false,
-							"dbDateCreated": "2022-09-08T13:13:22.467843Z",
-							"dbDateUpdated": "2022-09-08T13:13:22.467853Z",
-							"id": 10975049,
-							"uniqueId": "WB:curator"
+							"id": 20308683,
+							"uniqueId": "WB",
+							"abbreviation": "WB",
+							"fullName": "WormBase",
+							"homepageResourceDescriptorPage": {
+								"internal": false,
+								"obsolete": false,
+								"dbDateCreated": "2023-02-20T09:26:39.609757Z",
+								"dbDateUpdated": "2023-05-11T22:00:04.659745Z",
+								"id": 41750788,
+								"name": "homepage",
+								"urlTemplate": "https://www.wormbase.org/"
+							}
+						},
 					},
+					"dateCreated": "2022-11-15T22:01:18.89272Z",
+					"dateUpdated": "2022-11-15T22:01:18.895014Z",
 					"internal": false,
 					"obsolete": false,
-					"dbDateUpdated": "2023-05-16T12:29:04.108802Z",
-					"curie": "WB:WBGene00001131",
-					"taxon": {
-							"internal": false,
-							"obsolete": false,
-							"curie": "NCBITaxon:6239",
-							"name": "Caenorhabditis elegans"
-					},
-					"dataProvider": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateUpdated": "2023-05-16T12:29:04.108264Z",
-							"id": 77774850,
-							"sourceOrganization": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308683,
-									"uniqueId": "WB",
-									"abbreviation": "WB",
-									"fullName": "WormBase",
-									"homepageResourceDescriptorPage": {
-											"internal": false,
-											"obsolete": false,
-											"dbDateCreated": "2023-02-20T09:26:39.609757Z",
-											"dbDateUpdated": "2023-05-04T22:00:09.611705Z",
-											"id": 41750788,
-											"name": "homepage",
-											"urlTemplate": "https://www.wormbase.org/"
-									}
-							},
-							"crossReference": {
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-05-16T12:29:04.107675Z",
-									"dbDateUpdated": "2023-05-16T12:29:04.107677Z",
-									"id": 79687048,
-									"referencedCurie": "WB:WBGene00001131",
-									"displayName": "WBGene00001131",
-									"resourceDescriptorPage": {
-											"internal": false,
-											"obsolete": false,
-											"dbDateCreated": "2023-02-20T09:26:39.602562Z",
-											"dbDateUpdated": "2023-05-04T22:00:09.592619Z",
-											"id": 41750773,
-											"name": "gene",
-											"urlTemplate": "https://www.wormbase.org/db/get?name=[%s];class=Gene"
-									}
-							}
-					},
-					"geneType": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateUpdated": "2023-02-19T22:00:41.015903Z",
-							"curie": "SO:0001217",
-							"name": "protein_coding_gene",
-							"namespace": "sequence",
-							"definition": "A gene that codes for an RNA that can be translated into a protein.",
-							"subsets": [
-									"Alliance_of_Genome_Resources"
-							],
-							"synonyms": [
-									{
-											"internal": false,
-											"obsolete": false,
-											"id": 12304001,
-											"name": "protein coding gene"
-									}
-							]
-					},
-					"geneSymbol": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:25:02.951255Z",
-							"dbDateUpdated": "2023-05-16T12:29:04.133359Z",
-							"id": 27213467,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308690,
-									"name": "nomenclature_symbol",
-									"definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
-							},
-							"formatText": "dys-1",
-							"displayText": "dys-1",
-							"synonymScope": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308698,
-									"name": "exact"
-							}
-					},
-					"geneFullName": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:25:02.951815Z",
-							"dbDateUpdated": "2023-05-16T12:29:04.132335Z",
-							"id": 27213468,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308691,
-									"name": "full_name",
-									"definition": "The full length name of an entity: e.g., broad angular dumpy."
-							},
-							"formatText": "DYStrophin related 1",
-							"displayText": "DYStrophin related 1"
-					},
-					"geneSystematicName": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:25:02.952262Z",
-							"dbDateUpdated": "2023-05-16T12:29:04.135691Z",
-							"id": 27213469,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308692,
-									"name": "systematic_name",
-									"definition": "A systematic name: e.g., CG4889<sup>1</sup>."
-							},
-							"formatText": "F15D3.1",
-							"displayText": "F15D3.1",
-							"synonymScope": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308698,
-									"name": "exact"
-							}
-					},
-					"geneSynonyms": [
-							{
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-01-31T00:25:02.952724Z",
-									"dbDateUpdated": "2023-05-16T12:29:04.134271Z",
-									"id": 27213470,
-									"nameType": {
-											"internal": false,
-											"obsolete": false,
-											"id": 20308697,
-											"name": "unspecified",
-											"definition": "Unclassified name"
-									},
-									"formatText": "CELE_F15D3.1",
-									"displayText": "CELE_F15D3.1"
-							}
-					]
-			},
-			{
-					"type": "Gene",
-					"createdBy": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2022-09-08T13:13:22.467843Z",
-							"dbDateUpdated": "2022-09-08T13:13:22.467853Z",
-							"id": 10975049,
-							"uniqueId": "WB:curator"
-					},
-					"updatedBy": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2022-09-08T13:13:22.467843Z",
-							"dbDateUpdated": "2022-09-08T13:13:22.467853Z",
-							"id": 10975049,
-							"uniqueId": "WB:curator"
-					},
+					"dbDateCreated": "2022-11-15T22:01:18.905486Z",
+					"dbDateUpdated": "2022-11-15T22:01:18.905488Z",
+					"id": 15414972,
+					"name": "B2B/CvDC",
+					"definition": "The National Heart, Lung, and Blood Institute (NHLBI) Bench to Bassinet (B2B) Program of translational research in pediatric cardiovascular disease"
+				},
+				"isExtinct": false,
+				"alleleSymbol": {
 					"internal": false,
 					"obsolete": false,
-					"dbDateUpdated": "2023-05-16T12:30:11.68387Z",
-					"curie": "WB:WBGene00001948",
-					"taxon": {
-							"internal": false,
-							"obsolete": false,
-							"curie": "NCBITaxon:6239",
-							"name": "Caenorhabditis elegans"
+					"dbDateCreated": "2023-04-14T21:55:23.146643Z",
+					"dbDateUpdated": "2023-04-14T21:55:23.146645Z",
+					"id": 70002674,
+					"nameType": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308690,
+						"name": "nomenclature_symbol",
+						"definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
 					},
-					"dataProvider": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateUpdated": "2023-05-16T12:30:11.683344Z",
-							"id": 75345916,
-							"sourceOrganization": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308683,
-									"uniqueId": "WB",
-									"abbreviation": "WB",
-									"fullName": "WormBase",
-									"homepageResourceDescriptorPage": {
-											"internal": false,
-											"obsolete": false,
-											"dbDateCreated": "2023-02-20T09:26:39.609757Z",
-											"dbDateUpdated": "2023-05-04T22:00:09.611705Z",
-											"id": 41750788,
-											"name": "homepage",
-											"urlTemplate": "https://www.wormbase.org/"
-									}
-							},
-							"crossReference": {
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-05-16T12:30:11.682793Z",
-									"dbDateUpdated": "2023-05-16T12:30:11.682794Z",
-									"id": 79688778,
-									"referencedCurie": "WB:WBGene00001948",
-									"displayName": "WBGene00001948",
-									"resourceDescriptorPage": {
-											"internal": false,
-											"obsolete": false,
-											"dbDateCreated": "2023-02-20T09:26:39.602562Z",
-											"dbDateUpdated": "2023-05-04T22:00:09.592619Z",
-											"id": 41750773,
-											"name": "gene",
-											"urlTemplate": "https://www.wormbase.org/db/get?name=[%s];class=Gene"
-									}
-							}
+					"formatText": "Rfx3<sup>b2b1213Clo</sup>",
+					"displayText": "Rfx3<sup>b2b1213Clo</sup>"
+				},
+				"alleleFullName": {
+					"internal": false,
+					"obsolete": false,
+					"dbDateCreated": "2023-04-14T21:55:23.147861Z",
+					"dbDateUpdated": "2023-04-14T21:55:23.147862Z",
+					"id": 70002675,
+					"nameType": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308691,
+						"name": "full_name",
+						"definition": "The full length name of an entity: e.g., broad angular dumpy."
 					},
-					"geneType": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateUpdated": "2023-02-19T22:00:41.015903Z",
-							"curie": "SO:0001217",
-							"name": "protein_coding_gene",
-							"namespace": "sequence",
-							"definition": "A gene that codes for an RNA that can be translated into a protein.",
-							"subsets": [
-									"Alliance_of_Genome_Resources"
-							],
-							"synonyms": [
-									{
-											"internal": false,
-											"obsolete": false,
-											"id": 12304001,
-											"name": "protein coding gene"
-									}
-							]
-					},
-					"geneSymbol": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:25:27.919073Z",
-							"dbDateUpdated": "2023-05-16T12:30:11.711922Z",
-							"id": 27217422,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308690,
-									"name": "nomenclature_symbol",
-									"definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
-							},
-							"formatText": "hlh-1",
-							"displayText": "hlh-1",
-							"synonymScope": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308698,
-									"name": "exact"
-							}
-					},
-					"geneFullName": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:25:27.920177Z",
-							"dbDateUpdated": "2023-05-16T12:30:11.710941Z",
-							"id": 27217423,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308691,
-									"name": "full_name",
-									"definition": "The full length name of an entity: e.g., broad angular dumpy."
-							},
-							"formatText": "Helix Loop Helix 1",
-							"displayText": "Helix Loop Helix 1"
-					},
-					"geneSystematicName": {
-							"internal": false,
-							"obsolete": false,
-							"dbDateCreated": "2023-01-31T00:25:27.920666Z",
-							"dbDateUpdated": "2023-05-16T12:30:11.715489Z",
-							"id": 27217424,
-							"nameType": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308692,
-									"name": "systematic_name",
-									"definition": "A systematic name: e.g., CG4889<sup>1</sup>."
-							},
-							"formatText": "B0304.1",
-							"displayText": "B0304.1",
-							"synonymScope": {
-									"internal": false,
-									"obsolete": false,
-									"id": 20308698,
-									"name": "exact"
-							}
-					},
-					"geneSynonyms": [
-							{
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-01-31T00:25:27.921145Z",
-									"dbDateUpdated": "2023-05-16T12:30:11.712846Z",
-									"id": 27217425,
-									"nameType": {
-											"internal": false,
-											"obsolete": false,
-											"id": 20308697,
-											"name": "unspecified",
-											"definition": "Unclassified name"
-									},
-									"formatText": "MyoD1",
-									"displayText": "MyoD1"
-							},
-							{
-									"internal": false,
-									"obsolete": false,
-									"dbDateCreated": "2023-01-31T00:25:27.921591Z",
-									"dbDateUpdated": "2023-05-16T12:30:11.713741Z",
-									"id": 27217426,
-									"nameType": {
-											"internal": false,
-											"obsolete": false,
-											"id": 20308697,
-											"name": "unspecified",
-											"definition": "Unclassified name"
-									},
-									"formatText": "CELE_B0304.1",
-									"displayText": "CELE_B0304.1"
-							}
-					]
+					"formatText": "Bench to Bassinet Program (B2B/CVDC), mutation 1213 Cecilia Lo",
+					"displayText": "Bench to Bassinet Program (B2B/CVDC), mutation 1213 Cecilia Lo"
+				}
 			}
-	]
-}
+		}
+	],
+	"totalResults": 1,
+	"returnedRecords": 1
+};
