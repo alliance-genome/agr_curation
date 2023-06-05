@@ -62,6 +62,8 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
 	@Inject
 	GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
+	@Inject
+	SlotAnnotationIdentityHelper identityHelper;
 
 	@Transactional
 	public Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
@@ -138,27 +140,28 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		}
 		
 		List<GeneSynonymSlotAnnotation> synonyms = new ArrayList<>();
-		List<String> synonymIdentities = new ArrayList<>();
+		List<Long> synonymIdsToKeep = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getGeneSynonymDtos())) {
 			for (NameSlotAnnotationDTO synonymDTO : dto.getGeneSynonymDtos()) {
-				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(SlotAnnotationIdentityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
+				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(identityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
 				if (synonymResponse.hasErrors()) {
 					geneResponse.addErrorMessage("gene_synonym_dtos", synonymResponse.errorMessagesString());
 				} else {
 					GeneSynonymSlotAnnotation synonym = synonymResponse.getEntity();
 					synonyms.add(synonym);
-					synonymIdentities.add(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(synonym));
+					if (synonym.getId() != null)
+						synonymIdsToKeep.add(synonym.getId());
 				}
 			}
 		}
 		
-		if (!existingSynonyms.isEmpty()) {
-			existingSynonyms.forEach((k,v) -> {
-				if (!synonymIdentities.contains(k)) {
-					v.setSingleGene(null);
-					geneSynonymDAO.remove(v.getId());
+		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
+			for (GeneSynonymSlotAnnotation syn : gene.getGeneSynonyms()) {
+				if (!synonymIdsToKeep.contains(syn.getId())) {
+					syn.setSingleGene(null);
+					geneSynonymDAO.remove(syn.getId());
 				}
-			});
+			}
 		}
 
 		Map<String, GeneSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
@@ -169,32 +172,32 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		}
 		
 		List<GeneSecondaryIdSlotAnnotation> secondaryIds = new ArrayList<>();
-		List<String> secondaryIdIdentities = new ArrayList<>();
+		List<Long> secondaryIdIdsToKeep = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getGeneSecondaryIdDtos())) {
 			for (SecondaryIdSlotAnnotationDTO secondaryIdDTO : dto.getGeneSecondaryIdDtos()) {
-				ObjectResponse<GeneSecondaryIdSlotAnnotation> secondaryIdResponse = geneSecondaryIdDtoValidator.validateGeneSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(SlotAnnotationIdentityHelper.secondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
+				ObjectResponse<GeneSecondaryIdSlotAnnotation> secondaryIdResponse = geneSecondaryIdDtoValidator.validateGeneSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(identityHelper.secondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
 				if (secondaryIdResponse.hasErrors()) {
 					geneResponse.addErrorMessage("gene_secondary_id_dtos", secondaryIdResponse.errorMessagesString());
 				} else {
 					GeneSecondaryIdSlotAnnotation secondaryId = secondaryIdResponse.getEntity();
 					secondaryIds.add(secondaryId);
-					secondaryIdIdentities.add(SlotAnnotationIdentityHelper.secondaryIdIdentity(secondaryId));
+					if (secondaryId.getId() != null)
+						secondaryIdIdsToKeep.add(secondaryId.getId());
 				}
 			}
 		}
 		
-		if (!existingSecondaryIds.isEmpty()) {
-			existingSecondaryIds.forEach((k,v) -> {
-				if (!secondaryIdIdentities.contains(k)) {
-					v.setSingleGene(null);
-					geneSecondaryIdDAO.remove(v.getId());
+		if (CollectionUtils.isNotEmpty(gene.getGeneSecondaryIds())) {
+			for (GeneSecondaryIdSlotAnnotation sid : gene.getGeneSecondaryIds()) {
+				if (!secondaryIdIdsToKeep.contains(sid.getId())) {
+					sid.setSingleGene(null);
+					geneSecondaryIdDAO.remove(sid.getId());
 				}
-			});
+			}
 		}
 
-		if (geneResponse.hasErrors()) {
+		if (geneResponse.hasErrors())
 			throw new ObjectValidationException(dto, geneResponse.errorMessagesString());
-		}
 
 		gene = geneDAO.persist(gene);
 
