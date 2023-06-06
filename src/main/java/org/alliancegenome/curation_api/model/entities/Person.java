@@ -16,6 +16,8 @@ import javax.persistence.Table;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -38,8 +40,12 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Agent.class })
-@Table(indexes = { @Index(name = "person_createdby_index", columnList = "createdBy_id"), @Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "person_uniqueid_index", columnList = "uniqueid"), })
+@Table(indexes = { 
+	@Index(name = "person_createdby_index", columnList = "createdBy_id"), 
+	@Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
+	@Index(name = "person_allianceMember_index", columnList = "allianceMember_id"),
+})
 public class Person extends Agent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -61,12 +67,14 @@ public class Person extends Agent {
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
+	@Fetch(FetchMode.SUBSELECT)
 	private List<String> emails;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
+	@Fetch(FetchMode.SUBSELECT)
 	private List<String> oldEmails;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -83,10 +91,12 @@ public class Person extends Agent {
 
 	@OneToMany(mappedBy = "person")
 	@JsonView({ View.PersonSettingView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<PersonSetting> settings;
 
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@Fetch(FetchMode.JOIN)
 	private AllianceMember allianceMember;
 
 }

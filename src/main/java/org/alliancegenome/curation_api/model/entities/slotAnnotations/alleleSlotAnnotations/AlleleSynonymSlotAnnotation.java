@@ -12,6 +12,8 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -33,6 +35,7 @@ public class AlleleSynonymSlotAnnotation extends NameSlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference
+	@Fetch(FetchMode.JOIN)
 	private Allele singleAllele;
 
 }
