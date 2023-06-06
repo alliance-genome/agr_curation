@@ -216,7 +216,6 @@ export const ControlledVocabularyTable = () => {
 	const synonymsBodyTemplate = (rowData) => {
 		if (rowData?.synonyms && rowData.synonyms.length > 0) {
 			const sortedSynonyms = rowData.synonyms.sort();
-			console.log(sortedSynonyms)
 			const listTemplate = (synonym) => {
 				return (
 					<EllipsisTableCell>
