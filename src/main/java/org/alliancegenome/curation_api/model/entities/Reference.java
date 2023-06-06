@@ -41,7 +41,7 @@ public class Reference extends InformationContentEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@JsonView({View.FieldsOnly.class})
 	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_id")})
 	@EqualsAndHashCode.Include
