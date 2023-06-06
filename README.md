@@ -28,6 +28,7 @@ These instructions will get you a copy of the project and the API up and running
    *  [Additional deployment steps](#additional-deployment-steps)
    *  [Release versioning](#release-versioning)
    *  [Release Creation](#release-creation)
+   *  [Database](#database)
 -  [Loading Data](#loading-data)
 -  [Submitting Data](#submitting-data)
 
@@ -524,6 +525,35 @@ To create a new (pre-)release and deploy to beta or production, do the following
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
 Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
 continue the remaining steps described in the [additional deployment steps section](#additional-deployment-steps).
+
+### Database
+The Curation application connects to the postgres DB using a user called `curation_app`, which is member of a role called `curation_admins`.
+This role and user are used to ensure the database can be closed for all but admin users on initiating a DB restore,
+such that no accidential writes can happen to the postgres database during the restore process to ensure data integrity.
+When restoring to or creating a new postgres server, ensure the `curation_admins` role exists and has a member user called `curation_app`,
+ to ensure the database can be restored with the correct ownerships, and give the `curation_admins` role all permissions to
+ the curation database, the `public` schema, and all tables and sequences in it, and change the default privileges to allow
+ the curation_admins role all permissions on all newly created tables and sequences in the `public` schema.
+
+This can be achieved by connecting to the curation database using the admin (postgres) user (using `psql`)
+and executing the following queries:  
+```sql
+-- Create the role
+CREATE ROLE curation_admins;
+
+-- Create user (change the password)
+CREATE USER curation_app WITH PASSWORD '...';
+-- Grant role to user
+GRANT curation_admins TO curation_app;
+
+-- Grant required privileges to group (role)
+GRANT ALL ON DATABASE curation TO GROUP curation_admins;
+GRANT ALL ON SCHEMA public TO GROUP curation_admins;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO GROUP curation_admins;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO GROUP curation_admins;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO GROUP curation_admins;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO GROUP curation_admins;
+```
 
 ## Loading Data
 
