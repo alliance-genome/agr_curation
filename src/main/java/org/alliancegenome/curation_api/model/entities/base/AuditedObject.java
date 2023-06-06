@@ -13,6 +13,8 @@ import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -41,12 +43,14 @@ public class AuditedObject extends BaseEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView(View.FieldsOnly.class)
+	@Fetch(FetchMode.JOIN)
 	private Person createdBy;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView(View.FieldsOnly.class)
+	@Fetch(FetchMode.JOIN)
 	private Person updatedBy;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))

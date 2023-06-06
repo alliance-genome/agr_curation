@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -24,6 +25,8 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -55,15 +58,17 @@ public class Allele extends GenomicEntity {
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "references_curie") })
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<Reference> references;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
 	private VocabularyTerm inCollection;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
@@ -71,62 +76,72 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private Boolean isExtinct;
 
-	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@Fetch(FetchMode.SUBSELECT)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 
 	@IndexedEmbedded(includePaths = { "mutationTypes.curie", "mutationTypes.name", "evidence.curie", "mutationTypes.curie_keyword", "mutationTypes.name_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<AlleleMutationTypeSlotAnnotation> alleleMutationTypes;
 	
 	@IndexedEmbedded(includePaths = { "inheritanceMode.name", "phenotypeTerm.curie", "phenotypeTerm.name", "phenotypeStatement", "evidence.curie", "inheritanceMode.name_keyword", "phenotypeTerm.curie_keyword", "phenotypeTerm.name_keyword", "phenotypeStatement_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<AlleleInheritanceModeSlotAnnotation> alleleInheritanceModes;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
 	private AlleleFullNameSlotAnnotation alleleFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<AlleleSynonymSlotAnnotation> alleleSynonyms;
 
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<AlleleSecondaryIdSlotAnnotation> alleleSecondaryIds;
 	
 	@IndexedEmbedded(includePaths = { "germlineTransmissionStatus.name", "evidence.curie", "germlineTransmissionStatus.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
 	private AlleleGermlineTransmissionStatusSlotAnnotation alleleGermlineTransmissionStatus;
 
 	@IndexedEmbedded(includePaths = { "functionalImpacts.name", "phenotypeTerm.curie", "phenotypeTerm.name", "phenotypeStatement","evidence.curie", "functionalImpacts.name_keyword", "phenotypeTerm.curie_keyword", "phenotypeTerm.name_keyword", "phenotypeStatement_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<AlleleFunctionalImpactSlotAnnotation> alleleFunctionalImpacts;
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
+	@OneToMany(fetch = FetchType.EAGER)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "relatedNotes_id")})
+	@Fetch(FetchMode.SUBSELECT)
 	private List<Note> relatedNotes;
 
 }

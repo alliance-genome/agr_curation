@@ -17,6 +17,8 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
@@ -51,6 +53,7 @@ public class Note extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
 	private VocabularyTerm noteType;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -58,5 +61,6 @@ public class Note extends GeneratedAuditedObject {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.NoteView.class, View.AlleleView.class })
 	@JoinTable(indexes = { @Index(columnList = "note_id"), @Index(columnList = "references_curie")})
+	@Fetch(FetchMode.SUBSELECT)
 	private List<Reference> references;
 }

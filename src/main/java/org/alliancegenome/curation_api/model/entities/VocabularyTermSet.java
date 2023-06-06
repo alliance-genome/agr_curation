@@ -15,6 +15,8 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -53,6 +55,7 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.VocabularyTermSetView.class })
+	@Fetch(FetchMode.JOIN)
 	private Vocabulary vocabularyTermSetVocabulary;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -61,6 +64,7 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@JoinTable(indexes = { @Index(columnList = "vocabularytermsets_id", name = "vocabularytermset_vocabularyterm_vocabularytermsets_id_index"),
 			@Index(columnList = "memberterms_id", name = "vocabularytermset_vocabularyterm_memberterms_id_index") })
 	@JsonView({ View.VocabularyTermSetView.class })
+	@Fetch(FetchMode.SUBSELECT)
 	private List<VocabularyTerm> memberTerms;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
