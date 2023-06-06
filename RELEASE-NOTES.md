@@ -2,6 +2,11 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.19.1
+ * Fixes
+ 	* Fix cleanup of biological entities associated with disease annotation genetic modifiers (SCRUM-2918)
+ 	* Fix duplication of slot annotations on reload of bulk file (SCRUM-2949)
+
 ## v0.19.0
  * New features
     * Synchronizes to LinkML v1.7.1 release (SCRUM-2836)

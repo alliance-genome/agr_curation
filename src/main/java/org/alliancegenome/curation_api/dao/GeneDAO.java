@@ -27,13 +27,9 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	}
 
 	public List<Long> findReferencingDiseaseAnnotations(String geneCurie) {
-		Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie = :geneCurie");
+		Query jpqlQuery = entityManager.createQuery("SELECT gda.id FROM GeneDiseaseAnnotation gda WHERE gda.subject.curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
 		List<Long> results = (List<Long>) jpqlQuery.getResultList();
-
-		jpqlQuery = entityManager.createQuery("SELECT gda.id FROM GeneDiseaseAnnotation gda WHERE gda.subject.curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<Long>) jpqlQuery.getResultList());
 
 		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.inferredGene.curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
@@ -57,7 +53,12 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		jpqlQuery.setParameter("geneCurie", geneCurie);
 		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
 			results.add(nativeResult.longValue());
-
+		
+		jpqlQuery = entityManager.createNativeQuery("SELECT diseaseannotation_id FROM diseaseannotation_biologicalentity db WHERE diseasegeneticmodifiers_curie = :geneCurie");
+		jpqlQuery.setParameter("geneCurie", geneCurie);
+		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
+			results.add(nativeResult.longValue());
+		
 		return results;
 	}
 
