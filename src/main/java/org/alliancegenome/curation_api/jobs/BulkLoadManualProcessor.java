@@ -30,7 +30,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 		// endLoad(bulkManualLoad, null, BulkLoadStatus.FINISHED);
 	}
 
-	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataProvider dataProvider) { // Triggered by the API
+	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataProvider dataProvider, Boolean cleanUp) { // Triggered by the API
 		Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		if (form.containsKey(loadType)) {
@@ -52,7 +52,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 			String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataProvider().toString());
 			String localFilePath = fileHelper.compressInputFile(filePath);
-			processFilePath(bulkManualLoad, localFilePath);
+			processFilePath(bulkManualLoad, localFilePath, cleanUp);
 
 			endLoad(bulkManualLoad, null, JobStatus.FINISHED);
 		} else {
