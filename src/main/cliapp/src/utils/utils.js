@@ -128,29 +128,42 @@ export function getRefString(referenceItem) {
 		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.referencedCurie));
 	}
 
+	if (xrefCuries.length === 0)
+		return referenceItem.curie;
+
 	if (xrefCuries.length === 1)
 		return xrefCuries[0] + ' (' + referenceItem.curie + ')';
-	let primaryXrefCurie = '';
 
+	let sortedCuries = [];
 	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'MGI:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'MGI:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'RGD:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'RGD:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'SGD:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'SGD:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'WB:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'WB:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1);
-	} else {
-		primaryXrefCurie = xrefCuries.splice(0, 1);
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1));
 	}
+	if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'MGI:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'MGI:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'RGD:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'RGD:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'SGD:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'SGD:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'WB:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'WB:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1));
+	} 
+	if (xrefCuries.length > 0) {
+		sortedCuries = sortedCuries.concat(xrefCuries.sort());
+	}
+	sortedCuries.push(referenceItem.curie);
+	
+	let primaryXrefCurie = sortedCuries.splice(0, 1);
 
-	return primaryXrefCurie + ' (' + xrefCuries.join('|') + '|' + referenceItem.curie + ')';
+	return primaryXrefCurie + ' (' + sortedCuries.join('|') + ')';
 }
 
 function indexWithPrefix(array, prefix) {
