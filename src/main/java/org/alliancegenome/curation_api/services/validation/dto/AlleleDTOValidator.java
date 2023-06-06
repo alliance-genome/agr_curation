@@ -358,27 +358,28 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 		
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = new ArrayList<>();
-		List<String> functionalImpactIdentities = new ArrayList<>();
+		List<Long> functionalImpactIdsToKeep = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleFunctionalImpactDtos())) {
 			for (AlleleFunctionalImpactSlotAnnotationDTO functionalImpactDTO : dto.getAlleleFunctionalImpactDtos()) {
 				ObjectResponse<AlleleFunctionalImpactSlotAnnotation> functionalImpactResponse = alleleFunctionalImpactDtoValidator.validateAlleleFunctionalImpactSlotAnnotationDTO(existingFunctionalImpacts.get(identityHelper.alleleFunctionalImpactsDtoIdentity(functionalImpactDTO)), functionalImpactDTO);
 				if (functionalImpactResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("allele_mutation_type_dtos", functionalImpactResponse.errorMessagesString());
+					alleleResponse.addErrorMessage("allele_functional_impact_dtos", functionalImpactResponse.errorMessagesString());
 				} else {
 					AlleleFunctionalImpactSlotAnnotation functionalImpact = functionalImpactResponse.getEntity();
 					functionalImpacts.add(functionalImpact);
-					functionalImpactIdentities.add(SlotAnnotationIdentityHelper.alleleFunctionalImpactsIdentity(functionalImpact));
+					if (functionalImpact.getId() != null)
+						functionalImpactIdsToKeep.add(functionalImpact.getId());
 				}
 			}
 		}
 		
-		if (!existingFunctionalImpacts.isEmpty()) {
-			existingFunctionalImpacts.forEach((k,v) -> {
-				if (!functionalImpactIdentities.contains(k)) {
-					v.setSingleAllele(null);
-					alleleFunctionalImpactDAO.remove(v.getId());
+		if (CollectionUtils.isNotEmpty(allele.getAlleleFunctionalImpacts())) {
+			for (AlleleFunctionalImpactSlotAnnotation afi : allele.getAlleleFunctionalImpacts()) {
+				if (!functionalImpactIdsToKeep.contains(afi.getId())) {
+					afi.setSingleAllele(null);
+					alleleFunctionalImpactDAO.remove(afi.getId());
 				}
-			});
+			}
 		}
 
 		if (alleleResponse.hasErrors())
