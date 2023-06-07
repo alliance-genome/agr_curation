@@ -1046,4 +1046,10 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "EN_03_empty_non_required_fields_level_1_agm_annotation.json");
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "EN_04_empty_non_required_fields_level_2.json");
 	}
+	
+	@Test
+	@Order(24)
+	public void diseaseAnnotationBulkUploadSecondaryIds() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "SI_01_secondary_ids.json");
+	}
 }

@@ -46,7 +46,7 @@ quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hib
 %dev.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/dev-index-settings.json
 
 quarkus.vertx.max-worker-execute-time=PT1H
-quarkus.transaction-manager.default-transaction-timeout = PT5M
+quarkus.transaction-manager.default-transaction-timeout = PT1H
 
 %dev.quarkus.elasticsearch.hosts = localhost:9200
 %dev.quarkus.hibernate-search-orm.elasticsearch.hosts=localhost:9200

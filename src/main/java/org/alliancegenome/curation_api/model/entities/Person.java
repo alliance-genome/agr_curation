@@ -67,14 +67,12 @@ public class Person extends Agent {
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
-	@Fetch(FetchMode.SUBSELECT)
 	private List<String> emails;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
-	@Fetch(FetchMode.SUBSELECT)
 	private List<String> oldEmails;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -91,7 +89,6 @@ public class Person extends Agent {
 
 	@OneToMany(mappedBy = "person")
 	@JsonView({ View.PersonSettingView.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<PersonSetting> settings;
 
 	@ManyToOne

@@ -54,7 +54,6 @@ public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 	@JoinTable(indexes = { @Index(name = "allelemutationtypeslotannotation_id_index", columnList = "allelemutationtypeslotannotation_id"),
 		@Index(name = "allelemutationtypeslotannotation_mutationtypes_curie_index", columnList = "mutationtypes_curie"), })
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<SOTerm> mutationTypes;
 
 }

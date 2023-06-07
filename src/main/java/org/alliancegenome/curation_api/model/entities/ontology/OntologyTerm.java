@@ -102,7 +102,6 @@ public class OntologyTerm extends CurieAuditedObject {
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie", name = "ontologyterm_synonym_ontologyterm_curie_index"))
 	@JsonView({ View.FieldsAndLists.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<Synonym> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -111,27 +110,22 @@ public class OntologyTerm extends CurieAuditedObject {
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie", name = "ontologyterm_crossreference_ontologyterm_curie_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_id_index") })
 	@JsonView({ View.FieldsAndLists.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<CrossReference> crossReferences;
 
 	@ManyToMany
 	// @JsonView(View.OntologyTermView.class)
 	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = { @Index(columnList = "isaparents_curie"), @Index(columnList = "isachildren_curie") })
-	@Fetch(FetchMode.SUBSELECT)
 	private Set<OntologyTerm> isaParents;
 
 	@ManyToMany(mappedBy = "isaParents")
 	// @JsonView(View.OntologyTermView.class)
-	@Fetch(FetchMode.SUBSELECT)
 	private Set<OntologyTerm> isaChildren;
 
 	@ManyToMany
 	@JoinTable(name = "ontologyterm_isa_ancestor_descendant", indexes = { @Index(columnList = "isaancestors_curie"), @Index(columnList = "isadescendants_curie") })
-	@Fetch(FetchMode.SUBSELECT)
 	private Set<OntologyTerm> isaAncestors;
 
 	@ManyToMany(mappedBy = "isaAncestors")
-	@Fetch(FetchMode.SUBSELECT)
 	private Set<OntologyTerm> isaDescendants;
 
 	@Transient

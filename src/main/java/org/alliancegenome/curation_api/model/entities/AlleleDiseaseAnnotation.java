@@ -65,7 +65,6 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToMany
 	@JoinTable(indexes = { @Index(columnList = "allelediseaseannotation_id"), @Index(columnList = "assertedgenes_curie")})
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<Gene> assertedGenes;
 
 	@Transient

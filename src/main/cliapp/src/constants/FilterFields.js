@@ -272,6 +272,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "obsoleteFilter",
     fields: ["obsolete"],
   },
+  ontologySynonymsFieldSet: {
+    filterName: "ontologySynonymsFilter",
+    fields: ["synonyms.name"],
+  },
   pageDescriptionFieldSet: {
     filterName: "pageDescriptionFilter",
     fields: ["pageDescription"],
@@ -295,6 +299,10 @@ export const FIELD_SETS = Object.freeze({
   secondaryDataProviderFieldSet: {
     filterName: "secondaryDataProviderFilter",
     fields: [ "secondaryDataProvider.sourceOrganization.abbreviation", "secondaryDataProvider.sourceOrganization.fullName", "secondaryDataProvider.sourceOrganization.shortName" ],
+  },
+  secondaryIdsFieldSet: {
+    filterName: "secondaryIdsFilter",
+    fields: ["secondaryIdentifiers"],
   },
   sgdStrainBackgroundFieldSet: {
     filterName: "sgdStrainBackgroundFilter",
@@ -413,11 +421,13 @@ export const FILTER_CONFIGS = Object.freeze({
   modinternalidFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.modinternalidFieldSet] },
   nameFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.nameFieldSet] },
   objectFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.objectFieldSet] },
+  ontologySynonymsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.ontologySynonymsFieldSet] },
   pageDescriptionFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },
   prefixFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.prefixFieldSet]},
   referencesFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.referencesFieldSet] },
   relatedNotesFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.relatedNotesFieldSet] },
   resourceDescriptorFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.resourceDescriptorFieldSet] },
+  secondaryIdsFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.secondaryIdsFieldSet] },
   sgdStrainBackgroundFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.sgdStrainBackgroundFieldSet], },
   singleReferenceFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.singleReferenceFieldSet] },
   smilesFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.smilesFieldSet] },
