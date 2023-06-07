@@ -64,7 +64,6 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@JoinTable(indexes = { @Index(columnList = "vocabularytermsets_id", name = "vocabularytermset_vocabularyterm_vocabularytermsets_id_index"),
 			@Index(columnList = "memberterms_id", name = "vocabularytermset_vocabularyterm_memberterms_id_index") })
 	@JsonView({ View.VocabularyTermSetView.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<VocabularyTerm> memberTerms;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

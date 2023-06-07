@@ -61,6 +61,5 @@ public class Note extends GeneratedAuditedObject {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.NoteView.class, View.AlleleView.class })
 	@JoinTable(indexes = { @Index(columnList = "note_id"), @Index(columnList = "references_curie")})
-	@Fetch(FetchMode.SUBSELECT)
 	private List<Reference> references;
 }
