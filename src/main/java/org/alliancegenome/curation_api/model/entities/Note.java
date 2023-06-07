@@ -13,6 +13,7 @@ import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.bridges.FreeTextValueBridge;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -22,6 +23,7 @@ import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -44,8 +46,8 @@ import lombok.ToString;
 @Table(indexes = { @Index(name = "Note_noteType_index", columnList = "noteType_id"), @Index(name = "Note_createdby_index", columnList = "createdBy_id"), @Index(name = "Note_updatedby_index", columnList = "updatedBy_id"),})
 public class Note extends GeneratedAuditedObject {
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
+	@KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
 	@JsonView({ View.FieldsOnly.class })
 	@Column(columnDefinition = "TEXT")
 	private String freeText;

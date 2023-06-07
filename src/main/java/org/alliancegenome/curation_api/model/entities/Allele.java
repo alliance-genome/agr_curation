@@ -122,9 +122,8 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleFunctionalImpactSlotAnnotation> alleleFunctionalImpacts;
 	
-	//@IndexedEmbedded(includeDepth = 1)
-	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	// Don't index notes for now
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "relatedNotes_id")})
