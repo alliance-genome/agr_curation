@@ -585,4 +585,10 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	public void alleleBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "EN_01_empty_non_required_fields.json");
 	}
+	
+	@Test
+	@Order(11)
+	public void alleleBulkUploadSecondaryIds() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "SI_01_secondary_ids.json");
+	}
 }

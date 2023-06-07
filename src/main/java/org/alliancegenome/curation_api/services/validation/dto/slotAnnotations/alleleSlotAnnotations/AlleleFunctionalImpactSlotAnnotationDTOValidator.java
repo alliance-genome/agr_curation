@@ -9,12 +9,12 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.PhenotypeTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleFunctionalImpactSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.SlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ public class AlleleFunctionalImpactSlotAnnotationDTOValidator extends SlotAnnota
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	@Inject
-	PhenotypeTermDAO phenotypeTermDAO;
+	PhenotypeTermService phenotypeTermService;
 
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpactSlotAnnotationDTO(AlleleFunctionalImpactSlotAnnotation annotation, AlleleFunctionalImpactSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleFunctionalImpactSlotAnnotation> afisaResponse = new ObjectResponse<AlleleFunctionalImpactSlotAnnotation>();
@@ -50,7 +50,7 @@ public class AlleleFunctionalImpactSlotAnnotationDTOValidator extends SlotAnnota
 	
 		PhenotypeTerm phenotypeTerm = null;
 		if (StringUtils.isNotBlank(dto.getPhenotypeTermCurie())) {
-			phenotypeTerm = phenotypeTermDAO.find(dto.getPhenotypeTermCurie());
+			phenotypeTerm = phenotypeTermService.findByCurieOrSecondaryId(dto.getPhenotypeTermCurie());
 			if (phenotypeTerm == null)
 				afisaResponse.addErrorMessage("phenotype_term_curie", ValidationConstants.INVALID_MESSAGE);
 		}

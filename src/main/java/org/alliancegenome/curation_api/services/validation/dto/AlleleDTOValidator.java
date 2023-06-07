@@ -384,7 +384,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 
 		if (alleleResponse.hasErrors())
 			throw new ObjectValidationException(dto, alleleResponse.errorMessagesString());
-
+		
 		allele = alleleDAO.persist(allele);
 
 		// Attach allele and persist SlotAnnotation objects

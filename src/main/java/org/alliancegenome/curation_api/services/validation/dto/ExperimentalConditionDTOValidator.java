@@ -6,12 +6,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntologyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -25,6 +20,12 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
+import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
+import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
+import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,17 +35,17 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 	@Inject
 	ExperimentalConditionDAO experimentalConditionDAO;
 	@Inject
-	ZecoTermDAO zecoTermDAO;
+	ZecoTermService zecoTermService;
 	@Inject
-	ChemicalTermDAO chemicalTermDAO;
+	ChemicalTermService chemicalTermService;
 	@Inject
-	AnatomicalTermDAO anatomicalTermDAO;
+	AnatomicalTermService anatomicalTermService;
 	@Inject
 	NcbiTaxonTermDAO ncbiTaxonTermDAO;
 	@Inject
-	GoTermDAO goTermDAO;
+	GoTermService goTermService;
 	@Inject
-	ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
+	ExperimentalConditionOntologyTermService experimentalConditionOntologyTermService;
 	@Inject
 	ExperimentalConditionSummary experimentalConditionSummary;
 	@Inject
@@ -70,7 +71,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
 		ChemicalTerm conditionChemical = null;
 		if (StringUtils.isNotBlank(dto.getConditionChemicalCurie())) {
-			conditionChemical = chemicalTermDAO.find(dto.getConditionChemicalCurie());
+			conditionChemical = chemicalTermService.findByCurieOrSecondaryId(dto.getConditionChemicalCurie());
 			if (conditionChemical == null)
 				ecResponse.addErrorMessage("condition_chemical_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionChemicalCurie() + ")");
 		}
@@ -78,14 +79,14 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
 		ExperimentalConditionOntologyTerm conditionId = null;
 		if (StringUtils.isNotBlank(dto.getConditionIdCurie())) {
-			conditionId = experimentalConditionOntologyTermDAO.find(dto.getConditionIdCurie());
+			conditionId = experimentalConditionOntologyTermService.findByCurieOrSecondaryId(dto.getConditionIdCurie());
 			if (conditionId == null)
 				ecResponse.addErrorMessage("condition_id_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionIdCurie() + ")");
 		}
 		experimentalCondition.setConditionId(conditionId);
 
 		if (StringUtils.isNotBlank(dto.getConditionClassCurie())) {
-			ZECOTerm term = zecoTermDAO.find(dto.getConditionClassCurie());
+			ZECOTerm term = zecoTermService.findByCurieOrSecondaryId(dto.getConditionClassCurie());
 			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET))
 				ecResponse.addErrorMessage("condition_class_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionClassCurie() + ")");
 			experimentalCondition.setConditionClass(term);
@@ -95,7 +96,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
 		AnatomicalTerm conditionAnatomy = null;
 		if (StringUtils.isNotBlank(dto.getConditionAnatomyCurie())) {
-			conditionAnatomy = anatomicalTermDAO.find(dto.getConditionAnatomyCurie());
+			conditionAnatomy = anatomicalTermService.findByCurieOrSecondaryId(dto.getConditionAnatomyCurie());
 			if (conditionAnatomy == null)
 				ecResponse.addErrorMessage("condition_anatomy_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionAnatomyCurie() + ")");
 		}
@@ -114,7 +115,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
 		GOTerm conditionGeneOntology = null;
 		if (StringUtils.isNotBlank(dto.getConditionGeneOntologyCurie())) {
-			conditionGeneOntology = goTermDAO.find(dto.getConditionGeneOntologyCurie());
+			conditionGeneOntology = goTermService.findByCurieOrSecondaryId(dto.getConditionGeneOntologyCurie());
 			if (conditionGeneOntology == null)
 				ecResponse.addErrorMessage("condition_gene_ontology_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionGeneOntologyCurie() + ")");
 		}
