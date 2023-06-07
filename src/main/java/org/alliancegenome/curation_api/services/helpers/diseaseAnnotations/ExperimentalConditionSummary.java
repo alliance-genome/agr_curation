@@ -3,12 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntologyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -18,23 +13,28 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
+import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
+import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
+import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
+import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class ExperimentalConditionSummary {
 
 	@Inject
-	ZecoTermDAO zecoTermDAO;
+	ZecoTermService zecoTermService;
 	@Inject
-	ExperimentalConditionOntologyTermDAO expCondTermDAO;
+	ExperimentalConditionOntologyTermService expCondTermService;
 	@Inject
-	AnatomicalTermDAO anatomicalTermDAO;
+	AnatomicalTermService anatomicalTermService;
 	@Inject
-	GoTermDAO goTermDAO;
+	GoTermService goTermService;
 	@Inject
 	NcbiTaxonTermDAO ncbiTaxonTermDAO;
 	@Inject
-	ChemicalTermDAO chemicalTermDAO;
+	ChemicalTermService chemicalTermService;
 
 	public static String getConditionSummary(ExperimentalCondition condition) {
 		CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
@@ -70,27 +70,27 @@ public class ExperimentalConditionSummary {
 		CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
 
 		if (StringUtils.isNotBlank(conditionDto.getConditionClassCurie())) {
-			ZECOTerm conditionClass = zecoTermDAO.find(conditionDto.getConditionClassCurie());
+			ZECOTerm conditionClass = zecoTermService.findByCurieOrSecondaryId(conditionDto.getConditionClassCurie());
 			conditionSummary.add(conditionClass.getName());
 		}
 
 		if (StringUtils.isNotBlank(conditionDto.getConditionIdCurie())) {
-			ExperimentalConditionOntologyTerm conditionId = expCondTermDAO.find(conditionDto.getConditionIdCurie());
+			ExperimentalConditionOntologyTerm conditionId = expCondTermService.findByCurieOrSecondaryId(conditionDto.getConditionIdCurie());
 			conditionSummary.add(conditionId.getName());
 		}
 
 		if (StringUtils.isNotBlank(conditionDto.getConditionAnatomyCurie())) {
-			AnatomicalTerm conditionAnatomy = anatomicalTermDAO.find(conditionDto.getConditionAnatomyCurie());
+			AnatomicalTerm conditionAnatomy = anatomicalTermService.findByCurieOrSecondaryId(conditionDto.getConditionAnatomyCurie());
 			conditionSummary.add(conditionAnatomy.getName());
 		}
 
 		if (StringUtils.isNotBlank(conditionDto.getConditionGeneOntologyCurie())) {
-			GOTerm conditionGeneOntology = goTermDAO.find(conditionDto.getConditionGeneOntologyCurie());
+			GOTerm conditionGeneOntology = goTermService.findByCurieOrSecondaryId(conditionDto.getConditionGeneOntologyCurie());
 			conditionSummary.add(conditionGeneOntology.getName());
 		}
 
 		if (StringUtils.isNotBlank(conditionDto.getConditionChemicalCurie())) {
-			ChemicalTerm conditionChemical = chemicalTermDAO.find(conditionDto.getConditionChemicalCurie());
+			ChemicalTerm conditionChemical = chemicalTermService.findByCurieOrSecondaryId(conditionDto.getConditionChemicalCurie());
 			conditionSummary.add(conditionChemical.getName());
 		}
 
