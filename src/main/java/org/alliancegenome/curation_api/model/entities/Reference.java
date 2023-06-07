@@ -45,7 +45,6 @@ public class Reference extends InformationContentEntity {
 	@JsonView({View.FieldsOnly.class})
 	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_id")})
 	@EqualsAndHashCode.Include
-	@Fetch(FetchMode.SUBSELECT)
 	private List<CrossReference> crossReferences;
 
 	/**

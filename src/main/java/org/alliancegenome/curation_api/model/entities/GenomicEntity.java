@@ -44,7 +44,6 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_id_index")
 	})
 	@JsonView({ View.FieldsAndLists.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<CrossReference> crossReferences;
 
 }

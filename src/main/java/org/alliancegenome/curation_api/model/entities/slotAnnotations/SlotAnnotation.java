@@ -49,7 +49,6 @@ public class SlotAnnotation extends GeneratedAuditedObject {
 
 	})
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<InformationContentEntity> evidence;
 
 }

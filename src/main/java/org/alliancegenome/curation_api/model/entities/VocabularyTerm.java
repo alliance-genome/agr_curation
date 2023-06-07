@@ -72,7 +72,6 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	@ManyToMany
 	@JoinTable(indexes = { @Index(columnList = "vocabularyterm_id"), @Index(columnList = "crossreferences_id") })
 	@JsonView({ View.FieldsAndLists.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<CrossReference> crossReferences;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -94,6 +93,5 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany(mappedBy = "memberTerms")
 	@JsonView({ View.VocabularyTermView.class, View.VocabularyTermUpdate.class })
-	@Fetch(FetchMode.SUBSELECT)
 	private List<VocabularyTermSet> vocabularyTermSets;
 }
