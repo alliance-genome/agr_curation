@@ -79,7 +79,7 @@ describe("<ConditionRelationPage />", () => {
 		let experimentalConditionsAutocomplete = screen.getByRole('combobox', { name: /conditions/i });
 		
 		expect(handleInput.value).toEqual('Standard');
-		expect(referenceAutocomplete.value).toEqual("PMID:28806732 (DOI:10.1371/journal.pgen.1006959|PMCID:PMC5570503|ZFIN:ZDB-PUB-170815-1|AGRKB:101000000675992)");
+		expect(referenceAutocomplete.value).toEqual("PMID:28806732 (ZFIN:ZDB-PUB-170815-1|DOI:10.1371/journal.pgen.1006959|PMCID:PMC5570503|AGRKB:101000000675992)");
 		expect(relationDropdown.previousSibling.firstChild.nodeValue).toEqual("has_condition");
 		expect(experimentalConditionsAutocomplete.parentElement.previousSibling.firstChild.firstChild.nodeValue).toEqual("standard conditions");
 	});
