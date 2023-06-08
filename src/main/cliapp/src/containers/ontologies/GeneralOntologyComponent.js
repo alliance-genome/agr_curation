@@ -8,6 +8,9 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { GenericDataTree } from '../../components/GenericDataTree';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { ListTableCell } from '../../components/ListTableCell';
+import { Tooltip } from 'primereact/tooltip';
 
 export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbbreviation, hideDefinition}) => {
 	const [isEnabled, setIsEnabled] = useState(true);
@@ -19,6 +22,51 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 	const toast_topright = useRef(null);
 
 	const columns = [];
+
+	const synonymsTemplate = (rowData) => {
+		if (rowData?.synonyms && rowData.synonyms.length > 0) {
+			const listTemplate = (synonym) => {
+				return (
+					<EllipsisTableCell>
+						<div dangerouslySetInnerHTML={{__html: synonym}}/>
+					</EllipsisTableCell>
+				)
+			};
+			return (
+				<>
+					<div className={`syn${rowData.curie.replace(':', '')}`}>
+						<ListTableCell template={listTemplate} listData={rowData.synonyms.map(a => a.name).sort()}/>
+					</div>
+					<Tooltip target={`.syn${rowData.curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={rowData.synonyms.map(a => a.name).sort()}/>
+					</Tooltip>
+				</>
+			);
+		}
+	};
+
+	const secondaryIdsTemplate = (rowData) => {
+		if (rowData?.secondaryIdentifiers && rowData.secondaryIdentifiers.length > 0) {
+			const sortedIds = rowData.secondaryIdentifiers.sort();
+			const listTemplate = (secondaryId) => {
+				return (
+					<EllipsisTableCell>
+						<div dangerouslySetInnerHTML={{__html: secondaryId}}/>
+					</EllipsisTableCell>
+				)
+			};
+			return (
+				<>
+					<div className={`sid${rowData.curie.replace(':', '')}`}>
+						<ListTableCell template={listTemplate} listData={sortedIds}/>
+					</div>
+					<Tooltip target={`.sid${rowData.curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={sortedIds}/>
+					</Tooltip>
+				</>
+			);
+		}
+	};
 
 	columns.push(
 		{
@@ -63,6 +111,22 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			}
 		);
 	}
+	columns.push(
+		{
+			field: "synonyms.name",
+			header: "Synonyms",
+			body: synonymsTemplate,
+			filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig
+		}
+	);
+	columns.push(
+		{
+			field: "secondaryIdentifiers",
+			header: "Secondary IDs",
+			body: secondaryIdsTemplate,
+			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig
+		}
+	);
 	columns.push(
 		{
 			field: "obsolete",

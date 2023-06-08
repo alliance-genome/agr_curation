@@ -109,7 +109,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		
 		if (gdaResponse.hasErrors())
 			throw new ObjectValidationException(dto, gdaResponse.errorMessagesString());
-
+		
 		return annotation;
 	}
 }

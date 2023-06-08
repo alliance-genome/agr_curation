@@ -28,6 +28,7 @@ These instructions will get you a copy of the project and the API up and running
    *  [Additional deployment steps](#additional-deployment-steps)
    *  [Release versioning](#release-versioning)
    *  [Release Creation](#release-creation)
+   *  [Database](#database)
 -  [Loading Data](#loading-data)
 -  [Submitting Data](#submitting-data)
 
@@ -447,8 +448,8 @@ the new version of the application can function in a consistent state upon and a
    *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
    *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
    *  Removed variables should be cleaned up **after** successfull deployment
-2. Connect to the Environment's Elastic search domain by entering its domain endpoint in Cerebro, and delete all indexes.
-   The domain endpoint URL can be found through the [Amazon OpenSearch console](https://console.aws.amazon.com/esv3/home?region=us-east-1#opensearch/domains), the cerebro UI is available on the application server through HTTP at port 9000.
+2. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
+   Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
 3. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup
    (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
@@ -524,6 +525,35 @@ To create a new (pre-)release and deploy to beta or production, do the following
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
 Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
 continue the remaining steps described in the [additional deployment steps section](#additional-deployment-steps).
+
+### Database
+The Curation application connects to the postgres DB using a user called `curation_app`, which is member of a role called `curation_admins`.
+This role and user are used to ensure the database can be closed for all but admin users on initiating a DB restore,
+such that no accidential writes can happen to the postgres database during the restore process to ensure data integrity.
+When restoring to or creating a new postgres server, ensure the `curation_admins` role exists and has a member user called `curation_app`,
+ to ensure the database can be restored with the correct ownerships, and give the `curation_admins` role all permissions to
+ the curation database, the `public` schema, and all tables and sequences in it, and change the default privileges to allow
+ the curation_admins role all permissions on all newly created tables and sequences in the `public` schema.
+
+This can be achieved by connecting to the curation database using the admin (postgres) user (using `psql`)
+and executing the following queries:  
+```sql
+-- Create the role
+CREATE ROLE curation_admins;
+
+-- Create user (change the password)
+CREATE USER curation_app WITH PASSWORD '...';
+-- Grant role to user
+GRANT curation_admins TO curation_app;
+
+-- Grant required privileges to group (role)
+GRANT ALL ON DATABASE curation TO GROUP curation_admins;
+GRANT ALL ON SCHEMA public TO GROUP curation_admins;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO GROUP curation_admins;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO GROUP curation_admins;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO GROUP curation_admins;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO GROUP curation_admins;
+```
 
 ## Loading Data
 

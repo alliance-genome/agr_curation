@@ -40,11 +40,13 @@ quarkus.micrometer.export.json.enabled=true
 quarkus.micrometer.export.json.path=api/metrics.json
 
 quarkus.hibernate-search-orm.elasticsearch.analysis.configurer=bean:ApplicationAnalysisConfig
-quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/custom-index-settings.json
-%dev.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/local-index-settings.json
+quarkus.hibernate-search-orm.elasticsearch.schema-management.required-status-wait-timeout=180S
+quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/production-index-settings.json
+%test.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/test-index-settings.json
+%dev.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/dev-index-settings.json
 
 quarkus.vertx.max-worker-execute-time=PT1H
-quarkus.transaction-manager.default-transaction-timeout = PT5M
+quarkus.transaction-manager.default-transaction-timeout = PT1H
 
 %dev.quarkus.elasticsearch.hosts = localhost:9200
 %dev.quarkus.hibernate-search-orm.elasticsearch.hosts=localhost:9200

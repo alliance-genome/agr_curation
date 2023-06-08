@@ -6,6 +6,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 
 
 export const AffectedGenomicModelTable = () => {
@@ -68,6 +69,49 @@ export const AffectedGenomicModelTable = () => {
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
+		},
+		{
+			field: "updatedBy.uniqueId",
+			header: "Updated By",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+		},
+		{
+			field: "dateUpdated",
+			header: "Date Updated",
+			sortable: isEnabled,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
+		},
+		{
+			field: "createdBy.uniqueId",
+			header: "Created By",
+			sortable: isEnabled,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.createdByFilterConfig
+		},
+		{
+			field: "dateCreated",
+			header: "Date Created",
+			sortable: isEnabled,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
+		},
+		{
+			field: "internal",
+			header: "Internal",
+			body: internalTemplate,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.internalFilterConfig,
+			sortable: isEnabled
+		},
+		{
+			field: "obsolete",
+			header: "Obsolete",
+			body: obsoleteTemplate,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+			sortable: isEnabled
 		}
  ];
 

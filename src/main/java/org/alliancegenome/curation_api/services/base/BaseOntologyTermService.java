@@ -34,6 +34,19 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	@AuthenticatedUser
 	LoggedInPerson authenticatedPerson;
 
+	public E findByCurieOrSecondaryId(String id) {
+		
+		E term = dao.find(id);
+		if (term != null)
+			return term;
+		
+		SearchResponse<E> response = dao.findByField("secondaryIdentifiers", id);
+		if (response.getTotalResults() == 1)
+			return response.getSingleResult();
+		
+		return null;
+	}
+	
 	@Transactional
 	public E processUpdate(E inTerm) {
 

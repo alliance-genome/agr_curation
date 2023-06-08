@@ -6,12 +6,12 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.PhenotypeTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.SlotAnnotationDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +21,7 @@ public class AlleleInheritanceModeSlotAnnotationDTOValidator extends SlotAnnotat
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	@Inject
-	PhenotypeTermDAO phenotypeTermDAO;
+	PhenotypeTermService phenotypeTermService;
 
 	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotationDTO(AlleleInheritanceModeSlotAnnotation annotation, AlleleInheritanceModeSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleInheritanceModeSlotAnnotation> aisaResponse = new ObjectResponse<AlleleInheritanceModeSlotAnnotation>();
@@ -41,7 +41,7 @@ public class AlleleInheritanceModeSlotAnnotationDTOValidator extends SlotAnnotat
 	
 		PhenotypeTerm phenotypeTerm = null;
 		if (StringUtils.isNotBlank(dto.getPhenotypeTermCurie())) {
-			phenotypeTerm = phenotypeTermDAO.find(dto.getPhenotypeTermCurie());
+			phenotypeTerm = phenotypeTermService.findByCurieOrSecondaryId(dto.getPhenotypeTermCurie());
 			if (phenotypeTerm == null)
 				aisaResponse.addErrorMessage("phenotype_term_curie", ValidationConstants.INVALID_MESSAGE);
 		}
