@@ -111,7 +111,7 @@ export const GenesTable = () => {
 					<Button className="p-button-text" 
 						onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
 							<EllipsisTableCell otherClasses={`b${rowData.curie.replace(':', '')}`}>
-								<div style={{ textAlign: 'left' }} className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.geneSymbol.formatText }} />
+								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.geneSymbol.formatText }} />
 							</EllipsisTableCell>
 							<Tooltip target={`.b${rowData.curie.replace(':', '')}`}>
 								<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.formatText}}/>
