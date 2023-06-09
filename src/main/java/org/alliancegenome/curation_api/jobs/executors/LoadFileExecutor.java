@@ -65,7 +65,7 @@ public class LoadFileExecutor {
 
 	protected String getVersionNumber(String versionString) {
 		if (StringUtils.isBlank(versionString))
-			return LinkMLSchemaConstants.LATEST_RELEASE;
+			return null;
 		if (versionString.startsWith("v"))
 			return versionString.substring(1);
 		return versionString;
@@ -90,6 +90,12 @@ public class LoadFileExecutor {
 	
 
 	protected boolean checkSchemaVersion(BulkLoadFile bulkLoadFile, Class<?> dtoClass) {
+		if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
+			bulkLoadFile.setErrorMessage("Missing Schema Version");
+			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			return false;
+		}
 		if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass)) {
 			bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
