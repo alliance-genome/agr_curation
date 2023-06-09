@@ -430,7 +430,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			for (String aggField : aggList) {
 				AggregationKey<Map<String, Long>> aggKey = AggregationKey.of(aggField);
 				aggKeys.add(aggKey);
-				step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(10));
+				step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(30));
 			}
 		}
 
