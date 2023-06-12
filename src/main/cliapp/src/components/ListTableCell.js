@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const ListTableCell = ({ template, listData, showBullets}) => {
+export const ListTableCell = ({ template, listData, showBullets }) => {
 	let suppress = 'list-none'
 	if(showBullets)
 		suppress = ''
