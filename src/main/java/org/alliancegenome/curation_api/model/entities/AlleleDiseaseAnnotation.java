@@ -45,6 +45,7 @@ import lombok.EqualsAndHashCode;
 @Table(indexes = { @Index(name = "AlleleDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_curie"), @Index(name = "AlleleDiseaseAnnotation_Subject_index", columnList = "subject_curie")})
 public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
