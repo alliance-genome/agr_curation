@@ -68,8 +68,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> assertedGenes;
 
-	@IndexedEmbedded(includePaths = { "curie", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "alleleSecondaryIds.secondaryId",
-			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleFullName.displayText_keyword", "alleleSynonyms.displayText_keyword", "alleleSecondaryIds.secondaryId_keyword" })
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
