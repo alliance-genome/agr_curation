@@ -71,7 +71,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
-			failLoad(bulkLoadFile, e.getMessage());
+			failLoad(bulkLoadFile, e);
 			e.printStackTrace();
 		}
 	}

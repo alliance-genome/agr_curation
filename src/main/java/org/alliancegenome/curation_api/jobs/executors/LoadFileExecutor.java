@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -191,8 +190,8 @@ public class LoadFileExecutor {
 		
 	}
 	
-	protected void failLoad(BulkLoadFile bulkLoadFile, String message) {
-		bulkLoadFile.setErrorMessage(message);
+	protected void failLoad(BulkLoadFile bulkLoadFile, Exception e) {
+		bulkLoadFile.setErrorMessage(e.getLocalizedMessage());
 		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
