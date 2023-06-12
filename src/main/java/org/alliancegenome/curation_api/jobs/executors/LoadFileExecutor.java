@@ -2,7 +2,9 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -191,7 +193,12 @@ public class LoadFileExecutor {
 	}
 	
 	protected void failLoad(BulkLoadFile bulkLoadFile, Exception e) {
-		bulkLoadFile.setErrorMessage(e.getLocalizedMessage());
+		Set<String> errorMessages = new HashSet<String>();
+		errorMessages.add(e.getMessage());
+		errorMessages.add(e.getLocalizedMessage());
+		if (e.getCause() != null)
+			errorMessages.add(e.getCause().getMessage());
+		bulkLoadFile.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
