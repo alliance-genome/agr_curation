@@ -46,11 +46,11 @@ export const FIELD_SETS = Object.freeze({
   },
   assertedAlleleFieldSet: {
     filterName: "assertedAlleleFilter",
-    fields: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleSymbol.formatText", "assertedAllele.alleleFullName.displayText", "assertedAllele.alleleFullName.formatText", "assertedAllele.curie", "assertedAllele.alleleSynonyms.displayText", "assertedAllele.alleleSynonyms.formatText", "assertedAllele.alleleSecondaryIds.secondaryId"],
+    fields: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleSymbol.formatText", "assertedAllele.curie"],
   },
   assertedGenesFieldSet: {
     filterName: "assertedGenesFilter",
-    fields: ["assertedGenes.geneSymbol.displayText", "assertedGenes.geneSymbol.formatText", "assertedGenes.geneFullName.displayText", "assertedGenes.geneFullName.formatText", "assertedGenes.curie", "assertedGenes.geneSynonyms.displayText", "assertedGenes.geneSynonyms.formatText", "assertedGenes.geneSystematicName.displayText", "assertedGenes.geneSystematicName.formatText"],
+    fields: ["assertedGenes.geneSymbol.displayText", "assertedGenes.geneSymbol.formatText", "assertedGenes.curie"],
   },
   citationFieldSet: {
     filterName: "citationFilter",
@@ -226,11 +226,11 @@ export const FIELD_SETS = Object.freeze({
   },
   inferredAlleleFieldSet: {
     filterName: "inferredAlleleFilter",
-    fields: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleSymbol.formatText", "inferredAllele.alleleFullName.displayText", "inferredAllele.alleleFullName.formatText", "inferredAllele.curie",  "inferredAllele.alleleSynonyms.displayText", "inferredAllele.alleleSynonyms.formatText", "inferredAllele.alleleSecondaryIds.secondaryId"],
+    fields: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleSymbol.formatText", "inferredAllele.curie"],
   },
   inferredGeneFieldSet: {
     filterName: "inferredGeneFilter",
-    fields: ["inferredGene.geneSymbol.displayText", "inferredGene.geneSymbol.formatText", "inferredGene.geneFullName.displayText", "inferredGene.geneFullName.formatText", "inferredGene.curie", "inferredGene.geneSynonyms.displayText", "inferredGene.geneSynonyms.formatText", "inferredGene.geneSystematicName.displayText", "inferredGene.geneSystematicName.formatText"]
+    fields: ["inferredGene.geneSymbol.displayText", "inferredGene.geneSymbol.formatText", "inferredGene.curie"]
   },
   internalFieldSet: {
     filterName: "internalFilter",
@@ -362,7 +362,7 @@ export const FIELD_SETS = Object.freeze({
   },
   withFieldSet: {
     filterName: "withFilter",
-    fields: ["with.geneSymbol.displayText", "with.geneSymbol.formatText", "with.geneFullName.displayText", "with.geneFullName.formatText", "with.curie", "with.geneSynonyms.displayText", "with.geneSynonyms.formatText", "with.geneSystematicName.displayText", "with.geneSystematicName.formatText"],
+    fields: ["with.geneSymbol.displayText", "with.geneSymbol.formatText", "with.curie"],
   }
 });
 
