@@ -80,7 +80,7 @@ export const GenesTable = () => {
 				const sortedSynonyms = Array.from(synonymSet).sort();
 				const listTemplate = (item) => {
 					return (
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: item }} />	
+						<div className='overflow-hidden text-overflow-ellipsis text-left' dangerouslySetInnerHTML={{ __html: item }} />	
 					);
 				};
 				return (
