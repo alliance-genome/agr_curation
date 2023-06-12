@@ -190,4 +190,10 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 		
 	}
+	
+	protected void failLoad(BulkLoadFile bulkLoadFile, String message) {
+		bulkLoadFile.setErrorMessage(message);
+		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+		bulkLoadFileDAO.merge(bulkLoadFile);
+	}
 }

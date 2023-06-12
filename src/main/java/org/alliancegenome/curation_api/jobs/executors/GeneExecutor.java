@@ -72,6 +72,7 @@ public class GeneExecutor extends LoadFileExecutor {
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
+			failLoad(bulkLoadFile, e.getMessage());
 			e.printStackTrace();
 		}
 	}
