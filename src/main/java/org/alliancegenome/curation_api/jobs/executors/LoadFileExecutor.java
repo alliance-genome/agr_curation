@@ -2,12 +2,13 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -189,5 +190,19 @@ public class LoadFileExecutor {
 		}
 		ph.finishProcess();
 		
+	}
+	
+	protected void failLoad(BulkLoadFile bulkLoadFile, Exception e) {
+		Set<String> errorMessages = new LinkedHashSet<String>();
+		errorMessages.add(e.getMessage());
+		errorMessages.add(e.getLocalizedMessage());
+		Throwable cause = e.getCause();
+		while (e.getCause() != null) {
+			errorMessages.add(cause.getMessage());
+			cause = cause.getCause();
+		}
+		bulkLoadFile.setErrorMessage(String.join("|", errorMessages));
+		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
 }
