@@ -443,35 +443,35 @@ In order to successfully deploy to the beta or production environment, as few ad
 after merging into the respective branch to trigger deployment and to ensure
 the new version of the application can function in a consistent state upon and after deployment.
 
-1. Compare the environment variables set in the Elastic Beanstalk environment between the environment you want to deploy to and from (e.g. compare curation-beta to curation-alpha for deployment to beta, or curation-production to curation-beta for deployment to production). This can be done through the [EB console](https://console.aws.amazon.com/elasticbeanstalk/home?region=us-east-1#/application/overview?applicationName=curation-app), or by using the `eb printenv` CLI. Scan for relevant change:
-   *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
-   *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
-   *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
-   *  Removed variables should be cleaned up **after** successfull deployment
-2. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
-   Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
-3. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup
-   (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
-   This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
-   before the code causing it would get deployed to the production environment.  
-   To ensure users or loads can not write to the database while it is being reloaded, stop the (beta) application before
-   initiating the DB roll-down and restart it once the DB roll-down completed.
-   ```bash
-   > eb ssh curation-beta -e 'ssh -i $AGR_SSH_PEM_FILE' #Connect to relevant application server
-   > cd /var/app/current
-   > sudo docker-compose stop  #Stop the application
-   #Trigger DB roll-down locally and wait for completion
-   > sudo docker-compose start #(Re)start the application
-   ```
-4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
-5. Check the logs for the environment that you're releasing too and ensure that all migrations complete successfully.
-6. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
-   System Endpoints section in the swagger UI) and follow-up through the log server to check for progress and errors.
-7. Once reindexing completed, look at the dashboard page (where you deployed to)
-    and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
-    investigate what caused this and fix the issue first before continuing the deployment.
-8. If code to support new ontologies was added, create the respective new data loads through the Data loads page and load the new file.
-9. After completing all above steps successfully, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
+1.  Compare the environment variables set in the Elastic Beanstalk environment between the environment you want to deploy to and from (e.g. compare curation-beta to curation-alpha for deployment to beta, or curation-production to curation-beta for deployment to production). This can be done through the [EB console](https://console.aws.amazon.com/elasticbeanstalk/home?region=us-east-1#/application/overview?applicationName=curation-app), or by using the `eb printenv` CLI. Scan for relevant change:
+    *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
+    *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
+    *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
+    *  Removed variables should be cleaned up **after** successfull deployment
+2.  Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
+    Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
+3.  When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup
+    (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
+    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
+    before the code causing it would get deployed to the production environment.  
+    The restore function automatically prevents users from writing to the database while it is being reloaded,
+    by temporarily making the target database read-only and restoring in a separated database before renaming.
+4.  After the restore completed, restart the beta environment app-server to re-apply all flyway migrations
+    that were not yet present in the restored (production) database.
+    ```bash
+    > aws elasticbeanstalk restart-app-server --environment-name curation-beta
+    ```
+    Check the logs for errors after app-server restart, which could indicate a DB restore failure and troubleshoot accordingly
+    if necessary to fix any errors.
+5.  Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
+6.  Check the logs for the environment that you're releasing too and ensure that all migrations complete successfully.
+7.  Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
+    System Endpoints section in the swagger UI) and follow-up through the log server to check for progress and errors.
+8.  Once reindexing completed, look at the dashboard page (where you deployed to)
+     and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
+     investigate what caused this and fix the issue first before continuing the deployment.
+9.  If code to support new ontologies was added, create the respective new data loads through the Data loads page and load the new file.
+10. After completing all above steps successfully, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
 
 
 ### Release versioning
