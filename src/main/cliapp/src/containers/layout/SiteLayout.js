@@ -231,36 +231,60 @@ export const SiteLayout = (props) => {
 								{
 										label: 'Ontologies', icon: 'pi pi-fw pi-sitemap',
 										items: [
-											//TODO: order this map!
-												{ label: 'Chemical Entities of Biological Interest (ChEBI)', icon: 'pi pi-fw pi-home', to: '/ontology/chebi' },
-												{ label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
-												{ label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
-												{ label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
-												{ label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
-												{ label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
-												{ label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
-												{ label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
-												{ label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' },
-												{ label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
-												{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
-												{ label: 'Experimental condition ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
-												{ label: 'Relation ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
-												{ label: 'Zebrafish Experimental Conditions Ontology (ZECO)', icon: 'pi pi-fw pi-home', to: '/ontology/zeco' },
-												{ label: 'C. elegans Development Ontology (WBls)', icon: 'pi pi-fw pi-home', to: '/ontology/wbls' },
-												{ label: 'FlyBase Developmental Ontology (FBdv)', icon: 'pi pi-fw pi-home', to: '/ontology/fbdv' },
-												{ label: 'Mouse Developmental Stages (MmusDv)', icon: 'pi pi-fw pi-home', to: '/ontology/mmusdv' },
-												{ label: 'Zebrafish Developmental Stages Ontology (ZFS)', icon: 'pi pi-fw pi-home', to: '/ontology/zfs' },
-												{ label: 'Xenopus Anatomy Ontology (XBA)', icon: 'pi pi-fw pi-home', to: '/ontology/xba' },
-												{ label: 'Xenopus Developmental Stage Ontology (XBS)', icon: 'pi pi-fw pi-home', to: '/ontology/xbs' },
-												{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' },
-												{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' },
-												{ label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' },
-												{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
-												{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
-												{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
-												{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },
-												{ label: 'C. elegans Phenotype Ontology (WBPhenotype)', icon: 'pi pi-fw pi-home', to: '/ontology/wbpheno' },
-												{ label: 'Human Phenotype Ontology (HP)', icon: 'pi pi-fw pi-home', to: '/ontology/hp' }
+											{ 
+												label: 'Anatomical Ontologies', icon: 'pi pi-fw pi-sitemap',
+												items: [
+													{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
+													{ label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
+													{ label: 'Mouse Adult Gross Anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
+													{ label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
+													{ label: 'Xenopus Anatomy Ontology (XBA)', icon: 'pi pi-fw pi-home', to: '/ontology/xba' },
+													{ label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' }
+												]
+											},
+											{ 
+												label: 'Chemical Ontologies', icon: 'pi pi-fw pi-sitemap',
+												items: [
+													{ label: 'Chemical Entities of Biological Interest (ChEBI)', icon: 'pi pi-fw pi-home', to: '/ontology/chebi' },
+													{ label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' }
+												]
+											},
+											{ 
+												label: 'Experimental Condition Ontologies', icon: 'pi pi-fw pi-sitemap',
+												items: [
+													{ label: 'Experimental Condition Ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
+													{ label: 'Zebrafish Experimental Conditions Ontology (ZECO)', icon: 'pi pi-fw pi-home', to: '/ontology/zeco' }
+												]
+											},
+											{ 
+												label: 'Phenotype Ontologies', icon: 'pi pi-fw pi-sitemap',
+												items: [
+													{ label: 'C. elegans Phenotype Ontology (WBPhenotype)', icon: 'pi pi-fw pi-home', to: '/ontology/wbpheno' },
+													{ label: 'Human Phenotype Ontology (HP)', icon: 'pi pi-fw pi-home', to: '/ontology/hp' },
+													{ label: 'Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
+													{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' }
+												]
+											},
+											{ 
+												label: 'Stage Ontologies', icon: 'pi pi-fw pi-sitemap',
+												items: [
+													{ label: 'C. elegans Development Ontology (WBls)', icon: 'pi pi-fw pi-home', to: '/ontology/wbls' },
+													{ label: 'FlyBase Developmental Ontology (FBdv)', icon: 'pi pi-fw pi-home', to: '/ontology/fbdv' },
+													{ label: 'Mouse Developmental Stages Ontology (MmusDv)', icon: 'pi pi-fw pi-home', to: '/ontology/mmusdv' },
+													{ label: 'Xenopus Developmental Stage Ontology (XBS)', icon: 'pi pi-fw pi-home', to: '/ontology/xbs' },
+													{ label: 'Zebrafish Developmental Stages Ontology (ZFS)', icon: 'pi pi-fw pi-home', to: '/ontology/zfs' }
+												]
+											},
+											{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
+											{ label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
+											{ label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
+											{ label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
+											{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
+											{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
+											{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },
+											{ label: 'Relation Ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
+											{ label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
+											{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' }											
 										]
 								},
 								{
