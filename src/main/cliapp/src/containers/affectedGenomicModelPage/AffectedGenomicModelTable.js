@@ -10,8 +10,6 @@ import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObje
 
 
 export const AffectedGenomicModelTable = () => {
-	//does this still need to be here? List is the same as columns
-	const defaultVisibleColumns = ["Curie", "Name", "Sub Type", "Taxon"];
 
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [errorMessages, setErrorMessages] = useState({});
@@ -124,7 +122,7 @@ export const AffectedGenomicModelTable = () => {
 		widthsObject[col.field] = 100 / columns.length;
 	});
 
-	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames, defaultVisibleColumns, widthsObject);
+	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames, undefined, widthsObject);
 
 
 	return (
