@@ -454,15 +454,15 @@ the new version of the application can function in a consistent state upon and a
    (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
    before the code causing it would get deployed to the production environment.  
-   To ensure users or loads can not write to the database while it is being reloaded, stop the (beta) application before
-   initiating the DB roll-down and restart it once the DB roll-down completed.
+   The restore function automatically prevents users from writing to the database while it is being reloaded,
+   by temporarily making the target database read-only and restoring in a separated database before renaming.
+4. After the restore completed, restart the beta environment app-server to re-apply all flyway migrations
+   that were not yet present in the restored (production) database.
    ```bash
-   > eb ssh curation-beta -e 'ssh -i $AGR_SSH_PEM_FILE' #Connect to relevant application server
-   > cd /var/app/current
-   > sudo docker-compose stop  #Stop the application
-   #Trigger DB roll-down locally and wait for completion
-   > sudo docker-compose start #(Re)start the application
+   > aws elasticbeanstalk restart-app-server --environment-name curation-beta
    ```
+   Check the logs for errors after app-server restart, which could indicate a DB restore failure and troubleshoot accordingly
+   if necessary to fix any errors.
 4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
 5. Check the logs for the environment that you're releasing too and ensure that all migrations complete successfully.
 6. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
