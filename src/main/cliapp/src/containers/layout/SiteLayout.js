@@ -313,7 +313,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${siteContext?.apiVersion?.esHost}`, target: "_blank" },
 												{ label: 'Logs Server', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${siteContext?.apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
 										]
-								}	
+								}
 						]
 				}
 		];
