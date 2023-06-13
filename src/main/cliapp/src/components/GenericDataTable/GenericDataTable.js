@@ -239,7 +239,7 @@ export const GenericDataTable = (props) => {
 
 	const getRowClass = (props) => {
 		if (props?.obsolete && highlightObsolete) {
-			return 'bg-primary-reverse'
+			return 'bg-gray-500 text-white'
 		};
 		return null;
 	}
