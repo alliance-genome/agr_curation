@@ -448,7 +448,7 @@ export const NewAnnotationForm = ({
 		<div>
 			<Toast ref={toast_error} position="top-left" />
 			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newAnnotationDialog} style={{ width: '900px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable="true" >
+			<Dialog visible={newAnnotationDialog} style={{ width: '900px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable>
 				<ErrorBoundary>
 				<form>
 					<div className="grid">

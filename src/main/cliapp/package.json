@@ -9,6 +9,7 @@
     },
     "license": "MIT",
     "dependencies": {
+	"@babel/plugin-proposal-private-property-in-object": "7.21.0-placeholder-for-preset-env.2",
         "@fullcalendar/core": "^5.7.2",
         "@fullcalendar/daygrid": "^5.7.2",
         "@fullcalendar/interaction": "^5.7.2",
