@@ -32,6 +32,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "alleleGermlineTransmissionStatusFilter",
     fields: ["alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", "alleleGermlineTransmissionStatus.evidence.curie"]
   },
+  alleleDatabaseStatusFieldSet: {
+    filterName: "alleleDatabaseStatusFilter",
+    fields: ["alleleDatabaseStatus.databaseStatus.name", "alleleDatabaseStatus.evidence.curie"]
+  },
   alleleInheritanceModesFieldSet: {
     filterName: "alleleInheritanceModesFilter",
     fields: ["alleleInheritanceModes.inheritanceMode.name", "alleleInheritanceModes.phenotypeTerm.curie", "alleleInheritanceModes.phenotypeTerm.name", "alleleInheritanceModes.phenotypeStatement", "alleleInheritanceModes.evidence.curie"],
@@ -371,6 +375,7 @@ export const FILTER_CONFIGS = Object.freeze({
   abstractFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.abstractFieldSet]},
   alleleFunctionalImpactsFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleFunctionalImpactsFieldSet] },
   alleleGermlineTransmissionStatusFilterConfig: {filterComponentType: "input", fieldSets: [FIELD_SETS.alleleGermlineTransmissionStatusFieldSet]},
+  alleleDatabaseStatusFilterConfig:         { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleDatabaseStatusFieldSet]},
   alleleInheritanceModesFilterConfig:       { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleInheritanceModesFieldSet] },
   alleleMutationFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleMutationFieldSet] },
   alleleNameFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleNameFieldSet] },

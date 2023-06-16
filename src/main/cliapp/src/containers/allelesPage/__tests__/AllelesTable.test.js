@@ -53,6 +53,7 @@ describe.skip("<AllelesTable />", () => {
 		const dateCreatedTd = await result.findByText(/2007-06-18T17:00:58.685302Z/i);
 		const internalTd = await result.findByText(/false/i);
 		const obsoleteTd = await result.findByText(/false/i);
+		const alleleDatabaseStatusTd = await result.findByText(/approved/i);
 
 		await waitFor(() => {
 			expect(curieTd).toBeInTheDocument();
@@ -67,6 +68,7 @@ describe.skip("<AllelesTable />", () => {
 			expect(dateCreatedTd).toBeInTheDocument();
 			expect(internalTd).toBeInTheDocument();
 			expect(obsoleteTd).toBeInTheDocument();
+			expect(alleleDatabaseStatusTd).toBeInTheDocument();
 		});
 	});
 });

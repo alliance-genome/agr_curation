@@ -1,9 +1,10 @@
-package org.alliancegenome.curation_api.model.ingest.dto;
+package org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations;
 
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SlotAnnotationDTO;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

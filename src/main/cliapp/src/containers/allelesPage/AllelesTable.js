@@ -13,6 +13,7 @@ import { MutationTypesDialog } from './MutationTypesDialog';
 import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './InheritanceModesDialog';
 import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDialog';
+import { DatabaseStatusDialog } from './DatabaseStatusDialog';
 import { SymbolDialog } from './SymbolDialog';
 import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
@@ -76,6 +77,13 @@ export const AllelesTable = () => {
 	});
 
 	const [germlineTransmissionStatusData, setGermlineTransmissionStatusData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [databaseStatusData, setDatabaseStatusData] = useState({
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -793,6 +801,83 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	const databaseStatusTemplate = (rowData) => {
+		if (rowData?.alleleDatabaseStatus?.databaseStatus) {
+			return (
+				<>
+					<Button className="p-button-text"
+						onClick={(event) => { handleDatabaseStatusOpen(event, rowData, false) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`${rowData.alleleDatabaseStatus.databaseStatus.name}`}
+						</span>								
+					</Button>
+				</>
+			);
+		}
+	};
+
+	const databaseStatusEditor = (props) => {
+		if (props?.rowData?.alleleDatabaseStatus?.databaseStatus) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleDatabaseStatusOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`${props.rowData.alleleDatabaseStatus.databaseStatus.name}`}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<EditMessageTooltip object="allele"/>
+					</Button>
+				</div>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleDatabaseStatus"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleDatabaseStatusOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Database Status
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<EditMessageTooltip object="allele"/>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleDatabaseStatus"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+	const handleDatabaseStatusOpen = (event, rowData, isInEdit) => {
+		let _databaseStatusData = {};
+		_databaseStatusData["originalDatabaseStatuses"] = [rowData.alleleDatabaseStatus];
+		_databaseStatusData["dialog"] = true;
+		_databaseStatusData["isInEdit"] = isInEdit;
+		setDatabaseStatusData(() => ({
+			..._databaseStatusData
+		}));
+	};
+
+	const handleDatabaseStatusOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _databaseStatusData = {};
+		_databaseStatusData["originalDatabaseStatuses"] = [rowProps.rowData.alleleDatabaseStatus];
+		_databaseStatusData["dialog"] = true;
+		_databaseStatusData["isInEdit"] = isInEdit;
+		_databaseStatusData["rowIndex"] = index;
+		_databaseStatusData["mainRowProps"] = rowProps;
+		setDatabaseStatusData(() => ({
+			..._databaseStatusData
+		}));
+	};
+
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
@@ -1136,6 +1221,14 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
 		},
 		{
+			field: "alleleDatabaseStatus.databaseStatus.name",
+			header: "Database Status",
+			body: databaseStatusTemplate,
+			editor: (props) => databaseStatusEditor(props),
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
+		},
+		{
 			field: "references.curie",
 			header: "References",
 			body: referencesTemplate,
@@ -1299,6 +1392,12 @@ export const AllelesTable = () => {
 			<GermlineTransmissionStatusDialog
 				originalGermlineTransmissionStatusData={germlineTransmissionStatusData}
 				setOriginalGermlineTransmissionStatusData={setGermlineTransmissionStatusData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<DatabaseStatusDialog
+				originalDatabaseStatusData={databaseStatusData}
+				setOriginalDatabaseStatusData={setDatabaseStatusData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
