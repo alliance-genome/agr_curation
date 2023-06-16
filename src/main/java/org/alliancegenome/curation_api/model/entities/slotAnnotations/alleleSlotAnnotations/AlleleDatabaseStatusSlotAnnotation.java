@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlo
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -34,13 +32,12 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleDatabaseStatusSlotAnnotation", description = "POJO representing an allele database status slot annotation")
 @Table(indexes = { @Index(name = "alleledatabasestatus_singleallele_curie_index", columnList = "singleallele_curie"),
 		@Index(name = "alleledatabasestatus_databasestatus_id_index", columnList = "databasestatus_id")})
-public class AlleleDatabaseStatusSlotAnnotation extends NameSlotAnnotation {
+public class AlleleDatabaseStatusSlotAnnotation extends SlotAnnotation {
 
 	@OneToOne
 	@JsonBackReference
