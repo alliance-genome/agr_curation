@@ -12,7 +12,7 @@ import {ExConAutocompleteTemplate} from "../../components/Autocomplete/ExConAuto
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
-export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled }) => {
+export const ConditionRelationsForm = ({ dispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled }) => {
 	const [editingRows, setEditingRows] = useState({});
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
@@ -27,7 +27,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 		event.preventDefault();
 
 		let count = conditionRelations ? conditionRelations.length : 0;
-		newAnnotationDispatch({type: "ADD_NEW_RELATION", count})
+		dispatch({type: "ADD_NEW_RELATION", count})
 		let _editingRows = { ...editingRows, ...{ [`${count}`]: true } };
 		setEditingRows(_editingRows);
 
@@ -35,7 +35,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 
 
 	const onConditionRelationTypeEditorValueChange = (props, event) => {
-		newAnnotationDispatch({
+		dispatch({
 			type: "EDIT_ROW",
 			tableType: "conditionRelations",
 			field: "conditionRelationType",
@@ -62,7 +62,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 
 	const onConditionsEditorValueChange = (event, setValue, props) => {
 		setValue(event.target.value);
-		newAnnotationDispatch({
+		dispatch({
 			type: "EDIT_ROW",
 			tableType: "conditionRelations",
 			field: "conditions",
@@ -103,7 +103,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		newAnnotationDispatch({
+		dispatch({
 			type: "EDIT_ROW",
 			tableType: "conditionRelations",
 			field: "internal",
@@ -127,7 +127,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 	};
 
 	const handleDeleteRelation = (event, props) => {
-		newAnnotationDispatch({type: "DELETE_ROW", tableType: "conditionRelations", showType: "showConditionRelations", index: props.rowIndex})
+		dispatch({type: "DELETE_ROW", tableType: "conditionRelations", showType: "showConditionRelations", index: props.rowIndex})
 	}
 
 	const deleteAction = (props) => {

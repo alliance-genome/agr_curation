@@ -10,7 +10,7 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 
-export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRelatedNotes, errorMessages }) => {
+export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, errorMessages }) => {
 	const [editingRows, setEditingRows] = useState({});
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
@@ -25,13 +25,13 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 		event.preventDefault();
 
 		let count = relatedNotes ? relatedNotes.length : 0;
-		newAnnotationDispatch({type: "ADD_NEW_NOTE", count})
+		dispatch({type: "ADD_NEW_NOTE", count})
 		let _editingRows = { ...editingRows, ...{ [`${count}`]: true } };
 		setEditingRows(_editingRows);
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "internal", index: props.rowIndex, value: event.value.name});
+		dispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "internal", index: props.rowIndex, value: event.value.name});
 	}
 
 	const internalEditor = (props) => {
@@ -49,7 +49,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onNoteTypeEditorValueChange = (props, event) => {
-		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes",  field: "noteType", index: props.rowIndex, value: event.target.value})
+		dispatch({type: "EDIT_ROW", tableType: "relatedNotes",  field: "noteType", index: props.rowIndex, value: event.target.value})
 	};
 
 	const noteTypeEditor = (props) => {
@@ -69,7 +69,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onFreeTextEditorValueChange = (event, props) => {
-		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "freeText", index: props.rowIndex, value: event.target.value})
+		dispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "freeText", index: props.rowIndex, value: event.target.value})
 	};
 
 	const freeTextEditor = (props, fieldName, errorMessages) => {
@@ -87,7 +87,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const handleDeleteRelatedNote = (event, props) => {
-		newAnnotationDispatch({type: "DELETE_ROW", tableType: "relatedNotes", showType: "showRelatedNotes", index: props.rowIndex})
+		dispatch({type: "DELETE_ROW", tableType: "relatedNotes", showType: "showRelatedNotes", index: props.rowIndex})
 	}
 
 	const deleteAction = (props) => {
