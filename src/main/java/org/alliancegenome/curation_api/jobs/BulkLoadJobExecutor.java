@@ -226,9 +226,11 @@ public class BulkLoadJobExecutor {
 					config.setLoadOnlyIRIPrefix("MP");
 					processTerms(bulkLoadFile, mpTermService, config);
 				}
-				case RO ->
-					// config.setLoadOnlyIRIPrefix("RO");
+				case RO -> {
+					config.setLoadObjectProperties(true);
+					config.setLoadOnlyIRIPrefix("RO");
 					processTerms(bulkLoadFile, roTermService, config);
+				}
 				case MA -> processTerms(bulkLoadFile, maTermService, config);
 				case WBBT -> processTerms(bulkLoadFile, wbbtTermService, config);
 				case DAO -> {

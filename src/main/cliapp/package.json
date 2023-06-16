@@ -9,6 +9,7 @@
     },
     "license": "MIT",
     "dependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@fullcalendar/core": "^5.7.2",
         "@fullcalendar/daygrid": "^5.7.2",
         "@fullcalendar/interaction": "^5.7.2",
@@ -61,6 +62,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "msw": "^0.48.1"
     }
 }
