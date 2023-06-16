@@ -1,7 +1,7 @@
 ARG OVERWRITE_VERSION
 
 ### Stage 1: build UI
-FROM node:16 AS BUILD_UI_STAGE
+FROM node:18 AS BUILD_UI_STAGE
 
 WORKDIR /agr_curation
 COPY src/main/cliapp ./cliapp
