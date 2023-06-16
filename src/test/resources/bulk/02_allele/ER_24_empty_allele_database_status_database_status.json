@@ -1,6 +1,6 @@
 [
   {
-    "curie": "ALLELETEST:MR23",
+    "curie": "ALLELETEST:ER24",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
@@ -128,6 +128,7 @@
       }
     ],
     "allele_germline_transmission_status_dto": {
+      "germline_transmission_status_name": "cell_line",
       "internal": true,
       "obsolete": true,
       "created_by_curie": "ALLELETEST:Person0001",
@@ -139,7 +140,7 @@
       ]
     },
     "allele_database_status_dto": {
-      "database_status_name": "reserved",
+      "database_status_name": "",
       "internal": true,
       "obsolete": true,
       "created_by_curie": "ALLELETEST:Person0001",
@@ -154,7 +155,7 @@
       {
         "free_text": "Test note",
         "note_type_name": "comment",
-        "internal": true,
+        "internal": false,
         "obsolete": true,
         "created_by_curie": "DATEST:Person0001",
         "updated_by_curie": "DATEST:Person0002",

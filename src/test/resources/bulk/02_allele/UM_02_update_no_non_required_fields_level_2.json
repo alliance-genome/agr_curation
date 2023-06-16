@@ -57,6 +57,9 @@
     "allele_germline_transmission_status_dto": {
       "germline_transmission_status_name": "germline"
     },
+    "allele_database_status_dto": {
+      "database_status_name": "approved"
+    },
     "note_dtos": [
       {
         "free_text": "Test note",

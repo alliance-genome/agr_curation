@@ -23,7 +23,8 @@ ALTER TABLE alleledatabasestatusslotannotation_aud ADD CONSTRAINT alleledatabase
 
 INSERT INTO vocabulary (id, name) VALUES (nextval('hibernate_sequence'), 'Allele database status vocabulary');
 	
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'live', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'active', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'dead', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'private', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'approved', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'deleted', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'reserved', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'autoloaded', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'in_progress', id FROM vocabulary WHERE name = 'Allele database status vocabulary';
