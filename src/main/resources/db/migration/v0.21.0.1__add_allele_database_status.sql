@@ -6,6 +6,7 @@ CREATE TABLE alleledatabasestatusslotannotation (
 
 ALTER TABLE alleledatabasestatusslotannotation ADD CONSTRAINT alleledatabasestatus_singleallele_curie_fk FOREIGN KEY (singleallele_curie) REFERENCES allele (curie);
 ALTER TABLE alleledatabasestatusslotannotation ADD CONSTRAINT alleledatabasestatus_databasestatus_id_fk FOREIGN KEY (databasestatus_id) REFERENCES vocabularyterm (id);
+ALTER TABLE alleledatabasestatusslotannotation ADD CONSTRAINT alleledatabasestatus_id_fk FOREIGN KEY (id) REFERENCES slotannotation (id);
 
 CREATE INDEX alleledatabasestatus_singleallele_curie_index ON alleledatabasestatusslotannotation USING btree (singleallele_curie);
 CREATE INDEX alleledatabasestatus_databasestatus_id_index ON alleledatabasestatusslotannotation USING btree (databasestatus_id);
