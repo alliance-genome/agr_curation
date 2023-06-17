@@ -267,6 +267,7 @@ export const SiteLayout = (props) => {
 												label: 'Phenotype Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'C. elegans Phenotype Ontology (WBPhenotype)', icon: 'pi pi-fw pi-home', to: '/ontology/wbpheno' },
+													{ label: 'Drosophila Phenotype Ontology (DPO)', icon: 'pi pi-fw pi-home', to: '/ontology/dpo' },
 													{ label: 'Human Phenotype Ontology (HP)', icon: 'pi pi-fw pi-home', to: '/ontology/hp' },
 													{ label: 'Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
 													{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' }

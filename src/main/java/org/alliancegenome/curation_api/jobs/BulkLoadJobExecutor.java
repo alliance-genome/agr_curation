@@ -40,6 +40,7 @@ import org.alliancegenome.curation_api.services.ontology.AtpTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
+import org.alliancegenome.curation_api.services.ontology.DpoTermService;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
@@ -130,6 +131,8 @@ public class BulkLoadJobExecutor {
 	PatoTermService patoTermService;
 	@Inject
 	WbPhenotypeTermService wbPhenotypeTermService;
+	@Inject
+	DpoTermService dpoTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -272,6 +275,10 @@ public class BulkLoadJobExecutor {
 				case HP -> {
 					config.setLoadOnlyIRIPrefix("HP");
 					processTerms(bulkLoadFile, hpTermService, config);
+				}
+				case DPO -> {
+					config.getAltNameSpaces().add("phenotypic_class");
+					processTerms(bulkLoadFile, dpoTermService, config);
 				}
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
