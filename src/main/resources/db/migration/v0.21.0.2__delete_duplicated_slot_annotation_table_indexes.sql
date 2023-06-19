@@ -1,0 +1,4 @@
+DROP INDEX genefullname_singleallele_curie_index;
+DROP INDEX genesymbol_singleallele_curie_index;
+DROP INDEX genesynonym_singleallele_curie_index;
+DROP INDEX genesystematicname_singleallele_curie_index;
