@@ -2,6 +2,24 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.20.0
+ * New features
+   * Modify curation data submission API endpoint to include a "no clean up" option boolean (SCRUM-2932)
+   * Load and display Allele 'allele_germline_transmission_status' attribute (SCRUM-2333)
+   * Load and display Allele 'allele_functional_impacts' attribute (SCRUM-2334)
+   * Load and display Allele 'related_notes' attribute (SCRUM-2341)
+   * Expand gene page disease table "Annotation Details" pop-up to include all persistent store disease annotation information	(SCRUM-2394)
+  
+ * Fixes & maintenance
+   * Enable filtering on non-PMID references of disease annotations on gene pages (SCRUM-2727)	
+	* Upgrade machine size for the FMS to allow Paralogy work to continue (SCRUM-2848)
+	* Add mock data for all data table tests (SCRUM-2900)
+   * Upgrade quarkus to 3.0.3.Final (SCRUM-2908S)
+	* Address outstanding slow Cacher query after Neo4J upgrade to version 5.5 (SCRUM-2909)
+   * Fix broken public site API as a result of the Neo4J upgrade (SCRUM-2913)
+   * Audit allele indexes on the database	(SCRUM-2923)
+   * UI miss-handling of cross references is breaking the disease annotations section in the main site (SCRUM-2925)
+  
 ## v0.19.1
  * Fixes
  	* Fix cleanup of biological entities associated with disease annotation genetic modifiers (SCRUM-2918)
