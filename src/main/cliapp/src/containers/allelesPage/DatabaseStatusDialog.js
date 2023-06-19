@@ -8,6 +8,7 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ValidationService } from '../../service/ValidationService';
@@ -23,6 +24,7 @@ export const DatabaseStatusDialog = ({
 	const [localDatabaseStatuses, setLocalDatabaseStatuses] = useState(null) ;
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
+	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const validationService = new ValidationService();
 	const tableRef = useRef(null);
 	const rowsEdited = useRef(0);
@@ -71,6 +73,9 @@ export const DatabaseStatusDialog = ({
 
 	const compareChangesInDatabaseStatuses = (data, index) => {
 		if(originalDatabaseStatuses && originalDatabaseStatuses[index]) {
+			if (data.internal !== originalDatabaseStatuses[index].internal) {
+				rowsEdited.current++;
+			}
 			if ((originalDatabaseStatuses[index].evidence && !data.evidence) ||
 					(!originalDatabaseStatuses[index].evidence && data.evidence) ||
 					(data.evidence && (data.evidence.length !== originalDatabaseStatuses[index].evidence.length))
@@ -215,6 +220,29 @@ export const DatabaseStatusDialog = ({
 		return <EllipsisTableCell>{rowData.databaseStatus?.name}</EllipsisTableCell>;
 	};
 
+	const internalTemplate = (rowData) => {
+		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
+	};
+
+	const internalEditor = (props) => {
+		return (
+			<>
+				<TrueFalseDropdown
+					options={booleanTerms}
+					editorChange={onInternalEditorValueChange}
+					props={props}
+					field={"internal"}
+				/>
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+			</>
+		);
+	};
+	
+	const onInternalEditorValueChange = (props, event) => {
+		let _localDatabaseStatuses = [...localDatabaseStatuses];
+		_localDatabaseStatuses[props.rowIndex].internal = event.value.name;
+	}
+
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
@@ -263,6 +291,7 @@ export const DatabaseStatusDialog = ({
 				<Row>
 					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 					<Column header="Database Status" />
+					<Column header="Internal" />
 					<Column header="Evidence" />
 				</Row>
 			</ColumnGroup>;
@@ -278,6 +307,7 @@ export const DatabaseStatusDialog = ({
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={databaseStatusEditor} field="databaseStatus" header="Database Status" headerClassName='surface-0' body={databaseStatusTemplate}/>
+					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 				</DataTable>
 			</Dialog>
