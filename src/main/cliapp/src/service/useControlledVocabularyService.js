@@ -32,7 +32,7 @@ export function useControlledVocabularyService(termType) {
 		}, {
 			onSuccess: (data) => {
 				if (data.results) {
-					setTerms(data.results);
+					setTerms(data.results.sort((a, b) => (a.name > b.name) ? 1 : -1));
 				} else {
 					if (termData[termType]) {
 						setTerms(termData[termType]['terms']);
