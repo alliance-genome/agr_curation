@@ -31,7 +31,8 @@ public enum OntologyBulkLoadType {
 	XSMO(XSMOTerm.class),
 	OBI(OBITerm.class),
 	WBPheno(WBPhenotypeTerm.class),
-	HP(HPTerm.class);
+	HP(HPTerm.class),
+	DPO(DPOTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 

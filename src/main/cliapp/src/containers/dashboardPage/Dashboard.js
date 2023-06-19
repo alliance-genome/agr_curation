@@ -51,6 +51,7 @@ export const Dashboard = () => {
 		WBPhenotypeTerm: { name: "WBPheno", link: "/#/ontology/wbpheno", type: 'ontology', },
 		PATOTerm: { name: "PATO", link: "/#/ontology/pato", type: 'ontology', },
 		HPTerm: { name: "HP", link: "/#/ontology/hp", type: 'ontology', },
+		DPOTerm: { name: "DPO", link: "/#/ontology/dpo", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
