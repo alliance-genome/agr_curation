@@ -102,6 +102,14 @@
       "date_updated": "",
       "evidence_curies": []
     },
+    "allele_database_status_dto": {
+      "database_status_name": "approved",
+      "created_by_curie": "",
+      "updated_by_curie": "",
+      "date_created": "",
+      "date_updated": "",
+      "evidence_curies": []
+    },
     "note_dtos": [
       {
         "free_text": "Test note",

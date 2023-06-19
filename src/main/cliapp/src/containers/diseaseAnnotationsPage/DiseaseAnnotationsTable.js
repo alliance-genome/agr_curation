@@ -92,6 +92,21 @@ export const DiseaseAnnotationsTable = () => {
 		newAnnotationDispatch({type: "OPEN_DIALOG"})
 	};
 
+	const handleDuplication = (rowData) => {
+		newAnnotationDispatch({type: "DUPLICATE_ROW", rowData});
+		newAnnotationDispatch({type: "SET_IS_ENABLED", value: true});
+		if(rowData.type === "AGMDiseaseAnnotation") {
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: true});
+		}
+		
+		if(rowData.type === "AlleleDiseaseAnnotation") {
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
+		}
+
+		handleNewAnnotationOpen();
+	}
+
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
 		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
@@ -1496,6 +1511,8 @@ export const DiseaseAnnotationsTable = () => {
 					deprecateOption={true}
 					modReset={true}
 					widthsObject={widthsObject}
+					handleDuplication={handleDuplication}
+					duplicationEnabled={true}
 				/>
 			</div>
 			<NewAnnotationForm

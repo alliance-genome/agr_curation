@@ -10,6 +10,7 @@ import { Checkbox } from 'primereact/checkbox';
 
 import { FilterComponent } from '../Filters/FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
+import { DuplicationAction } from "../DuplicationAction";
 
 
 import { filterColumns, orderColumns } from '../../utils/utils';
@@ -25,10 +26,12 @@ export const GenericDataTable = (props) => {
 		columns, 
 		headerButtons, 
 		deletionEnabled, 
+		handleDuplication,
+		duplicationEnabled,
 		dataKey = 'id', 
 		deprecateOption = false,
-		modReset = false 
-
+		modReset = false,
+		highlightObsolete = true 
 	} = props;
 
 	const {
@@ -237,6 +240,13 @@ export const GenericDataTable = (props) => {
 		);
 	}
 
+	const getRowClass = (props) => {
+		if (props?.obsolete && highlightObsolete) {
+			return 'bg-gray-500 text-white'
+		};
+		return null;
+	}
+
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />
@@ -250,7 +260,8 @@ export const GenericDataTable = (props) => {
 					paginator= {true} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} >
+					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} 
+					rowClassName = {(props) => getRowClass(props)}>
 					{props.isEditable &&
 						<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
 							headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'
@@ -258,6 +269,13 @@ export const GenericDataTable = (props) => {
 					}
 					{deletionEnabled &&
 						<Column field="delete" editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} filterElement={rowEditorFilterNameHeader}
+						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0'/>
+					}
+					{duplicationEnabled &&
+						<Column field="duplicate" 
+						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} />} 
+						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} />} 
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}

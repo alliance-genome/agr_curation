@@ -183,6 +183,7 @@ public class BaseITCase {
 		chebiTerm.setCurie(curie);
 		chebiTerm.setObsolete(obsolete);
 		chebiTerm.setName(name);
+		chebiTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		RestAssured.given().
 				contentType("application/json").
@@ -238,6 +239,7 @@ public class BaseITCase {
 		DOTerm doTerm = new DOTerm();
 		doTerm.setCurie(curie);
 		doTerm.setObsolete(obsolete);
+		doTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		RestAssured.given().
 				contentType("application/json").
@@ -254,6 +256,7 @@ public class BaseITCase {
 		ecoTerm.setCurie(curie);
 		ecoTerm.setName(name);
 		ecoTerm.setObsolete(obsolete);
+		ecoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		if (inAgrSubset)
 			ecoTerm.setSubsets(List.of(OntologyConstants.AGR_ECO_TERM_SUBSET));
 		
@@ -312,6 +315,7 @@ public class BaseITCase {
 		goTerm.setCurie(curie);
 		goTerm.setObsolete(obsolete);
 		goTerm.setName(name);
+		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		RestAssured.given().
 				contentType("application/json").
@@ -328,6 +332,7 @@ public class BaseITCase {
 		mpTerm.setCurie(curie);
 		mpTerm.setObsolete(obsolete);
 		mpTerm.setName("Test MPTerm");
+		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		RestAssured.given().
 				contentType("application/json").
@@ -461,6 +466,7 @@ public class BaseITCase {
 		SOTerm term = new SOTerm();
 		term.setCurie(curie);
 		term.setObsolete(obsolete);
+		term.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		
 		ObjectResponse<SOTerm> response = RestAssured.given().
 				contentType("application/json").
@@ -542,6 +548,7 @@ public class BaseITCase {
 			zecoTerm.setSubsets(subsets);
 		}
 		zecoTerm.setObsolete(obsolete);
+		zecoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		given().
 			contentType("application/json").
@@ -558,6 +565,7 @@ public class BaseITCase {
 		zfaTerm.setCurie(curie);
 		zfaTerm.setObsolete(obsolete);
 		zfaTerm.setName("Test ZFATerm");
+		zfaTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		RestAssured.given().
 				contentType("application/json").
@@ -943,6 +951,7 @@ public class BaseITCase {
 		anatomicalTerm.setCurie(curie);
 		anatomicalTerm.setName(name);
 		anatomicalTerm.setObsolete(false);
+		anatomicalTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -958,6 +967,7 @@ public class BaseITCase {
 		chemicalTerm.setCurie(curie);
 		chemicalTerm.setName(name);
 		chemicalTerm.setObsolete(false);
+		chemicalTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -973,6 +983,7 @@ public class BaseITCase {
 		doTerm.setCurie(curie);
 		doTerm.setName(name);
 		doTerm.setObsolete(false);
+		doTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -988,6 +999,7 @@ public class BaseITCase {
 		ecTerm.setCurie(curie);
 		ecTerm.setName(name);
 		ecTerm.setObsolete(false);
+		ecTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1031,6 +1043,7 @@ public class BaseITCase {
 		goTerm.setCurie(curie);
 		goTerm.setName(name);
 		goTerm.setObsolete(false);
+		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -1046,6 +1059,7 @@ public class BaseITCase {
 		mpTerm.setCurie(curie);
 		mpTerm.setName(name);
 		mpTerm.setObsolete(false);
+		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -1106,6 +1120,7 @@ public class BaseITCase {
 		soTerm.setCurie(curie);
 		soTerm.setName(name);
 		soTerm.setObsolete(false);
+		soTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -1126,6 +1141,7 @@ public class BaseITCase {
 			subsets.add(subset);
 			zecoTerm.setSubsets(subsets);
 		}
+		zecoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 			
 		RestAssured.given().
 			contentType("application/json").

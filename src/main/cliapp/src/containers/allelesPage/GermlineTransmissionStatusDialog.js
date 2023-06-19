@@ -6,6 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
+import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
@@ -23,6 +24,7 @@ export const GermlineTransmissionStatusDialog = ({
 	const [localGermlineTransmissionStatuses, setLocalGermlineTransmissionStatuses] = useState(null) ;
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
+	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const validationService = new ValidationService();
 	const tableRef = useRef(null);
 	const rowsEdited = useRef(0);
@@ -71,6 +73,9 @@ export const GermlineTransmissionStatusDialog = ({
 
 	const compareChangesInGermlineTransmissionStatuses = (data, index) => {
 		if(originalGermlineTransmissionStatuses && originalGermlineTransmissionStatuses[index]) {
+			if (data.internal !== originalGermlineTransmissionStatuses[index].internal) {
+				rowsEdited.current++;
+			}
 			if ((originalGermlineTransmissionStatuses[index].evidence && !data.evidence) ||
 					(!originalGermlineTransmissionStatuses[index].evidence && data.evidence) ||
 					(data.evidence && (data.evidence.length !== originalGermlineTransmissionStatuses[index].evidence.length))
@@ -215,6 +220,29 @@ export const GermlineTransmissionStatusDialog = ({
 		return <EllipsisTableCell>{rowData.germlineTransmissionStatus?.name}</EllipsisTableCell>;
 	};
 
+	const internalTemplate = (rowData) => {
+		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
+	};
+
+	const internalEditor = (props) => {
+		return (
+			<>
+				<TrueFalseDropdown
+					options={booleanTerms}
+					editorChange={onInternalEditorValueChange}
+					props={props}
+					field={"internal"}
+				/>
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+			</>
+		);
+	};
+	
+	const onInternalEditorValueChange = (props, event) => {
+		let _localGermlineTransmissionStatuses = [...localGermlineTransmissionStatuses];
+		_localGermlineTransmissionStatuses[props.rowIndex].internal = event.value.name;
+	}
+
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
@@ -263,6 +291,7 @@ export const GermlineTransmissionStatusDialog = ({
 				<Row>
 					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 					<Column header="Germline Transmission Status" />
+					<Column header="Internal" />
 					<Column header="Evidence" />
 				</Row>
 			</ColumnGroup>;
@@ -278,6 +307,7 @@ export const GermlineTransmissionStatusDialog = ({
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={germlineTransmissionStatusEditor} field="germlineTransmissionStatus" header="Germline Transmission Status" headerClassName='surface-0' body={germlineTransmissionStatusTemplate}/>
+					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 				</DataTable>
 			</Dialog>

@@ -430,7 +430,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			for (String aggField : aggList) {
 				AggregationKey<Map<String, Long>> aggKey = AggregationKey.of(aggField);
 				aggKeys.add(aggKey);
-				step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(10));
+				step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(30));
 			}
 		}
 
@@ -535,7 +535,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 			} else {
 				column = root.get(key);
+				if (column.getJavaType().equals(List.class)) {
+					column = root.join(key);
+				}
 				countColumn = countRoot.get(key);
+				if (countColumn.getJavaType().equals(List.class)) {
+					countColumn = countRoot.join(key);
+				}
 			}
 
 			log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias()

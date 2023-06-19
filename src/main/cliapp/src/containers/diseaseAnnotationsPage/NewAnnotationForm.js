@@ -61,10 +61,10 @@ export const NewAnnotationForm = ({
 		newAnnotationDialog,
 		showRelatedNotes,
 		showConditionRelations,
+		isEnabled,
+		isAssertedGeneEnabled,
+		isAssertedAlleleEnabled,
 	} = newAnnotationState;
-	const [isEnabled, setIsEnabled] = useState(false);
-	const [isAsssertedGeneEnabled, setAsssertedGeneEnabled] = useState(false);
-	const [isAsssertedAlleleEnabled, setAsssertedAlleleEnabled] = useState(false);
 	const validationService = new ValidationService();
 	const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
 	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
@@ -93,14 +93,15 @@ export const NewAnnotationForm = ({
 
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: "RESET" });
-		setIsEnabled(false);
-		setAsssertedAlleleEnabled(false);
-		setAsssertedGeneEnabled(false);
+		newAnnotationDispatch({ type: "SET_IS_ENABLED", value: false });
+		newAnnotationDispatch({ type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: false });
+		newAnnotationDispatch({ type: "SET_IS_ASSERTED_GENE_ENABLED", value: false });
 		setUiErrorMessages({});
 	};
 
-	const validateTable = async (endpoint, errorType, row) => {
-		const results = await validate(row, endpoint);
+	const validateTable = async (endpoint, errorType, table) => {
+		if(!table) return false;
+		const results = await validate(table, endpoint);
 		const errors = [];
 		let anyErrors = false;
 		results.forEach((result, index) => {
@@ -131,7 +132,8 @@ export const NewAnnotationForm = ({
 		validateFormBioEntityFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors);
 		if (areUiErrors.current) {
 			newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages", errorMessages: uiErrorMessages});
-			setIsEnabled(false);
+			newAnnotationDispatch({ type: "SET_IS_ENABLED", value: false });
+
 			return;
 		}
 
@@ -173,9 +175,10 @@ export const NewAnnotationForm = ({
 		if(withRef.current.getInput()) withRef.current.getInput().value = "";
 		if(evidenceCodesRef.current.getInput().value) evidenceCodesRef.current.getInput().value = "";
 		newAnnotationDispatch({ type: "CLEAR" });
-		setIsEnabled(false);
-		setAsssertedAlleleEnabled(false);
-		setAsssertedGeneEnabled(false);
+		newAnnotationDispatch({ type: "SET_IS_ENABLED", value: false });
+		newAnnotationDispatch({ type: "SET_IS_ASSERTED_GENE_ENABLED", value: false });
+		newAnnotationDispatch({ type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: false });
+
 		setUiErrorMessages({});
 	}
 
@@ -229,19 +232,19 @@ export const NewAnnotationForm = ({
 	const onSubjectChange = (event) => {
 		setUiErrorMessages({});
 		if (event.target && event.target.value !== '' && event.target.value != null) {
-			setIsEnabled(true);
+			newAnnotationDispatch({ type: "SET_IS_ENABLED", value: true });
 		} else {
-			setIsEnabled(false);
+			newAnnotationDispatch({ type: "SET_IS_ENABLED", value: false });
 		}
 		if(event.target.value && event.target.value.type && (event.target.value.type === "Allele" || event.target.value.type === "AffectedGenomicModel" )){
-			setAsssertedGeneEnabled(true);
+			newAnnotationDispatch({ type: "SET_IS_ASSERTED_GENE_ENABLED", value: true });
 		}else{
-			setAsssertedGeneEnabled(false);
+			newAnnotationDispatch({ type: "SET_IS_ASSERTED_GENE_ENABLED", value: false });
 		}
 		if(event.target.value && event.target.value.type && (event.target.value.type === "AffectedGenomicModel")){
-			setAsssertedAlleleEnabled(true);
+			newAnnotationDispatch({ type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: true });
 		}else{
-			setAsssertedAlleleEnabled(false);
+			newAnnotationDispatch({ type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: false });
 		}
 		newAnnotationDispatch({
 			type: "EDIT",
@@ -334,8 +337,8 @@ export const NewAnnotationForm = ({
 
 	const isConditionRelationButtonEnabled = () => {
 		return (
-			newAnnotation.conditionRelations[0]
-			&& newAnnotation.conditionRelations[0].handle
+			newAnnotation.conditionRelations?.[0]
+			&& newAnnotation.conditionRelations?.[0].handle
 		)
 	}
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
@@ -448,7 +451,7 @@ export const NewAnnotationForm = ({
 		<div>
 			<Toast ref={toast_error} position="top-left" />
 			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newAnnotationDialog} style={{ width: '900px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable="true" >
+			<Dialog visible={newAnnotationDialog} style={{ width: '900px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable>
 				<ErrorBoundary>
 				<form>
 					<div className="grid">
@@ -486,7 +489,7 @@ export const NewAnnotationForm = ({
 								name="assertedGenes"
 								label="Asserted Genes"
 								fieldName='assertedGenes'
-								disabled = {!isAsssertedGeneEnabled}
+								disabled = {!isAssertedGeneEnabled}
 								initialValue={newAnnotation.assertedGenes}
 								onValueChangeHandler={onArrayFieldChange}
 								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
@@ -511,7 +514,7 @@ export const NewAnnotationForm = ({
 								name="assertedAllele"
 								label="Asserted Allele"
 								fieldName='assertedAllele'
-								disabled = {!isAsssertedAlleleEnabled}
+								disabled = {!isAssertedAlleleEnabled}
 								initialValue={newAnnotation.assertedAllele}
 								onValueChangeHandler={onSingleReferenceChange}
 								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
@@ -663,7 +666,7 @@ export const NewAnnotationForm = ({
 						</div>
 						<div className="col-9">
 							<RelatedNotesForm
-								newAnnotationDispatch={newAnnotationDispatch}
+								dispatch={newAnnotationDispatch}
 								relatedNotes={newAnnotation.relatedNotes}
 								showRelatedNotes={showRelatedNotes}
 								errorMessages={relatedNotesErrorMessages}
@@ -677,7 +680,7 @@ export const NewAnnotationForm = ({
 						</div>
 						<div className="col-6">
 							<ConditionRelationsForm
-								newAnnotationDispatch={newAnnotationDispatch}
+								dispatch={newAnnotationDispatch}
 								conditionRelations={newAnnotation.conditionRelations}
 								showConditionRelations={showConditionRelations}
 								errorMessages={exConErrorMessages}
@@ -696,10 +699,10 @@ export const NewAnnotationForm = ({
 								name="experiments"
 								customRef={experimentsRef}
 								editorChange={onDropdownExperimentsFieldChange}
-								referenceCurie={newAnnotation.singleReference.curie}
-								value={newAnnotation.conditionRelations[0]?.handle}
+								referenceCurie={newAnnotation.singleReference?.curie}
+								value={newAnnotation.conditionRelations?.[0]?.handle}
 								showClear={false}
-								placeholderText={newAnnotation.conditionRelations[0]?.handle}
+								placeholderText={newAnnotation.conditionRelations?.[0]?.handle}
 								isEnabled={isExperimentEnabled()}
 							/>
 						</div>
