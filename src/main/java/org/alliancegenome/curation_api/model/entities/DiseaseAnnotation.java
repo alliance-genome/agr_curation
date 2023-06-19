@@ -11,6 +11,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
@@ -50,6 +51,18 @@ import lombok.EqualsAndHashCode;
 @Inheritance(strategy = InheritanceType.JOINED)
 @AGRCurationSchemaVersion(min = "1.7.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Association.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
+
+@Table(indexes = { 
+	@Index(name = "DiseaseAnnotation_object_index", columnList = "object_curie"),
+	@Index(name = "DiseaseAnnotation_diseaseRelation_index", columnList = "diseaseRelation_id"),
+	@Index(name = "DiseaseAnnotation_singleReference_index", columnList = "singleReference_curie"),
+	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
+	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
+	@Index(name = "DiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
+	@Index(name = "DiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
+})
+
 public abstract class DiseaseAnnotation extends Association {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -101,19 +114,20 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "evidencecodes_curie")})
 	private List<ECOTerm> evidenceCodes;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "conditionrelations_id")})
 	private List<ConditionRelation> conditionRelations;
 
-	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText",
-			"curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword"})
+	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText", "curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index(columnList = "diseaseannotation_id"))
+	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "with_curie") })
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> with;
 
@@ -133,6 +147,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "diseasequalifiers_id")})
 	private List<VocabularyTerm> diseaseQualifiers;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -145,6 +160,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includeDepth = 2)
@@ -163,6 +179,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "diseasegeneticmodifiers_curie")})
 	private List<BiologicalEntity> diseaseGeneticModifiers;
 
 	@IndexedEmbedded(includeDepth = 1)

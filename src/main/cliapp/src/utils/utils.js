@@ -51,7 +51,10 @@ export function orderColumns(columns, orderedColumnNames) {
 	if(!orderedColumnNames) return columns;
 	let orderedColumns = [];
 	orderedColumnNames.forEach((columnName) => {
-		orderedColumns.push(columns.find(col => col.header === columnName));
+		var column = columns.find(col => col.header === columnName); // Once column names change it can't be assumed that everyones settings are changed.
+		if(column) {
+			orderedColumns.push(column);
+		}
 	});
 	return orderedColumns;
 };

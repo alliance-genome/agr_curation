@@ -36,7 +36,34 @@ import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
-import org.alliancegenome.curation_api.services.ontology.*;
+import org.alliancegenome.curation_api.services.ontology.AtpTermService;
+import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
+import org.alliancegenome.curation_api.services.ontology.DaoTermService;
+import org.alliancegenome.curation_api.services.ontology.DoTermService;
+import org.alliancegenome.curation_api.services.ontology.EcoTermService;
+import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
+import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
+import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.HpTermService;
+import org.alliancegenome.curation_api.services.ontology.MaTermService;
+import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
+import org.alliancegenome.curation_api.services.ontology.MpTermService;
+import org.alliancegenome.curation_api.services.ontology.ObiTermService;
+import org.alliancegenome.curation_api.services.ontology.PatoTermService;
+import org.alliancegenome.curation_api.services.ontology.RoTermService;
+import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
+import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
+import org.alliancegenome.curation_api.services.ontology.WblsTermService;
+import org.alliancegenome.curation_api.services.ontology.XbaTermService;
+import org.alliancegenome.curation_api.services.ontology.XbedTermService;
+import org.alliancegenome.curation_api.services.ontology.XbsTermService;
+import org.alliancegenome.curation_api.services.ontology.XcoTermService;
+import org.alliancegenome.curation_api.services.ontology.XpoTermService;
+import org.alliancegenome.curation_api.services.ontology.XsmoTermService;
+import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
+import org.alliancegenome.curation_api.services.ontology.ZfaTermService;
+import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -127,7 +154,7 @@ public class BulkLoadJobExecutor {
 	@Inject
 	ResourceDescriptorExecutor resourceDescriptorExecutor;
 
-	public void process(BulkLoadFile bulkLoadFile) throws Exception {
+	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
 
@@ -139,22 +166,22 @@ public class BulkLoadJobExecutor {
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
 			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				alleleDiseaseAnnotationExecutor.runLoad(bulkLoadFile);
+				alleleDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				agmDiseaseAnnotationExecutor.runLoad(bulkLoadFile);
+				agmDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				geneDiseaseAnnotationExecutor.runLoad(bulkLoadFile);
+				geneDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 			if (loadType == AGM || loadType == FULL_INGEST) {
-				agmExecutor.runLoad(bulkLoadFile);
+				agmExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 			if (loadType == ALLELE || loadType == FULL_INGEST) {
-				alleleExecutor.runLoad(bulkLoadFile);
+				alleleExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 			if (loadType == GENE || loadType == FULL_INGEST) {
-				geneExecutor.runLoad(bulkLoadFile);
+				geneExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {

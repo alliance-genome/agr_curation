@@ -1,5 +1,4 @@
 import React from "react";
-import { act } from "react-dom/test-utils";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { ResourceDescriptorsPage } from "../index";
@@ -17,10 +16,7 @@ describe("<ResourceDescriptorsPage />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ResourceDescriptorsPage />);
-		});
+		let result = await renderWithClient(<ResourceDescriptorsPage />);
 		
 		await waitFor(() => {
 			expect(result);
@@ -28,24 +24,18 @@ describe("<ResourceDescriptorsPage />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ResourceDescriptorsPage />);
-		});
+		let result = await renderWithClient(<ResourceDescriptorsPage />);
 
 		const tableTitle = await result.findByText(/Resource Descriptors Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	//skip this test for now, as it is not working
-	it.skip("The table contains correct data", async () => {
-		let result;
-		act(() => {
-			result = renderWithClient(<ResourceDescriptorsPage />);
-		});
+	it("The table contains correct data", async () => {
+		let result = await renderWithClient(<ResourceDescriptorsPage />);
 		
-		const prefixTd = await result.findByText(/Orphanet/i);
-		const nameTd = await result.findByText(/Orphanet/i);
+		const prefixTd = await result.findByText("Orphanet");
+		const nameTd = await result.findByText(/Orphanet_name/i);
 		const idPatternTd = await result.findByText("^ORPHA:\\\\d+$");
 		const idExampleTd = await result.findByText(/ORPHA:600483/i);
 		const defaultUrlTemplateTd = await result.findByText("https://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=EN&Expert=[%s]");
