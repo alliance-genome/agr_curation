@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -38,9 +39,15 @@ public class FileTransferHelper {
 		File saveFilePath = generateFilePath();
 
 		try {
+			URL urlObject = new URL(url);
 			log.info("Downloading File: " + url);
+			HttpURLConnection connection = (HttpURLConnection) urlObject.openConnection();
+			connection.setInstanceFollowRedirects(false);
+		    String redirectLocation = connection.getHeaderField("Location");
+		    if (redirectLocation != null)
+		    	urlObject = new URL(redirectLocation);
 			log.info("Saving file to local filesystem: " + saveFilePath.getAbsolutePath());
-			FileUtils.copyURLToFile(new URL(url), saveFilePath);
+			FileUtils.copyURLToFile(urlObject, saveFilePath);
 
 		} catch (Exception e) {
 			log.error(e.getMessage());
