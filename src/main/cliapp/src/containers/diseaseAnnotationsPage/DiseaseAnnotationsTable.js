@@ -1415,7 +1415,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
-		filterConfig: FILTER_CONFIGS.dataProviderFilterConfig,
+		filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
 	},
 	{
 		field: "secondaryDataProvider.sourceOrganization.abbreviation",

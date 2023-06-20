@@ -1268,6 +1268,12 @@ export const AllelesTable = () => {
 			editor: relatedNotesEditor
 		},
 		{
+			field: "dataProvider.sourceOrganization.abbreviation",
+			header: "Data Provider",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
+		},
+		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
 			sortable: isEnabled,

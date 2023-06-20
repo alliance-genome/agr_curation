@@ -8,6 +8,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "abstractFilter",
     fields: ["abstract"],
   },
+  alleleAggregationFieldSet: {
+    filterName: "alleleAggregationFilter",
+    fields: ['dataProvider.sourceOrganization.abbreviation'],
+  },
   alleleFunctionalImpactsFieldSet: {
     filterName: "alleleFunctionalImpactsFilter",
     fields: ["alleleFunctionalImpacts.functionalImpacts.name", "alleleFunctionalImpacts.phenotypeTerm.curie", "alleleFunctionalImpacts.phenotypeTerm.name", "alleleFunctionalImpacts.phenotypeStatement", "alleleFunctionalImpacts.evidence.curie"],
@@ -457,7 +461,8 @@ export const FILTER_CONFIGS = Object.freeze({
   negatedFilterConfig:                      { filterComponentType: "dropdown", fieldSets: [FIELD_SETS.negatedFieldSet] },
 
   annotationTypeFilterConfig:               { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.annotationTypeFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
-  dataProviderFilterConfig:                 { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true  },
+  diseaseDataProviderFilterConfig:          { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true  },
+  alleleDataProviderFilterConfig:           { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.alleleAggregationFieldSet, useKeywordFields: true  },
   diseaseQualifiersFilterConfig:            { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.diseaseQualifiersFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   diseaseRelationFilterConfig:              { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.diseaseRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticModifierRelationFilterConfig:      { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticModifierRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
