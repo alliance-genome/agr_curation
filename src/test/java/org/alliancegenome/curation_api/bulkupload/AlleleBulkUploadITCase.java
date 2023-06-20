@@ -620,4 +620,18 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	public void alleleBulkUploadSecondaryIds() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "SI_01_secondary_ids.json");
 	}
+	
+	@Test
+	@Order(12)
+	public void alleleBulkUploadDuplicateNotes() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "DN_01_duplicate_notes.json");
+		
+		RestAssured.given().
+			when().
+			get(alleleGetEndpoint + "ALLELETEST:DN01").
+			then().
+			statusCode(200).
+			body("entity.curie", is("ALLELETEST:DN01")).
+			body("entity.relatedNotes", hasSize(1));
+	}
 }
