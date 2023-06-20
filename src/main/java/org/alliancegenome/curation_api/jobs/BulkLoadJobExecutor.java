@@ -47,6 +47,7 @@ import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.HpTermService;
 import org.alliancegenome.curation_api.services.ontology.MaTermService;
+import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
@@ -133,6 +134,8 @@ public class BulkLoadJobExecutor {
 	WbPhenotypeTermService wbPhenotypeTermService;
 	@Inject
 	DpoTermService dpoTermService;
+	@Inject
+	MmoTermService mmoTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -280,6 +283,7 @@ public class BulkLoadJobExecutor {
 					config.getAltNameSpaces().add("phenotypic_class");
 					processTerms(bulkLoadFile, dpoTermService, config);
 				}
+				case MMO -> processTerms(bulkLoadFile, mmoTermService, config);
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
