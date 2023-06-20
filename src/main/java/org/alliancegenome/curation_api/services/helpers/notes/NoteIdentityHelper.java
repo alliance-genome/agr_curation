@@ -3,13 +3,10 @@ package org.alliancegenome.curation_api.services.helpers.notes;
 import java.util.Collections;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
-
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
-@RequestScoped
 public class NoteIdentityHelper {
 	
 	public static String noteDtoIdentity(NoteDTO note) {
