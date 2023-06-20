@@ -260,6 +260,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
+											{ label: 'Measurement Method Ontology (MMO)', icon: 'pi pi-fw pi-home', to: '/ontology/mmo' },
 											{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
 											{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
 											{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },

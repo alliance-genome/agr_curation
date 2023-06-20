@@ -85,7 +85,7 @@ export class DataLoadService extends BaseAuthService {
 
 		getOntologyTypes() {
 				return [
-					"ATP", "CHEBI", "DAO", "DO", "DPO", "ECO", "EMAPA", "FBDV", "GO", "HP", "MA", "MMUSDV", "MP", "OBI", "PATO", "RO", "SO", "WBBT", "WBLS", "WBPheno", "XBA_XBS", "XBED", "XCO", "XPO", "XSMO", "ZECO", "ZFA", "ZFS"
+					"ATP", "CHEBI", "DAO", "DO", "DPO", "ECO", "EMAPA", "FBDV", "GO", "HP", "MA", "MMO", "MMUSDV", "MP", "OBI", "PATO", "RO", "SO", "WBBT", "WBLS", "WBPheno", "XBA_XBS", "XBED", "XCO", "XPO", "XSMO", "ZECO", "ZFA", "ZFS"
 				];
 		}
 
