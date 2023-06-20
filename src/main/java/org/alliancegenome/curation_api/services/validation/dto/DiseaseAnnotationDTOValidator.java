@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -33,6 +35,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
@@ -227,6 +230,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		}
 		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
 			List<Note> notes = new ArrayList<>();
+			Set<String> noteIdentities = new HashSet<>();
 			for (NoteDTO noteDTO : dto.getNoteDtos()) {
 				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 				if (noteResponse.hasErrors()) {
@@ -240,7 +244,11 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 						}
 					}
 				}
-				notes.add(noteDAO.persist(noteResponse.getEntity()));
+				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
+				if (!noteIdentities.contains(noteIdentity)) {
+					noteIdentities.add(noteIdentity);
+					notes.add(noteDAO.persist(noteResponse.getEntity()));
+				}
 			}
 			annotation.setRelatedNotes(notes);
 		} else {

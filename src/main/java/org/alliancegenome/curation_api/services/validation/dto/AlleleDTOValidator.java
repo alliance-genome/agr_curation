@@ -2,8 +2,10 @@ package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -47,6 +49,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlot
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDTOValidator;
@@ -170,13 +173,18 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
 			List<Note> notes = new ArrayList<>();
+			Set<String> noteIdentities = new HashSet<>();
 			for (NoteDTO noteDTO : dto.getNoteDtos()) {
 				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
 				if (noteResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
 					break;
 				}
-				notes.add(noteDAO.persist(noteResponse.getEntity()));
+				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
+				if (!noteIdentities.contains(noteIdentity)) {
+					noteIdentities.add(noteIdentity);
+					notes.add(noteDAO.persist(noteResponse.getEntity()));
+				}
 			}
 			allele.setRelatedNotes(notes);
 		} else {

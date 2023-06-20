@@ -1052,4 +1052,18 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	public void diseaseAnnotationBulkUploadSecondaryIds() throws Exception {
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "SI_01_secondary_ids.json");
 	}
+	
+	@Test
+	@Order(25)
+	public void diseaseAnnotationBulkUploadDuplicateNotes() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "DN_01_duplicate_notes.json");
+		
+		RestAssured.given().
+			when().
+			get(geneDaGetEndpoint + "DATEST:DN01").
+			then().
+			statusCode(200).
+			body("entity.modEntityId", is("DATEST:DN01")).
+			body("entity.relatedNotes", hasSize(1));
+	}
 }
