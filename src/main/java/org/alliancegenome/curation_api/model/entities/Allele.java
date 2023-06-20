@@ -135,7 +135,7 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleDatabaseStatusSlotAnnotation alleleDatabaseStatus;
 	
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"freeText"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
