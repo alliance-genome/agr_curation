@@ -267,7 +267,7 @@ export const SiteLayout = (props) => {
 											{ 
 												label: 'Phenotype Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
-													{ label: 'Ascomycetes Phenotype Ontology (APO)', icon: 'pi pi-fw pi-home', to: '/ontology/apo' },
+													{ label: 'Ascomycete Phenotype Ontology (APO)', icon: 'pi pi-fw pi-home', to: '/ontology/apo' },
 													{ label: 'C. elegans Phenotype Ontology (WBPhenotype)', icon: 'pi pi-fw pi-home', to: '/ontology/wbpheno' },
 													{ label: 'Drosophila Phenotype Ontology (DPO)', icon: 'pi pi-fw pi-home', to: '/ontology/dpo' },
 													{ label: 'Human Phenotype Ontology (HP)', icon: 'pi pi-fw pi-home', to: '/ontology/hp' },
