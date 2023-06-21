@@ -322,6 +322,7 @@ export const RelatedNotesDialog = ({
 						header="Text"
 						body={textTemplate}
 						headerClassName='surface-0'
+						style={{overflowWrap: 'break-word', maxWidth: '40rem'}}
 					/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
