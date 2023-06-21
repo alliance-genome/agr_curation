@@ -8,6 +8,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "abstractFilter",
     fields: ["abstract"],
   },
+  agmAggregationFieldSet: {
+    filterName: "alleleAggregationFilter",
+    fields: ['dataProvider.sourceOrganization.abbreviation'],
+  },
   alleleAggregationFieldSet: {
     filterName: "alleleAggregationFilter",
     fields: ['dataProvider.sourceOrganization.abbreviation'],
@@ -176,6 +180,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "formulaFilter",
     fields: ["formula"],
   },
+  geneAggregationFieldSet: {
+    filterName: "geneAggregationFilter",
+    fields: ['dataProvider.sourceOrganization.abbreviation'],
+  },
   geneNameFieldSet: {
     filterName: "geneNameFilter",
     fields: ["geneFullName.displayText", "geneFullName.formatText"],
@@ -267,6 +275,10 @@ export const FIELD_SETS = Object.freeze({
   nameFieldSet: {
     filterName: "nameFilter",
     fields: ["name"],
+  },
+  namespaceFieldSet: {
+    filterName: "namespaceFilter",
+    fields: ["namespace"],
   },
   negatedFieldSet: {
     filterName: "negatedFilter",
@@ -429,6 +441,7 @@ export const FILTER_CONFIGS = Object.freeze({
   modentityidFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.modentityidFieldSet] },
   modinternalidFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.modinternalidFieldSet] },
   nameFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.nameFieldSet] },
+  namespaceFilterConfig:                    { filterComponentType: 'input', fieldSets: [FIELD_SETS.namespaceFieldSet] },
   objectFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.objectFieldSet] },
   ontologySynonymsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.ontologySynonymsFieldSet] },
   pageDescriptionFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },
@@ -463,6 +476,8 @@ export const FILTER_CONFIGS = Object.freeze({
   annotationTypeFilterConfig:               { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.annotationTypeFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   diseaseDataProviderFilterConfig:          { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true  },
   alleleDataProviderFilterConfig:           { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.alleleAggregationFieldSet, useKeywordFields: true  },
+  geneDataProviderFilterConfig:             { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.geneAggregationFieldSet, useKeywordFields: true  },
+  agmDataProviderFilterConfig:              { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.agmAggregationFieldSet, useKeywordFields: true  },
   diseaseQualifiersFilterConfig:            { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.diseaseQualifiersFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   diseaseRelationFilterConfig:              { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.diseaseRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticModifierRelationFilterConfig:      { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticModifierRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },

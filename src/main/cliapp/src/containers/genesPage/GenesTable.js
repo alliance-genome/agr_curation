@@ -255,6 +255,12 @@ export const GenesTable = () => {
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		},
 		{
+			field: "dataProvider.sourceOrganization.abbreviation",
+			header: "Data Provider",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
+		},
+		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
 			sortable: isEnabled,

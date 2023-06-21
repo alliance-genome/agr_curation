@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.enums;
 
+import org.alliancegenome.curation_api.model.entities.ontology.APOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ATPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
@@ -65,7 +66,8 @@ public enum OntologyBulkLoadType {
 	VT(VTTerm.class),
 	HP(HPTerm.class),
 	DPO(DPOTerm.class),
-	MMO(MMOTerm.class);
+	MMO(MMOTerm.class),
+	APO(APOTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 

@@ -87,6 +87,7 @@ export default (
 		<SecureRoute path="/ontology/hp"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="HP" endpoint="hpterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/dpo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="DPO" endpoint="dpoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/mmo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MMO" endpoint="mmoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/apo"	 render={() => <ErrorBoundary><GeneralOntologyComponent showNamespace={true} name="APO" endpoint="apoterm" /></ErrorBoundary>} />
 
 		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
