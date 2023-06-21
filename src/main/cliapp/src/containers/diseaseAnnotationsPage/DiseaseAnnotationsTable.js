@@ -104,6 +104,14 @@ export const DiseaseAnnotationsTable = () => {
 			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
 		}
 
+		if(rowData.relatedNotes && rowData.relatedNotes.length > 0){
+			newAnnotationDispatch({type: "SET_SHOW_RELATED_NOTES", value: true})
+		}
+		
+		if(rowData.conditionRelations && rowData.conditionRelations.length > 0){
+			newAnnotationDispatch({type: "SET_SHOW_CONDITION_RELATIONS", value: true})
+		}
+
 		handleNewAnnotationOpen();
 	}
 
