@@ -57,7 +57,7 @@ const buildAnnotation = (rowData) => {
 		conditionRelations: global.structuredClone(rowData.conditionRelations) || DEFAULT_ANNOTATION.conditionRelations,
 		geneticSex: global.structuredClone(rowData.geneticSex) || DEFAULT_ANNOTATION.geneticSex,
 		diseaseQualifiers: global.structuredClone(rowData.diseaseQualifiers) || DEFAULT_ANNOTATION.diseaseQualifiers,
-		sgdStrainBackground: rowData.sgdStrainBackground?.curie || DEFAULT_ANNOTATION.sgdStrainBackground,
+		sgdStrainBackground: global.structuredClone(rowData.sgdStrainBackground)|| DEFAULT_ANNOTATION.sgdStrainBackground,
 		annotationType: global.structuredClone(rowData.annotationType) || DEFAULT_ANNOTATION.annotationType,
 		diseaseGeneticModifierRelation: global.structuredClone(rowData.diseaseGeneticModifierRelation) || DEFAULT_ANNOTATION.diseaseGeneticModifierRelation,
 		diseaseGeneticModifiers: global.structuredClone(rowData.diseaseGeneticModifiers) || DEFAULT_ANNOTATION.diseaseGeneticModifiers,
@@ -137,7 +137,13 @@ const newAnnotationReducer = (draft, action) => {
 				break;
 			case 'SET_IS_ASSERTED_ALLELE_ENABLED':
 				draft.isAssertedAlleleEnabled = action.value;
-			break;
+				break;
+			case 'SET_SHOW_RELATED_NOTES':
+				draft.showRelatedNotes = action.value;
+				break;
+			case 'SET_SHOW_CONDITION_RELATIONS':
+				draft.showConditionRelations = action.value;
+				break;
 		default:
 			throw Error('Unknown action: ' + action.type);
 	}
