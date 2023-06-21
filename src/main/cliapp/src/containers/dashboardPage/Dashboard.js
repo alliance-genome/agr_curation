@@ -53,7 +53,7 @@ export const Dashboard = () => {
 		HPTerm: { name: "HP", link: "/#/ontology/hp", type: 'ontology', },
 		DPOTerm: { name: "DPO", link: "/#/ontology/dpo", type: 'ontology', },
 		MMOTerm: { name: "MMO", link: "/#/ontology/mmo", type: 'ontology' },
-		DPOTerm: { name: "APO", link: "/#/ontology/apo", type: 'ontology', },
+		APOTerm: { name: "APO", link: "/#/ontology/apo", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
