@@ -36,6 +36,7 @@ import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
+import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
@@ -136,6 +137,8 @@ public class BulkLoadJobExecutor {
 	DpoTermService dpoTermService;
 	@Inject
 	MmoTermService mmoTermService;
+	@Inject
+	ApoTermService apoTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -284,6 +287,13 @@ public class BulkLoadJobExecutor {
 					processTerms(bulkLoadFile, dpoTermService, config);
 				}
 				case MMO -> processTerms(bulkLoadFile, mmoTermService, config);
+				case APO -> {
+					config.getAltNameSpaces().add("experiment_type");
+					config.getAltNameSpaces().add("mutant_type");
+					config.getAltNameSpaces().add("observable");
+					config.getAltNameSpaces().add("qualifier");
+					processTerms(bulkLoadFile, apoTermService, config);
+				}
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
