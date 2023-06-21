@@ -1,3 +1,4 @@
+import '../../App.scss';
 import React, { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
@@ -322,7 +323,7 @@ export const RelatedNotesDialog = ({
 						header="Text"
 						body={textTemplate}
 						headerClassName='surface-0'
-						style={{overflowWrap: 'break-word', maxWidth: '40rem'}}
+						className='wrap-word max-w-40rem'
 					/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
