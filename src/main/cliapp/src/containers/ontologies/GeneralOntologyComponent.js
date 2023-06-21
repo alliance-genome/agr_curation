@@ -107,7 +107,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "namespace",
 				header: "Name Space",
-				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig
+				filterConfig: FILTER_CONFIGS.namespaceFilterConfig
 			}
 		);
 	}

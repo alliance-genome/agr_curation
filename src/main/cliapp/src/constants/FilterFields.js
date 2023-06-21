@@ -276,6 +276,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "nameFilter",
     fields: ["name"],
   },
+  namespaceFieldSet: {
+    filterName: "namespaceFilter",
+    fields: ["namespace"],
+  },
   negatedFieldSet: {
     filterName: "negatedFilter",
     fields: ["negated"],
@@ -437,6 +441,7 @@ export const FILTER_CONFIGS = Object.freeze({
   modentityidFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.modentityidFieldSet] },
   modinternalidFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.modinternalidFieldSet] },
   nameFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.nameFieldSet] },
+  namespaceFilterConfig:                    { filterComponentType: 'input', fieldSets: [FIELD_SETS.namespaceFieldSet] },
   objectFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.objectFieldSet] },
   ontologySynonymsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.ontologySynonymsFieldSet] },
   pageDescriptionFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },
