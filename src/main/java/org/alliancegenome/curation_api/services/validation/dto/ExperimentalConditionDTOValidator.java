@@ -18,7 +18,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
@@ -54,7 +54,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 	public ObjectResponse<ExperimentalCondition> validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
 		ObjectResponse<ExperimentalCondition> ecResponse = new ObjectResponse<ExperimentalCondition>();
 
-		String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dto);
+		String uniqueId = DiseaseAnnotationUniqueIdHelper.getExperimentalConditionUniqueId(dto);
 
 		ExperimentalCondition experimentalCondition;
 		SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
