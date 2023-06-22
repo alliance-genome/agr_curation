@@ -282,6 +282,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				public void indexingCompleted() {
 					ph.finishProcess();
+					setRefreshInterval();
 				}
 			});
 
@@ -327,22 +328,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				@Override
 				public void indexingCompleted() {
 					ph.finishProcess();
-					
-					RestHighLevelClient client = EsClientFactory.createClient(esHosts, esProtocol);
-					Log.info("Creating Settings Search Client: " + esProtocol + "://" + esHosts);
-
-					Map<String, String> settings = new HashMap<>();
-					settings.put("refresh_interval", "1s");
-					Log.info("Setting Refresh Interval: " + settings);
-					UpdateSettingsRequest request = new UpdateSettingsRequest();
-					request.indices("_all");
-					request.settings(settings);
-					try {
-						AcknowledgedResponse resp = client.indices().putSettings(request, RequestOptions.DEFAULT);
-						Log.info("Settings Change Complete: " + resp.isAcknowledged());
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					setRefreshInterval();
 				}
 
 			});
@@ -352,6 +338,24 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		indexer.start();
+	}
+
+	private void setRefreshInterval() {
+		RestHighLevelClient client = EsClientFactory.createClient(esHosts, esProtocol);
+		Log.info("Creating Settings Search Client: " + esProtocol + "://" + esHosts);
+
+		Map<String, String> settings = new HashMap<>();
+		settings.put("refresh_interval", "1s");
+		Log.info("Setting Refresh Interval: " + settings);
+		UpdateSettingsRequest request = new UpdateSettingsRequest();
+		request.indices("_all");
+		request.settings(settings);
+		try {
+			AcknowledgedResponse resp = client.indices().putSettings(request, RequestOptions.DEFAULT);
+			Log.info("Settings Change Complete: " + resp.isAcknowledged());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public SearchResponse<E> searchAll(Pagination pagination) {
