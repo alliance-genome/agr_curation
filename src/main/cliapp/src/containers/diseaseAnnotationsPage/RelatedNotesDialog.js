@@ -1,3 +1,4 @@
+import '../../App.scss';
 import React, { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
@@ -300,8 +301,8 @@ export const RelatedNotesDialog = ({
 						<Row>
 							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 							<Column header="Note Type" />
-							<Column header="Internal" />
 							<Column header="Text" />
+							<Column header="Internal" />
 						</Row>
 						</ColumnGroup>;
 
@@ -316,14 +317,15 @@ export const RelatedNotesDialog = ({
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					<Column
 						editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
 						field="freeText"
 						header="Text"
 						body={textTemplate}
 						headerClassName='surface-0'
+						className='wrap-word max-w-40rem'
 					/>
+					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
 			</Dialog>
 		</div>
