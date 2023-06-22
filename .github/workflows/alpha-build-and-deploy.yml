@@ -98,7 +98,7 @@ jobs:
         echo "tagname=$(git describe --tags)" >> $GITHUB_ENV
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
-        sed -i.bak "s/0.0.0/${{ env.tagname }}/g" .ebextensions/version.config
+        sed -i 's/\(AGR_CURATION_RELEASE: \).\+/\1${{ env.tagname }}/' .ebextensions/version.config
         echo "Stored version config:"
         echo "----------------------"
         cat .ebextensions/version.config
