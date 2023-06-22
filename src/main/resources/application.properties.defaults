@@ -10,7 +10,10 @@ quarkus.swagger-ui.doc-expansion=none
 quarkus.datasource.db-kind=postgresql
 quarkus.datasource.username=postgres
 quarkus.datasource.password=postgres
-quarkus.datasource.jdbc.max-size=128
+quarkus.datasource.jdbc.max-size=2000
+quarkus.datasource.jdbc.acquisition-timeout=PT1M
+quarkus.datasource.jdbc.idle-removal-interval=PT1M
+quarkus.datasource.jdbc.max-lifetime=PT5M
 
 quarkus.hibernate-orm.database.generation=validate
 %dev.quarkus.hibernate-orm.database.generation=update

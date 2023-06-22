@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PATOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ROTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.VTTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBBTTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBLSTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
@@ -62,6 +63,7 @@ public enum OntologyBulkLoadType {
 	XSMO(XSMOTerm.class),
 	OBI(OBITerm.class),
 	WBPheno(WBPhenotypeTerm.class),
+	VT(VTTerm.class),
 	HP(HPTerm.class),
 	DPO(DPOTerm.class),
 	MMO(MMOTerm.class),
