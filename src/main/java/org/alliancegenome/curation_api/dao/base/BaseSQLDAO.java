@@ -141,8 +141,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		List<String> primaryKeys = new ArrayList<>();
 
 		for (E entity : allQuery.getResultList()) {
-			// TODO if this cast to string fails then we should try to cast to a long.
-			primaryKeys.add((String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
+			String pkString;
+			try{
+				pkString = (String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+			} catch (ClassCastException e) {
+				pkString = Long.toString((Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
+			}
+			primaryKeys.add(pkString);
 		}
 
 		results.setResults(primaryKeys);

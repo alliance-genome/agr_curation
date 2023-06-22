@@ -12,7 +12,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
-import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
+import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
@@ -37,7 +37,7 @@ public class ExperimentalConditionSummary {
 	ChemicalTermService chemicalTermService;
 
 	public static String getConditionSummary(ExperimentalCondition condition) {
-		CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
+		UniqueIdGeneratorHelper conditionSummary = new UniqueIdGeneratorHelper();
 
 		if (condition.getConditionClass() != null)
 			conditionSummary.add(condition.getConditionClass().getName());
@@ -67,7 +67,7 @@ public class ExperimentalConditionSummary {
 	}
 
 	public String getConditionSummary(ExperimentalConditionDTO conditionDto) {
-		CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
+		UniqueIdGeneratorHelper conditionSummary = new UniqueIdGeneratorHelper();
 
 		if (StringUtils.isNotBlank(conditionDto.getConditionClassCurie())) {
 			ZECOTerm conditionClass = zecoTermService.findByCurieOrSecondaryId(conditionDto.getConditionClassCurie());
