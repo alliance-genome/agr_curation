@@ -46,6 +46,7 @@ export const Dashboard = () => {
 		ZFSTerm: { name: "ZFS", link: "/#/ontology/zfs", type: 'ontology', },
 		XPOTerm: { name: "XPO", link: "/#/ontology/xpo", type: 'ontology', },
 		ATPTerm: { name: "ATP", link: "/#/ontology/atp", type: 'ontology', },
+		VTTerm: { name: "VT", link: "/#/ontology/vt", type: 'ontology', },
 		XBEDTerm: { name: "XBED", link: "/#/ontology/xbed", type: 'ontology', },
 		OBITerm: { name: "OBI", link: "/#/ontology/obi", type: 'ontology', },
 		WBPhenotypeTerm: { name: "WBPheno", link: "/#/ontology/wbpheno", type: 'ontology', },
