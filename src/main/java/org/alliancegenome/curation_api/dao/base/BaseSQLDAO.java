@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.dao.base;
 
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +30,13 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ProcessDisplayService;
+import org.alliancegenome.curation_api.util.EsClientFactory;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
@@ -46,10 +53,15 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 import org.reflections.Reflections;
 
-import lombok.extern.jbosslog.JBossLog;
+import io.quarkus.logging.Log;
 
-@JBossLog
 public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
+
+	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
+	String esHosts;
+	
+	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.protocol")
+	String esProtocol;
 
 	@Inject
 	protected EntityManager entityManager;
@@ -57,50 +69,51 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	protected SearchSession searchSession;
 	@Inject
 	protected ProcessDisplayService processDisplayService;
+
 	
 	private int outerBoost = 0;
 	private int innerBoost = 0;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
-		log.debug("EntityManager: " + entityManager);
-		log.debug("SearchSession: " + searchSession);
+		Log.debug("EntityManager: " + entityManager);
+		Log.debug("SearchSession: " + searchSession);
 	}
 
 	@Transactional
 	public E persist(E entity) {
-		log.debug("SqlDAO: persist: " + entity);
+		Log.debug("SqlDAO: persist: " + entity);
 		entityManager.persist(entity);
 		return entity;
 	}
 
 	@Transactional
 	public List<E> persist(List<E> entities) {
-		log.debug("SqlDAO: persist: " + entities);
+		Log.debug("SqlDAO: persist: " + entities);
 		entityManager.persist(entities);
 		return entities;
 	}
 
 	public E find(String id) {
-		log.debug("SqlDAO: find: " + id + " " + myClass);
+		Log.debug("SqlDAO: find: " + id + " " + myClass);
 		if (id != null) {
 			E entity = entityManager.find(myClass, id);
-			log.debug("Entity Found: " + entity);
+			Log.debug("Entity Found: " + entity);
 			return entity;
 		} else {
-			log.debug("Input Param is null: " + id);
+			Log.debug("Input Param is null: " + id);
 			return null;
 		}
 	}
 
 	public E find(Long id) {
-		log.debug("SqlDAO: find: " + id + " " + myClass);
+		Log.debug("SqlDAO: find: " + id + " " + myClass);
 		if (id != null) {
 			E entity = entityManager.find(myClass, id);
-			log.debug("Entity Found: " + entity);
+			Log.debug("Entity Found: " + entity);
 			return entity;
 		} else {
-			log.debug("Input Param is null: " + id);
+			Log.debug("Input Param is null: " + id);
 			return null;
 		}
 	}
@@ -138,7 +151,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 
 	public SearchResponse<E> findAll(Pagination pagination) {
-		log.debug("SqlDAO: findAll: " + myClass);
+		Log.debug("SqlDAO: findAll: " + myClass);
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
@@ -168,14 +181,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public E merge(E entity) {
-		log.debug("SqlDAO: merge: " + entity);
+		Log.debug("SqlDAO: merge: " + entity);
 		entityManager.merge(entity);
 		return entity;
 	}
 
 	@Transactional
 	public E remove(String id) {
-		log.debug("SqlDAO: remove: " + id);
+		Log.debug("SqlDAO: remove: " + id);
 		E entity = find(id);
 
 		try {
@@ -189,7 +202,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public E remove(Long id) {
-		log.debug("SqlDAO: remove: " + id);
+		Log.debug("SqlDAO: remove: " + id);
 		E entity = find(id);
 
 		try {
@@ -277,7 +290,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		try {
-			log.info("Waiting for Full Indexer to finish");
+			Log.info("Waiting for Full Indexer to finish");
 			indexer.startAndWait();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -288,7 +301,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
 		Integer typesToIndexInParallel) {
 
-		log.debug("Starting Indexing for: " + objectClass);
+		Log.debug("Starting Indexing for: " + objectClass);
 		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true)
 			.mergeSegmentsOnFinish(true).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
 
@@ -314,6 +327,22 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				@Override
 				public void indexingCompleted() {
 					ph.finishProcess();
+					
+					RestHighLevelClient client = EsClientFactory.createClient(esHosts, esProtocol);
+					Log.info("Creating Settings Search Client: " + esProtocol + "://" + esHosts);
+
+					Map<String, String> settings = new HashMap<>();
+					settings.put("refresh_interval", "1s");
+					Log.info("Setting Refresh Interval: " + settings);
+					UpdateSettingsRequest request = new UpdateSettingsRequest();
+					request.indices("_all");
+					request.settings(settings);
+					try {
+						AcknowledgedResponse resp = client.indices().putSettings(request, RequestOptions.DEFAULT);
+						Log.info("Settings Change Complete: " + resp.isAcknowledged());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 
 			});
@@ -336,7 +365,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-		log.debug("Search: " + pagination + " Params: " + params);
+		Log.debug("Search: " + pagination + " Params: " + params);
 
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
 			return p.bool(b -> {
@@ -442,9 +471,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (params.containsKey("debug")) {
 			results.setDebug((String) params.get("debug"));
 			results.setEsQuery(query.queryString());
-			log.info(query);
+			Log.info(query);
 		} else {
-			log.debug(query);
+			Log.debug(query);
 		}
 
 		if (aggKeys.size() > 0) {
@@ -460,11 +489,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 
 	public SearchResponse<E> findByField(String field, Object value) {
-		log.debug("SqlDAO: findByField: " + field + " " + value);
+		Log.debug("SqlDAO: findByField: " + field + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
 		params.put(field, value);
 		SearchResponse<E> results = findByParams(null, params);
-		log.debug("Result List: " + results);
+		Log.debug("Result List: " + results);
 		if (results.getResults().size() > 0) {
 			return results;
 		} else {
@@ -478,9 +507,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
 		if (orderByField != null) {
-			log.debug("Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
+			Log.debug("Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
 		} else {
-			log.debug("Search By Params: " + params + " for class: " + myClass);
+			Log.debug("Search By Params: " + params + " for class: " + myClass);
 		}
 
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -496,13 +525,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		for (String key : params.keySet()) {
 			Path<Object> column = null;
 			Path<Object> countColumn = null;
-			log.debug("Key: " + key);
+			Log.debug("Key: " + key);
 			if (key.contains(".")) {
 				String[] objects = key.split("\\.");
 				for (String s : objects) {
-					log.debug("Looking up: " + s);
+					Log.debug("Looking up: " + s);
 					if (column != null) {
-						log.debug("Looking up via column: " + s);
+						Log.debug("Looking up via column: " + s);
 
 						Path<Object> pathColumn = column.get(s);
 						if (pathColumn.getJavaType().equals(List.class)) {
@@ -517,7 +546,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 							countColumn = pathCountColumn;
 						}
 					} else {
-						log.debug("Looking up via root: " + s);
+						Log.debug("Looking up via root: " + s);
 						column = root.get(s);
 						if (column.getJavaType().equals(List.class)) {
 							column = root.join(s);
@@ -528,9 +557,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						}
 					}
 
-					log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: "
+					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: "
 						+ column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-					log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
+					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
 						+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 				}
 			} else {
@@ -544,35 +573,35 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 			}
 
-			log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias()
+			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias()
 				+ " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
+			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
 				+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
 			if (value != null) {
-				log.debug("Object Type: " + value.getClass());
+				Log.debug("Object Type: " + value.getClass());
 				if (value instanceof Integer) {
-					log.debug("Integer Type: " + value);
+					Log.debug("Integer Type: " + value);
 					Integer desiredValue = (Integer) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
 				} else if (value instanceof Enum) {
-					log.debug("Enum Type: " + value);
+					Log.debug("Enum Type: " + value);
 					restrictions.add(builder.equal(column, value));
 					countRestrictions.add(builder.equal(countColumn, value));
 				} else if (value instanceof Long) {
-					log.debug("Long Type: " + value);
+					Log.debug("Long Type: " + value);
 					Long desiredValue = (Long) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
 				} else if (value instanceof Boolean) {
-					log.debug("Boolean Type: " + value);
+					Log.debug("Boolean Type: " + value);
 					Boolean desiredValue = (Boolean) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
 				} else {
-					log.debug("String Type: " + value);
+					Log.debug("String Type: " + value);
 					String desiredValue = (String) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));

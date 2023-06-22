@@ -28,9 +28,9 @@ public class SearchDocumentStatsGather {
 	
 	public SearchDocumentStatsGather() throws Exception {
 		
-		RestHighLevelClient client = createClient("olin-dev.alliancegenome.org");
-
-
+		//RestHighLevelClient client = createClient("olin-dev.alliancegenome.org");
+		RestHighLevelClient client = createClient("alpha.cluster01.alliancegenome.org");
+		
 
 		//final Scroll scroll = new Scroll();
 		SearchRequest searchRequest = new SearchRequest("allele-000001");
@@ -52,7 +52,7 @@ public class SearchDocumentStatsGather {
 		while (searchHits != null && searchHits.length > 0) {
 			
 			for(SearchHit hit: searchHits) {
-				processHit(".", hit.getSourceAsMap());
+				processHit("", hit.getSourceAsMap());
 			}
 			
 			System.out.println(c + " -> " + sizeMap);
@@ -79,34 +79,30 @@ public class SearchDocumentStatsGather {
 
 	private void processHit(String path, Map<String, Object> map) {
 
-		int total = 0;
 		for(String key: map.keySet()) {
 			Object value = map.get(key);
 			int size = String.valueOf(value).length();
-			total += size;
+			
 			//if(value != null) System.out.println(value.getClass());
 			
+			String newKey = path + "." + key;
+			
 			if(value != null && value.getClass() == HashMap.class) {
-				processHit(path + key + ".", (Map<String, Object>)value);
+				processHit(newKey, (Map<String, Object>)value);
 			}
 			
 			//System.out.println(value.getClass());
 			//System.out.println("Size: " + size + " Key: " + key + " -> " + value);
 			
-			if(sizeMap.containsKey(path + key)) {
-				int currentSize = sizeMap.get(path + key);
-				sizeMap.put(path + key, currentSize + size);
+			if(sizeMap.containsKey(newKey)) {
+				int currentSize = sizeMap.get(newKey);
+				sizeMap.put(newKey, currentSize + size);
 			} else {
-				sizeMap.put(path + key, size);
+				sizeMap.put(newKey, size);
 			}
 
 		}
-		if(sizeMap.containsKey(path)) {
-			int currentSize = sizeMap.get(path);
-			sizeMap.put(path, currentSize + total);
-		} else {
-			sizeMap.put(path, total);
-		}
+
 	}
 
 	// Used if APP needs to have multiple clients
