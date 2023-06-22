@@ -6,6 +6,9 @@ all:
 run:
 	npm start
 
+runalpha:
+	export API_URL=https://alpha-curation.alliancegenome.org; make run; unset API_URL
+
 build:
 	npm run-script build
 
