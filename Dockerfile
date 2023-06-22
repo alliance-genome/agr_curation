@@ -15,6 +15,8 @@ ARG OVERWRITE_VERSION
 
 # copy the src code to the container
 COPY ./ ./
+# Use default properties file
+COPY ./src/main/resources/application.properties.defaults ./src/main/resources/application.properties
 # copy the UI build artifacts to the container
 COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/index.html  ./src/main/resources/META-INF/resources/index.html
 COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/favicon.ico ./src/main/resources/META-INF/resources/favicon.ico

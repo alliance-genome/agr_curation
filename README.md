@@ -218,7 +218,7 @@ CONTAINER ID   IMAGE                                   COMMAND                  
 
 ## Building
 
-Before building make sure and create a copy of the application.properties file
+Before building locally, make sure and create a copy of the application.properties file
 
 ```bash
 > cp src/main/resources/application.properties.defaults src/main/resources/application.properties
