@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.model.entities.orthology;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -27,6 +29,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Inheritance(strategy = InheritanceType.JOINED)
 @ToString(callSuper = true)
 @Schema(name = "GeneToGeneOrthology", description = "POJO that represents orthology between two genes")
 @AGRCurationSchemaVersion(min = "1.7.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })

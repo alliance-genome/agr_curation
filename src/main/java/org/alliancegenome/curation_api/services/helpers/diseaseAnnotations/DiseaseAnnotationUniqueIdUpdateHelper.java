@@ -43,7 +43,7 @@ public class DiseaseAnnotationUniqueIdUpdateHelper {
 	}
 
 	@Transactional
-	private void updateDiseaseAnnotationUniqueId(Long id) {
+	public void updateDiseaseAnnotationUniqueId(Long id) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 		if (annotation == null)
 			return;
