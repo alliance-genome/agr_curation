@@ -36,7 +36,9 @@ const initialNewAnnotationState = {
 	submitted: false,
 	newAnnotationDialog: false,
 	showRelatedNotes: false,
+	relatedNotesEditingRows: {},
 	showConditionRelations: false,
+	conditionRelationsEditingRows: {},
 	isValid: false,
 	isAssertedGeneEnabled: false,
 	isAssertedAlleleEnabled: false,
@@ -53,7 +55,7 @@ const buildAnnotation = (rowData) => {
 		singleReference: global.structuredClone(rowData.singleReference) || DEFAULT_ANNOTATION.singleReference,
 		evidenceCodes: global.structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
 		with: global.structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,
-		relatedNotes: global.structuredClone(rowData.relatedNotes) || DEFAULT_ANNOTATION.relatedNotes,
+		relatedNotes: processDupRelatedNotes(global.structuredClone(rowData.relatedNotes)) || DEFAULT_ANNOTATION.relatedNotes,
 		conditionRelations: global.structuredClone(rowData.conditionRelations) || DEFAULT_ANNOTATION.conditionRelations,
 		geneticSex: global.structuredClone(rowData.geneticSex) || DEFAULT_ANNOTATION.geneticSex,
 		diseaseQualifiers: global.structuredClone(rowData.diseaseQualifiers) || DEFAULT_ANNOTATION.diseaseQualifiers,
@@ -63,6 +65,16 @@ const buildAnnotation = (rowData) => {
 		diseaseGeneticModifiers: global.structuredClone(rowData.diseaseGeneticModifiers) || DEFAULT_ANNOTATION.diseaseGeneticModifiers,
 		internal: rowData.internal || DEFAULT_ANNOTATION.internal
 	}
+}
+
+const processDupRelatedNotes = (notes) => {
+	if(!notes) return;
+	notes.forEach(note => {
+		if(note.id){
+			delete note.id;
+		}
+	})
+	return notes;
 }
 
 const newAnnotationReducer = (draft, action) => {
@@ -109,6 +121,7 @@ const newAnnotationReducer = (draft, action) => {
 					freeText: "",
 				}
 			)
+			draft.relatedNotesEditingRows[`${action.count}`] = true;
 			draft.showRelatedNotes = true;
 			break;
 		case 'ADD_NEW_RELATION':
@@ -118,6 +131,7 @@ const newAnnotationReducer = (draft, action) => {
 					conditions: [],
 				}
 			)
+			draft.conditionRelationsEditingRows[`${action.count}`] = true;
 			draft.showConditionRelations = true;
 			break;
 		case 'DELETE_ROW':
@@ -129,21 +143,27 @@ const newAnnotationReducer = (draft, action) => {
 		case 'EDIT_ROW':
 			draft.newAnnotation[action.tableType][action.index][action.field] = action.value;
 			break;
-			case 'SET_IS_ENABLED':
-				draft.isEnabled = action.value;
-				break;
-			case 'SET_IS_ASSERTED_GENE_ENABLED':
-				draft.isAssertedGeneEnabled = action.value;
-				break;
-			case 'SET_IS_ASSERTED_ALLELE_ENABLED':
-				draft.isAssertedAlleleEnabled = action.value;
-				break;
-			case 'SET_SHOW_RELATED_NOTES':
-				draft.showRelatedNotes = action.value;
-				break;
-			case 'SET_SHOW_CONDITION_RELATIONS':
-				draft.showConditionRelations = action.value;
-				break;
+		case 'SET_IS_ENABLED':
+			draft.isEnabled = action.value;
+			break;
+		case 'SET_IS_ASSERTED_GENE_ENABLED':
+			draft.isAssertedGeneEnabled = action.value;
+			break;
+		case 'SET_IS_ASSERTED_ALLELE_ENABLED':
+			draft.isAssertedAlleleEnabled = action.value;
+			break;
+		case 'SET_RELATED_NOTES_EDITING_ROWS':
+			action.relatedNotes.forEach((note) => {
+				draft.relatedNotesEditingRows[`${note.dataKey}`] = true;
+			});
+			draft.showRelatedNotes = true;
+			break;
+		case 'SET_CONDITION_RELATIONS_EDITING_ROWS':
+			action.conditionRelations.forEach((relation) => {
+				draft.conditionRelationsEditingRows[`${relation.dataKey}`] = true;
+			});
+			draft.showConditionRelations = true;
+			break;
 		default:
 			throw Error('Unknown action: ' + action.type);
 	}

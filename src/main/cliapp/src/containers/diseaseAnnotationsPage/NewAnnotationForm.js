@@ -56,7 +56,9 @@ export const NewAnnotationForm = ({
 		newAnnotation,
 		errorMessages,
 		relatedNotesErrorMessages,
+		relatedNotesEditingRows,
 		exConErrorMessages,
+		conditionRelationsEditingRows,
 		submitted,
 		newAnnotationDialog,
 		showRelatedNotes,
@@ -156,16 +158,28 @@ export const NewAnnotationForm = ({
 			},
 			onError: (error) => {
 
-				const message =
-					error.response.data.errorMessages.uniqueId ?
-					"Page Error: New annotation is a duplicate of an existing annotation" :
-					error.response.data.errorMessage;
+				let message; 
+				if(error?.response?.data?.errorMessages?.uniqueId){
+					message = "Page Error: New annotation is a duplicate of an existing annotation";
+				} else if(error?.response?.data?.errorMessage){
+					message = error.response.data.errorMessage;
+				} else {
+					//toast will still display even if 500 error and no errorMessages
+					message = `${error.response.status} ${error.response.statusText}`
+				}
+					
 
 				toast_error.current.show([
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
 				]);
-				if (!error.response.data) return;
-				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages", errorMessages: error.response.data.errorMessages});
+
+				newAnnotationDispatch(
+					{
+						type: "UPDATE_ERROR_MESSAGES", 
+						errorType: "errorMessages", 
+						errorMessages: error.response?.data?.errorMessages || {}
+					}
+				);
 			}
 		});
 	};
@@ -670,6 +684,7 @@ export const NewAnnotationForm = ({
 								relatedNotes={newAnnotation.relatedNotes}
 								showRelatedNotes={showRelatedNotes}
 								errorMessages={relatedNotesErrorMessages}
+								editingRows={relatedNotesEditingRows}
 							/>
 						</div>
 					</div>
@@ -686,6 +701,7 @@ export const NewAnnotationForm = ({
 								errorMessages={exConErrorMessages}
 								searchService={searchService}
 								buttonIsDisabled={isConditionRelationButtonEnabled()}
+								editingRows={conditionRelationsEditingRows}
 							/>
 						</div>
 					</div>
