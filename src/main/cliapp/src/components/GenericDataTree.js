@@ -42,7 +42,7 @@ export const GenericDataTree = (props) => {
 					modifyNode.children = [];
 					for(var node of res.data.entities) {
 						node.key = node.curie;
-						node.label = node.curie + " (" + node.name + ")";
+						node.label = node.name + " (" + node.curie + ")";
 						node.leaf = false;
 						modifyNode.children.push(node);
 					}
@@ -77,7 +77,7 @@ export const GenericDataTree = (props) => {
 			obsoleteNode.children = [];
 			for(var node of res.data.entities) {
 				node.key = node.curie;
-				node.label = node.curie + " (" + node.name + ")";
+				node.label = node.name + " (" + node.curie + ")";
 				node.leaf = false;
 				if(node.obsolete === true) {
 					obsoleteNode.children.push(node);
