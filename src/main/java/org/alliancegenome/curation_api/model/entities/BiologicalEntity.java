@@ -46,7 +46,7 @@ import lombok.ToString;
 	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"), @Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id")})
 public class BiologicalEntity extends CurieAuditedObject {
 
-	@IndexedEmbedded(includePaths = {"name", "curie"})
+	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })

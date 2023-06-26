@@ -63,7 +63,7 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<Reference> references;
 
-	@IndexedEmbedded(includePaths = {"name", "id"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
@@ -135,7 +135,7 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleDatabaseStatusSlotAnnotation alleleDatabaseStatus;
 	
-	@IndexedEmbedded(includePaths = {"freeText"})
+	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
