@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -12,15 +12,14 @@ import {ExConAutocompleteTemplate} from "../../components/Autocomplete/ExConAuto
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
-export const ConditionRelationsForm = ({ dispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled }) => {
-	const [editingRows, setEditingRows] = useState({});
+export const ConditionRelationsForm = ({ dispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
 	const onRowEditChange = (e) => {
-		setEditingRows(e.data);
+		console.log(e);
 	}
 
 	const createNewRelationHandler = (event) => {
@@ -28,9 +27,6 @@ export const ConditionRelationsForm = ({ dispatch, conditionRelations, showCondi
 
 		let count = conditionRelations ? conditionRelations.length : 0;
 		dispatch({type: "ADD_NEW_RELATION", count})
-		let _editingRows = { ...editingRows, ...{ [`${count}`]: true } };
-		setEditingRows(_editingRows);
-
 	};
 
 
@@ -140,7 +136,6 @@ export const ConditionRelationsForm = ({ dispatch, conditionRelations, showCondi
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			{/*<h3>Experimental Conditions</h3>*/}
 			{showConditionRelations &&
 				<DataTable value={conditionRelations} dataKey="dataKey" showGridlines editMode='row'
 							 editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>

@@ -105,11 +105,11 @@ export const DiseaseAnnotationsTable = () => {
 		}
 
 		if(rowData.relatedNotes && rowData.relatedNotes.length > 0){
-			newAnnotationDispatch({type: "SET_SHOW_RELATED_NOTES", value: true})
+			newAnnotationDispatch({type: "SET_RELATED_NOTES_EDITING_ROWS", relatedNotes: rowData.relatedNotes})
 		}
 		
 		if(rowData.conditionRelations && rowData.conditionRelations.length > 0){
-			newAnnotationDispatch({type: "SET_SHOW_CONDITION_RELATIONS", value: true})
+			newAnnotationDispatch({type: "SET_CONDITION_RELATIONS_EDITING_ROWS", conditionRelations: rowData.conditionRelations})
 		}
 
 		handleNewAnnotationOpen();
