@@ -11,7 +11,7 @@ public class OrthologyFmsDTO extends BaseDTO {
 	private Integer gene1Species;
 	private Integer gene2Species;
 	private String isBestScore;
-	private String inBestRevScore;
+	private String isBestRevScore;
 	private String gene1;
 	private String gene2;
 	private List<String> predictionMethodsMatched;
