@@ -1,9 +1,10 @@
 {
-  "number_of_shards": "16",
+  "number_of_shards": "8",
   "number_of_replicas": "0",
   "max_ngram_diff": "32",
+  "refresh_interval" : "-1",
   "max_result_window": 5000000,
-  "translog.sync_interval": "60s",
+  "translog.sync_interval": "600s",
   "translog.flush_threshold_size": "4096mb",
   "translog.durability": "async",
   "mapping.total_fields.limit": 2000

@@ -80,6 +80,7 @@ export default (
 		<SecureRoute path="/ontology/atp"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="ATP" endpoint="atpterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/xbed"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="XBED" endpoint="xbedterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/xsmo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/vt"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="VT" endpoint="vtterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/obi"	 	 render={() => <ErrorBoundary><GeneralOntologyComponent name="OBI" endpoint="obiterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/wbpheno"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/pato"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="PATO" endpoint="patoterm" /></ErrorBoundary>} />

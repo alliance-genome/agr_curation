@@ -55,6 +55,7 @@ import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.ontology.PatoTermService;
 import org.alliancegenome.curation_api.services.ontology.RoTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.alliancegenome.curation_api.services.ontology.VtTermService;
 import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
 import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
 import org.alliancegenome.curation_api.services.ontology.WblsTermService;
@@ -105,6 +106,8 @@ public class BulkLoadJobExecutor {
 	MpTermService mpTermService;
 	@Inject
 	MaTermService maTermService;
+	@Inject
+	VtTermService vtTermService;
 	@Inject
 	WblsTermService wblsTermService;
 	@Inject
@@ -271,6 +274,7 @@ public class BulkLoadJobExecutor {
 					processTerms(bulkLoadFile, atpTermService, config);
 				}
 				case XBED -> processTerms(bulkLoadFile, xbedTermService, config);
+				case VT -> processTerms(bulkLoadFile, vtTermService, config);
 				case XSMO -> processTerms(bulkLoadFile, xsmoTermService, config);
 				case OBI -> {
 					config.setLoadOnlyIRIPrefix("OBI");
