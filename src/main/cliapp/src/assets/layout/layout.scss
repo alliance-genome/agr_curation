@@ -1,3 +1,19 @@
 @import "./_variables";
 @import "./sass/_layout";
 @import "./_overrides";
+
+.wrap-word {
+    overflow-wrap : break-word;
+}
+
+.max-w-25rem {
+	max-width : 25rem;
+}
+
+.max-w-35rem {
+	max-width : 35rem;
+}
+
+.max-w-40rem {
+	max-width : 40rem;
+}

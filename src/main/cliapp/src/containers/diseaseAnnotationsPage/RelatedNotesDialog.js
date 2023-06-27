@@ -1,4 +1,3 @@
-import '../../App.scss';
 import React, { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
@@ -14,6 +13,7 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ValidationService } from '../../service/ValidationService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import '../../assets/layout/layout.scss';
 
 export const RelatedNotesDialog = ({
 													originalRelatedNotesData,

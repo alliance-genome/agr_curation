@@ -1,4 +1,3 @@
-import '../../App.scss';
 import React, { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
@@ -19,6 +18,7 @@ import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/Li
 import { ListTableCell } from '../../components/ListTableCell';
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
 import { SearchService } from '../../service/SearchService';
+import '../../assets/layout/layout.scss';
 
 export const RelatedNotesDialog = ({
 													originalRelatedNotesData,
