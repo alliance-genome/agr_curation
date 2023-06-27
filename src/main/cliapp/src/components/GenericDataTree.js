@@ -45,8 +45,8 @@ export const GenericDataTree = (props) => {
 						node.label = node.name + " (" + node.curie + ")";
 						node.leaf = false;
 						modifyNode.children.push(node);
-						modifyNode.children.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : -1)
 					}
+					modifyNode.children.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : -1);
 				} else {
 					modifyNode.leaf = true;
 				}
@@ -88,6 +88,7 @@ export const GenericDataTree = (props) => {
 
 				count = count + 1;
 			}
+			obsoleteNode.children.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : -1);
 			_nodes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : -1);
 			_nodes.push(obsoleteNode);
 			setNodes(_nodes);
