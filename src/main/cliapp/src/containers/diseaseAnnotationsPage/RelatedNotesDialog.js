@@ -13,7 +13,6 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ValidationService } from '../../service/ValidationService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import '../../assets/layout/layout.scss';
 
 export const RelatedNotesDialog = ({
 													originalRelatedNotesData,
