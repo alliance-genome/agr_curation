@@ -192,40 +192,95 @@ export function genericConfirmDialog({ header, message, accept, reject }){
 
 }
 
+function containsMatch(inputValue, selectedItem) {
+	for (const part of inputValue.split(/[^a-z0-9]/i)) {
+		if (selectedItem.indexOf(part) !== -1)
+			 return 1;
+	}
+	return 0;
+}
+
 export function filterDropDownObject(inputValue, object){
 	const trimmedValue = trimWhitespace(inputValue.toLowerCase());
 	let _object = global.structuredClone(object);
+	console.log(_object);
+	if (_object.geneSystematicName) {
+		if (containsMatch(trimmedValue, _object.geneSystematicName.displayText.toString().toLowerCase()) == 0)
+			_object = { ..._object, geneSystematicName: {}};
+	}
+	console.log(_object);
 
 	if (_object.synonyms?.length > 0) {
-		const { synonyms } = _object;
-		const filteredSynonyms = synonyms.filter((synonym) => {
+		const filteredSynonyms = [];
+		_object.synonyms.forEach((synonym) => {
 			let selectedItem = synonym.name ? synonym.name.toString().toLowerCase() : synonym.toString().toLowerCase();
-			return selectedItem.indexOf(trimmedValue) !== -1;
+			if (containsMatch(trimmedValue, selectedItem) == 1)
+				filteredSynonyms.push(synonym);
 		});
-		_object = { ..._object, synonyms: filteredSynonyms }
+		_object = { ..._object, synonyms: filteredSynonyms };
 	}
 
 	if (_object.crossReferences?.length > 0) {
-		const { crossReferences } = _object;
-		const filteredCrossReferences = crossReferences.filter((crossReference) => {
-			return crossReference.referencedCurie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		const filteredCrossReferences = [];
+		_object.crossReferences.forEach((xref) => {
+			if (containsMatch(trimmedValue, xref.displayName.toString().toLowerCase()) == 1)
+				filteredCrossReferences.push(xref);
 		});
-		_object = { ..._object, crossReferences: filteredCrossReferences }
+		_object = { ..._object, crossReferences: filteredCrossReferences };
 	}
 
 	if (_object.cross_references?.length > 0) {
-		const { cross_references } = _object;
-		const filteredCrossReferences = cross_references.filter((cross_reference) => {
-			return cross_reference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		const filteredLitSystemCrossReferences = [];
+		_object.cross_references.forEach((xref) => {
+			if (containsMatch(trimmedValue, xref.curie.toString().toLowerCase()) == 1)
+				filteredLitSystemCrossReferences.push(xref);
 		});
-		_object = { ..._object, cross_references: filteredCrossReferences }
+		_object = { ..._object, cross_references: filteredLitSystemCrossReferences };
 	}
+
 	if (_object.secondaryIdentifiers?.length > 0) {
-		const { secondaryIdentifiers } = _object;
-		const filteredSecondaryIdentifiers = secondaryIdentifiers.filter((secondaryIdentifier) => {
-			return secondaryIdentifier.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		const filteredSecondaryIdentifiers = [];
+		_object.secondaryIdentifiers.forEach((sid) => {
+			if (containsMatch(trimmedValue, sid.toString().toLowerCase()) == 1)
+				filteredSecondaryIdentifiers.push(sid);
 		});
-		_object = { ..._object, secondaryIdentifiers: filteredSecondaryIdentifiers }
+		_object = { ..._object, secondaryIdentifiers: filteredSecondaryIdentifiers };
+	}
+
+	if (_object.geneSynonyms?.length > 0) {
+		const filteredGeneSynonyms = [];
+		_object.geneSynonyms.forEach((syn) => {
+			if (containsMatch(trimmedValue, syn.displayText.toString().toLowerCase()) == 1)
+				filteredGeneSynonyms.push(syn);
+		});
+		_object = { ..._object, geneSynonyms: filteredGeneSynonyms };
+	}
+
+	if (_object.geneSecondaryIds?.length > 0) {
+		const filteredGeneSecondaryIds = [];
+		_object.geneSecondaryIds.forEach((sid) => {
+			if (containsMatch(trimmedValue, sid.secondaryId.toString().toLowerCase()) == 1)
+				filteredGeneSecondaryIds.push(sid);
+		});
+		_object = { ..._object, geneSecondaryIds: filteredGeneSecondaryIds };
+	}
+
+	if (_object.alleleSynonyms?.length > 0) {
+		const filteredAlleleSynonyms = [];
+		_object.alleleSynonyms.forEach((syn) => {
+			if (containsMatch(trimmedValue, syn.displayText.toString().toLowerCase()) == 1)
+				filteredAlleleSynonyms.push(syn);
+		});
+		_object = { ..._object, alleleSynonyms: filteredAlleleSynonyms };
+	}
+
+	if (_object.alleleSecondaryIds?.length > 0) {
+		const filteredAlleleSecondaryIds = [];
+		_object.alleleSecondaryIds.forEach((sid) => {
+			if (containsMatch(trimmedValue, sid.secondaryId.toString().toLowerCase()) == 1)
+				filteredAlleleSecondaryIds.push(sid);
+		});
+		_object = { ..._object, alleleSecondaryIds: filteredAlleleSecondaryIds };
 	}
 
 	return _object;
