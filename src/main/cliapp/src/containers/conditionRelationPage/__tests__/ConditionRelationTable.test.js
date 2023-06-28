@@ -52,11 +52,6 @@ describe("<ConditionRelationPage />", () => {
 
 	it("Has the same text in edit mode", async () => {
 
-		//jestdom doesn't support global.structuredClone so it needs to be mocked
-		global.structuredClone = jest.fn(val => {
-			return JSON.parse(JSON.stringify(val));
-		});
-
 		act(() => {
 			renderWithClient(<ConditionRelationPage />);
 		});
