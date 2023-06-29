@@ -50,4 +50,4 @@ ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS opensearch:9200
 ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_PROTOCOL http
 
 # Start the application
-CMD ["java", "-Xms30g", "-Xmx30g", "-jar", "agr_curation_api-runner.jar"]
+CMD ["java", "-XX:InitialRAMPercentage=50", "-XX:MaxRAMPercentage=90", "-jar", "agr_curation_api-runner.jar"]
