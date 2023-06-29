@@ -5,7 +5,7 @@ AWS_ACCT_NR=100225593120
 REG = ${AWS_ACCT_NR}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 EB_S3_BUCKET=elasticbeanstalk-${AWS_DEFAULT_REGION}-${AWS_ACCT_NR}
 
-NET?=alpha
+NET?=dev
 ENV_NAME?=curation-${NET}
 
 GIT_VERSION ?= $(shell git describe --tags)
