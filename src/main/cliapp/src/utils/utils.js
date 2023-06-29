@@ -194,7 +194,7 @@ export function genericConfirmDialog({ header, message, accept, reject }){
 
 function containsMatch(inputValue, selectedItem) {
 	for (const part of inputValue.split(/[^a-z0-9]/i)) {
-		if (selectedItem.indexOf(part) !== -1)
+		if (part.length > 0 && selectedItem.indexOf(part) !== -1)
 			 return 1;
 	}
 	return 0;
@@ -205,82 +205,41 @@ export function filterDropDownObject(inputValue, object){
 	let _object = global.structuredClone(object);
 	
 	if (_object.geneSystematicName) {
-		if (containsMatch(trimmedValue, _object.geneSystematicName.displayText.toString().toLowerCase()) == 0)
+		if (containsMatch(trimmedValue, _object.geneSystematicName.displayText.toString().toLowerCase()) === 0)
 			_object = { ..._object, geneSystematicName: {}};
 	}
 
-	if (_object.synonyms?.length > 0) {
-		const filteredSynonyms = [];
-		_object.synonyms.forEach((synonym) => {
-			let selectedItem = synonym.name ? synonym.name.toString().toLowerCase() : synonym.toString().toLowerCase();
-			if (containsMatch(trimmedValue, selectedItem) == 1)
-				filteredSynonyms.push(synonym);
-		});
-		_object = { ..._object, synonyms: filteredSynonyms };
-	}
+	const listFields = new Map([
+		["synonyms", "name"],
+		["crossReferences", "displayName"],
+		["cross_references", "curie"],
+		["secondaryIdentifiers", ""],
+		["geneSynonyms", "displayText"],
+		["geneSecondaryIds", "secondaryId"],
+		["alleleSynonyms", "displayText"],
+		["alleleSecondaryIds", "secondaryId"]
+	  ]);
 
-	if (_object.crossReferences?.length > 0) {
-		const filteredCrossReferences = [];
-		_object.crossReferences.forEach((xref) => {
-			if (containsMatch(trimmedValue, xref.displayName.toString().toLowerCase()) == 1)
-				filteredCrossReferences.push(xref);
-		});
-		_object = { ..._object, crossReferences: filteredCrossReferences };
-	}
+	listFields.forEach (function(subField, field) {
+		if (_object[field] && _object[field]?.length > 0) {
+			const filteredItems = [];
+			console.log(_object)
+			console.log(field)
+			console.log(_object[field])
+			_object[field].forEach((item) => {
+				let selectedItemValue = "";
+				if ((field === "synonyms" && !item.name) || subField === "") {
+					selectedItemValue = item;
+				} else {
+					selectedItemValue = item[subField];
+				}
 
-	if (_object.cross_references?.length > 0) {
-		const filteredLitSystemCrossReferences = [];
-		_object.cross_references.forEach((xref) => {
-			if (containsMatch(trimmedValue, xref.curie.toString().toLowerCase()) == 1)
-				filteredLitSystemCrossReferences.push(xref);
-		});
-		_object = { ..._object, cross_references: filteredLitSystemCrossReferences };
-	}
-
-	if (_object.secondaryIdentifiers?.length > 0) {
-		const filteredSecondaryIdentifiers = [];
-		_object.secondaryIdentifiers.forEach((sid) => {
-			if (containsMatch(trimmedValue, sid.toString().toLowerCase()) == 1)
-				filteredSecondaryIdentifiers.push(sid);
-		});
-		_object = { ..._object, secondaryIdentifiers: filteredSecondaryIdentifiers };
-	}
-
-	if (_object.geneSynonyms?.length > 0) {
-		const filteredGeneSynonyms = [];
-		_object.geneSynonyms.forEach((syn) => {
-			if (containsMatch(trimmedValue, syn.displayText.toString().toLowerCase()) == 1)
-				filteredGeneSynonyms.push(syn);
-		});
-		_object = { ..._object, geneSynonyms: filteredGeneSynonyms };
-	}
-
-	if (_object.geneSecondaryIds?.length > 0) {
-		const filteredGeneSecondaryIds = [];
-		_object.geneSecondaryIds.forEach((sid) => {
-			if (containsMatch(trimmedValue, sid.secondaryId.toString().toLowerCase()) == 1)
-				filteredGeneSecondaryIds.push(sid);
-		});
-		_object = { ..._object, geneSecondaryIds: filteredGeneSecondaryIds };
-	}
-
-	if (_object.alleleSynonyms?.length > 0) {
-		const filteredAlleleSynonyms = [];
-		_object.alleleSynonyms.forEach((syn) => {
-			if (containsMatch(trimmedValue, syn.displayText.toString().toLowerCase()) == 1)
-				filteredAlleleSynonyms.push(syn);
-		});
-		_object = { ..._object, alleleSynonyms: filteredAlleleSynonyms };
-	}
-
-	if (_object.alleleSecondaryIds?.length > 0) {
-		const filteredAlleleSecondaryIds = [];
-		_object.alleleSecondaryIds.forEach((sid) => {
-			if (containsMatch(trimmedValue, sid.secondaryId.toString().toLowerCase()) == 1)
-				filteredAlleleSecondaryIds.push(sid);
-		});
-		_object = { ..._object, alleleSecondaryIds: filteredAlleleSecondaryIds };
-	}
+				if (containsMatch(trimmedValue, selectedItemValue.toString().toLowerCase()))
+					filteredItems.push(item);
+			});
+			_object[field] = filteredItems;
+		}
+	});
 
 	return _object;
 }
