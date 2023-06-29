@@ -203,12 +203,11 @@ function containsMatch(inputValue, selectedItem) {
 export function filterDropDownObject(inputValue, object){
 	const trimmedValue = trimWhitespace(inputValue.toLowerCase());
 	let _object = global.structuredClone(object);
-	console.log(_object);
+	
 	if (_object.geneSystematicName) {
 		if (containsMatch(trimmedValue, _object.geneSystematicName.displayText.toString().toLowerCase()) == 0)
 			_object = { ..._object, geneSystematicName: {}};
 	}
-	console.log(_object);
 
 	if (_object.synonyms?.length > 0) {
 		const filteredSynonyms = [];
