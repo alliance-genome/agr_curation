@@ -393,9 +393,9 @@ export const RelatedNotesDialog = ({
 						header="Text"
 						body={textTemplate}
 						headerClassName='surface-0'
-						style={{overflowWrap: 'break-word', maxWidth: '35rem'}}
+						className='wrap-word max-w-35rem'
 					/>
-					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} style={{overflowWrap: 'break-word', maxWidth: '25rem'}}/>
+					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} className='wrap-word max-w-25rem'/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
 			</Dialog>
