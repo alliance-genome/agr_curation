@@ -1,6 +1,4 @@
 import React, {useState, useRef} from 'react';
-import {Toast} from 'primereact/toast';
-import {Messages} from 'primereact/messages';
 import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
 import {Tooltip} from 'primereact/tooltip';
