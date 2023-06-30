@@ -28,7 +28,6 @@ import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-
 @RequestScoped
 public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 
@@ -182,7 +181,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getConfidence())) {
 			orthologyResponse.addErrorMessage("confidence", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			confidence = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY, dto.getConfidence());
+			confidence = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY, dto.getConfidence());
 			if (confidence == null)
 				orthologyResponse.addErrorMessage("confidence", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConfidence() + ")");
 		}
@@ -194,7 +193,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 
 		if (orthologyResponse.hasErrors())
 			throw new ObjectValidationException(dto, orthologyResponse.errorMessagesString());
-
+		
 		return generatedOrthologyDAO.persist(orthoPair);
 
 	}

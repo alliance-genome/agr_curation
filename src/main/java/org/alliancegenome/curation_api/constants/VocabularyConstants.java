@@ -32,7 +32,7 @@ public final class VocabularyConstants {
 	public static final String AGM_SUBTYPE_VOCABULARY = "Affected genomic model subtypes";
 	
 	public static final String ORTHOLOGY_BEST_SCORE_VOCABULARY = "Orthology best score";
-	public static final String ORTHOLOGY_CONFIDENCE_VOCABULARY = "Orthology condidence";
+	public static final String ORTHOLOGY_CONFIDENCE_VOCABULARY = "Orthology confidence";
 	public static final String ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET = "Orthology best reverse score";
 	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY = "Orthology prediction methods";
 
