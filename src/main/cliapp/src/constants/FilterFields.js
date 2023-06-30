@@ -108,14 +108,6 @@ export const FIELD_SETS = Object.freeze({
     filterName: "conditionRelationHandleFilter",
     fields: ["conditionRelations.handle"],
   },
-  daConditionRelationsHandleFieldSet: {
-    filterName: "daConditionRelationHandleFilter",
-    fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
-  },
-  daConditionRelationsSummaryFieldSet: {
-    filterName: "conditionRelationsFilter",
-    fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name"],
-  },
   conditionTaxonFieldSet: {
     filterName: "conditionTaxonFilter",
     fields: ["conditionTaxon.curie", "conditionTaxon.name"],
@@ -123,6 +115,14 @@ export const FIELD_SETS = Object.freeze({
   confidenceFieldSet: {
     filterName: "confidenceFilter",
     fields: ["confidence.name"],
+  },
+  daConditionRelationsHandleFieldSet: {
+    filterName: "daConditionRelationHandleFilter",
+    fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
+  },
+  daConditionRelationsSummaryFieldSet: {
+    filterName: "conditionRelationsFilter",
+    fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name"],
   },
   createdByFieldSet: {
     filterName: "createdByFilter",
@@ -535,7 +535,7 @@ export const FILTER_CONFIGS = Object.freeze({
   geneticModifierRelationFilterConfig:      { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticModifierRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticSexFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticSexFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   secondaryDataProviderFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.secondaryDataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
-  evidenceCodesFilterConfig:				{ filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
+  evidenceCodesFilterConfig:				        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
 
   conditionRelationTypeFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.conditionRelationTypeFieldSet], aggregationFieldSet: FIELD_SETS.conditionRelationTypeFieldSet },
 
@@ -544,7 +544,7 @@ export const FILTER_CONFIGS = Object.freeze({
   subjectGeneTaxonFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.subjectGeneTaxonFieldSet] },
   objectGeneTaxonFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.objectGeneTaxonFieldSet] },
   isBestScoreFilterConfig:                  { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.isBestScoreFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
-  isBestReverseScoreFilterConfig:           { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.isBestReverseScoreFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
+  isBestScoreReverseFilterConfig:           { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.isBestScoreReverseFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
   confidenceFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.confidenceFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
   predictionMethodsMatchedFilterConfig:     { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.predictionMethodsMatchedFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
   predictionMethodsNotMatchedFilterConfig:  { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.predictionMethodsNotMatchedFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },

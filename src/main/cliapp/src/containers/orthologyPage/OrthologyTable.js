@@ -186,6 +186,24 @@ export const OrthologyTable = () => {
 			body: objectGeneTaxonTemplate
 		},
 		{
+			field: "isBestScore.name",
+			header: "Best Score",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.isBestScoreFilterConfig
+		},
+		{
+			field: "isBestScoreReverse.name",
+			header: "Best Reverse Score",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.isBestScoreReverseFilterConfig
+		},
+		{
+			field: "confidence.name",
+			header: "Confidence",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.confidenceFilterConfig
+		},
+		{
 			field: "predictionMethodsMatched.name",
 			header: "Prediction Methods Matched",
 			sortable: isEnabled,
