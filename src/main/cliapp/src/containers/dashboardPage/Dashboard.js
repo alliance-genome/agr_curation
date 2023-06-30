@@ -21,6 +21,7 @@ export const Dashboard = () => {
 		ConditionRelation: { name: "Condition Relations", link: "/#/conditionRelations", type: 'entity', },
 		Molecule: { name: "Molecules", link: "/#/molecules", type: 'entity', },
 		Reference: { name: "Literature References", link: "/#/references", type: 'entity', },
+		Orthology: { name: "Orthology Pairs", link: "/#/orthology", type: 'entity', },
 
 		DOTerm: { name: "DO", link: "/#/ontology/do", type: 'ontology', },
 		CHEBITerm: { name: "CHEBI", link: "/#/ontology/chebi", type: 'ontology', },

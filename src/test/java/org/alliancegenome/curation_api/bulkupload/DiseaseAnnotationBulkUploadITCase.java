@@ -124,7 +124,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
-		loadGenes(List.of(gene, gene2, withGene, withGene2), "NCBITaxon:6239", symbolTerm, dataProvider);
+		loadGenes(List.of(gene, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
+		loadGenes(List.of(withGene, withGene2), "NCBITaxon:9606", symbolTerm, dataProvider);
 		loadAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "fish", dataProvider);

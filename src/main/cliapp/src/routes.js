@@ -21,6 +21,7 @@ import { ReferencePage } from './containers/referencePage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 import { VocabulariesPage } from './containers/vocabularyPage';
 import { VocabularyTermSetPage } from './containers/vocabularyTermSetPage';
+import { OrthologyPage } from './containers/orthologyPage';
 
 import { FMSComponent } from './components/FMSComponent';
 import { MetricsComponent } from './components/MetricsComponent';
@@ -51,6 +52,7 @@ export default (
 		<SecureRoute path="/vocabularytermsets" render={() => <ErrorBoundary><VocabularyTermSetPage /></ErrorBoundary>} />
 		<SecureRoute path="/resourcedescriptors" render={() => <ErrorBoundary><ResourceDescriptorsPage /></ErrorBoundary>} />
 		<SecureRoute path="/resourcedescriptorpages" render={() => <ErrorBoundary><ResourceDescriptorPagesPage /></ErrorBoundary>} />
+		<SecureRoute path="/orthology" render={() => <ErrorBoundary><OrthologyPage /></ErrorBoundary>} />
 
 		<SecureRoute path="/ontology/eco" render={() => <ErrorBoundary><GeneralOntologyComponent showAbbreviation={true} name="ECO" endpoint="ecoterm" /></ErrorBoundary>} />
 

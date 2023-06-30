@@ -120,6 +120,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "conditionTaxonFilter",
     fields: ["conditionTaxon.curie", "conditionTaxon.name"],
   },
+  confidenceFieldSet: {
+    filterName: "confidenceFilter",
+    fields: ["confidence.name"],
+  },
   createdByFieldSet: {
     filterName: "createdByFilter",
     fields: ["createdBy.uniqueId"],
@@ -252,6 +256,14 @@ export const FIELD_SETS = Object.freeze({
     filterName: "internalFilter",
     fields: ["internal"],
   },
+  isBestScoreFieldSet: {
+    filterName: "isBestScoreFilter",
+    fields: ["isBestScore.name"],
+  },
+  isBestScoreReverseFieldSet: {
+    filterName: "isBestScoreReverseFilter",
+    fields: ["isBestScoreReverse.name"],
+  },
   isExtinctFieldSet: {
     filterName: "isExtinctFilter",
     fields: ["isExtinct"],
@@ -267,6 +279,10 @@ export const FIELD_SETS = Object.freeze({
   modentityidFieldSet: {
     filterName: "modentityidFilter",
     fields: ["modEntityId"],
+  },
+  moderateFilterFieldSet: {
+    filterName: "moderateFilterFilter",
+    fields: ["moderateFilter"],
   },
   modinternalidFieldSet: {
     filterName: "modinternalidFilter",
@@ -288,6 +304,14 @@ export const FIELD_SETS = Object.freeze({
     filterName: "objectFilter",
     fields: ["object.curie", "object.name"],
   },
+  objectGeneFieldSet: {
+    filterName: "objectGeneFilter",
+    fields: ["objectGene.geneSymbol.displayText", "objectGene.geneSymbol.formatText", "objectGene.curie"],
+  },
+  objectGeneTaxonFieldSet: {
+    filterName: "objectGeneTaxonFilter",
+    fields: ["objectGene.taxon.name", "objectGene.taxon.curie"],
+  },
   obsoleteFieldSet: {
     filterName: "obsoleteFilter",
     fields: ["obsolete"],
@@ -296,9 +320,25 @@ export const FIELD_SETS = Object.freeze({
     filterName: "ontologySynonymsFilter",
     fields: ["synonyms.name"],
   },
+  orthologyAggregationFieldSet: {
+    filterName: "orthologyAggregationFilter",
+    fields: ["predictionMethodsMatched.name", "predictionMethodsNotMatched.name", "predictionMethodsNotCalled.name", "confidence.name", "isBestScore.name", "isBestScoreReverse.name"]
+  },
   pageDescriptionFieldSet: {
     filterName: "pageDescriptionFilter",
     fields: ["pageDescription"],
+  },
+  predictionMethodsNotCalledFieldSet: {
+    filterName: "predictionMethodsNotCalledFilter",
+    fields: ["predictionMethodsNotCalled.name"],
+  },
+  predictionMethodsNotMatchedFieldSet: {
+    filterName: "predictionMethodsNotMatchedFilter",
+    fields: ["predictionMethodsNotMatched.name"],
+  },
+  predictionMethodsMatchedFieldSet: {
+    filterName: "predictionMethodsMatchedFilter",
+    fields: ["predictionMethodsMatched.name"],
   },
   prefixFieldSet: {
     filterName: "prefixFilter",
@@ -336,9 +376,21 @@ export const FIELD_SETS = Object.freeze({
     filterName: "smilesFilter",
     fields: ["smiles"],
   },
+  strictFilterFieldSet: {
+    filterName: "strictFilterFilter",
+    fields: ["strictFilter"],
+  },
   subjectFieldSet: {
     filterName: "subjectFilter",
     fields: ["subject.symbol", "subject.name", "subject.curie"],
+  },
+  subjectGeneFieldSet: {
+    filterName: "subjectGeneFilter",
+    fields: ["subjectGene.geneSymbol.displayText", "subjectGene.geneSymbol.formatText", "subjectGene.curie"],
+  },
+  subjectGeneTaxonFieldSet: {
+    filterName: "subjectGeneTaxonFilter",
+    fields: ["subjectGene.taxon.name", "subjectGene.taxon.curie"],
   },
   subtypeFieldSet: {
     filterName: "subtypeFilter",
@@ -486,6 +538,19 @@ export const FILTER_CONFIGS = Object.freeze({
   evidenceCodesFilterConfig:				{ filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
 
   conditionRelationTypeFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.conditionRelationTypeFieldSet], aggregationFieldSet: FIELD_SETS.conditionRelationTypeFieldSet },
+
+  subjectGeneFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.subjectGeneFieldSet] },
+  objectGeneFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.objectGeneFieldSet] },
+  subjectGeneTaxonFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.subjectGeneTaxonFieldSet] },
+  objectGeneTaxonFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.objectGeneTaxonFieldSet] },
+  isBestScoreFilterConfig:                  { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.isBestScoreFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
+  isBestReverseScoreFilterConfig:           { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.isBestReverseScoreFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
+  confidenceFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.confidenceFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
+  predictionMethodsMatchedFilterConfig:     { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.predictionMethodsMatchedFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
+  predictionMethodsNotMatchedFilterConfig:  { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.predictionMethodsNotMatchedFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
+  predictionMethodsNotCalledFilterConfig:   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.predictionMethodsNotCalledFieldSet], aggregationFieldSet: FIELD_SETS.orthologyAggregationFieldSet, useKeywordFields: true },
+  strictFilterFilterConfig:                 { filterComponentType: "dropdown", fieldSets: [FIELD_SETS.strictFilterFieldSet] },
+  moderateFilterFilterConfig:               { filterComponentType: "dropdown", fieldSets: [FIELD_SETS.moderateFilterFieldSet] },
 
   // ALL Auto Complete Filters need to have useKeywordFields: true in order that exact matches come to the top of the list
   acLiteratureCrossReferenceFilterConfig: { filterComponentType: "input", fieldSets: [FIELD_SETS.curieFieldSet, FIELD_SETS.literatureCrossReferenceFieldSet], useKeywordFields: true },
