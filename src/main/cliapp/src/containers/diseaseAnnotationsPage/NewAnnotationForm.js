@@ -717,7 +717,7 @@ export const NewAnnotationForm = ({
 								editorChange={onDropdownExperimentsFieldChange}
 								referenceCurie={newAnnotation.singleReference?.curie}
 								value={newAnnotation.conditionRelations?.[0]?.handle}
-								showClear={false}
+								showClear={true}
 								placeholderText={newAnnotation.conditionRelations?.[0]?.handle}
 								isEnabled={isExperimentEnabled()}
 							/>
@@ -737,6 +737,7 @@ export const NewAnnotationForm = ({
 								options={geneticSexTerms}
 								editorChange={onDropdownFieldChange}
 								value={newAnnotation.geneticSex}
+								showClear={true}
 								className={classNames({'p-invalid': submitted && errorMessages.geneticSex})}
 							/>
 						</div>
