@@ -13,7 +13,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
       - name: Check branching rules
         run: |
           bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
@@ -94,7 +93,6 @@ jobs:
       steps:
         - name: Check out repository code
           uses: actions/checkout@v3
-        - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
         - name: Build docker image
           env:
             ECR_REPOSITORY: agr_curation

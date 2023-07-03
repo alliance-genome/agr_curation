@@ -1,6 +1,17 @@
 # Elastic Beanstalk Files
+.ebextensions/*
 .elasticbeanstalk/*
+# Locally compiled (EB) application zips
+*.zip
+# Github actions workflows
+.github/*
+# Local git configs
 .git
 .gitignore
+# Local complied code and modules
+src/main/webapp/*
 src/main/cliapp/node_modules
-target
+target/*
+build/*
+.classpath
+.factorypath
