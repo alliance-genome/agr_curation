@@ -1,11 +1,14 @@
 RELEASE = alpha
-REG = 100225593120.dkr.ecr.us-east-1.amazonaws.com
-AWS_DEFAULT_REGION := us-east-1
 
-NET?=alpha
+AWS_DEFAULT_REGION := us-east-1
+AWS_ACCT_NR=100225593120
+REG = ${AWS_ACCT_NR}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+EB_S3_BUCKET=elasticbeanstalk-${AWS_DEFAULT_REGION}-${AWS_ACCT_NR}
+
+NET?=dev
 ENV_NAME?=curation-${NET}
 
-GIT_VERSION = $(shell git describe --tags)
+GIT_VERSION ?= $(shell git describe --tags)
 
 .PHONY: docker all
 
@@ -47,7 +50,7 @@ apirun:
 
 docker:
 	docker build --build-arg OVERWRITE_VERSION=${GIT_VERSION} -t ${REG}/agr_curation:${RELEASE} .
-docker-push:
+docker-push: registry-docker-login
 	docker push ${REG}/agr_curation:${RELEASE}
 docker-run:
 	docker run --rm -it -p 8080:8080 --network=curation ${REG}/agr_curation:${RELEASE}
@@ -87,3 +90,16 @@ eb-deploy:
 
 eb-terminate:
 	@eb terminate ${ENV_NAME}
+
+#Wrapper to build and deploy working dir code
+deploy-wd:
+	$(eval GIT_VERSION=$(shell git describe --tags --dirty)-$(shell git rev-parse --abbrev-ref HEAD)-$(shell date +%Y%m%d-%H%M%S))
+# Build and push container
+	$(MAKE) docker GIT_VERSION=${GIT_VERSION} RELEASE=${GIT_VERSION}
+	$(MAKE) docker-push RELEASE=${GIT_VERSION}
+# Create and deploy EB application version
+	sed -i 's/\(AGR_CURATION_RELEASE: \).\+/\1'${GIT_VERSION}'/' .ebextensions/version.config
+	zip -r ${GIT_VERSION}.zip docker-compose.yml .ebextensions/
+	aws s3 cp ${GIT_VERSION}.zip s3://${EB_S3_BUCKET}/curation-app/
+	aws elasticbeanstalk create-application-version --process --application-name curation-app --version-label ${GIT_VERSION} --source-bundle S3Bucket=${EB_S3_BUCKET},S3Key=curation-app/${GIT_VERSION}.zip
+	eb deploy ${ENV_NAME} --version ${GIT_VERSION} -p
