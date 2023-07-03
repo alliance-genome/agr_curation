@@ -36,22 +36,26 @@ import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
+import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
+import org.alliancegenome.curation_api.services.ontology.DpoTermService;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.HpTermService;
 import org.alliancegenome.curation_api.services.ontology.MaTermService;
+import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.ontology.PatoTermService;
 import org.alliancegenome.curation_api.services.ontology.RoTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.alliancegenome.curation_api.services.ontology.VtTermService;
 import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
 import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
 import org.alliancegenome.curation_api.services.ontology.WblsTermService;
@@ -103,6 +107,8 @@ public class BulkLoadJobExecutor {
 	@Inject
 	MaTermService maTermService;
 	@Inject
+	VtTermService vtTermService;
+	@Inject
 	WblsTermService wblsTermService;
 	@Inject
 	FbdvTermService fbdvTermService;
@@ -130,6 +136,12 @@ public class BulkLoadJobExecutor {
 	PatoTermService patoTermService;
 	@Inject
 	WbPhenotypeTermService wbPhenotypeTermService;
+	@Inject
+	DpoTermService dpoTermService;
+	@Inject
+	MmoTermService mmoTermService;
+	@Inject
+	ApoTermService apoTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -226,9 +238,11 @@ public class BulkLoadJobExecutor {
 					config.setLoadOnlyIRIPrefix("MP");
 					processTerms(bulkLoadFile, mpTermService, config);
 				}
-				case RO ->
-					// config.setLoadOnlyIRIPrefix("RO");
+				case RO -> {
+					config.setLoadObjectProperties(true);
+					config.setLoadOnlyIRIPrefix("RO");
 					processTerms(bulkLoadFile, roTermService, config);
+				}
 				case MA -> processTerms(bulkLoadFile, maTermService, config);
 				case WBBT -> processTerms(bulkLoadFile, wbbtTermService, config);
 				case DAO -> {
@@ -260,6 +274,7 @@ public class BulkLoadJobExecutor {
 					processTerms(bulkLoadFile, atpTermService, config);
 				}
 				case XBED -> processTerms(bulkLoadFile, xbedTermService, config);
+				case VT -> processTerms(bulkLoadFile, vtTermService, config);
 				case XSMO -> processTerms(bulkLoadFile, xsmoTermService, config);
 				case OBI -> {
 					config.setLoadOnlyIRIPrefix("OBI");
@@ -270,6 +285,18 @@ public class BulkLoadJobExecutor {
 				case HP -> {
 					config.setLoadOnlyIRIPrefix("HP");
 					processTerms(bulkLoadFile, hpTermService, config);
+				}
+				case DPO -> {
+					config.getAltNameSpaces().add("phenotypic_class");
+					processTerms(bulkLoadFile, dpoTermService, config);
+				}
+				case MMO -> processTerms(bulkLoadFile, mmoTermService, config);
+				case APO -> {
+					config.getAltNameSpaces().add("experiment_type");
+					config.getAltNameSpaces().add("mutant_type");
+					config.getAltNameSpaces().add("observable");
+					config.getAltNameSpaces().add("qualifier");
+					processTerms(bulkLoadFile, apoTermService, config);
 				}
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");

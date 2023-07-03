@@ -21,4 +21,6 @@ public class GenericOntologyLoadConfig {
 	// Can be used to turn of loading of ancestors on large ontologies
 	private Boolean loadAncestors = true;
 
+	// Used to load object properties instead of entities
+	private Boolean loadObjectProperties = false;
 }

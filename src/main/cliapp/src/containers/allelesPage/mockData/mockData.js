@@ -497,9 +497,30 @@ export const data = {
                         "id": 68788446,
                         "secondaryId": "FB:FBal0156260"
                     }
-                ]
+                ],
+                "alleleDatabaseStatus": {
+                    "createdBy": {
+                        "dateCreated": "2022-06-14T15:26:23.29035Z",
+                        "dateUpdated": "2022-06-14T15:26:23.29035Z",
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 8026897,
+                        "uniqueId": "FB:FB_curator"
+                    },
+                    "internal": false,
+                    "obsolete": false,
+                    "dbDateCreated": "2023-06-16T02:49:58.016499Z",
+                    "dbDateUpdated": "2023-06-16T02:49:58.016501Z",
+                    "id": 68788447,
+                    "databaseStatus": {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 91418698,
+                        "name": "approved"
+                    }
+                }
             }
-    ], 
+        ], 
         "totalResults": 1, "returnedRecords": 1
 }
 
@@ -535,6 +556,7 @@ export const mockSettingsData = {
         "Mutation Types",
         "References",
         "Inheritance Modes",
+        "Database Status",
         "In Collection",
         "Is Extinct",
         "Updated By",

@@ -28,5 +28,9 @@ public interface SystemControllerInterface {
 	@GET
 	@Path("/sitesummary")
 	public ObjectResponse<Map<String, Object>> getSiteSummary();
+	
+	@GET
+	@Path("/updatedauniqueids")
+	public void updateDiseaseAnnotationUniqueIds();
 
 }

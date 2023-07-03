@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -101,7 +101,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
 		dbEntity.setSingleReference(singleReference);
 
-		String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dbEntity);
+		String uniqueId = DiseaseAnnotationUniqueIdHelper.getConditionRelationUniqueId(dbEntity);
 		if (checkUniqueness && !uniqueId.equals(dbEntity.getUniqueId())) {
 			SearchResponse<ConditionRelation> crSearchResponse = conditionRelationDAO.findByField("uniqueId", uniqueId);
 			if (crSearchResponse != null) {

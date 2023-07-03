@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdUpdateHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -31,6 +32,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	LoggedInPersonService loggedInPersonService;
 	@Inject
 	PersonService personService;
+	@Inject
+	DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
 
 	@Override
 	@PostConstruct
@@ -100,6 +103,10 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		}
 
 		return null;
+	}
+
+	public void updateUniqueIds() {
+		uniqueIdUpdateHelper.updateDiseaseAnnotationUniqueIds();
 	}
 
 }

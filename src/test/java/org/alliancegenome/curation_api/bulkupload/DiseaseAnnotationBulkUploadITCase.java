@@ -182,7 +182,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0001")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|AGRKB:000000002")).
+			body("entity.uniqueId", is("DATEST:Gene0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
 			body("entity.subject.curie", is(gene)).
 			body("entity.object.curie", is(doTerm)).
 			body("entity.diseaseRelation.name", is(alleleAndGeneDiseaseRelation)).
@@ -262,7 +262,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0001")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:Allele0001|DATEST:Disease0001|AGRKB:000000002")).
+			body("entity.uniqueId", is("DATEST:Allele0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
 			body("entity.subject.curie", is(allele)).
 			body("entity.object.curie", is(doTerm)).
 			body("entity.diseaseRelation.name", is(alleleAndGeneDiseaseRelation)).
@@ -343,7 +343,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0001")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:AGM0001|DATEST:Disease0001|AGRKB:000000002")).
+			body("entity.uniqueId", is("DATEST:AGM0001|is_model_of|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
 			body("entity.subject.curie", is(agm)).
 			body("entity.object.curie", is(doTerm)).
 			body("entity.diseaseRelation.name", is(agmDiseaseRelation)).
@@ -426,7 +426,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:Gene0002|DATEST:Disease0002|AGRKB:000000021")).
+			body("entity.uniqueId", is("DATEST:Gene0002|is_marker_for|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(gene2)).
 			body("entity.object.curie", is(doTerm2)).
 			body("entity.diseaseRelation.name", is(geneDiseaseRelation)).
@@ -506,7 +506,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:Allele0002|DATEST:Disease0002|AGRKB:000000021")).
+			body("entity.uniqueId", is("DATEST:Allele0002|is_implicated_in|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(allele2)).
 			body("entity.object.curie", is(doTerm2)).
 			body("entity.diseaseRelation.name", is(alleleAndGeneDiseaseRelation)).
@@ -587,7 +587,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:AGM0002|DATEST:Disease0002|AGRKB:000000021")).
+			body("entity.uniqueId", is("DATEST:AGM0002|is_exacerbated_model_of|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(agm2)).
 			body("entity.object.curie", is(doTerm2)).
 			body("entity.diseaseRelation.name", is(agmDiseaseRelation2)).
@@ -1045,5 +1045,25 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(alleleDaBulkPostEndpoint, daTestFilePath + "EN_02_empty_non_required_fields_level_1_allele_annotation.json");
 		checkSuccessfulBulkLoad(agmDaBulkPostEndpoint, daTestFilePath + "EN_03_empty_non_required_fields_level_1_agm_annotation.json");
 		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "EN_04_empty_non_required_fields_level_2.json");
+	}
+	
+	@Test
+	@Order(24)
+	public void diseaseAnnotationBulkUploadSecondaryIds() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "SI_01_secondary_ids.json");
+	}
+	
+	@Test
+	@Order(25)
+	public void diseaseAnnotationBulkUploadDuplicateNotes() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "DN_01_duplicate_notes.json");
+		
+		RestAssured.given().
+			when().
+			get(geneDaGetEndpoint + "DATEST:DN01").
+			then().
+			statusCode(200).
+			body("entity.modEntityId", is("DATEST:DN01")).
+			body("entity.relatedNotes", hasSize(1));
 	}
 }

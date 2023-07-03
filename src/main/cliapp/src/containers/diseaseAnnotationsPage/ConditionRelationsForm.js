@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -12,30 +12,26 @@ import {ExConAutocompleteTemplate} from "../../components/Autocomplete/ExConAuto
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
-export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled }) => {
-	const [editingRows, setEditingRows] = useState({});
+export const ConditionRelationsForm = ({ dispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
 	const onRowEditChange = (e) => {
-		setEditingRows(e.data);
+		console.log(e);
 	}
 
 	const createNewRelationHandler = (event) => {
 		event.preventDefault();
 
 		let count = conditionRelations ? conditionRelations.length : 0;
-		newAnnotationDispatch({type: "ADD_NEW_RELATION", count})
-		let _editingRows = { ...editingRows, ...{ [`${count}`]: true } };
-		setEditingRows(_editingRows);
-
+		dispatch({type: "ADD_NEW_RELATION", count})
 	};
 
 
 	const onConditionRelationTypeEditorValueChange = (props, event) => {
-		newAnnotationDispatch({
+		dispatch({
 			type: "EDIT_ROW",
 			tableType: "conditionRelations",
 			field: "conditionRelationType",
@@ -62,7 +58,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 
 	const onConditionsEditorValueChange = (event, setValue, props) => {
 		setValue(event.target.value);
-		newAnnotationDispatch({
+		dispatch({
 			type: "EDIT_ROW",
 			tableType: "conditionRelations",
 			field: "conditions",
@@ -103,7 +99,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		newAnnotationDispatch({
+		dispatch({
 			type: "EDIT_ROW",
 			tableType: "conditionRelations",
 			field: "internal",
@@ -127,7 +123,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 	};
 
 	const handleDeleteRelation = (event, props) => {
-		newAnnotationDispatch({type: "DELETE_ROW", tableType: "conditionRelations", showType: "showConditionRelations", index: props.rowIndex})
+		dispatch({type: "DELETE_ROW", tableType: "conditionRelations", showType: "showConditionRelations", index: props.rowIndex})
 	}
 
 	const deleteAction = (props) => {
@@ -140,7 +136,6 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			{/*<h3>Experimental Conditions</h3>*/}
 			{showConditionRelations &&
 				<DataTable value={conditionRelations} dataKey="dataKey" showGridlines editMode='row'
 							 editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>

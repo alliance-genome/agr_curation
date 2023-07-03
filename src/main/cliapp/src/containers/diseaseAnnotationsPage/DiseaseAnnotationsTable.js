@@ -92,6 +92,29 @@ export const DiseaseAnnotationsTable = () => {
 		newAnnotationDispatch({type: "OPEN_DIALOG"})
 	};
 
+	const handleDuplication = (rowData) => {
+		newAnnotationDispatch({type: "DUPLICATE_ROW", rowData});
+		newAnnotationDispatch({type: "SET_IS_ENABLED", value: true});
+		if(rowData.type === "AGMDiseaseAnnotation") {
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: true});
+		}
+		
+		if(rowData.type === "AlleleDiseaseAnnotation") {
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
+		}
+
+		if(rowData.relatedNotes && rowData.relatedNotes.length > 0){
+			newAnnotationDispatch({type: "SET_RELATED_NOTES_EDITING_ROWS", relatedNotes: rowData.relatedNotes})
+		}
+		
+		if(rowData.conditionRelations && rowData.conditionRelations.length > 0){
+			newAnnotationDispatch({type: "SET_CONDITION_RELATIONS_EDITING_ROWS", conditionRelations: rowData.conditionRelations})
+		}
+
+		handleNewAnnotationOpen();
+	}
+
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
 		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
@@ -1400,7 +1423,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
-		filterConfig: FILTER_CONFIGS.dataProviderFilterConfig,
+		filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
 	},
 	{
 		field: "secondaryDataProvider.sourceOrganization.abbreviation",
@@ -1496,6 +1519,8 @@ export const DiseaseAnnotationsTable = () => {
 					deprecateOption={true}
 					modReset={true}
 					widthsObject={widthsObject}
+					handleDuplication={handleDuplication}
+					duplicationEnabled={true}
 				/>
 			</div>
 			<NewAnnotationForm

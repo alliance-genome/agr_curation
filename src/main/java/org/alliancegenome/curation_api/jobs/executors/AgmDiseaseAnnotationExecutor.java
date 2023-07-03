@@ -72,6 +72,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			trackHistory(history, bulkLoadFile);
 
 		} catch (Exception e) {
+			failLoad(bulkLoadFile, e);
 			e.printStackTrace();
 		}
 	}
