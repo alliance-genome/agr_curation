@@ -307,9 +307,6 @@ export const SiteLayout = (props) => {
 										]
 								},
 								{
-										label: 'Orthology', icon: 'pi pi-fw pi-sitemap', to: '/orthology'
-								},
-								{
 										label: 'Other Links', icon: 'pi pi-fw pi-sitemap',
 										items: [
 												{ label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },

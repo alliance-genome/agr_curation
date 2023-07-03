@@ -88,19 +88,7 @@ export const SORT_FIELDS = Object.freeze([
   "memberTerms.name",
   "vocabularyTermSetDescription",
   "synonyms.name",
-  "secondaryIdentifiers",
-  "subjectGene.geneSymbol.displayText",
-  "objectGene.geneSymbol.displayText",
-  "subjectGene.taxon.name",
-  "objectGene.taxon.name",
-  "isBestScore.name",
-  "isBestScoreReverse.name",
-  "confidence.name",
-  "strictFilter",
-  "moderateFilter",
-  "predictionMethodsMatched.name",
-  "predictionMethodsNotMatched.name",
-  "predictionMethodsNotCalled.name"
+  "secondaryIdentifiers"
 ]);
 
 
