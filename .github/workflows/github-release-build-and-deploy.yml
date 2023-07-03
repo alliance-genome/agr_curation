@@ -8,7 +8,6 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
-    - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v1-node16
       with:
@@ -57,7 +56,6 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
-    - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
         cat .ebextensions/version.config
