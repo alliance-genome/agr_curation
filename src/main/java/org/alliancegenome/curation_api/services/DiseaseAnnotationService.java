@@ -146,15 +146,29 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		
 		DataProvider newDataProvider = new DataProvider();
 		DataProvider oldDataProvider = annotation.getDataProvider();
-		
 		newDataProvider.setSourceOrganization(oldDataProvider.getSourceOrganization());	
 		annotation.setDataProvider(newDataProvider);
+		
+		DataProvider oldSecondaryDataProvider = null;
+		if (annotation.getSecondaryDataProvider() != null) {
+			DataProvider newSecondaryDataProvider = new DataProvider();
+			oldSecondaryDataProvider = annotation.getDataProvider();
+			newSecondaryDataProvider.setSourceOrganization(oldSecondaryDataProvider.getSourceOrganization());	
+			annotation.setSecondaryDataProvider(newSecondaryDataProvider);
+		}
 		diseaseAnnotationDAO.merge(annotation);
 		
 		Long xrefId = oldDataProvider.getCrossReference() == null ? null : oldDataProvider.getCrossReference().getId();
 		dataProviderDAO.remove(oldDataProvider.getId());
 		if (xrefId != null)
 			crossReferenceDAO.remove(xrefId);
+		
+		if (oldSecondaryDataProvider != null) {
+			Long secondaryXrefId = oldSecondaryDataProvider.getCrossReference() == null ? null : oldSecondaryDataProvider.getCrossReference().getId();
+			dataProviderDAO.remove(oldSecondaryDataProvider.getId());
+			if (xrefId != null)
+				crossReferenceDAO.remove(secondaryXrefId);
+		}
 	}
 
 }
