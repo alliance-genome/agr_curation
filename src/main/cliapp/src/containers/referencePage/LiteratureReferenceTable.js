@@ -56,17 +56,6 @@ export const LiteratureReferenceTable = () => {
 				);
 		};
 
-		const shortCitationTemplate = (rowData) => {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`${"SHORT_CITATION_"}${rowData.curie.replace(':', '')}`}>
-						{rowData.shortCitation}
-					</EllipsisTableCell>
-					<Tooltip target={`.${"SHORT_CITATION_"}${rowData.curie.replace(':', '')}`} content={rowData.shortCitation} style={{ width: '450px', maxWidth: '450px' }}/>
-				</>
-			);
-		};
-
 		const citationTemplate = (rowData) => {
 				return (
 						<>
