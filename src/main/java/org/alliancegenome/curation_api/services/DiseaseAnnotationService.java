@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -111,8 +113,12 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		return null;
 	}
 	
+	
+	// TODO remove code below this once SCRUM-3037 resolved
+	private Set<Long> xrefIdsToRemove = new HashSet<>();
+	private Set<Long> dataProviderIdsToRemove = new HashSet<>();
+
 	public void resetDataProviders() {
-		// TODO remove once SCRUM-3037 resolved
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		int page = 0;
 		int limit = 500;
@@ -136,10 +142,18 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			}
 		}
 		pdh.finishProcess();
+		
+		for (Long dataProviderId : dataProviderIdsToRemove) {
+			dataProviderDAO.remove(dataProviderId);
+		}
+		
+		for (Long xrefId : xrefIdsToRemove) {
+			crossReferenceDAO.remove(xrefId);
+		}
 	}
-
-	private void resetDataProvider(Long id) {
-		// TODO remove once SCRUM-3037 resolved
+	
+	@Transactional
+	public void resetDataProvider(Long id) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 		if (annotation == null)
 			return;
@@ -147,27 +161,27 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		DataProvider newDataProvider = new DataProvider();
 		DataProvider oldDataProvider = annotation.getDataProvider();
 		newDataProvider.setSourceOrganization(oldDataProvider.getSourceOrganization());	
-		annotation.setDataProvider(newDataProvider);
+		annotation.setDataProvider(dataProviderDAO.persist(newDataProvider));
 		
 		DataProvider oldSecondaryDataProvider = null;
 		if (annotation.getSecondaryDataProvider() != null) {
 			DataProvider newSecondaryDataProvider = new DataProvider();
 			oldSecondaryDataProvider = annotation.getDataProvider();
 			newSecondaryDataProvider.setSourceOrganization(oldSecondaryDataProvider.getSourceOrganization());	
-			annotation.setSecondaryDataProvider(newSecondaryDataProvider);
+			annotation.setSecondaryDataProvider(dataProviderDAO.persist(newSecondaryDataProvider));
 		}
 		diseaseAnnotationDAO.merge(annotation);
 		
 		Long xrefId = oldDataProvider.getCrossReference() == null ? null : oldDataProvider.getCrossReference().getId();
-		dataProviderDAO.remove(oldDataProvider.getId());
+		dataProviderIdsToRemove.add(oldDataProvider.getId());
 		if (xrefId != null)
-			crossReferenceDAO.remove(xrefId);
+			xrefIdsToRemove.add(xrefId);
 		
 		if (oldSecondaryDataProvider != null) {
 			Long secondaryXrefId = oldSecondaryDataProvider.getCrossReference() == null ? null : oldSecondaryDataProvider.getCrossReference().getId();
-			dataProviderDAO.remove(oldSecondaryDataProvider.getId());
-			if (xrefId != null)
-				crossReferenceDAO.remove(secondaryXrefId);
+			dataProviderIdsToRemove.add(oldSecondaryDataProvider.getId());
+			if (secondaryXrefId != null)
+				xrefIdsToRemove.add(secondaryXrefId);
 		}
 	}
 
