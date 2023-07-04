@@ -108,6 +108,14 @@ export const FIELD_SETS = Object.freeze({
     filterName: "conditionRelationHandleFilter",
     fields: ["conditionRelations.handle"],
   },
+  conditionTaxonFieldSet: {
+    filterName: "conditionTaxonFilter",
+    fields: ["conditionTaxon.curie", "conditionTaxon.name"],
+  },
+  confidenceFieldSet: {
+    filterName: "confidenceFilter",
+    fields: ["confidence.name"],
+  },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
     fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
@@ -115,10 +123,6 @@ export const FIELD_SETS = Object.freeze({
   daConditionRelationsSummaryFieldSet: {
     filterName: "conditionRelationsFilter",
     fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name"],
-  },
-  conditionTaxonFieldSet: {
-    filterName: "conditionTaxonFilter",
-    fields: ["conditionTaxon.curie", "conditionTaxon.name"],
   },
   createdByFieldSet: {
     filterName: "createdByFilter",
@@ -288,6 +292,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "objectFilter",
     fields: ["object.curie", "object.name"],
   },
+  objectGeneFieldSet: {
+    filterName: "objectGeneFilter",
+    fields: ["objectGene.geneSymbol.displayText", "objectGene.geneSymbol.formatText", "objectGene.curie"],
+  },
   obsoleteFieldSet: {
     filterName: "obsoleteFilter",
     fields: ["obsolete"],
@@ -295,6 +303,10 @@ export const FIELD_SETS = Object.freeze({
   ontologySynonymsFieldSet: {
     filterName: "ontologySynonymsFilter",
     fields: ["synonyms.name"],
+  },
+  orthologyAggregationFieldSet: {
+    filterName: "orthologyAggregationFilter",
+    fields: ["predictionMethodsMatched.name", "predictionMethodsNotMatched.name", "predictionMethodsNotCalled.name", "confidence.name", "isBestScore.name", "isBestScoreReverse.name"]
   },
   pageDescriptionFieldSet: {
     filterName: "pageDescriptionFilter",
@@ -339,6 +351,10 @@ export const FIELD_SETS = Object.freeze({
   subjectFieldSet: {
     filterName: "subjectFilter",
     fields: ["subject.symbol", "subject.name", "subject.curie"],
+  },
+  subjectGeneTaxonFieldSet: {
+    filterName: "subjectGeneTaxonFilter",
+    fields: ["subjectGene.taxon.name", "subjectGene.taxon.curie"],
   },
   subtypeFieldSet: {
     filterName: "subtypeFilter",
@@ -483,7 +499,7 @@ export const FILTER_CONFIGS = Object.freeze({
   geneticModifierRelationFilterConfig:      { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticModifierRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticSexFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticSexFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   secondaryDataProviderFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.secondaryDataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
-  evidenceCodesFilterConfig:				{ filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
+  evidenceCodesFilterConfig:				        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
 
   conditionRelationTypeFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.conditionRelationTypeFieldSet], aggregationFieldSet: FIELD_SETS.conditionRelationTypeFieldSet },
 

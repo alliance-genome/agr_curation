@@ -29,6 +29,7 @@ import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
+import org.alliancegenome.curation_api.jobs.executors.OrthologyExecutor;
 import org.alliancegenome.curation_api.jobs.executors.ResourceDescriptorExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -165,6 +166,8 @@ public class BulkLoadJobExecutor {
 	MoleculeExecutor moleculeExecutor;
 	@Inject
 	ResourceDescriptorExecutor resourceDescriptorExecutor;
+	@Inject
+	OrthologyExecutor orthologyExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
@@ -198,6 +201,8 @@ public class BulkLoadJobExecutor {
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
 			moleculeExecutor.runLoad(bulkLoadFile);
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ORTHOLOGY) {
+			orthologyExecutor.runLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
 			bulkLoadFile.setRecordCount(0);
 			GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
