@@ -42,7 +42,7 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProvider(dataProvider);
 	}
 
-	public void removeNonUpdated(Pair<String, String> pairToRemove, String taxon) {
+	public void removeNonUpdated(Pair<String, String> pairToRemove) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("subjectGene.curie", pairToRemove.getLeft());
 		params.put("objectGene.curie", pairToRemove.getRight());
