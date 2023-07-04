@@ -47,6 +47,11 @@ public class Reference extends InformationContentEntity {
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@JsonView({View.FieldsOnly.class})
+	private String shortCitation;
+
 	/**
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */

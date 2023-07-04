@@ -90,7 +90,7 @@ public class ReferenceSynchronisationHelper {
 		}
 		ref.setObsolete(false);
 
-		List<CrossReference> xrefs = new ArrayList<CrossReference>();
+		List<CrossReference> xrefs = new ArrayList<>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
 			SearchResponse<CrossReference> xrefResponse = crossReferenceDAO.findByField("referencedCurie", litXref.getCurie());
 			CrossReference xref;
@@ -109,6 +109,7 @@ public class ReferenceSynchronisationHelper {
 		if (CollectionUtils.isNotEmpty(xrefs))
 			ref.setCrossReferences(xrefs);
 
+		ref.setShortCitation(litRef.citationShort);
 		if (!ref.getCurie().equals(originalCurie) && originalCurie != null) {
 			referenceDAO.updateReferenceForeignKeys(originalCurie, ref.getCurie());
 			referenceDAO.remove(originalCurie);

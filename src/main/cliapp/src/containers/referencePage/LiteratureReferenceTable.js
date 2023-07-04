@@ -56,6 +56,17 @@ export const LiteratureReferenceTable = () => {
 				);
 		};
 
+		const shortCitationTemplate = (rowData) => {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`${"SHORT_CITATION_"}${rowData.curie.replace(':', '')}`}>
+						{rowData.shortCitation}
+					</EllipsisTableCell>
+					<Tooltip target={`.${"SHORT_CITATION_"}${rowData.curie.replace(':', '')}`} content={rowData.shortCitation} style={{ width: '450px', maxWidth: '450px' }}/>
+				</>
+			);
+		};
+
 		const citationTemplate = (rowData) => {
 				return (
 						<>
@@ -101,6 +112,12 @@ export const LiteratureReferenceTable = () => {
 						filter: true,
 						body : citationTemplate,
 						filterConfig: FILTER_CONFIGS.citationFilterConfig, 
+				}, {
+						field: "shortCitation",
+						header: "Short Citation",
+						sortable: { isEnabled },
+						filter: true,
+						filterConfig: FILTER_CONFIGS.shortCitationFilterConfig,
 				}
 		];
 		const defaultColumnNames = columns.map((col) => {
