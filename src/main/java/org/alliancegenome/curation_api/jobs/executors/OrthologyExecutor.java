@@ -46,7 +46,8 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			bulkLoadFile.setLinkMLSchemaVersion(version.max());
 			
 			List<Pair<String, String>> orthoPairsLoaded = new ArrayList<>();
-			List<Object[]> orthoPairsBefore = generatedOrthologyService.getAllOrthologyPairsBySubjectGeneDataProvider(fms.getFmsDataSubType());
+			String dataProviderAbbreviation = fms.getFmsDataSubType().equals("HUMAN") ? "OMIM" : fms.getFmsDataSubType();
+			List<Object[]> orthoPairsBefore = generatedOrthologyService.getAllOrthologyPairsBySubjectGeneDataProvider(dataProviderAbbreviation);
 			log.debug("runLoad: Before: total " + orthoPairsBefore.size());
 			
 			bulkLoadFileDAO.merge(bulkLoadFile);
@@ -87,7 +88,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 		ph.startProcess("Deletion/deprecation of orthology pairs " + dataProvider, pairsToRemove.size());
 		for (Pair<String,String> pairToRemove : pairsToRemove) {
 			try {
-				generatedOrthologyService.removeNonUpdated(pairToRemove, dataProvider);
+				generatedOrthologyService.removeNonUpdated(pairToRemove);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
