@@ -8,17 +8,12 @@ import { data, termData } from "../mockData/mockData.js";
 import 'core-js/features/structured-clone';
 
 //skipping for now
-describe.skip("<AllelesTable />", () => {
+describe("<AllelesTable />", () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
 		setupSaveSettingsHandler();
-		//controlled vocab service
-		setupSearchHandler(termData);
-		//table data search
 		setupSearchHandler(data);
-		//evidence component autocomplete
-		setupSearchHandler();
 	});
 
 	it("Renders without crashing", async () => {
@@ -40,19 +35,15 @@ describe.skip("<AllelesTable />", () => {
 	it("Contains Correct Table Data", async () => {
 		let result = await renderWithClient(<AllelesTable />);
 
-
 		const curieTd = await result.findByText(/FB:FBal0196303/i);
 		const nameTd = await result.findByText(/Saccharomyces cerevisiae UAS construct a of Stefancsik/i);
-		const symbolTd = await result.findByText(/Med<sup>UAS.cSa<\/sup>/i);
+		const symbolTd = await result.findByText(/symbol display text/i);
 		const secondaryIdsTd = await result.findByText(/FB:FBal0123136/i);
 		const taxonTd = await result.findByText(/Drosophila melanogaster/i);
 		const referencesTd = await result.findByText(/AGRKB:101000000033001/i);
-		const updatedByTd = await result.findByText(/FB:FB_curator/i);
-		const dateUpdatedTd = await result.findByText(/2023-04-05T02:49:58.012787Z/i);
-		const createdByTd = await result.findByText(/FB:FB_curator/i);
-		const dateCreatedTd = await result.findByText(/2007-06-18T17:00:58.685302Z/i);
-		const internalTd = await result.findByText(/false/i);
-		const obsoleteTd = await result.findByText(/false/i);
+		const updatedByCreatedByArray = await result.findAllByText("FB:FB_curator");
+		const dateUpdatedTd = await result.findByText(/date updated text/i);
+		const dateCreatedTd = await result.findByText(/date created text/i);
 		const alleleDatabaseStatusTd = await result.findByText(/approved/i);
 
 		await waitFor(() => {
@@ -62,12 +53,9 @@ describe.skip("<AllelesTable />", () => {
 			expect(secondaryIdsTd).toBeInTheDocument();
 			expect(taxonTd).toBeInTheDocument();
 			expect(referencesTd).toBeInTheDocument();
-			expect(updatedByTd).toBeInTheDocument();
+			expect(updatedByCreatedByArray.length).toEqual(2);
 			expect(dateUpdatedTd).toBeInTheDocument();
-			expect(createdByTd).toBeInTheDocument();
 			expect(dateCreatedTd).toBeInTheDocument();
-			expect(internalTd).toBeInTheDocument();
-			expect(obsoleteTd).toBeInTheDocument();
 			expect(alleleDatabaseStatusTd).toBeInTheDocument();
 		});
 	});

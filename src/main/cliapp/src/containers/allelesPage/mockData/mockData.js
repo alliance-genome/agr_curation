@@ -19,8 +19,8 @@ export const data = {
                     "id": 8026897,
                     "uniqueId": "FB:FB_curator"
                 },
-                "dateCreated": "2007-06-18T17:00:58.685302Z",
-                "dateUpdated": "2020-11-30T16:30:14.121769Z",
+                "dateCreated": "date created text",
+                "dateUpdated": "date updated text",
                 "internal": false,
                 "obsolete": false,
                 "dbDateUpdated": "2023-04-05T02:49:57.970413Z",
@@ -388,7 +388,7 @@ export const data = {
                         "definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
                     },
                     "formatText": "Med[UAS.cSa]",
-                    "displayText": "Med<sup>UAS.cSa</sup>",
+                    "displayText": "symbol display text",
                     "synonymScope": {
                         "internal": false,
                         "obsolete": false,
