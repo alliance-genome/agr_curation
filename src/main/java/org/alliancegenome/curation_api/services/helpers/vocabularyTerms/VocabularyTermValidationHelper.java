@@ -22,26 +22,30 @@ public class VocabularyTermValidationHelper {
 		
 		Map<String, Map<String,VocabularyTerm>> validationMap = new HashMap<>();
 		
-		for (String vocabularyName : vocabularies) {
-			Map<String, VocabularyTerm> termsInVocab = new HashMap<>();
-			SearchResponse<VocabularyTerm> response = vocabularyTermDAO.findByField("vocabulary.name", vocabularyName);	
-			if (response != null && CollectionUtils.isNotEmpty(response.getResults())) {
-				for (VocabularyTerm term : response.getResults()) {
-					termsInVocab.put(term.getName(), term);
+		if (CollectionUtils.isNotEmpty(vocabularies) ) {
+			for (String vocabularyName : vocabularies) {
+				Map<String, VocabularyTerm> termsInVocab = new HashMap<>();
+				SearchResponse<VocabularyTerm> response = vocabularyTermDAO.findByField("vocabulary.name", vocabularyName);	
+				if (response != null && CollectionUtils.isNotEmpty(response.getResults())) {
+					for (VocabularyTerm term : response.getResults()) {
+						termsInVocab.put(term.getName(), term);
+					}
 				}
+				validationMap.put(vocabularyName, termsInVocab);
 			}
-			validationMap.put(vocabularyName, termsInVocab);
 		}
 		
-		for (String termSet : termSets) {
-			Map<String, VocabularyTerm> termsInSet = new HashMap<>();
-			SearchResponse<VocabularyTerm> response = vocabularyTermDAO.findByField("vocabularyTermSets.name", termSet);	
-			if (response != null && CollectionUtils.isNotEmpty(response.getResults())) {
-				for (VocabularyTerm term : response.getResults()) {
-					termsInSet.put(term.getName(), term);
+		if (CollectionUtils.isNotEmpty(termSets)) {
+			for (String termSet : termSets) {
+				Map<String, VocabularyTerm> termsInSet = new HashMap<>();
+				SearchResponse<VocabularyTerm> response = vocabularyTermDAO.findByField("vocabularyTermSets.name", termSet);	
+				if (response != null && CollectionUtils.isNotEmpty(response.getResults())) {
+					for (VocabularyTerm term : response.getResults()) {
+						termsInSet.put(term.getName(), term);
+					}
 				}
+				validationMap.put(termSet, termsInSet);
 			}
-			validationMap.put(termSet, termsInSet);
 		}
 		
 		return validationMap;
