@@ -41,13 +41,13 @@ import lombok.ToString;
 })
 public class GeneToGeneOrthology extends GeneratedAuditedObject {
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "displayText_keyword", "formatText_keyword"})
+	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private Gene subjectGene;
 	
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "displayText_keyword", "formatText_keyword"})
+	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
