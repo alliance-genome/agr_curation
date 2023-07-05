@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -34,8 +35,8 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		setSQLDao(geneToGeneOrthologyGeneratedDAO);
 	}
 
-	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair) throws ObjectUpdateException {
-		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);		
+	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, Map<String, Map<String, VocabularyTerm>> validTerms) throws ObjectUpdateException {
+		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair, validTerms);		
 	}
 
 	public List<Object[]> getAllOrthologyPairsBySubjectGeneDataProvider(String dataProvider) {

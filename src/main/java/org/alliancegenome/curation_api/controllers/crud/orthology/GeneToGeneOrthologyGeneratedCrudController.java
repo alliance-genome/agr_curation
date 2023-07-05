@@ -28,8 +28,8 @@ public class GeneToGeneOrthologyGeneratedCrudController extends BaseEntityCrudCo
 	}
 
 	@Override
-	public APIResponse updateOrthology(OrthologyIngestFmsDTO orthologyData) {
-		return orthologyExecutor.runLoad(orthologyData);
+	public APIResponse updateOrthology(String dataProvider, OrthologyIngestFmsDTO orthologyData) {
+		return orthologyExecutor.runLoad(orthologyData, dataProvider);
 	}
 
 }

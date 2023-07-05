@@ -41,7 +41,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 	VocabularyTermDAO vocabularyTermDAO;
 
 	@Transactional
-	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ObjectValidationException {
+	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto, Map<String, Map<String, VocabularyTerm>> validTerms) throws ObjectValidationException {
 
 		ObjectResponse<GeneToGeneOrthologyGenerated> orthologyResponse = new ObjectResponse<GeneToGeneOrthologyGenerated>();
 
@@ -119,7 +119,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getIsBestScore())) {
 			orthologyResponse.addErrorMessage("isBestScore", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			isBestScore = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY, dto.getIsBestScore());
+			isBestScore = validTerms.get(VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY).get(dto.getIsBestScore());
 			if (isBestScore == null)
 				orthologyResponse.addErrorMessage("isBestScore", ValidationConstants.INVALID_MESSAGE + " (" + dto.getIsBestScore() + ")");
 		}
@@ -129,7 +129,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getIsBestRevScore())) {
 			orthologyResponse.addErrorMessage("isBestRevScore", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			isBestScoreReverse = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET, dto.getIsBestRevScore());
+			isBestScoreReverse = validTerms.get(VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET).get(dto.getIsBestRevScore());
 			if (isBestScoreReverse == null)
 				orthologyResponse.addErrorMessage("isBestRevScore", ValidationConstants.INVALID_MESSAGE + " (" + dto.getIsBestRevScore() + ")");
 		}
@@ -139,7 +139,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsMatched())) {
 			predictionMethodsMatched = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsMatched()) {
-				VocabularyTerm method = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName);
+				VocabularyTerm method = validTerms.get(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY).get(methodName);
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsMatched", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -153,7 +153,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsNotMatched())) {
 			predictionMethodsNotMatched = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsNotMatched()) {
-				VocabularyTerm method = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName);
+				VocabularyTerm method = validTerms.get(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY).get(methodName);
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsNotMatched", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -167,7 +167,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsNotCalled())) {
 			predictionMethodsNotCalled = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsNotCalled()) {
-				VocabularyTerm method = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName);
+				VocabularyTerm method = validTerms.get(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY).get(methodName);
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsNotCalled", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -181,7 +181,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getConfidence())) {
 			orthologyResponse.addErrorMessage("confidence", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			confidence = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY, dto.getConfidence());
+			confidence = validTerms.get(VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY).get(dto.getConfidence());
 			if (confidence == null)
 				orthologyResponse.addErrorMessage("confidence", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConfidence() + ")");
 		}

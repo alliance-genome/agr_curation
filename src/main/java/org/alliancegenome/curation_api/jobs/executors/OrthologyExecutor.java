@@ -3,15 +3,18 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -20,6 +23,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.helpers.vocabularyTerms.VocabularyTermValidationHelper;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.ListUtils;
@@ -34,6 +38,8 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 	@Inject
 	GeneToGeneOrthologyGeneratedService generatedOrthologyService;
+	@Inject
+	VocabularyTermValidationHelper vtHelper;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 		try {
@@ -54,7 +60,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(orthologyData.getData().size());
 			
-			runLoad(history, orthologyData, orthoPairsLoaded);
+			runLoad(history, fms.getFmsDataSubType(), orthologyData, orthoPairsLoaded);
 			
 			runCleanup(history, fms.getFmsDataSubType(), orthoPairsBefore, orthoPairsLoaded);
 
@@ -100,14 +106,25 @@ public class OrthologyExecutor extends LoadFileExecutor {
 	}
 
 
-	public void runLoad(BulkLoadFileHistory history, OrthologyIngestFmsDTO orthologyData, List<Pair<String, String>> orthoPairsAdded) {
+	public void runLoad(BulkLoadFileHistory history, String dataProvider, OrthologyIngestFmsDTO orthologyData, List<Pair<String, String>> orthoPairsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Orthology DTO Update", orthologyData.getData().size());
+		ph.startProcess(dataProvider + "Orthology DTO Update", orthologyData.getData().size());
+		
+		List<String> requiredVocabularyTerms = List.of(
+				VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY,
+				VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY,
+				VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY
+				);
+		List<String> requiredVocabularyTermSetTerms = List.of(
+				VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET
+				);
+				
+		Map<String, Map<String, VocabularyTerm>> validTerms = vtHelper.constructTermValidationMap(requiredVocabularyTerms, requiredVocabularyTermSetTerms);
 
 		for (OrthologyFmsDTO orthoPairDTO : orthologyData.getData()) {
 			try {
-				GeneToGeneOrthologyGenerated orthoPair = generatedOrthologyService.upsert(orthoPairDTO);
+				GeneToGeneOrthologyGenerated orthoPair = generatedOrthologyService.upsert(orthoPairDTO, validTerms);
 				history.incrementCompleted();
 				if (orthoPairsAdded != null)
 					orthoPairsAdded.add(Pair.of(orthoPair.getSubjectGene().getCurie(), orthoPair.getObjectGene().getCurie()));
@@ -125,11 +142,11 @@ public class OrthologyExecutor extends LoadFileExecutor {
 	}
 	
 	// Gets called from the API directly
-	public APIResponse runLoad(OrthologyIngestFmsDTO dto) {
+	public APIResponse runLoad(OrthologyIngestFmsDTO dto, String dataProvider) {
 		List<Pair<String, String>> orthoPairsAdded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(dto.getData().size());
-		runLoad(history, dto, orthoPairsAdded);
+		runLoad(history, dataProvider, dto, orthoPairsAdded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
