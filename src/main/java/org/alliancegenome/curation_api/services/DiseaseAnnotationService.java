@@ -115,17 +115,14 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	
 	
 	// TODO remove code below this once SCRUM-3037 resolved
-	private Set<Long> xrefIdsToRemove = new HashSet<>();
-	private Set<Long> dataProviderIdsToRemove = new HashSet<>();
-
 	public void resetDataProviders() {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		int page = 0;
 		int limit = 500;
 		Pagination pagination = new Pagination(page, limit);
 
-		Boolean allSynced = false;
-		while (!allSynced) {
+		Boolean allReset = false;
+		while (!allReset) {
 			pagination.setPage(page);
 			SearchResponse<String> response = diseaseAnnotationDAO.findAllIds(pagination);
 			if (page == 0)
@@ -135,21 +132,47 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				pdh.progressProcess();
 			}
 			page = page + 1;
-			int nrSynced = limit * page;
-			if (nrSynced > response.getTotalResults().intValue()) {
-				nrSynced = response.getTotalResults().intValue();
-				allSynced = true;
+			int nrReset = limit * page;
+			if (nrReset > response.getTotalResults().intValue()) {
+				nrReset = response.getTotalResults().intValue();
+				allReset = true;
 			}
 		}
 		pdh.finishProcess();
 		
-		for (Long dataProviderId : dataProviderIdsToRemove) {
-			dataProviderDAO.remove(dataProviderId);
+		cleanUpDataProviders();
+	}
+	
+	public void cleanUpDataProviders() {
+		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
+		int page = 0;
+		int limit = 500;
+		Pagination pagination = new Pagination(page, limit);
+
+		Boolean allCleaned = false;
+		while (!allCleaned) {
+			pagination.setPage(page);
+			SearchResponse<DataProvider> response = dataProviderDAO.findByField("obsolete", true);
+			if (response != null) {
+				if (page == 0)
+					pdh.startProcess("DataProvider cleanup", response.getTotalResults());
+				for (DataProvider da : response.getResults()) {
+					cleanUpDataProvider(da.getId());
+					pdh.progressProcess();
+				}
+				page = page + 1;
+				int nrCleaned = limit * page;
+				if (nrCleaned > response.getTotalResults().intValue()) {
+					nrCleaned = response.getTotalResults().intValue();
+					allCleaned = true;
+				}
+			} else {
+				allCleaned = true;
+			}
 		}
+		pdh.finishProcess();
 		
-		for (Long xrefId : xrefIdsToRemove) {
-			crossReferenceDAO.remove(xrefId);
-		}
+		cleanUpDataProviders();
 	}
 	
 	@Transactional
@@ -158,8 +181,11 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		if (annotation == null)
 			return;
 		
-		DataProvider newDataProvider = new DataProvider();
 		DataProvider oldDataProvider = annotation.getDataProvider();
+		if (oldDataProvider == null)
+			return;
+		
+		DataProvider newDataProvider = new DataProvider();
 		newDataProvider.setSourceOrganization(oldDataProvider.getSourceOrganization());	
 		annotation.setDataProvider(dataProviderDAO.persist(newDataProvider));
 		
@@ -172,17 +198,33 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		}
 		diseaseAnnotationDAO.merge(annotation);
 		
-		Long xrefId = oldDataProvider.getCrossReference() == null ? null : oldDataProvider.getCrossReference().getId();
-		dataProviderIdsToRemove.add(oldDataProvider.getId());
-		if (xrefId != null)
-			xrefIdsToRemove.add(xrefId);
+		if (oldDataProvider.getCrossReference() != null) {
+			Long xrefId = oldDataProvider.getCrossReference().getId();
+			oldDataProvider.setCrossReference(null);
+			oldDataProvider.setObsolete(true);
+			dataProviderDAO.merge(oldDataProvider);
+			crossReferenceDAO.remove(xrefId);
+		}
 		
 		if (oldSecondaryDataProvider != null) {
-			Long secondaryXrefId = oldSecondaryDataProvider.getCrossReference() == null ? null : oldSecondaryDataProvider.getCrossReference().getId();
-			dataProviderIdsToRemove.add(oldSecondaryDataProvider.getId());
-			if (secondaryXrefId != null)
-				xrefIdsToRemove.add(secondaryXrefId);
+			if (oldSecondaryDataProvider.getCrossReference() != null) {
+				Long xrefId = oldSecondaryDataProvider.getCrossReference().getId();
+				oldSecondaryDataProvider.setCrossReference(null);
+				oldSecondaryDataProvider.setObsolete(true);
+				dataProviderDAO.merge(oldSecondaryDataProvider);
+				crossReferenceDAO.remove(xrefId);
+			}	
 		}
+	}
+	
+	@Transactional
+	public void cleanUpDataProvider(Long id) {
+		DataProvider provider = dataProviderDAO.find(id);
+		if (provider == null)
+			return;
+		
+		if (provider.getObsolete())
+			dataProviderDAO.remove(id);
 	}
 
 }
