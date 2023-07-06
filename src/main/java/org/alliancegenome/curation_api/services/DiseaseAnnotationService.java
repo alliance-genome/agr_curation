@@ -139,8 +139,6 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			}
 		}
 		pdh.finishProcess();
-		
-		cleanUpDataProviders();
 	}
 	
 	public void cleanUpDataProviders() {
