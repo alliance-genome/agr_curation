@@ -1,7 +1,7 @@
 ARG OVERWRITE_VERSION
 
 ### Stage 1: build UI
-FROM node:16 AS BUILD_UI_STAGE
+FROM node:18 AS BUILD_UI_STAGE
 
 WORKDIR /agr_curation
 COPY src/main/cliapp ./cliapp
@@ -15,6 +15,8 @@ ARG OVERWRITE_VERSION
 
 # copy the src code to the container
 COPY ./ ./
+# Use default properties file
+COPY ./src/main/resources/application.properties.defaults ./src/main/resources/application.properties
 # copy the UI build artifacts to the container
 COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/index.html  ./src/main/resources/META-INF/resources/index.html
 COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/favicon.ico ./src/main/resources/META-INF/resources/favicon.ico
@@ -48,4 +50,4 @@ ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS opensearch:9200
 ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_PROTOCOL http
 
 # Start the application
-CMD ["java", "-Xmx15g", "-jar", "agr_curation_api-runner.jar"]
+CMD ["java", "-XX:InitialRAMPercentage=50", "-XX:MaxRAMPercentage=90", "-jar", "agr_curation_api-runner.jar"]

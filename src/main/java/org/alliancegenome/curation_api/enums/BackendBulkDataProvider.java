@@ -1,29 +1,24 @@
 package org.alliancegenome.curation_api.enums;
 
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.FlyDiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.MGIDiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.RGDDiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.SGDDiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.WormDiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ZFINDiseaseAnnotationCurie;
-
 public enum BackendBulkDataProvider {
-	RGD(new RGDDiseaseAnnotationCurie()),
-	MGI(new MGIDiseaseAnnotationCurie()),
-	SGD(new SGDDiseaseAnnotationCurie()),
-	OMIM(new RGDDiseaseAnnotationCurie()),
-	ZFIN(new ZFINDiseaseAnnotationCurie()),
-	FB(new FlyDiseaseAnnotationCurie()),
-	WB(new WormDiseaseAnnotationCurie());
-
-	public DiseaseAnnotationCurie annotationCurie;
+	RGD("NCBITaxon:10116", "RGD:"),
+	MGI("NCBITaxon:10090", "MGI:"),
+	SGD("NCBITaxon:4932", "SGD:"),
+	OMIM("NCBITaxon:9606", "HGNC:"),
+	ZFIN("NCBITaxon:7955", "ZFIN:"),
+	FB("NCBITaxon:7227", "FB:"),
+	WB("NCBITaxon:6239", "WB:");
 	
-	private BackendBulkDataProvider(DiseaseAnnotationCurie annotationCurie) {
-		this.annotationCurie = annotationCurie;
+	public String canonicalTaxonCurie;
+	public String curiePrefix;
+	
+	private BackendBulkDataProvider(String canonicalTaxonCurie, String curiePrefix) {
+		this.canonicalTaxonCurie = canonicalTaxonCurie;
+		this.curiePrefix = curiePrefix;
 	}
 	
-	public static DiseaseAnnotationCurie getAnnotationCurie(String dataProvider) {
+	
+	public static String getCanonicalTaxonCurie(String dataProvider) {
 		BackendBulkDataProvider result = null;
 		for (BackendBulkDataProvider provider : values()) {
 			if (provider.name().equals(dataProvider)) {
@@ -33,6 +28,19 @@ public enum BackendBulkDataProvider {
 		}
 		if (result == null)
 			return null;
-		return result.annotationCurie;
+		return result.canonicalTaxonCurie;
+	}
+	
+	public static String getCuriePrefixFromTaxonCurie(String taxonCurie) {
+		BackendBulkDataProvider result = null;
+		for (BackendBulkDataProvider provider : values()) {
+			if (provider.canonicalTaxonCurie.equals(taxonCurie)) {
+				result = provider;
+				break;
+			}
+		}
+		if (result == null)
+			return null;
+		return result.curiePrefix;
 	}
 }

@@ -28,6 +28,7 @@ These instructions will get you a copy of the project and the API up and running
    *  [Additional deployment steps](#additional-deployment-steps)
    *  [Release versioning](#release-versioning)
    *  [Release Creation](#release-creation)
+   *  [Database](#database)
 -  [Loading Data](#loading-data)
 -  [Submitting Data](#submitting-data)
 
@@ -217,7 +218,7 @@ CONTAINER ID   IMAGE                                   COMMAND                  
 
 ## Building
 
-Before building make sure and create a copy of the application.properties file
+Before building locally, make sure and create a copy of the application.properties file
 
 ```bash
 > cp src/main/resources/application.properties.defaults src/main/resources/application.properties
@@ -443,27 +444,41 @@ after merging into the respective branch to trigger deployment and to ensure
 the new version of the application can function in a consistent state upon and after deployment.
 
 1. Compare the environment variables set in the Elastic Beanstalk environment between the environment you want to deploy to and from (e.g. compare curation-beta to curation-alpha for deployment to beta, or curation-production to curation-beta for deployment to production). This can be done through the [EB console](https://console.aws.amazon.com/elasticbeanstalk/home?region=us-east-1#/application/overview?applicationName=curation-app), or by using the `eb printenv` CLI. Scan for relevant change:
-   *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
-   *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
-   *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
-   *  Removed variables should be cleaned up **after** successfull deployment
-2. Connect to the Environment's Elastic search domain by entering its domain endpoint in Cerebro, and delete all indexes.
-   The domain endpoint URL can be found through the [Amazon OpenSearch console](https://console.aws.amazon.com/esv3/home?region=us-east-1#opensearch/domains), the cerebro UI is available on the application server through HTTP at port 9000.
-3. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup
-   (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
+    *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
+    *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
+    *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
+    *  Removed variables should be cleaned up **after** successfull deployment
+2. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup.  
    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
    before the code causing it would get deployed to the production environment.  
-   To ensure users or loads can not write to the database while it is being reloaded, stop the (beta) application before
-   initiating the DB roll-down and restart it once the DB roll-down completed.
-   ```bash
-   > eb ssh curation-beta -e 'ssh -i $AGR_SSH_PEM_FILE' #Connect to relevant application server
-   > cd /var/app/current
-   > sudo docker-compose stop  #Stop the application
-   #Trigger DB roll-down locally and wait for completion
-   > sudo docker-compose start #(Re)start the application
-   ```
+   The restore function automatically prevents users from writing to the database while it is being reloaded,
+   by temporarily making the target database read-only and restoring in a separated database before renaming.
+    1. For instructions on how to trigger the restore, see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)
+    2. After the restore completed, restart the beta environment app-server to re-apply all flyway migrations
+       that were not yet present in the restored (production) database.
+       ```bash
+       > aws elasticbeanstalk restart-app-server --environment-name curation-beta
+       ```
+    3. Check the logs for errors after app-server restart, which could indicate a DB restore failure
+        and troubleshoot accordingly if necessary to fix any errors.
+3. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
+   Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
 4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
-5. Check the logs for the environment that you're releasing too and ensure that all migrations complete successfully.
+5. Check the logs for the environment that you're releasing to and ensure the application started successfully
+   and that all flyway migrations completed successfully. If errors occured, troubleshoot and fix accordingly.
+    * If the application failed to start due to incompatible indexes (the indexes were not deleted before deployment),
+      delete the indexes and restart the app-server by running
+      ```bash
+      > aws elasticbeanstalk restart-app-server --environment-name curation-<beta|production>
+      ```
+    * If any of the migrations failed, try restarting the application once more,
+      or create a new release to fix the failing migration if the second restart did not resolve the issue:
+      1. Create a new `release/v*` branch from the beta or production branch as appropriate.
+          * Update to the next release candidate (`a` in `vx.y.z-rca`) for fixes to beta, using the beta branch as starting commit
+          * Update to the next patch release (`z` in `vx.y.z`) for fixes to production, using the production branch as starting commit
+      2. Fix the required migration files
+      3. Create a PR to merge the new `release/v*` branch back into beta/production
+      4. repeat the deployment process for this new release (candidate) from the [additional-deployment-steps](#additional-deployment-steps) step 5 (release creation).
 6. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
    System Endpoints section in the swagger UI) and follow-up through the log server to check for progress and errors.
 7. Once reindexing completed, look at the dashboard page (where you deployed to)
@@ -524,6 +539,35 @@ To create a new (pre-)release and deploy to beta or production, do the following
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
 Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
 continue the remaining steps described in the [additional deployment steps section](#additional-deployment-steps).
+
+### Database
+The Curation application connects to the postgres DB using a user called `curation_app`, which is member of a role called `curation_admins`.
+This role and user are used to ensure the database can be closed for all but admin users on initiating a DB restore,
+such that no accidential writes can happen to the postgres database during the restore process to ensure data integrity.
+When restoring to or creating a new postgres server, ensure the `curation_admins` role exists and has a member user called `curation_app`,
+ to ensure the database can be restored with the correct ownerships, and give the `curation_admins` role all permissions to
+ the curation database, the `public` schema, and all tables and sequences in it, and change the default privileges to allow
+ the curation_admins role all permissions on all newly created tables and sequences in the `public` schema.
+
+This can be achieved by connecting to the curation database using the admin (postgres) user (using `psql`)
+and executing the following queries:  
+```sql
+-- Create the role
+CREATE ROLE curation_admins;
+
+-- Create user (change the password)
+CREATE USER curation_app WITH PASSWORD '...';
+-- Grant role to user
+GRANT curation_admins TO curation_app;
+
+-- Grant required privileges to group (role)
+GRANT ALL ON DATABASE curation TO GROUP curation_admins;
+GRANT ALL ON SCHEMA public TO GROUP curation_admins;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO GROUP curation_admins;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO GROUP curation_admins;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO GROUP curation_admins;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO GROUP curation_admins;
+```
 
 ## Loading Data
 

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -10,28 +10,25 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 
-export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRelatedNotes, errorMessages }) => {
-	const [editingRows, setEditingRows] = useState({});
+export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, errorMessages, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
 	const onRowEditChange = (e) => {
-		setEditingRows(e.data);
+		console.log(e);
 	}
 
 	const createNewNoteHandler = (event) => {
 		event.preventDefault();
 
 		let count = relatedNotes ? relatedNotes.length : 0;
-		newAnnotationDispatch({type: "ADD_NEW_NOTE", count})
-		let _editingRows = { ...editingRows, ...{ [`${count}`]: true } };
-		setEditingRows(_editingRows);
+		dispatch({type: "ADD_NEW_NOTE", count})
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "internal", index: props.rowIndex, value: event.value.name});
+		dispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "internal", index: props.rowIndex, value: event.value.name});
 	}
 
 	const internalEditor = (props) => {
@@ -49,7 +46,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onNoteTypeEditorValueChange = (props, event) => {
-		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes",  field: "noteType", index: props.rowIndex, value: event.target.value})
+		dispatch({type: "EDIT_ROW", tableType: "relatedNotes",  field: "noteType", index: props.rowIndex, value: event.target.value})
 	};
 
 	const noteTypeEditor = (props) => {
@@ -69,7 +66,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onFreeTextEditorValueChange = (event, props) => {
-		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "freeText", index: props.rowIndex, value: event.target.value})
+		dispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "freeText", index: props.rowIndex, value: event.target.value})
 	};
 
 	const freeTextEditor = (props, fieldName, errorMessages) => {
@@ -87,7 +84,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const handleDeleteRelatedNote = (event, props) => {
-		newAnnotationDispatch({type: "DELETE_ROW", tableType: "relatedNotes", showType: "showRelatedNotes", index: props.rowIndex})
+		dispatch({type: "DELETE_ROW", tableType: "relatedNotes", showType: "showRelatedNotes", index: props.rowIndex})
 	}
 
 	const deleteAction = (props) => {
@@ -100,10 +97,9 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			{/*<h3>Related Notes</h3>*/}
 			{showRelatedNotes &&
-				<DataTable value={relatedNotes} dataKey="dataKey" showGridlines editMode='row'
-						   editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
+				<DataTable value={relatedNotes} dataKey="dataKey" showGridlines editMode='row' 
+				onRowEditChange={onRowEditChange} editingRows={editingRows} ref={tableRef}>
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' />
 					<Column editor={internalEditor} field="internal" header="Internal" headerClassName='surface-0'/>

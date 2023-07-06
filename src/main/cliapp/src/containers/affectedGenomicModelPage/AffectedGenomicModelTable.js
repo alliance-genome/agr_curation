@@ -6,11 +6,10 @@ import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 
 
 export const AffectedGenomicModelTable = () => {
-	//does this still need to be here? List is the same as columns
-	const defaultVisibleColumns = ["Curie", "Name", "Sub Type", "Taxon"];
 
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [errorMessages, setErrorMessages] = useState({});
@@ -68,6 +67,55 @@ export const AffectedGenomicModelTable = () => {
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
+		},
+		{
+			field: "dataProvider.sourceOrganization.abbreviation",
+			header: "Data Provider",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,
+		},
+		{
+			field: "updatedBy.uniqueId",
+			header: "Updated By",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+		},
+		{
+			field: "dateUpdated",
+			header: "Date Updated",
+			sortable: isEnabled,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
+		},
+		{
+			field: "createdBy.uniqueId",
+			header: "Created By",
+			sortable: isEnabled,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.createdByFilterConfig
+		},
+		{
+			field: "dateCreated",
+			header: "Date Created",
+			sortable: isEnabled,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
+		},
+		{
+			field: "internal",
+			header: "Internal",
+			body: internalTemplate,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.internalFilterConfig,
+			sortable: isEnabled
+		},
+		{
+			field: "obsolete",
+			header: "Obsolete",
+			body: obsoleteTemplate,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+			sortable: isEnabled
 		}
  ];
 
@@ -80,7 +128,7 @@ export const AffectedGenomicModelTable = () => {
 		widthsObject[col.field] = 100 / columns.length;
 	});
 
-	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames, defaultVisibleColumns, widthsObject);
+	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames, undefined, widthsObject);
 
 
 	return (

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -39,9 +42,10 @@ public class FileTransferHelper {
 
 		try {
 			log.info("Downloading File: " + url);
+			Response response = Jsoup.connect(url).followRedirects(true).ignoreContentType(true).execute();
+			URL redirectUrl = response.url();
 			log.info("Saving file to local filesystem: " + saveFilePath.getAbsolutePath());
-			FileUtils.copyURLToFile(new URL(url), saveFilePath);
-
+			FileUtils.copyURLToFile(redirectUrl, saveFilePath);
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			log.info("Deleting old file: " + saveFilePath);

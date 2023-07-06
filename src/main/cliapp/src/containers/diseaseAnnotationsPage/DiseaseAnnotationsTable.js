@@ -92,6 +92,29 @@ export const DiseaseAnnotationsTable = () => {
 		newAnnotationDispatch({type: "OPEN_DIALOG"})
 	};
 
+	const handleDuplication = (rowData) => {
+		newAnnotationDispatch({type: "DUPLICATE_ROW", rowData});
+		newAnnotationDispatch({type: "SET_IS_ENABLED", value: true});
+		if(rowData.type === "AGMDiseaseAnnotation") {
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: true});
+		}
+		
+		if(rowData.type === "AlleleDiseaseAnnotation") {
+			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
+		}
+
+		if(rowData.relatedNotes && rowData.relatedNotes.length > 0){
+			newAnnotationDispatch({type: "SET_RELATED_NOTES_EDITING_ROWS", relatedNotes: rowData.relatedNotes})
+		}
+		
+		if(rowData.conditionRelations && rowData.conditionRelations.length > 0){
+			newAnnotationDispatch({type: "SET_CONDITION_RELATIONS_EDITING_ROWS", conditionRelations: rowData.conditionRelations})
+		}
+
+		handleNewAnnotationOpen();
+	}
+
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
 		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
@@ -717,7 +740,7 @@ export const DiseaseAnnotationsTable = () => {
 		} else if (props.rowData.type === "AlleleDiseaseAnnotation") {
 			subjectFields.push("alleleFullName.formatText", "alleleFullName.displayText", "alleleSymbol.formatText", "alleleSymbol.displayText", "alleleSynonyms.formatText", "alleleSynonyms.displayText", "alleleSecondaryIds.secondaryId");
 		} else if (props.rowData.type === "GeneDiseaseAnnotation") {
-			subjectFields.push("geneFullName.formatText", "geneFullName.displayText", "geneSymbol.formatText", "geneSymbol.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText");
+			subjectFields.push("geneFullName.formatText", "geneFullName.displayText", "geneSymbol.formatText", "geneSymbol.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId");
 		}
 		return subjectFields;
 	};
@@ -771,7 +794,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifiersSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "alleleSymbol.formatText", "alleleFullName.formatText", "alleleFullName.displayText", "alleleSynonyms.formatText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId"];
+		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId", "alleleSymbol.formatText", "alleleFullName.formatText", "alleleFullName.displayText", "alleleSynonyms.formatText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -925,7 +948,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText"];
+		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -1400,7 +1423,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
-		filterConfig: FILTER_CONFIGS.dataProviderFilterConfig,
+		filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
 	},
 	{
 		field: "secondaryDataProvider.sourceOrganization.abbreviation",
@@ -1496,6 +1519,8 @@ export const DiseaseAnnotationsTable = () => {
 					deprecateOption={true}
 					modReset={true}
 					widthsObject={widthsObject}
+					handleDuplication={handleDuplication}
+					duplicationEnabled={true}
 				/>
 			</div>
 			<NewAnnotationForm

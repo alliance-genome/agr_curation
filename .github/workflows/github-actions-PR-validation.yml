@@ -13,7 +13,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
       - name: Check branching rules
         run: |
           bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
@@ -75,10 +74,10 @@ jobs:
         run: |
           git fetch -q origin ${{ github.base_ref }} ${{ github.head_ref }}
           git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }}
-      - name: Setup Node.js (v16)
+      - name: Setup Node.js (v18)
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
       - name: Report Node version
         run: |
           node -v
@@ -94,7 +93,6 @@ jobs:
       steps:
         - name: Check out repository code
           uses: actions/checkout@v3
-        - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
         - name: Build docker image
           env:
             ECR_REPOSITORY: agr_curation

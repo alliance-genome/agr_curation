@@ -70,7 +70,7 @@ export class DataLoadService extends BaseAuthService {
 
 		getBackendBulkLoadTypes(loadType) {
 				const bulkLoadTypes = {
-						BulkFMSLoad: ["MOLECULE"],
+						BulkFMSLoad: ["MOLECULE", "ORTHOLOGY"],
 						BulkURLLoad: ["ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION", "RESOURCE_DESCRIPTOR"],
 						BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
 				};
@@ -85,7 +85,7 @@ export class DataLoadService extends BaseAuthService {
 
 		getOntologyTypes() {
 				return [
-						"ECO", "ZFA", "DO", "RO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO", "ATP", "OBI", "WBPheno", "PATO", "HP"
+					"APO", "ATP", "CHEBI", "DAO", "DO", "DPO", "ECO", "EMAPA", "FBDV", "GO", "HP", "MA", "MMO", "MMUSDV", "MP", "OBI", "PATO", "RO", "SO", "VT", "WBBT", "WBLS", "WBPheno", "XBA_XBS", "XBED", "XCO", "XPO", "XSMO", "ZECO", "ZFA", "ZFS"
 				];
 		}
 

@@ -12,7 +12,7 @@ import org.alliancegenome.curation_api.model.entities.Molecule;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeMetaDataFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeIngestFmsDTO;
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
@@ -24,7 +24,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 		try {
-			MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
+			MoleculeIngestFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeIngestFmsDTO.class);
 			bulkLoadFile.setRecordCount(moleculeData.getData().size());
 			if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
 				AGRCurationSchemaVersion version = Molecule.class.getAnnotation(AGRCurationSchemaVersion.class);
@@ -46,7 +46,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public void runLoad(BulkLoadFileHistory history, MoleculeMetaDataFmsDTO moleculeData) {
+	public void runLoad(BulkLoadFileHistory history, MoleculeIngestFmsDTO moleculeData) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Molecule DTO Update", moleculeData.getData().size());

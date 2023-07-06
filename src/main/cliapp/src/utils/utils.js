@@ -131,29 +131,42 @@ export function getRefString(referenceItem) {
 		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.referencedCurie));
 	}
 
+	if (xrefCuries.length === 0)
+		return referenceItem.curie;
+
 	if (xrefCuries.length === 1)
 		return xrefCuries[0] + ' (' + referenceItem.curie + ')';
-	let primaryXrefCurie = '';
 
+	let sortedCuries = [];
 	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'MGI:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'MGI:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'RGD:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'RGD:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'SGD:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'SGD:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'WB:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'WB:'), 1);
-	} else if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
-		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1);
-	} else {
-		primaryXrefCurie = xrefCuries.splice(0, 1);
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1));
 	}
+	if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'MGI:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'MGI:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'RGD:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'RGD:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'SGD:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'SGD:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'WB:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'WB:'), 1));
+	}
+	if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
+		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1));
+	} 
+	if (xrefCuries.length > 0) {
+		sortedCuries = sortedCuries.concat(xrefCuries.sort());
+	}
+	sortedCuries.push(referenceItem.curie);
+	
+	let primaryXrefCurie = sortedCuries.splice(0, 1);
 
-	return primaryXrefCurie + ' (' + xrefCuries.join('|') + '|' + referenceItem.curie + ')';
+	return primaryXrefCurie + ' (' + sortedCuries.join('|') + ')';
 }
 
 function indexWithPrefix(array, prefix) {
@@ -179,41 +192,54 @@ export function genericConfirmDialog({ header, message, accept, reject }){
 
 }
 
+function containsMatch(inputValue, selectedItem) {
+	for (const part of inputValue.split(/[^a-z0-9]/i)) {
+		if (part.length > 0 && selectedItem.indexOf(part) !== -1)
+			 return 1;
+	}
+	return 0;
+}
+
 export function filterDropDownObject(inputValue, object){
 	const trimmedValue = trimWhitespace(inputValue.toLowerCase());
 	let _object = global.structuredClone(object);
-
-	if (_object.synonyms?.length > 0) {
-		const { synonyms } = _object;
-		const filteredSynonyms = synonyms.filter((synonym) => {
-			let selectedItem = synonym.name ? synonym.name.toString().toLowerCase() : synonym.toString().toLowerCase();
-			return selectedItem.indexOf(trimmedValue) !== -1;
-		});
-		_object = { ..._object, synonyms: filteredSynonyms }
+	
+	if (_object.geneSystematicName) {
+		if (containsMatch(trimmedValue, _object.geneSystematicName.displayText.toString().toLowerCase()) === 0)
+			_object = { ..._object, geneSystematicName: {}};
 	}
 
-	if (_object.crossReferences?.length > 0) {
-		const { crossReferences } = _object;
-		const filteredCrossReferences = crossReferences.filter((crossReference) => {
-			return crossReference.referencedCurie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
-		});
-		_object = { ..._object, crossReferences: filteredCrossReferences }
-	}
+	const listFields = new Map([
+		["synonyms", "name"],
+		["crossReferences", "displayName"],
+		["cross_references", "curie"],
+		["secondaryIdentifiers", ""],
+		["geneSynonyms", "displayText"],
+		["geneSecondaryIds", "secondaryId"],
+		["alleleSynonyms", "displayText"],
+		["alleleSecondaryIds", "secondaryId"]
+	  ]);
 
-	if (_object.cross_references?.length > 0) {
-		const { cross_references } = _object;
-		const filteredCrossReferences = cross_references.filter((cross_reference) => {
-			return cross_reference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
-		});
-		_object = { ..._object, cross_references: filteredCrossReferences }
-	}
-	if (_object.secondaryIdentifiers?.length > 0) {
-		const { secondaryIdentifiers } = _object;
-		const filteredSecondaryIdentifiers = secondaryIdentifiers.filter((secondaryIdentifier) => {
-			return secondaryIdentifier.toString().toLowerCase().indexOf(trimmedValue) !== -1;
-		});
-		_object = { ..._object, secondaryIdentifiers: filteredSecondaryIdentifiers }
-	}
+	listFields.forEach (function(subField, field) {
+		if (_object[field] && _object[field]?.length > 0) {
+			const filteredItems = [];
+			console.log(_object)
+			console.log(field)
+			console.log(_object[field])
+			_object[field].forEach((item) => {
+				let selectedItemValue = "";
+				if ((field === "synonyms" && !item.name) || subField === "") {
+					selectedItemValue = item;
+				} else {
+					selectedItemValue = item[subField];
+				}
+
+				if (containsMatch(trimmedValue, selectedItemValue.toString().toLowerCase()))
+					filteredItems.push(item);
+			});
+			_object[field] = filteredItems;
+		}
+	});
 
 	return _object;
 }

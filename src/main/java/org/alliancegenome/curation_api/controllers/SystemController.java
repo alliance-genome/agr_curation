@@ -35,4 +35,8 @@ public class SystemController implements SystemControllerInterface {
 		diseaseAnnotationService.resetDataProviders();
 		diseaseAnnotationService.cleanUpDataProviders();
 	}
+	
+	public void updateDiseaseAnnotationUniqueIds() {
+		diseaseAnnotationService.updateUniqueIds();
+	}
 }

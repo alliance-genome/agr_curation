@@ -15,6 +15,7 @@ public final class VocabularyConstants {
 	public static final String AGM_DISEASE_RELATION_VOCABULARY_TERM_SET = "AGM disease relations";
 
 	public static final String ALLELE_INHERITANCE_MODE_VOCABULARY = "Allele inheritance mode vocabulary";
+	public static final String ALLELE_DATABASE_STATUS_VOCABULARY = "Allele database status vocabulary";
 	public static final String ALLELE_FUNCTIONAL_IMPACT_VOCABULARY = "Allele Functional Impact";
 	public static final String ALLELE_COLLECTION_VOCABULARY = "Allele collection vocabulary";
 	public static final String SEQUENCING_STATUS_VOCABULARY = "Sequencing status vocabulary";
@@ -29,5 +30,10 @@ public final class VocabularyConstants {
 	public static final String NAME_TYPE_VOCABULARY = "Name type";
 	
 	public static final String AGM_SUBTYPE_VOCABULARY = "Affected genomic model subtypes";
+	
+	public static final String ORTHOLOGY_BEST_SCORE_VOCABULARY = "Orthology best score";
+	public static final String ORTHOLOGY_CONFIDENCE_VOCABULARY = "Orthology confidence";
+	public static final String ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET = "Orthology best reverse score";
+	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY = "Orthology prediction methods";
 
 }
