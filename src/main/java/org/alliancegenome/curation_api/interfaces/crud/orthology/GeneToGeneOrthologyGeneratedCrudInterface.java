@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud.orthology;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -22,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface GeneToGeneOrthologyGeneratedCrudInterface extends BaseIdCrudInterface<GeneToGeneOrthologyGenerated> {
 
 	@POST
-	@Path("/bulk/orthologyfile")
+	@Path("/bulk/{dataProvider}/orthologyfile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateOrthology(OrthologyIngestFmsDTO orthologyData);
+	public APIResponse updateOrthology(@PathParam("dataProvider") String dataProvider, OrthologyIngestFmsDTO orthologyData);
 }

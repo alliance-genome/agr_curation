@@ -54,7 +54,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(orthologyData.getData().size());
 			
-			runLoad(history, orthologyData, orthoPairsLoaded);
+			runLoad(history, fms.getFmsDataSubType(), orthologyData, orthoPairsLoaded);
 			
 			runCleanup(history, fms.getFmsDataSubType(), orthoPairsBefore, orthoPairsLoaded);
 
@@ -100,10 +100,10 @@ public class OrthologyExecutor extends LoadFileExecutor {
 	}
 
 
-	public void runLoad(BulkLoadFileHistory history, OrthologyIngestFmsDTO orthologyData, List<Pair<String, String>> orthoPairsAdded) {
+	public void runLoad(BulkLoadFileHistory history, String dataProvider, OrthologyIngestFmsDTO orthologyData, List<Pair<String, String>> orthoPairsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Orthology DTO Update", orthologyData.getData().size());
+		ph.startProcess(dataProvider + " Orthology DTO Update", orthologyData.getData().size());
 
 		for (OrthologyFmsDTO orthoPairDTO : orthologyData.getData()) {
 			try {
@@ -125,11 +125,11 @@ public class OrthologyExecutor extends LoadFileExecutor {
 	}
 	
 	// Gets called from the API directly
-	public APIResponse runLoad(OrthologyIngestFmsDTO dto) {
+	public APIResponse runLoad(String dataProvider, OrthologyIngestFmsDTO dto) {
 		List<Pair<String, String>> orthoPairsAdded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(dto.getData().size());
-		runLoad(history, dto, orthoPairsAdded);
+		runLoad(history, dataProvider, dto, orthoPairsAdded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
