@@ -28,6 +28,10 @@ public interface SystemControllerInterface {
 	@GET
 	@Path("/sitesummary")
 	public ObjectResponse<Map<String, Object>> getSiteSummary();
+	
+	@GET
+	@Path("/updatedauniqueids")
+	public void updateDiseaseAnnotationUniqueIds();
 
 	// TODO remove once SCRUM-3037 resolved
 	@GET

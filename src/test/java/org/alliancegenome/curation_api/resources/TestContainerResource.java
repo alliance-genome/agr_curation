@@ -1,10 +1,12 @@
 package org.alliancegenome.curation_api.resources;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import io.quarkus.test.common.*;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 public class TestContainerResource {
@@ -40,6 +42,8 @@ public class TestContainerResource {
 			//map.put("quarkus.hibernate-search-orm.elasticsearch.version", "openseach:1.2.4");
 
 			map.put("quarkus.datasource.jdbc.url", "jdbc:postgresql://" + pgContainer.getHost() + ":" + pgContainer.getMappedPort(5432) + "/curation");
+
+			map.put("quarkus.hibernate-search-orm.elasticsearch.schema-management.required-status-wait-timeout", "180S");
 
 			// map.put("quarkus.elasticsearch.hosts", container.getHost() + ":" +
 			// container.getMappedPort(9200));

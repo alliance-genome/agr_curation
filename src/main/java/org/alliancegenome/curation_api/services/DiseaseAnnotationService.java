@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdUpdateHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -42,6 +43,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	DataProviderDAO dataProviderDAO;
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
 
 	@Override
 	@PostConstruct
@@ -221,6 +224,10 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		
 		if (provider.getObsolete())
 			dataProviderDAO.remove(id);
+	}
+
+	public void updateUniqueIds() {
+		uniqueIdUpdateHelper.updateDiseaseAnnotationUniqueIds();
 	}
 
 }

@@ -23,6 +23,7 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 								 });
 						 }
 				 };
+				 tmp.sort((a, b) => a.optionLabel > b.optionLabel ? 1 : -1);
 				 setSelectableOptions(tmp);
 				 if(currentFilters && currentFilters[fieldSet.filterName]) {
 						 let newSelectedOptions = [];

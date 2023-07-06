@@ -121,6 +121,16 @@
         "PMID:25920551"
       ]
     },
+    "allele_database_status_dto": {
+      "database_status_name": "approved",
+      "created_by_curie": "ALLELETEST:Person0002",
+      "updated_by_curie": "ALLELETEST:Person0001",
+      "date_created": "2022-03-19T22:10:12+00:00",
+      "date_updated": "2022-03-20T22:10:12+00:00",
+      "evidence_curies": [
+        "PMID:25920550"
+      ]
+    },
     "note_dtos": [
       {
         "free_text": "Test note",
