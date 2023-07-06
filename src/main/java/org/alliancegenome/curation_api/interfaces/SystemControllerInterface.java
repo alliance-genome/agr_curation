@@ -33,4 +33,8 @@ public interface SystemControllerInterface {
 	@Path("/updatedauniqueids")
 	public void updateDiseaseAnnotationUniqueIds();
 
+	// TODO remove once SCRUM-3037 resolved
+	@GET
+	@Path("/reset-da-data-providers")
+	public void resetDiseaseAnnotationDataProviders();
 }
