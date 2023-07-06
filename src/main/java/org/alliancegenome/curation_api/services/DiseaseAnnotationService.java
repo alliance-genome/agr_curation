@@ -169,8 +169,6 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			}
 		}
 		pdh.finishProcess();
-		
-		cleanUpDataProviders();
 	}
 	
 	@Transactional
