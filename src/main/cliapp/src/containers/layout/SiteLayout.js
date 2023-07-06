@@ -261,6 +261,8 @@ export const SiteLayout = (props) => {
 											},
 											{ label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
 											{ label: 'Measurement Method Ontology (MMO)', icon: 'pi pi-fw pi-home', to: '/ontology/mmo' },
+											{ label: 'Molecular Interactions Ontology (MI)', icon: 'pi pi-fw pi-home', to: '/ontology/mi' },
+											{ label: 'Mouse Pathology Ontology (MPATH)', icon: 'pi pi-fw pi-home', to: '/ontology/mpath' },
 											{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
 											{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
 											{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },
@@ -275,6 +277,7 @@ export const SiteLayout = (props) => {
 													{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' }
 												]
 											},
+											{ label: 'Protein Modification Ontology (MOD)', icon: 'pi pi-fw pi-home', to: '/ontology/mod' },
 											{ label: 'Relation Ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
 											{ label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
 											{ 
@@ -287,6 +290,7 @@ export const SiteLayout = (props) => {
 													{ label: 'Zebrafish Developmental Stages Ontology (ZFS)', icon: 'pi pi-fw pi-home', to: '/ontology/zfs' }
 												]
 											},
+											{ label: 'Uberon Ontology (UBERON)', icon: 'pi pi-fw pi-home', to: '/ontology/uberon' },
 											{ label: 'Vertebrate Trait Ontology (VT)', icon: 'pi pi-fw pi-home', to: '/ontology/vt' },
 											{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' }											
 										]
