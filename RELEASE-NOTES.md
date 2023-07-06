@@ -2,6 +2,10 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.20.1
+ * Fixes
+ 	* Temporary endpoint to reset data provider on all disease annotations (SCRUM-3037)
+
 ## v0.20.0
  * New features
    * Modify curation data submission API endpoint to include a "no clean up" option boolean (SCRUM-2932)

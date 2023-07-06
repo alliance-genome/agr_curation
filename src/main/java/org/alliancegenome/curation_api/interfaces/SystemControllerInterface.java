@@ -29,4 +29,8 @@ public interface SystemControllerInterface {
 	@Path("/sitesummary")
 	public ObjectResponse<Map<String, Object>> getSiteSummary();
 
+	// TODO remove once SCRUM-3037 resolved
+	@GET
+	@Path("/reset-da-data-providers")
+	public void resetDiseaseAnnotationDataProviders();
 }
