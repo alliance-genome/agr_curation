@@ -98,7 +98,7 @@ export const GenericDataTable = (props) => {
 				tableState = {tableState}
 				defaultColumnNames = {defaultColumnNames}
 				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
-				buttons = {headerButtons ? headerButtons() : undefined}
+				buttons = {headerButtons ? headerButtons(!isEnabled) : undefined}
 				tableStateConfirm = {tableStateConfirm}
 				setToModDefault = {setToModDefault}
 				resetTableState = {resetTableState}
@@ -275,7 +275,7 @@ export const GenericDataTable = (props) => {
 					{duplicationEnabled &&
 						<Column field="duplicate" 
 						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>} 
-						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={false}/>} 
+						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={!isEnabled}/>} 
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}

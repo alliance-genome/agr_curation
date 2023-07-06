@@ -1485,10 +1485,10 @@ export const DiseaseAnnotationsTable = () => {
 
 	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames, undefined, widthsObject);
 
-	const headerButtons = () => {
+	const headerButtons = (disabled=false) => {
 		return (
 			<>
-				<Button label="New Annotation" icon="pi pi-plus" onClick={handleNewAnnotationOpen} />&nbsp;&nbsp;
+				<Button label="New Annotation" icon="pi pi-plus" onClick={handleNewAnnotationOpen} disabled={disabled} />&nbsp;&nbsp;
 			</>
 		);
 	};
