@@ -14,5 +14,9 @@ export class AlleleService extends BaseAuthService {
 		const deletionService = new DeletionService();
 		return await deletionService.delete(`allele`, allele.id);
 	}
+
+	async getAllele(curie) { 
+		return this.api.get(`/allele/${curie}`);
+	}
 }
 
