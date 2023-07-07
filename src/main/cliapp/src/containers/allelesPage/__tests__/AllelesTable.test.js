@@ -4,10 +4,9 @@ import { renderWithClient } from '../../../tools/jest/utils';
 import { AllelesTable } from "../AllelesTable";
 import { setLocalStorage } from "../../../tools/jest/setupTests";
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
-import { data, termData } from "../mockData/mockData.js";
+import { data } from "../mockData/mockData.js";
 import 'core-js/features/structured-clone';
 
-//skipping for now
 describe("<AllelesTable />", () => {
 	beforeEach(() => {
 		setupFindHandler();
