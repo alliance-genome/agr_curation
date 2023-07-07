@@ -7,13 +7,11 @@ import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSe
 import { data } from "../mockData/mockData";
 import 'core-js/features/structured-clone';
 
-//is having the same issue as alleles table now
-describe.skip("<GenesPage />", () => {
+describe("<GenesPage />", () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
 		setupSaveSettingsHandler();
-		setupSearchHandler();
 		setupSearchHandler(data);
 	});
 
@@ -35,13 +33,14 @@ describe.skip("<GenesPage />", () => {
 	it("The table contains correct data", async () => {
 		let result = await renderWithClient(<GenesPage />);
 
-		const curieTd = await result.findByText(/WB:WBGene00002975/i);
+		const curieTd = await result.findByText(/WB:WBGene00003771/i);
 		const nameTd = await result.findByText(/LEVamisole resistant 8/i);
 		const symbolTd = await result.findByText(/lev-8/i); 
 		const synonymsTd = await result.findByText(/acr-13/i); 
 		const secondaryIdsTd = await result.findByText(/WB:WBGene00000052/i); 
-		const systematicNameTd = await result.findByText(/C35C5.5/i); 
+		const systematicNameTd = await result.findByText("C35C5.5"); 
 		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
+
 
 		await waitFor(() => {
 			expect(curieTd).toBeInTheDocument();
