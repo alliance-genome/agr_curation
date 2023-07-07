@@ -5,18 +5,18 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	public <E extends NameSlotAnnotation> ObjectResponse<E> validateNameSlotAnnotationDTO(E annotation, NameSlotAnnotationDTO dto) {
 		ObjectResponse<E> nsaResponse = validateSlotAnnotationDTO(annotation, dto);
@@ -41,7 +41,7 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 		}
 
 		if (StringUtils.isNotBlank(dto.getSynonymScopeName())) {
-			VocabularyTerm synonymScope = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, dto.getSynonymScopeName());
+			VocabularyTerm synonymScope = vocabularyTermService.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, dto.getSynonymScopeName()).getEntity();
 			if (synonymScope == null)
 				nsaResponse.addErrorMessage("synonym_scope", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSynonymScopeName() + ")");
 			annotation.setSynonymScope(synonymScope);

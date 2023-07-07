@@ -13,8 +13,8 @@ import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.model.entities.AllianceMember;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -25,9 +25,9 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 
 	@Inject
 	@AuthenticatedUser
-	protected LoggedInPerson authenticatedPerson;
+	protected Person authenticatedPerson;
 	@Inject
-	LoggedInPersonService loggedInPersonService;
+	PersonService personService;
 	@Inject
 	DataProviderDAO dataProviderDAO;
 	@Inject

@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -32,7 +32,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	@Inject
 	@AuthenticatedUser
-	LoggedInPerson authenticatedPerson;
+	Person authenticatedPerson;
 
 	public E findByCurieOrSecondaryId(String id) {
 		

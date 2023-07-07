@@ -22,7 +22,6 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -395,10 +394,10 @@ public class BaseITCase {
 	}
 	
 	public Person createPerson(String uniqueId) {
-		LoggedInPerson person = new LoggedInPerson();
+		Person person = new Person();
 		person.setUniqueId(uniqueId);
 		
-		ObjectResponse<LoggedInPerson> response = RestAssured.given().
+		ObjectResponse<Person> response = RestAssured.given().
 				contentType("application/json").
 				body(person).
 				when().
@@ -742,8 +741,8 @@ public class BaseITCase {
 		};
 	}
 
-	private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
-		return new TypeRef<ObjectResponse <LoggedInPerson>>() {
+	private TypeRef<ObjectResponse<Person>> getObjectResponseTypeRefLoggedInPerson() {
+		return new TypeRef<ObjectResponse <Person>>() {
 		};
 	}
 

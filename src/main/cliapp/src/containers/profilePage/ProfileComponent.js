@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { LoggedInPersonService } from '../../service/LoggedInPersonService';
+import { PersonService } from '../../service/PersonService';
 import { useOktaAuth } from '@okta/okta-react';
 import { Panel } from 'primereact/panel';
 import { Ripple } from 'primereact/ripple';
@@ -31,7 +31,7 @@ export const ProfileComponent = () => {
 
 	const { authState, oktaAuth } = useOktaAuth();
 
-	const loggedInPersonService = new LoggedInPersonService();
+	const personService = new PersonService();
 	const personSettingsService = new PersonSettingsService();
 
 	const globalResetHandler = () =>{
@@ -63,7 +63,7 @@ export const ProfileComponent = () => {
 	};
 
 	const regenApiToken = () => {
-		loggedInPersonService.regenApiToken().then((data) => {
+		personService.regenApiToken().then((data) => {
 			setLocalUserInfo(data);
 		}).catch((err) => {
 			console.log(err);
@@ -74,7 +74,7 @@ export const ProfileComponent = () => {
 			if (!authState || !authState.isAuthenticated) {
 					setLocalUserInfo(null);
 			} else {
-					loggedInPersonService.getUserInfo().then((data) => {
+					personService.getUserInfo().then((data) => {
 						setLocalUserInfo(data);
 					}).catch((err) => {
 						console.log(err);

@@ -12,7 +12,6 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -23,6 +22,7 @@ import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthol
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,7 +38,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	@Transactional
 	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ObjectValidationException {
@@ -65,7 +65,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 			Map<String, Object> params = new HashMap<>();
 			params.put("subjectGene.curie", subjectGeneCurie);
 			params.put("objectGene.curie", objectGeneCurie);
-			SearchResponse<GeneToGeneOrthologyGenerated> searchResponse = generatedOrthologyDAO.findByParams(null, params);
+			SearchResponse<GeneToGeneOrthologyGenerated> searchResponse = generatedOrthologyDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getSingleResult() != null)
 				orthoPair = searchResponse.getSingleResult();
 		}
@@ -119,7 +119,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getIsBestScore())) {
 			orthologyResponse.addErrorMessage("isBestScore", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			isBestScore = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY, dto.getIsBestScore());
+			isBestScore = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY, dto.getIsBestScore()).getEntity();
 			if (isBestScore == null)
 				orthologyResponse.addErrorMessage("isBestScore", ValidationConstants.INVALID_MESSAGE + " (" + dto.getIsBestScore() + ")");
 		}
@@ -129,7 +129,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getIsBestRevScore())) {
 			orthologyResponse.addErrorMessage("isBestRevScore", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			isBestScoreReverse = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET, dto.getIsBestRevScore());
+			isBestScoreReverse = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET, dto.getIsBestRevScore()).getEntity();
 			if (isBestScoreReverse == null)
 				orthologyResponse.addErrorMessage("isBestRevScore", ValidationConstants.INVALID_MESSAGE + " (" + dto.getIsBestRevScore() + ")");
 		}
@@ -139,7 +139,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsMatched())) {
 			predictionMethodsMatched = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsMatched()) {
-				VocabularyTerm method = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName);
+				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName).getEntity();
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsMatched", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -153,7 +153,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsNotMatched())) {
 			predictionMethodsNotMatched = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsNotMatched()) {
-				VocabularyTerm method = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName);
+				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName).getEntity();
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsNotMatched", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -167,7 +167,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsNotCalled())) {
 			predictionMethodsNotCalled = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsNotCalled()) {
-				VocabularyTerm method = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName);
+				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY, methodName).getEntity();
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsNotCalled", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -181,7 +181,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getConfidence())) {
 			orthologyResponse.addErrorMessage("confidence", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			confidence = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY, dto.getConfidence());
+			confidence = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY, dto.getConfidence()).getEntity();
 			if (confidence == null)
 				orthologyResponse.addErrorMessage("confidence", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConfidence() + ")");
 		}
@@ -209,7 +209,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 	private String convertToAgrCurie(String curie, Integer taxonId) {
 		curie = curie.replaceFirst("^DRSC:", "");
 		if (curie.indexOf(":") == -1) {
-			String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonCurie("NCBITaxon:" + taxonId);
+			String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonId(taxonId);
 			if (prefix != null)
 				curie = prefix + curie;
 		}

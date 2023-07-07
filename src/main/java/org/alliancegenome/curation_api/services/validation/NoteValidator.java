@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -17,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +26,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 	@Inject
 	NoteDAO noteDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	ReferenceService referenceService;
 	@Inject
@@ -116,14 +116,14 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 
 		VocabularyTerm noteType;
 		if (noteVocabularyName == null) {
-			SearchResponse<VocabularyTerm> vtSearchResponse = vocabularyTermDAO.findByField("name", uiEntity.getNoteType().getName());
+			SearchResponse<VocabularyTerm> vtSearchResponse = vocabularyTermService.findByField("name", uiEntity.getNoteType().getName());
 			if (vtSearchResponse == null || vtSearchResponse.getSingleResult() == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
 			noteType = vtSearchResponse.getSingleResult();
 		} else {
-			noteType = vocabularyTermDAO.getTermInVocabulary(noteVocabularyName, uiEntity.getNoteType().getName());
+			noteType = vocabularyTermService.getTermInVocabulary(noteVocabularyName, uiEntity.getNoteType().getName()).getEntity();
 			if (noteType == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;

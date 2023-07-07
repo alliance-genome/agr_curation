@@ -36,8 +36,6 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	@Inject
 	NoteService noteService;
 	@Inject
-	LoggedInPersonService loggedInPersonService;
-	@Inject
 	PersonService personService;
 	@Inject
 	DataProviderDAO dataProviderDAO;
@@ -96,7 +94,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			if (!annotation.getObsolete()) {
 				annotation.setObsolete(true);
 				if (authenticatedPerson.getOktaEmail() != null) {
-					annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+					annotation.setUpdatedBy(personService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
 				} else {
 					annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				}
