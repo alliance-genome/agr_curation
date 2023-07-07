@@ -183,7 +183,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			return;
 		
 		DataProvider newDataProvider = new DataProvider();
-		newDataProvider.setSourceOrganization(oldDataProvider.getSourceOrganization());	
+		newDataProvider.setSourceOrganization(oldDataProvider.getSourceOrganization());
 		annotation.setDataProvider(dataProviderDAO.persist(newDataProvider));
 		
 		DataProvider oldSecondaryDataProvider = null;
