@@ -278,6 +278,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Protein Modification Ontology (MOD)', icon: 'pi pi-fw pi-home', to: '/ontology/mod' },
+											{ label: 'Rat Strain Ontology (RS)', icon: 'pi pi-fw pi-home', to: '/ontology/rs' },
 											{ label: 'Relation Ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
 											{ label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
 											{ 
