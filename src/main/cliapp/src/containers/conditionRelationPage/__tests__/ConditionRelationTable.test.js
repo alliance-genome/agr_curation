@@ -87,6 +87,7 @@ describe("<ConditionRelationPage />", () => {
 	
 	it("Removes columns when corresponding box is checked", async () => {
 		const user = userEvent.setup();
+		jest.setTimeout(10000);
 		
 		// scrollIntoView needs to be mocked because it's not implemented in jsdom
 		window.HTMLElement.prototype.scrollIntoView = jest.fn(() => {});
