@@ -181,9 +181,9 @@ export const GenericDataTable = (props) => {
 		setAllowDelete(false);
 	}
 
-	const deleteAction = (props) => {
+	const deleteAction = (props, disabled) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
+			<Button icon="pi pi-trash" className="p-button-text" disabled={disabled}
 					onClick={() => showDeleteOrDeprecateDialog(props)}/>
 		);
 	}
@@ -268,7 +268,9 @@ export const GenericDataTable = (props) => {
 						/>
 					}
 					{deletionEnabled &&
-						<Column field="delete" editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} filterElement={rowEditorFilterNameHeader}
+						<Column field="delete" 
+						editor={(props) => deleteAction(props, true)} 
+						body={(props) => deleteAction(props, !isEnabled)} filterElement={rowEditorFilterNameHeader}
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
