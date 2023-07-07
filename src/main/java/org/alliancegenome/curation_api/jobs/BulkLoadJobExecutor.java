@@ -49,13 +49,17 @@ import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.HpTermService;
 import org.alliancegenome.curation_api.services.ontology.MaTermService;
+import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
+import org.alliancegenome.curation_api.services.ontology.ModTermService;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
+import org.alliancegenome.curation_api.services.ontology.MpathTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.ontology.PatoTermService;
 import org.alliancegenome.curation_api.services.ontology.RoTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.alliancegenome.curation_api.services.ontology.UberonTermService;
 import org.alliancegenome.curation_api.services.ontology.VtTermService;
 import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
 import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
@@ -143,6 +147,14 @@ public class BulkLoadJobExecutor {
 	MmoTermService mmoTermService;
 	@Inject
 	ApoTermService apoTermService;
+	@Inject
+	MiTermService miTermService;
+	@Inject
+	MpathTermService mpathTermService;
+	@Inject
+	ModTermService modTermService;
+	@Inject
+	UberonTermService uberonTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -303,6 +315,10 @@ public class BulkLoadJobExecutor {
 					config.getAltNameSpaces().add("qualifier");
 					processTerms(bulkLoadFile, apoTermService, config);
 				}
+				case MI -> processTerms(bulkLoadFile, miTermService, config);
+				case MPATH -> processTerms(bulkLoadFile, mpathTermService, config);
+				case MOD -> processTerms(bulkLoadFile, modTermService, config);
+				case UBERON -> processTerms(bulkLoadFile, uberonTermService, config);
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");

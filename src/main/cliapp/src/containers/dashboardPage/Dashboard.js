@@ -55,6 +55,10 @@ export const Dashboard = () => {
 		DPOTerm: { name: "DPO", link: "/#/ontology/dpo", type: 'ontology', },
 		MMOTerm: { name: "MMO", link: "/#/ontology/mmo", type: 'ontology' },
 		APOTerm: { name: "APO", link: "/#/ontology/apo", type: 'ontology', },
+		MITerm: { name: "MI", link: "/#/ontology/mi", type: 'ontology', },
+		MPATHTerm: { name: "MPATH", link: "/#/ontology/mpath", type: 'ontology', },
+		MODTerm: { name: "MOD", link: "/#/ontology/mod", type: 'ontology', },
+		UBERONTerm: { name: "UBERON", link: "/#/ontology/uberon", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },

@@ -88,6 +88,10 @@ export default (
 		<SecureRoute path="/ontology/dpo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="DPO" endpoint="dpoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/mmo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MMO" endpoint="mmoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/apo"	 render={() => <ErrorBoundary><GeneralOntologyComponent showNamespace={true} name="APO" endpoint="apoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/mi"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MI" endpoint="miterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/mpath"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MPATH" endpoint="mpathterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/mod"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MOD" endpoint="modterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/uberon" render={() => <ErrorBoundary><GeneralOntologyComponent name="UBERON" endpoint="uberonterm" /></ErrorBoundary>} />
 
 		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
