@@ -19,7 +19,7 @@ import io.quarkus.logging.Log;
 public class ResourceDescriptorPageService extends BaseEntityCrudService<ResourceDescriptorPage, ResourceDescriptorPageDAO> {
 
 	@Inject
-	ResourceDescriptorPageDAO resourcePageDescriptorPageDAO;
+	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
 	
 	HashMap<String, Date> resourceRequestMap = new HashMap<>();
 	HashMap<String, HashMap<String, ResourceDescriptorPage>> resourcePageCacheMap = new HashMap<>();
@@ -27,7 +27,7 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(resourcePageDescriptorPageDAO);
+		setSQLDao(resourceDescriptorPageDAO);
 	}
 
 	public ResourceDescriptorPage getPageForResourceDescriptor(String resourceDescriptorPrefix, String pageName) {
@@ -67,7 +67,7 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 		params.put("name", pageName);
 		params.put("resourceDescriptor.prefix", resourceDescriptorPrefix);
 
-		SearchResponse<ResourceDescriptorPage> resp = resourcePageDescriptorPageDAO.findByParams(params);
+		SearchResponse<ResourceDescriptorPage> resp = resourceDescriptorPageDAO.findByParams(params);
 		return resp.getSingleResult();
 	}
 	
