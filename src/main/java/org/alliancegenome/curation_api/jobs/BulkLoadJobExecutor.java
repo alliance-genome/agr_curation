@@ -58,6 +58,7 @@ import org.alliancegenome.curation_api.services.ontology.MpathTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.ontology.PatoTermService;
 import org.alliancegenome.curation_api.services.ontology.RoTermService;
+import org.alliancegenome.curation_api.services.ontology.RsTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.ontology.UberonTermService;
 import org.alliancegenome.curation_api.services.ontology.VtTermService;
@@ -155,6 +156,8 @@ public class BulkLoadJobExecutor {
 	ModTermService modTermService;
 	@Inject
 	UberonTermService uberonTermService;
+	@Inject
+	RsTermService rsTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -319,6 +322,7 @@ public class BulkLoadJobExecutor {
 				case MPATH -> processTerms(bulkLoadFile, mpathTermService, config);
 				case MOD -> processTerms(bulkLoadFile, modTermService, config);
 				case UBERON -> processTerms(bulkLoadFile, uberonTermService, config);
+				case RS -> processTerms(bulkLoadFile, rsTermService, config);
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
