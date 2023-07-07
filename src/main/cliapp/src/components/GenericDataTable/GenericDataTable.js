@@ -257,7 +257,7 @@ export const GenericDataTable = (props) => {
 					sortMode="multiple" removableSort={true} onSort={onSort} multiSortMeta={tableState.multiSortMeta}
 					onColReorder={colReorderHandler} reorderableColumns= {true} 
 					resizableColumns= {true} columnResizeMode="expand" showGridlines= {true} onColumnResizeEnd={handleColumnResizeEnd}
-					paginator= {true} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
+					paginator={isEnabled} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} 
