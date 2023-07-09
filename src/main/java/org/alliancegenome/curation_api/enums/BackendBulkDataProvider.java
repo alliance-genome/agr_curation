@@ -7,7 +7,8 @@ public enum BackendBulkDataProvider {
 	OMIM("NCBITaxon:9606", "HGNC:"),
 	ZFIN("NCBITaxon:7955", "ZFIN:"),
 	FB("NCBITaxon:7227", "FB:"),
-	WB("NCBITaxon:6239", "WB:");
+	WB("NCBITaxon:6239", "WB:"),
+	XB("NCBITaxon:8355", "XB:");
 	
 	public String canonicalTaxonCurie;
 	public String curiePrefix;
