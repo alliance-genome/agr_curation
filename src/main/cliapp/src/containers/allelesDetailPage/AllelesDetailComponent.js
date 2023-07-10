@@ -8,14 +8,12 @@ export const AllelesDetailComponent = () => {
 	const [allele, setAllele] = useState();
 	const { curie } = useParams();
 	const { layoutColorMode } = localStorage.getItem("themeSettings");
-	//call service
 	const alleleService = new AlleleService();
-	//retrieve data
+
 	useQuery([curie],
 		() => alleleService.getAllele(curie), 
 		{
 			onSuccess: (result) => {
-				// const alleleString = JSON.stringify(result.data.entity);
 				setAllele(result?.data?.entity);
 			},
 			onError: (error) => {
@@ -25,7 +23,7 @@ export const AllelesDetailComponent = () => {
 			refetchOnWindowFocus: false,
 		}
 	);
-	//display output data
+
 	return(
 		<>
 			<h1>Allele Detail Page</h1>
