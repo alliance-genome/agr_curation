@@ -4,7 +4,6 @@ import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.base.SystemSQLDAO;
 import org.alliancegenome.curation_api.interfaces.SystemControllerInterface;
@@ -38,5 +37,10 @@ public class SystemController implements SystemControllerInterface {
 	
 	public void updateDiseaseAnnotationUniqueIds() {
 		diseaseAnnotationService.updateUniqueIds();
+	}
+
+	@Override
+	public void updateRefreshIntervalOnAllIndexes() {
+		systemSQLDAO.setRefreshInterval();
 	}
 }
