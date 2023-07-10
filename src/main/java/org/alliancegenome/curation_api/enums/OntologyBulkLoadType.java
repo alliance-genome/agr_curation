@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api.enums;
 import org.alliancegenome.curation_api.model.entities.ontology.APOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ATPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
+import org.alliancegenome.curation_api.model.entities.ontology.CLTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.CMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DPOTerm;
@@ -79,7 +81,9 @@ public enum OntologyBulkLoadType {
 	MOD(MODTerm.class),
 	UBERON(UBERONTerm.class),
 	RS(RSTerm.class),
-	PW(PWTerm.class);
+	PW(PWTerm.class),
+	CL(CLTerm.class),
+	CMO(CMOTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 

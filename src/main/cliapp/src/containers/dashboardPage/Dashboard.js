@@ -61,6 +61,8 @@ export const Dashboard = () => {
 		UBERONTerm: { name: "UBERON", link: "/#/ontology/uberon", type: 'ontology', },
 		RSTerm: { name: "RS", link: "/#/ontology/rs", type: 'ontology', },
 		PWTerm: { name: "PW", link: "/#/ontology/pw", type: 'ontology', },
+		CLTerm: { name: "CL", link: "/#/ontology/cl", type: 'ontology', },
+		CMOTerm: { name: "CMO", link: "/#/ontology/cmo", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },

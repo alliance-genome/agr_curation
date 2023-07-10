@@ -236,6 +236,7 @@ export const SiteLayout = (props) => {
 												label: 'Anatomical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
+													{ label: 'Cell Ontology (CL)', icon: 'pi pi-fw pi-home', to: '/ontology/cl' },
 													{ label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
 													{ label: 'Mouse Adult Gross Anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
 													{ label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
@@ -251,6 +252,7 @@ export const SiteLayout = (props) => {
 													{ label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' }
 												]
 											},
+											{ label: 'Clinical Measurement Ontology (CMO)', icon: 'pi pi-fw pi-home', to: '/ontology/cmo' },
 											{ label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
 											{ label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
 											{ 
