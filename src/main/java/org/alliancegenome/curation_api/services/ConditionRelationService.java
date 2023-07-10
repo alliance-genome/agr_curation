@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
@@ -31,7 +30,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 	@Inject
 	ConditionRelationValidator conditionRelationValidator;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	ZecoTermDAO zecoTermDAO;
 	@Inject
@@ -71,12 +70,12 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 		ConditionRelation conditionRelation = new ConditionRelation();
 		conditionRelation.setHandle(experimentName);
 		conditionRelation.setSingleReference(reference);
-		conditionRelation.setConditionRelationType(vocabularyTermDAO.getTermInVocabulary("Condition relation types", "has_condition"));
+		conditionRelation.setConditionRelationType(vocabularyTermService.getTermInVocabulary("Condition relation types", "has_condition").getEntity());
 		ExperimentalCondition condition = new ExperimentalCondition();
 		condition.setUniqueId("ZECO:0000103");
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("curie", "ZECO:0000103");
-		condition.setConditionClass(zecoTermDAO.findByParams(null, params).getSingleResult());
+		condition.setConditionClass(zecoTermDAO.findByParams(params).getSingleResult());
 		conditionRelation.setConditions(List.of(condition));
 		return conditionRelation;
 	}

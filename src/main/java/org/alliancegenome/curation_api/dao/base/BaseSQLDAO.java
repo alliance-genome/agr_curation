@@ -509,6 +509,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			return null;
 		}
 	}
+	
+	public SearchResponse<E> findByParams(Map<String, Object> params) {
+		return findByParams(null, params, null);
+	}
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params) {
 		return findByParams(pagination, params, null);

@@ -9,7 +9,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -29,7 +29,7 @@ public abstract class BaseEntityCrudService<E extends BaseEntity, D extends Base
 
 	@Inject
 	@AuthenticatedUser
-	protected LoggedInPerson authenticatedPerson;
+	protected Person authenticatedPerson;
 
 	protected abstract void init();
 

@@ -53,7 +53,7 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		Map<String, Object> params = new HashMap<>();
 		params.put("subjectGene.curie", pairToRemove.getLeft());
 		params.put("objectGene.curie", pairToRemove.getRight());
-		SearchResponse<GeneToGeneOrthologyGenerated> response = geneToGeneOrthologyGeneratedDAO.findByParams(null, params);
+		SearchResponse<GeneToGeneOrthologyGenerated> response = geneToGeneOrthologyGeneratedDAO.findByParams(params);
 		if (response != null && response.getSingleResult() != null) {
 			geneToGeneOrthologyGeneratedDAO.remove(response.getSingleResult().getId());
 		} else {

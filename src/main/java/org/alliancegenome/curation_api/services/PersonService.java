@@ -1,5 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.UUID;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -12,6 +16,8 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.PersonValidator;
 
+import io.quarkus.logging.Log;
+
 @RequestScoped
 public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 
@@ -20,6 +26,9 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 	@Inject
 	PersonValidator personValidator;
 
+	Date personRequest = null;
+	HashMap<String, Person> personCacheMap = new HashMap<>();
+	
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -28,6 +37,23 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 
 	@Transactional
 	public Person fetchByUniqueIdOrCreate(String uniqueId) {
+		Person person = null;
+		if(personRequest != null) {
+			if(personCacheMap.containsKey(uniqueId)) {
+				person = personCacheMap.get(uniqueId);
+			} else {
+				Log.debug("Person not cached, caching uniqueId: (" + uniqueId + ")");
+				person = findPersonByUniqueIdOrCreateDB(uniqueId);
+				personCacheMap.put(uniqueId, person);
+			}
+		} else {
+			person = findPersonByUniqueIdOrCreateDB(uniqueId);
+			personRequest = new Date();
+		}
+		return person;
+	}
+	
+	private Person findPersonByUniqueIdOrCreateDB(String uniqueId) {
 		SearchResponse<Person> personResponse = personDAO.findByField("uniqueId", uniqueId);
 		if (personResponse != null && personResponse.getResults().size() > 0) {
 			return personResponse.getSingleResult();
@@ -42,7 +68,6 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		if (resp != null && resp.getTotalResults() == 1) {
 			return resp.getSingleResult();
 		}
-
 		return null;
 	}
 
@@ -51,5 +76,21 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 	public ObjectResponse<Person> update(Person uiEntity) {
 		Person dbEntity = personValidator.validatePerson(uiEntity);
 		return new ObjectResponse<>(personDAO.persist(dbEntity));
+	}
+	
+	public Person findLoggedInPersonByOktaEmail(String email) {
+		SearchResponse<Person> resp = personDAO.findByField("oktaEmail", email);
+		if (resp != null && resp.getTotalResults() == 1) {
+			return resp.getSingleResult();
+		}
+
+		return null;
+	}
+
+	@Transactional
+	public Person regenApiToken() {
+		Person user = personDAO.find(authenticatedPerson.getId());
+		user.setApiToken(UUID.randomUUID().toString());
+		return user;
 	}
 }
