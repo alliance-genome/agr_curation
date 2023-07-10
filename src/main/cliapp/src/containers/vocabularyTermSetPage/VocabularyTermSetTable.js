@@ -225,10 +225,10 @@ export const VocabularyTermSetTable = () => {
 
 	const initialTableState = getDefaultTableState("VocabularyTermSets", defaultColumnNames, undefined, widthsObject);
 
-	const headerButtons = () => {
+	const headerButtons = (disabled=false) => {
 		return (
 			<>
-				<Button label="New Vocabulary Term Set" icon="pi pi-plus" onClick={handleNewVocabularyTermSetOpen} />&nbsp;&nbsp;
+				<Button label="New Vocabulary Term Set" icon="pi pi-plus" onClick={handleNewVocabularyTermSetOpen} disabled={disabled} />&nbsp;&nbsp;
 			</>
 		);
 	};
