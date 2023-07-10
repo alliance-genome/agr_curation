@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -14,6 +12,7 @@ import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnno
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

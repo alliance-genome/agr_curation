@@ -3,8 +3,6 @@ package org.alliancegenome.curation_api.services.base;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -15,6 +13,7 @@ import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 public abstract class BaseEntityCrudService<E extends BaseEntity, D extends BaseEntityDAO<E>> {

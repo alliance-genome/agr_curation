@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
@@ -18,6 +16,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.reflections.Reflections;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.Entity;
 
 @ApplicationScoped

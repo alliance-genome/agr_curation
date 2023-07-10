@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.slotAnnotations.geneSlotAnnotations;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -10,6 +8,7 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneS
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

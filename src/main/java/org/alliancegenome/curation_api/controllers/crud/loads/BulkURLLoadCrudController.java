@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.loads;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.loads.BulkURLLoadDAO;
 import org.alliancegenome.curation_api.interfaces.crud.bulkloads.BulkURLLoadCrudInterface;
@@ -11,6 +9,7 @@ import org.alliancegenome.curation_api.services.loads.BulkURLLoadService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class BulkURLLoadCrudController extends BaseEntityCrudController<BulkURLLoadService, BulkURLLoad, BulkURLLoadDAO> implements BulkURLLoadCrudInterface {

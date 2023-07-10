@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
@@ -25,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
 

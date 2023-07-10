@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -13,6 +11,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 
 @RequestScoped

@@ -1,8 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
@@ -19,6 +17,7 @@ import org.alliancegenome.curation_api.services.validation.DataProviderValidator
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

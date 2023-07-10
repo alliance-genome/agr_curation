@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -15,6 +13,7 @@ import org.alliancegenome.curation_api.services.validation.dto.AGMDiseaseAnnotat
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

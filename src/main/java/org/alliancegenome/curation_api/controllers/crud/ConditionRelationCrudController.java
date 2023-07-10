@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.HashMap;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ConditionRelationCrudInterface;
@@ -14,6 +12,7 @@ import org.alliancegenome.curation_api.services.ConditionRelationService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 
 @RequestScoped

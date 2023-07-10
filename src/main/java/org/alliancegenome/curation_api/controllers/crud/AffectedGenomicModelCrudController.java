@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AffectedGenomicModelCrudInterface;
@@ -15,6 +13,7 @@ import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AffectedGenomicModelCrudController extends BaseDTOCrudController<AffectedGenomicModelService, AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> implements AffectedGenomicModelCrudInterface {

@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -10,6 +8,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SecondaryIdSlotAnnotationValidator;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AlleleSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnnotationValidator<AlleleSecondaryIdSlotAnnotation> {

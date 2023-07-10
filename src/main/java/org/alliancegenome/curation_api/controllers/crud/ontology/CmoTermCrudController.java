@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.ontology;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermController;
@@ -10,6 +8,9 @@ import org.alliancegenome.curation_api.interfaces.crud.ontology.CmoTermCrudInter
 import org.alliancegenome.curation_api.model.entities.ontology.CMOTerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.CmoTermService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class CmoTermCrudController extends BaseOntologyTermController<CmoTermService, CMOTerm, CmoTermDAO> implements CmoTermCrudInterface {

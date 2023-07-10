@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.slotAnnotations.geneSlotAnnotations;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationCrudInterface;
@@ -11,6 +9,7 @@ import org.alliancegenome.curation_api.services.slotAnnotations.geneSlotAnnotati
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class GeneFullNameSlotAnnotationCrudController extends BaseEntityCrudController<GeneFullNameSlotAnnotationService, GeneFullNameSlotAnnotation, GeneFullNameSlotAnnotationDAO>

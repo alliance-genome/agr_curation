@@ -3,13 +3,13 @@ package org.alliancegenome.curation_api.services.validation;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.apache.commons.collections.CollectionUtils;
+
+import jakarta.inject.Inject;
 
 public class GenomicEntityValidator extends BiologicalEntityValidator {
 

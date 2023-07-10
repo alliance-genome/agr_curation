@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleCrudInterface;
@@ -15,6 +13,7 @@ import org.alliancegenome.curation_api.services.AlleleService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AlleleCrudController extends BaseDTOCrudController<AlleleService, Allele, AlleleDTO, AlleleDAO> implements AlleleCrudInterface {

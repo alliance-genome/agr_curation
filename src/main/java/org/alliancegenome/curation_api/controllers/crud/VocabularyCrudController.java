@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.interfaces.crud.VocabularyCrudInterface;
@@ -14,6 +12,7 @@ import org.alliancegenome.curation_api.services.VocabularyService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class VocabularyCrudController extends BaseEntityCrudController<VocabularyService, Vocabulary, VocabularyDAO> implements VocabularyCrudInterface {

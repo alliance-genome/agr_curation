@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.document;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseDocumentController;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.interfaces.document.LiteratureReferenceInterface;
@@ -10,6 +8,7 @@ import org.alliancegenome.curation_api.services.LiteratureReferenceService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog

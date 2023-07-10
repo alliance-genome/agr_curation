@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.model.event.EndProcessingEvent;
 import org.alliancegenome.curation_api.model.event.ProcessingEvent;
 import org.alliancegenome.curation_api.model.event.ProgressProcessingEvent;
@@ -10,6 +8,7 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHandler;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ProcessDisplayService implements ProcessDisplayHandler {

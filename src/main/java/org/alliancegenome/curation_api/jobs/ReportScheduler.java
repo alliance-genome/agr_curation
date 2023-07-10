@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.time.ZonedDateTime;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportGroupDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
@@ -24,6 +22,7 @@ import io.quarkus.scheduler.Scheduled;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ReportScheduler {

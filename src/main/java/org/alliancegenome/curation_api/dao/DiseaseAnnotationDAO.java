@@ -1,11 +1,10 @@
 package org.alliancegenome.curation_api.dao;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.Query;
 
 @ApplicationScoped

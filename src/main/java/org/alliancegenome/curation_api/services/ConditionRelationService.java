@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -21,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

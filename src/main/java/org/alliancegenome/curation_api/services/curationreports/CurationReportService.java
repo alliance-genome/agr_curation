@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.curationreports;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
@@ -10,6 +8,7 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

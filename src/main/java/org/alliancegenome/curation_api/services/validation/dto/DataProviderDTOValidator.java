@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
@@ -16,6 +14,7 @@ import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValid
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class DataProviderDTOValidator extends BaseDTOValidator {

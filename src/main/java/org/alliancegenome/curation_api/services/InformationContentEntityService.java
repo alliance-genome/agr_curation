@@ -1,13 +1,12 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.InformationContentEntityDAO;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class InformationContentEntityService extends BaseEntityCrudService<InformationContentEntity, InformationContentEntityDAO> {

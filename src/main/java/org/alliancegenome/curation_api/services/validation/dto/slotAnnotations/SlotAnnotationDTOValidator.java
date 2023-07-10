@@ -3,8 +3,6 @@ package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
@@ -15,6 +13,7 @@ import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValid
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class SlotAnnotationDTOValidator extends BaseDTOValidator {

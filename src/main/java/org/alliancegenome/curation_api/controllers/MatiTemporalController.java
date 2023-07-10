@@ -2,14 +2,13 @@ package org.alliancegenome.curation_api.controllers;
 
 import java.io.IOException;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.model.mati.Identifier;
 import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
 import org.alliancegenome.curation_api.services.mati.MaTIService;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.POST;

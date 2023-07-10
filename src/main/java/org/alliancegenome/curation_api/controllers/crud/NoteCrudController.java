@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.interfaces.crud.NoteCrudInterface;
@@ -11,6 +9,7 @@ import org.alliancegenome.curation_api.services.NoteService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class NoteCrudController extends BaseEntityCrudController<NoteService, Note, NoteDAO> implements NoteCrudInterface {

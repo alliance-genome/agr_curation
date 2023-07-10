@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.validation;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
@@ -14,6 +12,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class DataProviderValidator extends AuditedObjectValidator<DataProvider> {

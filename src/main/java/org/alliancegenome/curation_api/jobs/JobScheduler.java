@@ -3,8 +3,6 @@ package org.alliancegenome.curation_api.jobs;
 import java.io.File;
 import java.time.ZonedDateTime;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadGroupDAO;
@@ -28,6 +26,7 @@ import io.quarkus.scheduler.Scheduled;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class JobScheduler {

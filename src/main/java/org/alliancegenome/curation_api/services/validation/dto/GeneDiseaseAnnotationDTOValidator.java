@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
@@ -23,6 +21,7 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {

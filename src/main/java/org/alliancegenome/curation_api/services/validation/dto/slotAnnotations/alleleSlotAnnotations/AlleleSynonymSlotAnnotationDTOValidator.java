@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -13,6 +11,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.N
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AlleleSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
