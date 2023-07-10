@@ -9,7 +9,7 @@ public enum BackendBulkDataProvider {
 	ZFIN("NCBITaxon:7955", "ZFIN:", 7955),
 	FB("NCBITaxon:7227", "FB:", 7227),
 	WB("NCBITaxon:6239", "WB:", 6239),
-  XB("NCBITaxon:8355", "XB:", 8355);
+	XB("NCBITaxon:8355", "XB:", 8355);
 
 	public String canonicalTaxonCurie;
 	public String curiePrefix;
@@ -36,9 +36,8 @@ public enum BackendBulkDataProvider {
 	}
 	
 	public static String getCuriePrefixFromTaxonId(Integer id) {
-		BackendBulkDataProvider result = null;
 		for (BackendBulkDataProvider provider : values()) {
-			if (provider.idPart == id) {
+			if (id.equals(provider.idPart)) {
 				return provider.curiePrefix;
 			}
 		}
