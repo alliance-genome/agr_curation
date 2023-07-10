@@ -40,6 +40,8 @@ import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelpe
 import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
+import org.alliancegenome.curation_api.services.ontology.ClTermService;
+import org.alliancegenome.curation_api.services.ontology.CmoTermService;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.alliancegenome.curation_api.services.ontology.DpoTermService;
@@ -161,6 +163,10 @@ public class BulkLoadJobExecutor {
 	RsTermService rsTermService;
 	@Inject
 	PwTermService pwTermService;
+	@Inject
+	ClTermService clTermService;
+	@Inject
+	CmoTermService cmoTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -330,6 +336,14 @@ public class BulkLoadJobExecutor {
 				}
 				case RS -> processTerms(bulkLoadFile, rsTermService, config);
 				case PW -> processTerms(bulkLoadFile, pwTermService, config);
+				case CL -> {
+					config.setLoadOnlyIRIPrefix("CL");
+					processTerms(bulkLoadFile, clTermService, config);
+				}
+				case CMO -> {
+					config.setLoadOnlyIRIPrefix("CMO");
+					processTerms(bulkLoadFile, cmoTermService, config);
+				}
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
