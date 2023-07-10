@@ -198,10 +198,16 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 
 	}
 
-	private boolean sameGenus(NCBITaxonTerm subjectTaxon, NCBITaxonTerm objectTaxon) {
-		String subjectGenus = subjectTaxon.getName().substring(0, subjectTaxon.getName().indexOf(" "));
-		String objectGenus = objectTaxon.getName().substring(0, objectTaxon.getName().indexOf(" "));
-		if (subjectGenus.equals(objectGenus))
+	private boolean sameGenus(NCBITaxonTerm taxon, NCBITaxonTerm geneTaxon) {
+		if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:8355") || StringUtils.equals(taxon.getCurie(), "NCBITaxon:8364")) {
+			// Must be same species for Xenopus as cleanup uses taxon curie
+			if (StringUtils.equals(taxon.getCurie(), geneTaxon.getCurie()))
+				return true;
+			return false;
+		}
+		String genus = taxon.getName().substring(0, taxon.getName().indexOf(" "));
+		String geneGenus = geneTaxon.getName().substring(0, geneTaxon.getName().indexOf(" "));
+		if (StringUtils.equals(genus, geneGenus))
 			return true;
 		return false;
 	}
