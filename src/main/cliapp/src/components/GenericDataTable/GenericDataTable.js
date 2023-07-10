@@ -11,6 +11,7 @@ import { Checkbox } from 'primereact/checkbox';
 import { FilterComponent } from '../Filters/FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 import { DuplicationAction } from "../DuplicationAction";
+import { EntityDetailsAction } from "../EntityDetailsAction";
 
 
 import { filterColumns, orderColumns } from '../../utils/utils';
@@ -28,6 +29,7 @@ export const GenericDataTable = (props) => {
 		deletionEnabled, 
 		handleDuplication,
 		duplicationEnabled,
+		hasDetails=false,
 		dataKey = 'id', 
 		deprecateOption = false,
 		modReset = false,
@@ -278,6 +280,13 @@ export const GenericDataTable = (props) => {
 						<Column field="duplicate" 
 						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>} 
 						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={!isEnabled}/>} 
+						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0'/>
+					}
+					{hasDetails &&
+						<Column field="details" 
+						editor={(props) => <EntityDetailsAction props={props} disabled={true}/>} 
+						body={(props) => <EntityDetailsAction props={props} disabled={!isEnabled}/>} 
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
