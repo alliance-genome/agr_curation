@@ -33,6 +33,7 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
 		// mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		
 		mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);

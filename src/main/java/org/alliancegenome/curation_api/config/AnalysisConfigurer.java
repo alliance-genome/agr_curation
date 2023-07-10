@@ -1,14 +1,11 @@
 package org.alliancegenome.curation_api.config;
 
-import javax.inject.Named;
-
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurer;
 
-import jakarta.enterprise.context.Dependent;
+import io.quarkus.hibernate.search.orm.elasticsearch.SearchExtension;
 
-@Dependent
-@Named("ApplicationAnalysisConfig")
+@SearchExtension
 public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
 
 	@Override
