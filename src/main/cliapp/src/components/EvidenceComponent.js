@@ -7,7 +7,6 @@ import { SearchService } from '../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from '../utils/utils';
 import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocompleteTemplate';
 
-const searchService = new SearchService();
 
 export const evidenceTemplate = (rowData) => {
 	if (rowData && rowData.evidence) {
@@ -49,6 +48,7 @@ export const onEvidenceValueChange = (event, setFieldValue, props) => {
 };
 
 export const evidenceSearch = (event, setFiltered, setInputValue) => {
+	const searchService = new SearchService();
 	const autocompleteFields = ["curie", "cross_references.curie"];
 	const endpoint = "literature-reference";
 	const filterName = "evidenceFilter";
