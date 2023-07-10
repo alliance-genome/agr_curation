@@ -324,7 +324,10 @@ public class BulkLoadJobExecutor {
 				case MI -> processTerms(bulkLoadFile, miTermService, config);
 				case MPATH -> processTerms(bulkLoadFile, mpathTermService, config);
 				case MOD -> processTerms(bulkLoadFile, modTermService, config);
-				case UBERON -> processTerms(bulkLoadFile, uberonTermService, config);
+				case UBERON -> {
+					config.setLoadOnlyIRIPrefix("UBERON");
+					processTerms(bulkLoadFile, uberonTermService, config);
+				}
 				case RS -> processTerms(bulkLoadFile, rsTermService, config);
 				case PW -> processTerms(bulkLoadFile, pwTermService, config);
 				default -> {
