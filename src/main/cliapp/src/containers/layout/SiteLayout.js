@@ -239,6 +239,7 @@ export const SiteLayout = (props) => {
 													{ label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
 													{ label: 'Mouse Adult Gross Anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
 													{ label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
+													{ label: 'Uberon Ontology (UBERON)', icon: 'pi pi-fw pi-home', to: '/ontology/uberon' },
 													{ label: 'Xenopus Anatomy Ontology (XBA)', icon: 'pi pi-fw pi-home', to: '/ontology/xba' },
 													{ label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' }
 												]
@@ -291,7 +292,6 @@ export const SiteLayout = (props) => {
 													{ label: 'Zebrafish Developmental Stages Ontology (ZFS)', icon: 'pi pi-fw pi-home', to: '/ontology/zfs' }
 												]
 											},
-											{ label: 'Uberon Ontology (UBERON)', icon: 'pi pi-fw pi-home', to: '/ontology/uberon' },
 											{ label: 'Vertebrate Trait Ontology (VT)', icon: 'pi pi-fw pi-home', to: '/ontology/vt' },
 											{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' }											
 										]
