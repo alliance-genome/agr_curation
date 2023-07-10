@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.Person;

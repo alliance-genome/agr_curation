@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.services;
 import java.util.Date;
 import java.util.HashMap;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.model.entities.Organization;

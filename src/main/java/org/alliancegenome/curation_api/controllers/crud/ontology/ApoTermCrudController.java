@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.ontology;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.ApoTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.ApoTermCrudInterface;

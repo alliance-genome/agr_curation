@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.services.orthology;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyCuratedDAO;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyCurated;

@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.services.orthology;
 
 import java.time.OffsetDateTime;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyDAO;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;

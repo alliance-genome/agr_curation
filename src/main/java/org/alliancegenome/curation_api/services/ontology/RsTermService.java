@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.services.ontology;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.ontology.RsTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.RSTerm;

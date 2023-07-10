@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.dao;
 import java.math.BigInteger;
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
