@@ -278,6 +278,7 @@ export const SiteLayout = (props) => {
 													{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' }
 												]
 											},
+											{ label: 'Pathway Ontology (PW)', icon: 'pi pi-fw pi-home', to: '/ontology/pw' },
 											{ label: 'Protein Modification Ontology (MOD)', icon: 'pi pi-fw pi-home', to: '/ontology/mod' },
 											{ label: 'Rat Strain Ontology (RS)', icon: 'pi pi-fw pi-home', to: '/ontology/rs' },
 											{ label: 'Relation Ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },

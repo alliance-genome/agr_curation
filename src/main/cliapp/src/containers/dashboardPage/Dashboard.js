@@ -60,6 +60,7 @@ export const Dashboard = () => {
 		MODTerm: { name: "MOD", link: "/#/ontology/mod", type: 'ontology', },
 		UBERONTerm: { name: "UBERON", link: "/#/ontology/uberon", type: 'ontology', },
 		RSTerm: { name: "RS", link: "/#/ontology/rs", type: 'ontology', },
+		PWTerm: { name: "PW", link: "/#/ontology/pw", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
