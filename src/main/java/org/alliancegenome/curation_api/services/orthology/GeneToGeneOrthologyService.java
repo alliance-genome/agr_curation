@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.services.orthology;
 
 import java.time.OffsetDateTime;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyDAO;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
 import org.alliancegenome.curation_api.services.PersonService;
@@ -11,6 +9,7 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

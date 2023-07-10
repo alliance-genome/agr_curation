@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class ApoTermCrudController extends BaseOntologyTermController<ApoTermService, APOTerm, ApoTermDAO> implements ApoTermCrudInterface {

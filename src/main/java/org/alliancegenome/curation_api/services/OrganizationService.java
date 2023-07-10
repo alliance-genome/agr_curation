@@ -3,8 +3,6 @@ package org.alliancegenome.curation_api.services;
 import java.util.Date;
 import java.util.HashMap;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -13,6 +11,7 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class OrganizationService extends BaseEntityCrudService<Organization, OrganizationDAO> {

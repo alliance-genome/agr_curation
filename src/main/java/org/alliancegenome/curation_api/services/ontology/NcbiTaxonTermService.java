@@ -4,8 +4,6 @@ package org.alliancegenome.curation_api.services.ontology;
 import java.util.Date;
 import java.util.HashMap;
 
-import jakarta.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -14,6 +12,7 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm, NcbiTaxonTermDAO> {
