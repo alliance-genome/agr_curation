@@ -321,7 +321,10 @@ public class BulkLoadJobExecutor {
 				case MI -> processTerms(bulkLoadFile, miTermService, config);
 				case MPATH -> processTerms(bulkLoadFile, mpathTermService, config);
 				case MOD -> processTerms(bulkLoadFile, modTermService, config);
-				case UBERON -> processTerms(bulkLoadFile, uberonTermService, config);
+				case UBERON -> {
+					config.setLoadOnlyIRIPrefix("UBERON");
+					processTerms(bulkLoadFile, uberonTermService, config);
+				}
 				case RS -> processTerms(bulkLoadFile, rsTermService, config);
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
