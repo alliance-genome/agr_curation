@@ -6,13 +6,13 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 
 @RequestScoped
@@ -23,7 +23,7 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends Slo
 	@Inject
 	AlleleDAO alleleDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> validateAlleleGermlineTransmissionStatusSlotAnnotation(AlleleGermlineTransmissionStatusSlotAnnotation uiEntity) {
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity, false, false);
@@ -79,7 +79,7 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends Slo
 			return null;
 		}
 
-		VocabularyTerm gts = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, uiEntity.getGermlineTransmissionStatus().getName());
+		VocabularyTerm gts = vocabularyTermService.getTermInVocabulary(VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, uiEntity.getGermlineTransmissionStatus().getName()).getEntity();
 		if (gts == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

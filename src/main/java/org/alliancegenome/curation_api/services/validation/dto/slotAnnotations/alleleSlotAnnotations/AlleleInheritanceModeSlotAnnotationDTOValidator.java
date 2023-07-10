@@ -5,12 +5,12 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.SlotAnnotationDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 public class AlleleInheritanceModeSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	PhenotypeTermService phenotypeTermService;
 
@@ -33,7 +33,7 @@ public class AlleleInheritanceModeSlotAnnotationDTOValidator extends SlotAnnotat
 		if (StringUtils.isBlank(dto.getInheritanceModeName())) {
 			aisaResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			inheritanceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceModeName());
+			inheritanceMode = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceModeName()).getEntity();
 			if (inheritanceMode == null)
 				aisaResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.INVALID_MESSAGE);
 		}

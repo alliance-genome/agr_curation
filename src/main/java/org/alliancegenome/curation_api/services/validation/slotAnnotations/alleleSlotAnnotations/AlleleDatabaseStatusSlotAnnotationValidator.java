@@ -5,15 +5,13 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.PhenotypeTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 
 @RequestScoped
@@ -22,7 +20,7 @@ public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationV
 	@Inject
 	AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validateAlleleDatabaseStatusSlotAnnotation(AlleleDatabaseStatusSlotAnnotation uiEntity) {
 		AlleleDatabaseStatusSlotAnnotation mutationType = validateAlleleDatabaseStatusSlotAnnotation(uiEntity, false, false);
@@ -80,7 +78,7 @@ public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationV
 			return null;
 		}
 
-		VocabularyTerm databaseStatus = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, uiEntity.getDatabaseStatus().getName());
+		VocabularyTerm databaseStatus = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, uiEntity.getDatabaseStatus().getName()).getEntity();
 		if (databaseStatus == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
