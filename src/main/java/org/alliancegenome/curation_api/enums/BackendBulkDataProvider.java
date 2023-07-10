@@ -1,14 +1,16 @@
 package org.alliancegenome.curation_api.enums;
 
 public enum BackendBulkDataProvider {
+
 	RGD("NCBITaxon:10116", "RGD:", 10116),
 	MGI("NCBITaxon:10090", "MGI:", 10090),
 	SGD("NCBITaxon:4932", "SGD:", 4932),
 	OMIM("NCBITaxon:9606", "HGNC:", 9606),
 	ZFIN("NCBITaxon:7955", "ZFIN:", 7955),
 	FB("NCBITaxon:7227", "FB:", 7227),
-	WB("NCBITaxon:6239", "WB:", 6239);
-	
+	WB("NCBITaxon:6239", "WB:", 6239),
+  XB("NCBITaxon:8355", "XB:", 8355);
+
 	public String canonicalTaxonCurie;
 	public String curiePrefix;
 	public Integer idPart;

@@ -245,10 +245,10 @@ export const ConditionRelationTable = () => {
 
 	const initialTableState = getDefaultTableState("Experiments", defaultColumnNames, undefined, widthsObject);
 
-	const headerButtons = () => {
+	const headerButtons = (disabled=false) => {
 		return (
 			<>
-				<Button label="New Condition Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
+				<Button label="New Condition Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} disabled={disabled}/>&nbsp;&nbsp;
 			</>
 		);
 	};

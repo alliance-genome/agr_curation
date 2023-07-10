@@ -92,6 +92,8 @@ export default (
 		<SecureRoute path="/ontology/mpath"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MPATH" endpoint="mpathterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/mod"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MOD" endpoint="modterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/uberon" render={() => <ErrorBoundary><GeneralOntologyComponent name="UBERON" endpoint="uberonterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/rs" render={() => <ErrorBoundary><GeneralOntologyComponent name="RS" endpoint="rsterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/pw" render={() => <ErrorBoundary><GeneralOntologyComponent name="PW" endpoint="pwterm" /></ErrorBoundary>} />
 
 		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />

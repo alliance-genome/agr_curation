@@ -21,7 +21,9 @@ import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PATOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.PWTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ROTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.RSTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.VTTerm;
@@ -75,7 +77,9 @@ public enum OntologyBulkLoadType {
 	MI(MITerm.class),
 	MPATH(MPATHTerm.class),
 	MOD(MODTerm.class),
-	UBERON(UBERONTerm.class);
+	UBERON(UBERONTerm.class),
+	RS(RSTerm.class),
+	PW(PWTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 

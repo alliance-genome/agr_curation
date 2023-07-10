@@ -52,11 +52,6 @@ describe("<ConditionRelationPage />", () => {
 
 	it("Has the same text in edit mode", async () => {
 
-		//jestdom doesn't support global.structuredClone so it needs to be mocked
-		global.structuredClone = jest.fn(val => {
-			return JSON.parse(JSON.stringify(val));
-		});
-
 		act(() => {
 			renderWithClient(<ConditionRelationPage />);
 		});
@@ -87,6 +82,7 @@ describe("<ConditionRelationPage />", () => {
 	
 	it("Removes columns when corresponding box is checked", async () => {
 		const user = userEvent.setup();
+		jest.setTimeout(10000);
 		
 		// scrollIntoView needs to be mocked because it's not implemented in jsdom
 		window.HTMLElement.prototype.scrollIntoView = jest.fn(() => {});

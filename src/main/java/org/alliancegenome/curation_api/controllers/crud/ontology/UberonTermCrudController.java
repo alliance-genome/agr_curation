@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermControll
 import org.alliancegenome.curation_api.dao.ontology.UberonTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.UberonTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.UberonTermService;
 
 @RequestScoped
@@ -19,7 +20,9 @@ public class UberonTermCrudController extends BaseOntologyTermController<UberonT
 	@Override
 	@PostConstruct
 	public void init() {
-		setService(uberonTermService, UBERONTerm.class);
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.setLoadOnlyIRIPrefix("UBERON");
+		setService(uberonTermService, UBERONTerm.class, config);
 	}
 
 }

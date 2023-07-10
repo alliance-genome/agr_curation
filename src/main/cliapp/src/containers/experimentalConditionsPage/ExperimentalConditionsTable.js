@@ -336,10 +336,10 @@ export const ExperimentalConditionsTable = () => {
 	const initialTableState = getDefaultTableState("ExperimentalConditions", defaultColumnNames, undefined, widthsObject);
 
 
-	const headerButtons = () => {
+	const headerButtons = (disabled=false) => {
 		return (
 			<>
-				<Button label="New Condition" icon="pi pi-plus" onClick={handleNewConditionOpen} />&nbsp;&nbsp;
+				<Button label="New Condition" icon="pi pi-plus" onClick={handleNewConditionOpen} disabled={disabled} />&nbsp;&nbsp;
 			</>
 		);
 	};

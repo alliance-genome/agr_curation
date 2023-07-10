@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.OrthologyFmsDTOValidator;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -39,6 +40,12 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 	}
 
 	public List<Object[]> getAllOrthologyPairsBySubjectGeneDataProvider(String dataProvider) {
+		if (StringUtils.equals(dataProvider,"XBXL")) {
+			return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8355");
+		}
+		if (StringUtils.equals(dataProvider,"XBXT")) {
+			return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8364");
+		}
 		return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProvider(dataProvider);
 	}
 
