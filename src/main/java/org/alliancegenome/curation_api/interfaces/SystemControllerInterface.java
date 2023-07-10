@@ -37,4 +37,9 @@ public interface SystemControllerInterface {
 	@GET
 	@Path("/reset-da-data-providers")
 	public void resetDiseaseAnnotationDataProviders();
+	
+	@GET
+	@Path("/updaterefreshindex")
+	public void updateRefreshIntervalOnAllIndexes();
+
 }
