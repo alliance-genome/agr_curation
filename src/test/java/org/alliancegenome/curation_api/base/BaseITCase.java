@@ -401,7 +401,7 @@ public class BaseITCase {
 				contentType("application/json").
 				body(person).
 				when().
-				post("/api/loggedinperson").
+				post("/api/person").
 				then().
 				statusCode(200).extract().
 				body().as(getObjectResponseTypeRefLoggedInPerson());
