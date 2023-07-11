@@ -25,7 +25,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
-        role-session-name: gh-actions-${{github.workflow}}-build-image.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}
+        role-session-name: gh-actions-${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-build-image
         aws-region: us-east-1
     - name: Amazon ECR login
       id: login-ecr
@@ -112,7 +112,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v2
       with:
         role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
-        role-session-name: gh-actions-${{github.workflow}}-eb-deploy.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}
+        role-session-name: gh-actions-${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deploy
         aws-region: us-east-1
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
@@ -124,7 +124,7 @@ jobs:
         use_existing_version_if_available: true
         region: us-east-1
     - name: Set COMMIT_MESSAGE
-      run: echo "COMMIT_MESSAGE=$(git show -s --format=%B ${{github.event.pull_request.head.sha}})" >> $GITHUB_ENV
+      run: echo "COMMIT_MESSAGE=$(git show -s --format=%s ${{github.event.pull_request.head.sha}})" >> $GITHUB_ENV
     - name: Slack Notification
       uses: tokorom/action-slack-incoming-webhook@main
       env:
