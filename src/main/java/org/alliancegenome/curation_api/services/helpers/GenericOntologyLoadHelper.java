@@ -239,7 +239,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
 		boolean condition6 = !hasChebiXref(currentTerm);
 
-		return ((condition1 && condition2) || (condition3 && condition4)) && (condition5 || condition6);
+		return ((condition1 && condition2 && !condition3) || (condition3 && condition4)) && (condition5 || condition6);
 	}
 
 	public void printDepthMessage(int depth, String message) {

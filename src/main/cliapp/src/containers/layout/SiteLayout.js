@@ -245,6 +245,7 @@ export const SiteLayout = (props) => {
 													{ label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' }
 												]
 											},
+											{ label: 'Biological Spatial Ontology (BSPO)', icon: 'pi pi-fw pi-home', to: '/ontology/bspo' },
 											{ 
 												label: 'Chemical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
