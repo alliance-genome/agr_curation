@@ -7,6 +7,8 @@ on:
 jobs:
   build-and-push-docker-image:
     if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
+    permissions:
+      id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
@@ -22,8 +24,8 @@ jobs:
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
+        role-session-name: gh-actions-${{github.workflow}}-build-image.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}
         aws-region: us-east-1
     - name: Amazon ECR login
       id: login-ecr
@@ -65,6 +67,8 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
   deploy-to-alpha:
     if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
+    permissions:
+      id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     needs: [build-and-push-docker-image]
     runs-on: ubuntu-20.04
     steps:
@@ -104,11 +108,15 @@ jobs:
         cat .ebextensions/version.config
     - name: Generate deployment package
       run: zip -r ${{ env.tagname }}.zip docker-compose.yml .ebextensions/
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
+        role-session-name: gh-actions-${{github.workflow}}-eb-deploy.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}
+        aws-region: us-east-1
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-alpha
         version_label: ${{ env.tagname }}

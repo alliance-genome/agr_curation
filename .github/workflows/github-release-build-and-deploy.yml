@@ -4,6 +4,8 @@ on:
     types: [published]
 jobs:
   build-release-image:
+    permissions:
+      id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
@@ -11,8 +13,8 @@ jobs:
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
+        role-session-name: gh-actions-${{github.workflow}}-build-image.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}
         aws-region: us-east-1
     - name: Amazon ECR login
       id: login-ecr
@@ -70,6 +72,8 @@ jobs:
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
   deploy-to-production:
     if: github.event.release.prerelease == false
+    permissions:
+      id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     needs: [generate-deployment-package]
     runs-on: ubuntu-20.04
     steps:
@@ -78,11 +82,15 @@ jobs:
       with:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
+        role-session-name: gh-actions-${{github.workflow}}-eb-deploy-production.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}
+        aws-region: us-east-1
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-production
         version_label: ${{ github.event.release.tag_name }}
@@ -98,6 +106,8 @@ jobs:
   deploy-to-beta:
     if: github.event.release.prerelease == true
     needs: [generate-deployment-package]
+    permissions:
+      id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     runs-on: ubuntu-20.04
     steps:
     - name: Fetch deployment package from cache
@@ -105,11 +115,14 @@ jobs:
       with:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
+        role-session-name: gh-actions-${{github.workflow}}-eb-deploy-beta.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-beta
         version_label: ${{ github.event.release.tag_name }}
