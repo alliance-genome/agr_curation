@@ -1,5 +1,10 @@
 package org.alliancegenome.curation_api.model.entities.base;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
 import org.alliancegenome.curation_api.view.View;
 import org.alliancegenome.curation_api.view.View.VocabularyTermSetView;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -10,10 +15,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

@@ -1,12 +1,12 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
 
+import javax.enterprise.context.RequestScoped;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.StringUtils;
-
-import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class SecondaryIdSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {

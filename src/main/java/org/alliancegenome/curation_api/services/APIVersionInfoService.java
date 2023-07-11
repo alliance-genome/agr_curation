@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import javax.enterprise.context.RequestScoped;
 
-import jakarta.enterprise.context.RequestScoped;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 
 @RequestScoped
 public class APIVersionInfoService {

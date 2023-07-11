@@ -4,12 +4,13 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.interfaces.ncbi.NCBIRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponseDTO;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import si.mazi.rescu.RestProxyFactory;
 
 @ApplicationScoped

@@ -1,14 +1,14 @@
 package org.alliancegenome.curation_api.config;
 
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
+
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
-import jakarta.ws.rs.ext.ContextResolver;
-import jakarta.ws.rs.ext.Provider;
 
 @Provider
 public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
@@ -33,7 +33,6 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
 		// mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		
 		mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);

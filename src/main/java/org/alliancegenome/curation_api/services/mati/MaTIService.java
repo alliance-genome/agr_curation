@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api.services.mati;
 import java.io.IOException;
 import java.util.Base64;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
 import org.alliancegenome.curation_api.model.mati.Identifier;
 import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
@@ -11,7 +13,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import jakarta.enterprise.context.ApplicationScoped;
 import si.mazi.rescu.RestProxyFactory;
 
 @ApplicationScoped

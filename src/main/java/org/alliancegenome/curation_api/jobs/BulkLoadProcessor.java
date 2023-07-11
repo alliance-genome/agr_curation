@@ -4,6 +4,8 @@ import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.dao.loads.BulkFMSLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
@@ -22,7 +24,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.Message;
 import io.vertx.mutiny.core.eventbus.EventBus;
-import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog

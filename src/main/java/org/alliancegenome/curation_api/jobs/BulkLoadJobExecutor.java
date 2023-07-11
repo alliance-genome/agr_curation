@@ -16,6 +16,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
@@ -79,8 +82,6 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
