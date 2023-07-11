@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api.model.entities.base;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -13,6 +10,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

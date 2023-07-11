@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +14,7 @@
 	<url>https://github.com/alliance-genome/agr_curation</url>
 
 	<properties>
-		<compiler-plugin.version>3.8.1</compiler-plugin.version>
+		<compiler-plugin.version>3.11.0</compiler-plugin.version>
 		<maven.compiler.parameters>true</maven.compiler.parameters>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
@@ -23,13 +25,14 @@
 		<okta.version>3.0.1</okta.version>
 		<okta.authn.version>2.0.0</okta.authn.version>
 		<okta-jwt.version>0.5.1</okta-jwt.version>
-		<quarkus.platform.version>2.16.1.Final</quarkus.platform.version>
+		<quarkus.platform.version>3.2.0.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
 	</properties>
 
 	<scm>
 		<connection>scm:git:git@github.com:alliance-genome/agr_curation.git</connection>
-		<developerConnection>scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
+		<developerConnection>
+			scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
 		<url>https://www.github.com/alliance-genome/agr_curation/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
@@ -97,7 +100,8 @@
 		<repository>
 			<id>ossrh</id>
 			<name>Central Repository OSSRH</name>
-			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<url>
+				https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 
@@ -210,11 +214,7 @@
 			<artifactId>quarkus-junit5-mockito</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.quarkiverse.hibernatetypes</groupId>
-			<artifactId>quarkus-hibernate-types</artifactId>
-			<version>0.2.0</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>io.rest-assured</groupId>
@@ -358,11 +358,18 @@
 			<artifactId>reflections</artifactId>
 			<version>0.10.2</version>
 		</dependency>
-		
+
 		<dependency>
-    		<groupId>org.jsoup</groupId>
-    		<artifactId>jsoup</artifactId>
-    		<version>1.13.1</version>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.13.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-resources-plugin</artifactId>
+			<version>3.3.1</version>
+			<type>maven-plugin</type>
 		</dependency>
 	</dependencies>
 
@@ -456,7 +463,8 @@
 				<version>${surefire-plugin.version}</version>
 				<configuration>
 					<systemPropertyVariables>
-						<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+						<java.util.logging.manager>
+							org.jboss.logmanager.LogManager</java.util.logging.manager>
 						<maven.home>${maven.home}</maven.home>
 					</systemPropertyVariables>
 				</configuration>
@@ -493,8 +501,10 @@
 								</goals>
 								<configuration>
 									<systemPropertyVariables>
-										<native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-										<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+										<native.image.path>
+											${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+										<java.util.logging.manager>
+											org.jboss.logmanager.LogManager</java.util.logging.manager>
 										<maven.home>${maven.home}</maven.home>
 									</systemPropertyVariables>
 								</configuration>

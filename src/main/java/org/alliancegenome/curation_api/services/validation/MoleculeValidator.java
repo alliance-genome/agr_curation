@@ -1,12 +1,12 @@
 package org.alliancegenome.curation_api.services.validation;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Molecule;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class MoleculeValidator extends CurieAuditedObjectValidator {
