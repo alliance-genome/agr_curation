@@ -1,11 +1,10 @@
 package org.alliancegenome.curation_api.auth;
 
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
 
 import org.alliancegenome.curation_api.model.entities.Person;
-
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.Produces;
 
 @RequestScoped
 public class AuthenticatedUserProducer {

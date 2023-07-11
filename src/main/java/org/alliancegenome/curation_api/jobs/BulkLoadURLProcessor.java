@@ -1,11 +1,12 @@
 package org.alliancegenome.curation_api.jobs;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.Message;
-import jakarta.enterprise.context.ApplicationScoped;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog

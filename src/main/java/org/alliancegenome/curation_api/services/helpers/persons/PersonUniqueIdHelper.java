@@ -1,9 +1,9 @@
 package org.alliancegenome.curation_api.services.helpers.persons;
 
+import javax.enterprise.context.RequestScoped;
+
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
-
-import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class PersonUniqueIdHelper {
