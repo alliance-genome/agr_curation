@@ -295,13 +295,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
-		try {
-			Log.info("Waiting for Full Indexer to finish");
-			indexer.startAndWait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
+		indexer.start();
 	}
 
 	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
@@ -337,7 +331,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 
 			});
-		// indexer.dropAndCreateSchemaOnStart(true);
+
 		indexer.transactionTimeout(transactionTimeout);
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
@@ -570,10 +564,18 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						}
 					}
 
-					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: "
-						+ column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
-						+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
+					Log.debug("Column Alias: " + column.getAlias());
+					Log.debug("Column Java Type: " + column.getJavaType());
+					Log.debug("Column Model: " + column.getModel());
+					//Log.debug("Column Type Alias: " + column.type().getAlias());
+					Log.debug("Column Parent Path Alias: " + column.getParentPath().getAlias());
+					
+					Log.debug("Count Column Alias: " + countColumn.getAlias());
+					Log.debug("Count Column Java Type: " + countColumn.getJavaType());
+					Log.debug("Count Column Model: " + countColumn.getModel());
+					//Log.debug("Count Column Type Alias: " + countColumn.type().getAlias());
+					Log.debug("Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
+					
 				}
 			} else {
 				column = root.get(key);
@@ -586,10 +588,17 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 			}
 
-			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias()
-				+ " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
-				+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
+			Log.debug("Column Alias: " + column.getAlias());
+			Log.debug("Column Java Type: " + column.getJavaType());
+			Log.debug("Column Model: " + column.getModel());
+			//Log.debug("Column Type Alias: " + column.type().getAlias());
+			Log.debug("Column Parent Path Alias: " + column.getParentPath().getAlias());
+			
+			Log.debug("Count Column Alias: " + countColumn.getAlias());
+			Log.debug("Count Column Java Type: " + countColumn.getJavaType());
+			Log.debug("Count Column Model: " + countColumn.getModel());
+			//Log.debug("Count Column Type Alias: " + countColumn.type().getAlias());
+			Log.debug("Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
 			if (value != null) {

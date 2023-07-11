@@ -21,7 +21,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
@@ -69,7 +68,7 @@ public abstract class BulkLoad extends GeneratedAuditedObject {
 	private String fileExtension;
 
 	@JsonView({ View.FieldsOnly.class })
-	@OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "bulkLoad")
 	@OrderBy("dateUpdated DESC")
 	private List<BulkLoadFile> loadFiles;
 
