@@ -3,6 +3,17 @@ package org.alliancegenome.curation_api.auth;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.annotation.Priority;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import javax.ws.rs.Priorities;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
+
 import org.alliancegenome.curation_api.dao.AllianceMemberDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.AllianceMember;
@@ -22,16 +33,6 @@ import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.user.User;
 
 import io.quarkus.logging.Log;
-import jakarta.annotation.Priority;
-import jakarta.enterprise.event.Event;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.Priorities;
-import jakarta.ws.rs.container.ContainerRequestContext;
-import jakarta.ws.rs.container.ContainerRequestFilter;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.Provider;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog

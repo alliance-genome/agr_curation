@@ -2,24 +2,28 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.Map;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.hibernate.envers.Audited;
-import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import io.quarkiverse.hibernate.types.json.JsonBinaryType;
+import io.quarkiverse.hibernate.types.json.JsonTypes;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -31,6 +35,7 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = "person")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(indexes = {
 	@Index(name = "personsetting_createdby_index", columnList = "createdBy_id"),
@@ -46,8 +51,8 @@ public class PersonSetting extends GeneratedAuditedObject {
 	@JsonView(View.PersonSettingView.class)
 	private String settingsKey;
 
-
-	@JdbcTypeCode(SqlTypes.JSON)
+	@Type(type = JsonTypes.JSON_BIN)
+	@Column(columnDefinition = JsonTypes.JSON_BIN)
 	@JsonView(View.PersonSettingView.class)
 	private Map<String, Object> settingsMap;
 

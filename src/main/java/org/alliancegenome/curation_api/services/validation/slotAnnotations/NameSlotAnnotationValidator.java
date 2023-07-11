@@ -1,13 +1,13 @@
 package org.alliancegenome.curation_api.services.validation.slotAnnotations;
 
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.StringUtils;
-
-import jakarta.inject.Inject;
 
 public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends SlotAnnotationValidator<E> {
 

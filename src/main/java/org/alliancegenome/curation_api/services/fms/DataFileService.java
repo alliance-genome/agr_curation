@@ -2,10 +2,11 @@ package org.alliancegenome.curation_api.services.fms;
 
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.alliancegenome.curation_api.interfaces.fms.DataFileRESTInterface;
 import org.alliancegenome.curation_api.model.fms.DataFile;
 
-import jakarta.enterprise.context.ApplicationScoped;
 import si.mazi.rescu.RestProxyFactory;
 
 @ApplicationScoped

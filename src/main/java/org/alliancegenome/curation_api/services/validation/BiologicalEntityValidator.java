@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
@@ -9,8 +11,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
-
-import jakarta.inject.Inject;
 
 public class BiologicalEntityValidator extends CurieAuditedObjectValidator {
 
