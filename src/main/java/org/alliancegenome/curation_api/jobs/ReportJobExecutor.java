@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
 import org.alliancegenome.curation_api.model.entities.curationreports.CurationReportHistory;
 import org.alliancegenome.curation_api.services.curationreports.CurationReportHistoryService;
@@ -24,6 +21,8 @@ import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ReportJobExecutor {

@@ -3,11 +3,11 @@ package org.alliancegenome.curation_api.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.ApplicationScoped;
-
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.response.SearchResponse;
+
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ResourceDescriptorDAO extends BaseSQLDAO<ResourceDescriptor> {
