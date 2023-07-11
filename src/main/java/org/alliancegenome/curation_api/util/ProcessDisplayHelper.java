@@ -31,7 +31,7 @@ public class ProcessDisplayHelper {
 	}
 
 	public ProcessDisplayHelper(Integer displayTimeout, ProcessDisplayHandler handler) {
-		this(displayTimeout, new ArrayList<ProcessDisplayHandler>() {
+		this(displayTimeout, new ArrayList<>() {
 			{
 				add(handler);
 			}

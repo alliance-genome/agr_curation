@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api.services.validation;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
@@ -10,8 +12,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import jakarta.inject.Inject;
 
 public class AuditedObjectValidator<E extends AuditedObject> {
 
