@@ -63,6 +63,7 @@ export const Dashboard = () => {
 		PWTerm: { name: "PW", link: "/#/ontology/pw", type: 'ontology', },
 		CLTerm: { name: "CL", link: "/#/ontology/cl", type: 'ontology', },
 		CMOTerm: { name: "CMO", link: "/#/ontology/cmo", type: 'ontology', },
+		BSPOTerm: { name: "BSPO", link: "/#/ontology/bspo", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
 		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },

@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.enums;
 
 import org.alliancegenome.curation_api.model.entities.ontology.APOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ATPTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.BSPOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CLTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CMOTerm;
@@ -83,7 +84,8 @@ public enum OntologyBulkLoadType {
 	RS(RSTerm.class),
 	PW(PWTerm.class),
 	CL(CLTerm.class),
-	CMO(CMOTerm.class);
+	CMO(CMOTerm.class),
+	BSPO(BSPOTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 
