@@ -1,0 +1,2 @@
+DROP TABLE vocabularyterm_crossreference;
+DROP TABLE vocabularyterm_crossreference_aud;
