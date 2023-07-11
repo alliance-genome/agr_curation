@@ -39,6 +39,7 @@ import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfi
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
 import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
+import org.alliancegenome.curation_api.services.ontology.BspoTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 import org.alliancegenome.curation_api.services.ontology.ClTermService;
 import org.alliancegenome.curation_api.services.ontology.CmoTermService;
@@ -167,6 +168,8 @@ public class BulkLoadJobExecutor {
 	ClTermService clTermService;
 	@Inject
 	CmoTermService cmoTermService;
+	@Inject
+	BspoTermService bspoTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -343,6 +346,10 @@ public class BulkLoadJobExecutor {
 				case CMO -> {
 					config.setLoadOnlyIRIPrefix("CMO");
 					processTerms(bulkLoadFile, cmoTermService, config);
+				}
+				case BSPO -> {
+					config.setLoadOnlyIRIPrefix("BSPO");
+					processTerms(bulkLoadFile, bspoTermService, config);
 				}
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
