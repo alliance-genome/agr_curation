@@ -124,7 +124,7 @@ jobs:
         use_existing_version_if_available: true
         region: us-east-1
     - name: Set COMMIT_MESSAGE
-      run: echo "COMMIT_MESSAGE=$(git show -s --format=%B ${{github.event.pull_request.head.sha}})" >> $GITHUB_ENV
+      run: echo "COMMIT_MESSAGE=$(git show -s --format=%s ${{github.event.pull_request.head.sha}})" >> $GITHUB_ENV
     - name: Slack Notification
       uses: tokorom/action-slack-incoming-webhook@main
       env:
