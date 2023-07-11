@@ -42,7 +42,6 @@ quarkus.micrometer.binder.vertx.enabled=true
 quarkus.micrometer.export.json.enabled=true
 quarkus.micrometer.export.json.path=api/metrics.json
 
-quarkus.hibernate-search-orm.elasticsearch.analysis.configurer=bean:ApplicationAnalysisConfig
 quarkus.hibernate-search-orm.elasticsearch.schema-management.required-status-wait-timeout=180S
 quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/production-index-settings.json
 %test.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/test-index-settings.json
