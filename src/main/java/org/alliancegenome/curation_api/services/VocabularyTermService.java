@@ -57,7 +57,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 			} else {
 				Log.debug("Term not cached, caching term: " + vocabularyName + "(" + termName + ")");
 				term = getTermInVocabularyFromDB(vocabularyName, termName);
-				if (CollectionUtils.isNotEmpty(term.getSynonyms()))
+				if (term != null)
 					term.getSynonyms().size();
 				termMap.put(termName, term);
 			}
@@ -90,7 +90,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 			} else {
 				Log.debug("Term not cached, caching term: " + vocabularyTermSetName + "(" + termName + ")");
 				term = getTermInVocabularyTermSetFromDB(vocabularyTermSetName, termName);
-				if (CollectionUtils.isNotEmpty(term.getSynonyms()))
+				if (term != null)
 					term.getSynonyms().size();
 				termMap.put(termName, term);
 			}
