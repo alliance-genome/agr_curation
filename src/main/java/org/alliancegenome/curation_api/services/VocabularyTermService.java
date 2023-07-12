@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.VocabularyTermValidator;
+import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 
@@ -56,7 +57,8 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 			} else {
 				Log.debug("Term not cached, caching term: " + vocabularyName + "(" + termName + ")");
 				term = getTermInVocabularyFromDB(vocabularyName, termName);
-				term.getSynonyms().size();
+				if (CollectionUtils.isNotEmpty(term.getSynonyms()))
+					term.getSynonyms().size();
 				termMap.put(termName, term);
 			}
 		} else {
@@ -88,7 +90,8 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 			} else {
 				Log.debug("Term not cached, caching term: " + vocabularyTermSetName + "(" + termName + ")");
 				term = getTermInVocabularyTermSetFromDB(vocabularyTermSetName, termName);
-				term.getSynonyms().size();
+				if (CollectionUtils.isNotEmpty(term.getSynonyms()))
+					term.getSynonyms().size();
 				termMap.put(termName, term);
 			}
 		} else {
