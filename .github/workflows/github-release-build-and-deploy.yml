@@ -121,6 +121,7 @@ jobs:
       with:
         role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
         role-session-name: gh-actions-${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deploy-beta
+        aws-region: us-east-1
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
