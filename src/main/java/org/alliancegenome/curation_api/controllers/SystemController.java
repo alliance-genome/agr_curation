@@ -28,12 +28,6 @@ public class SystemController implements SystemControllerInterface {
 	public ObjectResponse<Map<String, Object>> getSiteSummary() {
 		return systemSQLDAO.getSiteSummary();
 	}
-
-	// TODO remove once SCRUM-3037 resolved
-	public void resetDiseaseAnnotationDataProviders() {
-		diseaseAnnotationService.resetDataProviders();
-		diseaseAnnotationService.cleanUpDataProviders();
-	}
 	
 	public void updateDiseaseAnnotationUniqueIds() {
 		diseaseAnnotationService.updateUniqueIds();
