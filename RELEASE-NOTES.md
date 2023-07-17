@@ -2,6 +2,21 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.21.0
+ * New features
+   * Duplicate Disease Annotation popup (SCRUM-2911)
+   * Updated display of ontology terms in Tree View (SCRUM-3021)
+   * Improved display of notes popups (SCRUM-3005)
+   * Switch to single consensus set of defining properties for disease annotations (SCRUM-3008)
+   * Loaded Vertebrate Trait (VT) Ontology (SCRUM-2453)
+   * Loaded Ascomycete Phenotype Ontology (APO) (SCRUM-2447)
+   * Loaded Measurement Method Ontology (MMO) (SCRUM-1206)
+   * Added Data Provider column to Alleles table (SCRUM-3006)
+   * Added Data Provider column to Genes and AGMs tables (SCRUM-3007)
+   * Prevented loading of duplicate notes (SCRUM-2828)
+ * Fixes and maintenance   
+   * Allele indexing optimizations (SCRUM-2982) 
+
 ## v0.20.1
  * Fixes
  	* Temporary endpoint to reset data provider on all disease annotations (SCRUM-3037)
