@@ -20,7 +20,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -59,7 +59,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			} else {
 				String annotationId;
 				String identifyingField;
-				String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(gene.getDataProvider().getSourceOrganization().getAbbreviation()).getCurieID(dto, dto.getGeneCurie(), refCurie);
+				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getGeneCurie(), refCurie);
 				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
@@ -109,7 +109,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		
 		if (gdaResponse.hasErrors())
 			throw new ObjectValidationException(dto, gdaResponse.errorMessagesString());
-
+		
 		return annotation;
 	}
 }

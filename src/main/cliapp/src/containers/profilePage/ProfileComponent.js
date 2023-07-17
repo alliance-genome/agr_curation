@@ -127,7 +127,7 @@ export const ProfileComponent = () => {
 				</Panel>
 				<ConfirmButton
 					buttonText="Reset Table"
-					headerText={`${props.value.settingsKey} State Reset`}
+					headerText={`${props.value.tableKeyName} State Reset`}
 					messageText={`Are you sure? This will reset the local state of the ${props.name}.`}
 					acceptHandler={() => resetTableState(props.name)}
 				/>

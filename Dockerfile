@@ -1,7 +1,7 @@
 ARG OVERWRITE_VERSION
 
 ### Stage 1: build UI
-FROM node:16 AS BUILD_UI_STAGE
+FROM node:18 AS BUILD_UI_STAGE
 
 WORKDIR /agr_curation
 COPY src/main/cliapp ./cliapp
@@ -48,4 +48,4 @@ ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS opensearch:9200
 ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_PROTOCOL http
 
 # Start the application
-CMD ["java", "-Xmx15g", "-jar", "agr_curation_api-runner.jar"]
+CMD ["java", "-Xms30g", "-Xmx30g", "-jar", "agr_curation_api-runner.jar"]

@@ -80,10 +80,14 @@ export default (
 		<SecureRoute path="/ontology/atp"		 render={() => <ErrorBoundary><GeneralOntologyComponent name="ATP" endpoint="atpterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/xbed"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="XBED" endpoint="xbedterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/xsmo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/vt"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="VT" endpoint="vtterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/obi"	 	 render={() => <ErrorBoundary><GeneralOntologyComponent name="OBI" endpoint="obiterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/wbpheno"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/pato"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="PATO" endpoint="patoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/hp"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="HP" endpoint="hpterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/dpo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="DPO" endpoint="dpoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/mmo"	 render={() => <ErrorBoundary><GeneralOntologyComponent name="MMO" endpoint="mmoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/apo"	 render={() => <ErrorBoundary><GeneralOntologyComponent showNamespace={true} name="APO" endpoint="apoterm" /></ErrorBoundary>} />
 
 		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />

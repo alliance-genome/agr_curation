@@ -64,7 +64,7 @@ public class CurationReport extends GeneratedAuditedObject {
 	private String birtReportFilePath;
 
 	@JsonView({ View.ReportHistory.class })
-	@OneToMany(mappedBy = "curationReport", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "curationReport")
 	@OrderBy("curationReportTimestamp DESC")
 	private List<CurationReportHistory> curationReportHistory;
 

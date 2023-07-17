@@ -13,7 +13,7 @@ export function useVocabularyTermSetService(setName) {
 		}, {
 			onSuccess: (data) => {
 				if (data.results) {
-					setTerms(data.results);
+					setTerms(data.results.sort((a, b) => (a.name > b.name) ? 1 : -1));
 				} else {
 					if (termData[setName]) {
 						setTerms(termData[setName]['terms']);

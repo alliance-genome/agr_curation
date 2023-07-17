@@ -80,7 +80,7 @@ export const GenesTable = () => {
 				const sortedSynonyms = Array.from(synonymSet).sort();
 				const listTemplate = (item) => {
 					return (
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: item }} />	
+						<div className='overflow-hidden text-overflow-ellipsis text-left' dangerouslySetInnerHTML={{ __html: item }} />	
 					);
 				};
 				return (
@@ -111,7 +111,7 @@ export const GenesTable = () => {
 					<Button className="p-button-text" 
 						onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
 							<EllipsisTableCell otherClasses={`b${rowData.curie.replace(':', '')}`}>
-								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.geneSymbol.formatText }} />								
+								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.geneSymbol.formatText }} />
 							</EllipsisTableCell>
 							<Tooltip target={`.b${rowData.curie.replace(':', '')}`}>
 								<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.formatText}}/>
@@ -229,7 +229,7 @@ export const GenesTable = () => {
 			header: "Synonyms",
 			body: synonymsTemplate,
 			sortable: isEnabled,
-			filterConfig: FILTER_CONFIGS.geneSynonymsFilterConfig,
+			filterConfig: FILTER_CONFIGS.geneSynonymsFilterConfig
 		},
 		{
 			field: "geneSecondaryIds.secondaryId",
@@ -253,6 +253,12 @@ export const GenesTable = () => {
 			body: taxonBodyTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
+		},
+		{
+			field: "dataProvider.sourceOrganization.abbreviation",
+			header: "Data Provider",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",

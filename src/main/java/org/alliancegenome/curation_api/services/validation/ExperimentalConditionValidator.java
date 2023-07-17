@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,7 +102,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 		dbEntity.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(dbEntity));
 
-		String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
+		String uniqueId = DiseaseAnnotationUniqueIdHelper.getExperimentalConditionUniqueId(dbEntity);
 		if (!uniqueId.equals(uiEntity.getUniqueId())) {
 			SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
 			if (dbSearchResponse != null) {

@@ -67,7 +67,7 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 			}
 		}
 		
-		return getMergedXrefList(incomingXrefMap, existingCrossReferences);	
+		return getMergedXrefList(incomingXrefMap, existingCrossReferences); 
 	}
 	
 	@Transactional

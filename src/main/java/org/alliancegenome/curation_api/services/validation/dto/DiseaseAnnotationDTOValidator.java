@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -18,8 +20,6 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
@@ -35,6 +35,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.ontology.DoTermService;
+import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,9 +48,9 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 	@Inject
 	ReferenceDAO referenceDAO;
 	@Inject
-	DoTermDAO doTermDAO;
+	DoTermService doTermService;
 	@Inject
-	EcoTermDAO ecoTermDAO;
+	EcoTermService ecoTermService;
 	@Inject
 	ReferenceService referenceService;
 	@Inject
@@ -92,7 +95,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getDoTermCurie())) {
 			daResponse.addErrorMessage("do_term_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			DOTerm disease = doTermDAO.find(dto.getDoTermCurie());
+			DOTerm disease = doTermService.findByCurieOrSecondaryId(dto.getDoTermCurie());
 			if (disease == null)
 				daResponse.addErrorMessage("do_term_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDoTermCurie() + ")");
 			annotation.setObject(disease);
@@ -103,7 +106,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		} else {
 			List<ECOTerm> ecoTerms = new ArrayList<>();
 			for (String ecoCurie : dto.getEvidenceCodeCuries()) {
-				ECOTerm ecoTerm = ecoTermDAO.find(ecoCurie);
+				ECOTerm ecoTerm = ecoTermService.findByCurieOrSecondaryId(ecoCurie);
 				if (ecoTerm == null) {
 					daResponse.addErrorMessage("evidence_code_curies", ValidationConstants.INVALID_MESSAGE + " (" + ecoCurie + ")");
 				} else if (!ecoTerm.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
@@ -227,6 +230,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		}
 		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
 			List<Note> notes = new ArrayList<>();
+			Set<String> noteIdentities = new HashSet<>();
 			for (NoteDTO noteDTO : dto.getNoteDtos()) {
 				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 				if (noteResponse.hasErrors()) {
@@ -240,7 +244,11 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 						}
 					}
 				}
-				notes.add(noteDAO.persist(noteResponse.getEntity()));
+				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
+				if (!noteIdentities.contains(noteIdentity)) {
+					noteIdentities.add(noteIdentity);
+					notes.add(noteDAO.persist(noteResponse.getEntity()));
+				}
 			}
 			annotation.setRelatedNotes(notes);
 		} else {
