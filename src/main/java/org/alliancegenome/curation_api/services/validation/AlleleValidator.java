@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDAO;
@@ -40,6 +39,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationValidator;
@@ -98,7 +98,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 	@Inject
 	NoteValidator noteValidator;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	ReferenceValidator referenceValidator;
 	@Inject
@@ -305,7 +305,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (uiEntity.getInCollection() == null)
 			return null;
 
-		VocabularyTerm inCollection = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, uiEntity.getInCollection().getName());
+		VocabularyTerm inCollection = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, uiEntity.getInCollection().getName()).getEntity();
 		if (inCollection == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

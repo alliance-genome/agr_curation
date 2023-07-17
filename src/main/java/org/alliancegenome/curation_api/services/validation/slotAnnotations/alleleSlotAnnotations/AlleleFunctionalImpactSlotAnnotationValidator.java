@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.PhenotypeTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -17,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -28,7 +28,7 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 	@Inject
 	PhenotypeTermDAO phenotypeTermDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpactSlotAnnotation(AlleleFunctionalImpactSlotAnnotation uiEntity) {
 		AlleleFunctionalImpactSlotAnnotation mutationType = validateAlleleFunctionalImpactSlotAnnotation(uiEntity, false, false);
@@ -92,7 +92,7 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 		}
 		List<VocabularyTerm> validFunctionalImpacts = new ArrayList<>();
 		for (VocabularyTerm fi : uiEntity.getFunctionalImpacts()) {
-			VocabularyTerm functionalImpact = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, fi.getName());
+			VocabularyTerm functionalImpact = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, fi.getName()).getEntity();
 			if (functionalImpact == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;

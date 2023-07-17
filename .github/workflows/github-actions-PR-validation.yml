@@ -8,17 +8,14 @@ on:
       - production
 jobs:
   check-branching-rules:
-    if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
       - name: Check branching rules
         run: |
           bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
   verify-test-api:
-    if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -62,7 +59,6 @@ jobs:
           make integration-test
 
   verify-test-ui:
-    if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -89,12 +85,10 @@ jobs:
           npm test -- --watchAll=false
           npm run build
   test-build-docker-image:
-      if: github.event.action != 'edited' || github.event.changes.base
       runs-on: ubuntu-20.04
       steps:
         - name: Check out repository code
           uses: actions/checkout@v3
-        - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
         - name: Build docker image
           env:
             ECR_REPOSITORY: agr_curation

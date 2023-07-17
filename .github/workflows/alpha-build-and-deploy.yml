@@ -7,13 +7,14 @@ on:
 jobs:
   build-and-push-docker-image:
     if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
+    permissions:
+      id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Store release tag in env
       shell: bash
       run: |
@@ -21,10 +22,10 @@ jobs:
     # This step will configure environment variables to be used by all steps
     # involving AWS interaction further down
     - name: AWS credentials configuration
-      uses: aws-actions/configure-aws-credentials@v1-node16
+      uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
+        role-session-name: gh-actions-${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-build-image
         aws-region: us-east-1
     - name: Amazon ECR login
       id: login-ecr
@@ -66,6 +67,8 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
   deploy-to-alpha:
     if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
+    permissions:
+      id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     needs: [build-and-push-docker-image]
     runs-on: ubuntu-20.04
     steps:
@@ -93,24 +96,30 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Store release tag in env
       shell: bash
       run: |
         echo "tagname=$(git describe --tags)" >> $GITHUB_ENV
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
-        sed -i.bak "s/0.0.0/${{ env.tagname }}/g" .ebextensions/version.config
+        sed -i 's/\(AGR_CURATION_RELEASE: \).\+/\1${{ env.tagname }}/' .ebextensions/version.config
         echo "Stored version config:"
         echo "----------------------"
         cat .ebextensions/version.config
     - name: Generate deployment package
       run: zip -r ${{ env.tagname }}.zip docker-compose.yml .ebextensions/
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{secrets.GH_ACTIONS_AWS_ROLE}}
+        role-session-name: gh-actions-${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deploy
+        aws-region: us-east-1
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v21
       with:
-        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_access_key: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        aws_session_token: ${{env.AWS_SESSION_TOKEN}}
         application_name: curation-app
         environment_name: curation-alpha
         version_label: ${{ env.tagname }}
@@ -118,7 +127,7 @@ jobs:
         use_existing_version_if_available: true
         region: us-east-1
     - name: Set COMMIT_MESSAGE
-      run: echo "COMMIT_MESSAGE=$(git show -s --format=%B ${{github.event.pull_request.head.sha}})" >> $GITHUB_ENV
+      run: echo "COMMIT_MESSAGE=$(git show -s --format=%s ${{github.event.pull_request.head.sha}})" >> $GITHUB_ENV
     - name: Slack Notification
       uses: tokorom/action-slack-incoming-webhook@main
       env:

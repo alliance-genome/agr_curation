@@ -218,7 +218,7 @@ CONTAINER ID   IMAGE                                   COMMAND                  
 
 ## Building
 
-Before building make sure and create a copy of the application.properties file
+Before building locally, make sure and create a copy of the application.properties file
 
 ```bash
 > cp src/main/resources/application.properties.defaults src/main/resources/application.properties
@@ -448,9 +448,7 @@ the new version of the application can function in a consistent state upon and a
     *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
     *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
     *  Removed variables should be cleaned up **after** successfull deployment
-2. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
-   Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
-3. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup.  
+2. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup.  
    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
    before the code causing it would get deployed to the production environment.  
    The restore function automatically prevents users from writing to the database while it is being reloaded,
@@ -463,6 +461,8 @@ the new version of the application can function in a consistent state upon and a
        ```
     3. Check the logs for errors after app-server restart, which could indicate a DB restore failure
         and troubleshoot accordingly if necessary to fix any errors.
+3. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
+   Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
 4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
 5. Check the logs for the environment that you're releasing to and ensure the application started successfully
    and that all flyway migrations completed successfully. If errors occured, troubleshoot and fix accordingly.

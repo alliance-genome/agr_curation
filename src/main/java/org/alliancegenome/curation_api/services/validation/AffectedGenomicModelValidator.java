@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -19,7 +18,7 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.collections.CollectionUtils;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator {
@@ -27,7 +26,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 	
@@ -112,7 +111,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 			return null;
 		}
 
-		VocabularyTerm subtype = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, uiEntity.getSubtype().getName());
+		VocabularyTerm subtype = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, uiEntity.getSubtype().getName()).getEntity();
 		if (subtype == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

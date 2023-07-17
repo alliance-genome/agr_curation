@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -24,7 +23,7 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject
-	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
+	ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Override
 	@PostConstruct
@@ -44,7 +43,7 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 						xref.setDisplayName(xrefCurie);
 						String prefix = xrefCurie.indexOf(":") == -1 ? xrefCurie :
 							xrefCurie.substring(0, xrefCurie.indexOf(":"));
-						xref.setResourceDescriptorPage(resourceDescriptorPageDAO.getPageForResourceDescriptor(prefix, xrefPage));
+						xref.setResourceDescriptorPage(resourceDescriptorPageService.getPageForResourceDescriptor(prefix, xrefPage));
 						incomingXrefMap.put(getCrossReferenceUniqueId(xref), xref);
 					}
 				} else {

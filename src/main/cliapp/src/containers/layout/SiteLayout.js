@@ -236,13 +236,16 @@ export const SiteLayout = (props) => {
 												label: 'Anatomical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
+													{ label: 'Cell Ontology (CL)', icon: 'pi pi-fw pi-home', to: '/ontology/cl' },
 													{ label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
 													{ label: 'Mouse Adult Gross Anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
 													{ label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
+													{ label: 'Uberon Ontology (UBERON)', icon: 'pi pi-fw pi-home', to: '/ontology/uberon' },
 													{ label: 'Xenopus Anatomy Ontology (XBA)', icon: 'pi pi-fw pi-home', to: '/ontology/xba' },
 													{ label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' }
 												]
 											},
+											{ label: 'Biological Spatial Ontology (BSPO)', icon: 'pi pi-fw pi-home', to: '/ontology/bspo' },
 											{ 
 												label: 'Chemical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
@@ -250,6 +253,7 @@ export const SiteLayout = (props) => {
 													{ label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' }
 												]
 											},
+											{ label: 'Clinical Measurement Ontology (CMO)', icon: 'pi pi-fw pi-home', to: '/ontology/cmo' },
 											{ label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
 											{ label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
 											{ 
@@ -261,6 +265,8 @@ export const SiteLayout = (props) => {
 											},
 											{ label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
 											{ label: 'Measurement Method Ontology (MMO)', icon: 'pi pi-fw pi-home', to: '/ontology/mmo' },
+											{ label: 'Molecular Interactions Ontology (MI)', icon: 'pi pi-fw pi-home', to: '/ontology/mi' },
+											{ label: 'Mouse Pathology Ontology (MPATH)', icon: 'pi pi-fw pi-home', to: '/ontology/mpath' },
 											{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
 											{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
 											{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },
@@ -275,6 +281,9 @@ export const SiteLayout = (props) => {
 													{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' }
 												]
 											},
+											{ label: 'Pathway Ontology (PW)', icon: 'pi pi-fw pi-home', to: '/ontology/pw' },
+											{ label: 'Protein Modification Ontology (MOD)', icon: 'pi pi-fw pi-home', to: '/ontology/mod' },
+											{ label: 'Rat Strain Ontology (RS)', icon: 'pi pi-fw pi-home', to: '/ontology/rs' },
 											{ label: 'Relation Ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
 											{ label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
 											{ 

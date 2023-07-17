@@ -9,7 +9,6 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.interfaces.person.PersonSettingInterface;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.PersonSetting;
 import org.alliancegenome.curation_api.model.input.Pagination;
@@ -23,7 +22,7 @@ public class PersonSettingController implements PersonSettingInterface {
 
 	@Inject
 	@AuthenticatedUser
-	LoggedInPerson authenticatedPerson;
+	Person authenticatedPerson;
 	@Inject
 	PersonSettingService personSettingService;
 	@Inject

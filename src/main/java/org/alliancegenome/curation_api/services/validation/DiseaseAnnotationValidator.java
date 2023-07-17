@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
@@ -34,6 +33,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
@@ -51,7 +51,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	@Inject
 	BiologicalEntityDAO biologicalEntityDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	ReferenceDAO referenceDAO;
 	@Inject
@@ -101,7 +101,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		}
 		List<VocabularyTerm> validDiseaseQualifiers = new ArrayList<>();
 		for (VocabularyTerm dq : uiEntity.getDiseaseQualifiers()) {
-			VocabularyTerm qualifier = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, dq.getName());
+			VocabularyTerm qualifier = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, dq.getName()).getEntity();
 			if (qualifier == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -253,7 +253,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 
-		VocabularyTerm dgmRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, uiEntity.getDiseaseGeneticModifierRelation().getName());
+		VocabularyTerm dgmRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, uiEntity.getDiseaseGeneticModifierRelation().getName()).getEntity();
 
 		if (dgmRelation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -274,7 +274,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 
-		VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, uiEntity.getGeneticSex().getName());
+		VocabularyTerm geneticSex = vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, uiEntity.getGeneticSex().getName()).getEntity();
 
 		if (geneticSex == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -295,7 +295,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 
-		VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, uiEntity.getAnnotationType().getName());
+		VocabularyTerm annotationType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, uiEntity.getAnnotationType().getName()).getEntity();
 
 		if (annotationType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

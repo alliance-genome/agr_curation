@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,10 +14,13 @@ import org.alliancegenome.curation_api.dao.ResourceDescriptorDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.ResourceDescriptorDTOValidator;
 import org.apache.commons.collections4.ListUtils;
+
+import io.quarkus.logging.Log;
 
 @RequestScoped
 public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDescriptor, ResourceDescriptorDAO> {
@@ -24,6 +29,9 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 	ResourceDescriptorDAO resourceDescriptorDAO;
 	@Inject
 	ResourceDescriptorDTOValidator resourceDescriptorDtoValidator;
+	
+	Date prefixRequest = null;
+	HashMap<String, ResourceDescriptor> prefixCacheMap = new HashMap<>();
 	
 	@Override
 	@PostConstruct
@@ -57,6 +65,29 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 			}
 		}
 		
+	}
+
+	
+	public ObjectResponse<ResourceDescriptor> getByPrefix(String prefix) {
+		
+		ResourceDescriptor rd = null;
+		
+		if(prefixRequest != null) {
+			if(prefixCacheMap.containsKey(prefix)) {
+				rd = prefixCacheMap.get(prefix);
+			} else {
+				Log.debug("RD not cached, caching rd: (" + prefix + ")");
+				rd = resourceDescriptorDAO.findByField("prefix", prefix).getSingleResult();
+				prefixCacheMap.put(prefix, rd);
+			}
+		} else {
+			rd = resourceDescriptorDAO.findByField("prefix", prefix).getSingleResult();
+			prefixRequest = new Date();
+		}
+
+		ObjectResponse<ResourceDescriptor> response = new ObjectResponse<>();
+		response.setEntity(rd);
+		return response;
 	}
 
 }

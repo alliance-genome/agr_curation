@@ -345,7 +345,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		indexer.start();
 	}
 
-	private void setRefreshInterval() {
+	public void setRefreshInterval() {
 		RestHighLevelClient client = EsClientFactory.createClient(esHosts, esProtocol);
 		Log.info("Creating Settings Search Client: " + esProtocol + "://" + esHosts);
 
@@ -508,6 +508,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		} else {
 			return null;
 		}
+	}
+	
+	public SearchResponse<E> findByParams(Map<String, Object> params) {
+		return findByParams(null, params, null);
 	}
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params) {

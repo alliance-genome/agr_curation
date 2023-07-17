@@ -98,7 +98,7 @@ export const GenericDataTable = (props) => {
 				tableState = {tableState}
 				defaultColumnNames = {defaultColumnNames}
 				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
-				buttons = {headerButtons ? headerButtons() : undefined}
+				buttons = {headerButtons ? headerButtons(!isEnabled) : undefined}
 				tableStateConfirm = {tableStateConfirm}
 				setToModDefault = {setToModDefault}
 				resetTableState = {resetTableState}
@@ -181,9 +181,9 @@ export const GenericDataTable = (props) => {
 		setAllowDelete(false);
 	}
 
-	const deleteAction = (props) => {
+	const deleteAction = (props, disabled) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
+			<Button icon="pi pi-trash" className="p-button-text" disabled={disabled}
 					onClick={() => showDeleteOrDeprecateDialog(props)}/>
 		);
 	}
@@ -257,7 +257,7 @@ export const GenericDataTable = (props) => {
 					sortMode="multiple" removableSort={true} onSort={onSort} multiSortMeta={tableState.multiSortMeta}
 					onColReorder={colReorderHandler} reorderableColumns= {true} 
 					resizableColumns= {true} columnResizeMode="expand" showGridlines= {true} onColumnResizeEnd={handleColumnResizeEnd}
-					paginator= {true} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
+					paginator={isEnabled} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} 
@@ -268,14 +268,16 @@ export const GenericDataTable = (props) => {
 						/>
 					}
 					{deletionEnabled &&
-						<Column field="delete" editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} filterElement={rowEditorFilterNameHeader}
+						<Column field="delete" 
+						editor={(props) => deleteAction(props, true)} 
+						body={(props) => deleteAction(props, !isEnabled)} filterElement={rowEditorFilterNameHeader}
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
 					{duplicationEnabled &&
 						<Column field="duplicate" 
 						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>} 
-						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={false}/>} 
+						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={!isEnabled}/>} 
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
