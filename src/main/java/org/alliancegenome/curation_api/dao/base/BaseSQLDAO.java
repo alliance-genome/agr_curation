@@ -123,10 +123,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
 		
-		Metamodel metaModel = entityManager.getMetamodel();
-		IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
-		
-		CriteriaQuery<E> all = findQuery.select(rootEntry).orderBy(cb.asc(rootEntry.get(of.getId(of.getIdType().getJavaType()).getName())));;
+		CriteriaQuery<E> all = findQuery.select(rootEntry);
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(myClass)));
