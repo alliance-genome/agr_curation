@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
 
-export const AllelesDetailComponent = () => {
+export default function AlleleDetailPage(){
 	const [allele, setAllele] = useState();
 	const { curie } = useParams();
 	const { layoutColorMode } = localStorage.getItem("themeSettings");
