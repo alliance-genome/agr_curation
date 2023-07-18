@@ -18,26 +18,12 @@ public class DiseaseAnnotationUniqueIdUpdateHelper {
 	
 	public void updateDiseaseAnnotationUniqueIds() {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		int page = 0;
-		int limit = 500;
-		Pagination pagination = new Pagination(page, limit);
-
-		Boolean allSynced = false;
-		while (!allSynced) {
-			pagination.setPage(page);
-			SearchResponse<String> response = diseaseAnnotationDAO.findAllIds(pagination);
-			if (page == 0)
-				pdh.startProcess("DiseaseAnnotation uniqueId update", response.getTotalResults());
-			for (String daId : response.getResults()) {
-				updateDiseaseAnnotationUniqueId(Long.parseLong(daId));
-				pdh.progressProcess();
-			}
-			page = page + 1;
-			int nrSynced = limit * page;
-			if (nrSynced > response.getTotalResults().intValue()) {
-				nrSynced = response.getTotalResults().intValue();
-				allSynced = true;
-			}
+		
+		SearchResponse<String> response = diseaseAnnotationDAO.findAllIds();
+		pdh.startProcess("DiseaseAnnotation uniqueId update", response.getTotalResults());
+		for (String daId : response.getResults()) {
+			updateDiseaseAnnotationUniqueId(Long.parseLong(daId));
+			pdh.progressProcess();
 		}
 		pdh.finishProcess();
 	}

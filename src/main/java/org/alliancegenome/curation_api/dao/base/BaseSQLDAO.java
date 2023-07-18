@@ -118,24 +118,21 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		}
 	}
 
-	public SearchResponse<String> findAllIds(Pagination pagination) {
+	public SearchResponse<String> findAllIds() {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
-		CriteriaQuery<E> all = findQuery.select(rootEntry);
+		
+		Metamodel metaModel = entityManager.getMetamodel();
+		IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
+		
+		CriteriaQuery<E> all = findQuery.select(rootEntry).orderBy(cb.asc(rootEntry.get(of.getId(of.getIdType().getJavaType()).getName())));;
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(myClass)));
 		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
-		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
-			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0)
-				first = 0;
-			allQuery.setFirstResult(first);
-			allQuery.setMaxResults(pagination.getLimit());
-		}
 		SearchResponse<String> results = new SearchResponse<String>();
 
 		List<String> primaryKeys = new ArrayList<>();
