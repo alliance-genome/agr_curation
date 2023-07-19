@@ -285,8 +285,8 @@ export const GenericDataTable = (props) => {
 					}
 					{hasDetails &&
 						<Column field="details" 
-						editor={(props) => <EntityDetailsAction entity={props.rowData} disabled={true}/>} 
-						body={(props) => <EntityDetailsAction entity={props} disabled={!isEnabled}/>} 
+						editor={(props) => <EntityDetailsAction curie={props.rowData?.curie} disabled={true}/>} 
+						body={(props) => <EntityDetailsAction curie={props?.curie} disabled={!isEnabled}/>} 
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
