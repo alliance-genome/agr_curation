@@ -62,4 +62,10 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		return results;
 	}
 
+	public List<Long> findReferencingOrthologyPairs(String curie) {
+		Query jpqlQuery = entityManager.createQuery("SELECT o.id FROM GeneToGeneOrthology o WHERE o.subjectGene.curie = :curie OR o.objectGene.curie = :curie");
+		jpqlQuery.setParameter("curie", curie);
+		return (List<Long>) jpqlQuery.getResultList();
+	}
+
 }

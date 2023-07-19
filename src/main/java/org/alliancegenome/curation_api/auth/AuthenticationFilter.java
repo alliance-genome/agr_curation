@@ -15,12 +15,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import org.alliancegenome.curation_api.dao.AllianceMemberDAO;
-import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
+import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.AllianceMember;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.LoggedInPersonService;
-import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueIdHelper;
+import org.alliancegenome.curation_api.services.PersonService;
+import org.alliancegenome.curation_api.services.helpers.persons.PersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.okta.jwt.Jwt;
@@ -42,22 +42,22 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	@Inject
 	@AuthenticatedUser
-	Event<LoggedInPerson> userAuthenticatedEvent;
+	Event<Person> userAuthenticatedEvent;
 
 	@Inject
 	AuthenticationService authenticationService;
 
 	@Inject
-	LoggedInPersonDAO loggedInPersonDAO;
+	PersonDAO personDAO;
 
 	@Inject
 	AllianceMemberDAO allianceMemberDAO;
 
 	@Inject
-	LoggedInPersonService loggedInPersonService;
+	PersonService personService;
 
 	@Inject
-	LoggedInPersonUniqueIdHelper loggedInPersonUniqueId;
+	PersonUniqueIdHelper loggedInPersonUniqueId;
 
 	@ConfigProperty(name = "okta.authentication")
 	Instance<Boolean> okta_auth;
@@ -95,7 +95,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 					failAuthentication(requestContext);
 				} else {
 					String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
-					LoggedInPerson person = validateToken(token);
+					Person person = validateToken(token);
 					if (person != null) {
 						userAuthenticatedEvent.fire(person);
 					} else {
@@ -114,8 +114,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	}
 
-	private LoggedInPerson validateLocalToken(String token) {
-		SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
+	private Person validateLocalToken(String token) {
+		SearchResponse<Person> res = personDAO.findByField("apiToken", token);
 		if (res != null && res.getResults().size() == 1) {
 			Log.info("User Found in local DB via: " + token);
 			return res.getResults().get(0);
@@ -129,15 +129,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	private void loginDevUser() {
 		log.debug("OKTA Authentication Disabled using Test Dev User");
-		LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail("test@alliancegenome.org");
+		Person authenticatedUser = personService.findLoggedInPersonByOktaEmail("test@alliancegenome.org");
 		if (authenticatedUser == null) {
-			LoggedInPerson person = new LoggedInPerson();
+			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
 			person.setOktaEmail("test@alliancegenome.org");
 			person.setFirstName("Local");
 			person.setLastName("Dev User");
 			person.setUniqueId("Local|Dev User|test@alliancegenome.org");
-			loggedInPersonDAO.persist(person);
+			personDAO.persist(person);
 			userAuthenticatedEvent.fire(person);
 		} else {
 			userAuthenticatedEvent.fire(authenticatedUser);
@@ -145,25 +145,25 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	// Check Okta(token), Check DB ApiToken(token), else return null
-	private LoggedInPerson validateToken(String token) {
+	private Person validateToken(String token) {
 
 		Jwt jsonWebToken;
 		try {
 			jsonWebToken = authenticationService.verifyToken(token);
 		} catch (JwtVerificationException e) {
-			LoggedInPerson person = validateLocalToken(token);
+			Person person = validateLocalToken(token);
 			return person;
 		}
 
 		String oktaEmail = (String) jsonWebToken.getClaims().get("sub"); // Subject Id
 		String oktaId = (String) jsonWebToken.getClaims().get("uid"); // User Id
-		LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail(oktaEmail);
+		Person authenticatedUser = personService.findLoggedInPersonByOktaEmail(oktaEmail);
 
 		if (authenticatedUser != null) {
 			if (authenticatedUser.getAllianceMember() == null) {
 				User user = getOktaUser(oktaId);
 				authenticatedUser.setAllianceMember(getAllianceMember(user.listGroups()));
-				loggedInPersonDAO.persist(authenticatedUser);
+				personDAO.persist(authenticatedUser);
 			}
 			return authenticatedUser;
 		}
@@ -173,7 +173,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		User user = getOktaUser(oktaId);
 
 		if (user != null) {
-			LoggedInPerson person = new LoggedInPerson();
+			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
 			person.setOktaId(oktaId);
 			person.setAllianceMember(getAllianceMember(user.listGroups()));
@@ -181,7 +181,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			person.setFirstName(user.getProfile().getFirstName());
 			person.setLastName(user.getProfile().getLastName());
 			person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
-			loggedInPersonDAO.persist(person);
+			personDAO.persist(person);
 			return person;
 
 		}

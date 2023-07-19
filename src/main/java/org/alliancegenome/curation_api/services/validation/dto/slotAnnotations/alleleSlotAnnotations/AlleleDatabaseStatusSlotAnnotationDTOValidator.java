@@ -5,11 +5,11 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.SlotAnnotationDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 public class AlleleDatabaseStatusSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validateAlleleDatabaseStatusSlotAnnotationDTO(AlleleDatabaseStatusSlotAnnotation annotation, AlleleDatabaseStatusSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> adsResponse = new ObjectResponse<AlleleDatabaseStatusSlotAnnotation>();
@@ -29,7 +29,7 @@ public class AlleleDatabaseStatusSlotAnnotationDTOValidator extends SlotAnnotati
 		if (StringUtils.isBlank(dto.getDatabaseStatusName())) {
 			adsResponse.addErrorMessage("database_status_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			databaseStatus = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, dto.getDatabaseStatusName());
+			databaseStatus = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, dto.getDatabaseStatusName()).getEntity();
 			if (databaseStatus == null)
 				adsResponse.addErrorMessage("database_status_name", ValidationConstants.INVALID_MESSAGE);
 		}

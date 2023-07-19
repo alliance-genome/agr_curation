@@ -17,9 +17,11 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -48,6 +50,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
 	@Inject
 	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
+	@Inject
+	GeneToGeneOrthologyService orthologyService;
 
 	@Override
 	@PostConstruct
@@ -79,14 +83,20 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		String loadDescription = dataProvider + " Gene bulk load (" + md5sum + ")"; 
 		if (gene != null) {
 			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
-			Boolean anyReferencingDAs = false;
+			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
-					anyReferencingDAs = true;
+					anyReferencingEntities = true;
 			}
-
-			if (anyReferencingDAs) {
+			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(curie);
+			for (Long orthId : referencingOrthologyPairs) {
+				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
+				if (referencingOrthoPair != null)
+					anyReferencingEntities = true;
+			}
+			
+			if (anyReferencingEntities) {
 				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				gene.setDateUpdated(OffsetDateTime.now());
 				gene.setObsolete(true);

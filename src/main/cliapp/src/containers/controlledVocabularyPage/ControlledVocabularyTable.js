@@ -73,11 +73,11 @@ export const ControlledVocabularyTable = () => {
 		setNewVocabularyDialog(true);
 	};
 
-	const createButtons = () => {
+	const createButtons = (disabled=false) => {
 				return (
 						<>
-						<Button label="New Term" icon="pi pi-plus" onClick={handleNewTerm} />&nbsp;&nbsp;
-						<Button label="New Vocabulary" icon="pi pi-plus" onClick={handleNewVocabulary} />
+						<Button label="New Term" icon="pi pi-plus" onClick={handleNewTerm} disabled={disabled}/>&nbsp;&nbsp;
+						<Button label="New Vocabulary" icon="pi pi-plus" onClick={handleNewVocabulary} disabled={disabled} />
 						</>
 				);
 		};

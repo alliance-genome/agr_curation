@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.LoggedInPersonService;
+import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 
 @RequestScoped
@@ -20,7 +20,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 	ReferenceDAO referenceDAO;
 
 	@Inject
-	LoggedInPersonService loggedInPersonService;
+	PersonService personService;
 
 	public ObjectResponse<Reference> validateReference(Reference uiEntity) {
 		Reference reference = validateReference(uiEntity, false);

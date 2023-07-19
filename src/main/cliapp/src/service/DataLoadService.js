@@ -70,7 +70,7 @@ export class DataLoadService extends BaseAuthService {
 
 		getBackendBulkLoadTypes(loadType) {
 				const bulkLoadTypes = {
-						BulkFMSLoad: ["MOLECULE"],
+						BulkFMSLoad: ["MOLECULE", "ORTHOLOGY"],
 						BulkURLLoad: ["ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION", "RESOURCE_DESCRIPTOR"],
 						BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
 				};
@@ -85,13 +85,13 @@ export class DataLoadService extends BaseAuthService {
 
 		getOntologyTypes() {
 				return [
-					"APO", "ATP", "CHEBI", "DAO", "DO", "DPO", "ECO", "EMAPA", "FBDV", "GO", "HP", "MA", "MMO", "MMUSDV", "MP", "OBI", "PATO", "RO", "SO", "VT", "WBBT", "WBLS", "WBPheno", "XBA_XBS", "XBED", "XCO", "XPO", "XSMO", "ZECO", "ZFA", "ZFS"
+					"APO", "ATP", "BSPO", "CHEBI", "CL", "CMO", "DAO", "DO", "DPO", "ECO", "EMAPA", "FBDV", "GO", "HP", "MA", "MI", "MMO", "MPATH", "MOD", "MMUSDV", "MP", "OBI", "PATO", "PW", "RO", "RS", "SO", "UBERON", "VT", "WBBT", "WBLS", "WBPheno", "XBA_XBS", "XBED", "XCO", "XPO", "XSMO", "ZECO", "ZFA", "ZFS"
 				];
 		}
 
 		getDataProviders() {
 				return [
-						"RGD", "MGI", "SGD", "OMIM", "ZFIN", "FB", "WB"
+					"FB", "MGI", "OMIM", "RGD", "SGD", "WB", "XB", "ZFIN"
 				];
 		}
 

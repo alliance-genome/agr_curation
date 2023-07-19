@@ -8,12 +8,12 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.SlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 public class AlleleFunctionalImpactSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	PhenotypeTermService phenotypeTermService;
 
@@ -38,7 +38,7 @@ public class AlleleFunctionalImpactSlotAnnotationDTOValidator extends SlotAnnota
 		} else {
 			List<VocabularyTerm> functionalImpacts = new ArrayList<>();
 			for (String fiName : dto.getFunctionalImpactNames()) {
-				VocabularyTerm functionalImpact = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, fiName);
+				VocabularyTerm functionalImpact = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY, fiName).getEntity();
 				if (functionalImpact == null) {
 					afisaResponse.addErrorMessage("functional_impact_names", ValidationConstants.INVALID_MESSAGE);
 					break;

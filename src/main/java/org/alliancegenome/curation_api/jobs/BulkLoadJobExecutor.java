@@ -29,6 +29,7 @@ import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
+import org.alliancegenome.curation_api.jobs.executors.OrthologyExecutor;
 import org.alliancegenome.curation_api.jobs.executors.ResourceDescriptorExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -38,7 +39,10 @@ import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfi
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
 import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
+import org.alliancegenome.curation_api.services.ontology.BspoTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
+import org.alliancegenome.curation_api.services.ontology.ClTermService;
+import org.alliancegenome.curation_api.services.ontology.CmoTermService;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.alliancegenome.curation_api.services.ontology.DpoTermService;
@@ -48,13 +52,19 @@ import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.HpTermService;
 import org.alliancegenome.curation_api.services.ontology.MaTermService;
+import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
+import org.alliancegenome.curation_api.services.ontology.ModTermService;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
+import org.alliancegenome.curation_api.services.ontology.MpathTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.ontology.PatoTermService;
+import org.alliancegenome.curation_api.services.ontology.PwTermService;
 import org.alliancegenome.curation_api.services.ontology.RoTermService;
+import org.alliancegenome.curation_api.services.ontology.RsTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.alliancegenome.curation_api.services.ontology.UberonTermService;
 import org.alliancegenome.curation_api.services.ontology.VtTermService;
 import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
 import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
@@ -142,6 +152,24 @@ public class BulkLoadJobExecutor {
 	MmoTermService mmoTermService;
 	@Inject
 	ApoTermService apoTermService;
+	@Inject
+	MiTermService miTermService;
+	@Inject
+	MpathTermService mpathTermService;
+	@Inject
+	ModTermService modTermService;
+	@Inject
+	UberonTermService uberonTermService;
+	@Inject
+	RsTermService rsTermService;
+	@Inject
+	PwTermService pwTermService;
+	@Inject
+	ClTermService clTermService;
+	@Inject
+	CmoTermService cmoTermService;
+	@Inject
+	BspoTermService bspoTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -165,6 +193,8 @@ public class BulkLoadJobExecutor {
 	MoleculeExecutor moleculeExecutor;
 	@Inject
 	ResourceDescriptorExecutor resourceDescriptorExecutor;
+	@Inject
+	OrthologyExecutor orthologyExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
@@ -198,6 +228,8 @@ public class BulkLoadJobExecutor {
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
 			moleculeExecutor.runLoad(bulkLoadFile);
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ORTHOLOGY) {
+			orthologyExecutor.runLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
 			bulkLoadFile.setRecordCount(0);
 			GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
@@ -297,6 +329,27 @@ public class BulkLoadJobExecutor {
 					config.getAltNameSpaces().add("observable");
 					config.getAltNameSpaces().add("qualifier");
 					processTerms(bulkLoadFile, apoTermService, config);
+				}
+				case MI -> processTerms(bulkLoadFile, miTermService, config);
+				case MPATH -> processTerms(bulkLoadFile, mpathTermService, config);
+				case MOD -> processTerms(bulkLoadFile, modTermService, config);
+				case UBERON -> {
+					config.setLoadOnlyIRIPrefix("UBERON");
+					processTerms(bulkLoadFile, uberonTermService, config);
+				}
+				case RS -> processTerms(bulkLoadFile, rsTermService, config);
+				case PW -> processTerms(bulkLoadFile, pwTermService, config);
+				case CL -> {
+					config.setLoadOnlyIRIPrefix("CL");
+					processTerms(bulkLoadFile, clTermService, config);
+				}
+				case CMO -> {
+					config.setLoadOnlyIRIPrefix("CMO");
+					processTerms(bulkLoadFile, cmoTermService, config);
+				}
+				case BSPO -> {
+					config.setLoadOnlyIRIPrefix("BSPO");
+					processTerms(bulkLoadFile, bspoTermService, config);
 				}
 				default -> {
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");

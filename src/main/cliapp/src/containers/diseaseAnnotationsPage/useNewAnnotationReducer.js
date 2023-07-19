@@ -1,4 +1,5 @@
 import { useImmerReducer } from "use-immer";
+import 'core-js/features/structured-clone';
 
 const DEFAULT_ANNOTATION = {
 	subject: {
