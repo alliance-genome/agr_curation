@@ -126,6 +126,7 @@ export const AllelesTable = () => {
 		return alleleService.saveAllele(updatedAllele);
 	});
 
+
 	const taxonTemplate = (rowData) => {
 		if (rowData?.taxon) {
 			return (
@@ -1345,6 +1346,7 @@ export const AllelesTable = () => {
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
 					isEditable={true}
+					hasDetails={true}
 					mutation={mutation}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}

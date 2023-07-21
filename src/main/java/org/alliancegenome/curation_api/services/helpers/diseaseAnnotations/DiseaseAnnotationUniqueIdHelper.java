@@ -51,8 +51,11 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(subjectCurie);
 		uniqueId.add(annotationDTO.getDiseaseRelationName());
-		if (annotationDTO.getNegated())
+		if (annotationDTO.getNegated()) {
 			uniqueId.add(annotationDTO.getNegated().toString());
+		} else {
+			uniqueId.add("false");
+		}
 		uniqueId.add(annotationDTO.getDoTermCurie());
 		uniqueId.add(refCurie);
 		uniqueId.addList(annotationDTO.getEvidenceCodeCuries());
