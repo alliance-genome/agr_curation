@@ -56,7 +56,7 @@ public interface VocabularyTermSetCrudInterface extends BaseIdCrudInterface<Voca
 	@Override
 	@POST
 	@Path("/find")
-	@Tag(name = "Database Search Endpoints")
+	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.VocabularyTermSetView.class)
 	public SearchResponse<VocabularyTermSet> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit,
 		@RequestBody HashMap<String, Object> params);
@@ -64,7 +64,7 @@ public interface VocabularyTermSetCrudInterface extends BaseIdCrudInterface<Voca
 	@Override
 	@POST
 	@Path("/search")
-	@Tag(name = "Elastic Search Endpoints")
+	@Tag(name = "Search Database Browsing Endpoints")
 	@JsonView({ View.VocabularyTermSetView.class })
 	public SearchResponse<VocabularyTermSet> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit,
 		@RequestBody HashMap<String, Object> params);
