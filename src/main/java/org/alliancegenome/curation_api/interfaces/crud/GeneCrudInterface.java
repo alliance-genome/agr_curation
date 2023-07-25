@@ -59,14 +59,14 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene>, BaseDTO
 	@Override
 	@POST
 	@Path("/find")
-	@Tag(name = "Database Search Endpoints")
+	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.GeneView.class)
 	public SearchResponse<Gene> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
-	@Tag(name = "Elastic Search Endpoints")
+	@Tag(name = "Search Database Browsing Endpoints")
 	@JsonView({ View.GeneView.class })
 	public SearchResponse<Gene> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
