@@ -257,23 +257,6 @@ export const AllelesTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
-	const taxonEditor = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={taxonSearch}
-					initialValue={props.rowData.taxon?.curie}
-					rowProps={props}
-					fieldName='taxon'
-					onValueChangeHandler={onTaxonValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField='taxon'
-				/>
-			</>
-		);
-	};
 
 	const onInternalEditorValueChange = (props, event) => {
 		let updatedAlleles = [...props.props.value];
