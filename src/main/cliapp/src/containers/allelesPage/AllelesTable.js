@@ -5,7 +5,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
@@ -31,6 +31,7 @@ import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilte
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { taxonSearch } from '../../components/editors/taxon/utils';
 
 export const AllelesTable = () => {
 
@@ -248,15 +249,24 @@ export const AllelesTable = () => {
 		defaultAutocompleteOnChange(props, event, "taxon", setFieldValue);
 	};
 
-	const taxonSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
-		const endpoint = "ncbitaxonterm";
-		const filterName = "taxonFilter";
-		setQuery(event.query);
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
 
+	const taxonEditor = (props) => {
+		return (
+			<>
+				<AutocompleteEditor
+					search={taxonSearch}
+					initialValue={props.rowData.taxon?.curie}
+					rowProps={props}
+					fieldName='taxon'
+					onValueChangeHandler={onTaxonValueChange}
+				/>
+				<ErrorMessageComponent
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField='taxon'
+				/>
+			</>
+		);
+	};
 
 	const onInternalEditorValueChange = (props, event) => {
 		let updatedAlleles = [...props.props.value];
