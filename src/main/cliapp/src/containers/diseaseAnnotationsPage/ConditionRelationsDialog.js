@@ -10,7 +10,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { Toast } from 'primereact/toast';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ValidationService } from '../../service/ValidationService';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';

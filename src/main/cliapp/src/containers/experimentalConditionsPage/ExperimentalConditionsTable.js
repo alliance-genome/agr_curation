@@ -5,7 +5,7 @@ import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEd
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
-import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Tooltip } from 'primereact/tooltip';
@@ -14,7 +14,7 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { NewConditionForm } from './NewConditionForm';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useNewConditionReducer } from './useNewConditionReducer';
-import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
+import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 

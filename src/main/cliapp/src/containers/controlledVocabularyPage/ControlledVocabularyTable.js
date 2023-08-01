@@ -9,7 +9,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 import { VocabularyService } from "../../service/VocabularyService";
 import { TrueFalseDropdown } from "../../components/TrueFalseDropDownSelector";
-import { ErrorMessageComponent } from "../../components/ErrorMessageComponent";
+import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
 import { InputTextEditor } from "../../components/InputTextEditor";
 import { ControlledVocabularyDropdown } from "../../components/ControlledVocabularySelector";
 import { NewTermForm } from "../../containers/controlledVocabularyPage/NewTermForm";
