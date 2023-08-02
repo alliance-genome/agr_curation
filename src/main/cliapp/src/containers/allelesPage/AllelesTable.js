@@ -31,7 +31,7 @@ import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilte
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { taxonSearch } from '../../components/editors/taxon/utils';
+import { taxonSearch } from '../../components/Editors/taxon/utils';
 
 export const AllelesTable = () => {
 

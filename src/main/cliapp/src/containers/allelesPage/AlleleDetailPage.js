@@ -6,12 +6,13 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonAdditionalFieldData } from '../../components/FieldData/TaxonAdditionalFieldData';
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
+import { useAlleleReducer } from './useAlleleReducer';
 
 export default function AlleleDetailPage(){
-	const [allele, setAllele] = useState();
 	const { curie } = useParams();
 	const alleleService = new AlleleService();
 	const errorMessages = useState([]);
+	const { alleleState, alleleDispatch } = useAlleleReducer();
 
 	const labelColumnSize = "col-3";
 	const widgetColumnSize = "col-4";
@@ -21,7 +22,7 @@ export default function AlleleDetailPage(){
 		() => alleleService.getAllele(curie), 
 		{
 			onSuccess: (result) => {
-				setAllele(result?.data?.entity);
+				alleleDispatch({type: 'SET', value: result?.data?.entity});
 			},
 			onError: (error) => {
 				console.warn(error);
@@ -31,8 +32,13 @@ export default function AlleleDetailPage(){
 		}
 	);
 
-	const onTaxonValueChange = () => {
-		console.log("onTaxonValueChange");
+	const onTaxonValueChange = (event) => {
+		console.log("onTaxonValueChange", event);
+		alleleDispatch({
+			type: 'EDIT',
+			field: 'taxon',
+			value: event.value,
+		})
 	}
 
 	return(
@@ -45,11 +51,11 @@ export default function AlleleDetailPage(){
 					 		<label htmlFor="taxon"><font color={'red'}>*</font>Taxon</label>
 						</div>
 						<div className={widgetColumnSize}>
-							<TaxonFormEditor curie={allele?.taxon?.curie} onTaxonValueChange={onTaxonValueChange} />
+							<TaxonFormEditor taxon={alleleState.allele?.taxon} onTaxonValueChange={onTaxonValueChange} />
 						</div>
 						<div className={fieldDetailsColumnSize}>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"taxon"}/>
-							<TaxonAdditionalFieldData curie={allele?.taxon?.curie}/>
+							<TaxonAdditionalFieldData curie={alleleState.allele?.taxon?.curie}/>
 						</div>
 					</div>
 
