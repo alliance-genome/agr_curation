@@ -81,7 +81,7 @@ public class FileTransferHelper {
 
 	}
 
-	public String compressInputFile(String fullFilePath) {
+	public String compressInputFile(String fullFilePath) throws NullPointerException {
 
 		try {
 			GZIPInputStream gs = new GZIPInputStream(new FileInputStream(new File(fullFilePath)));
@@ -104,6 +104,9 @@ public class FileTransferHelper {
 			inFilePath.delete();
 
 			return outFilePath.getAbsolutePath();
+		} catch (NullPointerException e) {
+			log.error(e.getMessage());
+			throw e;
 		}
 
 	}

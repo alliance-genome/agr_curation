@@ -20,9 +20,15 @@ public class BulkLoadURLProcessor extends BulkLoadProcessor {
 
 		if (bulkURLLoad.getBulkloadUrl() != null && bulkURLLoad.getBulkloadUrl().length() > 0) {
 			String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getBulkloadUrl());
-			String localFilePath = fileHelper.compressInputFile(filePath);
-			processFilePath(bulkURLLoad, localFilePath);
-			endLoad(bulkURLLoad, null, JobStatus.FINISHED);
+			String localFilePath;
+			try {
+				localFilePath = fileHelper.compressInputFile(filePath);
+				processFilePath(bulkURLLoad, localFilePath);
+				endLoad(bulkURLLoad, null, JobStatus.FINISHED);
+			} catch (NullPointerException e) {
+				endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: URL is invalid", JobStatus.FAILED);
+			}
+			
 		} else {
 			log.info("Load: " + bulkURLLoad.getName() + " failed: URL is missing");
 			endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: URL is missing", JobStatus.FAILED);
