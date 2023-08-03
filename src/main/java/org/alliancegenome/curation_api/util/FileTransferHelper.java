@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +45,11 @@ public class FileTransferHelper {
 			URL redirectUrl = response.url();
 			log.info("Saving file to local filesystem: " + saveFilePath.getAbsolutePath());
 			FileUtils.copyURLToFile(redirectUrl, saveFilePath);
+			if(!saveFilePath.exists() || saveFilePath.length() == 0) {
+				log.error("Downloading URL failed: " + redirectUrl);
+				saveFilePath.delete();
+				return null;
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			log.info("Deleting old file: " + saveFilePath);
@@ -81,10 +85,17 @@ public class FileTransferHelper {
 
 	}
 
-	public String compressInputFile(String fullFilePath) {
+	public String compressInputFile(String fullFilePath) throws NullPointerException {
 
+		File inFilePath = new File(fullFilePath);
+		
+		if(!inFilePath.exists() || inFilePath.length() == 0) {
+			log.error("Input file does not exist");
+			return null;
+		}
+		
 		try {
-			GZIPInputStream gs = new GZIPInputStream(new FileInputStream(new File(fullFilePath)));
+			GZIPInputStream gs = new GZIPInputStream(new FileInputStream(inFilePath));
 			gs.close();
 			log.info("Input stream is compressed not compressing");
 			return new File(fullFilePath).getAbsolutePath();
@@ -92,8 +103,6 @@ public class FileTransferHelper {
 			log.info("Input stream not in the GZIP format, GZIP it");
 
 			File outFilePath = generateFilePath();
-
-			File inFilePath = new File(fullFilePath);
 
 			if (!compressGzipFile(inFilePath, outFilePath)) {
 				return null;
