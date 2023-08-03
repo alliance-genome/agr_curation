@@ -85,8 +85,12 @@ public class FileTransferHelper {
 
 	}
 
-	public String compressInputFile(String fullFilePath) throws NullPointerException {
+	public String compressInputFile(String fullFilePath) {
 
+		if(fullFilePath == null) {
+			return null;
+		}
+		
 		File inFilePath = new File(fullFilePath);
 		
 		if(!inFilePath.exists() || inFilePath.length() == 0) {
