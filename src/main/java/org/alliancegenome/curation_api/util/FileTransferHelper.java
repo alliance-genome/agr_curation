@@ -46,7 +46,7 @@ public class FileTransferHelper {
 			log.info("Saving file to local filesystem: " + saveFilePath.getAbsolutePath());
 			FileUtils.copyURLToFile(redirectUrl, saveFilePath);
 			if(!saveFilePath.exists() || saveFilePath.length() == 0) {
-				log.error("Downloading URL failed: " + url);
+				log.error("Downloading URL failed: " + redirectUrl);
 				saveFilePath.delete();
 				return null;
 			}
