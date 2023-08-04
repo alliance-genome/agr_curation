@@ -214,7 +214,7 @@ public class BulkLoadProcessor {
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);
 		bulkLoadDAO.merge(bulkLoad);
-		log.info("Loadx: " + bulkLoad.getName() + " is finished");
+		log.info("Load: " + bulkLoad.getName() + " is finished");
 	}
 
 	protected void startLoadFile(BulkLoadFile bulkLoadFile) {
