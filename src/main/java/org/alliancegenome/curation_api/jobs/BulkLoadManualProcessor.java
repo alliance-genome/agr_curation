@@ -53,8 +53,6 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 			String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataProvider().toString());
 			String localFilePath = fileHelper.compressInputFile(filePath);
 			processFilePath(bulkManualLoad, localFilePath, cleanUp);
-
-			endLoad(bulkManualLoad, null, JobStatus.FINISHED);
 		} else {
 			log.warn("BulkManualLoad not found: " + loadType);
 			endLoad(bulkManualLoad, "BulkManualLoad not found: " + loadType, JobStatus.FAILED);

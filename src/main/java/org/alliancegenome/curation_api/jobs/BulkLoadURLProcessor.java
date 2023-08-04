@@ -30,7 +30,6 @@ public class BulkLoadURLProcessor extends BulkLoadProcessor {
 				endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: to save local file: " + filePath, JobStatus.FAILED);
 			} else {
 				processFilePath(bulkURLLoad, localFilePath);
-				endLoad(bulkURLLoad, null, JobStatus.FINISHED);
 			}
 		} else {
 			log.info("Load: " + bulkURLLoad.getName() + " failed: URL is missing");

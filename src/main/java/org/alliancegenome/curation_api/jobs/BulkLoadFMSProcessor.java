@@ -30,7 +30,6 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 				String filePath = fileHelper.saveIncomingURLFile(s3Url);
 				String localFilePath = fileHelper.compressInputFile(filePath);
 				processFilePath(bulkFMSLoad, localFilePath);
-				endLoad(bulkFMSLoad, null, JobStatus.FINISHED);
 			} else {
 				log.warn("Files: " + files);
 				log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getFmsDataType() + " " + bulkFMSLoad.getFmsDataSubType());

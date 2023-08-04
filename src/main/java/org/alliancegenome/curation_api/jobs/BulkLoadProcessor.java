@@ -64,12 +64,14 @@ public class BulkLoadProcessor {
 	@ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler or Forced start
 	public void bulkLoadFile(Message<BulkLoadFile> file) {
 		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
+		BulkLoad bulkLoad = bulkLoadFile.getBulkLoad();
 		if (!bulkLoadFile.getBulkloadStatus().isStarted()) {
 			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
 			// endLoad(bulkLoadFile, "Finished ended due to status: " +
 			// bulkLoadFile.getBulkloadStatus(), bulkLoadFile.getBulkloadStatus());
 			return;
 		} else {
+			startLoad(bulkLoad);
 			startLoadFile(bulkLoadFile);
 		}
 
@@ -214,7 +216,7 @@ public class BulkLoadProcessor {
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);
 		bulkLoadDAO.merge(bulkLoad);
-		log.info("Load: " + bulkLoad.getName() + " is finished");
+		log.info("Loadx: " + bulkLoad.getName() + " is finished");
 	}
 
 	protected void startLoadFile(BulkLoadFile bulkLoadFile) {
@@ -233,6 +235,7 @@ public class BulkLoadProcessor {
 		bulkLoadFile.setDateLastLoaded(OffsetDateTime.now());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		log.info("Load File: " + bulkLoadFile.getMd5Sum() + " is finished");
+		endLoad(bulkLoadFile.getBulkLoad(), message, status);
 	}
 
 }
