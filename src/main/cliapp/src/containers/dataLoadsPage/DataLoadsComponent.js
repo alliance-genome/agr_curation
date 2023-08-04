@@ -323,7 +323,7 @@ export const DataLoadsComponent = () => {
 		return ret;
 	};
 
-	const bulkloadStatusTemplate = (rowData) => {
+	const bulkloadFileStatusTemplate = (rowData) => {
 		let styleClass = 'p-button-text p-button-plain';
 		if (rowData.bulkloadStatus === 'FAILED') { styleClass = "p-button-danger"; }
 		if (rowData.bulkloadStatus && (
@@ -334,6 +334,26 @@ export const DataLoadsComponent = () => {
 
 		return (
 			<Button label={rowData.bulkloadStatus} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
+		);
+	};
+
+	const bulkloadStatusTemplate = (rowData) => {
+		let sortedFiles = [];
+		if (rowData.loadFiles) {
+			sortedFiles = sortFilesByDate(rowData.loadFiles);
+		}
+		let latestStatus = sortedFiles[0].bulkloadStatus;
+		let latestError = sortedFiles[0].errorMessage;
+		let styleClass = 'p-button-text p-button-plain';
+		if (latestStatus === 'FAILED') { styleClass = "p-button-danger"; }
+		if (latestStatus && (
+			latestStatus.endsWith('STARTED') ||
+			latestStatus.endsWith('RUNNING') ||
+			latestStatus.endsWith('PENDING')
+		)) { styleClass = "p-button-success"; }
+
+		return (
+			<Button label={latestStatus} tooltip={latestError} className={`p-button-rounded ${styleClass}`} />
 		);
 	};
 
@@ -356,31 +376,38 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
-	const fileTable = (load) => {
+	const sortFilesByDate = (files) => {
+		let sortedFiles = [];
 		let lastLoadedDates = new Map();
 		let filesWithoutDates = [];
+		files.forEach(file => {
+			if (file.bulkloadStatus === "FINISHED" || file.bulkloadStatus === "STOPPED" || file.bulkloadStatus === "FAILED") {
+				if (file.dateLastLoaded) {
+					lastLoadedDates.set(file.dateLastLoaded, file);
+				} else {
+					filesWithoutDates.push(file);	
+				}
+			} else {
+				lastLoadedDates.set(new Date().toISOString(), file);
+			}
+		});
+		Array.from(lastLoadedDates.keys()).sort(function(a,b) {
+			const start1 = new Date(a);
+			const start2 = new Date(b);
+			return start2 - start1;
+		}).forEach(date => sortedFiles.push(lastLoadedDates.get(date)));
+		
+		if (filesWithoutDates.length > 0) {
+			filesWithoutDates.forEach(fwd => {sortedFiles.push(fwd)});
+		}
+
+		return sortedFiles;
+	}
+
+	const fileTable = (load) => {
 		let sortedFiles = [];
 		if (load.loadFiles) {
-			load.loadFiles.forEach(file => {
-				if (file.bulkloadStatus === "FINISHED" || file.bulkloadStatus === "STOPPED" || file.bulkloadStatus === "FAILED") {
-					if (file.dateLastLoaded) {
-						lastLoadedDates.set(file.dateLastLoaded, file);
-					} else {
-						filesWithoutDates.push(file);	
-					}
-				} else {
-					lastLoadedDates.set(new Date().toISOString(), file);
-				}
-			});
-			Array.from(lastLoadedDates.keys()).sort(function(a,b) {
-				const start1 = new Date(a);
-				const start2 = new Date(b);
-				return start2 - start1;
-			}).forEach(date => sortedFiles.push(lastLoadedDates.get(date)));
-			
-			if (filesWithoutDates.length > 0) {
-				filesWithoutDates.forEach(fwd => {sortedFiles.push(fwd)});
-			}
+			sortedFiles = sortFilesByDate(load.loadFiles);
 		}
 		sortedFiles.forEach(file => {file.loadType = load.backendBulkLoadType});
 		return (
@@ -395,7 +422,7 @@ export const DataLoadsComponent = () => {
 					<Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="linkMLSchemaVersion" header="LinkML Schema Version" />
 					<Column field="dateLastLoaded" header="Last Loaded" />
-					<Column field="bulkloadStatus" body={bulkloadStatusTemplate} header="Status" />
+					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
 			</div>
