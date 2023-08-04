@@ -64,14 +64,12 @@ public class BulkLoadProcessor {
 	@ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler or Forced start
 	public void bulkLoadFile(Message<BulkLoadFile> file) {
 		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
-		BulkLoad bulkLoad = bulkLoadFile.getBulkLoad();
 		if (!bulkLoadFile.getBulkloadStatus().isStarted()) {
 			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
 			// endLoad(bulkLoadFile, "Finished ended due to status: " +
 			// bulkLoadFile.getBulkloadStatus(), bulkLoadFile.getBulkloadStatus());
 			return;
 		} else {
-			startLoad(bulkLoad);
 			startLoadFile(bulkLoadFile);
 		}
 
