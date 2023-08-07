@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { Toast } from 'primereact/toast';
 import { Divider } from 'primereact/divider';
 import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
@@ -12,13 +13,15 @@ import { InCollectionFormEditor } from '../../components/Editors/inCollection/In
 import { IsExtinctFormEditor } from '../../components/Editors/isExtinct/IsExtinctFormEditor';
 import { InternalFormEditor } from '../../components/Editors/internal/InternalFormEditor';
 import { ObsoleteFormEditor } from '../../components/Editors/obsolete/ObsoleteFormEditor';
+import { PageFooter } from './PageFooter';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
-	const alleleService = new AlleleService();
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const errorMessages = useState([]);//todo: put in reducer?
 	const { alleleState, alleleDispatch } = useAlleleReducer();
+	const alleleService = new AlleleService();
+	const toastSuccess = useRef(null);
+	const toastError = useRef(null);
 
 	const labelColumnSize = "col-3";
 	const widgetColumnSize = "col-4";
@@ -38,11 +41,54 @@ export default function AlleleDetailPage(){
 		}
 	);
 
+	const mutation = useMutation(allele => {
+		return alleleService.saveAllele(allele);
+	});
+
+	const handleSubmit = (event) => {
+		alleleDispatch({
+			type: "SUBMIT" 
+		})
+		event.preventDefault();
+		mutation.mutate(alleleState.allele, {
+			onSuccess: (data) => {
+				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
+				console.log(alleleState.errorMessages);
+			},
+			onError: (error) => {
+				let message;
+				if(error?.response?.data?.errorMessage){
+					message = error.response.data.errorMessage;
+				} else {
+					//toast will still display even if 500 error and no errorMessages
+					message = `${error.response.status} ${error.response.statusText}`
+				}
+				toastError.current.show([
+					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
+				]);
+
+				alleleDispatch(
+					{
+						type: "UPDATE_ERROR_MESSAGES", 
+						errorType: "errorMessages", 
+						errorMessages: error.response?.data?.errorMessages || {}
+					}
+				);
+			}
+		})
+	}
+
 	const onTaxonValueChange = (event) => {
+		let value = {};
+		if(typeof event.value === "object"){
+			value = event.value;
+		} else {
+			value.curie = event.value;
+		}
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'taxon',
-			value: event.value,
+			value,
 		})
 	}
 
@@ -55,10 +101,18 @@ export default function AlleleDetailPage(){
 	}
 
 	const onInCollectionValueChange = (event) => {
+		let value = {};
+		if(typeof event.value === "object"){
+			value = event.value;
+		} else if(event.value === "") {
+			value = undefined;
+		} else {
+			value.name = event.value;
+		}
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'inCollection',
-			value: event.value,
+			value,
 		})
 	}
 
@@ -88,6 +142,8 @@ export default function AlleleDetailPage(){
 
 	return(
 		<>
+			<Toast ref={toastError} position="top-left" />
+			<Toast ref={toastSuccess} position="top-right" />
 			<h1>Allele Detail Page</h1>
 			<ErrorBoundary>
 				<form>
@@ -98,7 +154,7 @@ export default function AlleleDetailPage(){
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={errorMessages}
+						errorMessages={alleleState.errorMessages}
 					/>
 
 					<Divider/>
@@ -109,7 +165,7 @@ export default function AlleleDetailPage(){
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={errorMessages}
+						errorMessages={alleleState.errorMessages}
 					/>
 
 					<Divider/>
@@ -120,7 +176,7 @@ export default function AlleleDetailPage(){
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={errorMessages}
+						errorMessages={alleleState.errorMessages}
 					/>
 
 					<Divider/>
@@ -132,7 +188,7 @@ export default function AlleleDetailPage(){
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={errorMessages}
+						errorMessages={alleleState.errorMessages}
 					/>
 
 					<Divider/>
@@ -144,7 +200,7 @@ export default function AlleleDetailPage(){
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={errorMessages}
+						errorMessages={alleleState.errorMessages}
 					/>
 
 					<Divider/>
@@ -156,10 +212,10 @@ export default function AlleleDetailPage(){
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={errorMessages}
+						errorMessages={alleleState.errorMessages}
 					/>
-
 			</form>
+			<PageFooter handleSubmit={handleSubmit}/>
 		</ErrorBoundary>
 		</>
 	)

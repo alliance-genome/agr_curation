@@ -26,9 +26,9 @@ export const TaxonFormEditor = ({
           fieldName='taxon'
           onValueChangeHandler={onTaxonValueChange}
         />
+        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"taxon"}/>
       </div>
       <div className={fieldDetailsColumnSize}>
-        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"taxon"}/>
         <TaxonAdditionalFieldData curie={taxon?.curie}/>
       </div>
     </div>

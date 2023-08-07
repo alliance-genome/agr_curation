@@ -16,7 +16,7 @@ export const IsExtinctFormEditor = ({
   return (
     <div className="grid">
       <div className={labelColumnSize}>
-        <label htmlFor="isExtinct">In Collection</label>
+        <label htmlFor="isExtinct">Is Extinct</label>
       </div>
       <div className={widgetColumnSize}>
         <Dropdown

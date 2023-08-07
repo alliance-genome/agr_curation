@@ -169,9 +169,7 @@ export const NewAnnotationForm = ({
 				}
 					
 
-				toast_error.current.show([
-					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
-				]);
+				toast_error.current.show({severity: 'error', summary: 'Page error: ', detail: message });
 
 				newAnnotationDispatch(
 					{

@@ -35,6 +35,7 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'SUBMIT':
 			draft.submitted = true;
+			draft.errorMessages = {};
 			break;
 		default:
       throw Error('Unknown action: ' + action.type);

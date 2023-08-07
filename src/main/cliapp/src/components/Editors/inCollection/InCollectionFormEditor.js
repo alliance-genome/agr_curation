@@ -30,9 +30,9 @@ export const InCollectionFormEditor = ({
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<VocabTermAutocompleteTemplate item={item} op={op} query={query} setAutocompleteSelectedItem={setAutocompleteSelectedItem}/>}
         />
+        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"inCollection"}/>
       </div>
       <div className={fieldDetailsColumnSize}>
-        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"inCollection"}/>
         <InCollectionAdditionalFieldData name={inCollection?.name}/>
       </div>
     </div>
