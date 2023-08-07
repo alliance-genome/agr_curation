@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Divider } from 'primereact/divider';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
@@ -39,23 +40,39 @@ export default function AlleleDetailPage(){
 		})
 	}
 
+	const onReferenceValueChange = (event) => {
+		alleleDispatch({
+			type: 'EDIT',
+			field: 'references',
+			value: event.value,
+		})
+	}
+
 	return(
 		<>
 			<h1>Allele Detail Page</h1>
 			<ErrorBoundary>
 				<form>
-					<div className="grid">
-						<div className={labelColumnSize}>
-					 		<label htmlFor="taxon"><font color={'red'}>*</font>Taxon</label>
-						</div>
-						<div className={widgetColumnSize}>
-							<TaxonFormEditor taxon={alleleState.allele?.taxon} onTaxonValueChange={onTaxonValueChange} />
-						</div>
-						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"taxon"}/>
-							<TaxonAdditionalFieldData curie={alleleState.allele?.taxon?.curie}/>
-						</div>
-					</div>
+
+					<TaxonFormEditor 
+						taxon={alleleState.allele?.taxon} 
+						onTaxonValueChange={onTaxonValueChange} 
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						errorMessages={errorMessages}
+					/>
+
+					<Divider/>
+
+					<ReferencesFormEditor 
+						references={alleleState.allele?.references} 
+						onReferencesValueChange={onReferenceValueChange} 
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						errorMessages={errorMessages}
+					/>
 
 					{/* <div className="grid">
 						<div className={labelColumnSize}>

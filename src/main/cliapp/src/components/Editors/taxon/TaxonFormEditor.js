@@ -4,7 +4,14 @@ import { taxonSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { TaxonAdditionalFieldData } from '../../FieldData/TaxonAdditionalFieldData';
 
-export const TaxonFormEditor = ({ taxon, onTaxonValueChange, widgetColumnSize, labelColumnSize, fieldDetailsColumnSize, errorMessages }) => {
+export const TaxonFormEditor = ({ 
+    taxon, 
+    onTaxonValueChange, 
+    widgetColumnSize, 
+    labelColumnSize, 
+    fieldDetailsColumnSize, 
+    errorMessages 
+  }) => {
   
   return (
     <div className="grid">
