@@ -11,6 +11,7 @@ import { ReferencesFormEditor } from '../../components/Editors/references/Refere
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { IsExtinctFormEditor } from '../../components/Editors/isExtinct/IsExtinctFormEditor';
 import { InternalFormEditor } from '../../components/Editors/internal/InternalFormEditor';
+import { ObsoleteFormEditor } from '../../components/Editors/obsolete/ObsoleteFormEditor';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -77,6 +78,14 @@ export default function AlleleDetailPage(){
 		})
 	}
 
+	const onObsoleteValueChange = (event) => {
+		alleleDispatch({
+			type: 'EDIT',
+			field: 'obsolete',
+			value: event.value,
+		})
+	}
+
 	return(
 		<>
 			<h1>Allele Detail Page</h1>
@@ -131,6 +140,18 @@ export default function AlleleDetailPage(){
 					<InternalFormEditor
 						internal={alleleState.allele?.internal} 
 						onInternalValueChange={onInternalValueChange} 
+						booleanTerms={booleanTerms}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						errorMessages={errorMessages}
+					/>
+
+					<Divider/>
+
+					<ObsoleteFormEditor
+						obsolete={alleleState.allele?.obsolete} 
+						onObsoleteValueChange={onObsoleteValueChange} 
 						booleanTerms={booleanTerms}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}

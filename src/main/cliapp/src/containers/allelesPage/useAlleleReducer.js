@@ -11,6 +11,7 @@ const initialAlleleState = {
 		},
 		isExtinct: false,
 		internal: false,
+		obsolete: false,
 	},
 	errorMessages: {},
 	submitted: false,
