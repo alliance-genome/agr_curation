@@ -32,6 +32,7 @@ import { AutocompleteMultiEditor } from "../../components/Autocomplete/Autocompl
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { taxonSearch } from '../../components/Editors/taxon/utils';
+import { referenceSearch } from '../../components/Editors/references/utils';
 
 export const AllelesTable = () => {
 
@@ -215,15 +216,6 @@ export const AllelesTable = () => {
 		multipleAutocompleteOnChange(props, event, "references", setFieldValue);
 	};
 
-	const referenceSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["curie", "cross_references.curie"];
-		const endpoint = "literature-reference";
-		const filterName = "curieFilter";
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
 
 	const referencesEditor = (props) => {
 		return (

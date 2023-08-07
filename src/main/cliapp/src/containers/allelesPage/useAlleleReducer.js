@@ -5,6 +5,7 @@ const initialAlleleState = {
 		taxon: {
 			curie: "",
 		},
+		references: [],
 	},
 	errorMessages: {},
 	submitted: false,
