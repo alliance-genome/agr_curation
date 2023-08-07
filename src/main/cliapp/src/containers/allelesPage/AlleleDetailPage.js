@@ -3,15 +3,14 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
-import { TaxonAdditionalFieldData } from '../../components/FieldData/TaxonAdditionalFieldData';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
+import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
 	const alleleService = new AlleleService();
-	const errorMessages = useState([]);
+	const errorMessages = useState([]);//todo: put in reducer?
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 
 	const labelColumnSize = "col-3";
@@ -33,7 +32,6 @@ export default function AlleleDetailPage(){
 	);
 
 	const onTaxonValueChange = (event) => {
-		console.log("onTaxonValueChange", event);
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'taxon',
