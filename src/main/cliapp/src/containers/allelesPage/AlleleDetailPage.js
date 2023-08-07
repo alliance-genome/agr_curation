@@ -3,15 +3,18 @@ import { Divider } from 'primereact/divider';
 import { useParams } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
 import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
+import { IsExtinctFormEditor } from '../../components/Editors/isExtinct/IsExtinctFormEditor';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
 	const alleleService = new AlleleService();
+	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const errorMessages = useState([]);//todo: put in reducer?
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 
@@ -57,6 +60,14 @@ export default function AlleleDetailPage(){
 		})
 	}
 
+	const onIsExtinctValueChange = (event) => {
+		alleleDispatch({
+			type: 'EDIT',
+			field: 'isExtinct',
+			value: event.value,
+		})
+	}
+
 	return(
 		<>
 			<h1>Allele Detail Page</h1>
@@ -94,64 +105,17 @@ export default function AlleleDetailPage(){
 						errorMessages={errorMessages}
 					/>
 
-					{/* <div className="grid">
-						<div className={labelColumnSize}>
-							<label htmlFor="assertedGenes">Asserted Genes</label>
-						</div>
-						<div className={widgetColumnSize}>
-						</div>
-						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedGenes"}/>
-							<AssertedGenesAdditionalFieldData fieldData={newAnnotation.assertedGenes}/>
-						</div>
-					</div>
+					<Divider/>
 
-					<div className="grid">
-						<div className={labelColumnSize}>
-							<label htmlFor="assertedAllele">Asserted Allele</label>
-						</div>
-						<div className={widgetColumnSize}>
-						</div>
-						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedAllele"}/>
-							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"assertedAllele"}/>
-							<AssertedAlleleAdditionalFieldData fieldData={newAnnotation.assertedAllele}/>
-						</div>
-					</div>
-
-					<div className="grid">
-						<div className={labelColumnSize}>
-							<label htmlFor="diseaseRelation"><font color={'red'}>*</font>Disease Relation</label>
-						</div>
-						<div className={widgetColumnSize}>
-						</div>
-						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
-						</div>
-					</div>
-
-					<div className="grid">
-						<div className={labelColumnSize}>
-							<label htmlFor="negated">Negated</label>
-						</div>
-						<div className={widgetColumnSize}>
-						</div>
-						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
-						</div>
-					</div>
-
-					<div className="grid">
-						<div className={labelColumnSize}>
-							<label htmlFor="object"><font color={'red'}>*</font>Disease</label>
-						</div>
-						<div className={widgetColumnSize}>
-						</div>
-						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
-							<DiseaseAdditionalFieldData fieldData={newAnnotation.object}/>
-						</div>
-					</div> */}
+					<IsExtinctFormEditor
+						isExtinct={alleleState.allele?.isExtinct} 
+						onIsExtinctValueChange={onIsExtinctValueChange} 
+						booleanTerms={booleanTerms}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						errorMessages={errorMessages}
+					/>
 
 			</form>
 		</ErrorBoundary>

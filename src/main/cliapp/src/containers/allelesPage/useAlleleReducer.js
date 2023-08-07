@@ -9,6 +9,7 @@ const initialAlleleState = {
 		inCollection: {
 			name: "",
 		},
+		isExtinct: false,
 	},
 	errorMessages: {},
 	submitted: false,
