@@ -10,6 +10,7 @@ import { useAlleleReducer } from './useAlleleReducer';
 import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { IsExtinctFormEditor } from '../../components/Editors/isExtinct/IsExtinctFormEditor';
+import { InternalFormEditor } from '../../components/Editors/internal/InternalFormEditor';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -68,6 +69,14 @@ export default function AlleleDetailPage(){
 		})
 	}
 
+	const onInternalValueChange = (event) => {
+		alleleDispatch({
+			type: 'EDIT',
+			field: 'internal',
+			value: event.value,
+		})
+	}
+
 	return(
 		<>
 			<h1>Allele Detail Page</h1>
@@ -110,6 +119,18 @@ export default function AlleleDetailPage(){
 					<IsExtinctFormEditor
 						isExtinct={alleleState.allele?.isExtinct} 
 						onIsExtinctValueChange={onIsExtinctValueChange} 
+						booleanTerms={booleanTerms}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						errorMessages={errorMessages}
+					/>
+
+					<Divider/>
+
+					<InternalFormEditor
+						internal={alleleState.allele?.internal} 
+						onInternalValueChange={onInternalValueChange} 
 						booleanTerms={booleanTerms}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}

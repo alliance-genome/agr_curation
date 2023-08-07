@@ -10,6 +10,7 @@ const initialAlleleState = {
 			name: "",
 		},
 		isExtinct: false,
+		internal: false,
 	},
 	errorMessages: {},
 	submitted: false,
