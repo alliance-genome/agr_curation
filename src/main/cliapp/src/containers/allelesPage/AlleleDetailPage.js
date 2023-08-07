@@ -7,6 +7,7 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
 import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
+import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -48,6 +49,14 @@ export default function AlleleDetailPage(){
 		})
 	}
 
+	const onInCollectionValueChange = (event) => {
+		alleleDispatch({
+			type: 'EDIT',
+			field: 'inCollection',
+			value: event.value,
+		})
+	}
+
 	return(
 		<>
 			<h1>Allele Detail Page</h1>
@@ -68,6 +77,17 @@ export default function AlleleDetailPage(){
 					<ReferencesFormEditor 
 						references={alleleState.allele?.references} 
 						onReferencesValueChange={onReferenceValueChange} 
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						errorMessages={errorMessages}
+					/>
+
+					<Divider/>
+
+					<InCollectionFormEditor
+						inCollection={alleleState.allele?.inCollection} 
+						onInCollectionValueChange={onInCollectionValueChange} 
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}

@@ -6,6 +6,9 @@ const initialAlleleState = {
 			curie: "",
 		},
 		references: [],
+		inCollection: {
+			name: "",
+		},
 	},
 	errorMessages: {},
 	submitted: false,
