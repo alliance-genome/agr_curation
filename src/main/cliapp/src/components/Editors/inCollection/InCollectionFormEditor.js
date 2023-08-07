@@ -3,6 +3,7 @@ import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEdito
 import { inCollectionSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { InCollectionAdditionalFieldData } from '../../FieldData/InCollectionAdditionalFieldData';
+import { VocabTermAutocompleteTemplate } from '../../Autocomplete/VocabTermAutocompleteTemplate';
 
 export const InCollectionFormEditor = ({ 
     inCollection, 
@@ -26,6 +27,8 @@ export const InCollectionFormEditor = ({
           fieldName='inCollection'
           subField='name'
           onValueChangeHandler={onInCollectionValueChange}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+						<VocabTermAutocompleteTemplate item={item} op={op} query={query} setAutocompleteSelectedItem={setAutocompleteSelectedItem}/>}
         />
       </div>
       <div className={fieldDetailsColumnSize}>
