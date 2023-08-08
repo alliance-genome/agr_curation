@@ -27,10 +27,10 @@ export const ObsoleteFormEditor = ({
           optionValue='name'
           onChange={onObsoleteValueChange}
         />
+        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"obsolete"}/>
       </div>
       <div className={fieldDetailsColumnSize}>
-        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"obsolete"}/>
-        <ObsoleteAdditionalFieldData obsolete={obsolete.toString()}/>
+        <ObsoleteAdditionalFieldData obsolete={obsolete?.toString()}/>
       </div>
     </div>
 

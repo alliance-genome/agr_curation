@@ -27,10 +27,10 @@ export const InternalFormEditor = ({
           optionValue='name'
           onChange={onInternalValueChange}
         />
+        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
       </div>
       <div className={fieldDetailsColumnSize}>
-        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
-        <InternalAdditionalFieldData internal={internal.toString()}/>
+        <InternalAdditionalFieldData internal={internal?.toString()}/>
       </div>
     </div>
 

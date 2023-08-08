@@ -27,10 +27,10 @@ export const IsExtinctFormEditor = ({
           optionValue='name'
           onChange={onIsExtinctValueChange}
         />
+        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"isExtinct"}/>
       </div>
       <div className={fieldDetailsColumnSize}>
-        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"isExtinct"}/>
-        <IsExtinctAdditionalFieldData isExtinct={isExtinct.toString()}/>
+        <IsExtinctAdditionalFieldData isExtinct={isExtinct?.toString()}/>
       </div>
     </div>
   )

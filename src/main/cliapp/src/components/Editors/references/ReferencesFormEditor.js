@@ -28,9 +28,9 @@ export const ReferencesFormEditor = ({
             <LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
           onValueChangeHandler={onReferencesValueChange}
         />
+        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"references"}/>
       </div>
       <div className={fieldDetailsColumnSize}>
-        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"references"}/>
         <ReferencesAdditionalFieldData references={references}/>
       </div>
     </div>
