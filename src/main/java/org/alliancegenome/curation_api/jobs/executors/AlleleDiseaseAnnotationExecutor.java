@@ -10,6 +10,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -33,7 +34,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject
 	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 	@Inject
-	AlleleDiseaseAnnotationService alleleDiseaseService;
+	AlleleDiseaseAnnotationService alleleDiseaseAnnotationService;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 
@@ -41,7 +42,8 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataProvider().name());
+			BackendBulkDataProvider dataProvider = manual.getDataProvider();
+			log.info("Running with dataProvider: " + dataProvider.name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -50,12 +52,10 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			
 			List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
 			if (annotations == null) annotations = new ArrayList<>();
-			
-			String dataProvider = manual.getDataProvider().name();
 
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = new ArrayList<>();
-			annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider));
+			annotationIdsBefore.addAll(alleleDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
 			annotationIdsBefore.removeIf(Objects::isNull);
 
 			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
@@ -63,9 +63,9 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 			
-			runLoad(history, dataProvider, annotations, annotationIdsLoaded);
+			runLoad(history, dataProvider.name(), annotations, annotationIdsLoaded);
 			
-			if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider, annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
 
 			history.finishLoad();
 			
@@ -78,25 +78,25 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
+	public APIResponse runLoad(String dataProviderName, List<AlleleDiseaseAnnotationDTO> annotations) {
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
+		runLoad(history, dataProviderName, annotations, annotationIdsLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, String dataProviderName, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Allele Disease Annotation Update for: " + dataProvider, annotations.size());
+		ph.startProcess("Allele Disease Annotation Update for: " + dataProviderName, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
-				AlleleDiseaseAnnotation annotation = alleleDiseaseService.upsert(annotationDTO);
+				AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationService.upsert(annotationDTO);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
 					curiesAdded.add(annotation.getId());

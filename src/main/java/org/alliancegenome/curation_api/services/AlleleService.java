@@ -67,9 +67,9 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
 		Allele allele = alleleDAO.find(curie);
-		String loadDescription = dataProvider + " Allele bulk load (" + md5sum + ")"; 
+		String loadDescription = dataProviderName + " Allele bulk load (" + md5sum + ")";
 		if (allele != null) {
 			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
 			Boolean anyReferencingDAs = false;

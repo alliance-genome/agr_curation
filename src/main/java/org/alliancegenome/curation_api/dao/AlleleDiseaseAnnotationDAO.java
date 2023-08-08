@@ -15,9 +15,24 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 		super(AlleleDiseaseAnnotation.class);
 	}
 
-	public List<Long> findAllAnnotationIdsByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM AlleleDiseaseAnnotation annotation WHERE annotation.subject.dataProvider.sourceOrganization.abbreviation = :dataProvider");
-		jpqlQuery.setParameter("dataProvider", dataProvider);
+	public List<Long> findAllAnnotationIdsByDataProvider(String sourceOrg) {
+		return findAllAnnotationIdsByDataProvider(sourceOrg, null);
+	}
+
+	public List<Long> findAllAnnotationIdsByDataProvider(String sourceOrg, String taxonCurie) {
+		String qlString = "SELECT annotation.id";
+		qlString += " FROM AlleleDiseaseAnnotation annotation";
+		qlString += " WHERE annotation.subject.dataProvider.sourceOrganization.abbreviation = :sourceOrg";
+		if ( taxonCurie != null && !taxonCurie.isEmpty() && !taxonCurie.isBlank() ){
+			qlString += " AND annotation.subject.taxon.curie = :taxonCurie";
+		}
+
+		Query jpqlQuery = entityManager.createQuery(qlString);
+		jpqlQuery.setParameter("sourceOrg", sourceOrg);
+		if ( taxonCurie != null && !taxonCurie.isEmpty() && !taxonCurie.isBlank() ){
+			jpqlQuery.setParameter("taxonCurie", taxonCurie);
+		}
+
 		return (List<Long>) jpqlQuery.getResultList();
 	}
 
