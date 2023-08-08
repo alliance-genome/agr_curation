@@ -82,7 +82,13 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
 										<label htmlFor="name">Vocabulary Name</label>
 
 										<InputText id="name" value={vocabulary.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !vocabulary.name })} />
-										{submitted && !vocabulary.name && <small className="p-error">Vocabulary is required.</small>}
+										{submitted && !vocabulary.name && <small className="p-error">Vocabulary name is required.</small>}
+								</div>
+								<div className="field">
+										<label htmlFor="vocabularyLabel">Vocabulary Label</label>
+
+										<InputText id="vocabularyLabel" value={vocabulary.vocabularyLabel} onChange={(e) => onChange(e, 'vocabularyLabel')} required autoFocus className={classNames({ 'p-invalid': submitted && !vocabulary.vocabularyLabel })} />
+										{submitted && !vocabulary.vocabularyLabel && <small className="p-error">Vocabulary label is required.</small>}
 								</div>
 							</ErrorBoundary>
 						</Dialog>

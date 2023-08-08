@@ -86,6 +86,7 @@ export const SORT_FIELDS = Object.freeze([
   "vocabularyDescription",
   "vocabularyTermSetVocabulary.name",
   "memberTerms.name",
+  "vocabularyLabel",
   "vocabularyTermSetDescription",
   "synonyms.name",
   "secondaryIdentifiers"

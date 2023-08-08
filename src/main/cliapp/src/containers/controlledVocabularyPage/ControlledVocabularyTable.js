@@ -171,16 +171,17 @@ export const ControlledVocabularyTable = () => {
 	};
 
 	const obsoleteEditorTemplate = (props) => {
-			return (
-					<>
-							<TrueFalseDropdown
-									options={obsoleteTerms}
-									editorChange={onObsoleteEditorValueChange}
-									props={props}
-							/>
-							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
-					</>
-			);
+		return (
+			<>
+				<TrueFalseDropdown
+					options={obsoleteTerms}
+					editorChange={onObsoleteEditorValueChange}
+					props={props}
+					field={"obsolete"}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
+			</>
+		);
 	};
 
 	const nameBodyTemplate = (rowData) => {

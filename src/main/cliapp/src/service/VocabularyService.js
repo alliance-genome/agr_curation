@@ -6,6 +6,10 @@ export class VocabularyService extends BaseAuthService {
 				return this.api.put(`/vocabularyterm`, updatedTerm);
 		}
 
+		saveVocabulary(updatedVocabulary) {
+			return this.api.put(`/vocabulary`, updatedVocabulary);
+		}
+
 		createVocabulary(vocabulary){ //new Vocab creation
 				return this.api.post(`/vocabulary`, vocabulary);
 		}
@@ -21,6 +25,11 @@ export class VocabularyService extends BaseAuthService {
 		async deleteTerm(term) { 
 			const deletionService = new DeletionService();
 			return await deletionService.delete(`vocabularyterm`, term.id);
+		}
+
+		async deleteVocabulary(updatedVocabulary) {
+			const deletionService = new DeletionService();
+			return await deletionService.delete('vocabulary', updatedVocabulary.id);
 		}
 }
 

@@ -392,6 +392,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "vocabularyFilter",
     fields: ["vocabularyTermSetVocabulary.name"],
   },
+  vocabularyLabelFieldSet: {
+    filterName: "vocabularyLabelFilter",
+    fields: ["vocabularyLabel"]
+  },
   vocabularyNameFieldSet: {
     filterName: "vocabularyNameFilter",
     fields: ["vocabulary.name"],
@@ -485,6 +489,7 @@ export const FILTER_CONFIGS = Object.freeze({
   vocabularyDescriptionFilterConfig:        { filterComponentType: "input", fieldSets: [FIELD_SETS.vocabularyDescriptionFieldSet] },
   vocabularyFieldSetFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.vocabularyFieldSet] },
   vocabularyMemberTermsFilterConfig:        { filterComponentType: "input", fieldSets: [FIELD_SETS.memberTermsFieldSet] },
+  vocabularyLabelFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.vocabularyLabelFieldSet] },
   vocabularyNameFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.vocabularyNameFieldSet] },
   vocabularyTermSetDescriptionFilterConfig: { filterComponentType: "input", fieldSets: [FIELD_SETS.vocabularyTermSetDescriptionFieldSet] },
   withFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.withFieldSet] },

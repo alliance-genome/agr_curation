@@ -65,6 +65,14 @@ export const NewVocabularyTermSetForm = ({
 		});
 	};
 
+	const onLabelChange = (event) => {
+		newVocabularyTermSetDispatch({
+			type: "EDIT",
+			field: event.target.name,
+			value: event.target.value
+		})
+	}
+
 	const onVocabularyChange = (event, setFieldValue) => {
 		setFieldValue(event.target.value);
 		newVocabularyTermSetDispatch({
@@ -150,6 +158,18 @@ export const NewVocabularyTermSetForm = ({
 										className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.name })}
 									/>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"name"}/>
+								</div>
+								<div className="field">
+									<label htmlFor="vocabularyLabel"><font color={'red'}>*</font>Label</label>
+									<InputText
+										id="vocabularyLabel"
+										name="vocabularyLabel"
+										value={newVocabularyTermSet.vocabularyLabel}
+										onChange={onLabelChange}
+										required
+										className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.vocabularyLabel })}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyLabel"}/>
 								</div>
 								<div className="field">
 									<label htmlFor="vocabularyTermSetVocabulary"><font color={'red'}>*</font>Vocabulary</label>
