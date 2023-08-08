@@ -6,7 +6,7 @@ import { VocabularyService } from "../../service/VocabularyService";
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ErrorMessageComponent } from "../../components/ErrorMessageComponent";
+import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
 import { Tooltip } from 'primereact/tooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
