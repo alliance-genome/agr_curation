@@ -68,7 +68,7 @@ export const NewVocabularyTermSetForm = ({
 	const onLabelChange = (event) => {
 		newVocabularyTermSetDispatch({
 			type: "EDIT",
-			field: event.target.vocabularyLabel,
+			field: event.target.name,
 			value: event.target.value
 		})
 	}
@@ -164,7 +164,7 @@ export const NewVocabularyTermSetForm = ({
 									<InputText
 										id="vocabularyLabel"
 										name="vocabularyLabel"
-										value={newVocabularyTermSet.name}
+										value={newVocabularyTermSet.vocabularyLabel}
 										onChange={onLabelChange}
 										required
 										className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.vocabularyLabel })}
