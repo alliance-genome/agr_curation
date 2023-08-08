@@ -138,22 +138,22 @@ public class LoadFileExecutor {
 	
 
 	// The following methods are for bulk validation
-	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProvider, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
-		Log.debug("runLoad: After: " + dataProvider + " " + annotationIdsAfter.size());
+	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
+		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
+		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
 
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProvider + " " + idsToRemove.size());
+		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
 		history.setTotalDeleteRecords((long)idsToRemove.size());
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + dataProvider, idsToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + dataProviderName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
-				String loadDescription = dataProvider + " disease annotation bulk load (" + md5sum + ")";
+				String loadDescription = dataProviderName + " disease annotation bulk load (" + md5sum + ")";
 				service.deprecateOrDeleteAnnotationAndNotes(id, false, loadDescription, true);
 				history.incrementDeleted();
 			} catch (Exception e) {

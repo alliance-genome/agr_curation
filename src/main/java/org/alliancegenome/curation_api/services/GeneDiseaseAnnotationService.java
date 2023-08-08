@@ -1,11 +1,15 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.List;
+import java.util.Objects;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
@@ -14,6 +18,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.GeneDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDiseaseAnnotationDTOValidator;
+import org.apache.commons.lang.StringUtils;
 
 @RequestScoped
 public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
@@ -81,4 +86,20 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 
 	@Override
 	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) { }
+
+	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+		List<Long> annotationIds;
+
+		String sourceOrg = dataProvider.sourceOrganization;
+
+		if( StringUtils.equals(sourceOrg, "RGD") ){
+			annotationIds = geneDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider.sourceOrganization, dataProvider.canonicalTaxonCurie);
+		} else {
+			annotationIds = geneDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider.sourceOrganization);
+		}
+
+		annotationIds.removeIf(Objects::isNull);
+
+		return annotationIds;
+	}
 }
