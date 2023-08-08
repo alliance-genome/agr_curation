@@ -46,7 +46,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			bulkLoadFile.setLinkMLSchemaVersion(version.max());
 			
 			List<Pair<String, String>> orthoPairsLoaded = new ArrayList<>();
-			String dataProviderAbbreviation = fms.getFmsDataSubType().equals("HUMAN") ? "OMIM" : fms.getFmsDataSubType();
+			String dataProviderAbbreviation = fms.getFmsDataSubType();
 			List<Object[]> orthoPairsBefore = generatedOrthologyService.getAllOrthologyPairsBySubjectGeneDataProvider(dataProviderAbbreviation);
 			log.debug("runLoad: Before: total " + orthoPairsBefore.size());
 			

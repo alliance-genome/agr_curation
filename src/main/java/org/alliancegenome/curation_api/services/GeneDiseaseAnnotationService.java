@@ -80,5 +80,5 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) { }
+	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) { }
 }

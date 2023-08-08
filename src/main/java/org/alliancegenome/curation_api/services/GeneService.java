@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -25,6 +26,7 @@ import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologySer
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -78,9 +80,9 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
 		Gene gene = geneDAO.find(curie);
-		String loadDescription = dataProvider + " Gene bulk load (" + md5sum + ")"; 
+		String loadDescription = dataProviderName + " Gene bulk load (" + md5sum + ")";
 		if (gene != null) {
 			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
 			Boolean anyReferencingEntities = false;
@@ -110,9 +112,19 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		}	
 	}
 
-	public List<String> getCuriesByDataProvider(String dataProvider) {
-		List<String> curies = geneDAO.findAllCuriesByDataProvider(dataProvider);
+	public List<String> getCuriesByDataProvider(BackendBulkDataProvider dataProvider) {
+		List<String> curies;
+
+		String sourceOrg = dataProvider.sourceOrganization;
+
+		if( StringUtils.equals(sourceOrg, "RGD") ){
+			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization, dataProvider.canonicalTaxonCurie);
+		} else {
+			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization);
+		}
+
 		curies.removeIf(Objects::isNull);
+
 		return curies;
 	}
 
