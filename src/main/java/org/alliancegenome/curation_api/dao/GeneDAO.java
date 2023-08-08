@@ -20,9 +20,25 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		return find(id);
 	}
 
-	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT gene.curie FROM Gene gene WHERE gene.dataProvider.sourceOrganization.abbreviation = :dataProvider");
-		jpqlQuery.setParameter("dataProvider", dataProvider);
+	public List<String> findAllCuriesByDataProvider(String sourceOrg) {
+		return findAllCuriesByDataProvider(sourceOrg, null);
+	}
+	
+	public List<String> findAllCuriesByDataProvider(String sourceOrg, String taxonCurie) {
+
+		String qlString = "SELECT gene.curie";
+		qlString += " FROM Gene gene";
+		qlString += " WHERE gene.dataProvider.sourceOrganization.abbreviation = :sourceOrg";
+		if ( taxonCurie != null && !taxonCurie.isEmpty() && !taxonCurie.isBlank() ){
+			qlString += " AND gene.taxon.curie = :taxonCurie";
+		}
+
+		Query jpqlQuery = entityManager.createQuery(qlString);
+		jpqlQuery.setParameter("sourceOrg", sourceOrg);
+		if ( taxonCurie != null && !taxonCurie.isEmpty() && !taxonCurie.isBlank() ){
+			jpqlQuery.setParameter("taxonCurie", taxonCurie);
+		}
+
 		return (List<String>) jpqlQuery.getResultList();
 	}
 

@@ -40,13 +40,18 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 	}
 
 	public List<Object[]> getAllOrthologyPairsBySubjectGeneDataProvider(String dataProvider) {
-		if (StringUtils.equals(dataProvider,"XBXL")) {
-			return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8355");
+		switch(dataProvider) {
+			case "XBXL":
+				return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8355");
+			case "XBXT":
+				return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8364");
+			case "HUMAN":
+				return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("RGD", "NCBITaxon:9606");
+			case "RGD":
+				return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("RGD", "NCBITaxon:10116");
+			default:
+				return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProvider(dataProvider);
 		}
-		if (StringUtils.equals(dataProvider,"XBXT")) {
-			return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8364");
-		}
-		return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProvider(dataProvider);
 	}
 
 	public void removeNonUpdated(Pair<String, String> pairToRemove) {

@@ -4,7 +4,7 @@ import {Toast} from 'primereact/toast';
 import {SearchService} from '../../service/SearchService';
 import {Messages} from 'primereact/messages';
 import {ControlledVocabularyDropdown} from "../../components/ControlledVocabularySelector";
-import {ErrorMessageComponent} from "../../components/ErrorMessageComponent";
+import {ErrorMessageComponent} from "../../components/Error/ErrorMessageComponent";
 import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
 import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";

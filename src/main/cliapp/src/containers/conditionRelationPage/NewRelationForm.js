@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from "react-query";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { LiteratureAutocompleteTemplate } from "../../components/Autocomplete/LiteratureAutocompleteTemplate";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";

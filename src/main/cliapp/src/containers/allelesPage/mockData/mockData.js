@@ -524,23 +524,195 @@ export const data = {
         "totalResults": 1, "returnedRecords": 1
 }
 
-// curie --> FB:FBal0196303
-//name --> Saccharomyces cerevisiae UAS construct a of Stefancsik
-// symbol --> "Med<sup>UAS.cSa</sup>",
-// secondary ids --> FB:FBal0123136, FB:FBal0156260
-//taxon --> Drosophila melanogaster
-//mutation types --> should be empty
-//references --> AGRKB:101000000033001, AGRKB:101000000042600, AGRKB:101000000386949, 
-    // AGRKB:101000000035902, AGRKB:101000000065563, AGRKB:101000000078020, AGRKB:101000000054912
-//Inheritance modes --> should be empty
-//In collection --> should be empty
-//Is extinct --> should be empty
-//updated by --> FB:FB_curator
-//date updated --> 2023-04-05T02:49:58.012787Z
-//created by --> FB:FB_curator
-//date created --> 2007-06-18T17:00:58.685302Z
-//internal --> false
-//obsolete --> false
+export const alleleDetailData = {
+    "entity": {
+        "type": "Allele",
+        "internal": false,
+        "obsolete": false,
+        "dbDateUpdated": "2023-04-14T22:58:06.51117Z",
+        "curie": "MGI:5146840",
+        "taxon": {
+            "internal": false,
+            "obsolete": false,
+            "curie": "NCBITaxon:10090",
+            "name": "Mus musculus"
+        },
+        "dataProvider": {
+            "internal": false,
+            "obsolete": false,
+            "id": 78176048,
+            "sourceOrganization": {
+                "internal": false,
+                "obsolete": false,
+                "id": 20308680,
+                "uniqueId": "MGI",
+                "abbreviation": "MGI",
+                "fullName": "Mouse Genome Informatics",
+                "homepageResourceDescriptorPage": {
+                    "internal": false,
+                    "obsolete": false,
+                    "dbDateCreated": "2023-02-20T09:26:39.240245Z",
+                    "dbDateUpdated": "2023-05-04T22:00:08.169748Z",
+                    "id": 41750686,
+                    "name": "homepage",
+                    "urlTemplate": "http://www.informatics.jax.org/"
+                }
+            }
+        },
+        "references": [
+            {
+                "updatedBy": {
+                    "dateCreated": "2022-05-03T18:33:16.445309Z",
+                    "dateUpdated": "2022-05-03T18:33:16.445322Z",
+                    "internal": false,
+                    "obsolete": false,
+                    "dbDateUpdated": "2023-05-17T12:54:30.01721Z",
+                    "id": 7685810,
+                    "uniqueId": "Chris|Grove|chris@wormbase.org",
+                    "firstName": "Chris",
+                    "lastName": "Grove",
+                    "allianceMember": {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 20308683,
+                        "uniqueId": "WB",
+                        "abbreviation": "WB",
+                        "fullName": "WormBase",
+                        "homepageResourceDescriptorPage": {
+                            "internal": false,
+                            "obsolete": false,
+                            "dbDateCreated": "2023-02-20T09:26:39.609757Z",
+                            "dbDateUpdated": "2023-05-04T22:00:09.611705Z",
+                            "id": 41750788,
+                            "name": "homepage",
+                            "urlTemplate": "https://www.wormbase.org/"
+                        }
+                    }
+                },
+                "dateUpdated": "2023-06-20T19:00:37.179493Z",
+                "internal": false,
+                "obsolete": false,
+                "dbDateCreated": "2022-11-24T05:18:32.319687Z",
+                "dbDateUpdated": "2023-06-20T19:00:37.303478Z",
+                "curie": "AGRKB:101000000367334",
+                "crossReferences": [
+                    {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 74881090,
+                        "referencedCurie": "PMCID:PMC2556270",
+                        "displayName": "PMCID:PMC2556270"
+                    },
+                    {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 74881088,
+                        "referencedCurie": "DOI:10.1101/gr.078352.108",
+                        "displayName": "DOI:10.1101/gr.078352.108"
+                    },
+                    {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 74881089,
+                        "referencedCurie": "MGI:3822093",
+                        "displayName": "MGI:3822093"
+                    },
+                    {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 74881092,
+                        "referencedCurie": "RGD:11052566",
+                        "displayName": "RGD:11052566"
+                    },
+                    {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 74881091,
+                        "referencedCurie": "PMID:18799693",
+                        "displayName": "PMID:18799693"
+                    }
+                ]
+            },
+            {
+                "updatedBy": {
+                    "dateCreated": "2022-05-06T12:26:36.696662Z",
+                    "dateUpdated": "2022-05-06T12:26:36.696665Z",
+                    "internal": false,
+                    "obsolete": false,
+                    "id": 7825552,
+                    "uniqueId": "Mark|Quinton-Tulloch|mark.quintontulloch@wormbase.org",
+                    "firstName": "Mark",
+                    "lastName": "Quinton-Tulloch",
+                    "allianceMember": {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 20308683,
+                        "uniqueId": "WB",
+                        "abbreviation": "WB",
+                        "fullName": "WormBase",
+                        "homepageResourceDescriptorPage": {
+                            "internal": false,
+                            "obsolete": false,
+                            "dbDateCreated": "2023-02-20T09:26:39.609757Z",
+                            "dbDateUpdated": "2023-05-04T22:00:09.611705Z",
+                            "id": 41750788,
+                            "name": "homepage",
+                            "urlTemplate": "https://www.wormbase.org/"
+                        }
+                    }
+                },
+                "dateUpdated": "2023-07-12T14:35:06.150764Z",
+                "internal": false,
+                "obsolete": false,
+                "dbDateCreated": "2022-11-24T02:37:36.599595Z",
+                "dbDateUpdated": "2023-07-12T14:35:06.151761Z",
+                "curie": "AGRKB:101000000827406",
+                "crossReferences": [
+                    {
+                        "internal": false,
+                        "obsolete": false,
+                        "id": 74880101,
+                        "referencedCurie": "MGI:3817419",
+                        "displayName": "MGI:3817419"
+                    }
+                ]
+            }
+        ],
+        "isExtinct": false,
+        "alleleSymbol": {
+            "internal": false,
+            "obsolete": false,
+            "dbDateCreated": "2023-04-14T22:58:06.530876Z",
+            "dbDateUpdated": "2023-04-14T22:58:06.530878Z",
+            "id": 70154729,
+            "nameType": {
+                "internal": false,
+                "obsolete": false,
+                "id": 20308690,
+                "name": "nomenclature_symbol",
+                "definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
+            },
+            "formatText": "Ahdc1<sup>Gt(IST11463A1)Tigm</sup>",
+            "displayText": "Ahdc1<sup>Gt(IST11463A1)Tigm</sup>"
+        },
+        "alleleFullName": {
+            "internal": false,
+            "obsolete": false,
+            "dbDateCreated": "2023-04-14T22:58:06.532043Z",
+            "dbDateUpdated": "2023-04-14T22:58:06.532044Z",
+            "id": 70154730,
+            "nameType": {
+                "internal": false,
+                "obsolete": false,
+                "id": 20308691,
+                "name": "full_name",
+                "definition": "The full length name of an entity: e.g., broad angular dumpy."
+            },
+            "formatText": "gene trap IST11463A1, Texas A&M Institute for Genomic Medicine",
+            "displayText": "gene trap IST11463A1, Texas A&M Institute for Genomic Medicine"
+        }
+    }
+} 
 
 export const mockSettingsData = {
 	"page": 0,

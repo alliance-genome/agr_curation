@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
