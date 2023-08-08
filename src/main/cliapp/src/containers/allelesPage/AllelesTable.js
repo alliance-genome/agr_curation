@@ -5,10 +5,9 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { AlleleService } from '../../service/AlleleService';
-import { SearchService } from '../../service/SearchService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './InheritanceModesDialog';
@@ -27,10 +26,13 @@ import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
-import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
+import { defaultAutocompleteOnChange, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { taxonSearch } from '../../components/Editors/taxon/utils';
+import { referenceSearch } from '../../components/Editors/references/utils';
+import { inCollectionSearch } from '../../components/Editors/inCollection/utils';
 
 export const AllelesTable = () => {
 
@@ -116,7 +118,6 @@ export const AllelesTable = () => {
 	const toast_topright = useRef(null);
 
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const searchService = new SearchService();
 	let alleleService = new AlleleService();
 
 	const mutation = useMutation(updatedAllele => {
@@ -194,35 +195,10 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const inCollectionSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["name"];
-		const endpoint = "vocabularyterm";
-		const filterName = "taxonFilter";
-		const otherFilters = {
-			vocabularyFilter: {
-				"vocabulary.name": {
-					queryString: "Allele collection vocabulary"
-				}
-			}
-		}
-		setQuery(event.query);
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	}
-
 	const onReferenceValueChange = (event, setFieldValue, props) => {
 		multipleAutocompleteOnChange(props, event, "references", setFieldValue);
 	};
 
-	const referenceSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["curie", "cross_references.curie"];
-		const endpoint = "literature-reference";
-		const filterName = "curieFilter";
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
 
 	const referencesEditor = (props) => {
 		return (
@@ -248,14 +224,6 @@ export const AllelesTable = () => {
 		defaultAutocompleteOnChange(props, event, "taxon", setFieldValue);
 	};
 
-	const taxonSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
-		const endpoint = "ncbitaxonterm";
-		const filterName = "taxonFilter";
-		setQuery(event.query);
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
 
 	const taxonEditor = (props) => {
 		return (

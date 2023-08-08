@@ -6,7 +6,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 // import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from "react-query";
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import { DiseaseAnnotationService } from "../../service/DiseaseAnnotationService";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -22,15 +22,15 @@ import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/Co
 import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
 import { autocompleteSearch, buildAutocompleteFilter, validateFormBioEntityFields } from "../../utils/utils";
 import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
-import { SubjectAdditionalFieldData } from "../../components/SubjectAdditionalFieldData";
-import { AssertedAlleleAdditionalFieldData } from "../../components/AssertedAlleleAdditionalFieldData";
-import { DiseaseAdditionalFieldData } from "../../components/DiseaseAdditionalFieldData";
-import { SingleReferenceAdditionalFieldData } from "../../components/SingleReferenceAdditionalFieldData";
-import { SGDStrainBackgroundAdditionalFieldData } from "../../components/SGDStrainBackgroundAdditionalFieldData";
-import { AssertedGenesAdditionalFieldData } from "../../components/AssertedGenesAdditionalFieldData";
-import { EvidenceCodesAdditionalFieldData } from "../../components/EvidenceCodesAdditionalFieldData";
-import { WithAdditionalFieldData } from "../../components/WithAdditionalFieldData";
-import { GeneticModifiersAdditionalFieldData } from "../../components/GeneticModifiersAdditionalFieldData";
+import { SubjectAdditionalFieldData } from "../../components/FieldData/SubjectAdditionalFieldData";
+import { AssertedAlleleAdditionalFieldData } from "../../components/FieldData/AssertedAlleleAdditionalFieldData";
+import { DiseaseAdditionalFieldData } from "../../components/FieldData/DiseaseAdditionalFieldData";
+import { SingleReferenceAdditionalFieldData } from "../../components/FieldData/SingleReferenceAdditionalFieldData";
+import { SGDStrainBackgroundAdditionalFieldData } from "../../components/FieldData/SGDStrainBackgroundAdditionalFieldData";
+import { AssertedGenesAdditionalFieldData } from "../../components/FieldData/AssertedGenesAdditionalFieldData";
+import { EvidenceCodesAdditionalFieldData } from "../../components/FieldData/EvidenceCodesAdditionalFieldData";
+import { WithAdditionalFieldData } from "../../components/FieldData/WithAdditionalFieldData";
+import { GeneticModifiersAdditionalFieldData } from "../../components/FieldData/GeneticModifiersAdditionalFieldData";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 // import { ConfirmButton } from "../../components/ConfirmButton";
 
@@ -169,9 +169,7 @@ export const NewAnnotationForm = ({
 				}
 					
 
-				toast_error.current.show([
-					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
-				]);
+				toast_error.current.show({severity: 'error', summary: 'Page error: ', detail: message });
 
 				newAnnotationDispatch(
 					{

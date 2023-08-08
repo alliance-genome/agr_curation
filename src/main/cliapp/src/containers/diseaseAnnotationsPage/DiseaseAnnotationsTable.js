@@ -19,7 +19,7 @@ import { ControlledVocabularyDropdown } from '../../components/ControlledVocabul
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
