@@ -461,7 +461,7 @@ the new version of the application can function in a consistent state upon and a
        ```
     3. Check the logs for errors after app-server restart, which could indicate a DB restore failure
         and troubleshoot accordingly if necessary to fix any errors.
-3. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Other Links` > `Elastic Search UI` (VPN connection required).
+3. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Developer Links` > `Search index UI (cerebro)` (VPN connection required).
    Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
 4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
 5. Check the logs for the environment that you're releasing to and ensure the application started successfully
