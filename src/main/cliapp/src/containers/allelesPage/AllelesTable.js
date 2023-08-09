@@ -21,6 +21,7 @@ import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
+import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -30,7 +31,6 @@ import { defaultAutocompleteOnChange, getRefStrings, multipleAutocompleteOnChang
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { taxonSearch } from '../../components/Editors/taxon/utils';
 import { referenceSearch } from '../../components/Editors/references/utils';
 import { inCollectionSearch } from '../../components/Editors/inCollection/utils';
 
@@ -220,28 +220,6 @@ export const AllelesTable = () => {
 		);
 	};
 
-	const onTaxonValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "taxon", setFieldValue);
-	};
-
-
-	const taxonEditor = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={taxonSearch}
-					initialValue={props.rowData.taxon?.curie}
-					rowProps={props}
-					fieldName='taxon'
-					onValueChangeHandler={onTaxonValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField='taxon'
-				/>
-			</>
-		);
-	};
 
 	const onInternalEditorValueChange = (props, event) => {
 		let updatedAlleles = [...props.props.value];
@@ -1163,7 +1141,7 @@ export const AllelesTable = () => {
 			body: taxonTemplate,
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-			editor: (props) => taxonEditor(props)
+			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "alleleMutationTypes.mutationTypes.name",
