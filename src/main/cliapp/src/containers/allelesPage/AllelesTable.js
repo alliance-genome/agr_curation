@@ -4,9 +4,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
@@ -21,7 +19,7 @@ import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
-import { IsExtinctTableEditor } from '../../components/Editors/isExtinct/IsExtinctTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -114,7 +112,6 @@ export const AllelesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	let alleleService = new AlleleService();
 
 	const mutation = useMutation(updatedAllele => {
@@ -167,49 +164,6 @@ export const AllelesTable = () => {
 
 		}
 	};
-
-	const onInternalEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAlleles[props.rowIndex].internal = JSON.parse(event.value.name);
-		}
-	};
-
-	const internalEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms}
-					editorChange={onInternalEditorValueChange}
-					props={props}
-					field={"internal"}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"internal"} />
-			</>
-		);
-	};
-
-	const onObsoleteEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAlleles[props.rowIndex].obsolete = JSON.parse(event.value.name);
-		}
-	};
-
-	const obsoleteEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms}
-					editorChange={onObsoleteEditorValueChange}
-					props={props}
-					field={"obsolete"}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
-			</>
-		);
-	};
-
 
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
@@ -1127,7 +1081,9 @@ export const AllelesTable = () => {
 			body: isExtinctTemplate,
 			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: isEnabled,
-			editor: (props) => <IsExtinctTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} booleanTerms={booleanTerms}/>
+			editor: (props) => (
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"isExtinct"} />
+			)
 		},
 		{
 			field: "relatedNotes.freeText",
@@ -1177,7 +1133,9 @@ export const AllelesTable = () => {
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: isEnabled,
-			editor: (props) => internalEditor(props)
+			editor: (props) => (
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} />
+			)
 		},
 		{
 			field: "obsolete",
@@ -1186,7 +1144,9 @@ export const AllelesTable = () => {
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: isEnabled,
-			editor: (props) => obsoleteEditor(props)
+			editor: (props) => (
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"} />
+			)
 		}
 	];
 
