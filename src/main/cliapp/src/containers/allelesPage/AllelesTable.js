@@ -21,6 +21,7 @@ import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
+import { IsExtinctTableEditor } from '../../components/Editors/isExtinct/IsExtinctTableEditor';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -209,30 +210,6 @@ export const AllelesTable = () => {
 		);
 	};
 
-	const onIsExtinctEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-
-		if (event.value && event.value !== '') {
-			updatedAlleles[props.rowIndex].isExtinct = JSON.parse(event.value.name);
-		} else {
-			updatedAlleles[props.rowIndex].isExtinct = null;
-		}
-	};
-
-	const isExtinctEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms}
-					editorChange={onIsExtinctEditorValueChange}
-					props={props}
-					field={"isExtinct"}
-					showClear={true}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"isExtinct"} />
-			</>
-		);
-	};
 
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
@@ -1150,7 +1127,7 @@ export const AllelesTable = () => {
 			body: isExtinctTemplate,
 			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: isEnabled,
-			editor: (props) => isExtinctEditor(props)
+			editor: (props) => <IsExtinctTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} booleanTerms={booleanTerms}/>
 		},
 		{
 			field: "relatedNotes.freeText",
