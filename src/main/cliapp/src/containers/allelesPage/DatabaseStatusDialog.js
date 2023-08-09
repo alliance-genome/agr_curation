@@ -30,7 +30,7 @@ export const DatabaseStatusDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const databaseStatusTerms = useControlledVocabularyService('Allele database status vocabulary');
+	const databaseStatusTerms = useControlledVocabularyService('allele_db_status');
 
 	const showDialogHandler = () => {
 		let _localDatabaseStatuses = cloneDatabaseStatuses(originalDatabaseStatuses);

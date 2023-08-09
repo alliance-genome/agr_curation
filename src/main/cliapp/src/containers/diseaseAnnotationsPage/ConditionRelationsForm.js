@@ -14,7 +14,7 @@ import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
 export const ConditionRelationsForm = ({ dispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
+	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 

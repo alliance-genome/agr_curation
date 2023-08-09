@@ -32,8 +32,8 @@ export const FullNameDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const synonymScopeTerms = useControlledVocabularyService('Synonym scope');
-	const fullNameTypeTerms = useVocabularyTermSetService('Full name types');
+	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+	const fullNameTypeTerms = useVocabularyTermSetService('full_name_type');
 
 	const showDialogHandler = () => {
 		let _localFullNames = cloneFullNames(originalFullNames);

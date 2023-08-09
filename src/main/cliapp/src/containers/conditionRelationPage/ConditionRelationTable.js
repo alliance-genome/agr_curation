@@ -41,7 +41,7 @@ export const ConditionRelationTable = () => {
 
 	let conditionRelationService = new ConditionRelationService();
 
-	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
+	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
 
 	const mutation = useMutation(updatedRelation => {
 		if (!conditionRelationService) {

@@ -12,7 +12,7 @@ import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessa
 
 export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, errorMessages, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
+	const noteTypeTerms = useControlledVocabularyService('da_note_type');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
