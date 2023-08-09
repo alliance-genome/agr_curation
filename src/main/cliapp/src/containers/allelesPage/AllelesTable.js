@@ -18,21 +18,19 @@ import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
 import { SynonymsDialog } from './SynonymsDialog';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
-import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
+import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
-import { defaultAutocompleteOnChange, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
+import { getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { referenceSearch } from '../../components/Editors/references/utils';
-import { inCollectionSearch } from '../../components/Editors/inCollection/utils';
 
 export const AllelesTable = () => {
 
@@ -140,30 +138,6 @@ export const AllelesTable = () => {
 			);
 		}
 	}
-
-	const onInCollectionValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "inCollection", setFieldValue, "name");
-	};
-
-	const inCollectionEditor = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={inCollectionSearch}
-					initialValue={props.rowData.inCollection?.name}
-					rowProps={props}
-					fieldName='inCollection'
-					onValueChangeHandler={onInCollectionValueChange}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<VocabTermAutocompleteTemplate item={item} op={op} query={query} setAutocompleteSelectedItem={setAutocompleteSelectedItem}/>}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField='inCollection'
-				/>
-			</>
-		);
-	};
 
 	const isExtinctTemplate = (rowData) => {
 		if (rowData && rowData.isExtinct !== null && rowData.isExtinct !== undefined) {
@@ -1196,7 +1170,7 @@ export const AllelesTable = () => {
 			header: "In Collection",
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
-			editor: (props) => inCollectionEditor(props)
+			editor: (props) => <InCollectionTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "isExtinct",
