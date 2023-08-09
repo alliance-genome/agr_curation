@@ -18,19 +18,17 @@ import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
 import { SynonymsDialog } from './SynonymsDialog';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
+import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
-import { getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
-import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getRefStrings } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { referenceSearch } from '../../components/Editors/references/utils';
 
 export const AllelesTable = () => {
 
@@ -168,32 +166,6 @@ export const AllelesTable = () => {
 
 		}
 	};
-
-	const onReferenceValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, "references", setFieldValue);
-	};
-
-
-	const referencesEditor = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={referenceSearch}
-					initialValue={props.rowData.references}
-					rowProps={props}
-					fieldName='references'
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-					onValueChangeHandler={onReferenceValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"references"}
-				/>
-			</>
-		);
-	};
-
 
 	const onInternalEditorValueChange = (props, event) => {
 		let updatedAlleles = [...props.props.value];
@@ -1155,7 +1127,7 @@ export const AllelesTable = () => {
 			body: referencesTemplate,
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-			editor: (props) => referencesEditor(props)
+			editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />
 		},
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
