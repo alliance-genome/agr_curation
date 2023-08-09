@@ -35,7 +35,7 @@ export const InheritanceModesDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const inheritanceModeTerms = useControlledVocabularyService('Allele inheritance mode vocabulary');
+	const inheritanceModeTerms = useControlledVocabularyService('allele_inheritance_mode');
 
 	const showDialogHandler = () => {
 		let _localInheritanceModes = cloneInheritanceModes(originalInheritanceModes);

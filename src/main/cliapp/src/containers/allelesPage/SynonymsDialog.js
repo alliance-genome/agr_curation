@@ -31,8 +31,8 @@ export const SynonymsDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const synonymScopeTerms = useControlledVocabularyService('Synonym scope');
-	const synonymTypeTerms = useControlledVocabularyService('Name type');
+	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+	const synonymTypeTerms = useControlledVocabularyService('name_type');
 
 	const showDialogHandler = () => {
 		let _localSynonyms = cloneSynonyms(originalSynonyms);

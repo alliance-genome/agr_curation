@@ -30,7 +30,7 @@ export const GermlineTransmissionStatusDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const germlineTransmissionStatusTerms = useControlledVocabularyService('Allele Germline Transmission Status');
+	const germlineTransmissionStatusTerms = useControlledVocabularyService('allele_germline_transmission_status');
 
 	const showDialogHandler = () => {
 		let _localGermlineTransmissionStatuses = cloneGermlineTransmissionStatuses(originalGermlineTransmissionStatuses);

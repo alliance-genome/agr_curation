@@ -68,11 +68,11 @@ export const NewAnnotationForm = ({
 		isAssertedAlleleEnabled,
 	} = newAnnotationState;
 	const validationService = new ValidationService();
-	const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
-	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
-	const annotationTypeTerms = useControlledVocabularyService('Annotation types');
+	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
+	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
+	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
+	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
 

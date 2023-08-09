@@ -50,12 +50,12 @@ export const DiseaseAnnotationsTable = () => {
 	});
 	const { newAnnotationState, newAnnotationDispatch } = useNewAnnotationReducer();
 
-	const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
-	const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
-	const annotationTypeTerms = useControlledVocabularyService('Annotation types')
+	const diseaseRelationsTerms = useControlledVocabularyService('disease_relation');
+	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
+	const annotationTypeTerms = useControlledVocabularyService('annotation_type')
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
-	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
+	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
+	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 
 	const [newDiseaseAnnotation, setNewDiseaseAnnotation] = useState(null);
 
