@@ -4,20 +4,16 @@ import { Divider } from 'primereact/divider';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
 import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
-import { IsExtinctFormEditor } from '../../components/Editors/isExtinct/IsExtinctFormEditor';
-import { InternalFormEditor } from '../../components/Editors/internal/InternalFormEditor';
-import { ObsoleteFormEditor } from '../../components/Editors/obsolete/ObsoleteFormEditor';
 import { PageFooter } from './PageFooter';
+import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
@@ -181,10 +177,11 @@ export default function AlleleDetailPage(){
 
 					<Divider/>
 
-					<IsExtinctFormEditor
-						isExtinct={alleleState.allele?.isExtinct} 
-						onIsExtinctValueChange={onIsExtinctValueChange} 
-						booleanTerms={booleanTerms}
+					<BooleanFormEditor
+						value={alleleState.allele?.isExtinct} 
+						name={"isExtinct"}
+						label={"Is Extinct"}
+						onValueChange={onIsExtinctValueChange} 
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -193,10 +190,11 @@ export default function AlleleDetailPage(){
 
 					<Divider/>
 
-					<InternalFormEditor
-						internal={alleleState.allele?.internal} 
-						onInternalValueChange={onInternalValueChange} 
-						booleanTerms={booleanTerms}
+					<BooleanFormEditor
+						value={alleleState.allele?.internal} 
+						name={"internal"}
+						label={"Internal"}
+						onValueChange={onInternalValueChange} 
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -205,10 +203,11 @@ export default function AlleleDetailPage(){
 
 					<Divider/>
 
-					<ObsoleteFormEditor
-						obsolete={alleleState.allele?.obsolete} 
-						onObsoleteValueChange={onObsoleteValueChange} 
-						booleanTerms={booleanTerms}
+					<BooleanFormEditor
+						value={alleleState.allele?.obsolete} 
+						name={"obsolete"}
+						label={"Obsolete"}
+						onValueChange={onObsoleteValueChange} 
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
