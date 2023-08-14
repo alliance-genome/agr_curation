@@ -118,10 +118,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		}
 	}
 
-	public SearchResponse<String> findAllIds(Pagination pagination) {
+	public SearchResponse<String> findAllIds() {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
+		
 		CriteriaQuery<E> all = findQuery.select(rootEntry);
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -129,13 +130,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
-		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
-			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0)
-				first = 0;
-			allQuery.setFirstResult(first);
-			allQuery.setMaxResults(pagination.getLimit());
-		}
 		SearchResponse<String> results = new SearchResponse<String>();
 
 		List<String> primaryKeys = new ArrayList<>();
@@ -345,7 +339,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		indexer.start();
 	}
 
-	private void setRefreshInterval() {
+	public void setRefreshInterval() {
 		RestHighLevelClient client = EsClientFactory.createClient(esHosts, esProtocol);
 		Log.info("Creating Settings Search Client: " + esProtocol + "://" + esHosts);
 
@@ -508,6 +502,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		} else {
 			return null;
 		}
+	}
+	
+	public SearchResponse<E> findByParams(Map<String, Object> params) {
+		return findByParams(null, params, null);
 	}
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params) {

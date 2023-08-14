@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
@@ -22,6 +21,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	LiteratureReferenceDAO literatureReferenceDAO;
 	@Inject
@@ -148,7 +148,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			params.put("handle", uiEntity.getHandle());
 			params.put("singleReference.curie", uiEntity.getSingleReference().getCurie());
 			
-			SearchResponse<ConditionRelation> response = conditionRelationDAO.findByParams(null, params);
+			SearchResponse<ConditionRelation> response = conditionRelationDAO.findByParams(params);
 			if (response.getTotalResults() > 0) {
 				addMessageResponse("handle", "Handle / Pub combination already exists");
 				return null;
@@ -188,7 +188,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			return null;
 		}
 
-		VocabularyTerm conditionRelationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, uiEntity.getConditionRelationType().getName());
+		VocabularyTerm conditionRelationType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, uiEntity.getConditionRelationType().getName()).getEntity();
 		if (conditionRelationType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

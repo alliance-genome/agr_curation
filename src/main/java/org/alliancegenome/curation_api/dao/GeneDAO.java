@@ -20,9 +20,25 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		return find(id);
 	}
 
-	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT gene.curie FROM Gene gene WHERE gene.dataProvider.sourceOrganization.abbreviation = :dataProvider");
-		jpqlQuery.setParameter("dataProvider", dataProvider);
+	public List<String> findAllCuriesByDataProvider(String sourceOrg) {
+		return findAllCuriesByDataProvider(sourceOrg, null);
+	}
+	
+	public List<String> findAllCuriesByDataProvider(String sourceOrg, String taxonCurie) {
+
+		String qlString = "SELECT gene.curie";
+		qlString += " FROM Gene gene";
+		qlString += " WHERE gene.dataProvider.sourceOrganization.abbreviation = :sourceOrg";
+		if ( taxonCurie != null && !taxonCurie.isEmpty() && !taxonCurie.isBlank() ){
+			qlString += " AND gene.taxon.curie = :taxonCurie";
+		}
+
+		Query jpqlQuery = entityManager.createQuery(qlString);
+		jpqlQuery.setParameter("sourceOrg", sourceOrg);
+		if ( taxonCurie != null && !taxonCurie.isEmpty() && !taxonCurie.isBlank() ){
+			jpqlQuery.setParameter("taxonCurie", taxonCurie);
+		}
+
 		return (List<String>) jpqlQuery.getResultList();
 	}
 
@@ -60,6 +76,12 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			results.add(nativeResult.longValue());
 		
 		return results;
+	}
+
+	public List<Long> findReferencingOrthologyPairs(String curie) {
+		Query jpqlQuery = entityManager.createQuery("SELECT o.id FROM GeneToGeneOrthology o WHERE o.subjectGene.curie = :curie OR o.objectGene.curie = :curie");
+		jpqlQuery.setParameter("curie", curie);
+		return (List<Long>) jpqlQuery.getResultList();
 	}
 
 }

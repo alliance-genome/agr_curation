@@ -30,7 +30,6 @@ describe("<ResourceDescriptorsPage />", () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	//skip this test for now, as it is not working
 	it("The table contains correct data", async () => {
 		let result = await renderWithClient(<ResourceDescriptorsPage />);
 		

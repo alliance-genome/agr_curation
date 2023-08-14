@@ -91,7 +91,7 @@ export const DataLoadsComponent = () => {
 						}
 					}
 				}
-				setGroups(data.results);
+				setGroups(data.results.sort((a,b) => a.name > b.name ? 1 : -1));
 			}
 
 			var loc = window.location, new_uri;
@@ -403,50 +403,11 @@ export const DataLoadsComponent = () => {
 	};
 
 	const loadTable = (group) => {
-		let lastFileLoaded = new Map();
-		let loadsWithoutFiles = [];
-		group.loads.forEach(load => {
-			let runsStarted = [];
-			if (load.loadFiles) {
-				load.loadFiles.forEach(file => {
-					if (file.bulkloadStatus === "FINISHED" || file.bulkloadStatus === "STOPPED" || file.bulkloadStatus === "FAILED") {
-						if (file.dateLastLoaded) {
-							runsStarted.push(file.dateLastLoaded);
-						} else {
-							if (file.history) {
-								file.history.forEach(history => {
-									runsStarted.push(history.loadStarted);
-								});
-							}
-						}
-					} else {
-						runsStarted.push(new Date().toISOString());
-					}
-				});
-				if (runsStarted.length > 0) {
-					let sortedRunsStarted = runsStarted.sort(function(a,b) {
-						const start1 = new Date(a);
-						const start2 = new Date(b);
-						return start2 - start1;
-					});
-					lastFileLoaded.set(sortedRunsStarted[0], load);
-				} else {
-					loadsWithoutFiles.push(load);
-				}
-			} else {
-				loadsWithoutFiles.push(load);
-			}
-		});
 		let sortedLoads = [];
-		Array.from(lastFileLoaded.keys()).sort(function(a,b) {
-			const start1 = new Date(a);
-			const start2 = new Date(b);
-			return start2 - start1;
-		}).forEach(date => sortedLoads.push(lastFileLoaded.get(date)));
-		
-		if (loadsWithoutFiles.length > 0) {
-			loadsWithoutFiles.sort((a, b) => (a.backendBulkLoadType > b.backendBulkLoadType) ? 1 : -1).forEach(lwf => {sortedLoads.push(lwf)});
+		if (group.loads) {
+			sortedLoads = group.loads.sort((a, b) => (a.name > b.name) ? 1: -1);
 		}
+		
 		return (
 			<div className="card">
 				<DataTable key="loadTable" value={sortedLoads} responsiveLayout="scroll"

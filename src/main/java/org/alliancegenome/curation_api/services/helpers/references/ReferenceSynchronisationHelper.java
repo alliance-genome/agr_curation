@@ -72,26 +72,12 @@ public class ReferenceSynchronisationHelper {
 	public void synchroniseReferences() {
 
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		int page = 0;
-		int limit = 500;
-		Pagination pagination = new Pagination(page, limit);
-
-		Boolean allSynced = false;
-		while (!allSynced) {
-			pagination.setPage(page);
-			SearchResponse<String> response = referenceDAO.findAllIds(pagination);
-			if (page == 0)
-				pdh.startProcess("Reference Sync", response.getTotalResults());
-			for (String refCurie : response.getResults()) {
-				synchroniseReference(refCurie);
-				pdh.progressProcess();
-			}
-			page = page + 1;
-			int nrSynced = limit * page;
-			if (nrSynced > response.getTotalResults().intValue()) {
-				nrSynced = response.getTotalResults().intValue();
-				allSynced = true;
-			}
+		
+		SearchResponse<String> response = referenceDAO.findAllIds();
+		pdh.startProcess("Reference Sync", response.getTotalResults());
+		for (String refCurie : response.getResults()) {
+			synchroniseReference(refCurie);
+			pdh.progressProcess();
 		}
 		pdh.finishProcess();
 	}

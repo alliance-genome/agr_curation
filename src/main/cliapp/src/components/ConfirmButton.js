@@ -26,7 +26,7 @@ export const ConfirmButton = ({ messageText, headerText, buttonText, acceptHandl
 			icon="pi pi-exclamation-triangle"
 			accept={accept} reject={reject} />
 
-			<Button className={buttonClassName} onClick={() => setVisible(true)} label={buttonText} />
+			<Button className={buttonClassName} onClick={() => setVisible(true)} label={buttonText} disabled={disabled}/>
 		</>
 	);
 

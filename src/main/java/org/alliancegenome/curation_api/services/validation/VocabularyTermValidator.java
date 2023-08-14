@@ -5,12 +5,12 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTerm> {
 
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	VocabularyDAO vocabularyDAO;
 
@@ -33,7 +33,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 			addMessageResponse("No VocabularyTerm ID provided");
 			throw new ApiErrorException(response);
 		}
-		VocabularyTerm dbEntity = vocabularyTermDAO.find(id);
+		VocabularyTerm dbEntity = vocabularyTermService.get(id).getEntity();
 		if (dbEntity == null) {
 			addMessageResponse("Could not find VocabularyTerm with ID: [" + id + "]");
 			throw new ApiErrorException(response);

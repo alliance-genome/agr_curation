@@ -740,7 +740,7 @@ export const DiseaseAnnotationsTable = () => {
 		} else if (props.rowData.type === "AlleleDiseaseAnnotation") {
 			subjectFields.push("alleleFullName.formatText", "alleleFullName.displayText", "alleleSymbol.formatText", "alleleSymbol.displayText", "alleleSynonyms.formatText", "alleleSynonyms.displayText", "alleleSecondaryIds.secondaryId");
 		} else if (props.rowData.type === "GeneDiseaseAnnotation") {
-			subjectFields.push("geneFullName.formatText", "geneFullName.displayText", "geneSymbol.formatText", "geneSymbol.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText");
+			subjectFields.push("geneFullName.formatText", "geneFullName.displayText", "geneSymbol.formatText", "geneSymbol.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId");
 		}
 		return subjectFields;
 	};
@@ -794,7 +794,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifiersSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "alleleSymbol.formatText", "alleleFullName.formatText", "alleleFullName.displayText", "alleleSynonyms.formatText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId"];
+		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId", "alleleSymbol.formatText", "alleleFullName.formatText", "alleleFullName.displayText", "alleleSynonyms.formatText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -948,7 +948,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText"];
+		const autocompleteFields = ["geneSymbol.formatText", "geneSymbol.displayText", "geneFullName.formatText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.formatText", "geneSynonyms.displayText", "geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -1485,10 +1485,10 @@ export const DiseaseAnnotationsTable = () => {
 
 	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames, undefined, widthsObject);
 
-	const headerButtons = () => {
+	const headerButtons = (disabled=false) => {
 		return (
 			<>
-				<Button label="New Annotation" icon="pi pi-plus" onClick={handleNewAnnotationOpen} />&nbsp;&nbsp;
+				<Button label="New Annotation" icon="pi pi-plus" onClick={handleNewAnnotationOpen} disabled={disabled} />&nbsp;&nbsp;
 			</>
 		);
 	};

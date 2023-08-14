@@ -5,15 +5,14 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.ingest.dto.DataProviderDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 public class DataProviderDTOValidator extends BaseDTOValidator {
 
 	@Inject
-	OrganizationDAO organizationDAO;
+	OrganizationService organizationService;
 	@Inject
 	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
 	@Inject
@@ -42,11 +41,11 @@ public class DataProviderDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getSourceOrganizationAbbreviation())) {
 			dpResponse.addErrorMessage("source_organization_abbreviation", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			SearchResponse<Organization> soResponse = organizationDAO.findByField("abbreviation", dto.getSourceOrganizationAbbreviation());
-			if (soResponse == null || soResponse.getSingleResult() == null) {
+			ObjectResponse<Organization> soResponse = organizationService.getByAbbr(dto.getSourceOrganizationAbbreviation());
+			if (soResponse == null || soResponse.getEntity() == null) {
 				dpResponse.addErrorMessage("source_organization_abbreviation", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSourceOrganizationAbbreviation() + ")");
 			} else {
-				dbEntity.setSourceOrganization(soResponse.getSingleResult());
+				dbEntity.setSourceOrganization(soResponse.getEntity());
 			}
 		}
 

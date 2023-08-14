@@ -43,9 +43,18 @@ export const termData = {
 	}
 };
 
-		//ID --> 6363427
-//name --> ECO:0007014
-//abbreviation --> CEC
-//vocabulary --> AGR disease annotation ECO terms
-//definition --> ECO:0007014
-//obsolete --> fals
+export const vocabularyData = {
+    "results": [
+        {
+            "dateCreated": "2022-01-25T15:12:09.615698Z",
+            "dateUpdated": "2022-01-25T15:12:09.6157Z",
+            "internal": false,
+            "obsolete": false,
+            "id": 6363401,
+            "name": "AGR disease annotation ECO terms",
+            "vocabularyDescription": "Evidence codes (ECO terms) with letter code abbreviations used in AGR disease annotations"
+        },
+    ],
+    "totalResults": 24,
+    "returnedRecords": 24
+} 

@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -42,7 +43,8 @@ public class GeneExecutor extends LoadFileExecutor {
 
 		try {
 			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			log.info("Running with: " + manual.getDataProvider().name());
+			BackendBulkDataProvider dataProvider = manual.getDataProvider();
+			log.info("Running with dataProvider : " + dataProvider.name());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -51,8 +53,6 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			if (genes == null) genes = new ArrayList<>();
-			
-			String dataProvider = manual.getDataProvider().name();
 
 			List<String> geneCuriesLoaded = new ArrayList<>();
 			List<String> geneCuriesBefore = geneService.getCuriesByDataProvider(dataProvider);
@@ -63,9 +63,9 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 			
-			runLoad(history, genes, dataProvider, geneCuriesLoaded);
+			runLoad(history, genes, dataProvider.name(), geneCuriesLoaded);
 
-			if(cleanUp) runCleanup(geneService, history, dataProvider, geneCuriesBefore, geneCuriesLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(geneService, history, dataProvider.name(), geneCuriesBefore, geneCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			
@@ -89,11 +89,11 @@ public class GeneExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataProvider, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataProviderName, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Gene Update for: " + dataProvider, genes.size());
+		ph.startProcess("Gene Update for: " + dataProviderName, genes.size());
 		genes.forEach(geneDTO -> {
 			try {
 				Gene gene = geneService.upsert(geneDTO);

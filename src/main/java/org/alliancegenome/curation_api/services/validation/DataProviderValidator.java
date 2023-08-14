@@ -6,13 +6,13 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.OrganizationService;
 
 @RequestScoped
 public class DataProviderValidator extends AuditedObjectValidator<DataProvider> {
@@ -20,7 +20,7 @@ public class DataProviderValidator extends AuditedObjectValidator<DataProvider> 
 	@Inject
 	DataProviderDAO dataProviderDAO;
 	@Inject
-	OrganizationDAO organizationDAO;
+	OrganizationService organizationService;
 	@Inject
 	CrossReferenceValidator crossReferenceValidator;
 	@Inject
@@ -96,7 +96,7 @@ public class DataProviderValidator extends AuditedObjectValidator<DataProvider> 
 			return null;
 		}
 		
-		Organization sourceOrganization = organizationDAO.find(uiEntity.getSourceOrganization().getId());
+		Organization sourceOrganization = organizationService.get(uiEntity.getSourceOrganization().getId()).getEntity();
 		if (sourceOrganization == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

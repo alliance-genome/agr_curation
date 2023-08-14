@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -21,6 +20,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -32,7 +32,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 	@Inject
 	ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
 	@Inject
@@ -74,7 +74,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(relationType)) {
 			crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType);
+			VocabularyTerm conditionRelationTypeTerm = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType).getEntity();
 			if (conditionRelationTypeTerm == null)
 				crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.INVALID_MESSAGE + " (" + relationType + ")");
 			relation.setConditionRelationType(conditionRelationTypeTerm);

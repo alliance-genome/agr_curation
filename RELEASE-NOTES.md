@@ -2,6 +2,27 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.22.0
+ * New features
+   * Loaded orthology data (SCRUM-2710)
+   * Loaded Xenbase genes and orthology data (SCRUM-3056)
+   * Loaded Biological Spatial Ontology (BSPO) (SCRUM-3062)
+   * Loaded Cell Ontology(CL) (SCRUM-3059)
+   * Loaded Clinical Measurement Ontology (SCRUM-3060)
+   * Loaded Pathway Ontology (PW) (SCRUM-3057)
+   * Loaded Uberson Ontology (SCRUM-2454)
+   * Loaded Rat Strain Ontology (RS) (SCRUM-3050)
+   * Loaded Molecular Interactions Ontology (MI) (SCRUM-2451)
+   * Loaded Mouse Pathology Ontology (MPATH) (SCRUM-2452)
+   * Loaded Rat Strain Ontology (RS) (SCRUM-3036)
+ 
+ * Fixes and maintenance
+   * Bulk load cleanup procedure fixed (SCRUM-3143 & SCRUM-3073)
+   * Removed DataProvider reset endpoint (SCRUM-3037)
+   * Fixed age error when cancelling edit mode after having duplicated annotation (SCRUM-3030)
+   * Fixed disappearing loads in Data Loads page when multiple loads running (SCRUM-3051)
+   * Disabled reset buttons during row editing (SCRUM-3030)
+
 ## v0.21.0
  * New features
    * Duplicate Disease Annotation popup (SCRUM-2911)

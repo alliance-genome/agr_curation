@@ -115,7 +115,7 @@ export const SynonymsDialog = ({
 			}
 		}
 		
-		if (localSynonyms.length > originalSynonyms?.length || !originalSynonyms[0]) {
+		if (localSynonyms.length > originalSynonyms?.length || !originalSynonyms) {
 			rowsEdited.current++;
 		}
 	};

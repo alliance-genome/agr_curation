@@ -14,15 +14,19 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -48,6 +52,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
 	@Inject
 	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
+	@Inject
+	GeneToGeneOrthologyService orthologyService;
 
 	@Override
 	@PostConstruct
@@ -74,19 +80,25 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProvider, String md5sum) {
+	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
 		Gene gene = geneDAO.find(curie);
-		String loadDescription = dataProvider + " Gene bulk load (" + md5sum + ")"; 
+		String loadDescription = dataProviderName + " Gene bulk load (" + md5sum + ")";
 		if (gene != null) {
 			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
-			Boolean anyReferencingDAs = false;
+			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
-					anyReferencingDAs = true;
+					anyReferencingEntities = true;
 			}
-
-			if (anyReferencingDAs) {
+			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(curie);
+			for (Long orthId : referencingOrthologyPairs) {
+				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
+				if (referencingOrthoPair != null)
+					anyReferencingEntities = true;
+			}
+			
+			if (anyReferencingEntities) {
 				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				gene.setDateUpdated(OffsetDateTime.now());
 				gene.setObsolete(true);
@@ -100,9 +112,19 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		}	
 	}
 
-	public List<String> getCuriesByDataProvider(String dataProvider) {
-		List<String> curies = geneDAO.findAllCuriesByDataProvider(dataProvider);
+	public List<String> getCuriesByDataProvider(BackendBulkDataProvider dataProvider) {
+		List<String> curies;
+
+		String sourceOrg = dataProvider.sourceOrganization;
+
+		if( StringUtils.equals(sourceOrg, "RGD") ){
+			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization, dataProvider.canonicalTaxonCurie);
+		} else {
+			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization);
+		}
+
 		curies.removeIf(Objects::isNull);
+
 		return curies;
 	}
 

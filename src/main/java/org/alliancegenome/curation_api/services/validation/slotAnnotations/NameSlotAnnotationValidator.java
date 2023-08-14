@@ -4,15 +4,15 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.StringUtils;
 
 public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends SlotAnnotationValidator<E> {
 
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	public E validateNameSlotAnnotationFields(E uiEntity, E dbEntity, Boolean newEntity) {
 
@@ -49,7 +49,7 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 		if (uiEntity.getSynonymScope() == null)
 			return null;
 
-		VocabularyTerm synonymScope = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, uiEntity.getSynonymScope().getName());
+		VocabularyTerm synonymScope = vocabularyTermService.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, uiEntity.getSynonymScope().getName()).getEntity();
 		if (synonymScope == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -80,7 +80,7 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 			return null;
 		}
 
-		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, uiTerm.getName());
+		VocabularyTerm nameType = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, uiTerm.getName()).getEntity();
 		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -96,7 +96,7 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 			return null;
 		}
 
-		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, uiTerm.getName());
+		VocabularyTerm nameType = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, uiTerm.getName()).getEntity();
 		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -112,7 +112,7 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 			return null;
 		}
 
-		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, uiTerm.getName());
+		VocabularyTerm nameType = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, uiTerm.getName()).getEntity();
 		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -128,7 +128,7 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 			return null;
 		}
 
-		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY, uiTerm.getName());
+		VocabularyTerm nameType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY, uiTerm.getName()).getEntity();
 		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

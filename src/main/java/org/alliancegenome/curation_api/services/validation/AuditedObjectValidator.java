@@ -6,11 +6,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.LoggedInPersonService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,13 +17,10 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 
 	@Inject
 	@AuthenticatedUser
-	protected LoggedInPerson authenticatedPerson;
+	protected Person authenticatedPerson;
 
 	@Inject
 	PersonService personService;
-
-	@Inject
-	LoggedInPersonService loggedInPersonService;
 
 	public ObjectResponse<E> response;
 
@@ -46,11 +41,11 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
 			dbEntity.setCreatedBy(createdBy);
 		} else if (newEntity) {
-			LoggedInPerson createdBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+			Person createdBy = personService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
 			dbEntity.setCreatedBy(createdBy);
 		}
 
-		LoggedInPerson updatedBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+		Person updatedBy = personService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
 		dbEntity.setUpdatedBy(updatedBy);
 
 		dbEntity.setDateUpdated(OffsetDateTime.now());

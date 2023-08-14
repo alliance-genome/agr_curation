@@ -108,7 +108,7 @@ public class BulkLoadProcessor {
 		log.info("S3: " + bulkLoadFile.getS3Path());
 
 		if ((bulkLoadFile.getS3Path() != null || bulkLoadFile.generateS3MD5Path() != null) && bulkLoadFile.getLocalFilePath() == null) {
-			File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path());
+			File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, bulkLoadFile.getS3Path());
 			if (outfile != null) {
 				// log.info(outfile + " is of size: " + outfile.length());
 				bulkLoadFile.setFileSize(outfile.length());

@@ -2,7 +2,10 @@ package org.alliancegenome.curation_api.enums;
 
 import org.alliancegenome.curation_api.model.entities.ontology.APOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ATPTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.BSPOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
+import org.alliancegenome.curation_api.model.entities.ontology.CLTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.CMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DPOTerm;
@@ -12,14 +15,20 @@ import org.alliancegenome.curation_api.model.entities.ontology.FBDVTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.HPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MATerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMUSDVTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MODTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MPATHTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PATOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.PWTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ROTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.RSTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.VTTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBBTTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBLSTerm;
@@ -67,7 +76,16 @@ public enum OntologyBulkLoadType {
 	HP(HPTerm.class),
 	DPO(DPOTerm.class),
 	MMO(MMOTerm.class),
-	APO(APOTerm.class);
+	APO(APOTerm.class),
+	MI(MITerm.class),
+	MPATH(MPATHTerm.class),
+	MOD(MODTerm.class),
+	UBERON(UBERONTerm.class),
+	RS(RSTerm.class),
+	PW(PWTerm.class),
+	CL(CLTerm.class),
+	CMO(CMOTerm.class),
+	BSPO(BSPOTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 

@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -16,6 +15,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +30,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 	@Inject
 	PersonService personService;
 	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
+	VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String note_type_vocabulary) {
 		Note note = new Note();
@@ -45,7 +45,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getNoteTypeName())) {
 			noteResponse.addErrorMessage("note_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(note_type_vocabulary, dto.getNoteTypeName());
+			VocabularyTerm noteType = vocabularyTermService.getTermInVocabulary(note_type_vocabulary, dto.getNoteTypeName()).getEntity();
 			if (noteType == null)
 				noteResponse.addErrorMessage("note_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNoteTypeName() + ")");
 			note.setNoteType(noteType);

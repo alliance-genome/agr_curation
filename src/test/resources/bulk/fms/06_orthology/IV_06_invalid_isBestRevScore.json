@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "confidence": "low",
+      "gene1": "DRSC:GENETEST:Gene0001",
+      "gene1Species": 6239,
+      "gene2": "DRSC:HGNC:0001",
+      "gene2Species": 9606,
+      "isBestRevScore": "Invalid",
+      "isBestScore": "Yes",
+      "moderateFilter": false,
+      "predictionMethodsMatched": [
+        "Ensembl Compara"
+      ],
+      "predictionMethodsNotCalled": [
+        "HGNC",
+        "ZFIN",
+        "Xenbase"
+      ],
+      "predictionMethodsNotMatched": [
+        "Hieranoid",
+        "OMA",
+        "PhylomeDB",
+        "OrthoFinder",
+        "OrthoInspector",
+        "PANTHER",
+        "SonicParanoid",
+        "InParanoid"
+      ],
+      "strictFilter": true
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "DRSC",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2022-12-16T15:00:36-04:00",
+    "release": "9"
+  }
+}

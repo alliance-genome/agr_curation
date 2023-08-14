@@ -138,22 +138,22 @@ public class LoadFileExecutor {
 	
 
 	// The following methods are for bulk validation
-	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProvider, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
-		Log.debug("runLoad: After: " + dataProvider + " " + annotationIdsAfter.size());
+	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
+		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
+		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
 
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProvider + " " + idsToRemove.size());
+		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
 		history.setTotalDeleteRecords((long)idsToRemove.size());
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + dataProvider, idsToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + dataProviderName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
-				String loadDescription = dataProvider + " disease annotation bulk load (" + md5sum + ")";
+				String loadDescription = dataProviderName + " disease annotation bulk load (" + md5sum + ")";
 				service.deprecateOrDeleteAnnotationAndNotes(id, false, loadDescription, true);
 				history.incrementDeleted();
 			} catch (Exception e) {
@@ -165,22 +165,22 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProvider, List<String> curiesBefore, List<String> curiesAfter, String md5sum) {
-		Log.debug("runLoad: After: " + dataProvider + " " + curiesAfter.size());
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<String> curiesBefore, List<String> curiesAfter, String md5sum) {
+		Log.debug("runLoad: After: " + dataProviderName + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
+		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
 
 		List<String> curiesToRemove = ListUtils.subtract(curiesBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProvider + " " + curiesToRemove.size());
+		Log.debug("runLoad: Remove: " + dataProviderName + " " + curiesToRemove.size());
 
 		history.setTotalDeleteRecords((long)curiesToRemove.size());
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of primary objects " + dataProvider, curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of primary objects " + dataProviderName, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				service.removeOrDeprecateNonUpdated(curie, dataProvider, md5sum);
+				service.removeOrDeprecateNonUpdated(curie, dataProviderName, md5sum);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();

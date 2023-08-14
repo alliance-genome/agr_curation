@@ -2,16 +2,17 @@ import React from "react";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import ControlledVocabularyPage from "../ControlledVocabularyPage";
-import { setupSettingsHandler, setupFindHandler, setupVocabularyHandler, setupSearchHandler } from "../../../tools/jest/commonMswhandlers";
-import { data, termData } from "../mockData/mockData.js";
+import { setLocalStorage } from "../../../tools/jest/setupTests";
+import { setupSettingsHandler, setupFindHandler, setupVocabularyHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
+import { data, termData, vocabularyData } from "../mockData/mockData.js";
 import 'core-js/features/structured-clone';
 
-//skipping for now
-describe.skip("<ControlledVocabularyPage />", () => {
+describe("<ControlledVocabularyPage />", () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
-		setupVocabularyHandler();
+		setupSaveSettingsHandler();
+		setupVocabularyHandler(vocabularyData);
 		setupSearchHandler(termData);
 		setupSearchHandler(data);
 	});
@@ -36,17 +37,15 @@ describe.skip("<ControlledVocabularyPage />", () => {
 		let result = await renderWithClient(<ControlledVocabularyPage />);
 
 		const idTd = await result.findByText(/6363427/i);
-		const nameTd = await result.findByText(/ECO:0007014/i);
+		const nameAndDefinitionArray = await result.findAllByText(/ECO:0007014/i);
 		const abbreviationTd = await result.findByText(/CEC/i);
 		const vocabularyTd = await result.findByText(/AGR disease annotation ECO terms/i);
-		const definitionTd = await result.findByText(/ECO:0007014/i);
 		const obsoleteTd = await result.findByText(/false/i);
 
 		expect(idTd).toBeInTheDocument();
-		expect(nameTd).toBeInTheDocument();
+		expect(nameAndDefinitionArray.length).toEqual(2);
 		expect(abbreviationTd).toBeInTheDocument();
 		expect(vocabularyTd).toBeInTheDocument();
-		expect(definitionTd).toBeInTheDocument();
 		expect(obsoleteTd).toBeInTheDocument();
 	});
 });
