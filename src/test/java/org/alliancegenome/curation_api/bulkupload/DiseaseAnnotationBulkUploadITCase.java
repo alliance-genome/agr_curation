@@ -104,10 +104,16 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	private final String geneDaBulkPostEndpoint = "/api/gene-disease-annotation/bulk/WB/annotationFile";
+	private final String geneDaBulkPostEndpointRGD = "/api/gene-disease-annotation/bulk/RGD/annotationFile";
+	private final String geneDaBulkPostEndpointHUMAN = "/api/gene-disease-annotation/bulk/HUMAN/annotationFile";
 	private final String geneDaGetEndpoint = "/api/gene-disease-annotation/findBy/";
 	private final String alleleDaBulkPostEndpoint = "/api/allele-disease-annotation/bulk/WB/annotationFile";
+	private final String alleleDaBulkPostEndpointRGD = "/api/allele-disease-annotation/bulk/RGD/annotationFile";
+	private final String alleleDaBulkPostEndpointHUMAN = "/api/allele-disease-annotation/bulk/HUMAN/annotationFile";
 	private final String alleleDaGetEndpoint = "/api/allele-disease-annotation/findBy/";
 	private final String agmDaBulkPostEndpoint = "/api/agm-disease-annotation/bulk/WB/annotationFile";
+	private final String agmDaBulkPostEndpointRGD = "/api/agm-disease-annotation/bulk/RGD/annotationFile";
+	private final String agmDaBulkPostEndpointHUMAN = "/api/agm-disease-annotation/bulk/HUMAN/annotationFile";
 	private final String agmDaGetEndpoint = "/api/agm-disease-annotation/findBy/";
 	private final String daTestFilePath = "src/test/resources/bulk/04_disease_annotation/";
 	
@@ -1079,5 +1085,22 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modEntityId", is("DATEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
+	}
+	
+	@Test
+	@Order(26)
+	public void diseaseAnnotationBulkUploadSubjectChecks() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpointHUMAN, daTestFilePath + "VS_01_valid_subject_gene_for_HUMAN.json");
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpointRGD, daTestFilePath + "VS_02_valid_subject_gene_for_RGD.json");
+		checkSuccessfulBulkLoad(alleleDaBulkPostEndpointHUMAN, daTestFilePath + "VS_03_valid_subject_allele_for_HUMAN.json");
+		checkSuccessfulBulkLoad(alleleDaBulkPostEndpointRGD, daTestFilePath + "VS_04_valid_subject_allele_for_RGD.json");
+		checkSuccessfulBulkLoad(agmDaBulkPostEndpointHUMAN, daTestFilePath + "VS_05_valid_subject_agm_for_HUMAN.json");
+		checkSuccessfulBulkLoad(agmDaBulkPostEndpointRGD, daTestFilePath + "VS_06_valid_subject_agm_for_RGD.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpointRGD, daTestFilePath + "VS_01_valid_subject_gene_for_HUMAN.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpointHUMAN, daTestFilePath + "VS_02_valid_subject_gene_for_RGD.json");
+		checkFailedBulkLoad(alleleDaBulkPostEndpointRGD, daTestFilePath + "VS_03_valid_subject_allele_for_HUMAN.json");
+		checkFailedBulkLoad(alleleDaBulkPostEndpointHUMAN, daTestFilePath + "VS_04_valid_subject_allele_for_RGD.json");
+		checkFailedBulkLoad(agmDaBulkPostEndpointRGD, daTestFilePath + "VS_05_valid_subject_agm_for_HUMAN.json");
+		checkFailedBulkLoad(agmDaBulkPostEndpointHUMAN, daTestFilePath + "VS_06_valid_subject_agm_for_RGD.json");
 	}
 }

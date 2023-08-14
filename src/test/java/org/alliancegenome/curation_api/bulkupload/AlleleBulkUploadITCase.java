@@ -40,7 +40,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	private String requiredMpTerm = "MP:00001";
 	private String requiredMpTerm2 = "MP:00002";
 	private String requiredDataProvider = "WB";
-	private String requiredDataProvider2 = "RGD";
+	private String requiredDataProviderRGD = "RGD";
 	
 	@BeforeEach
 	public void init() {
@@ -51,7 +51,8 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	private final String alleleBulkPostEndpoint = "/api/allele/bulk/WB/alleles";
-	private final String alleleBulkPostEndpoint2 = "/api/allele/bulk/RGD/alleles";
+	private final String alleleBulkPostEndpointRGD = "/api/allele/bulk/RGD/alleles";
+	private final String alleleBulkPostEndpointHUMAN = "/api/allele/bulk/HUMAN/alleles";
 	private final String alleleGetEndpoint = "/api/allele/";
 	private final String alleleTestFilePath = "src/test/resources/bulk/02_allele/";
 
@@ -198,7 +199,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	public void alleleBulkUploadUpdateCheckFields() throws Exception {
 		loadRequiredEntities();
 		
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint2, alleleTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpointRGD, alleleTestFilePath + "UD_01_update_all_except_default_fields.json");
 	
 		RestAssured.given().
 			when().
@@ -318,7 +319,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleDatabaseStatus.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleDatabaseStatus.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.alleleDatabaseStatus.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProviderRGD)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
@@ -638,7 +639,11 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	
 	@Test
 	@Order(13)
-	public void alleleBulkUploadInvalidAlleleForDataProvider() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint2, alleleTestFilePath + "AF_01_all_fields.json");
+	public void geneBulkUploadDataProviderChecks() throws Exception {
+		checkFailedBulkLoad(alleleBulkPostEndpointRGD, alleleTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpointHUMAN, alleleTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpointRGD, alleleTestFilePath + "VT_02_valid_taxon_for_RGD.json");
+		checkFailedBulkLoad(alleleBulkPostEndpointRGD, alleleTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkFailedBulkLoad(alleleBulkPostEndpointHUMAN, alleleTestFilePath + "VT_02_valid_taxon_for_RGD.json");
 	}
 }

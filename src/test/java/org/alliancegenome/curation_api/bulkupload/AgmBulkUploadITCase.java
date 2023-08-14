@@ -34,7 +34,7 @@ import io.restassured.config.RestAssuredConfig;
 public class AgmBulkUploadITCase extends BaseITCase {
 	
 	private String dataProvider = "WB";
-	private String dataProvider2 = "RGD";
+	private String dataProviderRGD = "RGD";
 	
 	@BeforeEach
 	public void init() {
@@ -45,7 +45,8 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	}
 	
 	private final String agmBulkPostEndpoint = "/api/agm/bulk/WB/agms";
-	private final String agmBulkPostEndpoint2 = "/api/agm/bulk/RGD/agms";
+	private final String agmBulkPostEndpointRGD = "/api/agm/bulk/RGD/agms";
+	private final String agmBulkPostEndpointHUMAN = "/api/agm/bulk/HUMAN/agms";
 	private final String agmGetEndpoint = "/api/agm/";
 	private final String agmTestFilePath = "src/test/resources/bulk/03_agm/";
 
@@ -78,7 +79,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void agmBulkUploadUpdateCheckFields() throws Exception {
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint2, agmTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpointRGD, agmTestFilePath + "UD_01_update_all_except_default_fields.json");
 		
 		RestAssured.given().
 			when().
@@ -95,7 +96,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProviderRGD)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
@@ -192,7 +193,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	
 	@Test
 	@Order(10)
-	public void agmBulkUploadInvalidAgmForDataProvider() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint2, agmTestFilePath + "AF_01_all_fields.json");
+	public void geneBulkUploadDataProviderChecks() throws Exception {
+		checkFailedBulkLoad(agmBulkPostEndpointRGD, agmTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpointHUMAN, agmTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpointRGD, agmTestFilePath + "VT_02_valid_taxon_for_RGD.json");
+		checkFailedBulkLoad(agmBulkPostEndpointRGD, agmTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkFailedBulkLoad(agmBulkPostEndpointHUMAN, agmTestFilePath + "VT_02_valid_taxon_for_RGD.json");
 	}
 }

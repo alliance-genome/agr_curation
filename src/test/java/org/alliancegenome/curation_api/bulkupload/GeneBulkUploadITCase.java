@@ -49,7 +49,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredDataProvider2 = "RGD";
 	
 	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
-	private final String geneBulkPostEndpoint2 = "/api/gene/bulk/RGD/genes";
+	private final String geneBulkPostEndpointRGD = "/api/gene/bulk/RGD/genes";
+	private final String geneBulkPostEndpointHUMAN = "/api/gene/bulk/HUMAN/genes";
 	private final String geneGetEndpoint = "/api/gene/";
 	private final String geneTestFilePath = "src/test/resources/bulk/01_gene/";
 	
@@ -149,7 +150,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void geneBulkUploadUpdateFields() throws Exception {
-		checkSuccessfulBulkLoad(geneBulkPostEndpoint2, geneTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "UD_01_update_all_except_default_fields.json");
 		
 		RestAssured.given().
 			when().
@@ -438,7 +439,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	
 	@Test
 	@Order(11)
-	public void geneBulkUploadInvalidGeneForDataProvider() throws Exception {
-		checkFailedBulkLoad(geneBulkPostEndpoint2, geneTestFilePath + "AF_01_all_fields.json");
+	public void geneBulkUploadDataProviderChecks() throws Exception {
+		checkFailedBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(geneBulkPostEndpointHUMAN, geneTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkSuccessfulBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "VT_02_valid_taxon_for_RGD.json");
+		checkFailedBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkFailedBulkLoad(geneBulkPostEndpointHUMAN, geneTestFilePath + "VT_02_valid_taxon_for_RGD.json");
 	}
 }
