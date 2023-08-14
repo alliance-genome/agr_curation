@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
@@ -87,7 +88,7 @@ public class BaseDTOValidator {
 		return response;
 	}
 
-	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO(E entity, D dto) {
+	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO(E entity, D dto, BackendBulkDataProvider beDataProvider) {
 
 		ObjectResponse<E> beResponse = new ObjectResponse<E>();
 
@@ -102,6 +103,10 @@ public class BaseDTOValidator {
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
 			}
+			if (beDataProvider != null && (beDataProvider.name().equals("RGD") || beDataProvider.name().equals("HUMAN")) &&
+					!taxonResponse.getEntity().getCurie().equals(beDataProvider.canonicalTaxonCurie)) {
+				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ") for " + beDataProvider.name() + " load");
+			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
 		
@@ -112,6 +117,10 @@ public class BaseDTOValidator {
 			if (dpResponse.hasErrors()) {
 				beResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
+				if (beDataProvider != null && !dpResponse.getEntity().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+					beResponse.addErrorMessage("data_provider_dto - source_organization_dto - abbreviation", ValidationConstants.INVALID_MESSAGE +
+							" (" + dpResponse.getEntity().getSourceOrganization().getAbbreviation() + ") for " + beDataProvider.name() + " load");
+				}
 				entity.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
@@ -121,11 +130,11 @@ public class BaseDTOValidator {
 		return beResponse;
 	}
 
-	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO(E entity, D dto) {
+	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO(E entity, D dto, BackendBulkDataProvider dataProvider) {
 
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
 
-		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto);
+		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto, dataProvider);
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
 

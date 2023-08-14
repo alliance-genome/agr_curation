@@ -63,7 +63,7 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 			
-			runLoad(history, genes, dataProvider.name(), geneCuriesLoaded);
+			runLoad(history, genes, dataProvider, geneCuriesLoaded);
 
 			if(cleanUp) runCleanup(geneService, history, dataProvider.name(), geneCuriesBefore, geneCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
@@ -78,9 +78,11 @@ public class GeneExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataProvider, List<GeneDTO> genes) {
+	public APIResponse runLoad(String dataProviderName, List<GeneDTO> genes) {
 
 		List<String> curiesLoaded = new ArrayList<>();
+		
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 		runLoad(history, genes, dataProvider, curiesLoaded);
@@ -89,14 +91,14 @@ public class GeneExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, String dataProviderName, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Gene Update for: " + dataProviderName, genes.size());
+		ph.startProcess("Gene Update for: " + dataProvider.name(), genes.size());
 		genes.forEach(geneDTO -> {
 			try {
-				Gene gene = geneService.upsert(geneDTO);
+				Gene gene = geneService.upsert(geneDTO, dataProvider);
 				history.incrementCompleted();
 				if (curiesAdded != null) {
 					curiesAdded.add(gene.getCurie());
