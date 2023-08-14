@@ -51,6 +51,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	private final String alleleBulkPostEndpoint = "/api/allele/bulk/WB/alleles";
+	private final String alleleBulkPostEndpoint2 = "/api/allele/bulk/RGD/alleles";
 	private final String alleleGetEndpoint = "/api/allele/";
 	private final String alleleTestFilePath = "src/test/resources/bulk/02_allele/";
 
@@ -197,7 +198,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	public void alleleBulkUploadUpdateCheckFields() throws Exception {
 		loadRequiredEntities();
 		
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint2, alleleTestFilePath + "UD_01_update_all_except_default_fields.json");
 	
 		RestAssured.given().
 			when().
@@ -205,7 +206,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.curie", is("ALLELETEST:Allele0001")).
-			body("entity.taxon.curie", is("NCBITaxon:9606")).
+			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0002")).
@@ -633,5 +634,11 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.curie", is("ALLELETEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
+	}
+	
+	@Test
+	@Order(13)
+	public void alleleBulkUploadInvalidAlleleForDataProvider() throws Exception {
+		checkFailedBulkLoad(alleleBulkPostEndpoint2, alleleTestFilePath + "AF_01_all_fields.json");
 	}
 }

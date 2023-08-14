@@ -25,6 +25,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -119,7 +120,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	NoteDTOValidator noteDtoValidator;
 
 	@Transactional
-	public Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
+	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		ObjectResponse<Allele> alleleResponse = new ObjectResponse<Allele>();
 
@@ -135,7 +136,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 
 		allele.setCurie(dto.getCurie());
 
-		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto);
+		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto, dataProvider);
 		alleleResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		allele = geResponse.getEntity();

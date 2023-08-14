@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -23,7 +24,7 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 	@Inject
 	VocabularyTermService vocabularyTermService;
 
-	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto) throws ObjectValidationException {
+	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<AffectedGenomicModel>();
 
 		AffectedGenomicModel agm = null;
@@ -44,7 +45,7 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 			agm.setName(null);
 		}
 
-		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto);
+		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto, dataProvider);
 		agmResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		agm = geResponse.getEntity();

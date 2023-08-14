@@ -45,6 +45,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	}
 	
 	private final String agmBulkPostEndpoint = "/api/agm/bulk/WB/agms";
+	private final String agmBulkPostEndpoint2 = "/api/agm/bulk/RGD/agms";
 	private final String agmGetEndpoint = "/api/agm/";
 	private final String agmTestFilePath = "src/test/resources/bulk/03_agm/";
 
@@ -77,7 +78,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void agmBulkUploadUpdateCheckFields() throws Exception {
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint2, agmTestFilePath + "UD_01_update_all_except_default_fields.json");
 		
 		RestAssured.given().
 			when().
@@ -86,7 +87,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.curie", is("AGMTEST:Agm0001")).
 			body("entity.name", is("TestAgm1a")).
-			body("entity.taxon.curie", is("NCBITaxon:9606")).
+			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.subtype.name", is("genotype")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -187,5 +188,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	@Order(9)
 	public void agmBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "EN_01_empty_non_required_fields.json");
+	}
+	
+	@Test
+	@Order(10)
+	public void agmBulkUploadInvalidAgmForDataProvider() throws Exception {
+		checkFailedBulkLoad(agmBulkPostEndpoint2, agmTestFilePath + "AF_01_all_fields.json");
 	}
 }
