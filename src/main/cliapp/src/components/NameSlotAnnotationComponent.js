@@ -1,6 +1,6 @@
 import React from 'react'
 import { EllipsisTableCell } from './EllipsisTableCell';
-import { DialogErrorMessageComponent } from './DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
 import { InputTextEditor } from './InputTextEditor';
 
 export const synonymScopeTemplate = (rowData) => {

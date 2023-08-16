@@ -2,21 +2,21 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from './SearchService';
 
-export function useVocabularyTermSetService(setName) {
+export function useVocabularyTermSetService(vocabularyLabel) {
 	const [terms, setTerms] = useState();
 	const searchService = new SearchService();
 	const termData = {};
 
-	useQuery(['terms', setName],
+	useQuery(['terms', vocabularyLabel],
 		() => {
-			return searchService.find("vocabularyterm", 15, 0, {"vocabularyTermSets.name" : setName } )
+			return searchService.find("vocabularyterm", 15, 0, {"vocabularyTermSets.vocabularyLabel" : vocabularyLabel } )
 		}, {
 			onSuccess: (data) => {
 				if (data.results) {
 					setTerms(data.results.sort((a, b) => (a.name > b.name) ? 1 : -1));
 				} else {
-					if (termData[setName]) {
-						setTerms(termData[setName]['terms']);
+					if (termData[vocabularyLabel]) {
+						setTerms(termData[vocabularyLabel]['terms']);
 					}
 				}
 			},

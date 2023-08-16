@@ -3,7 +3,7 @@
     "curie": "AGMTEST:Agm0001",
     "subtype_name": "genotype",
     "name": "TestAgm1a",
-    "taxon_curie": "NCBITaxon:9606",
+    "taxon_curie": "NCBITaxon:10116",
     "created_by_curie": "AGMTEST:Person0002",
     "updated_by_curie": "AGMTEST:Person0001",
     "date_created": "2022-03-19T22:10:12+00:00",

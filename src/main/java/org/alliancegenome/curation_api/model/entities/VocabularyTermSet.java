@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
@@ -40,6 +41,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "VocabularyTermSet", description = "POJO that represents the Vocabulary Term Set")
 @Table(indexes = { @Index(name = "vocabularytermset_name_index", columnList = "name"),
+		@Index(name = "vocabularytermset_vocabularylabel_index", columnList = "vocabularylabel"),
 		@Index(name = "vocabularytermset_createdby_id_index", columnList = "createdby_id"),
 		@Index(name = "vocabularytermset_updatedby_id_index", columnList = "updatedby_id"),
 		@Index(name = "vocabularytermset_vocabularytermsetvocabulary_id_index", columnList = "vocabularytermsetvocabulary_id")})
@@ -50,6 +52,12 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class })
 	private String name;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "vocabularyLabel_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true)
+	@JsonView({ View.FieldsOnly.class })
+	private String vocabularyLabel;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

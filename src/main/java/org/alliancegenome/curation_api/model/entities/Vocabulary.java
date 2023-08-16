@@ -40,7 +40,7 @@ import lombok.ToString;
 @Schema(name = "Vocabulary", description = "POJO that represents the Vocabulary")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = { @Index(name = "vocabulary_createdby_index", columnList = "createdBy_id"), @Index(name = "vocabulary_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "vocabulary_name_index", columnList = "name") })
+	@Index(name = "vocabulary_name_index", columnList = "name"), @Index(name = "vocabulary_vocabularylabel_index", columnList = "vocabularylabel") })
 public class Vocabulary extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -48,6 +48,12 @@ public class Vocabulary extends GeneratedAuditedObject {
 	@Column(unique = true)
 	@JsonView({ View.FieldsOnly.class })
 	private String name;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "vocabularyLabel_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true)
+	@JsonView({ View.FieldsOnly.class })
+	private String vocabularyLabel;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "vocabularyDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

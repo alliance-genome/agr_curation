@@ -7,7 +7,7 @@ import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
@@ -25,7 +25,7 @@ export const RelatedNotesDialog = ({
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
+	const noteTypeTerms = useControlledVocabularyService('da_note_type');
 	const validationService = new ValidationService();
 	const tableRef = useRef(null);
 	const rowsEdited = useRef(0);

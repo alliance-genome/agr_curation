@@ -1,6 +1,5 @@
 import React from 'react';
 
-//import { Route } from 'react-router-dom';
 import { SecureRoute } from '@okta/okta-react';
 
 
@@ -13,7 +12,7 @@ import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
-import { AllelesPage } from './containers/allelesPage';
+import { AllelesPage, AlleleDetailPage  } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
@@ -44,6 +43,7 @@ export default (
 		<SecureRoute path="/conditionRelations" render={() => <ErrorBoundary><ConditionRelationPage /></ErrorBoundary>} />
 		<SecureRoute path="/genes" render={() => <ErrorBoundary><GenesPage /></ErrorBoundary>} />
 		<SecureRoute path="/alleles" render={() => <ErrorBoundary><AllelesPage /></ErrorBoundary>} />
+		<SecureRoute path="/allele/:curie" render={() => <ErrorBoundary><AlleleDetailPage /></ErrorBoundary>} />
 		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />
 		<SecureRoute path="/references" render={() => <ErrorBoundary><ReferencePage /></ErrorBoundary>} />
 		<SecureRoute path="/vocabterms" render={() => <ErrorBoundary><ControlledVocabularyPage /></ErrorBoundary>} />

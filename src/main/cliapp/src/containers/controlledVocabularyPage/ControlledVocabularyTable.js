@@ -9,7 +9,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 import { VocabularyService } from "../../service/VocabularyService";
 import { TrueFalseDropdown } from "../../components/TrueFalseDropDownSelector";
-import { ErrorMessageComponent } from "../../components/ErrorMessageComponent";
+import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
 import { InputTextEditor } from "../../components/InputTextEditor";
 import { ControlledVocabularyDropdown } from "../../components/ControlledVocabularySelector";
 import { NewTermForm } from "../../containers/controlledVocabularyPage/NewTermForm";
@@ -171,16 +171,17 @@ export const ControlledVocabularyTable = () => {
 	};
 
 	const obsoleteEditorTemplate = (props) => {
-			return (
-					<>
-							<TrueFalseDropdown
-									options={obsoleteTerms}
-									editorChange={onObsoleteEditorValueChange}
-									props={props}
-							/>
-							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
-					</>
-			);
+		return (
+			<>
+				<TrueFalseDropdown
+					options={obsoleteTerms}
+					editorChange={onObsoleteEditorValueChange}
+					props={props}
+					field={"obsolete"}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
+			</>
+		);
 	};
 
 	const nameBodyTemplate = (rowData) => {

@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
@@ -64,6 +64,14 @@ export const NewVocabularyTermSetForm = ({
 			value: event.target.value
 		});
 	};
+
+	const onLabelChange = (event) => {
+		newVocabularyTermSetDispatch({
+			type: "EDIT",
+			field: event.target.name,
+			value: event.target.value
+		})
+	}
 
 	const onVocabularyChange = (event, setFieldValue) => {
 		setFieldValue(event.target.value);
@@ -150,6 +158,18 @@ export const NewVocabularyTermSetForm = ({
 										className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.name })}
 									/>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"name"}/>
+								</div>
+								<div className="field">
+									<label htmlFor="vocabularyLabel"><font color={'red'}>*</font>Label</label>
+									<InputText
+										id="vocabularyLabel"
+										name="vocabularyLabel"
+										value={newVocabularyTermSet.vocabularyLabel}
+										onChange={onLabelChange}
+										required
+										className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.vocabularyLabel })}
+									/>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyLabel"}/>
 								</div>
 								<div className="field">
 									<label htmlFor="vocabularyTermSetVocabulary"><font color={'red'}>*</font>Vocabulary</label>

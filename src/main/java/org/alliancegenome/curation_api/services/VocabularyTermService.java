@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.VocabularyTermValidator;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 
@@ -39,31 +38,31 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		setSQLDao(vocabularyTermDAO);
 	}
 
-	public ObjectResponse<VocabularyTerm> getTermInVocabulary(String vocabularyName, String termName) {
+	public ObjectResponse<VocabularyTerm> getTermInVocabulary(String vocabularyLabel, String termName) {
 
 		VocabularyTerm term = null;
 		
-		if(termRequestMap.get(vocabularyName) != null) {
-			HashMap<String, VocabularyTerm> termMap = vocabTermCacheMap.get(vocabularyName);
+		if(termRequestMap.get(vocabularyLabel) != null) {
+			HashMap<String, VocabularyTerm> termMap = vocabTermCacheMap.get(vocabularyLabel);
 			
 			if(termMap == null) {
-				Log.debug("Vocab not cached, caching vocab: " + vocabularyName);
+				Log.debug("Vocab not cached, caching vocab: " + vocabularyLabel);
 				termMap = new HashMap<>();
-				vocabTermCacheMap.put(vocabularyName, termMap);
+				vocabTermCacheMap.put(vocabularyLabel, termMap);
 			}
 
 			if(termMap.containsKey(termName)) {
 				term = termMap.get(termName);
 			} else {
-				Log.debug("Term not cached, caching term: " + vocabularyName + "(" + termName + ")");
-				term = getTermInVocabularyFromDB(vocabularyName, termName);
+				Log.debug("Term not cached, caching term: " + vocabularyLabel + "(" + termName + ")");
+				term = getTermInVocabularyFromDB(vocabularyLabel, termName);
 				if (term != null)
 					term.getSynonyms().size();
 				termMap.put(termName, term);
 			}
 		} else {
-			term = getTermInVocabularyFromDB(vocabularyName, termName);
-			termRequestMap.put(vocabularyName, new Date());
+			term = getTermInVocabularyFromDB(vocabularyLabel, termName);
+			termRequestMap.put(vocabularyLabel, new Date());
 		}
 
 		ObjectResponse<VocabularyTerm> response = new ObjectResponse<>();
@@ -72,31 +71,31 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		
 	}
 
-	public ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(String vocabularyTermSetName, String termName) {
+	public ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(String vocabularyTermSetLabel, String termName) {
 
 		VocabularyTerm term = null;
 		
-		if(termSetRequestMap.get(vocabularyTermSetName) != null) {
-			HashMap<String, VocabularyTerm> termMap = vocabTermSetCacheMap.get(vocabularyTermSetName);
+		if(termSetRequestMap.get(vocabularyTermSetLabel) != null) {
+			HashMap<String, VocabularyTerm> termMap = vocabTermSetCacheMap.get(vocabularyTermSetLabel);
 			
 			if(termMap == null) {
-				Log.debug("Vocab not cached, caching vocab: " + vocabularyTermSetName);
+				Log.debug("Vocab not cached, caching vocab: " + vocabularyTermSetLabel);
 				termMap = new HashMap<>();
-				vocabTermSetCacheMap.put(vocabularyTermSetName, termMap);
+				vocabTermSetCacheMap.put(vocabularyTermSetLabel, termMap);
 			}
 
 			if(termMap.containsKey(termName)) {
 				term = termMap.get(termName);
 			} else {
-				Log.debug("Term not cached, caching term: " + vocabularyTermSetName + "(" + termName + ")");
-				term = getTermInVocabularyTermSetFromDB(vocabularyTermSetName, termName);
+				Log.debug("Term not cached, caching term: " + vocabularyTermSetLabel + "(" + termName + ")");
+				term = getTermInVocabularyTermSetFromDB(vocabularyTermSetLabel, termName);
 				if (term != null)
 					term.getSynonyms().size();
 				termMap.put(termName, term);
 			}
 		} else {
-			term = getTermInVocabularyTermSetFromDB(vocabularyTermSetName, termName);
-			termSetRequestMap.put(vocabularyTermSetName, new Date());
+			term = getTermInVocabularyTermSetFromDB(vocabularyTermSetLabel, termName);
+			termSetRequestMap.put(vocabularyTermSetLabel, new Date());
 		}
 
 		ObjectResponse<VocabularyTerm> response = new ObjectResponse<VocabularyTerm>();
@@ -105,18 +104,18 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		
 	}
 	
-	private VocabularyTerm getTermInVocabularyFromDB(String vocabularyName, String termName) {
+	private VocabularyTerm getTermInVocabularyFromDB(String vocabularyLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		params.put("vocabulary.name", vocabularyName);
+		params.put("vocabulary.vocabularyLabel", vocabularyLabel);
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();
 	}
 	
-	private VocabularyTerm getTermInVocabularyTermSetFromDB(String vocabularyTermSetName, String termName) {
+	private VocabularyTerm getTermInVocabularyTermSetFromDB(String vocabularyTermSetLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		params.put("vocabularyTermSets.name", vocabularyTermSetName);
+		params.put("vocabularyTermSets.vocabularyLabel", vocabularyTermSetLabel);
 
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();

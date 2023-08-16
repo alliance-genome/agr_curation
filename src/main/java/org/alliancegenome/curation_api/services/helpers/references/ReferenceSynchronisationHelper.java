@@ -90,25 +90,28 @@ public class ReferenceSynchronisationHelper {
 		}
 		ref.setObsolete(false);
 
-		List<CrossReference> xrefs = new ArrayList<CrossReference>();
-		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
-			SearchResponse<CrossReference> xrefResponse = crossReferenceDAO.findByField("referencedCurie", litXref.getCurie());
-			CrossReference xref;
-			if (xrefResponse == null || xrefResponse.getSingleResult() == null) {
-				xref = new CrossReference();
-				xref.setReferencedCurie(litXref.getCurie());
-				xref.setDisplayName(litXref.getCurie());
-				xref.setInternal(false);
-				xref.setObsolete(false);
-				xref = crossReferenceDAO.persist(xref);
-			} else {
-				xref = xrefResponse.getSingleResult();
+		List<CrossReference> xrefs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(litRef.getCross_references())) {
+			for (LiteratureCrossReference litXref : litRef.getCross_references()) {
+				SearchResponse<CrossReference> xrefResponse = crossReferenceDAO.findByField("referencedCurie", litXref.getCurie());
+				CrossReference xref;
+				if (xrefResponse == null || xrefResponse.getSingleResult() == null) {
+					xref = new CrossReference();
+					xref.setReferencedCurie(litXref.getCurie());
+					xref.setDisplayName(litXref.getCurie());
+					xref.setInternal(false);
+					xref.setObsolete(false);
+					xref = crossReferenceDAO.persist(xref);
+				} else {
+					xref = xrefResponse.getSingleResult();
+				}
+				xrefs.add(xref);
 			}
-			xrefs.add(xref);
 		}
 		if (CollectionUtils.isNotEmpty(xrefs))
 			ref.setCrossReferences(xrefs);
 
+		ref.setShortCitation(litRef.citationShort);
 		if (!ref.getCurie().equals(originalCurie) && originalCurie != null) {
 			referenceDAO.updateReferenceForeignKeys(originalCurie, ref.getCurie());
 			referenceDAO.remove(originalCurie);

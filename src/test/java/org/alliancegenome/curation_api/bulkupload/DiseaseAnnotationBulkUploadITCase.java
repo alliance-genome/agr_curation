@@ -44,6 +44,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	private String agmDiseaseAnnotation = "DATEST:Annot0003";
 	private String gene = "DATEST:Gene0001";
 	private String gene2 = "DATEST:Gene0002";
+	private String ratGene = "DATEST:Gene0003";
+	private String humanGene = "DATEST:Gene0004";
 	private String withGene = "HGNC:0001";
 	private String withGene2 = "HGNC:0002";
 	private String doTerm = "DATEST:Disease0001";
@@ -59,8 +61,12 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	private String chemicalTerm2 = "DATEST:ChemicalTerm0002";
 	private String allele = "DATEST:Allele0001";
 	private String allele2 = "DATEST:Allele0002";
+	private String ratAllele = "DATEST:Allele0003";
+	private String humanAllele = "DATEST:Allele0004";
 	private String agm = "DATEST:AGM0001";
 	private String agm2 = "DATEST:AGM0002";
+	private String ratAgm = "DATEST:AGM0003";
+	private String humanAgm = "DATEST:AGM0004";
 	private String sgdBackgroundStrain = "SGD:AGM0001";
 	private String sgdBackgroundStrain2 = "SGD:AGM0002";
 	private String zecoTerm = "DATEST:ExpCondTerm0001";
@@ -98,10 +104,16 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	}
 	
 	private final String geneDaBulkPostEndpoint = "/api/gene-disease-annotation/bulk/WB/annotationFile";
+	private final String geneDaBulkPostEndpointRGD = "/api/gene-disease-annotation/bulk/RGD/annotationFile";
+	private final String geneDaBulkPostEndpointHUMAN = "/api/gene-disease-annotation/bulk/HUMAN/annotationFile";
 	private final String geneDaGetEndpoint = "/api/gene-disease-annotation/findBy/";
 	private final String alleleDaBulkPostEndpoint = "/api/allele-disease-annotation/bulk/WB/annotationFile";
+	private final String alleleDaBulkPostEndpointRGD = "/api/allele-disease-annotation/bulk/RGD/annotationFile";
+	private final String alleleDaBulkPostEndpointHUMAN = "/api/allele-disease-annotation/bulk/HUMAN/annotationFile";
 	private final String alleleDaGetEndpoint = "/api/allele-disease-annotation/findBy/";
 	private final String agmDaBulkPostEndpoint = "/api/agm-disease-annotation/bulk/WB/annotationFile";
+	private final String agmDaBulkPostEndpointRGD = "/api/agm-disease-annotation/bulk/RGD/annotationFile";
+	private final String agmDaBulkPostEndpointHUMAN = "/api/agm-disease-annotation/bulk/HUMAN/annotationFile";
 	private final String agmDaGetEndpoint = "/api/agm-disease-annotation/findBy/";
 	private final String daTestFilePath = "src/test/resources/bulk/04_disease_annotation/";
 	
@@ -124,12 +136,19 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
+		DataProvider ratDataProvider = createDataProvider("RGD", false);
 		loadGenes(List.of(gene, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadGenes(List.of(withGene, withGene2), "NCBITaxon:9606", symbolTerm, dataProvider);
+		loadGenes(List.of(ratGene), "NCBITaxon:10116", symbolTerm, ratDataProvider);
+		loadGenes(List.of(humanGene), "NCBITaxon:9606", symbolTerm, ratDataProvider);
 		loadAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, dataProvider);
+		loadAllele(ratAllele, "TestAllele3", "NCBITaxon:10116", symbolTerm, ratDataProvider);
+		loadAllele(humanAllele, "TestAllele4", "NCBITaxon:9606", symbolTerm, ratDataProvider);
 		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "fish", dataProvider);
 		loadAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "genotype", dataProvider);
+		loadAffectedGenomicModel(ratAgm, "TestAGM3", "NCBITaxon:10116", "genotype", ratDataProvider);
+		loadAffectedGenomicModel(humanAgm, "TestAGM4", "NCBITaxon:9606", "genotype", ratDataProvider);
 		loadAffectedGenomicModel(sgdBackgroundStrain, "Test SGD AGM", "NCBITaxon:559292", "strain", dataProvider);
 		loadAffectedGenomicModel(sgdBackgroundStrain2, "Test SGD AGM2", "NCBITaxon:559292", "strain", dataProvider);
 		loadReference(reference, referenceXref);
@@ -427,7 +446,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:Gene0002|is_marker_for|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
+			body("entity.uniqueId", is("DATEST:Gene0002|is_marker_for|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(gene2)).
 			body("entity.object.curie", is(doTerm2)).
 			body("entity.diseaseRelation.name", is(geneDiseaseRelation)).
@@ -507,7 +526,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:Allele0002|is_implicated_in|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
+			body("entity.uniqueId", is("DATEST:Allele0002|is_implicated_in|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(allele2)).
 			body("entity.object.curie", is(doTerm2)).
 			body("entity.diseaseRelation.name", is(alleleAndGeneDiseaseRelation)).
@@ -588,7 +607,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0002")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.uniqueId", is("DATEST:AGM0002|is_exacerbated_model_of|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
+			body("entity.uniqueId", is("DATEST:AGM0002|is_exacerbated_model_of|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(agm2)).
 			body("entity.object.curie", is(doTerm2)).
 			body("entity.diseaseRelation.name", is(agmDiseaseRelation2)).
@@ -1066,5 +1085,22 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.modEntityId", is("DATEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
+	}
+	
+	@Test
+	@Order(26)
+	public void diseaseAnnotationBulkUploadSubjectChecks() throws Exception {
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpointHUMAN, daTestFilePath + "VS_01_valid_subject_gene_for_HUMAN.json");
+		checkSuccessfulBulkLoad(geneDaBulkPostEndpointRGD, daTestFilePath + "VS_02_valid_subject_gene_for_RGD.json");
+		checkSuccessfulBulkLoad(alleleDaBulkPostEndpointHUMAN, daTestFilePath + "VS_03_valid_subject_allele_for_HUMAN.json");
+		checkSuccessfulBulkLoad(alleleDaBulkPostEndpointRGD, daTestFilePath + "VS_04_valid_subject_allele_for_RGD.json");
+		checkSuccessfulBulkLoad(agmDaBulkPostEndpointHUMAN, daTestFilePath + "VS_05_valid_subject_agm_for_HUMAN.json");
+		checkSuccessfulBulkLoad(agmDaBulkPostEndpointRGD, daTestFilePath + "VS_06_valid_subject_agm_for_RGD.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpointRGD, daTestFilePath + "VS_01_valid_subject_gene_for_HUMAN.json");
+		checkFailedBulkLoad(geneDaBulkPostEndpointHUMAN, daTestFilePath + "VS_02_valid_subject_gene_for_RGD.json");
+		checkFailedBulkLoad(alleleDaBulkPostEndpointRGD, daTestFilePath + "VS_03_valid_subject_allele_for_HUMAN.json");
+		checkFailedBulkLoad(alleleDaBulkPostEndpointHUMAN, daTestFilePath + "VS_04_valid_subject_allele_for_RGD.json");
+		checkFailedBulkLoad(agmDaBulkPostEndpointRGD, daTestFilePath + "VS_05_valid_subject_agm_for_HUMAN.json");
+		checkFailedBulkLoad(agmDaBulkPostEndpointHUMAN, daTestFilePath + "VS_06_valid_subject_agm_for_RGD.json");
 	}
 }

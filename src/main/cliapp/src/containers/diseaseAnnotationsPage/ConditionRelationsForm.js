@@ -3,18 +3,18 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import {ExConAutocompleteTemplate} from "../../components/Autocomplete/ExConAutocompleteTemplate";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
 export const ConditionRelationsForm = ({ dispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
+	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 

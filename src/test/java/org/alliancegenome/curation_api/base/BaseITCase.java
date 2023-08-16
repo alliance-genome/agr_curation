@@ -482,6 +482,7 @@ public class BaseITCase {
 	public Vocabulary createVocabulary(String name, Boolean obsolete) {
 		Vocabulary vocabulary = new Vocabulary();
 		vocabulary.setName(name);
+		vocabulary.setVocabularyLabel(name);
 		vocabulary.setInternal(false);
 		vocabulary.setObsolete(obsolete);
 		
@@ -523,6 +524,7 @@ public class BaseITCase {
 	public void createVocabularyTermSet(String name, Vocabulary vocabulary, List<VocabularyTerm> terms) {
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
 		vocabularyTermSet.setName(name);
+		vocabularyTermSet.setVocabularyLabel(name);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(vocabulary);
 		vocabularyTermSet.setInternal(false);
 		vocabularyTermSet.setMemberTerms(terms);
@@ -828,6 +830,10 @@ public class BaseITCase {
 		};
 	}
 	
+	private TypeRef<SearchResponse<Vocabulary>> getSearchResponseTypeRefVocabulary() {
+		return new TypeRef<SearchResponse <Vocabulary>>() { };
+	}
+	
 	private TypeRef<SearchResponse<VocabularyTermSet>> getSearchResponseTypeRefVocabularyTermSet() {
 		return new TypeRef<SearchResponse <VocabularyTermSet>>() { };
 	}
@@ -843,16 +849,17 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Vocabulary getVocabulary(String name) {
-		ObjectResponse<Vocabulary> response = 
+	public Vocabulary getVocabulary(String label) {
+		SearchResponse<Vocabulary> response = 
 			RestAssured.given().
+				contentType("application/json").
+				body("{\"vocabularyLabel\": \"" + label + "\" }").
 				when().
-				get("/api/vocabulary/findBy/" + name).
-				then().
+				post("/api/vocabulary/find").then().
 				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
+				extract().body().as(getSearchResponseTypeRefVocabulary());
 		
-		Vocabulary vocabulary = response.getEntity();
+		Vocabulary vocabulary = response.getSingleResult();
 		
 		return vocabulary;
 	}
@@ -876,12 +883,12 @@ public class BaseITCase {
 		return null;
 	}
 
-	public VocabularyTermSet getVocabularyTermSet(String name) {
+	public VocabularyTermSet getVocabularyTermSet(String label) {
 		
 		SearchResponse<VocabularyTermSet> response =
 				RestAssured.given().
 					contentType("application/json").
-					body("{\"name\": \"" + name + "\" }").
+					body("{\"vocabularyLabel\": \"" + label + "\" }").
 					when().
 					post("/api/vocabularytermset/find").
 					then().
