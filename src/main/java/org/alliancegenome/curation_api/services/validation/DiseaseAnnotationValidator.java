@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -35,6 +37,7 @@ import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -314,6 +317,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		String field = "relatedNotes";
 
 		List<Note> validatedNotes = new ArrayList<Note>();
+		Set<String> validatedNoteIdentities = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (Note note : uiEntity.getRelatedNotes()) {
 				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
@@ -332,7 +336,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 						}
 					}
 				}
-
+				String noteIdentity = NoteIdentityHelper.noteIdentity(note);
+				if (validatedNoteIdentities.contains(noteIdentity)) {
+					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
+					return null;
+				}
 				validatedNotes.add(note);
 			}
 		}
