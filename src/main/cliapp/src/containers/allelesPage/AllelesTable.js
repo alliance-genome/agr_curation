@@ -671,7 +671,7 @@ export const AllelesTable = () => {
 					<Button className="p-button-text"
 						onClick={(event) => { handleNomenclatureEventsOpenInEdit(event, props, true) }} >
 						<span style={{ textDecoration: 'underline' }}>
-							{`Inheritance Modes(${props.rowData.alleleNomenclatureEvents.length}) `}
+							{`Nomenclature Events(${props.rowData.alleleNomenclatureEvents.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
 						<EditMessageTooltip object="allele"/>
@@ -687,7 +687,7 @@ export const AllelesTable = () => {
 						<Button className="p-button-text"
 							onClick={(event) => { handleNomenclatureEventsOpenInEdit(event, props, true) }} >
 							<span style={{ textDecoration: 'underline' }}>
-								Add Inheritance Mode
+								Add Nomenclature Event
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>

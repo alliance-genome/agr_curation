@@ -293,14 +293,14 @@ export const NomenclatureEventsDialog = ({
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
+			<Dialog visible={dialog} className='w-8' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
 				<h3>Nomenclature Events</h3>
 				<DataTable value={localNomenclatureEvents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} 
 						editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={(props) => nomenclatureEventEditor(props)} field="nomenclatureEvent.name" header="Inheritance Mode" headerClassName='surface-0' body={nomenclatureEventTemplate}/>
+					<Column editor={(props) => nomenclatureEventEditor(props)} field="nomenclatureEvent.name" header="Nomenclature Event" headerClassName='surface-0' body={nomenclatureEventTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					<Column editor={(props) =>evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 				</DataTable>
