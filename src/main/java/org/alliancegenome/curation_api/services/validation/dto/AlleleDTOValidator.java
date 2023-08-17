@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
@@ -37,6 +38,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
@@ -47,6 +49,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryI
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
@@ -59,6 +62,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.a
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDTOValidator;
@@ -76,6 +80,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
 	@Inject
 	AlleleGermlineTransmissionStatusSlotAnnotationDAO alleleGermlineTransmissionStatusDAO;
+	@Inject
+	AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
 	@Inject
 	AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
 	@Inject
@@ -102,6 +108,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	AlleleInheritanceModeSlotAnnotationDTOValidator alleleInheritanceModeDtoValidator;
 	@Inject
 	AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator alleleGermlineTransmissionStatusDtoValidator;
+	@Inject
+	AlleleNomenclatureEventSlotAnnotationDTOValidator alleleNomenclatureEventDtoValidator;
 	@Inject
 	AlleleSymbolSlotAnnotationDTOValidator alleleSymbolDtoValidator;
 	@Inject
@@ -288,6 +296,38 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		} else {
 			databaseStatus = null;
+		}
+		
+		Map<String, AlleleNomenclatureEventSlotAnnotation> existingNomenclatureEvents = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(allele.getAlleleNomenclatureEvents())) {
+			for (AlleleNomenclatureEventSlotAnnotation existingNomenclatureEvent : allele.getAlleleNomenclatureEvents()) {
+				existingNomenclatureEvents.put(SlotAnnotationIdentityHelper.alleleNomenclatureEventsIdentity(existingNomenclatureEvent), existingNomenclatureEvent);
+			}
+		}
+		
+		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = new ArrayList<>();
+		List<Long> nomenclatureEventIdsToKeep = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getAlleleNomenclatureEventDtos())) {
+			for (AlleleNomenclatureEventSlotAnnotationDTO nomenclatureEventDTO : dto.getAlleleNomenclatureEventDtos()) {
+				ObjectResponse<AlleleNomenclatureEventSlotAnnotation> nomenclatureEventResponse = alleleNomenclatureEventDtoValidator.validateAlleleNomenclatureEventSlotAnnotationDTO(existingNomenclatureEvents.get(identityHelper.alleleNomenclatureEventsDtoIdentity(nomenclatureEventDTO)), nomenclatureEventDTO);
+				if (nomenclatureEventResponse.hasErrors()) {
+					alleleResponse.addErrorMessage("allele_nomenclature_event_dtos", nomenclatureEventResponse.errorMessagesString());
+				} else {
+					AlleleNomenclatureEventSlotAnnotation nomenclatureEvent = nomenclatureEventResponse.getEntity();
+					nomenclatureEvents.add(nomenclatureEvent);
+					if (nomenclatureEvent.getId() != null)
+						nomenclatureEventIdsToKeep.add(nomenclatureEvent.getId());
+				}
+			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(allele.getAlleleNomenclatureEvents())) {
+			for (AlleleNomenclatureEventSlotAnnotation ane : allele.getAlleleNomenclatureEvents()) {
+				if (!nomenclatureEventIdsToKeep.contains(ane.getId())) {
+					ane.setSingleAllele(null);
+					alleleNomenclatureEventDAO.remove(ane.getId());
+				}
+			}
 		}
 
 		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
@@ -485,6 +525,14 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		}
 		allele.setAlleleFunctionalImpacts(functionalImpacts);
+		
+		if (CollectionUtils.isNotEmpty(nomenclatureEvents)) {
+			for (AlleleNomenclatureEventSlotAnnotation ne : nomenclatureEvents) {
+				ne.setSingleAllele(allele);
+				alleleNomenclatureEventDAO.persist(ne);
+			}
+		}
+		allele.setAlleleNomenclatureEvents(nomenclatureEvents);
 
 		return allele;
 	}
