@@ -9,6 +9,7 @@ import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './InheritanceModesDialog';
+import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';
 import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDialog';
 import { DatabaseStatusDialog } from './DatabaseStatusDialog';
 import { SymbolDialog } from './SymbolDialog';
@@ -89,6 +90,14 @@ export const AllelesTable = () => {
 
 	const [inheritanceModesData, setInheritanceModesData] = useState({
 		inheritanceModes: {},
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [nomenclatureEventsData, setNomenclatureEventsData] = useState({
+		nomenclatureEvents: {},
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -625,6 +634,97 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	const nomenclatureEventsTemplate = (rowData) => {
+		if (rowData?.alleleNomenclatureEvents) {
+			const nomenclatureEventSet = new Set();
+			for(var i = 0; i < rowData.alleleNomenclatureEvents.length; i++){
+				if (rowData.alleleNomenclatureEvents[i].nomenclatureEvent) {
+					nomenclatureEventSet.add(rowData.alleleNomenclatureEvents[i].nomenclatureEvent.name);
+				}
+			}
+			if (nomenclatureEventSet.size > 0) {
+				const sortedNomenclatureEvents = Array.from(nomenclatureEventSet).sort();
+				const listTemplate = (item) => {
+					return (
+						<span style={{ textDecoration: 'underline' }}>
+							{item && item}
+						</span>
+					);
+				};
+				return (
+					<>
+						<Button className="p-button-text"
+							onClick={(event) => { handleNomenclatureEventsOpen(event, rowData, false) }} >
+							<ListTableCell template={listTemplate} listData={sortedNomenclatureEvents}/>
+						</Button>
+					</>
+				);
+			}
+		}
+	};
+
+	const nomenclatureEventsEditor = (props) => {
+		if (props?.rowData?.alleleNomenclatureEvents) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleNomenclatureEventsOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`Inheritance Modes(${props.rowData.alleleNomenclatureEvents.length}) `}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<EditMessageTooltip object="allele"/>
+					</Button>
+				</div>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleNomenclatureEvents"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleNomenclatureEventsOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Inheritance Mode
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<EditMessageTooltip object="allele"/>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleNomenclatureEvents"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+	const handleNomenclatureEventsOpen = (event, rowData, isInEdit) => {
+		let _nomenclatureEventsData = {};
+		_nomenclatureEventsData["originalNomenclatureEvents"] = rowData.alleleNomenclatureEvents;
+		_nomenclatureEventsData["dialog"] = true;
+		_nomenclatureEventsData["isInEdit"] = isInEdit;
+		setNomenclatureEventsData(() => ({
+			..._nomenclatureEventsData
+		}));
+	};
+
+	const handleNomenclatureEventsOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _nomenclatureEventsData = {};
+		_nomenclatureEventsData["originalNomenclatureEvents"] = rowProps.rowData.alleleNomenclatureEvents;
+		_nomenclatureEventsData["dialog"] = true;
+		_nomenclatureEventsData["isInEdit"] = isInEdit;
+		_nomenclatureEventsData["rowIndex"] = index;
+		_nomenclatureEventsData["mainRowProps"] = rowProps;
+		setNomenclatureEventsData(() => ({
+			..._nomenclatureEventsData
+		}));
+	};
+
 	const databaseStatusTemplate = (rowData) => {
 		if (rowData?.alleleDatabaseStatus?.databaseStatus) {
 			return (
@@ -1013,6 +1113,14 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
 		},
 		{
+			field: "alleleNomenclatureEvents.nomenclatureEvent.name",
+			header: "Nomenclature Events",
+			body: nomenclatureEventsTemplate,
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
+			editor: (props) => nomenclatureEventsEditor(props),
+		},
+		{
 			field: "taxon.name",
 			header: "Taxon",
 			body: taxonTemplate,
@@ -1199,6 +1307,12 @@ export const AllelesTable = () => {
 			<SynonymsDialog
 				originalSynonymsData={synonymsData}
 				setOriginalSynonymsData={setSynonymsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<NomenclatureEventsDialog
+				originalNomenclatureEventsData={nomenclatureEventsData}
+				setOriginalNomenclatureEventsData={setNomenclatureEventsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
