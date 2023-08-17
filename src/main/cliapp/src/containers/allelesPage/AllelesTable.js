@@ -4,9 +4,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
@@ -18,21 +16,18 @@ import { FullNameDialog } from './FullNameDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
 import { SynonymsDialog } from './SynonymsDialog';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
-import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
+import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
+import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
+import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
-import { defaultAutocompleteOnChange, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
-import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getRefStrings } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { taxonSearch } from '../../components/Editors/taxon/utils';
-import { referenceSearch } from '../../components/Editors/references/utils';
-import { inCollectionSearch } from '../../components/Editors/inCollection/utils';
 
 export const AllelesTable = () => {
 
@@ -117,7 +112,6 @@ export const AllelesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	let alleleService = new AlleleService();
 
 	const mutation = useMutation(updatedAllele => {
@@ -140,30 +134,6 @@ export const AllelesTable = () => {
 			);
 		}
 	}
-
-	const onInCollectionValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "inCollection", setFieldValue, "name");
-	};
-
-	const inCollectionEditor = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={inCollectionSearch}
-					initialValue={props.rowData.inCollection?.name}
-					rowProps={props}
-					fieldName='inCollection'
-					onValueChangeHandler={onInCollectionValueChange}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<VocabTermAutocompleteTemplate item={item} op={op} query={query} setAutocompleteSelectedItem={setAutocompleteSelectedItem}/>}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField='inCollection'
-				/>
-			</>
-		);
-	};
 
 	const isExtinctTemplate = (rowData) => {
 		if (rowData && rowData.isExtinct !== null && rowData.isExtinct !== undefined) {
@@ -193,121 +163,6 @@ export const AllelesTable = () => {
 			);
 
 		}
-	};
-
-	const onReferenceValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, "references", setFieldValue);
-	};
-
-
-	const referencesEditor = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={referenceSearch}
-					initialValue={props.rowData.references}
-					rowProps={props}
-					fieldName='references'
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-					onValueChangeHandler={onReferenceValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"references"}
-				/>
-			</>
-		);
-	};
-
-	const onTaxonValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "taxon", setFieldValue);
-	};
-
-
-	const taxonEditor = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={taxonSearch}
-					initialValue={props.rowData.taxon?.curie}
-					rowProps={props}
-					fieldName='taxon'
-					onValueChangeHandler={onTaxonValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField='taxon'
-				/>
-			</>
-		);
-	};
-
-	const onInternalEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAlleles[props.rowIndex].internal = JSON.parse(event.value.name);
-		}
-	};
-
-	const internalEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms}
-					editorChange={onInternalEditorValueChange}
-					props={props}
-					field={"internal"}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"internal"} />
-			</>
-		);
-	};
-
-	const onObsoleteEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAlleles[props.rowIndex].obsolete = JSON.parse(event.value.name);
-		}
-	};
-
-	const obsoleteEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms}
-					editorChange={onObsoleteEditorValueChange}
-					props={props}
-					field={"obsolete"}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
-			</>
-		);
-	};
-
-	const onIsExtinctEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-
-		if (event.value && event.value !== '') {
-			updatedAlleles[props.rowIndex].isExtinct = JSON.parse(event.value.name);
-		} else {
-			updatedAlleles[props.rowIndex].isExtinct = null;
-		}
-	};
-
-	const isExtinctEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms}
-					editorChange={onIsExtinctEditorValueChange}
-					props={props}
-					field={"isExtinct"}
-					showClear={true}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"isExtinct"} />
-			</>
-		);
 	};
 
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
@@ -1163,7 +1018,7 @@ export const AllelesTable = () => {
 			body: taxonTemplate,
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-			editor: (props) => taxonEditor(props)
+			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "alleleMutationTypes.mutationTypes.name",
@@ -1203,7 +1058,7 @@ export const AllelesTable = () => {
 			body: referencesTemplate,
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-			editor: (props) => referencesEditor(props)
+			editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />
 		},
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
@@ -1218,7 +1073,7 @@ export const AllelesTable = () => {
 			header: "In Collection",
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
-			editor: (props) => inCollectionEditor(props)
+			editor: (props) => <InCollectionTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "isExtinct",
@@ -1226,7 +1081,9 @@ export const AllelesTable = () => {
 			body: isExtinctTemplate,
 			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: isEnabled,
-			editor: (props) => isExtinctEditor(props)
+			editor: (props) => (
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"isExtinct"} />
+			)
 		},
 		{
 			field: "relatedNotes.freeText",
@@ -1276,7 +1133,9 @@ export const AllelesTable = () => {
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: isEnabled,
-			editor: (props) => internalEditor(props)
+			editor: (props) => (
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} />
+			)
 		},
 		{
 			field: "obsolete",
@@ -1285,7 +1144,9 @@ export const AllelesTable = () => {
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: isEnabled,
-			editor: (props) => obsoleteEditor(props)
+			editor: (props) => (
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"} />
+			)
 		}
 	];
 

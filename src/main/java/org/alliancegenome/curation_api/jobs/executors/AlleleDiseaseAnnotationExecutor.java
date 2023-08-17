@@ -63,7 +63,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 			
-			runLoad(history, dataProvider.name(), annotations, annotationIdsLoaded);
+			runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 			
 			if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
 
@@ -83,20 +83,21 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		runLoad(history, dataProviderName, annotations, annotationIdsLoaded);
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, String dataProviderName, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("Allele Disease Annotation Update for: " + dataProviderName, annotations.size());
+		ph.startProcess("Allele Disease Annotation Update for: " + dataProvider.name(), annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
-				AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationService.upsert(annotationDTO);
+				AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationService.upsert(annotationDTO, dataProvider);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
 					curiesAdded.add(annotation.getId());

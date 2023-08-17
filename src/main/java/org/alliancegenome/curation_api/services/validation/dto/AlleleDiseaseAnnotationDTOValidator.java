@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -37,7 +38,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 	@Inject
 	VocabularyTermService vocabularyTermService;
 
-	public AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
+	public AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
 		Allele allele;
 
@@ -78,6 +79,11 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				}
 				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(allele);
+				
+				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !allele.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
+						!dataProvider.sourceOrganization.equals(allele.getDataProvider().getSourceOrganization().getAbbreviation())) {
+					adaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ") for " + dataProvider.name() + " load");
+				}
 			}
 		}
 		annotation.setSingleReference(validatedReference);
