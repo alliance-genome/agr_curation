@@ -1246,7 +1246,7 @@ public class AlleleITCase extends BaseITCase {
 		editedDatabaseStatus.setEvidence(null);
 		
 		AlleleNomenclatureEventSlotAnnotation editedNomenclatureEvent = allele.getAlleleNomenclatureEvents().get(0);
-		editedDatabaseStatus.setEvidence(null);
+		editedNomenclatureEvent.setEvidence(null);
 		
 		Note editedNote = allele.getRelatedNotes().get(0);
 		editedNote.setReferences(null);

@@ -139,7 +139,7 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "nomenclatureEvent.name", "evidence.curie", "nomenclatureEvent.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
 	
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
