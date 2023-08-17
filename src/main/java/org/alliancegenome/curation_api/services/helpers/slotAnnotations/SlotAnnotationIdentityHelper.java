@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SlotAnnotationDTO;
@@ -26,6 +27,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlot
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDTO;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,6 +68,18 @@ public class SlotAnnotationIdentityHelper {
 		String gts = StringUtils.isBlank(dto.getGermlineTransmissionStatusName()) ? "" : dto.getGermlineTransmissionStatusName();
 	
 		return StringUtils.join(List.of(gts, slotAnnotationDtoIdentity(dto)), "|");
+	}
+	
+	public static String alleleNomenclatureEventsIdentity(AlleleNomenclatureEventSlotAnnotation annotation) {
+		String ne = annotation.getNomenclatureEvent() == null ? "" : annotation.getNomenclatureEvent().getName();
+		
+		return StringUtils.join(List.of(ne, slotAnnotationIdentity(annotation)), "|");
+	}
+	
+	public String alleleNomenclatureEventsDtoIdentity(AlleleNomenclatureEventSlotAnnotationDTO dto) {
+		String ne = StringUtils.isBlank(dto.getNomenclatureEventName()) ? "" : dto.getNomenclatureEventName();
+	
+		return StringUtils.join(List.of(ne, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
 	public static String alleleFunctionalImpactsIdentity(AlleleFunctionalImpactSlotAnnotation annotation) {
