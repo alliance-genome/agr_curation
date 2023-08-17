@@ -6,7 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
@@ -30,7 +30,7 @@ export const DatabaseStatusDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const databaseStatusTerms = useControlledVocabularyService('Allele database status vocabulary');
+	const databaseStatusTerms = useControlledVocabularyService('allele_db_status');
 
 	const showDialogHandler = () => {
 		let _localDatabaseStatuses = cloneDatabaseStatuses(originalDatabaseStatuses);

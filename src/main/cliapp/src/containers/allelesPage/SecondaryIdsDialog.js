@@ -6,7 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';

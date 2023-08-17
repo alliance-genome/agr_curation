@@ -4,15 +4,15 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 
 export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, errorMessages, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
+	const noteTypeTerms = useControlledVocabularyService('da_note_type');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 

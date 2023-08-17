@@ -41,6 +41,9 @@ public class LiteratureReference extends BaseDocument {
 	public String citation;
 
 	@JsonView({ View.FieldsOnly.class })
+	public String citationShort;
+
+	@JsonView({ View.FieldsOnly.class })
 	public List<LiteratureCrossReference> cross_references;
 
 }

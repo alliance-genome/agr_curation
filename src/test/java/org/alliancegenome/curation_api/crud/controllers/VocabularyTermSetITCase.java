@@ -38,6 +38,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	private VocabularyTerm testObsoleteVocabularyTerm;
 	private String testVocabularyTermSetName1 = "VTS0001";
 	private String testVocabularyTermSetName2 = "VTS0002";
+	private String testVocabularyTermSetName3 = "VTS0003";
 	
 	private void createRequiredObjects() {
 		testVocabulary1 = createVocabulary("VocabularyTermSet test vocabulary", false);
@@ -57,6 +58,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 		
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
 		vocabularyTermSet.setName(testVocabularyTermSetName1);
+		vocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName1);
 		vocabularyTermSet.setObsolete(true);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(testVocabulary1);
 		vocabularyTermSet.setInternal(false);
@@ -134,6 +136,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 		
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
 		vocabularyTermSet.setName(null);
+		vocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName3);
 		vocabularyTermSet.setObsolete(true);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(testVocabulary1);
 		vocabularyTermSet.setInternal(false);
@@ -155,9 +158,10 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	@Order(4)
 	public void editMissingNameVocabularyTermSet() {
 		
-		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName2);
+		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName1);
 		
 		editedVocabularyTermSet.setName(null);
+		editedVocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName1);
 		editedVocabularyTermSet.setObsolete(false);
 		editedVocabularyTermSet.setVocabularyTermSetVocabulary(testVocabulary2);
 		editedVocabularyTermSet.setInternal(true);
@@ -181,6 +185,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 		
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
 		vocabularyTermSet.setName("");
+		vocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName3);
 		vocabularyTermSet.setObsolete(true);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(testVocabulary1);
 		vocabularyTermSet.setInternal(false);
@@ -202,9 +207,10 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	@Order(6)
 	public void editEmptyNameVocabularyTermSet() {
 		
-		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName2);
+		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName1);
 		
 		editedVocabularyTermSet.setName("");
+		editedVocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName1);
 		editedVocabularyTermSet.setObsolete(false);
 		editedVocabularyTermSet.setVocabularyTermSetVocabulary(testVocabulary2);
 		editedVocabularyTermSet.setInternal(true);
@@ -227,7 +233,8 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	public void createObsoleteVocabularyVocabularyTermSet() {
 		
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
-		vocabularyTermSet.setName(testVocabularyTermSetName1);
+		vocabularyTermSet.setName(testVocabularyTermSetName3);
+		vocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName3);
 		vocabularyTermSet.setObsolete(true);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(testObsoleteVocabulary);
 		vocabularyTermSet.setInternal(false);
@@ -249,7 +256,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	@Order(8)
 	public void editObsoleteVocabularyVocabularyTermSet() {
 		
-		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName2);
+		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName1);
 		
 		editedVocabularyTermSet.setName(testVocabularyTermSetName1);
 		editedVocabularyTermSet.setObsolete(false);
@@ -274,7 +281,8 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	public void createMissingVocabularyVocabularyTermSet() {
 		
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
-		vocabularyTermSet.setName(testVocabularyTermSetName1);
+		vocabularyTermSet.setName(testVocabularyTermSetName3);
+		vocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName3);
 		vocabularyTermSet.setObsolete(true);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(null);
 		vocabularyTermSet.setInternal(false);
@@ -296,7 +304,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	@Order(10)
 	public void editMissingVocabularyVocabularyTermSet() {
 		
-		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName2);
+		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName1);
 		
 		editedVocabularyTermSet.setName(testVocabularyTermSetName1);
 		editedVocabularyTermSet.setObsolete(false);
@@ -321,7 +329,8 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	public void createObsoleteMemberTermVocabularyTermSet() {
 		
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
-		vocabularyTermSet.setName(testVocabularyTermSetName1);
+		vocabularyTermSet.setName(testVocabularyTermSetName3);
+		vocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName3);
 		vocabularyTermSet.setObsolete(true);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(testVocabulary1);
 		vocabularyTermSet.setInternal(false);
@@ -343,7 +352,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	@Order(12)
 	public void editObsoleteMemberTermVocabularyTermSet() {
 		
-		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName2);
+		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName1);
 		
 		editedVocabularyTermSet.setName(testVocabularyTermSetName1);
 		editedVocabularyTermSet.setObsolete(false);
@@ -368,7 +377,8 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	public void createInvalidMemberTermVocabularyTermSet() {
 		
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
-		vocabularyTermSet.setName(testVocabularyTermSetName1);
+		vocabularyTermSet.setName(testVocabularyTermSetName3);
+		vocabularyTermSet.setVocabularyLabel(testVocabularyTermSetName3);
 		vocabularyTermSet.setObsolete(true);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(testVocabulary1);
 		vocabularyTermSet.setInternal(false);
@@ -390,7 +400,7 @@ public class VocabularyTermSetITCase extends BaseITCase {
 	@Order(14)
 	public void editInvalidMemberTermVocabularyTermSet() {
 		
-		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName2);
+		VocabularyTermSet editedVocabularyTermSet = getVocabularyTermSet(testVocabularyTermSetName1);
 		
 		editedVocabularyTermSet.setName(testVocabularyTermSetName1);
 		editedVocabularyTermSet.setObsolete(false);

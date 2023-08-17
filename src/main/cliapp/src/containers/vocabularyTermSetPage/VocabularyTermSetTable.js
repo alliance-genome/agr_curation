@@ -3,7 +3,7 @@ import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Messages } from 'primereact/messages';
-import { ErrorMessageComponent } from "../../components/ErrorMessageComponent";
+import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
 import { EllipsisTableCell } from "../../components/EllipsisTableCell";
 import { ListTableCell } from "../../components/ListTableCell";
 import { Button } from 'primereact/button';
@@ -18,6 +18,7 @@ import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { Tooltip } from 'primereact/tooltip';
 
 
 export const VocabularyTermSetTable = () => {
@@ -178,11 +179,20 @@ export const VocabularyTermSetTable = () => {
 		);
 	};
 
+	const stringBodyTemplate = (rowData, field) => {
+		return (
+			<>
+				<EllipsisTableCell otherClasses={`${field}${rowData.id}`}>{rowData[field]}</EllipsisTableCell>
+				<Tooltip target={`.${field}${rowData.id}`} content={rowData[field]} style={{ width: '450px', maxWidth: '450px' }} />
+			</>
+		)
+	}
+
 	const columns = [
 		{
 			field: "name",
 			header: "Name",
-			body: (rowData) => rowData.name,
+			body: (rowData) => stringBodyTemplate(rowData, "name"),
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditor(props)
@@ -191,7 +201,7 @@ export const VocabularyTermSetTable = () => {
 			field: "vocabularyTermSetVocabulary.name",
 			header: "Vocabulary",
 			sortable: isEnabled,
-			body: vocabularyTemplate,
+			body: (rowData) => vocabularyTemplate(rowData),
 			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props)
 		},
@@ -206,10 +216,16 @@ export const VocabularyTermSetTable = () => {
 		{
 			field: "vocabularyTermSetDescription",
 			header: "Description",
-			body: (rowData) => rowData.vocabularyTermSetDescription,
+			body: (rowData) => stringBodyTemplate(rowData, "vocabularyTermSetDescription"),
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
 			editor: (props) => descriptionEditor(props)
+		},
+		{
+			field: "vocabularyLabel",
+			header: "Label",
+			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
+			body: (rowData) => stringBodyTemplate(rowData, "vocabularyLabel")
 		}
 	];
 

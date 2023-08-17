@@ -28,7 +28,7 @@ public interface ResourceDescriptorPageCrudInterface extends BaseIdCrudInterface
 	@POST
 	@Path("/search")
 	@JsonView(View.ResourceDescriptorPageView.class)
-	@Tag(name = "Elastic Search Endpoints")
+	@Tag(name = "Search Database Browsing Endpoints")
 	public SearchResponse<ResourceDescriptorPage> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit,
 		@RequestBody HashMap<String, Object> params);
 }

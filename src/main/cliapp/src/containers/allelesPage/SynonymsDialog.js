@@ -6,7 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
@@ -31,8 +31,8 @@ export const SynonymsDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const synonymScopeTerms = useControlledVocabularyService('Synonym scope');
-	const synonymTypeTerms = useControlledVocabularyService('Name type');
+	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+	const synonymTypeTerms = useControlledVocabularyService('name_type');
 
 	const showDialogHandler = () => {
 		let _localSynonyms = cloneSynonyms(originalSynonyms);

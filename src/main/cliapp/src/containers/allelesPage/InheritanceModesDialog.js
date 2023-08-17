@@ -6,7 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
@@ -35,7 +35,7 @@ export const InheritanceModesDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const inheritanceModeTerms = useControlledVocabularyService('Allele inheritance mode vocabulary');
+	const inheritanceModeTerms = useControlledVocabularyService('allele_inheritance_mode');
 
 	const showDialogHandler = () => {
 		let _localInheritanceModes = cloneInheritanceModes(originalInheritanceModes);

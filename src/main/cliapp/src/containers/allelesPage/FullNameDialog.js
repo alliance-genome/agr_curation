@@ -6,7 +6,7 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
@@ -32,8 +32,8 @@ export const FullNameDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const synonymScopeTerms = useControlledVocabularyService('Synonym scope');
-	const fullNameTypeTerms = useVocabularyTermSetService('Full name types');
+	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+	const fullNameTypeTerms = useVocabularyTermSetService('full_name_type');
 
 	const showDialogHandler = () => {
 		let _localFullNames = cloneFullNames(originalFullNames);
