@@ -4,6 +4,7 @@ CREATE TABLE allelenomenclatureeventslotannotation (
 	nomenclatureevent_id bigint
 );
 
+ALTER TABLE allelenomenclatureeventslotannotation ADD CONSTRAINT allelenomenclatureeventslotannotation_id_fk FOREIGN KEY (id) REFERENCES slotannotation (id);
 ALTER TABLE allelenomenclatureeventslotannotation ADD CONSTRAINT allelenomenclatureeventslotannotation_singleallele_curie_fk FOREIGN KEY (singleallele_curie) REFERENCES allele (curie);
 ALTER TABLE allelenomenclatureeventslotannotation ADD CONSTRAINT allelenomenclatureeventslotannotation_nomenclatureevent_id_fk FOREIGN KEY (nomenclatureevent_id) REFERENCES vocabularyterm (id);
 
