@@ -40,7 +40,7 @@ public class LiteratureReference extends BaseDocument {
 	@JsonView({ View.FieldsOnly.class })
 	public String citation;
 
-	@JsonProperty("citation_short")
+	@JsonProperty("short_citation")
 	@JsonView({ View.FieldsOnly.class })
 	public String citationShort;
 
