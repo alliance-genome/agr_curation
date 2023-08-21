@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.document;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.alliancegenome.curation_api.document.base.BaseDocument;
 import org.alliancegenome.curation_api.view.View;
 
@@ -19,6 +20,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @ToString(callSuper = true)
+@JsonPropertyOrder({"curie", "title", "volume", "citation", "short_citation", "cross_references", "abstract"})
 public class LiteratureReference extends BaseDocument {
 
 	@JsonView({ View.FieldsOnly.class })
@@ -40,7 +42,7 @@ public class LiteratureReference extends BaseDocument {
 	@JsonView({ View.FieldsOnly.class })
 	public String citation;
 
-	@JsonProperty("citation_short")
+	@JsonProperty("short_citation")
 	@JsonView({ View.FieldsOnly.class })
 	public String citationShort;
 

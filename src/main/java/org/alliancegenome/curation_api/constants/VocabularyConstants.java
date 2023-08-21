@@ -20,6 +20,7 @@ public final class VocabularyConstants {
 	public static final String ALLELE_FUNCTIONAL_IMPACT_VOCABULARY = "allele_functional_impact";
 	public static final String ALLELE_COLLECTION_VOCABULARY = "allele_collection";
 	public static final String GERMLINE_TRANSMISSION_STATUS_VOCABULARY = "allele_germline_transmission_status";
+	public static final String ALLELE_NOMENCLATURE_EVENT_VOCABULARY = "allele_nomenclature_event";
 	public static final String ALLELE_NOTE_TYPES_VOCABULARY = "allele_note_type";
 
 	public static final String FULL_NAME_TYPE_TERM_SET = "full_name_type";
