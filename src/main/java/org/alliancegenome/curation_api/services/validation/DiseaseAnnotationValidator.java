@@ -341,6 +341,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
 					return null;
 				}
+				validatedNoteIdentities.add(noteIdentity);
 				validatedNotes.add(note);
 			}
 		}

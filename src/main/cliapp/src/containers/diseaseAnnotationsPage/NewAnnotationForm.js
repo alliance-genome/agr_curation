@@ -161,6 +161,8 @@ export const NewAnnotationForm = ({
 				let message; 
 				if(error?.response?.data?.errorMessages?.uniqueId){
 					message = "Page Error: New annotation is a duplicate of an existing annotation";
+				} else if(error?.response.data?.errorMessages?.relatedNotes && !isRelatedNotesErrors) {
+					message = "New annotation contains duplicate notes";
 				} else if(error?.response?.data?.errorMessage){
 					message = error.response.data.errorMessage;
 				} else {
