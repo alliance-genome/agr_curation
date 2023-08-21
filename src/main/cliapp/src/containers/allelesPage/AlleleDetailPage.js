@@ -13,6 +13,8 @@ import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
 import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
+import { DateUpdatedFormTemplate } from '../../components/Templates/DateUpdatedFormTemplate';
+import { UpdatedByFormTemplate } from '../../components/Templates/UpdatedByFormTemplate';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -159,6 +161,24 @@ const { isLoading } =	useQuery([curie],
 			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
 				<form>
+					<UpdatedByFormTemplate
+						updatedBy={alleleState.allele?.updatedBy?.uniqueId}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider/>
+
+					<DateUpdatedFormTemplate
+						dateUpdated={alleleState.allele?.dateUpdated}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider/>
+
 					<DataProviderFormTemplate
 						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
 						widgetColumnSize={widgetColumnSize}
@@ -246,6 +266,8 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
+
+					<Divider/>
 			</form>
 			<PageFooter handleSubmit={handleSubmit}/>
 		</ErrorBoundary>
