@@ -653,7 +653,7 @@ export const AllelesTable = () => {
 				};
 				return (
 					<>
-						<Button className="p-button-text"
+						<Button className="p-button-text text-left"
 							onClick={(event) => { handleNomenclatureEventsOpen(event, rowData, false) }} >
 							<ListTableCell template={listTemplate} listData={sortedNomenclatureEvents}/>
 						</Button>
