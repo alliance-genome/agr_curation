@@ -676,7 +676,7 @@ export const NewAnnotationForm = ({
 						<div className={labelColumnSize}>
 							<label>Related Notes</label>
 						</div>
-						<div className="col-9">
+						<div className={classNames('col-9', {'border-2 border-red-300': submitted && errorMessages.relatedNotes && Object.keys(relatedNotesErrorMessages).length === 0})}>
 							<RelatedNotesForm
 								dispatch={newAnnotationDispatch}
 								relatedNotes={newAnnotation.relatedNotes}
@@ -684,6 +684,8 @@ export const NewAnnotationForm = ({
 								errorMessages={relatedNotesErrorMessages}
 								editingRows={relatedNotesEditingRows}
 							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"relatedNotes"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"relatedNotes"}/>
 						</div>
 					</div>
 
