@@ -13,7 +13,7 @@ import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
 import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
-import { DateUpdatedFormTemplate } from '../../components/Templates/DateUpdatedFormTemplate';
+import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 
 export default function AlleleDetailPage(){
@@ -181,8 +181,19 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider/>
 
-					<DateUpdatedFormTemplate
-						dateUpdated={alleleState.allele?.dateUpdated}
+					<DateFormTemplate
+						date={alleleState.allele?.dateCreated}
+						fieldName="Date Created"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider/>
+
+					<DateFormTemplate
+						date={alleleState.allele?.dateUpdated}
+						fieldName="Date Updated"
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}

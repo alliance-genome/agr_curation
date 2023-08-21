@@ -1,22 +1,23 @@
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
-export const DateUpdatedFormTemplate = ({
-  dateUpdated,
+export const DateFormTemplate = ({
+  date,
+  fieldName,
   widgetColumnSize,
   labelColumnSize,
   fieldDetailsColumnSize,
 }) => {
 
-  if(!dateUpdated) return null;
+  if(!date) return null;
 
   return (
     <FormFieldWrapper
       labelColumnSize={labelColumnSize}
       fieldDetailsColumnSize={fieldDetailsColumnSize}
       widgetColumnSize={widgetColumnSize}
-      fieldName="Date Updated"
-      formField={dateUpdated}
-      additionalDataField={dateUpdated}
+      fieldName={fieldName}
+      formField={date}
+      additionalDataField={date}
     />
   );
 };
