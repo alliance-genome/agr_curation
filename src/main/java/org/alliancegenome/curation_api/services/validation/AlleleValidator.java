@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
@@ -40,6 +42,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationValidator;
@@ -322,6 +325,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		String field = "relatedNotes";
 
 		List<Note> validatedNotes = new ArrayList<Note>();
+		Set<String> validatedNoteIdentities = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (Note note : uiEntity.getRelatedNotes()) {
 				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
@@ -329,7 +333,15 @@ public class AlleleValidator extends GenomicEntityValidator {
 					addMessageResponse(field, noteResponse.errorMessagesString());
 					return null;
 				}
-				validatedNotes.add(noteResponse.getEntity());
+				note = noteResponse.getEntity();
+				
+				String noteIdentity = NoteIdentityHelper.noteIdentity(note);
+				if (validatedNoteIdentities.contains(noteIdentity)) {
+					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
+					return null;
+				}
+				validatedNoteIdentities.add(noteIdentity);
+				validatedNotes.add(note);
 			}
 		}
 

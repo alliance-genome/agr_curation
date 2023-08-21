@@ -676,7 +676,7 @@ export const NewAnnotationForm = ({
 						<div className={labelColumnSize}>
 							<label>Related Notes</label>
 						</div>
-						<div className={classNames('col-9', {'border-2 border-red-500': errorMessages.relatedNotes && submitted})}>
+						<div className={classNames('col-9', {'border-2 border-red-300': submitted && errorMessages.relatedNotes && Object.keys(relatedNotesErrorMessages).length === 0})}>
 							<RelatedNotesForm
 								dispatch={newAnnotationDispatch}
 								relatedNotes={newAnnotation.relatedNotes}
