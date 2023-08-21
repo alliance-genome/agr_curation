@@ -11,7 +11,8 @@ import { ReferencesFormEditor } from '../../components/Editors/references/Refere
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
-import { AlleleCurieFormTemplate } from '../../components/Templates/AlleleCurieFormTemplate';
+import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
+import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -137,6 +138,7 @@ const { isLoading } =	useQuery([curie],
 		})
 	}
 	
+	//Todo: use spinner component
 	if(isLoading) return "Loading...";
 
 	const headerText = (allele) => {
@@ -157,7 +159,16 @@ const { isLoading } =	useQuery([curie],
 			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
 				<form>
-					<AlleleCurieFormTemplate
+					<DataProviderFormTemplate
+						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider/>
+
+					<CurieFormTemplate
 						curie={alleleState.allele?.curie}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}

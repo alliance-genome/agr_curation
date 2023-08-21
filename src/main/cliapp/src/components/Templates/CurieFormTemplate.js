@@ -1,6 +1,6 @@
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
-export const AlleleCurieFormTemplate = ({
+export const CurieFormTemplate = ({
   curie,
   widgetColumnSize,
   labelColumnSize,
