@@ -161,8 +161,6 @@ export const NewAnnotationForm = ({
 				let message; 
 				if(error?.response?.data?.errorMessages?.uniqueId){
 					message = "Page Error: New annotation is a duplicate of an existing annotation";
-				} else if(error?.response.data?.errorMessages?.relatedNotes && !isRelatedNotesErrors) {
-					message = "New annotation contains duplicate notes";
 				} else if(error?.response?.data?.errorMessage){
 					message = error.response.data.errorMessage;
 				} else {
@@ -678,7 +676,7 @@ export const NewAnnotationForm = ({
 						<div className={labelColumnSize}>
 							<label>Related Notes</label>
 						</div>
-						<div className="col-9">
+						<div className={classNames('col-9', {'border-2 border-red-500': errorMessages.relatedNotes && submitted})}>
 							<RelatedNotesForm
 								dispatch={newAnnotationDispatch}
 								relatedNotes={newAnnotation.relatedNotes}
@@ -686,6 +684,8 @@ export const NewAnnotationForm = ({
 								errorMessages={relatedNotesErrorMessages}
 								editingRows={relatedNotesEditingRows}
 							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"relatedNotes"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"relatedNotes"}/>
 						</div>
 					</div>
 
