@@ -1361,7 +1361,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(19)
 	public void createAlleleWithOnlyRequiredFieldsLevel1() {
 		Allele allele = new Allele();
-		allele.setCurie("ALLELE:0020");
+		allele.setCurie("ALLELE:0019");
 		allele.setTaxon(taxon);
 		allele.setAlleleSymbol(alleleSymbol);
 		
@@ -1378,7 +1378,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(20)
 	public void createAlleleWithOnlyRequiredFieldsLevel2() {
 		Allele allele = new Allele();
-		allele.setCurie("ALLELE:0021");
+		allele.setCurie("ALLELE:0020");
 		allele.setTaxon(taxon);
 
 		AlleleMutationTypeSlotAnnotation minimalAlleleMutationType = createAlleleMutationTypeSlotAnnotation(null, List.of(soTerm));
@@ -1414,9 +1414,34 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200);
 	}
-
+	
 	@Test
 	@Order(21)
+	public void createAlleleWithDuplicateNote() {
+		Allele allele = new Allele();
+		allele.setCurie("ALLELE:0021");
+		allele.setTaxon(taxon);
+		
+		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
+		allele.setAlleleSymbol(alleleSymbol);
+		
+		Note note1 = createNote(noteType, "Test text", false, null);
+		Note note2 = createNote(noteType, "Test text", false, null);
+		allele.setRelatedNotes(List.of(note1, note2));	
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.relatedNotes", is(ValidationConstants.DUPLICATE_MESSAGE + " (Test text|comment|false|false)"));
+	}
+
+	@Test
+	@Order(22)
 	public void deleteAllele() {
 
 		RestAssured.given().
