@@ -8,5 +8,6 @@ public final class ValidationConstants {
 	public static final String DEPENDENCY_MESSAGE_PREFIX = "Invalid without value for ";
 	public static final String NON_UNIQUE_MESSAGE = "Field value is not unique";
 	public static final String UNSUPPORTED_MESSAGE = "Unsupported value specified";
+	public static final String DUPLICATE_MESSAGE = "Duplicate entries found";
 
 }
