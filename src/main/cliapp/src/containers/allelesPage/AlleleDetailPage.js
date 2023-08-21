@@ -11,6 +11,7 @@ import { ReferencesFormEditor } from '../../components/Editors/references/Refere
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
+import { AlleleCurieFormTemplate } from '../../components/Templates/AlleleCurieFormTemplate';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -23,7 +24,7 @@ export default function AlleleDetailPage(){
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
 
-	useQuery([curie],
+const { isLoading } =	useQuery([curie],
 		() => alleleService.getAllele(curie), 
 		{
 			onSuccess: (result) => {
@@ -135,6 +136,8 @@ export default function AlleleDetailPage(){
 			value: event.value,
 		})
 	}
+	
+	if(isLoading) return "Loading...";
 
 	const headerText = (allele) => {
 		let prefix = "Allele: "
@@ -154,6 +157,14 @@ export default function AlleleDetailPage(){
 			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
 				<form>
+					<AlleleCurieFormTemplate
+						curie={alleleState.allele?.curie}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider/>
 
 					<TaxonFormEditor 
 						taxon={alleleState.allele?.taxon} 
