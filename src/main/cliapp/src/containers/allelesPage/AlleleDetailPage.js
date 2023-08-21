@@ -14,7 +14,7 @@ import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormE
 import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 import { DateUpdatedFormTemplate } from '../../components/Templates/DateUpdatedFormTemplate';
-import { UpdatedByFormTemplate } from '../../components/Templates/UpdatedByFormTemplate';
+import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -161,8 +161,19 @@ const { isLoading } =	useQuery([curie],
 			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
 				<form>
-					<UpdatedByFormTemplate
-						updatedBy={alleleState.allele?.updatedBy?.uniqueId}
+					<UserFormTemplate
+						user={alleleState.allele?.createdBy?.uniqueId}
+						fieldName="Created By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider/>
+
+					<UserFormTemplate
+						user={alleleState.allele?.updatedBy?.uniqueId}
+						fieldName="Updated By"
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}

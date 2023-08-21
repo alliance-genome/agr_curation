@@ -1,22 +1,23 @@
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
-export const UpdatedByFormTemplate = ({
-  updatedBy,
+export const UserFormTemplate = ({
+  user,
+  fieldName,
   widgetColumnSize,
   labelColumnSize,
   fieldDetailsColumnSize,
 }) => {
 
-  if(!updatedBy) return null;
+  if(!user) return null;
 
   return (
     <FormFieldWrapper
       labelColumnSize={labelColumnSize}
       fieldDetailsColumnSize={fieldDetailsColumnSize}
       widgetColumnSize={widgetColumnSize}
-      fieldName="Updated By"
-      formField={updatedBy}
-      additionalDataField={updatedBy}
+      fieldName={fieldName}
+      formField={user}
+      additionalDataField={user}
     />
   );
 };
