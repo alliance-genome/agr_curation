@@ -136,11 +136,22 @@ export default function AlleleDetailPage(){
 		})
 	}
 
+	const headerText = (allele) => {
+		let prefix = "Allele: "
+		if (allele.alleleSymbol?.displayText && allele?.curie) {
+			return `${prefix} ${allele.alleleSymbol.displayText} (${allele.curie})`;
+		}
+		if (allele?.curie) {
+			return `${prefix} ${allele.curie}`;
+		}
+		return "Allele Detail Page";
+	}
+
 	return(
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<h1>Allele Detail Page</h1>
+			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
 				<form>
 
