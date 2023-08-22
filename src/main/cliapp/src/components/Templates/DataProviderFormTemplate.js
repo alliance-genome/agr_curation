@@ -1,3 +1,4 @@
+import { Divider } from "primereact/divider";
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
 export const DataProviderFormTemplate = ({
@@ -7,16 +8,19 @@ export const DataProviderFormTemplate = ({
   fieldDetailsColumnSize,
 }) => {
 
-  if(!dataProvider) return null;
+  if (!dataProvider) return null;
 
   return (
-    <FormFieldWrapper
-      labelColumnSize={labelColumnSize}
-      fieldDetailsColumnSize={fieldDetailsColumnSize}
-      widgetColumnSize={widgetColumnSize}
-      fieldName="Data Provider"
-      formField={dataProvider}
-      additionalDataField={dataProvider}
-    />
+    <>
+      <FormFieldWrapper
+        labelColumnSize={labelColumnSize}
+        fieldDetailsColumnSize={fieldDetailsColumnSize}
+        widgetColumnSize={widgetColumnSize}
+        fieldName="Data Provider"
+        formField={dataProvider}
+        additionalDataField={dataProvider}
+      />
+      <Divider/>
+    </>
   );
 };

@@ -1,3 +1,4 @@
+import { Divider } from "primereact/divider";
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
 export const DateFormTemplate = ({
@@ -8,16 +9,19 @@ export const DateFormTemplate = ({
   fieldDetailsColumnSize,
 }) => {
 
-  if(!date) return null;
+  if (!date) return null;
 
   return (
-    <FormFieldWrapper
-      labelColumnSize={labelColumnSize}
-      fieldDetailsColumnSize={fieldDetailsColumnSize}
-      widgetColumnSize={widgetColumnSize}
-      fieldName={fieldName}
-      formField={date}
-      additionalDataField={date}
-    />
+    <>
+      <FormFieldWrapper
+        labelColumnSize={labelColumnSize}
+        fieldDetailsColumnSize={fieldDetailsColumnSize}
+        widgetColumnSize={widgetColumnSize}
+        fieldName={fieldName}
+        formField={date}
+        additionalDataField={date}
+      />
+      <Divider />
+    </>
   );
 };

@@ -1,3 +1,4 @@
+import { Divider } from "primereact/divider";
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
 export const CurieFormTemplate = ({
@@ -7,13 +8,16 @@ export const CurieFormTemplate = ({
   fieldDetailsColumnSize,
 }) => {
   return (
-    <FormFieldWrapper
-      labelColumnSize={labelColumnSize}
-      fieldDetailsColumnSize={fieldDetailsColumnSize}
-      widgetColumnSize={widgetColumnSize}
-      fieldName="Curie"
-      formField={curie}
-      additionalDataField={curie}
-    />
+    <>
+      <FormFieldWrapper
+        labelColumnSize={labelColumnSize}
+        fieldDetailsColumnSize={fieldDetailsColumnSize}
+        widgetColumnSize={widgetColumnSize}
+        fieldName="Curie"
+        formField={curie}
+        additionalDataField={curie}
+      />
+      <Divider />
+    </>
   );
 };
