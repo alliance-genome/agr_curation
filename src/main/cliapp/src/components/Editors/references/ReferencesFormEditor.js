@@ -1,39 +1,41 @@
-import React from "react"
+import React from "react";
+import { Divider } from "primereact/divider";
 import { AutocompleteFormMultiEditor } from '../../Autocomplete/AutocompleteFormMultiEditor';
 import { LiteratureAutocompleteTemplate } from "../../Autocomplete/LiteratureAutocompleteTemplate";
 import { FormErrorMessageComponent } from "../../Error/FormErrorMessageComponent";
 import { ReferencesAdditionalFieldData } from "../../FieldData/ReferencesAdditionalFieldData";
+import { FormFieldWrapper } from "../../FormFieldWrapper";
 import { referenceSearch } from "./utils";
 
-export const ReferencesFormEditor = ({ 
-  references, 
-  onReferencesValueChange, 
-  widgetColumnSize, 
-  labelColumnSize, 
-  fieldDetailsColumnSize, 
-  errorMessages 
-  }) => {
-
+export const ReferencesFormEditor = ({
+  references,
+  onReferencesValueChange,
+  widgetColumnSize,
+  labelColumnSize,
+  fieldDetailsColumnSize,
+  errorMessages
+}) => {
   return (
-    <div className="grid">
-      <div className={labelColumnSize}>
-        <label htmlFor="referenes">References</label>
-      </div>
-      <div className={widgetColumnSize}>
-        <AutocompleteFormMultiEditor
-          search={referenceSearch}
-          initialValue={references}
-          fieldName='references'
-          valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-            <LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-          onValueChangeHandler={onReferencesValueChange}
-        />
-        <FormErrorMessageComponent errorMessages={errorMessages} errorField={"references"}/>
-      </div>
-      <div className={fieldDetailsColumnSize}>
-        <ReferencesAdditionalFieldData references={references}/>
-      </div>
-    </div>
-
-  )
-}
+    <>
+      <FormFieldWrapper
+        labelColumnSize={labelColumnSize}
+        fieldDetailsColumnSize={fieldDetailsColumnSize}
+        widgetColumnSize={widgetColumnSize}
+        fieldName="References"
+        formField={
+          <AutocompleteFormMultiEditor
+            search={referenceSearch}
+            initialValue={references}
+            fieldName="references"
+            valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+              <LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
+            onValueChangeHandler={onReferencesValueChange}
+          />
+        }
+        errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"references"} />}
+        additionalDataField={<ReferencesAdditionalFieldData references={references}/>}
+      />
+      <Divider />
+    </>
+  );
+};

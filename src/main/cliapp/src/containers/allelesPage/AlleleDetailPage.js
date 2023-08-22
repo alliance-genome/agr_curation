@@ -140,7 +140,6 @@ const { isLoading } =	useQuery([curie],
 		})
 	}
 	
-	//Todo: use spinner component
 	if(isLoading) return (
 		<div className='flex align-items-center justify-content-center h-screen'>
 			<ProgressSpinner/>
