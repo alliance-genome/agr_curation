@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import { Divider } from 'primereact/divider';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
@@ -11,6 +12,10 @@ import { ReferencesFormEditor } from '../../components/Editors/references/Refere
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
+import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
+import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
+import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
+import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -23,7 +28,7 @@ export default function AlleleDetailPage(){
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
 
-	useQuery([curie],
+const { isLoading } =	useQuery([curie],
 		() => alleleService.getAllele(curie), 
 		{
 			onSuccess: (result) => {
@@ -135,6 +140,12 @@ export default function AlleleDetailPage(){
 			value: event.value,
 		})
 	}
+	
+	if(isLoading) return (
+		<div className='flex align-items-center justify-content-center h-screen'>
+			<ProgressSpinner/>
+		</div>
+	)
 
 	const headerText = (allele) => {
 		let prefix = "Allele: "
@@ -155,6 +166,15 @@ export default function AlleleDetailPage(){
 			<ErrorBoundary>
 				<form>
 
+					<CurieFormTemplate
+						curie={alleleState.allele?.curie}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
 					<TaxonFormEditor 
 						taxon={alleleState.allele?.taxon} 
 						onTaxonValueChange={onTaxonValueChange} 
@@ -164,7 +184,7 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
 					<ReferencesFormEditor 
 						references={alleleState.allele?.references} 
@@ -175,7 +195,7 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
 					<InCollectionFormEditor
 						inCollection={alleleState.allele?.inCollection} 
@@ -186,7 +206,7 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
 					<BooleanFormEditor
 						value={alleleState.allele?.isExtinct} 
@@ -199,7 +219,56 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
+
+					<DataProviderFormTemplate
+						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<UserFormTemplate
+						user={alleleState.allele?.updatedBy?.uniqueId}
+						fieldName="Updated By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<DateFormTemplate
+						date={alleleState.allele?.dateUpdated}
+						fieldName="Date Updated"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<UserFormTemplate
+						user={alleleState.allele?.createdBy?.uniqueId}
+						fieldName="Created By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<DateFormTemplate
+						date={alleleState.allele?.dateCreated}
+						fieldName="Date Created"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
 
 					<BooleanFormEditor
 						value={alleleState.allele?.internal} 
@@ -212,7 +281,7 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
 					<BooleanFormEditor
 						value={alleleState.allele?.obsolete} 
@@ -224,6 +293,9 @@ export default function AlleleDetailPage(){
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
+
+					<Divider />
+
 			</form>
 			<PageFooter handleSubmit={handleSubmit}/>
 		</ErrorBoundary>
