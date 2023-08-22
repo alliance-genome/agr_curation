@@ -9,7 +9,7 @@ export const UserFormTemplate = ({
   fieldDetailsColumnSize,
 }) => {
 
-  if (!user) return null;
+  if (!user) user = <i>No data</i>;
 
   return (
     <>

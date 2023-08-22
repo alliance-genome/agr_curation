@@ -9,7 +9,7 @@ export const DateFormTemplate = ({
   fieldDetailsColumnSize,
 }) => {
 
-  if (!date) return null;
+  if (!date) date = <i>No data</i>;
 
   return (
     <>

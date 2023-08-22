@@ -164,44 +164,8 @@ const { isLoading } =	useQuery([curie],
 			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
 				<form>
-					<UserFormTemplate
-						user={alleleState.allele?.createdBy?.uniqueId}
-						fieldName="Created By"
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-					/>
 
-					<UserFormTemplate
-						user={alleleState.allele?.updatedBy?.uniqueId}
-						fieldName="Updated By"
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-					/>
 
-					<DateFormTemplate
-						date={alleleState.allele?.dateCreated}
-						fieldName="Date Created"
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-					/>
-
-					<DateFormTemplate
-						date={alleleState.allele?.dateUpdated}
-						fieldName="Date Updated"
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-					/>
-
-					<DataProviderFormTemplate
-						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-					/>
 
 					<CurieFormTemplate
 						curie={alleleState.allele?.curie}
@@ -228,7 +192,6 @@ const { isLoading } =	useQuery([curie],
 						errorMessages={alleleState.errorMessages}
 					/>
 
-
 					<InCollectionFormEditor
 						inCollection={alleleState.allele?.inCollection} 
 						onInCollectionValueChange={onInCollectionValueChange} 
@@ -237,7 +200,6 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
-
 
 					<BooleanFormEditor
 						value={alleleState.allele?.isExtinct} 
@@ -250,6 +212,44 @@ const { isLoading } =	useQuery([curie],
 						errorMessages={alleleState.errorMessages}
 					/>
 
+					<DataProviderFormTemplate
+						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<UserFormTemplate
+						user={alleleState.allele?.updatedBy?.uniqueId}
+						fieldName="Updated By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<DateFormTemplate
+						date={alleleState.allele?.dateUpdated}
+						fieldName="Date Updated"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<UserFormTemplate
+						user={alleleState.allele?.createdBy?.uniqueId}
+						fieldName="Created By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<DateFormTemplate
+						date={alleleState.allele?.dateCreated}
+						fieldName="Date Created"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
 
 					<BooleanFormEditor
 						value={alleleState.allele?.internal} 
