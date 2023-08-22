@@ -1,5 +1,4 @@
 import React from "react";
-import { Divider } from "primereact/divider";
 import { AutocompleteFormMultiEditor } from '../../Autocomplete/AutocompleteFormMultiEditor';
 import { LiteratureAutocompleteTemplate } from "../../Autocomplete/LiteratureAutocompleteTemplate";
 import { FormErrorMessageComponent } from "../../Error/FormErrorMessageComponent";
@@ -35,7 +34,6 @@ export const ReferencesFormEditor = ({
         errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"references"} />}
         additionalDataField={<ReferencesAdditionalFieldData references={references}/>}
       />
-      <Divider />
     </>
   );
 };

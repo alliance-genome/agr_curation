@@ -1,4 +1,3 @@
-import { Divider } from "primereact/divider";
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
 export const UserFormTemplate = ({
@@ -21,7 +20,6 @@ export const UserFormTemplate = ({
         formField={user}
         additionalDataField={user}
       />
-      <Divider />
     </>
   );
 };

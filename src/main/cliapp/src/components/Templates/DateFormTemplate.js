@@ -1,4 +1,3 @@
-import { Divider } from "primereact/divider";
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
 export const DateFormTemplate = ({
@@ -21,7 +20,6 @@ export const DateFormTemplate = ({
         formField={date}
         additionalDataField={date}
       />
-      <Divider />
     </>
   );
 };

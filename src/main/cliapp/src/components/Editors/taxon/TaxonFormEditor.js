@@ -4,7 +4,6 @@ import { taxonSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { TaxonAdditionalFieldData } from '../../FieldData/TaxonAdditionalFieldData';
 import { FormFieldWrapper } from '../../FormFieldWrapper';
-import { Divider } from 'primereact/divider';
 
 export const TaxonFormEditor = ({
   taxon,
@@ -33,7 +32,6 @@ export const TaxonFormEditor = ({
         errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"taxon"} />}
         additionalDataField={<TaxonAdditionalFieldData curie={taxon?.curie} name={taxon?.name} />}
       />
-      <Divider />
     </>
   );
 };

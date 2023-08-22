@@ -1,5 +1,4 @@
 import React from 'react';
-import { Divider } from 'primereact/divider';
 import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEditor';
 import { inCollectionSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
@@ -38,7 +37,6 @@ export const InCollectionFormEditor = ({
         errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"inCollection"} />}
         additionalDataField={<InCollectionAdditionalFieldData name={inCollection?.name}/>}
       />
-      <Divider />
     </>
   );
 };

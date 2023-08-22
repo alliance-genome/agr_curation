@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Toast } from 'primereact/toast';
+import { Divider } from 'primereact/divider';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
@@ -165,14 +166,14 @@ const { isLoading } =	useQuery([curie],
 			<ErrorBoundary>
 				<form>
 
-
-
 					<CurieFormTemplate
 						curie={alleleState.allele?.curie}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
+
+					<Divider />
 
 					<TaxonFormEditor 
 						taxon={alleleState.allele?.taxon} 
@@ -183,6 +184,8 @@ const { isLoading } =	useQuery([curie],
 						errorMessages={alleleState.errorMessages}
 					/>
 
+					<Divider />
+
 					<ReferencesFormEditor 
 						references={alleleState.allele?.references} 
 						onReferencesValueChange={onReferenceValueChange} 
@@ -192,6 +195,8 @@ const { isLoading } =	useQuery([curie],
 						errorMessages={alleleState.errorMessages}
 					/>
 
+					<Divider />
+
 					<InCollectionFormEditor
 						inCollection={alleleState.allele?.inCollection} 
 						onInCollectionValueChange={onInCollectionValueChange} 
@@ -200,6 +205,8 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
+
+					<Divider />
 
 					<BooleanFormEditor
 						value={alleleState.allele?.isExtinct} 
@@ -212,12 +219,16 @@ const { isLoading } =	useQuery([curie],
 						errorMessages={alleleState.errorMessages}
 					/>
 
+					<Divider />
+
 					<DataProviderFormTemplate
 						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
+
+					<Divider />
 
 					<UserFormTemplate
 						user={alleleState.allele?.updatedBy?.uniqueId}
@@ -227,6 +238,8 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
 
+					<Divider />
+
 					<DateFormTemplate
 						date={alleleState.allele?.dateUpdated}
 						fieldName="Date Updated"
@@ -234,6 +247,8 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
+
+					<Divider />
 
 					<UserFormTemplate
 						user={alleleState.allele?.createdBy?.uniqueId}
@@ -243,6 +258,8 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
 
+					<Divider />
+
 					<DateFormTemplate
 						date={alleleState.allele?.dateCreated}
 						fieldName="Date Created"
@@ -250,6 +267,8 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
+
+					<Divider />
 
 					<BooleanFormEditor
 						value={alleleState.allele?.internal} 
@@ -262,6 +281,7 @@ const { isLoading } =	useQuery([curie],
 						errorMessages={alleleState.errorMessages}
 					/>
 
+					<Divider />
 
 					<BooleanFormEditor
 						value={alleleState.allele?.obsolete} 
@@ -273,6 +293,8 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
+
+					<Divider />
 
 			</form>
 			<PageFooter handleSubmit={handleSubmit}/>

@@ -1,4 +1,3 @@
-import { Divider } from "primereact/divider";
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
 export const CurieFormTemplate = ({
@@ -17,7 +16,6 @@ export const CurieFormTemplate = ({
         formField={curie}
         additionalDataField={curie}
       />
-      <Divider />
     </>
   );
 };
