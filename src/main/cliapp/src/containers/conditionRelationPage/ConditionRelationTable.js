@@ -208,7 +208,7 @@ export const ConditionRelationTable = () => {
 			editor: (props) => handleEditor(props)
 		},
 		{
-			field: "singleReference.curie",
+			field: "singleReference.primaryCrossReferenceCurie",
 			header: "Reference",
 			sortable: isEnabled,
 			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
