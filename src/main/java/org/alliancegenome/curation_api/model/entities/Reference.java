@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
@@ -14,6 +16,7 @@ import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.ReferenceTypeBridge;
 import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -64,12 +67,18 @@ public class Reference extends InformationContentEntity {
 	@Transient
 	@JsonIgnore
 	public String getReferenceID() {
+		if (CollectionUtils.isEmpty(getCrossReferences()))
+			return null;
+		
 		for (String prefix : ReferenceConstants.primaryXrefOrder) {
 			Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith(prefix + ":")).findFirst();
 			if (opt.isPresent())
 				return opt.map(CrossReference::getReferencedCurie).orElse(null);
 		}
 		
-		return null;
+		List<String> referencedCuries = getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toList());
+		Collections.sort(referencedCuries);
+		
+		return referencedCuries.get(0);
 	}
 }
