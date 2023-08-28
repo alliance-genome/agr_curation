@@ -16,6 +16,7 @@ import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate'
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
+import { SynonymsForm } from './SynonymsForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -171,6 +172,14 @@ const { isLoading } =	useQuery([curie],
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<SynonymsForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+						labelColumnSize={labelColumnSize}
 					/>
 
 					<Divider />

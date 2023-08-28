@@ -5,6 +5,7 @@ const initialAlleleState = {
 		taxon: {
 			curie: "",
 		},
+		synonyms: [],
 		references: [],
 		inCollection: {
 			name: "",
@@ -15,6 +16,7 @@ const initialAlleleState = {
 	},
 	errorMessages: {},
 	submitted: false,
+	showSynonyms: false,
 };
 
 const alleleReducer = (draft, action) => {
@@ -32,6 +34,19 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft.errorMessages = action.errorMessages;
+			break;
+		case 'ADD_ROW':
+			// draft.newAnnotation.relatedNotes.push(
+			// 	{
+			// 		dataKey: action.count,
+			// 		noteType: {
+			// 			name : ""
+			// 		},
+			// 		freeText: "",
+			// 	}
+			// )
+			// draft.relatedNotesEditingRows[`${action.count}`] = true;
+			draft[action.showType]= true;
 			break;
 		case 'SUBMIT':
 			draft.submitted = true;
