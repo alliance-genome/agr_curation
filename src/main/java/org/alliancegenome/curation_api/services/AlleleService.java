@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
@@ -62,8 +63,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		return new ObjectResponse<Allele>(dbEntity);
 	}
 
-	public Allele upsert(AlleleDTO dto) throws ObjectUpdateException {
-		return alleleDtoValidator.validateAlleleDTO(dto);
+	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
 	
 	@Transactional

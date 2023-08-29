@@ -9,7 +9,7 @@ export const EntityDetailsAction = ({ curie, disabled }) =>{
   return (
     <>
       <Link to={`allele/${curie}`} target="_blank" className={`${curie.replace(':', '')} ${disabledClasses}`}>
-        <i className="pi pi-info"></i>
+        <i className="pi pi-info-circle"></i>
       </Link>
       <Tooltip target={`.${curie.replace(':', '')}`} content= {"Open Details"} />
     </>

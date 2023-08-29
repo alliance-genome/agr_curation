@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
@@ -42,7 +43,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 	@Inject
 	AlleleDAO alleleDAO;
 
-	public AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException, ObjectValidationException {
+	public AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException, ObjectValidationException {
 
 		AGMDiseaseAnnotation annotation = new AGMDiseaseAnnotation();
 		AffectedGenomicModel agm;
@@ -84,6 +85,11 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				}
 				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(agm);
+				
+				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !agm.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
+						!dataProvider.sourceOrganization.equals(agm.getDataProvider().getSourceOrganization().getAbbreviation())) {
+					adaResponse.addErrorMessage("agm_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmCurie() + ") for " + dataProvider.name() + " load");
+				}
 			}
 		}
 		annotation.setSingleReference(validatedReference);

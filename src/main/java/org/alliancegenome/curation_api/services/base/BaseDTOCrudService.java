@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.base;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
@@ -9,7 +10,7 @@ public abstract class BaseDTOCrudService<E extends BaseEntity, T extends BaseDTO
 
 	protected abstract void init();
 
-	public abstract E upsert(T dto) throws ObjectUpdateException;
+	public abstract E upsert(T dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException;
 
 	public abstract void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum);
 

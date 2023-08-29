@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
@@ -66,7 +67,7 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	SlotAnnotationIdentityHelper identityHelper;
 
 	@Transactional
-	public Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
+	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		ObjectResponse<Gene> geneResponse = new ObjectResponse<Gene>();
 
@@ -82,7 +83,7 @@ public class GeneDTOValidator extends BaseDTOValidator {
 
 		gene.setCurie(dto.getCurie());
 
-		ObjectResponse<Gene> geResponse = validateGenomicEntityDTO(gene, dto);
+		ObjectResponse<Gene> geResponse = validateGenomicEntityDTO(gene, dto, dataProvider);
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
 		gene = geResponse.getEntity();
 

@@ -60,6 +60,11 @@
     "allele_database_status_dto": {
       "database_status_name": "reserved"
     },
+    "allele_nomenclature_event_dtos": [
+      {
+        "nomenclature_event_name": "data_merged"
+      }
+    ],
     "note_dtos": [
       {
         "free_text": "Test note",

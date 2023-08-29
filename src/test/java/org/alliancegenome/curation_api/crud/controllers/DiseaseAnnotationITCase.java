@@ -107,6 +107,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 	private OffsetDateTime datetime;
 	private OffsetDateTime datetime2;
 	private Note relatedNote;
+	private Note duplicateNote;
 	private ExperimentalCondition experimentalCondition;
 	private ExperimentalCondition experimentalCondition2;
 	private ConditionRelation conditionRelation;
@@ -187,6 +188,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		noteType2 = getVocabularyTerm(noteTypeVocabulary, "disease_summary");
 		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
 		relatedNote = createNote(noteType, "Test text", false, null);
+		duplicateNote = createNote(noteType, "Test text", false, null);
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "has_condition", false);
 		conditionRelationType2 = getVocabularyTerm(conditionRelationTypeVocabulary, "induced_by");
 		obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
@@ -2404,6 +2406,29 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			post("/api/agm-disease-annotation").
 			then().
 			statusCode(200);
+	}
+	
+	@Test
+	@Order(52)
+	public void createDiseaseAnnotationWithDuplicateNote() {
+		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
+		diseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		diseaseAnnotation.setObject(doTerm2);
+		diseaseAnnotation.setSubject(gene);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setEvidenceCodes(List.of(ecoTerm));
+		diseaseAnnotation.setSingleReference(reference2);
+		diseaseAnnotation.setRelatedNotes(List.of(relatedNote, duplicateNote));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/gene-disease-annotation").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.relatedNotes", is(ValidationConstants.DUPLICATE_MESSAGE + " (Test text|disease_note|false|false)"));
 	}
 	
 }
