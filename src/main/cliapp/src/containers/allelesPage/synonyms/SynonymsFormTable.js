@@ -8,6 +8,7 @@ import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
 import { SynonymScopeEditor } from '../../../components/Editors/SynonymScopeEditor';
 import { NameTypeEditor } from '../../../components/Editors/NameTypeEditor';
+import { InternalEditor } from '../../../components/Editors/InternalEditor';
 
 export const SynonymsFormTable = ({
   synonyms,
@@ -18,10 +19,10 @@ export const SynonymsFormTable = ({
   onRowEditSave,
   deletionHandler,
   errorMessages,
-  internalEditor,
   textOnChangeHandler,
   synonymScopeOnChangeHandler,
   nameTypeOnChangeHandler,
+  internalOnChangeHandler,
   internalTemplate
 }) => {
   let headerGroup = HeaderGroup();
@@ -84,7 +85,16 @@ export const SynonymsFormTable = ({
             field="synonymUrl"
         />}} 
         field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate} />
-      <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0' />
+      <Column 
+        editor={(props) => {
+          return <InternalEditor
+            value={props.value} 
+            rowIndex={props.rowIndex} 
+            errorMessages={errorMessages}
+            internalOnChangeHandler={internalOnChangeHandler}
+            editorCallback={props.editorCallback}
+        />}} 
+        field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0' />
       <Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} />
       <Column field="updatedBy.uniqueId" header="Updated By" />
       <Column field="dateUpdated" header="Date Updated" />
