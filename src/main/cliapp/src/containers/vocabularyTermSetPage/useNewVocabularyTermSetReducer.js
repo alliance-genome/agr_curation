@@ -3,6 +3,7 @@ import { useImmerReducer } from "use-immer";
 const initialNewVocabularyTermSetState = {
 	newVocabularyTermSet: {
 		name: "",
+		vocabularyLabel: "",
 		vocabularyTermSetDescription: "",
 		vocabularyTermSetVocabulary: null,
 		memberTerms: [],

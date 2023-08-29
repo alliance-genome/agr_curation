@@ -1,4 +1,5 @@
 import React from "react";
+import { BrowserRouter } from "react-router-dom/cjs/react-router-dom";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AllelesTable } from "../AllelesTable";
@@ -16,7 +17,7 @@ describe("<AllelesTable />", () => {
 	});
 
 	it("Renders without crashing", async () => {
-		let result = await renderWithClient(<AllelesTable />);
+		let result = await renderWithClient(<BrowserRouter><AllelesTable /></BrowserRouter>);
 		
 		await waitFor(() => {
 			expect(result);
@@ -25,14 +26,14 @@ describe("<AllelesTable />", () => {
 	});
 
 	it("Contains Correct Table Name", async () => {
-		let result = await renderWithClient(<AllelesTable />);
+		let result = await renderWithClient(<BrowserRouter><AllelesTable /></BrowserRouter>);
 
 		const tableTitle = await result.findByText(/Alleles Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it("Contains Correct Table Data", async () => {
-		let result = await renderWithClient(<AllelesTable />);
+		let result = await renderWithClient(<BrowserRouter><AllelesTable /></BrowserRouter>);
 
 		const curieTd = await result.findByText(/FB:FBal0196303/i);
 		const nameTd = await result.findByText(/Saccharomyces cerevisiae UAS construct a of Stefancsik/i);

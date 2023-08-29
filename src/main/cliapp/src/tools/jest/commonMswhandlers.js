@@ -66,3 +66,16 @@ export const setupSiteSummaryHandler = (override = {}) => {
 		}),
 	)
 }
+
+export const setupGetEntityHandler = (override = {}) => {
+	server.use(
+		rest.get("*/api/:entity/:curie", (req, res, ctx) => {
+			return res(
+				ctx.status(200),
+				ctx.json(
+					{...override}
+				)
+			)
+		}),
+	)
+}

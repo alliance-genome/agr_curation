@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,6 +55,9 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary> {
 
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
+		
+		String label = validateVocabularyLabel(uiEntity, dbEntity);
+		dbEntity.setVocabularyLabel(label);
 
 		dbEntity.setVocabularyDescription(handleStringField(uiEntity.getVocabularyDescription()));
 
@@ -77,7 +81,41 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary> {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
+		if (!isUniqueValue(uiEntity.getName(), field, uiEntity.getId())) {
+			addMessageResponse(field, ValidationConstants.NON_UNIQUE_MESSAGE);
+			return null;
+		}
 
 		return uiEntity.getName();
+	}
+
+	public String validateVocabularyLabel(Vocabulary uiEntity, Vocabulary dbEntity) {
+		String field = "vocabularyLabel";
+		if (StringUtils.isBlank(uiEntity.getVocabularyLabel())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+		if (StringUtils.isNotBlank(dbEntity.getVocabularyLabel()) && 
+				!StringUtils.equals(uiEntity.getVocabularyLabel(), dbEntity.getVocabularyLabel())) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		if (!isUniqueValue(uiEntity.getVocabularyLabel(), field, uiEntity.getId())) {
+			addMessageResponse(field, ValidationConstants.NON_UNIQUE_MESSAGE);
+			return null;
+		}
+
+		return uiEntity.getVocabularyLabel();
+	}
+	
+	private Boolean isUniqueValue(String uiEntityValue, String field, Long uiEntityId) {
+		SearchResponse<Vocabulary> response = vocabularyDAO.findByField(field, uiEntityValue);
+		if (response == null || response.getSingleResult() == null)
+			return true;
+		if (uiEntityId == null)
+			return false;
+		if (uiEntityId.equals(response.getSingleResult().getId()))
+			return true;
+		return false;
 	}
 }

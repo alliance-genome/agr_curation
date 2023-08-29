@@ -10,7 +10,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { Toast } from 'primereact/toast';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ValidationService } from '../../service/ValidationService';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
@@ -29,7 +29,7 @@ export const ConditionRelationsDialog = ({
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
+	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
 	const validationService = new ValidationService();
 	const searchService = new SearchService();
 	const tableRef = useRef(null);

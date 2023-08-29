@@ -7,7 +7,7 @@ import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
@@ -30,7 +30,7 @@ export const GermlineTransmissionStatusDialog = ({
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
-	const germlineTransmissionStatusTerms = useControlledVocabularyService('Allele Germline Transmission Status');
+	const germlineTransmissionStatusTerms = useControlledVocabularyService('allele_germline_transmission_status');
 
 	const showDialogHandler = () => {
 		let _localGermlineTransmissionStatuses = cloneGermlineTransmissionStatuses(originalGermlineTransmissionStatuses);

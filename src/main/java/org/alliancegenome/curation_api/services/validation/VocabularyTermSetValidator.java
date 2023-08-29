@@ -65,6 +65,9 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
 
+		String label = validateVocabularyLabel(uiEntity, dbEntity);
+		dbEntity.setVocabularyLabel(label);
+		
 		Vocabulary vocabularyTermSetVocabulary = validateVocabularyTermSetVocabulary(uiEntity, dbEntity);
 		dbEntity.setVocabularyTermSetVocabulary(vocabularyTermSetVocabulary);
 
@@ -87,8 +90,31 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
+		if (!isUniqueValue(uiEntity.getName(), field, uiEntity.getId())) {
+			addMessageResponse(field, ValidationConstants.NON_UNIQUE_MESSAGE);
+			return null;
+		}
 
 		return uiEntity.getName();
+	}
+
+	public String validateVocabularyLabel(VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
+		String field = "vocabularyLabel";
+		if (StringUtils.isBlank(uiEntity.getVocabularyLabel())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+		if (StringUtils.isNotBlank(dbEntity.getVocabularyLabel()) && 
+				!StringUtils.equals(uiEntity.getVocabularyLabel(), dbEntity.getVocabularyLabel())) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		if (!isUniqueValue(uiEntity.getVocabularyLabel(), field, uiEntity.getId())) {
+			addMessageResponse(field, ValidationConstants.NON_UNIQUE_MESSAGE);
+			return null;
+		}
+
+		return uiEntity.getVocabularyLabel();
 	}
 
 	private Vocabulary validateVocabularyTermSetVocabulary(VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
@@ -138,5 +164,16 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 		}
 
 		return uiEntity.getMemberTerms();
+	}
+	
+	private Boolean isUniqueValue(String uiEntityValue, String field, Long uiEntityId) {
+		SearchResponse<VocabularyTermSet> response = vocabularyTermSetDAO.findByField(field, uiEntityValue);
+		if (response == null || response.getSingleResult() == null)
+			return true;
+		if (uiEntityId == null)
+			return false;
+		if (uiEntityId.equals(response.getSingleResult().getId()))
+			return true;
+		return false;
 	}
 }

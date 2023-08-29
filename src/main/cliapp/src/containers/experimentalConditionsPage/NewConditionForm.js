@@ -8,7 +8,7 @@ import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useMutation, useQueryClient } from "react-query";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";

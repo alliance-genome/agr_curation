@@ -2,7 +2,7 @@ import React from 'react'
 import { EllipsisTableCell } from './EllipsisTableCell';
 import { ListTableCell } from './ListTableCell';
 import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
-import { DialogErrorMessageComponent } from './DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
 import { SearchService } from '../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from '../utils/utils';
 import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocompleteTemplate';

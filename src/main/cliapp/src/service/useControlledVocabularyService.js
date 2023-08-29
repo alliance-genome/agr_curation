@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from './SearchService';
 
-export function useControlledVocabularyService(termType) {
+export function useControlledVocabularyService(vocabularyLabel) {
 	const [terms, setTerms] = useState();
 	const searchService = new SearchService();
 
@@ -26,16 +26,16 @@ export function useControlledVocabularyService(termType) {
 	};
 
 
-	useQuery(['terms', termType],
+	useQuery(['terms', vocabularyLabel],
 		() => {
-			return searchService.find("vocabularyterm", 20, 0, {"vocabulary.name" : termType } )
+			return searchService.find("vocabularyterm", 20, 0, {"vocabulary.vocabularyLabel" : vocabularyLabel } )
 		}, {
 			onSuccess: (data) => {
 				if (data.results) {
 					setTerms(data.results.sort((a, b) => (a.name > b.name) ? 1 : -1));
 				} else {
-					if (termData[termType]) {
-						setTerms(termData[termType]['terms']);
+					if (termData[vocabularyLabel]) {
+						setTerms(termData[vocabularyLabel]['terms']);
 					}
 				}
 			},
