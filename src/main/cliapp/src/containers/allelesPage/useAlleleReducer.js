@@ -5,7 +5,7 @@ const initialAlleleState = {
 		taxon: {
 			curie: "",
 		},
-		synonyms: [],
+		alleleSynonyms: [],
 		references: [],
 		inCollection: {
 			name: "",
@@ -14,6 +14,7 @@ const initialAlleleState = {
 		internal: false,
 		obsolete: false,
 	},
+	synonymsEditingRows: {},
 	errorMessages: {},
 	submitted: false,
 	showSynonyms: false,
@@ -32,6 +33,9 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT':
 			draft.allele[action.field] = action.value;
 			break;
+		case 'EDIT_ROW':
+			draft.allele[action.tableType][action.index][action.field] = action.value;
+			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft.errorMessages = action.errorMessages;
 			break;
@@ -47,6 +51,12 @@ const alleleReducer = (draft, action) => {
 			// )
 			// draft.relatedNotesEditingRows[`${action.count}`] = true;
 			draft[action.showType]= true;
+			break;
+		case 'SET_EDITING_ROWS':
+			action.entities.forEach((entity) => {
+				draft[action.editingRowsType][`${entity.dataKey}`] = true;
+			});
+			draft[action.showType] = true;
 			break;
 		case 'SUBMIT':
 			draft.submitted = true;

@@ -4,6 +4,8 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
+import { DisplayTextEditor } from '../../../components/Editors/nameSlotAnnotationEditors';
+import { DeleteAction } from '../../../components/Actions/DeletionAction';
 
 export const SynonymsFormTable = ({
   synonyms,
@@ -13,10 +15,12 @@ export const SynonymsFormTable = ({
   onRowEditCancel,
   onRowEditSave,
   deleteAction,
+  deletionHandler,
   errorMessages,
   synonymScopeEditor,
   nameTypeEditor,
   internalEditor,
+  displayTextOnChangeHandler,
   internalTemplate
 }) => {
   let headerGroup = HeaderGroup();
@@ -24,8 +28,18 @@ export const SynonymsFormTable = ({
   return (
     <DataTable value={synonyms} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
       editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-      <Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' }} frozen headerClassName='surface-0' bodyStyle={{ textAlign: 'center' }} />
-      <Column editor={(props) => displayTextEditorTemplate(props, errorMessages)} field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate} />
+      <Column editor={() => <DeleteAction deletionHandler={deletionHandler}/>} 
+        style={{ maxWidth: '4rem' }} frozen headerClassName='surface-0' bodyStyle={{ textAlign: 'center' }} />
+      <Column 
+        editor={(props) => {
+          return <DisplayTextEditor 
+            value={props.value} 
+            rowIndex={props.rowIndex} 
+            errorMessages={errorMessages}
+            displayTextOnChangeHandler={displayTextOnChangeHandler}
+            editorCallback={props.editorCallback}
+        />}} 
+        field="displayText" header="Display Text" headerClassName='surface-0' />
       <Column editor={(props) => formatTextEditorTemplate(props, errorMessages)} field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate} />
       <Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate} />
       <Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate} />
@@ -40,7 +54,7 @@ export const SynonymsFormTable = ({
 function HeaderGroup() {
   return <ColumnGroup>
     <Row>
-      <Column header="Actions" colSpan={2} />
+      <Column header="Actions" />
       <Column header="Display Text" />
       <Column header="Format Text" />
       <Column header="Synonym Scope" />

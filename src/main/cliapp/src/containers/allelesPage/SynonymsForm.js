@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../components/FormTableWrapper";
 import { SynonymsFormTable } from "./synonyms/SynonymsFormTable";
 import { useRef } from "react";
 
-export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
+export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) => {
   const tableRef = useRef(null);
   const createNewSynonymHandler = (e) => {
     e.preventDefault();
@@ -18,6 +18,18 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const synonymScopeEditor = (e) => {
     return null;
   };
+
+  const displayTextOnChangeHandler = (rowIndex, event, editorCallback) => {
+    //updates value in table input box
+    editorCallback(event.target.value);
+    dispatch({ 
+      type: 'EDIT_ROW', 
+      tableType: 'alleleSynonyms', 
+      index: rowIndex, 
+      field: 'displayText', 
+      value: event.target.value
+    });
+  }
 
   const nameTypeEditor = (e) => {
     return null;
@@ -48,8 +60,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
       labelColumnSize={labelColumnSize}
       table={
         <SynonymsFormTable
-          synonyms={state.synonyms}
-          editingRows={state.editingRows}
+          synonyms={state.allele?.alleleSynonyms}
+          editingRows={editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           onRowEditCancel={onRowEditCancel}
@@ -60,6 +72,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
           nameTypeEditor={nameTypeEditor}
           internalEditor={internalEditor}
           internalTemplate={internalTemplate}
+          displayTextOnChangeHandler={displayTextOnChangeHandler}
 
         />
       }
