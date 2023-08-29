@@ -19,14 +19,14 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
     return null;
   };
 
-  const displayTextOnChangeHandler = (rowIndex, event, editorCallback) => {
+  const textOnChangeHandler = (rowIndex, event, editorCallback, field) => {
     //updates value in table input box
     editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
       tableType: 'alleleSynonyms', 
       index: rowIndex, 
-      field: 'displayText', 
+      field: field, 
       value: event.target.value
     });
   }
@@ -72,8 +72,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
           nameTypeEditor={nameTypeEditor}
           internalEditor={internalEditor}
           internalTemplate={internalTemplate}
-          displayTextOnChangeHandler={displayTextOnChangeHandler}
-
+          textOnChangeHandler={textOnChangeHandler}
         />
       }
       tableName="Synonyms"

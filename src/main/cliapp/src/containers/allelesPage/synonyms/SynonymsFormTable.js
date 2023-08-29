@@ -4,7 +4,7 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
-import { DisplayTextEditor } from '../../../components/Editors/nameSlotAnnotationEditors';
+import { DisplayTextEditor, FormatTextEditor } from '../../../components/Editors/nameSlotAnnotationEditors';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 
 export const SynonymsFormTable = ({
@@ -14,13 +14,12 @@ export const SynonymsFormTable = ({
   tableRef,
   onRowEditCancel,
   onRowEditSave,
-  deleteAction,
   deletionHandler,
   errorMessages,
   synonymScopeEditor,
   nameTypeEditor,
   internalEditor,
-  displayTextOnChangeHandler,
+  textOnChangeHandler,
   internalTemplate
 }) => {
   let headerGroup = HeaderGroup();
@@ -36,11 +35,20 @@ export const SynonymsFormTable = ({
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
-            displayTextOnChangeHandler={displayTextOnChangeHandler}
+            textOnChangeHandler={textOnChangeHandler}
             editorCallback={props.editorCallback}
         />}} 
         field="displayText" header="Display Text" headerClassName='surface-0' />
-      <Column editor={(props) => formatTextEditorTemplate(props, errorMessages)} field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate} />
+      <Column 
+        editor={(props) => {
+          return <FormatTextEditor
+            value={props.value} 
+            rowIndex={props.rowIndex} 
+            errorMessages={errorMessages}
+            textOnChangeHandler={textOnChangeHandler}
+            editorCallback={props.editorCallback}
+        />}} 
+        field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate} />
       <Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate} />
       <Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate} />
       <Column editor={(props) => synonymUrlEditorTemplate(props, errorMessages)} field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate} />

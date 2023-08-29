@@ -16,32 +16,33 @@ export const synonymUrlEditorTemplate = (props, errorMessages) => {
 	);
 };
 
-export const DisplayTextEditor = ({ value, errorMessages, displayTextOnChangeHandler, rowIndex, editorCallback }) => {
+export const DisplayTextEditor = ({ value, errorMessages, textOnChangeHandler, rowIndex, editorCallback }) => {
+	const field = "displayText";
 	return (
 		<>
 			<InputText
-				id="displayText"
+				id={field}
 				value={value}
-				onChange={(event) => displayTextOnChangeHandler(rowIndex, event, editorCallback)}
-				fieldName={"displayText"}
+				onChange={(event) => textOnChangeHandler(rowIndex, event, editorCallback, field)}
+				fieldName={field}
 			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={"displayText"} />
+			<DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={field} />
 		</>
 	);
 };
 
-export const formatTextTemplate = (rowData) => {
-	return <EllipsisTableCell>{rowData.formatText}</EllipsisTableCell>;
-};
 
-export const formatTextEditorTemplate = (props, errorMessages) => {
+export const FormatTextEditor = ({ value, errorMessages, textOnChangeHandler, rowIndex, editorCallback }) => {
+	const field = "formatText";
 	return (
 		<>
-			<InputTextEditor
-				rowProps={props}
-				fieldName={"formatText"}
+			<InputText
+				id={field}
+				value={value}
+				onChange={(event) => textOnChangeHandler(rowIndex, event, editorCallback, field)}
+				fieldName={field}
 			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"formatText"} />
+			<DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={field} />
 		</>
 	);
 };
