@@ -4,8 +4,8 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
-import { DisplayTextEditor, FormatTextEditor } from '../../../components/Editors/nameSlotAnnotationEditors';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
+import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
 
 export const SynonymsFormTable = ({
   synonyms,
@@ -31,27 +31,39 @@ export const SynonymsFormTable = ({
         style={{ maxWidth: '4rem' }} frozen headerClassName='surface-0' bodyStyle={{ textAlign: 'center' }} />
       <Column 
         editor={(props) => {
-          return <DisplayTextEditor 
+          return <TableInputTextEditor
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
             textOnChangeHandler={textOnChangeHandler}
             editorCallback={props.editorCallback}
+            field="displayText"
         />}} 
         field="displayText" header="Display Text" headerClassName='surface-0' />
       <Column 
         editor={(props) => {
-          return <FormatTextEditor
+          return <TableInputTextEditor
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
             textOnChangeHandler={textOnChangeHandler}
             editorCallback={props.editorCallback}
+            field="formatText"
         />}} 
         field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate} />
       <Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate} />
       <Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate} />
-      <Column editor={(props) => synonymUrlEditorTemplate(props, errorMessages)} field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate} />
+      <Column 
+        editor={(props) => {
+          return <TableInputTextEditor
+            value={props.value} 
+            rowIndex={props.rowIndex} 
+            errorMessages={errorMessages}
+            textOnChangeHandler={textOnChangeHandler}
+            editorCallback={props.editorCallback}
+            field="synonymUrl"
+        />}} 
+        field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate} />
       <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0' />
       <Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} />
       <Column field="updatedBy.uniqueId" header="Updated By" />
