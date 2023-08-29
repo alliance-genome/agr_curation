@@ -15,8 +15,28 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
     return null;
   };
 
-  const synonymScopeEditor = (e) => {
-    return null;
+  const nameTypeOnChangeHandler = (event, editorCallback, rowIndex, field) => {
+    //updates value in table input box
+    editorCallback(event.target.value);
+    dispatch({ 
+      type: 'EDIT_ROW', 
+      tableType: 'alleleSynonyms', 
+      index: rowIndex, 
+      field: field, 
+      value: event.target.value
+    });
+  };
+
+  const synonymScopeOnChangeHandler = (event, editorCallback, rowIndex, field) => {
+    //updates value in table input box
+    editorCallback(event.target.value);
+    dispatch({ 
+      type: 'EDIT_ROW', 
+      tableType: 'alleleSynonyms', 
+      index: rowIndex, 
+      field: field, 
+      value: event.target.value
+    });
   };
 
   const textOnChangeHandler = (rowIndex, event, editorCallback, field) => {
@@ -68,11 +88,12 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
           onRowEditSave={onRowEditSave}
           deleteAction={deleteAction}
           errorMessages={state.errorMessages}
-          synonymScopeEditor={synonymScopeEditor}
           nameTypeEditor={nameTypeEditor}
           internalEditor={internalEditor}
           internalTemplate={internalTemplate}
           textOnChangeHandler={textOnChangeHandler}
+          synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
+          nameTypeOnChangeHandler={nameTypeOnChangeHandler}
         />
       }
       tableName="Synonyms"

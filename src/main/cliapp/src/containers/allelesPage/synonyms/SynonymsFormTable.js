@@ -6,6 +6,8 @@ import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/Ev
 import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
+import { SynonymScopeEditor } from '../../../components/Editors/SynonymScopeEditor';
+import { NameTypeEditor } from '../../../components/Editors/NameTypeEditor';
 
 export const SynonymsFormTable = ({
   synonyms,
@@ -16,10 +18,10 @@ export const SynonymsFormTable = ({
   onRowEditSave,
   deletionHandler,
   errorMessages,
-  synonymScopeEditor,
-  nameTypeEditor,
   internalEditor,
   textOnChangeHandler,
+  synonymScopeOnChangeHandler,
+  nameTypeOnChangeHandler,
   internalTemplate
 }) => {
   let headerGroup = HeaderGroup();
@@ -51,8 +53,26 @@ export const SynonymsFormTable = ({
             field="formatText"
         />}} 
         field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate} />
-      <Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate} />
-      <Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate} />
+      <Column 
+        editor={(props) => {
+          return <SynonymScopeEditor
+            value={props.value} 
+            rowIndex={props.rowIndex} 
+            errorMessages={errorMessages}
+            synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
+            editorCallback={props.editorCallback}
+        />}} 
+        field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate} />
+      <Column 
+        editor={(props) => {
+          return <NameTypeEditor
+            value={props.value} 
+            rowIndex={props.rowIndex} 
+            errorMessages={errorMessages}
+            nameTypeOnChangeHandler={nameTypeOnChangeHandler}
+            editorCallback={props.editorCallback}
+        />}} 
+        field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate} />
       <Column 
         editor={(props) => {
           return <TableInputTextEditor
