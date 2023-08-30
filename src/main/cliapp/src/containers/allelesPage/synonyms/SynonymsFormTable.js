@@ -2,13 +2,12 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
-import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
 import { SynonymScopeEditor } from '../../../components/Editors/SynonymScopeEditor';
 import { NameTypeEditor } from '../../../components/Editors/NameTypeEditor';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
+import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 
 export const SynonymsFormTable = ({
   synonyms,
@@ -23,7 +22,7 @@ export const SynonymsFormTable = ({
   synonymScopeOnChangeHandler,
   nameTypeOnChangeHandler,
   internalOnChangeHandler,
-  internalTemplate
+  evidenceOnChangeHandler,
 }) => {
   let headerGroup = HeaderGroup();
 
@@ -53,7 +52,7 @@ export const SynonymsFormTable = ({
             editorCallback={props.editorCallback}
             field="formatText"
         />}} 
-        field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate} />
+        field="formatText" header="Format Text" headerClassName='surface-0'/>
       <Column 
         editor={(props) => {
           return <SynonymScopeEditor
@@ -63,7 +62,7 @@ export const SynonymsFormTable = ({
             synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
             editorCallback={props.editorCallback}
         />}} 
-        field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate} />
+        field="synonymScope" header="Synonym Scope" headerClassName='surface-0' />
       <Column 
         editor={(props) => {
           return <NameTypeEditor
@@ -73,7 +72,7 @@ export const SynonymsFormTable = ({
             nameTypeOnChangeHandler={nameTypeOnChangeHandler}
             editorCallback={props.editorCallback}
         />}} 
-        field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate} />
+        field="nameType" header="Name Type" headerClassName='surface-0' />
       <Column 
         editor={(props) => {
           return <TableInputTextEditor
@@ -84,7 +83,7 @@ export const SynonymsFormTable = ({
             editorCallback={props.editorCallback}
             field="synonymUrl"
         />}} 
-        field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate} />
+        field="synonymUrl" header="Synonym URL" headerClassName='surface-0' />
       <Column 
         editor={(props) => {
           return <InternalEditor
@@ -94,8 +93,15 @@ export const SynonymsFormTable = ({
             internalOnChangeHandler={internalOnChangeHandler}
             editorCallback={props.editorCallback}
         />}} 
-        field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0' />
-      <Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} />
+        field="internal" header="Internal" headerClassName='surface-0' />
+      <Column 
+        editor={(props) => {
+          return <EvidenceEditor
+            props={props} 
+            errorMessages={errorMessages}
+            onChange={evidenceOnChangeHandler}
+        />}} 
+        field="evidence.curie" header="Evidence" headerClassName='surface-0' />
       <Column field="updatedBy.uniqueId" header="Updated By" />
       <Column field="dateUpdated" header="Date Updated" />
     </DataTable>

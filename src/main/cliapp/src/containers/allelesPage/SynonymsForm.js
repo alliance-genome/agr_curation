@@ -63,6 +63,18 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
     });
   }
 
+  const evidenceOnChangeHandler = (event, setFieldValue, props) => {
+    //updates value in table input box
+    setFieldValue(event.target.value);
+    dispatch({ 
+      type: 'EDIT_ROW', 
+      tableType: 'alleleSynonyms', 
+      index: props.rowIndex, 
+      field: "evidence", 
+      value: event.target.value
+    });
+  }
+
   const nameTypeEditor = (e) => {
     return null;
   };
@@ -101,6 +113,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
+          evidenceOnChangeHandler={evidenceOnChangeHandler}
         />
       }
       tableName="Synonyms"
