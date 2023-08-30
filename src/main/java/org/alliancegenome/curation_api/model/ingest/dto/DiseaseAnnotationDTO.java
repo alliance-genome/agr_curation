@@ -15,24 +15,12 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.7.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class, DataProviderDTO.class })
-public class DiseaseAnnotationDTO extends AuditedObjectDTO {
-
-	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("mod_entity_id")
-	private String modEntityId;
-	
-	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("mod_internal_id")
-	private String modInternalId;
+@AGRCurationSchemaVersion(min = "1.7.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AnnotationDTO.class })
+public class DiseaseAnnotationDTO extends AnnotationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("do_term_curie")
 	private String doTermCurie;
-
-	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("data_provider_dto")
-	private DataProviderDTO dataProviderDto;
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("secondary_data_provider_dto")
@@ -53,10 +41,6 @@ public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 	@JsonProperty("evidence_code_curies")
 	private List<String> evidenceCodeCuries;
 
-	@JsonView({ View.FieldsAndLists.class })
-	@JsonProperty("condition_relation_dtos")
-	private List<ConditionRelationDTO> conditionRelationDtos;
-
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("disease_genetic_modifier_curies")
 	private List<String> diseaseGeneticModifierCuries;
@@ -70,10 +54,6 @@ public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 	private List<String> withGeneCuries;
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("reference_curie")
-	private String referenceCurie;
-
-	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("annotation_type_name")
 	private String annotationTypeName;
 
@@ -81,7 +61,4 @@ public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 	@JsonProperty("disease_qualifier_names")
 	private List<String> diseaseQualifierNames;
 
-	@JsonView({ View.FieldsAndLists.class })
-	@JsonProperty("note_dtos")
-	private List<NoteDTO> noteDtos;
 }

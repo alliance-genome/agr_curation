@@ -34,8 +34,8 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "1.3.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
 @Table(indexes = { 
-	@Index(name = "DiseaseAnnotation_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "DiseaseAnnotation_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "association_createdby_index", columnList = "createdBy_id"), 
+	@Index(name = "association_updatedby_index", columnList = "updatedBy_id"),
 })
 
 public class Association extends GeneratedAuditedObject {
