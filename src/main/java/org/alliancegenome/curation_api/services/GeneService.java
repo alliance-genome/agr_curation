@@ -75,8 +75,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return new ObjectResponse<Gene>(dbEntity);
 	}
 
-	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
-		return geneDtoValidator.validateGeneDTO(dto);
+	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
 	}
 	
 	@Transactional

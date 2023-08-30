@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.quarkus.logging.Log;
 import org.alliancegenome.curation_api.document.base.BaseDocument;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -103,7 +104,12 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 		searchSourceBuilder = searchSourceBuilder.size(pagination.getLimit());
 		searchSourceBuilder = searchSourceBuilder.trackTotalHits(true);
 
-		log.debug(searchSourceBuilder);
+
+		if (params.containsKey("debug")) {
+			Log.info(query);
+		} else {
+			Log.debug(query);
+		}
 
 		SearchRequest searchRequest = new SearchRequest(esIndex);
 		searchRequest.source(searchSourceBuilder);

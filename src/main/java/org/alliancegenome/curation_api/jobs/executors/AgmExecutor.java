@@ -9,6 +9,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -51,10 +52,10 @@ public class AgmExecutor extends LoadFileExecutor {
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
 			if (agms == null) agms = new ArrayList<>();
 			
-			String dataProvider = manual.getDataProvider().name();
+			BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
 			List<String> amgCuriesLoaded = new ArrayList<>();
-			List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider);
+			List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider.name());
 			Log.debug("runLoad: Before: total " + agmCuriesBefore.size());
 
 			bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
@@ -64,7 +65,7 @@ public class AgmExecutor extends LoadFileExecutor {
 
 			runLoad(history, agms, dataProvider, amgCuriesLoaded);
 			
-			if(cleanUp) runCleanup(affectedGenomicModelService, history, dataProvider, agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(affectedGenomicModelService, history, dataProvider.name(), agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			
@@ -77,24 +78,25 @@ public class AgmExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataProvider, List<AffectedGenomicModelDTO> agms) {
+	public APIResponse runLoad(String dataProviderName, List<AffectedGenomicModelDTO> agms) {
 
 		List<String> curiesLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, agms, dataProvider, curiesLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, String dataProvider, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("AGM Update for: " + dataProvider, agms.size());
+		ph.startProcess("AGM Update for: " + dataProvider.name(), agms.size());
 		agms.forEach(agmDTO -> {
 			try {
-				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
+				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO, dataProvider);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
 					curiesAdded.add(agm.getCurie());

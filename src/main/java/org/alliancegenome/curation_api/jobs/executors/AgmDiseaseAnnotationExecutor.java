@@ -63,7 +63,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 			
-			runLoad(history, dataProvider.name(), annotations, annotationIdsLoaded);
+			runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 			
 			if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
 
@@ -78,25 +78,26 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataProvider, List<AGMDiseaseAnnotationDTO> annotations) {
+	public APIResponse runLoad(String dataProviderName, List<AGMDiseaseAnnotationDTO> annotations) {
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, String dataProviderName, List<AGMDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AGMDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
-		ph.startProcess("AGM Disease Annotation Update for: " + dataProviderName, annotations.size());
+		ph.startProcess("AGM Disease Annotation Update for: " + dataProvider.name(), annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
-				AGMDiseaseAnnotation annotation = agmDiseaseAnnotationService.upsert(annotationDTO);
+				AGMDiseaseAnnotation annotation = agmDiseaseAnnotationService.upsert(annotationDTO, dataProvider);
 				history.incrementCompleted();
 				if(curiesAdded != null) {
 					curiesAdded.add(annotation.getId());

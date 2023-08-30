@@ -1,23 +1,24 @@
 import React, { useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import { Divider } from 'primereact/divider';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
 import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
-import { IsExtinctFormEditor } from '../../components/Editors/isExtinct/IsExtinctFormEditor';
-import { InternalFormEditor } from '../../components/Editors/internal/InternalFormEditor';
-import { ObsoleteFormEditor } from '../../components/Editors/obsolete/ObsoleteFormEditor';
 import { PageFooter } from './PageFooter';
+import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
+import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
+import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
+import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
+import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
@@ -27,7 +28,7 @@ export default function AlleleDetailPage(){
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
 
-	useQuery([curie],
+const { isLoading } =	useQuery([curie],
 		() => alleleService.getAllele(curie), 
 		{
 			onSuccess: (result) => {
@@ -139,14 +140,40 @@ export default function AlleleDetailPage(){
 			value: event.value,
 		})
 	}
+	
+	if(isLoading) return (
+		<div className='flex align-items-center justify-content-center h-screen'>
+			<ProgressSpinner/>
+		</div>
+	)
+
+	const headerText = (allele) => {
+		let prefix = "Allele: "
+		if (allele.alleleSymbol?.displayText && allele?.curie) {
+			return `${prefix} ${allele.alleleSymbol.displayText} (${allele.curie})`;
+		}
+		if (allele?.curie) {
+			return `${prefix} ${allele.curie}`;
+		}
+		return "Allele Detail Page";
+	}
 
 	return(
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<h1>Allele Detail Page</h1>
+			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
 				<form>
+
+					<CurieFormTemplate
+						curie={alleleState.allele?.curie}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
 
 					<TaxonFormEditor 
 						taxon={alleleState.allele?.taxon} 
@@ -157,7 +184,7 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
 					<ReferencesFormEditor 
 						references={alleleState.allele?.references} 
@@ -168,7 +195,7 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
 					<InCollectionFormEditor
 						inCollection={alleleState.allele?.inCollection} 
@@ -179,41 +206,96 @@ export default function AlleleDetailPage(){
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
-					<IsExtinctFormEditor
-						isExtinct={alleleState.allele?.isExtinct} 
-						onIsExtinctValueChange={onIsExtinctValueChange} 
-						booleanTerms={booleanTerms}
+					<BooleanFormEditor
+						value={alleleState.allele?.isExtinct} 
+						name={"isExtinct"}
+						label={"Is Extinct"}
+						onValueChange={onIsExtinctValueChange} 
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
-					<InternalFormEditor
-						internal={alleleState.allele?.internal} 
-						onInternalValueChange={onInternalValueChange} 
-						booleanTerms={booleanTerms}
+					<DataProviderFormTemplate
+						dataProvider={alleleState.allele?.dataProvider?.sourceOrganization?.abbreviation}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<UserFormTemplate
+						user={alleleState.allele?.updatedBy?.uniqueId}
+						fieldName="Updated By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<DateFormTemplate
+						date={alleleState.allele?.dateUpdated}
+						fieldName="Date Updated"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<UserFormTemplate
+						user={alleleState.allele?.createdBy?.uniqueId}
+						fieldName="Created By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<DateFormTemplate
+						date={alleleState.allele?.dateCreated}
+						fieldName="Date Created"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<BooleanFormEditor
+						value={alleleState.allele?.internal} 
+						name={"internal"}
+						label={"Internal"}
+						onValueChange={onInternalValueChange} 
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
 
-					<Divider/>
+					<Divider />
 
-					<ObsoleteFormEditor
-						obsolete={alleleState.allele?.obsolete} 
-						onObsoleteValueChange={onObsoleteValueChange} 
-						booleanTerms={booleanTerms}
+					<BooleanFormEditor
+						value={alleleState.allele?.obsolete} 
+						name={"obsolete"}
+						label={"Obsolete"}
+						onValueChange={onObsoleteValueChange} 
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
+
+					<Divider />
+
 			</form>
 			<PageFooter handleSubmit={handleSubmit}/>
 		</ErrorBoundary>

@@ -6,7 +6,8 @@ export const LiteratureAutocompleteTemplate = ({ item, setAutocompleteHoverItem,
 	return (
 		<div>
 			<div onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteHoverItem)}>
-				{getRefString(item)}
+				{getRefString(item)} <p></p>
+				{item.short_citation}
 			</div>
 		</div>
 	);

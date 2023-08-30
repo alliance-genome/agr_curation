@@ -52,6 +52,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "alleleMutationFilter",
     fields: ["alleleMutationTypes.mutationTypes.curie", "alleleMutationTypes.mutationTypes.name", "alleleMutationTypes.evidence.curie"],
   },
+  alleleNomenclatureEventsFieldSet: {
+    filterName: "alleleNomenclatureEventsFilter",
+    fields: ["alleleNomenclatureEvents.nomenclatureEvent.name", "alleleNomenclatureEvents.evidence.curie"]
+  },
   annotationTypeFieldSet: {
     filterName: "annotationTypeFilter",
     fields: ["annotationType.name"],
@@ -419,6 +423,7 @@ export const FILTER_CONFIGS = Object.freeze({
   alleleInheritanceModesFilterConfig:       { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleInheritanceModesFieldSet] },
   alleleMutationFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleMutationFieldSet] },
   alleleNameFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleNameFieldSet] },
+  alleleNomenclatureEventsFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleNomenclatureEventsFieldSet] },
   alleleSecondaryIdsFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSecondaryIdsFieldSet] },
   alleleSymbolFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
   alleleSynonymsFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
