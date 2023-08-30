@@ -2,6 +2,17 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.23.0
+ * New features
+   * "Vocabulary Label" field added to vocabularies and vocabulary term sets (SCRUM-3167)
+   * Created Allele Detail page (SCRUM-3009)
+   * Enabled display and editing of simple properties on Allele Detail page (SCRUM-3121)
+   * Display short citation in human-readable values of reference field (SCRUM-2784)
+ 
+ * Fixes and maintenance
+   * Fixed display of load status in summary row (SCRUM-3117)
+   * Fixed reporting of load failures due to invalid URL (SCRUM-2248) 
+
 ## v0.22.0
  * New features
    * Loaded orthology data (SCRUM-2710)

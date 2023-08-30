@@ -1,32 +1,34 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.enums.CrossReferencePrefix;
+import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.bridges.FreeTextValueBridge;
+import org.alliancegenome.curation_api.model.bridges.ReferenceTypeBridge;
 import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.TypeBinderRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.TypeBinding;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -34,11 +36,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 
 @Audited
 @Entity
+@TypeBinding(binder = @TypeBinderRef(type = ReferenceTypeBridge.class))
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
@@ -65,11 +67,18 @@ public class Reference extends InformationContentEntity {
 	@Transient
 	@JsonIgnore
 	public String getReferenceID() {
-		Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith("PMID:")).findFirst();
-		// if no PUBMED ID try MOD ID
-		if (opt.isEmpty()) {
-			opt = getCrossReferences().stream().filter(reference -> CrossReferencePrefix.valueOf(reference.getPrefix()) != null).findFirst();
+		if (CollectionUtils.isEmpty(getCrossReferences()))
+			return null;
+		
+		for (String prefix : ReferenceConstants.primaryXrefOrder) {
+			Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith(prefix + ":")).findFirst();
+			if (opt.isPresent())
+				return opt.map(CrossReference::getReferencedCurie).orElse(null);
 		}
-		return opt.map(CrossReference::getReferencedCurie).orElse(null);
+		
+		List<String> referencedCuries = getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toList());
+		Collections.sort(referencedCuries);
+		
+		return referencedCuries.get(0);
 	}
 }

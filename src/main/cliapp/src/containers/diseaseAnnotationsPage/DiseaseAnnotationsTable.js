@@ -1296,7 +1296,7 @@ export const DiseaseAnnotationsTable = () => {
 		editor: (props) => diseaseEditorTemplate(props),
 	},
 	{
-		field: "singleReference.curie",
+		field: "singleReference.primaryCrossReferenceCurie",
 		header: "Reference",
 		body: singleReferenceBodyTemplate,
 		sortable: isEnabled,
