@@ -41,11 +41,11 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
 			dbEntity.setCreatedBy(createdBy);
 		} else if (newEntity) {
-			Person createdBy = personService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+			Person createdBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
 			dbEntity.setCreatedBy(createdBy);
 		}
 
-		Person updatedBy = personService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+		Person updatedBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
 		dbEntity.setUpdatedBy(updatedBy);
 
 		dbEntity.setDateUpdated(OffsetDateTime.now());
