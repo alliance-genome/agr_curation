@@ -1210,6 +1210,20 @@ export const DiseaseAnnotationsTable = () => {
 		)
 	};
 
+	const uniqueIdEditorTemplate = (props) => {
+		return (
+			<>
+				<EllipsisTableCell otherClasses={`c${props.rowData.id}`}>
+					{props.rowData.uniqueId}
+				</EllipsisTableCell>
+				<ErrorMessageComponent
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField={"uniqueId"}
+				/>
+			</>
+		);
+	};
+
 	const modEntityIdBodyTemplate = (rowData) => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
@@ -1249,6 +1263,7 @@ export const DiseaseAnnotationsTable = () => {
 		body: uniqueIdBodyTemplate,
 		sortable: isEnabled,
 		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
+		editor: (props) => uniqueIdEditorTemplate(props)
 	},
 	{
 		field: "modEntityId",
