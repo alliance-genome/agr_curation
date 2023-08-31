@@ -214,9 +214,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 				person.setApiToken(UUID.randomUUID().toString());
 				person.setOktaId(app.getId());
 				person.setOktaEmail(adminEmail);
-				person.setFirstName(app.getName());
-				person.setLastName(app.getLabel());
-				person.setUniqueId(app.getName() + "|" + app.getLabel() + "|" + adminEmail);
+				person.setFirstName(app.getLabel());
+				person.setLastName(app.getName());
+				person.setUniqueId(app.getLabel() + "|" + app.getName() + "|" + adminEmail);
 				personDAO.persist(person);
 				return person;
 			}

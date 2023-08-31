@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import io.quarkus.logging.Log;
 import org.alliancegenome.curation_api.document.base.BaseDocument;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -25,6 +24,7 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.quarkus.logging.Log;
 import io.vertx.core.json.JsonObject;
 import lombok.extern.jbosslog.JBossLog;
 
@@ -129,7 +129,7 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 			resp.setTotalResults(hits.getTotalHits().value);
 			return resp;
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.error(e.getLocalizedMessage() + " " + e.getMessage());
 			return new SearchResponse<E>();
 		}
 
