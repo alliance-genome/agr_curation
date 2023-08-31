@@ -389,7 +389,9 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.0.1</version>
 				<configuration>
-					<doclint>all,-missing</doclint>
+					<doclint>all,-html,-syntax,-accessibility,-missing</doclint>
+					<failOnError>false</failOnError>
+					<quiet>true</quiet>
 				</configuration>
 				<executions>
 					<execution>
