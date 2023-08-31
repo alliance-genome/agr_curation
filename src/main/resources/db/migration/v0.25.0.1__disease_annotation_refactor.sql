@@ -51,7 +51,7 @@ ALTER TABLE diseaseannotation RENAME CONSTRAINT fkgtlivor9244ndobm9w5c0lxff TO d
 ALTER TABLE diseaseannotation RENAME CONSTRAINT fklns1tn5kseoys0xvq0f26h2vl TO diseaseannotation_geneticsex_id_fk;
 ALTER TABLE diseaseannotation RENAME CONSTRAINT fknagkqf0yu1qib0wkp8s0n60hn TO diseaseannotation_diseasegeneticmodifierrelation_id_fk;
 ALTER TABLE diseaseannotation RENAME CONSTRAINT fkp8u0w7kiirnjfcmdl4oyjhcs3 TO diseaseannotation_object_curie_fk;
-ALTER TABLE diseaseannotation RENAME CONSTRAINT uk_2ea912q3hgfs30y1wo2c868wx TO diseaseannotation_modentityid_key;
+ALTER TABLE diseaseannotation DROP CONSTRAINT uk_2ea912q3hgfs30y1wo2c868wx;
 ALTER TABLE diseaseannotation DROP CONSTRAINT uk_hvn7cmiviowf91epvfp1r67vy;
 ALTER TABLE diseaseannotation DROP CONSTRAINT uk_hlsp8ic6sxwpd99k8gc90eq4a;
 ALTER TABLE diseaseannotation DROP CONSTRAINT diseaseannotation_dataprovider_id_fk;
@@ -61,10 +61,9 @@ ALTER TABLE diseaseannotation_note RENAME TO annotation_note;
 ALTER TABLE annotation_note RENAME COLUMN diseaseannotation_id TO annotation_id;
 ALTER TABLE annotation_note RENAME CONSTRAINT fk52oyqivgshum07elq4opyfr5o TO annotation_note_relatednotes_id_fk;
 ALTER TABLE annotation_note RENAME CONSTRAINT uk_f3o1apeoj9un48jw6qmiihpjc TO annotation_note_relatednotes_id_key;
-ALTER TABLE annotation_note DROP CONSTRAINT fkeb3hi0d63vs83vg7lbqavs6pu;
+ALTER TABLE annotation_note RENAME CONSTRAINT fkeb3hi0d63vs83vg7lbqavs6pu TO annotation_note_annotation_id_fk;
 ALTER INDEX idx2nxnuty631qew681vvjn4wd75 RENAME TO annotation_note_annotation_id_index;
 ALTER INDEX idx42skj23oouce6tf5x57pxycba RENAME TO annotation_note_relatednotes_id_index;
-ALTER TABLE annotation_note ADD CONSTRAINT annotation_note_annotation_id_fk FOREIGN KEY (annotation_id) REFERENCES annotation(id);
 
 ALTER TABLE diseaseannotation_note_aud RENAME TO annotation_note_aud;
 ALTER TABLE annotation_note_aud RENAME COLUMN diseaseannotation_id to annotation_id;
@@ -99,6 +98,11 @@ UPDATE annotation SET uniqueid = diseaseannotation.uniqueid FROM diseaseannotati
 UPDATE annotation SET dataprovider_id = diseaseannotation.dataprovider_id FROM diseaseannotation WHERE annotation.id = diseaseannotation.id;
 UPDATE annotation SET singlereference_curie = diseaseannotation.singlereference_curie FROM diseaseannotation WHERE annotation.id = diseaseannotation.id;
 DELETE FROM annotation WHERE dataprovider_id IS NULL;
+
+ALTER TABLE annotation ADD CONSTRAINT annotation_singlereference_curie_fk FOREIGN KEY (singlereference_curie) REFERENCES reference (curie);
+ALTER TABLE annotation ADD CONSTRAINT annotation_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider (id);
+ALTER TABLE annotation ADD CONSTRAINT annotation_modentityid_key UNIQUE (modentityid);
+ALTER TABLE annotation ADD CONSTRAINT annotation_modinternalid_key UNIQUE (modinternalid);
 
 ALTER TABLE diseaseannotation
 	DROP COLUMN curie,
