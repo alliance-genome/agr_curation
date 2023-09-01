@@ -16,6 +16,7 @@ const initialAlleleState = {
 	},
 	synonymsEditingRows: {},
 	errorMessages: {},
+	synonymsErrorMessages: [],
 	submitted: false,
 	showSynonyms: false,
 };
@@ -52,15 +53,13 @@ const alleleReducer = (draft, action) => {
 			// draft.relatedNotesEditingRows[`${action.count}`] = true;
 			draft[action.showType]= true;
 			break;
-		case 'SET_EDITING_ROWS':
-			action.entities.forEach((entity) => {
-				draft[action.editingRowsType][`${entity.dataKey}`] = true;
-			});
-			draft[action.showType] = true;
+		case 'UPDATE_ERROR_MESSAGES':
+			draft[action.errorType]= action.errorMessages;
 			break;
 		case 'SUBMIT':
 			draft.submitted = true;
 			draft.errorMessages = {};
+			draft.synonymsErrorMessages = [];
 			break;
 		default:
       throw Error('Unknown action: ' + action.type);

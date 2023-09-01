@@ -127,8 +127,18 @@ export const NewAnnotationForm = ({
 	const handleSubmit = async (event, closeAfterSubmit=true) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
-		const isRelatedNotesErrors = await validateTable("note", "relatedNotesErrorMessages", newAnnotation.relatedNotes);
-		const isExConErrors = await validateTable("condition-relation", "exConErrorMessages", newAnnotation.conditionRelations);
+		const isRelatedNotesErrors = await validateTable(
+			"note", 
+			"relatedNotesErrorMessages", 
+			newAnnotation.relatedNotes, 
+			newAnnotationDispatch
+		);
+		const isExConErrors = await validateTable(
+			"condition-relation", 
+			"exConErrorMessages", 
+			newAnnotation.conditionRelations, 
+			newAnnotationDispatch
+		);
 
 		areUiErrors.current = false;
 		validateFormBioEntityFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors);

@@ -414,3 +414,36 @@ export const removeInvalidSorts = (currentSorts) => {
 
 	return currentSortsCopy;
 }
+
+const validate = async (entities, endpoint, validationService) => {
+	const validationResultsArray = [];
+	for (const entity of entities) {
+		const result = await validationService.validate(endpoint, entity);
+		validationResultsArray.push(result);
+	}
+	return validationResultsArray;
+};
+
+export const validateTable = async (endpoint, errorType, table, dispatch) => {
+	if(!table) return false;
+	const validationService = new ValidationService();
+	const results = await validate(table, endpoint, validationService);
+	const errors = [];
+	let anyErrors = false;
+	results.forEach((result, index) => {
+		const {isError, data} = result;
+		if (isError) {
+			errors[index] = {};
+			if (!data) return;
+			Object.keys(data).forEach((field) => {
+				errors[index][field] = {
+					severity: "error",
+					message: data[field]
+				};
+			});
+			anyErrors = true;
+		}
+	});
+	dispatch({type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors});
+	return anyErrors;
+}
