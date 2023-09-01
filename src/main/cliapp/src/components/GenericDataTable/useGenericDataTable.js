@@ -234,7 +234,7 @@ export const useGenericDataTable = ({
 					if (error.response.data.errorMessages && Object.keys(error.response.data.errorMessages).length > 0) {
 						let messages = [];
 						for (let errorField in error.response.data.errorMessages) {
-							messages.push(errorField + ": " + error.response.data.errorMessages[errorField].message);
+							messages.push(errorField + ": " + error.response.data.errorMessages[errorField]);
 						}
 						let messageSummary = messages.join(" / ");
 						toast_topleft.current.show([
