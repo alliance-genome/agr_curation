@@ -60,7 +60,7 @@ ALTER TABLE diseaseannotation DROP CONSTRAINT diseaseannotation_singlereference_
 ALTER TABLE diseaseannotation_note RENAME TO annotation_note;
 ALTER TABLE annotation_note RENAME COLUMN diseaseannotation_id TO annotation_id;
 ALTER TABLE annotation_note RENAME CONSTRAINT fk52oyqivgshum07elq4opyfr5o TO annotation_note_relatednotes_id_fk;
-ALTER TABLE annotation_note RENAME CONSTRAINT uk_f3o1apeoj9un48jw6qmiihpjc TO annotation_note_relatednotes_id_key;
+ALTER TABLE annotation_note RENAME CONSTRAINT uk_f3o1apeoj9un48jw6qmiihpjc TO annotation_note_relatednotes_id_uk;
 ALTER TABLE annotation_note RENAME CONSTRAINT fkeb3hi0d63vs83vg7lbqavs6pu TO annotation_note_annotation_id_fk;
 ALTER INDEX idx2nxnuty631qew681vvjn4wd75 RENAME TO annotation_note_annotation_id_index;
 ALTER INDEX idx42skj23oouce6tf5x57pxycba RENAME TO annotation_note_relatednotes_id_index;
@@ -101,8 +101,13 @@ DELETE FROM annotation WHERE dataprovider_id IS NULL;
 
 ALTER TABLE annotation ADD CONSTRAINT annotation_singlereference_curie_fk FOREIGN KEY (singlereference_curie) REFERENCES reference (curie);
 ALTER TABLE annotation ADD CONSTRAINT annotation_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider (id);
-ALTER TABLE annotation ADD CONSTRAINT annotation_modentityid_key UNIQUE (modentityid);
-ALTER TABLE annotation ADD CONSTRAINT annotation_modinternalid_key UNIQUE (modinternalid);
+ALTER TABLE annotation ADD CONSTRAINT annotation_modentityid_uk UNIQUE (modentityid);
+ALTER TABLE annotation ADD CONSTRAINT annotation_modinternalid_uk UNIQUE (modinternalid);
+
+CREATE INDEX annotation_curie_index ON annotation  USING btree (curie);
+CREATE INDEX annotation_uniqueid_index ON annotation  USING btree (uniqueid);
+CREATE INDEX annotation_modentityid_index ON annotation  USING btree (modentityid);
+CREATE INDEX annotation_modinternalid_index ON annotation  USING btree (modinternalid);
 
 ALTER TABLE diseaseannotation
 	DROP COLUMN curie,

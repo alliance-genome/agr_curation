@@ -39,10 +39,14 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-@Schema(name = "association", description = "Annotation class representing a disease annotation")
+@Schema(name = "annotation", description = "POJO that represents an annotation")
 @AGRCurationSchemaVersion(min = "1.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
-@Table(indexes = { 
+@Table(indexes = {
+	@Index(name = "annotation_curie_index", columnList = "curie"),
+	@Index(name = "annotation_uniqueId_index", columnList = "uniqueId"),
+	@Index(name = "annotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "annotation_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "annotation_createdby_index", columnList = "createdBy_id"), 
 	@Index(name = "annotation_updatedby_index", columnList = "updatedBy_id"),
 	@Index(name = "annotation_singlereference_index", columnList = "singleReference_curie"),

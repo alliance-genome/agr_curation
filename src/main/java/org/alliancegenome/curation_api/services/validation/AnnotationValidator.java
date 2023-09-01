@@ -101,7 +101,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 				}
 				note = noteResponse.getEntity();
 
-				// If present, note reference should match DA reference
+				// If present, note reference should match annotation reference
 				if (CollectionUtils.isNotEmpty(note.getReferences())) {
 					for (Reference noteRef : note.getReferences()) {
 						if (!noteRef.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
