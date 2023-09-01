@@ -1,11 +1,3 @@
- -- Rename DiseaseAnnotation_updatedby_index and DiseaseAnnotation_createdby_index
- -- Rename Association tables as Annotation and add columns
- -- Recreate Association tables
- 
- -- Delete DiseaseAnnotation_dataProvider_index DiseaseAnnotation_singleReference_index
- -- Add columns to annotation, copy data and delete from diseaseannotation
- -- Create annotation_dataprovider_index annotation_singlereference_index
- 
 ALTER TABLE association RENAME TO annotation;
 ALTER TABLE annotation RENAME CONSTRAINT association_pkey TO annotation_pkey;
 ALTER TABLE annotation RENAME CONSTRAINT fkpsajgrrbs4x9panhka0cq9ihy TO annotation_createdby_id_fk;
@@ -108,6 +100,8 @@ CREATE INDEX annotation_curie_index ON annotation  USING btree (curie);
 CREATE INDEX annotation_uniqueid_index ON annotation  USING btree (uniqueid);
 CREATE INDEX annotation_modentityid_index ON annotation  USING btree (modentityid);
 CREATE INDEX annotation_modinternalid_index ON annotation  USING btree (modinternalid);
+CREATE INDEX annotation_dataprovider_index ON annotation USING btree (dataprovider_id);
+CREATE INDEX annotation_singlereference_index ON annotation USING btree (singlereference_curie);
 
 ALTER TABLE diseaseannotation
 	DROP COLUMN curie,
