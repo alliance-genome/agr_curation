@@ -231,6 +231,16 @@ export const useGenericDataTable = ({
 					toast_topright.current.show([
 						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
 					]);
+					if (error.response.data.errorMessages && Object.keys(error.response.data.errorMessages).length > 0) {
+						let messages = [];
+						for (let errorField in error.response.data.errorMessages) {
+							messages.push(errorField + ": " + error.response.data.errorMessages[errorField].message);
+						}
+						let messageSummary = messages.join(" / ");
+						toast_topleft.current.show([
+							{ life: 7000, severity: 'error', summary: 'Errors found: ', detail: messageSummary, sticky: false }
+						]);
+					}
 				}
 				else if(error.response.data !== undefined) {
 					setExceptionMessage(error.response.data);
