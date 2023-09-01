@@ -77,6 +77,7 @@ export const SORT_FIELDS = Object.freeze([
   "title",
   "abstract",
   "citation",
+  "short_citation",
   "prefix",
   "idPattern",
   "idExample",

@@ -102,11 +102,11 @@ export const LiteratureReferenceTable = () => {
 						body : citationTemplate,
 						filterConfig: FILTER_CONFIGS.citationFilterConfig, 
 				}, {
-						field: "shortCitation",
+						field: "short_citation",
 						header: "Short Citation",
 						sortable: { isEnabled },
 						filter: true,
-						filterConfig: FILTER_CONFIGS.shortCitationFilterConfig,
+						filterConfig: FILTER_CONFIGS.literatureShortCitationFilterConfig,
 				}
 		];
 		const defaultColumnNames = columns.map((col) => {
