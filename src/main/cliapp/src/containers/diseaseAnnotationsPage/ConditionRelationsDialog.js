@@ -18,7 +18,6 @@ import { SearchService } from '../../service/SearchService';
 import {autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
-
 export const ConditionRelationsDialog = ({
 		originalConditionRelationsData, setOriginalConditionRelationsData,
 		errorMessagesMainRow, setErrorMessagesMainRow
@@ -256,7 +255,7 @@ export const ConditionRelationsDialog = ({
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
-						{item.conditionSummary}
+						{item.conditionSummary + ' (' + item.uniqueId + ')'}
 					</EllipsisTableCell>
 				);
 			};

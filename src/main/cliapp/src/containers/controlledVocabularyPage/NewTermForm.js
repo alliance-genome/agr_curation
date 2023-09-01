@@ -71,7 +71,7 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
 			<div>
 						<Toast ref={toast_error} position="top-left" />
 						<Toast ref={toast_success} position="top-right" />
-						<Dialog visible={newTermDialog} style={{ width: '450px' }} header="Add Term" modal className="p-fluid" footer={newTermDialogFooter} onHide={hideTermDialog} resizeable >
+						<Dialog visible={newTermDialog} style={{ width: '450px' }} header="Add Term" modal className="p-fluid" footer={newTermDialogFooter} onHide={hideTermDialog} resizeable="true">
 							<ErrorBoundary>
 								<div className='p-justify-center'>
 										<form>
