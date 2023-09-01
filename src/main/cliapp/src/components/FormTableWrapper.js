@@ -7,12 +7,12 @@ export const FormTableWrapper = ({
 }) => {
   return (
     <div className="grid">
-      <div className={labelColumnSize}>
-        <label>{tableName}</label>
-      </div>
-      <div className="col-6">
+      <div className="col-12">
+        <div className="mb-3">
+          <label>{tableName}</label>
+        </div>
         {showTable && table}
-        <div className={`${showTable ? "pt-3" : ""} p-field p-col`}>
+        <div className={`${showTable ? "pt-3" : ""} p-field p-col col-4`}>
           {button}
         </div>
       </div>
