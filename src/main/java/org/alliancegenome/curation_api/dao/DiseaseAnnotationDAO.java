@@ -16,11 +16,4 @@ public class DiseaseAnnotationDAO extends BaseSQLDAO<DiseaseAnnotation> {
 	protected DiseaseAnnotationDAO() {
 		super(DiseaseAnnotation.class);
 	}
-
-	public void deleteAttachedNote(Long id) {
-		Query jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_note WHERE relatednotes_id = '" + id + "'");
-		jpqlQuery.executeUpdate();
-
-		noteDAO.remove(id);
-	}
 }
