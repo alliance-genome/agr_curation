@@ -462,8 +462,8 @@ export const NewAnnotationForm = ({
 	return(
 		<div>
 			<Toast ref={toast_error} position="top-left" />
-			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newAnnotationDialog} style={{ width: '1200px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} maximizable resizeable="true">
+			<Toast ref={toast_success} position="top-right" />  
+			<Dialog visible={newAnnotationDialog} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} maximizable maximized={true}>
 				<ErrorBoundary>
 				<form>
 					<div className="grid">

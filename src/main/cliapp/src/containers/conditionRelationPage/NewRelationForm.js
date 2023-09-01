@@ -130,7 +130,7 @@ export const NewRelationForm = ({
 		<div>
 				<Toast ref={toast_error} position="top-left" />
 				<Toast ref={toast_success} position="top-right" />
-				<Dialog visible={newRelationDialog} style={{ width: '450px' }} header="Add Relation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable="true" >
+				<Dialog visible={newRelationDialog} style={{ width: '450px' }} header="Add Relation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>
 					<ErrorBoundary>
 						<div className='p-justify-center'>
 							<form>
