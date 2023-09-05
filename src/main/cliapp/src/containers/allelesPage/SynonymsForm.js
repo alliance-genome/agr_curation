@@ -12,13 +12,9 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     const newSynonym = {
       dataKey: dataKey,
       synonymUrl: "",
-      updatedBy: {},
-      dateUpdated: "",
       internal: false,
       obsolete: false,
-      dbDateCreated: "",
-      dbDateUpdated: "",
-      nameType: {},
+      nameType: null,
       formatText: "",
       displayText: ""
     }
@@ -88,18 +84,6 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     });
   }
 
-  const nameTypeEditor = (e) => {
-    return null;
-  };
-
-  const onRowEditCancel = (e) => {
-    return null;
-  };
-
-  const onRowEditSave = (e) => {
-    return null;
-  };
-
   const deletionHandler  = (e, index) => {
     e.preventDefault();
     dispatch({type: "DELETE_ROW", tableType: "alleleSynonyms", showType: "showSynonyms", index: index});
@@ -114,11 +98,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
           editingRows={state.synonymsEditingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
-          onRowEditCancel={onRowEditCancel}
-          onRowEditSave={onRowEditSave}
           deletionHandler={deletionHandler}
           errorMessages={state.synonymsErrorMessages}
-          nameTypeEditor={nameTypeEditor}
           textOnChangeHandler={textOnChangeHandler}
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}

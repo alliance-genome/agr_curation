@@ -14,8 +14,6 @@ export const SynonymsFormTable = ({
   editingRows,
   onRowEditChange,
   tableRef,
-  onRowEditCancel,
-  onRowEditSave,
   deletionHandler,
   errorMessages,
   textOnChangeHandler,
@@ -28,8 +26,7 @@ export const SynonymsFormTable = ({
 
   return (
     <DataTable value={synonyms} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} 
-      onRowEditSave={(props) => onRowEditSave(props)}>
+      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex}/>} 
         style={{ maxWidth: '4rem' }} frozen headerClassName='surface-0' bodyStyle={{ textAlign: 'center' }} />
       <Column 
