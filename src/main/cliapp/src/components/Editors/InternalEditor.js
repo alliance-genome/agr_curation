@@ -1,27 +1,18 @@
-import { useState } from "react";
-import { Dropdown } from "primereact/dropdown";
 import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
+import { TrueFalseDropdown } from "../TrueFalseDropDownSelector";
 
-export const InternalEditor = ({ value, internalOnChangeHandler, errorMessages, rowIndex }) => {
+export const InternalEditor = ({ props, internalOnChangeHandler, errorMessages, rowIndex }) => {
   const booleanTerms = useControlledVocabularyService("generic_boolean_terms");
-	const [localValue, setLocalValue] = useState(value); 
-
-	const onChange = (e) => {
-		setLocalValue(e.target.value);
-    internalOnChangeHandler(e, rowIndex, "internal")
-	}
 
   return (
     <>
-      <Dropdown
+      <TrueFalseDropdown
+        props={props}
         field="internal"
-        value={localValue}
         options={booleanTerms}
-        onChange={onChange}
-        optionLabel="text"
+        editorChange={internalOnChangeHandler}
         showClear={false}
-        dataKey='id'
       />
       <DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={"internal"} />
     </>

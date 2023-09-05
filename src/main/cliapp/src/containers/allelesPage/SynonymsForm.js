@@ -32,32 +32,32 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     return null;
   };
 
-  const nameTypeOnChangeHandler = (event, rowIndex, field) => {
+  const nameTypeOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_ROW', 
       tableType: 'alleleSynonyms', 
-      index: rowIndex, 
-      field: field, 
+      index: props.rowIndex, 
+      field: "nameType", 
       value: event.target.value
     });
   };
 
-  const internalOnChangeHandler = (event, rowIndex, field) => {
+  const internalOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_ROW', 
       tableType: 'alleleSynonyms', 
-      index: rowIndex, 
-      field: field, 
-      value: event.target.value.name
+      index: props.rowIndex, 
+      field: "internal", 
+      value: event.target?.value?.name
     });
   };
 
-  const synonymScopeOnChangeHandler = (event, rowIndex, field) => {
+  const synonymScopeOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_ROW', 
       tableType: 'alleleSynonyms', 
-      index: rowIndex, 
-      field: field, 
+      index: props.rowIndex, 
+      field: "synonymScope", 
       value: event.target.value
     });
   };

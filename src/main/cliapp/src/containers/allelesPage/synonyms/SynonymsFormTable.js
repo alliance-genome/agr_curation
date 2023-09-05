@@ -4,10 +4,9 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
-import { SynonymScopeEditor } from '../../../components/Editors/SynonymScopeEditor';
-import { NameTypeEditor } from '../../../components/Editors/NameTypeEditor';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
+import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
 
 export const SynonymsFormTable = ({
   synonyms,
@@ -22,7 +21,23 @@ export const SynonymsFormTable = ({
   internalOnChangeHandler,
   evidenceOnChangeHandler,
 }) => {
-  let headerGroup = HeaderGroup();
+  let headerGroup = (
+    <ColumnGroup>
+      <Row>
+        <Column header="Actions" />
+        <Column header="Display Text" />
+        <Column header="Format Text" />
+        <Column header="Synonym Scope" />
+        <Column header="Name Type" />
+        <Column header="Synonym URL" />
+        <Column header="Internal" />
+        <Column header="Evidence" />
+        <Column header="Updated By" />
+        <Column header="Date Updated" />
+      </Row>
+    </ColumnGroup>
+  );
+  
 
   return (
     <DataTable value={synonyms} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
@@ -51,21 +66,29 @@ export const SynonymsFormTable = ({
         field="formatText" header="Format Text" headerClassName='surface-0'/>
       <Column 
         editor={(props) => {
-          return <SynonymScopeEditor
-            value={props.value} 
-            rowIndex={props.rowIndex} 
+          return <ControlledVocabularyEditor
+            props={props}
+            onChangeHandler={synonymScopeOnChangeHandler}
             errorMessages={errorMessages}
-            synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
-        />}} 
+            rowIndex={props.rowIndex} 
+            vocabType="synonym_scope"
+            field="synonymScope"
+            showClear={true}
+        />
+      }} 
         field="synonymScope" header="Synonym Scope" headerClassName='surface-0' />
       <Column 
         editor={(props) => {
-          return <NameTypeEditor
-            value={props.value} 
-            rowIndex={props.rowIndex} 
+          return <ControlledVocabularyEditor
+            props={props}
+            onChangeHandler={nameTypeOnChangeHandler}
             errorMessages={errorMessages}
-            nameTypeOnChangeHandler={nameTypeOnChangeHandler}
-        />}} 
+            rowIndex={props.rowIndex} 
+            vocabType="name_type"
+            field="nameType"
+            showClear={false}
+        />
+      }} 
         field="nameType" header="Name Type" headerClassName='surface-0' />
       <Column 
         editor={(props) => {
@@ -80,7 +103,7 @@ export const SynonymsFormTable = ({
       <Column 
         editor={(props) => {
           return <InternalEditor
-            value={props.value} 
+            props={props}
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
             internalOnChangeHandler={internalOnChangeHandler}
@@ -99,20 +122,4 @@ export const SynonymsFormTable = ({
     </DataTable>
   );
 };
-function HeaderGroup() {
-  return <ColumnGroup>
-    <Row>
-      <Column header="Actions" />
-      <Column header="Display Text" />
-      <Column header="Format Text" />
-      <Column header="Synonym Scope" />
-      <Column header="Name Type" />
-      <Column header="Synonym URL" />
-      <Column header="Internal" />
-      <Column header="Evidence" />
-      <Column header="Updated By" />
-      <Column header="Date Updated" />
-    </Row>
-  </ColumnGroup>;
-}
 
