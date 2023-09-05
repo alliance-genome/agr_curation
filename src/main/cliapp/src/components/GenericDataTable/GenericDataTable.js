@@ -10,8 +10,8 @@ import { Checkbox } from 'primereact/checkbox';
 
 import { FilterComponent } from '../Filters/FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
-import { DuplicationAction } from "../DuplicationAction";
-import { EntityDetailsAction } from "../EntityDetailsAction";
+import { DuplicationAction } from "../Actions/DuplicationAction";
+import { EntityDetailsAction } from "../Actions/EntityDetailsAction";
 
 
 import { filterColumns, orderColumns } from '../../utils/utils';

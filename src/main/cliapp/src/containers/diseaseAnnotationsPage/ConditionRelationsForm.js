@@ -123,6 +123,7 @@ export const ConditionRelationsForm = ({ dispatch, conditionRelations, showCondi
 	};
 
 	const handleDeleteRelation = (event, props) => {
+		event.preventDefault();
 		dispatch({type: "DELETE_ROW", tableType: "conditionRelations", showType: "showConditionRelations", index: props.rowIndex})
 	}
 
