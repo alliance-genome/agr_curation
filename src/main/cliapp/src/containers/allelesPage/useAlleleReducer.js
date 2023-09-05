@@ -24,7 +24,20 @@ const initialAlleleState = {
 const alleleReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
-			draft.allele = action.value;
+			const allele = action.value;
+			if(allele?.alleleSynonyms){
+				let clonableEntities = global.structuredClone(allele.alleleSynonyms);
+				clonableEntities.forEach((entity, index) => {
+					entity.dataKey = index;
+					draft.synonymsEditingRows[`${entity.dataKey}`] = true;
+				});
+
+				allele.alleleSynonyms = clonableEntities;
+				draft.showSynonyms = true;
+			} else {
+				allele.alleleSynonyms = [];
+			}
+			draft.allele = allele;
 			break;
 		case 'RESET':
 			draft.allele = initialAlleleState.allele;
@@ -37,21 +50,16 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT_ROW':
 			draft.allele[action.tableType][action.index][action.field] = action.value;
 			break;
-		case 'UPDATE_ERROR_MESSAGES':
-			draft.errorMessages = action.errorMessages;
-			break;
 		case 'ADD_ROW':
-			// draft.newAnnotation.relatedNotes.push(
-			// 	{
-			// 		dataKey: action.count,
-			// 		noteType: {
-			// 			name : ""
-			// 		},
-			// 		freeText: "",
-			// 	}
-			// )
-			// draft.relatedNotesEditingRows[`${action.count}`] = true;
+			draft.allele[action.tableType].push(action.row);
+			draft[action.editingRowsType][`${action.row.dataKey}`] = true;
 			draft[action.showType]= true;
+			break;
+		case 'DELETE_ROW':
+			draft.allele[action.tableType].splice(action.index, 1);
+			if(draft.allele[action.tableType].length === 0){
+				draft[action.showType] = false;
+			}
 			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft[action.errorType]= action.errorMessages;

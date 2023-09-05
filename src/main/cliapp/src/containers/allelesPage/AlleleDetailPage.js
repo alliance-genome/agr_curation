@@ -35,17 +35,6 @@ const { isLoading } =	useQuery([curie],
 		{
 			onSuccess: (result) => {
 				alleleDispatch({type: 'SET', value: result?.data?.entity});
-				const synonyms = result?.data?.entity?.alleleSynonyms;
-				if(synonyms?.length > 0){
-					alleleDispatch(
-						{
-							type: 'SET_EDITING_ROWS', 
-							entities: synonyms, 
-							editingRowsType: 'synonymsEditingRows', 
-							showType: 'showSynonyms' 
-						}
-					)
-				}
 			},
 			onError: (error) => {
 				console.warn(error);
@@ -59,7 +48,9 @@ const { isLoading } =	useQuery([curie],
 		return alleleService.saveAllele(allele);
 	});
 
-	const handleSubmit = (event) => {
+
+	const handleSubmit = async (event) => {
+		event.preventDefault();
 		alleleDispatch({
 			type: "SUBMIT" 
 		})
@@ -75,7 +66,6 @@ const { isLoading } =	useQuery([curie],
 			onSuccess: () => {
 				if(isSynonymsErrors) return;
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
-				console.log(alleleState.errorMessages);
 			},
 			onError: (error) => {
 				let message;
@@ -200,7 +190,6 @@ const { isLoading } =	useQuery([curie],
 						state={alleleState}
 						dispatch={alleleDispatch}
 						labelColumnSize={labelColumnSize}
-						editingRows={alleleState.synonymsEditingRows}
 					/>
 
 					<Divider />

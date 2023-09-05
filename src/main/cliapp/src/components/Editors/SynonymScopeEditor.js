@@ -1,17 +1,24 @@
 import { Dropdown } from "primereact/dropdown";
 import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
+import { useState } from "react";
 
-export const SynonymScopeEditor = ({ value, synonymScopeOnChangeHandler, errorMessages, rowIndex, editorCallback }) => {
+export const SynonymScopeEditor = ({ value, synonymScopeOnChangeHandler, errorMessages, rowIndex }) => {
 	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+	const [localValue, setLocalValue] = useState(value); 
+
+	const onChange = (e) => {
+		setLocalValue(e.target.value);
+    synonymScopeOnChangeHandler(e, rowIndex, "synonymScope")
+	}
 
   return (
     <>
       <Dropdown
         field="synonymScope"
-        value={value}
+        value={localValue}
         options={synonymScopeTerms}
-        onChange={(e) => synonymScopeOnChangeHandler(e, editorCallback, rowIndex, "synonymScope")}
+        onChange={onChange}
         optionLabel="name"
         showClear={true}
         dataKey='id'

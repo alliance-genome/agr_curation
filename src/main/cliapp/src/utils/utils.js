@@ -2,6 +2,7 @@ import { confirmDialog } from 'primereact/confirmdialog';
 import { SORT_FIELDS } from '../constants/SortFields';
 
 import { FIELD_SETS} from '../constants/FilterFields';
+import { ValidationService } from '../service/ValidationService';
 
 export function returnSorted(event, originalSort) {
 

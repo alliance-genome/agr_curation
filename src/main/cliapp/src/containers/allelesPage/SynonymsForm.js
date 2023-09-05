@@ -3,21 +3,40 @@ import { FormTableWrapper } from "../../components/FormTableWrapper";
 import { SynonymsFormTable } from "./synonyms/SynonymsFormTable";
 import { useRef } from "react";
 
-export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) => {
+export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
+
   const createNewSynonymHandler = (e) => {
     e.preventDefault();
-    dispatch({type: "ADD_ROW", showType: "showSynonyms", row: {}})
-    return null;
+    const dataKey = state.alleleSynonyms?.length;
+    const newSynonym = {
+      dataKey: dataKey,
+      synonymUrl: "",
+      updatedBy: {},
+      dateUpdated: "",
+      internal: false,
+      obsolete: false,
+      dbDateCreated: "",
+      dbDateUpdated: "",
+      nameType: {},
+      formatText: "",
+      displayText: ""
+    }
+
+    dispatch({
+      type: "ADD_ROW", 
+      showType: "showSynonyms", 
+      row: newSynonym, 
+      tableType: "alleleSynonyms", 
+      editingRowsType: "synonymsEditingRows" 
+    })
   };
 
   const onRowEditChange = (e) => {
     return null;
   };
 
-  const nameTypeOnChangeHandler = (event, editorCallback, rowIndex, field) => {
-    //updates value in table input box
-    editorCallback(event.target.value);
+  const nameTypeOnChangeHandler = (event, rowIndex, field) => {
     dispatch({ 
       type: 'EDIT_ROW', 
       tableType: 'alleleSynonyms', 
@@ -27,9 +46,17 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
     });
   };
 
-  const internalOnChangeHandler = (event, editorCallback, rowIndex, field) => {
-    //updates value in table input box
-    editorCallback(event.target.value);
+  const internalOnChangeHandler = (event, rowIndex, field) => {
+    dispatch({ 
+      type: 'EDIT_ROW', 
+      tableType: 'alleleSynonyms', 
+      index: rowIndex, 
+      field: field, 
+      value: event.target.value.name
+    });
+  };
+
+  const synonymScopeOnChangeHandler = (event, rowIndex, field) => {
     dispatch({ 
       type: 'EDIT_ROW', 
       tableType: 'alleleSynonyms', 
@@ -39,21 +66,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
     });
   };
 
-  const synonymScopeOnChangeHandler = (event, editorCallback, rowIndex, field) => {
-    //updates value in table input box
-    editorCallback(event.target.value);
-    dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
-      index: rowIndex, 
-      field: field, 
-      value: event.target.value
-    });
-  };
-
-  const textOnChangeHandler = (rowIndex, event, editorCallback, field) => {
-    //updates value in table input box
-    editorCallback(event.target.value);
+  const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
       type: 'EDIT_ROW', 
       tableType: 'alleleSynonyms', 
@@ -79,10 +92,6 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
     return null;
   };
 
-  const internalTemplate = (e) => {
-    return null;
-  };
-
   const onRowEditCancel = (e) => {
     return null;
   };
@@ -91,8 +100,9 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
     return null;
   };
 
-  const deleteAction = (e) => {
-    return null;
+  const deletionHandler  = (e, index) => {
+    e.preventDefault();
+    dispatch({type: "DELETE_ROW", tableType: "alleleSynonyms", showType: "showSynonyms", index: index});
   };
 
   return (
@@ -101,13 +111,13 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch, editingRows }) 
       table={
         <SynonymsFormTable
           synonyms={state.allele?.alleleSynonyms}
-          editingRows={editingRows}
+          editingRows={state.synonymsEditingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           onRowEditCancel={onRowEditCancel}
           onRowEditSave={onRowEditSave}
-          deleteAction={deleteAction}
-          errorMessages={state.errorMessages}
+          deletionHandler={deletionHandler}
+          errorMessages={state.synonymsErrorMessages}
           nameTypeEditor={nameTypeEditor}
           textOnChangeHandler={textOnChangeHandler}
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}

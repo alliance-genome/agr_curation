@@ -1,17 +1,24 @@
+import { useState } from "react";
 import { Dropdown } from "primereact/dropdown";
 import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 
-export const NameTypeEditor = ({ value, nameTypeOnChangeHandler, errorMessages, rowIndex, editorCallback }) => {
+export const NameTypeEditor = ({ value, nameTypeOnChangeHandler, errorMessages, rowIndex }) => {
 	const synonymTypeTerms = useControlledVocabularyService('name_type');
+	const [localValue, setLocalValue] = useState(value); 
+
+	const onChange = (e) => {
+		setLocalValue(e.target.value);
+    nameTypeOnChangeHandler(e, rowIndex, "nameType");
+	}
 
   return (
     <>
       <Dropdown
         field="nameType"
-        value={value}
+        value={localValue}
         options={synonymTypeTerms}
-        onChange={(e) => nameTypeOnChangeHandler(e, editorCallback, rowIndex, "nameType")}
+        onChange={onChange}
         optionLabel="name"
         showClear={false}
         dataKey='id'
