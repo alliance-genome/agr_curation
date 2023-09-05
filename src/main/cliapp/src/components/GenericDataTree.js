@@ -113,7 +113,7 @@ export const GenericDataTree = (props) => {
 				</div>
 				<div className="col-6">
 					<div className="card">
-						<div><pre style={{whiteSpace: "pre-wrap"}}>{JSON.stringify(selectedTerm, null, 2) }</pre></div>
+						<div className="fixed"><pre style={{whiteSpace: "pre-wrap"}}>{JSON.stringify(selectedTerm, null, 2) }</pre></div>
 					</div>
 				</div>
 			</div>
