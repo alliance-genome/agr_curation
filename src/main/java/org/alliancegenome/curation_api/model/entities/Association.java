@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "association", description = "POJO that represents an association")
-@AGRCurationSchemaVersion(min = "1.3.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
 @Table(indexes = { 
 	@Index(name = "association_createdby_index", columnList = "createdBy_id"), 

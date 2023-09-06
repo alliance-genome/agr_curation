@@ -40,7 +40,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "annotation", description = "POJO that represents an annotation")
-@AGRCurationSchemaVersion(min = "1.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
 @Table(indexes = {
 	@Index(name = "annotation_curie_index", columnList = "curie"),
