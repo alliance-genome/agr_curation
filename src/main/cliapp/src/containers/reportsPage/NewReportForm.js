@@ -63,7 +63,7 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 
 
 	return (
-		<Dialog visible={newReportDialog} style={{ width: '450px' }} header="Add Report" modal className="p-fluid" footer={newReportDialogFooter} onHide={hideDialog} resizeable >
+		<Dialog visible={newReportDialog} style={{ width: '450px' }} header="Add Report" modal className="p-fluid" footer={newReportDialogFooter} onHide={hideDialog}>
 			<ErrorBoundary>
 				<div className='p-justify-center'>
 					<form>

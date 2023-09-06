@@ -119,7 +119,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 
 
 	return (
-		<Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" footer={newBulkLoadDialogFooter} onHide={hideDialog} resizeable >
+		<Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" footer={newBulkLoadDialogFooter} onHide={hideDialog}>
 			<ErrorBoundary>
 				<div className='p-justify-center'>
 					<form>
