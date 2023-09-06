@@ -73,10 +73,10 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	private String zecoTerm2 = "DATEST:ExpCondTerm0003";
 	private String nonSlimZecoTerm = "DATEST:NSExpCondTerm0001";
 	private String expCondTerm = "DATEST:ExpCondTerm0002";
-	private String alleleAndGeneDiseaseRelation = "is_implicated_in";
-	private String geneDiseaseRelation = "is_marker_for";
-	private String agmDiseaseRelation = "is_model_of";
-	private String agmDiseaseRelation2 = "is_exacerbated_model_of";
+	private String alleleAndGeneRelation = "is_implicated_in";
+	private String geneRelation = "is_marker_for";
+	private String agmRelation = "is_model_of";
+	private String agmRelation2 = "is_exacerbated_model_of";
 	private String geneticSex = "male";
 	private String geneticSex2 = "female";
 	private String diseaseGeneticModifierRelation = "ameliorated_by";
@@ -155,7 +155,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		loadOrganization("OBSOLETE");
 		
 		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
-		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY, false);
+		Vocabulary relationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY, false);
 		Vocabulary geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, false);
 		Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, false);
 		Vocabulary diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, false);
@@ -163,10 +163,10 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, false);
 		createVocabularyTerm(noteTypeVocabulary, noteType, false);
 		createVocabularyTerm(noteTypeVocabulary, noteType2, false);
-		VocabularyTerm alleleAndGeneDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, alleleAndGeneDiseaseRelation, false);
-		VocabularyTerm agmDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, agmDiseaseRelation, false);
-		VocabularyTerm agmDiseaseRelationVocabularyTerm2 = createVocabularyTerm(diseaseRelationVocabulary, agmDiseaseRelation2, false);
-		VocabularyTerm geneDiseaseVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, geneDiseaseRelation, false);
+		VocabularyTerm alleleAndGeneRelationVocabularyTerm = createVocabularyTerm(relationVocabulary, alleleAndGeneRelation, false);
+		VocabularyTerm agmRelationVocabularyTerm = createVocabularyTerm(relationVocabulary, agmRelation, false);
+		VocabularyTerm agmRelationVocabularyTerm2 = createVocabularyTerm(relationVocabulary, agmRelation2, false);
+		VocabularyTerm geneDiseaseVocabularyTerm = createVocabularyTerm(relationVocabulary, geneRelation, false);
 		createVocabularyTerm(diseaseQualifierVocabulary, diseaseQualifier, false);
 		createVocabularyTerm(diseaseQualifierVocabulary, diseaseQualifier2, false);
 		createVocabularyTerm(geneticSexVocabulary, geneticSex, false);
@@ -177,9 +177,9 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		createVocabularyTerm(annotationTypeVocabulary, annotationType2, false);
 		createVocabularyTerm(conditionRelationTypeVocabulary, conditionRelationType, false);
 		createVocabularyTerm(conditionRelationTypeVocabulary, conditionRelationType2, false);
-		createVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(agmDiseaseRelationVocabularyTerm, agmDiseaseRelationVocabularyTerm2));
-		createVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(alleleAndGeneDiseaseRelationVocabularyTerm));
-		createVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(geneDiseaseVocabularyTerm, alleleAndGeneDiseaseRelationVocabularyTerm));
+		createVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(agmRelationVocabularyTerm, agmRelationVocabularyTerm2));
+		createVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(alleleAndGeneRelationVocabularyTerm));
+		createVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(geneDiseaseVocabularyTerm, alleleAndGeneRelationVocabularyTerm));
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.uniqueId", is("DATEST:Gene0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
 			body("entity.subject.curie", is(gene)).
 			body("entity.object.curie", is(doTerm)).
-			body("entity.diseaseRelation.name", is(alleleAndGeneDiseaseRelation)).
+			body("entity.relation.name", is(alleleAndGeneRelation)).
 			body("entity.geneticSex.name", is(geneticSex)).
 			body("entity.conditionRelations", hasSize(1)).
 			body("entity.conditionRelations[0].internal", is(true)).
@@ -285,7 +285,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.uniqueId", is("DATEST:Allele0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
 			body("entity.subject.curie", is(allele)).
 			body("entity.object.curie", is(doTerm)).
-			body("entity.diseaseRelation.name", is(alleleAndGeneDiseaseRelation)).
+			body("entity.relation.name", is(alleleAndGeneRelation)).
 			body("entity.geneticSex.name", is(geneticSex)).
 			body("entity.conditionRelations", hasSize(1)).
 			body("entity.conditionRelations[0].internal", is(true)).
@@ -366,7 +366,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.uniqueId", is("DATEST:AGM0001|is_model_of|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
 			body("entity.subject.curie", is(agm)).
 			body("entity.object.curie", is(doTerm)).
-			body("entity.diseaseRelation.name", is(agmDiseaseRelation)).
+			body("entity.relation.name", is(agmRelation)).
 			body("entity.geneticSex.name", is(geneticSex)).
 			body("entity.conditionRelations", hasSize(1)).
 			body("entity.conditionRelations[0].internal", is(true)).
@@ -449,7 +449,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.uniqueId", is("DATEST:Gene0002|is_marker_for|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(gene2)).
 			body("entity.object.curie", is(doTerm2)).
-			body("entity.diseaseRelation.name", is(geneDiseaseRelation)).
+			body("entity.relation.name", is(geneRelation)).
 			body("entity.geneticSex.name", is(geneticSex2)).
 			body("entity.conditionRelations", hasSize(1)).
 			body("entity.conditionRelations[0].internal", is(false)).
@@ -529,7 +529,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.uniqueId", is("DATEST:Allele0002|is_implicated_in|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(allele2)).
 			body("entity.object.curie", is(doTerm2)).
-			body("entity.diseaseRelation.name", is(alleleAndGeneDiseaseRelation)).
+			body("entity.relation.name", is(alleleAndGeneRelation)).
 			body("entity.geneticSex.name", is(geneticSex2)).
 			body("entity.conditionRelations", hasSize(1)).
 			body("entity.conditionRelations[0].internal", is(false)).
@@ -610,7 +610,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.uniqueId", is("DATEST:AGM0002|is_exacerbated_model_of|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
 			body("entity.subject.curie", is(agm2)).
 			body("entity.object.curie", is(doTerm2)).
-			body("entity.diseaseRelation.name", is(agmDiseaseRelation2)).
+			body("entity.relation.name", is(agmRelation2)).
 			body("entity.geneticSex.name", is(geneticSex2)).
 			body("entity.conditionRelations", hasSize(1)).
 			body("entity.conditionRelations[0].internal", is(false)).

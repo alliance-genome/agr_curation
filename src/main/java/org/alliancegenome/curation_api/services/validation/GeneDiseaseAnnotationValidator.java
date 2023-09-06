@@ -68,7 +68,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		dbEntity.setSubject(subject);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
-		dbEntity.setDiseaseRelation(relation);
+		dbEntity.setRelation(relation);
 
 		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity, dbEntity);
 		dbEntity.setSgdStrainBackground(sgdStrainBackground);
@@ -105,20 +105,20 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		String field = "diseaseRelation";
-		if (uiEntity.getDiseaseRelation() == null) {
+		String field = "relation";
+		if (uiEntity.getRelation() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getDiseaseRelation().getName()).getEntity();
+		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
 
 		if (relation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (relation.getObsolete() && (dbEntity.getDiseaseRelation() == null || !relation.getName().equals(dbEntity.getDiseaseRelation().getName()))) {
+		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
