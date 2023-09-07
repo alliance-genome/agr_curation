@@ -78,6 +78,7 @@ ALTER INDEX diseaseannotation_diseaserelation_index RENAME TO diseaseannotation_
 ALTER TABLE singlereferenceassociation ADD CONSTRAINT singlereferenceassociation_id_fk FOREIGN KEY (id) REFERENCES association (id);
 ALTER TABLE singlereferenceassociation ADD CONSTRAINT singlereferenceassociation_singlereference_curie_fk FOREIGN KEY (singlereference_curie) REFERENCES reference (curie);
 ALTER TABLE evidenceassociation ADD CONSTRAINT evidenceassociation_id_fk FOREIGN KEY (id) REFERENCES association (id);
+ALTER TABLE annotation ADD CONSTRAINT annotation_id_fk FOREIGN KEY (id) REFERENCES singlereferenceassociation (id);
 
 ALTER TABLE singlereferenceassociation_aud ADD CONSTRAINT singlereferenceassociation_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES association_aud (id, rev);
 ALTER TABLE evidenceassociation_aud ADD CONSTRAINT evidenceassociation_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES association_aud (id, rev);
