@@ -289,13 +289,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
-		try {
-			Log.info("Waiting for Full Indexer to finish");
-			indexer.startAndWait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
+		indexer.start();
 	}
 
 	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
@@ -331,7 +325,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 
 			});
-		// indexer.dropAndCreateSchemaOnStart(true);
+
 		indexer.transactionTimeout(transactionTimeout);
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);

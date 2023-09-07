@@ -14,18 +14,29 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import org.alliancegenome.curation_api.model.event.EndProcessingEvent;
 import org.alliancegenome.curation_api.model.event.ProcessingEvent;
+import org.alliancegenome.curation_api.model.event.ProgressProcessingEvent;
+import org.alliancegenome.curation_api.model.event.StartProcessingEvent;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.HealthCheckResponseBuilder;
+import org.eclipse.microprofile.health.Liveness;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Liveness
 @ServerEndpoint("/processing_events")
 @ApplicationScoped
-public class LoadProcessingWebsocket {
+public class LoadProcessingWebsocket implements HealthCheck {
 
 	@Inject
 	ObjectMapper mapper;
 
 	Map<String, Session> sessions = new ConcurrentHashMap<>();
+	
+	private ProcessingEvent event;
 
 	@OnOpen
 	public void onOpen(Session session) {
@@ -56,6 +67,7 @@ public class LoadProcessingWebsocket {
 	}
 
 	public void observeProcessingEvent(@Observes ProcessingEvent event) {
+		this.event = event;
 		for (Entry<String, Session> sessionEntry : sessions.entrySet()) {
 			try {
 				sessionEntry.getValue().getAsyncRemote().sendText(mapper.writeValueAsString(event));
@@ -64,4 +76,34 @@ public class LoadProcessingWebsocket {
 			}
 		}
 	}
+
+	@Override
+	public HealthCheckResponse call() {
+
+		HealthCheckResponseBuilder resp = null;
+		
+		resp = HealthCheckResponse.named("Elasticsearch Indexing health check");
+		
+		try {
+			if(event != null) {
+				resp.withData("json", mapper.writeValueAsString(event));
+				if(event instanceof StartProcessingEvent event) {
+					resp.down();
+				}
+				if(event instanceof ProgressProcessingEvent event) {
+					resp.down();
+				}
+				if(event instanceof EndProcessingEvent event) {
+					resp.up();
+				}
+			} else {
+				resp.up();
+			}
+		} catch (JsonProcessingException e) {
+			resp.down();
+		}
+
+		return resp.build();
+	}
+	
 }
