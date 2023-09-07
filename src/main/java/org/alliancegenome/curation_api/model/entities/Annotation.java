@@ -47,8 +47,6 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "annotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "annotation_modEntityId_index", columnList = "modEntityId"),
 	@Index(name = "annotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "annotation_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "annotation_updatedby_index", columnList = "updatedBy_id"),
 	@Index(name = "annotation_dataprovider_index", columnList = "dataProvider_id"),
 })
 
