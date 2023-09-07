@@ -2,7 +2,7 @@ export const SORT_FIELDS = Object.freeze([
   "uniqueId",
   "modEntityId",
   "subject.symbol",
-  "diseaseRelation.name",
+  "relation.name",
   "negated",
   "object.name",
   "singleReference.primaryCrossReferenceCurie",
