@@ -38,7 +38,7 @@ export const NewAnnotationForm = ({
 									newAnnotationDispatch,
 									searchService,
 									diseaseAnnotationService,
-									diseaseRelationsTerms,
+									relationsTerms,
 									negatedTerms,
 									setNewDiseaseAnnotation
 }) => {
@@ -519,20 +519,20 @@ export const NewAnnotationForm = ({
 
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="diseaseRelation"><font color={'red'}>*</font>Disease Relation</label>
+							<label htmlFor="relation"><font color={'red'}>*</font>Disease Relation</label>
 						</div>
 						<div className={widgetColumnSize}>
 							<Dropdown
-								options={diseaseRelationsTerms}
-								value={newAnnotation.diseaseRelation}
-								name="diseaseRelation"
+								options={relationsTerms}
+								value={newAnnotation.relation}
+								name="relation"
 								optionLabel='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.diseaseRelation})}
+								className={classNames({'p-invalid': submitted && errorMessages.relation})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"relation"}/>
 						</div>
 					</div>
 
