@@ -59,7 +59,6 @@ export const AppTopbar = (props) => {
 	const ProgressIndicator = (pe) => {
 
 		if(pe.currentCount && pe.totalSize) {
-			console.log(pe);
 			return <ProgressBar value={(parseInt((pe.currentCount / pe.totalSize) * 10000) / 100)} />
 		} else if(pe.currentCount && pe.lastCount && pe.lastTime && pe.nowTime) {
 			let rate = Math.ceil(((pe.currentCount - pe.lastCount) / (pe.nowTime - pe.lastTime)) * 1000);
