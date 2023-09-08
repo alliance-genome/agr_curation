@@ -82,25 +82,24 @@ public class LoadProcessingWebsocket implements HealthCheck {
 
 		HealthCheckResponseBuilder resp = null;
 		
-		resp = HealthCheckResponse.named("Elasticsearch Indexing health check");
+		resp = HealthCheckResponse.named("Elasticsearch Indexing health check").up();
 		
 		try {
 			if(event != null) {
 				resp.withData("json", mapper.writeValueAsString(event));
+				
 				if(event instanceof StartProcessingEvent event) {
-					resp.down();
+					resp.withData("status", "Start Indexing");
 				}
 				if(event instanceof ProgressProcessingEvent event) {
-					resp.down();
+					resp.withData("status", "Indexing");
 				}
 				if(event instanceof EndProcessingEvent event) {
-					resp.up();
+					resp.withData("status", "Indexing Finished");
 				}
-			} else {
-				resp.up();
 			}
 		} catch (JsonProcessingException e) {
-			resp.down();
+			resp.withData("status", "Error: " + e.getMessage());
 		}
 
 		return resp.build();
