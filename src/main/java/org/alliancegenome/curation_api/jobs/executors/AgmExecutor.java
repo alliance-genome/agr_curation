@@ -92,7 +92,7 @@ public class AgmExecutor extends LoadFileExecutor {
 	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("AGM Update for: " + dataProvider.name(), agms.size());
 		agms.forEach(agmDTO -> {
 			try {

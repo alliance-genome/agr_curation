@@ -20,8 +20,8 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileExce
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
-import org.alliancegenome.curation_api.services.ProcessDisplayService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +35,7 @@ public class LoadFileExecutor {
 	@Inject
 	ObjectMapper mapper;
 	@Inject
-	ProcessDisplayService processDisplayService;
+	LoadProcessDisplayService loadProcessDisplayService;
 	@Inject
 	BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject
