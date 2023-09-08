@@ -1,7 +1,7 @@
 .PHONY: all build
 
 all:
-	npm install
+	npm install --legacy-peer-deps
 
 run:
 	npm start
