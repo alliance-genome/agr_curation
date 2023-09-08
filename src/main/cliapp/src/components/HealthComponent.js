@@ -27,7 +27,7 @@ export const HealthComponent = () => {
 	return (
 		<div className="card">
 			<div className="flex justify-content-between">
-				<h2>Healt Status</h2>
+				<h2>Health Status</h2>
 				<Button onClick={() => setRefresh(!refresh)} label="Refresh Table" />
 			</div>
 			<div className="fixed"><pre style={{whiteSpace: "pre-wrap"}}>{JSON.stringify(health, null, 2) }</pre></div>
