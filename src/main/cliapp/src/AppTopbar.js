@@ -4,13 +4,11 @@ import { Menu } from 'primereact/menu';
 import classNames from 'classnames';
 import { SiteContext } from './containers/layout/SiteContext';
 import useWebSocket from 'react-use-websocket';
-import { Messages } from 'primereact/messages';
 import { Message } from 'primereact/message';
 import { ProgressBar } from 'primereact/progressbar';
 
 export const AppTopbar = (props) => {
 	const menu = useRef(null);
-	const messages = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
 
 	const { apiVersion } = useContext(SiteContext);
