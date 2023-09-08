@@ -23,6 +23,7 @@ import { VocabularyTermSetPage } from './containers/vocabularyTermSetPage';
 
 import { FMSComponent } from './components/FMSComponent';
 import { MetricsComponent } from './components/MetricsComponent';
+import { HealthComponent } from './components/HealthComponent';
 
 import { SiteLayout } from './containers/layout/SiteLayout';
 //import { Login } from './Login';
@@ -100,6 +101,7 @@ export default (
 
 		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
+		<SecureRoute path="/healthpage" render={() => <ErrorBoundary><HealthComponent /></ErrorBoundary>} />
 		<SecureRoute path="/agms" render={() => <ErrorBoundary><AffectedGenomicModelPage /></ErrorBoundary>} />
 
 	</SiteLayout>
