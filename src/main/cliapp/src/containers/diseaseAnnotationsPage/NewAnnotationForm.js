@@ -437,9 +437,9 @@ export const NewAnnotationForm = ({
 
 	return(
 		<div>
-			<Toast ref={toast_error} position="top-left" />
-			<Toast ref={toast_success} position="top-right" />  
-			<Dialog visible={newAnnotationDialog} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} maximizable maximized={true}>
+			<Toast ref={toast_error} position="top-left"/>
+			<Toast ref={toast_success} position="top-right"/>
+			<Dialog visible={newAnnotationDialog} header={dialogHeader} modal className="p-fluid w-9" footer={dialogFooter} onHide={hideDialog} maximizable>
 				<ErrorBoundary>
 				<form>
 					<div className="grid">
@@ -669,7 +669,7 @@ export const NewAnnotationForm = ({
 						<div className={labelColumnSize}>
 							<label>Experimental Conditions</label>
 						</div>
-						<div className="col-9">
+						<div className={classNames('col-9')} >
 							<ConditionRelationsForm
 								dispatch={newAnnotationDispatch}
 								conditionRelations={newAnnotation.conditionRelations}
