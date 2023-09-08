@@ -61,7 +61,7 @@ jobs:
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
       - name: Publish package
-        run: mvn --batch-mode -Dmaven.test.skip=true -Dquarkus.hibernate-search-orm.elasticsearch.version=1.2.4 deploy
+        run: mvn --batch-mode -ntp -Dmaven.test.skip=true -Dquarkus.hibernate-search-orm.elasticsearch.version=1.2.4 deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
