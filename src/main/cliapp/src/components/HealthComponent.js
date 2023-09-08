@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
-import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { HealthService } from '../service/HealthService';
 
