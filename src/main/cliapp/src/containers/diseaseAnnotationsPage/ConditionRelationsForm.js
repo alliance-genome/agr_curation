@@ -123,6 +123,7 @@ export const ConditionRelationsForm = ({ dispatch, conditionRelations, showCondi
 	};
 
 	const handleDeleteRelation = (event, props) => {
+		event.preventDefault();
 		dispatch({type: "DELETE_ROW", tableType: "conditionRelations", showType: "showConditionRelations", index: props.rowIndex})
 	}
 
@@ -135,13 +136,13 @@ export const ConditionRelationsForm = ({ dispatch, conditionRelations, showCondi
 
 	return (
 		<div>
-			<Toast ref={toast_topright} position="top-right" />
+			<Toast ref={toast_topright} position="top-right" className='w-10'/>
 			{showConditionRelations &&
-				<DataTable value={conditionRelations} dataKey="dataKey" showGridlines editMode='row'
-							 editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
+				<DataTable value={conditionRelations} dataKey="dataKey" showGridlines editMode='row' editingRows={editingRows}
+					onRowEditChange={onRowEditChange} ref={tableRef} resizableColumns columnResizeMode="expand">
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' />
-					<Column editor={conditionsEditorTemplate} field="conditions.conditionSummary" header="Conditions" headerClassName='surface-0' />
+					<Column editor={conditionsEditorTemplate} field="conditions.condSummary" header="Conditions" headerClassName='surface-0' />
 					<Column editor={internalEditor} field="internal" header="Internal" headerClassName='surface-0'/>
 				</DataTable>
 			}

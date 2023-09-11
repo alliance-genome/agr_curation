@@ -6,6 +6,7 @@ quarkus.http.non-application-root-path=/
 
 quarkus.swagger-ui.always-include=true
 quarkus.swagger-ui.doc-expansion=none
+quarkus.health.openapi.included=true
 
 quarkus.datasource.db-kind=postgresql
 quarkus.datasource.username=postgres

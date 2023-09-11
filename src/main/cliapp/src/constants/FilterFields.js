@@ -72,9 +72,9 @@ export const FIELD_SETS = Object.freeze({
     filterName: "citationFilter",
     fields: ["citation"],
   },
-  shortCitationFieldSet: {
-    filterName: "shortCitationFilter",
-    fields: ["shortCitation"],
+  literatureShortCitationFieldSet: {
+    filterName: "literatureShortCitationFilter",
+    fields: ["short_citation"],
   },
   conditionAnatomyFieldSet: {
     filterName: "conditionAnatomyFilter",
@@ -158,7 +158,7 @@ export const FIELD_SETS = Object.freeze({
   },
   daAggregationFieldSet: {
     filterName: "daAggregationFilter",
-    fields: ['diseaseRelation.name', 'geneticSex.name', 'annotationType.name', 'diseaseGeneticModifierRelation.name', 'diseaseQualifiers.name', 'dataProvider.sourceOrganization.abbreviation', 'secondaryDataProvider.sourceOrganization.abbreviation', 'evidenceCodes.abbreviation'],
+    fields: ['relation.name', 'geneticSex.name', 'annotationType.name', 'diseaseGeneticModifierRelation.name', 'diseaseQualifiers.name', 'dataProvider.sourceOrganization.abbreviation', 'secondaryDataProvider.sourceOrganization.abbreviation', 'evidenceCodes.abbreviation'],
   },
   defaultUrlTemplateFieldSet: {
     filterName: "defaultUrlTemplateFilter",
@@ -175,10 +175,6 @@ export const FIELD_SETS = Object.freeze({
   diseaseQualifiersFieldSet: {
     filterName: "diseaseQualifiersFilter",
     fields: ["diseaseQualifiers.name"],
-  },
-  diseaseRelationFieldSet: {
-    filterName: "diseaseRelationFilter",
-    fields: ["diseaseRelation.name"],
   },
   evidenceCodesFieldSet: {
     filterName: "evidenceCodesFilter",
@@ -332,7 +328,11 @@ export const FIELD_SETS = Object.freeze({
     filterName: "relatedNotesFilter",
     fields: ["relatedNotes.freeText"],
   },
-  resourceDescriptorFieldSet: {
+  relationFieldSet: {
+    filterName: "relationFilter",
+    fields: ["relation.name"],
+  },
+ resourceDescriptorFieldSet: {
     filterName: "resourceDescriptorFilter",
     fields: ["resourceDescriptor.prefix", "resourceDescriptor.name"],
   },
@@ -430,7 +430,7 @@ export const FILTER_CONFIGS = Object.freeze({
   assertedAlleleFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.assertedAlleleFieldSet] },
   assertedGenesFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.assertedGenesFieldSet] },
   citationFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.citationFieldSet]},
-  shortCitationFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.shortCitationFieldSet]},
+  literatureShortCitationFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.literatureShortCitationFieldSet]},
   conditionAnatomyFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionAnatomyFieldSet] },
   conditionChemicalFilterConfig:            { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionChemicalFieldSet] },
   conditionClassFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionClassFieldSet] },
@@ -510,7 +510,7 @@ export const FILTER_CONFIGS = Object.freeze({
   geneDataProviderFilterConfig:             { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.geneAggregationFieldSet, useKeywordFields: true  },
   agmDataProviderFilterConfig:              { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.agmAggregationFieldSet, useKeywordFields: true  },
   diseaseQualifiersFilterConfig:            { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.diseaseQualifiersFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
-  diseaseRelationFilterConfig:              { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.diseaseRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
+  relationFilterConfig:                     { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.relationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticModifierRelationFilterConfig:      { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticModifierRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticSexFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticSexFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   secondaryDataProviderFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.secondaryDataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },

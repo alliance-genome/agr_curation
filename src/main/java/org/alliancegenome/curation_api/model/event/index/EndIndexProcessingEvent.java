@@ -1,11 +1,11 @@
-package org.alliancegenome.curation_api.model.event;
+package org.alliancegenome.curation_api.model.event.index;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class EndProcessingEvent extends ProcessingEvent {
+public class EndIndexProcessingEvent extends IndexProcessingEvent {
 	private String message;
 	private String data;
 	private long currentCount;

@@ -57,7 +57,7 @@ import lombok.ToString;
 @Table(indexes = { @Index(name = "allele_inCollection_index", columnList = "inCollection_id"), })
 public class Allele extends GenomicEntity {
 
-	@IndexedEmbedded(includePaths = {"crossReferences.referencedCurie", "crossReferences.displayName", "curie", "crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "curie_keyword"})
+	@IndexedEmbedded(includePaths = {"primaryCrossReferenceCurie", "crossReferences.referencedCurie", "crossReferences.displayName", "curie", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "references_curie") })

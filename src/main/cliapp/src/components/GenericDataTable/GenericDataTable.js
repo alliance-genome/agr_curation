@@ -10,8 +10,8 @@ import { Checkbox } from 'primereact/checkbox';
 
 import { FilterComponent } from '../Filters/FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
-import { DuplicationAction } from "../DuplicationAction";
-import { EntityDetailsAction } from "../EntityDetailsAction";
+import { DuplicationAction } from "../Actions/DuplicationAction";
+import { EntityDetailsAction } from "../Actions/EntityDetailsAction";
 
 
 import { filterColumns, orderColumns } from '../../utils/utils';
@@ -65,6 +65,7 @@ export const GenericDataTable = (props) => {
 		exceptionMessage,
 	} = useGenericDataTable(props);
 
+	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const [deleteDialog, setDeleteDialog] = useState(false);
 	const [deprecateDialog, setDeprecateDialog] = useState(false);
@@ -251,6 +252,7 @@ export const GenericDataTable = (props) => {
 
 	return (
 			<div className="card">
+				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<DataTable dataKey={dataKey} value={entities} header={header} ref={dataTable}
 					filterDisplay="row" scrollHeight="62vh" scrollable= {true} tableClassName='p-datatable-md'

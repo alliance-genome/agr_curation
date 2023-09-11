@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { ValidationService } from '../../service/ValidationService';
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
@@ -20,7 +19,7 @@ import { ControlledVocabularyFormDropdown } from '../../components/ControlledVoc
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/ControlledVocabularyFormMultiSelector';
 import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
-import { autocompleteSearch, buildAutocompleteFilter, validateFormBioEntityFields } from "../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter, validateFormBioEntityFields, validateTable } from "../../utils/utils";
 import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
 import { SubjectAdditionalFieldData } from "../../components/FieldData/SubjectAdditionalFieldData";
 import { AssertedAlleleAdditionalFieldData } from "../../components/FieldData/AssertedAlleleAdditionalFieldData";
@@ -39,7 +38,7 @@ export const NewAnnotationForm = ({
 									newAnnotationDispatch,
 									searchService,
 									diseaseAnnotationService,
-									diseaseRelationsTerms,
+									relationsTerms,
 									negatedTerms,
 									setNewDiseaseAnnotation
 }) => {
@@ -67,7 +66,6 @@ export const NewAnnotationForm = ({
 		isAssertedGeneEnabled,
 		isAssertedAlleleEnabled,
 	} = newAnnotationState;
-	const validationService = new ValidationService();
 	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
 	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
@@ -75,15 +73,6 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-
-	const validate = async (entities, endpoint) => {
-		const validationResultsArray = [];
-		for (const entity of entities) {
-			const result = await validationService.validate(endpoint, entity);
-			validationResultsArray.push(result);
-		}
-		return validationResultsArray;
-	};
 
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
@@ -101,34 +90,21 @@ export const NewAnnotationForm = ({
 		setUiErrorMessages({});
 	};
 
-	const validateTable = async (endpoint, errorType, table) => {
-		if(!table) return false;
-		const results = await validate(table, endpoint);
-		const errors = [];
-		let anyErrors = false;
-		results.forEach((result, index) => {
-			const {isError, data} = result;
-			if (isError) {
-				errors[index] = {};
-				if (!data) return;
-				Object.keys(data).forEach((field) => {
-					errors[index][field] = {
-						severity: "error",
-						message: data[field]
-					};
-				});
-				anyErrors = true;
-			}
-		});
-		newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors});
-		return anyErrors;
-	}
-
 	const handleSubmit = async (event, closeAfterSubmit=true) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
-		const isRelatedNotesErrors = await validateTable("note", "relatedNotesErrorMessages", newAnnotation.relatedNotes);
-		const isExConErrors = await validateTable("condition-relation", "exConErrorMessages", newAnnotation.conditionRelations);
+		const isRelatedNotesErrors = await validateTable(
+			"note", 
+			"relatedNotesErrorMessages", 
+			newAnnotation.relatedNotes, 
+			newAnnotationDispatch
+		);
+		const isExConErrors = await validateTable(
+			"condition-relation", 
+			"exConErrorMessages", 
+			newAnnotation.conditionRelations, 
+			newAnnotationDispatch
+		);
 
 		areUiErrors.current = false;
 		validateFormBioEntityFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors);
@@ -461,9 +437,9 @@ export const NewAnnotationForm = ({
 
 	return(
 		<div>
-			<Toast ref={toast_error} position="top-left" />
-			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newAnnotationDialog} style={{ width: '900px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable>
+			<Toast ref={toast_error} position="top-left"/>
+			<Toast ref={toast_success} position="top-right"/>
+			<Dialog visible={newAnnotationDialog} header={dialogHeader} modal className="p-fluid w-9" footer={dialogFooter} onHide={hideDialog} maximizable>
 				<ErrorBoundary>
 				<form>
 					<div className="grid">
@@ -543,20 +519,20 @@ export const NewAnnotationForm = ({
 
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="diseaseRelation"><font color={'red'}>*</font>Disease Relation</label>
+							<label htmlFor="relation"><font color={'red'}>*</font>Disease Relation</label>
 						</div>
 						<div className={widgetColumnSize}>
 							<Dropdown
-								options={diseaseRelationsTerms}
-								value={newAnnotation.diseaseRelation}
-								name="diseaseRelation"
+								options={relationsTerms}
+								value={newAnnotation.relation}
+								name="relation"
 								optionLabel='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.diseaseRelation})}
+								className={classNames({'p-invalid': submitted && errorMessages.relation})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"relation"}/>
 						</div>
 					</div>
 
@@ -693,7 +669,7 @@ export const NewAnnotationForm = ({
 						<div className={labelColumnSize}>
 							<label>Experimental Conditions</label>
 						</div>
-						<div className="col-6">
+						<div className={classNames('col-9')} >
 							<ConditionRelationsForm
 								dispatch={newAnnotationDispatch}
 								conditionRelations={newAnnotation.conditionRelations}

@@ -48,7 +48,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public void runLoad(BulkLoadFileHistory history, MoleculeIngestFmsDTO moleculeData) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Molecule DTO Update", moleculeData.getData().size());
 
 		for (MoleculeFmsDTO molecule : moleculeData.getData()) {

@@ -94,7 +94,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		}
 		annotation.setSingleReference(validatedReference);
 
-		ObjectResponse<AGMDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
+		ObjectResponse<AGMDiseaseAnnotation> daResponse = validateDiseaseAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 
@@ -102,7 +102,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName()).getEntity();
 			if (diseaseRelation == null)
 				adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseRelationName() + ")");
-			annotation.setDiseaseRelation(diseaseRelation);
+			annotation.setRelation(diseaseRelation);
 		} else {
 			adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}

@@ -100,7 +100,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);
 		
-		ObjectResponse<GeneDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
+		ObjectResponse<GeneDiseaseAnnotation> daResponse = validateDiseaseAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
 		
@@ -108,7 +108,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName()).getEntity();
 			if (diseaseRelation == null)
 				gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseRelationName() + ")");
-			annotation.setDiseaseRelation(diseaseRelation);
+			annotation.setRelation(diseaseRelation);
 		} else {
 			gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}

@@ -74,7 +74,7 @@
         ]
     },
     "negated": false,
-    "diseaseRelation": "is_model_of",
+    "relation": "is_model_of",
     "evidenceCodes": [
         {
             "curie": "ECO:0007191",
@@ -253,7 +253,7 @@
         ]
     },
     "negated": true,
-    "diseaseRelation": "is_model_of",
+    "relation": "is_model_of",
     "evidenceCodes": [
         {
             "curie": "ECO:0007191",
