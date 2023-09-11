@@ -2,6 +2,30 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.24.0
+ * New features
+   * Load and display Allele 'allele_nomenclature_events' attribute (SCRUM-2340)
+   * Restore gene page disease table Source column linkouts based on cross references and persistent store data (SCRUM-2372)
+   * Show reference short citation in Disease Annotations table "New Annotation" pop-up human-readable values (SCRUM-2784)
+   * Disallow entry of duplicate notes	(SCRUM-3080) 
+   * Update Alliance gene page disease table download file to include primary annotation disease relation (SCRUM-3091)
+   * Add primary disease annotation disease relation to the gene page disease table Annotation Details pop-up	(SCRUM-3092)
+   * Update species order of disease annotation display on gene pages (SCRUM-3093)
+   * Enable display of read-only allele properties on Allele Detail page (SCRUM-3120)
+   * Display allele symbol and curie at top of Allele Detail Page	(SCRUM-3198)
+   * Display species/taxon name next to Taxon data entry field on Allele Detail Page (SCRUM-3199)
+   * Collapse redundant Based On entries on gene page disease tables	(SCRUM-3201)
+
+ * Fixes and maintenance
+   * agr_mati GH-actions authentication credentials cleanup (SCRUM-3211) 
+   * Update agr_mati GH-actions authentication to AWS (SCRUM-3210) 
+   * Fix display of strain disease genetic modifier to display strain name instead of curie	(SCRUM-3203) 
+   * Need to regenerate disease annotation Unique IDs on production Postgres according to new consensus set of defining properties	(SCRUM-3190) 
+   * Release and deploy SCRUM-3143 fix to beta (as v0.22.0-rc2) (SCRUM-3144)
+   * New Taxons not showing up after they are loaded	(SCRUM-3169)
+   * Ensure submitted data meets expectations for cleanup code parameters	(SCRUM-3172)
+   * Update agr_curation GH-actions authentication to AWS to prevent usage of long-lived secrets (SCRUM-3068)
+   * cln-3.1 WB gene page disease annotations should be consolidated	(SCRUM-2933)
 ## v0.23.0
  * New features
    * "Vocabulary Label" field added to vocabularies and vocabulary term sets (SCRUM-3167)

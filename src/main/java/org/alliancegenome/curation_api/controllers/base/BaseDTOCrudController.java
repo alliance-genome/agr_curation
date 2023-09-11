@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.controllers.base;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
@@ -18,9 +19,13 @@ public abstract class BaseDTOCrudController<S extends BaseDTOCrudService<E, T, D
 		super.setService(service);
 		this.service = service;
 	}
-
+	
 	public E upsert(T dto) throws ObjectUpdateException {
-		return service.upsert(dto);
+		return upsert(dto, null);
+	}
+
+	public E upsert(T dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		return service.upsert(dto, dataProvider);
 	}
 
 }

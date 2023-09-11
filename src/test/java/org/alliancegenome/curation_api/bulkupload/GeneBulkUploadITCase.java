@@ -49,6 +49,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	private String requiredDataProvider2 = "RGD";
 	
 	private final String geneBulkPostEndpoint = "/api/gene/bulk/WB/genes";
+	private final String geneBulkPostEndpointRGD = "/api/gene/bulk/RGD/genes";
+	private final String geneBulkPostEndpointHUMAN = "/api/gene/bulk/HUMAN/genes";
 	private final String geneGetEndpoint = "/api/gene/";
 	private final String geneTestFilePath = "src/test/resources/bulk/01_gene/";
 	
@@ -148,7 +150,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void geneBulkUploadUpdateFields() throws Exception {
-		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "UD_01_update_all_except_default_fields.json");
 		
 		RestAssured.given().
 			when().
@@ -156,7 +158,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.curie", is("GENETEST:Gene0001")).
-			body("entity.taxon.curie", is("NCBITaxon:9606")).
+			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("GENETEST:Person0002")).
@@ -433,5 +435,15 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	@Order(10)
 	public void geneBulkUploadEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "EN_01_empty_non_required_fields.json");
+	}
+	
+	@Test
+	@Order(11)
+	public void geneBulkUploadDataProviderChecks() throws Exception {
+		checkFailedBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(geneBulkPostEndpointHUMAN, geneTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkSuccessfulBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "VT_02_valid_taxon_for_RGD.json");
+		checkFailedBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
+		checkFailedBulkLoad(geneBulkPostEndpointHUMAN, geneTestFilePath + "VT_02_valid_taxon_for_RGD.json");
 	}
 }
