@@ -14,24 +14,32 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-import org.alliancegenome.curation_api.model.event.load.LoadProcessingEvent;
+import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@ServerEndpoint("/load_processing_events")
+import lombok.Getter;
+
+@ServerEndpoint("/index_processing_events")
 @ApplicationScoped
-public class LoadProcessingWebsocket {
+public class IndexProcessingWebsocket {
 
 	@Inject
 	ObjectMapper mapper;
 
 	Map<String, Session> sessions = new ConcurrentHashMap<>();
 
+	@Getter
+	private IndexProcessingEvent event;
+	
 	@OnOpen
 	public void onOpen(Session session) {
 		//Log.info("Creating New Session: " + session);
 		try {
 			sessions.put(session.getId(), session);
+			if(event != null) {
+				session.getAsyncRemote().sendText(mapper.writeValueAsString(event));
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,9 +67,9 @@ public class LoadProcessingWebsocket {
 		// session.getOpenSessions().forEach(s -> s.getAsyncRemote().sendText(message));
 	}
 
-	public void observeProcessingEvent(@Observes LoadProcessingEvent event) {
+	public void observeProcessingEvent(@Observes IndexProcessingEvent event) {
+		this.event = event;
 		//Log.info(sessions);
-		//Log.info(event);
 		for (Entry<String, Session> sessionEntry : sessions.entrySet()) {
 			try {
 				sessionEntry.getValue().getAsyncRemote().sendText(mapper.writeValueAsString(event));

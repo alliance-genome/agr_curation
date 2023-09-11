@@ -41,6 +41,7 @@
         "react-router-dom": "^5.2.0",
         "react-scripts": "^5.0.0",
         "react-transition-group": "^4.4.1",
+        "react-use-websocket": "^4.4.0",
         "sass": "^1.32.8",
         "use-immer": "^0.7.0"
     },

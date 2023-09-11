@@ -106,7 +106,7 @@ export const DataLoadsComponent = () => {
 				new_uri += "//localhost:8080";
 			}
 
-			new_uri += loc.pathname + "processing_events";
+			new_uri += loc.pathname + "load_processing_events";
 			//console.log(new_uri);
 			let ws = new WebSocket(new_uri);
 
