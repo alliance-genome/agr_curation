@@ -94,7 +94,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		}
 		annotation.setSingleReference(validatedReference);
 
-		ObjectResponse<AGMDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
+		ObjectResponse<AGMDiseaseAnnotation> daResponse = validateDiseaseAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 

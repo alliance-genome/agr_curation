@@ -51,48 +51,19 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-@AGRCurationSchemaVersion(min = "1.7.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Association.class })
+@AGRCurationSchemaVersion(min = "1.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Annotation.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 
 @Table(indexes = { 
 	@Index(name = "DiseaseAnnotation_object_index", columnList = "object_curie"),
 	@Index(name = "DiseaseAnnotation_diseaseRelation_index", columnList = "diseaseRelation_id"),
-	@Index(name = "DiseaseAnnotation_singleReference_index", columnList = "singleReference_curie"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
 	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
-	@Index(name = "DiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
 	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
 	@Index(name = "DiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
 })
 
-public abstract class DiseaseAnnotation extends Association {
-
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(length = 2000)
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	protected String uniqueId;
-
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	protected String curie;
-
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	private String modEntityId;
-	
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "modInternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	private String modInternalId;
+public abstract class DiseaseAnnotation extends Annotation {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -122,22 +93,9 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "conditionrelations_id")})
-	private List<ConditionRelation> conditionRelations;
-
-	@IndexedEmbedded(includeDepth = 2)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
 	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "with_curie") })
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> with;
-
-	@IndexedEmbedded(includeDepth = 2)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
-	private Reference singleReference;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -157,19 +115,6 @@ public abstract class DiseaseAnnotation extends Association {
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private VocabularyTerm geneticSex;
-
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "relatednotes_id")})
-	private List<Note> relatedNotes;
-
-	@IndexedEmbedded(includeDepth = 2)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
-	private DataProvider dataProvider;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

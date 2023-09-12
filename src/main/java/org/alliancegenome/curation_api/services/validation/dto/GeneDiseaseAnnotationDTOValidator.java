@@ -100,7 +100,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);
 		
-		ObjectResponse<GeneDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
+		ObjectResponse<GeneDiseaseAnnotation> daResponse = validateDiseaseAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
 		

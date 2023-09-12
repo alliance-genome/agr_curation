@@ -88,7 +88,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		}
 		annotation.setSingleReference(validatedReference);
 
-		ObjectResponse<AlleleDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
+		ObjectResponse<AlleleDiseaseAnnotation> daResponse = validateDiseaseAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 

@@ -1161,7 +1161,7 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
 		},
 		{
-			field: "references.curie",
+			field: "references.primaryCrossReferenceCurie",
 			header: "References",
 			body: referencesTemplate,
 			sortable: isEnabled,

@@ -1,5 +1,4 @@
 import React, { useRef, useState } from "react";
-import { ValidationService } from '../../service/ValidationService';
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
@@ -20,7 +19,7 @@ import { ControlledVocabularyFormDropdown } from '../../components/ControlledVoc
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/ControlledVocabularyFormMultiSelector';
 import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
-import { autocompleteSearch, buildAutocompleteFilter, validateFormBioEntityFields } from "../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter, validateFormBioEntityFields, validateTable } from "../../utils/utils";
 import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
 import { SubjectAdditionalFieldData } from "../../components/FieldData/SubjectAdditionalFieldData";
 import { AssertedAlleleAdditionalFieldData } from "../../components/FieldData/AssertedAlleleAdditionalFieldData";
@@ -67,7 +66,6 @@ export const NewAnnotationForm = ({
 		isAssertedGeneEnabled,
 		isAssertedAlleleEnabled,
 	} = newAnnotationState;
-	const validationService = new ValidationService();
 	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
 	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
@@ -75,15 +73,6 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-
-	const validate = async (entities, endpoint) => {
-		const validationResultsArray = [];
-		for (const entity of entities) {
-			const result = await validationService.validate(endpoint, entity);
-			validationResultsArray.push(result);
-		}
-		return validationResultsArray;
-	};
 
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
@@ -101,34 +90,21 @@ export const NewAnnotationForm = ({
 		setUiErrorMessages({});
 	};
 
-	const validateTable = async (endpoint, errorType, table) => {
-		if(!table) return false;
-		const results = await validate(table, endpoint);
-		const errors = [];
-		let anyErrors = false;
-		results.forEach((result, index) => {
-			const {isError, data} = result;
-			if (isError) {
-				errors[index] = {};
-				if (!data) return;
-				Object.keys(data).forEach((field) => {
-					errors[index][field] = {
-						severity: "error",
-						message: data[field]
-					};
-				});
-				anyErrors = true;
-			}
-		});
-		newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors});
-		return anyErrors;
-	}
-
 	const handleSubmit = async (event, closeAfterSubmit=true) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
-		const isRelatedNotesErrors = await validateTable("note", "relatedNotesErrorMessages", newAnnotation.relatedNotes);
-		const isExConErrors = await validateTable("condition-relation", "exConErrorMessages", newAnnotation.conditionRelations);
+		const isRelatedNotesErrors = await validateTable(
+			"note", 
+			"relatedNotesErrorMessages", 
+			newAnnotation.relatedNotes, 
+			newAnnotationDispatch
+		);
+		const isExConErrors = await validateTable(
+			"condition-relation", 
+			"exConErrorMessages", 
+			newAnnotation.conditionRelations, 
+			newAnnotationDispatch
+		);
 
 		areUiErrors.current = false;
 		validateFormBioEntityFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors);

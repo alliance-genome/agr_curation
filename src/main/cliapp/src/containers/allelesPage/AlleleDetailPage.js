@@ -16,6 +16,8 @@ import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate'
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
+import { SynonymsForm } from './SynonymsForm';
+import { validateTable } from '../../utils/utils';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -46,15 +48,24 @@ const { isLoading } =	useQuery([curie],
 		return alleleService.saveAllele(allele);
 	});
 
-	const handleSubmit = (event) => {
+
+	const handleSubmit = async (event) => {
+		event.preventDefault();
 		alleleDispatch({
 			type: "SUBMIT" 
 		})
-		event.preventDefault();
+
+		const isSynonymsErrors = await validateTable(
+			"allelesynonymslotannotation", 
+			"synonymsErrorMessages", 
+			alleleState.allele.alleleSynonyms,
+			alleleDispatch,
+		);
+
 		mutation.mutate(alleleState.allele, {
-			onSuccess: (data) => {
+			onSuccess: () => {
+				if(isSynonymsErrors) return;
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
-				console.log(alleleState.errorMessages);
 			},
 			onError: (error) => {
 				let message;
@@ -171,6 +182,14 @@ const { isLoading } =	useQuery([curie],
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<SynonymsForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+						labelColumnSize={labelColumnSize}
 					/>
 
 					<Divider />
