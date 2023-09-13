@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
@@ -12,10 +12,6 @@ export const FMSComponent = () => {
 	const [rows, setRows] = useState(20);
 	const [releases, setReleases] = useState(null);
 	const [selectedRelease, setSelectedRelease] = useState({releaseVersion: '0'});
-
-	useLayoutEffect(() => {
-		
-	})
 
 	useEffect(() => {
 		const fmsService = new FMSService();
