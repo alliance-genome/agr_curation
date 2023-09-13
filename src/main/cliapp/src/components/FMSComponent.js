@@ -10,26 +10,32 @@ export const FMSComponent = () => {
 	const [snapShotDate, setSnapShotDate] = useState(0);
 	const [first, setFirst] = useState(0);
 	const [rows, setRows] = useState(20);
-	const [releases, setReleases] = useState([{ releaseVersion: '5.1.1'}]);
-	const [selectedRelease, setSelectedRelease] = useState({ releaseVersion: '5.1.1'});
+	const [releases, setReleases] = useState(null);
+	const [selectedRelease, setSelectedRelease] = useState({releaseVersion: '0'});
 
 	useEffect(() => {
 		const fmsService = new FMSService();
 		fmsService.getReleases().then(results => {
 			//console.log(results);
 			setReleases(results.reverse());
-			for(let idx of results) {
-				if(idx.releaseVersion === selectedRelease.releaseVersion) {
-					setSelectedRelease(idx);
+			if (selectedRelease.releaseVersion === '0') {
+				setSelectedRelease(results[0]);
+			} else {
+				for(let idx of results) {
+					if(idx.releaseVersion === selectedRelease.releaseVersion) {
+						setSelectedRelease(idx);
+					}
 				}
 			}
 		});
 
-		fmsService.getSnapshot(selectedRelease.releaseVersion).then(results => {
-			//console.log(results);
-			setDataFiles(results.dataFiles);
-			setSnapShotDate(results.snapShotDate);
-		});
+		if (selectedRelease.releaseVersion !== '0') {
+			fmsService.getSnapshot(selectedRelease.releaseVersion).then(results => {
+				//console.log(results);
+				setDataFiles(results.dataFiles);
+				setSnapShotDate(results.snapShotDate);
+			})
+		};
 
 	}, [selectedRelease.releaseVersion]);
 
