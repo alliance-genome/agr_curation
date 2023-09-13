@@ -94,7 +94,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<GeneDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Gene Disease Annotation Update for: " + dataProvider.name(), annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {

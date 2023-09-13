@@ -94,7 +94,7 @@ public class GeneExecutor extends LoadFileExecutor {
 	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Gene Update for: " + dataProvider.name(), genes.size());
 		genes.forEach(geneDTO -> {
 			try {

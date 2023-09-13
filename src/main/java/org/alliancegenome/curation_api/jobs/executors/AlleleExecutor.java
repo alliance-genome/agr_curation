@@ -94,7 +94,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 	public void runLoad(BulkLoadFileHistory history, List<AlleleDTO> alleles, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Allele Update for: " + dataProvider.name(), alleles.size());
 		alleles.forEach(alleleDTO -> {
 			try {

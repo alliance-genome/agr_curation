@@ -39,7 +39,7 @@ export const SecondaryIdsDialog = ({originalSecondaryIdsData, setOriginalSeconda
 
 	return (
 		<div>
-			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={true} resizable>
+			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={true}>
 				<h3>Secondary IDs</h3>
 				<DataTable value={originalSecondaryIds} dataKey="dataKey" showGridlines headerColumnGroup={headerGroup}
 								ref={tableRef}>

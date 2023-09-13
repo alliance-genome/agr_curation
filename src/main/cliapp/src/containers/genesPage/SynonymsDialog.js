@@ -42,7 +42,7 @@ export const SynonymsDialog = ({originalSynonymsData, setOriginalSynonymsData}) 
 
 	return (
 		<div>
-			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={true} resizable>
+			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={true}>
 				<h3>Synonyms</h3>
 				<DataTable value={originalSynonyms} dataKey="dataKey" showGridlines headerColumnGroup={headerGroup} ref={tableRef}>
 					<Column field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate}/>

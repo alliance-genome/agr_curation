@@ -7,7 +7,7 @@ const DEFAULT_ANNOTATION = {
 	},
 	assertedGenes : [],
 	assertedAllele : null,
-	diseaseRelation: {
+	relation: {
 		name: "",
 	},
 	negated: false,
@@ -50,7 +50,7 @@ const buildAnnotation = (rowData) => {
 		subject: global.structuredClone(rowData.subject) || DEFAULT_ANNOTATION.subject,
 		assertedGenes : global.structuredClone(rowData.assertedGenes) || DEFAULT_ANNOTATION.assertedGenes,
 		assertedAllele : global.structuredClone(rowData.assertedAllele) || DEFAULT_ANNOTATION.assertedAllele,
-		diseaseRelation: global.structuredClone(rowData.diseaseRelation) || DEFAULT_ANNOTATION.diseaseRelation,
+		relation: global.structuredClone(rowData.relation) || DEFAULT_ANNOTATION.relation,
 		negated: rowData.negated || DEFAULT_ANNOTATION.negated,
 		object: global.structuredClone(rowData.object)  || DEFAULT_ANNOTATION.object,
 		singleReference: global.structuredClone(rowData.singleReference) || DEFAULT_ANNOTATION.singleReference,
