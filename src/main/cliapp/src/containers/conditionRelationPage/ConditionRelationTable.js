@@ -67,14 +67,14 @@ export const ConditionRelationTable = () => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
-					field="conditionRelationType.name"
+					field="conditionRelationType"
 					options={conditionRelationTypeTerms}
 					editorChange={onConditionRelationTypeValueChange}
 					props={props}
 					showClear={false}
 					placeholderText={props.rowData.conditionRelationType.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationType.name"}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationType"}/>
 			</>
 		);
 	};
@@ -266,7 +266,6 @@ export const ConditionRelationTable = () => {
 				initialTableState={initialTableState}
 				isEditable={true}
 				curieFields={["singleReference"]}
-				idFields={["conditionRelationType"]}
 				mutation={mutation}
 				isEnabled={isEnabled}
 				setIsEnabled={setIsEnabled}
