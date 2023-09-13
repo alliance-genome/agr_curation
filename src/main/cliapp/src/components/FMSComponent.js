@@ -15,27 +15,36 @@ export const FMSComponent = () => {
 
 	useEffect(() => {
 		const fmsService = new FMSService();
-		fmsService.getReleases().then(results => {
-			//console.log(results);
-			setReleases(results.reverse());
-			if (selectedRelease.releaseVersion === '0') {
-				setSelectedRelease(results[0]);
-			} else {
+		
+		if (selectedRelease.releaseVersion !== '0') {
+			fmsService.getReleases().then(results => {
+				setReleases(results.sort(function(a,b){
+					return new Date(b.releaseDate) - new Date(a.releaseDate);
+				  }));
 				for(let idx of results) {
 					if(idx.releaseVersion === selectedRelease.releaseVersion) {
 						setSelectedRelease(idx);
+						break;
 					}
 				}
-			}
-		});
+			});
+		} else {
+			fmsService.getNextRelease().then(result => {
+				setSelectedRelease(result);
+			});
+		}
 
 		if (selectedRelease.releaseVersion !== '0') {
-			fmsService.getSnapshot(selectedRelease.releaseVersion).then(results => {
-				//console.log(results);
-				setDataFiles(results.dataFiles);
-				setSnapShotDate(results.snapShotDate);
-			})
-		};
+			fmsService.getSnapshot(selectedRelease.releaseVersion).then(snapShot => {
+				if (typeof snapShot !== 'undefined') {
+					setDataFiles(snapShot.dataFiles);
+					setSnapShotDate(snapShot.snapShotDate);
+				} else {
+					setDataFiles([]);
+					setSnapShotDate('');
+				}
+			});
+		}
 
 	}, [selectedRelease.releaseVersion]);
 
@@ -63,7 +72,7 @@ export const FMSComponent = () => {
 			<div className="card">
 				<h2>FMS Data</h2>
 				Release Version: <Dropdown value={selectedRelease} options={releases} optionLabel="releaseVersion" placeholder="Choose Release Version" onChange={onReleaseChange} />
-				<br />Snapshot Date: {new Date(snapShotDate).toGMTString()}
+				<br />Snapshot Date: {snapShotDate === '' ? 'No snapshot available' : new Date(snapShotDate).toGMTString()}
 				<DataTable value={dataFiles} className="p-datatable-sm"
 					paginator onPage={customPage} first={first}
 					filterDisplay="row"
