@@ -11,7 +11,7 @@ import 'core-js/features/structured-clone';
 
 describe("<ConditionRelationPage />", () => {
 	beforeEach(() => {
-		setLocalStorage('ExperimentsTableSettings', mockSettingsData);
+		//setLocalStorage('ExperimentsTableSettings', mockSettingsData);
 		setupFindHandler();
 		setupSettingsHandler();
 		setupSaveSettingsHandler();
