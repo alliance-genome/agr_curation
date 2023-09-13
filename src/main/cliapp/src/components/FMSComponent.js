@@ -20,7 +20,7 @@ export const FMSComponent = () => {
 			fmsService.getReleases().then(results => {
 				setReleases(results.sort(function(a,b){
 					return new Date(b.releaseDate) - new Date(a.releaseDate);
-				  }));
+				}));
 				for(let idx of results) {
 					if(idx.releaseVersion === selectedRelease.releaseVersion) {
 						setSelectedRelease(idx);
