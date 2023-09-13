@@ -30,7 +30,7 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(View.ConditionRelationCreateView.class)
 	ObjectResponse<ConditionRelation> create(ConditionRelation entity);
 
 	@Override
@@ -47,7 +47,7 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
 
 	@POST
 	@Path("/validate")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(View.ConditionRelationView.class)
 	ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
 
 	@POST

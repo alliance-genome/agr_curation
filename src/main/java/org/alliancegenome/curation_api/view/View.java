@@ -11,6 +11,9 @@ public class View {
 	public static class ConditionRelationView extends FieldsOnly {
 	}
 	
+	public static class ConditionRelationCreateView extends ConditionRelationView {
+	}
+	
 	public static class ConditionRelationUpdateView extends ConditionRelationView {
 	}
 
