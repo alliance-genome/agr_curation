@@ -36,9 +36,8 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 
   const nameTypeOnChangeHandler = (props, event) => {
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleFullName', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      objectType: 'alleleFullName', 
       field: "nameType", 
       value: event.target.value
     });
@@ -46,9 +45,8 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 
   const internalOnChangeHandler = (props, event) => {
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleFullName', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      objectType: 'alleleFullName', 
       field: "internal", 
       value: event.target?.value?.name
     });
@@ -56,15 +54,14 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 
   const synonymScopeOnChangeHandler = (props, event) => {
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleFullName', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      objectType: 'alleleFullName', 
       field: "synonymScope", 
       value: event.target.value
     });
   };
 
-  const textOnChangeHandler = (event, field) => {
+  const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
       type: 'EDIT_OBJECT', 
       objectType: 'alleleFullName', 
@@ -77,9 +74,8 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
     //updates value in table input box
     setFieldValue(event.target.value);
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleFullName', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      objectType: 'alleleFullName', 
       field: "evidence", 
       value: event.target.value
     });

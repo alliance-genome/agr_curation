@@ -7,7 +7,6 @@ import { TableInputTextEditor } from '../../../components/Editors/TableInputText
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
-import { useEffect } from 'react';
 
 export const FullNameFormTable = ({
   name,
@@ -22,9 +21,7 @@ export const FullNameFormTable = ({
   internalOnChangeHandler,
   evidenceOnChangeHandler,
 }) => {
-  useEffect(() => {
-    console.log("name (should be an array)", name);
-  }, [name])
+
   let headerGroup =
     <ColumnGroup>
       <Row>
