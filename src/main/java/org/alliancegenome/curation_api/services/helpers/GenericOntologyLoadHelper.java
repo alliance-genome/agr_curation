@@ -196,6 +196,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				}
 			}
 		}
+		
+		currentTerm.setChildCount(currentTerm.getIsaChildren().size());
+		currentTerm.setDescendantsCount(currentTerm.getIsaDescendants().size());
 
 		return currentTerm;
 
