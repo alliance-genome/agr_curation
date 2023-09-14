@@ -70,7 +70,7 @@ export const FMSComponent = () => {
 	return (
 		<div>
 			<div className="card">
-				<h2>FMS Data</h2>
+				<h2>FMS Data Files</h2>
 				Release Version: <Dropdown value={selectedRelease} options={releases} optionLabel="releaseVersion" placeholder="Choose Release Version" onChange={onReleaseChange} />
 				<br />Snapshot Date: {snapShotDate === '' ? 'No snapshot available' : new Date(snapShotDate).toGMTString()}
 				<DataTable value={dataFiles} className="p-datatable-sm"
