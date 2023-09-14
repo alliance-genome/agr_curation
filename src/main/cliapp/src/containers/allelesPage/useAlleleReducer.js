@@ -6,6 +6,7 @@ const initialAlleleState = {
 			curie: "",
 		},
 		alleleSynonyms: [],
+		alleleFullName: null, 
 		references: [],
 		inCollection: {
 			name: "",
@@ -15,16 +16,20 @@ const initialAlleleState = {
 		obsolete: false,
 	},
 	synonymsEditingRows: {},
+	fullNameEditingRows: {},
 	errorMessages: {},
 	synonymsErrorMessages: [],
 	submitted: false,
 	showSynonyms: false,
+	showFullName: false,
 };
 
 const alleleReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
 			const allele = action.value;
+			//todo: refactor these two if statements (maybe a constant array of strings that list all table types, and for each run this code?)
+			//this may need to include if it is an object or array
 			if(allele?.alleleSynonyms){
 				let clonableEntities = global.structuredClone(allele.alleleSynonyms);
 				clonableEntities.forEach((entity, index) => {
@@ -36,6 +41,13 @@ const alleleReducer = (draft, action) => {
 				draft.showSynonyms = true;
 			} else {
 				allele.alleleSynonyms = [];
+			}
+			if(allele?.alleleFullName){
+				allele.alleleFullName.dataKey = 0;
+				draft.fullNameEditingRows[0] = true;
+				draft.showFullName = true;
+			} else {
+				allele.alleleFullName = null;
 			}
 			draft.allele = allele;
 			break;
@@ -49,6 +61,9 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'EDIT_ROW':
 			draft.allele[action.tableType][action.index][action.field] = action.value;
+			break;
+		case 'EDIT_OBJECT':
+			draft.allele[action.objectType][action.field] = action.value;
 			break;
 		case 'ADD_ROW':
 			draft.allele[action.tableType].push(action.row);
