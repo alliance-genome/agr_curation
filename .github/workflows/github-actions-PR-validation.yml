@@ -82,7 +82,7 @@ jobs:
         working-directory: src/main/cliapp
         run: |
           npm install
-          echo "npm test -- --watchAll=false"
+          npm test -- --watchAll=false
           npm run build
   test-build-docker-image:
       runs-on: ubuntu-20.04
