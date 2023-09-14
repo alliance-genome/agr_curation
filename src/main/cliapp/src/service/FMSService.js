@@ -14,4 +14,12 @@ export class FMSService {
 			return axios.get('https://fms.alliancegenome.org/api/releaseversion/next').then(res => res.data);
 		}
 
+		getDataTypes() {
+			return axios.get('https://fms.alliancegenome.org/api/datatype/all').then(res => res.data);
+		}
+
+		getDataFiles(dataType, latest = true) {
+			return axios.get('https://fms.alliancegenome.org/api/datafile/by/' + dataType + "?latest=" + latest).then(res => res.data);
+		}
+
 }
