@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
-import { FormTableWrapper } from "../../components/FormTableWrapper";
-import { SynonymsFormTable } from "./synonyms/SynonymsFormTable";
+import { FormTableWrapper } from "../../../components/FormTableWrapper";
+import { SynonymsFormTable } from "./SynonymsFormTable";
 import { useRef } from "react";
 
 export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
