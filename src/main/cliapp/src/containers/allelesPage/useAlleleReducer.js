@@ -81,6 +81,10 @@ const alleleReducer = (draft, action) => {
 				draft[action.showType] = false;
 			}
 			break;
+		case 'DELETE_OBJECT':
+			draft.allele[action.objectType] = null;
+			draft[action.showType] = false;
+			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft[action.errorType]= action.errorMessages;
 			break;

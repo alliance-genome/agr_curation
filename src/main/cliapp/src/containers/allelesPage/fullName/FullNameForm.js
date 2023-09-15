@@ -79,9 +79,9 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
     });
   }
 
-  const deletionHandler  = (e, index) => {
+  const deletionHandler  = (e) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", tableType: "alleleFullName", showType: "showFullName", index: index});
+    dispatch({type: "DELETE_OBJECT", objectType: "alleleFullName", showType: "showFullName"});
   };
 
   return (
