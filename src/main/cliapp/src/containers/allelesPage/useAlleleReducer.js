@@ -29,8 +29,6 @@ const alleleReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
 			const allele = action.value;
-			//todo: refactor these two if statements (maybe a constant array of strings that list all table types, and for each run this code?)
-			//this may need to include if it is an object or array
 			if(allele?.alleleSynonyms){
 				let clonableEntities = global.structuredClone(allele.alleleSynonyms);
 				clonableEntities.forEach((entity, index) => {
