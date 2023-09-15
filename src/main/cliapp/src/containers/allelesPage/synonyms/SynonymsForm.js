@@ -109,7 +109,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
       }
       tableName="Synonyms"
       showTable={state.showSynonyms}
-      button={<Button label="Add Synonym" onClick={createNewSynonymHandler} style={{ width: "50%" }} />}
+      button={<Button label="Add Synonym" onClick={createNewSynonymHandler} className="w-6"/>}
     />
   );
 

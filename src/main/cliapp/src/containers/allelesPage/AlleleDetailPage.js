@@ -63,9 +63,16 @@ const { isLoading } =	useQuery([curie],
 			alleleDispatch,
 		);
 
+		const isFullNameErrors = await validateTable(
+			"allelefullnameslotannotation", 
+			"fullNameErrorMessages", 
+			[alleleState.allele.alleleFullName],
+			alleleDispatch,
+		);
+
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isSynonymsErrors) return;
+				if(isSynonymsErrors || isFullNameErrors) return;
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
 			onError: (error) => {

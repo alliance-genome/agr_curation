@@ -19,6 +19,7 @@ const initialAlleleState = {
 	fullNameEditingRows: {},
 	errorMessages: {},
 	synonymsErrorMessages: [],
+	fullNameErrorMessages: [],
 	submitted: false,
 	showSynonyms: false,
 	showFullName: false,
@@ -92,6 +93,7 @@ const alleleReducer = (draft, action) => {
 			draft.submitted = true;
 			draft.errorMessages = {};
 			draft.synonymsErrorMessages = [];
+			draft.fullNameErrorMessages = [];
 			break;
 		default:
       throw Error('Unknown action: ' + action.type);
