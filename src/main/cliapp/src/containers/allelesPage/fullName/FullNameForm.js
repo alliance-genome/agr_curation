@@ -10,22 +10,20 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 
   const createNewFullNameHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.alleleSynonyms?.length;
-    const newSynonym = {
-      dataKey: dataKey,
+    const newFullName = {
+      dataKey: 0,
       synonymUrl: "",
       internal: false,
-      obsolete: false,
       nameType: null,
       formatText: "",
       displayText: ""
     }
 
     dispatch({
-      type: "ADD_ROW", 
+      type: "ADD_OBJECT", 
       showType: "showFullName", 
-      row: newSynonym, 
-      tableType: "alleleFullName", 
+      value: newFullName, 
+      objectType: "alleleFullName", 
       editingRowsType: "fullNameEditingRows" 
     })
   };

@@ -70,6 +70,11 @@ const alleleReducer = (draft, action) => {
 			draft[action.editingRowsType][`${action.row.dataKey}`] = true;
 			draft[action.showType]= true;
 			break;
+		case 'ADD_OBJECT':
+			draft.allele[action.objectType] = action.value
+			draft[action.editingRowsType][`${action.value.dataKey}`] = true;
+			draft[action.showType]= true;
+			break;
 		case 'DELETE_ROW':
 			draft.allele[action.tableType].splice(action.index, 1);
 			if(draft.allele[action.tableType].length === 0){
