@@ -7,6 +7,7 @@ import { TableInputTextEditor } from '../../../components/Editors/TableInputText
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
+import { VocabularyTermSetEditor } from '../../../components/Editors/VocabularyTermSetEditor';
 
 export const FullNameFormTable = ({
   name,
@@ -80,12 +81,12 @@ export const FullNameFormTable = ({
         field="synonymScope.name" header="Synonym Scope" headerClassName='surface-0' />
       <Column
         editor={(props) => {
-          return <ControlledVocabularyEditor
+          return <VocabularyTermSetEditor
             props={props}
             onChangeHandler={nameTypeOnChangeHandler}
             errorMessages={errorMessages}
             rowIndex={props.rowIndex}
-            vocabType="name_type"
+            vocabType="full_name_type"
             field="nameType"
             showClear={false}
           />;
