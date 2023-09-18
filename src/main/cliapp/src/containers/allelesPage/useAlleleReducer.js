@@ -6,6 +6,7 @@ const initialAlleleState = {
 			curie: "",
 		},
 		alleleSynonyms: [],
+		alleleFullName: null, 
 		references: [],
 		inCollection: {
 			name: "",
@@ -15,10 +16,13 @@ const initialAlleleState = {
 		obsolete: false,
 	},
 	synonymsEditingRows: {},
+	fullNameEditingRows: {},
 	errorMessages: {},
 	synonymsErrorMessages: [],
+	fullNameErrorMessages: [],
 	submitted: false,
 	showSynonyms: false,
+	showFullName: false,
 };
 
 const alleleReducer = (draft, action) => {
@@ -37,6 +41,13 @@ const alleleReducer = (draft, action) => {
 			} else {
 				allele.alleleSynonyms = [];
 			}
+			if(allele?.alleleFullName){
+				allele.alleleFullName.dataKey = 0;
+				draft.fullNameEditingRows[0] = true;
+				draft.showFullName = true;
+			} else {
+				allele.alleleFullName = null;
+			}
 			draft.allele = allele;
 			break;
 		case 'RESET':
@@ -50,9 +61,17 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT_ROW':
 			draft.allele[action.tableType][action.index][action.field] = action.value;
 			break;
+		case 'EDIT_OBJECT':
+			draft.allele[action.objectType][action.field] = action.value;
+			break;
 		case 'ADD_ROW':
 			draft.allele[action.tableType].push(action.row);
 			draft[action.editingRowsType][`${action.row.dataKey}`] = true;
+			draft[action.showType]= true;
+			break;
+		case 'ADD_OBJECT':
+			draft.allele[action.objectType] = action.value
+			draft[action.editingRowsType][`${action.value.dataKey}`] = true;
 			draft[action.showType]= true;
 			break;
 		case 'DELETE_ROW':
@@ -61,6 +80,10 @@ const alleleReducer = (draft, action) => {
 				draft[action.showType] = false;
 			}
 			break;
+		case 'DELETE_OBJECT':
+			draft.allele[action.objectType] = null;
+			draft[action.showType] = false;
+			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft[action.errorType]= action.errorMessages;
 			break;
@@ -68,6 +91,7 @@ const alleleReducer = (draft, action) => {
 			draft.submitted = true;
 			draft.errorMessages = {};
 			draft.synonymsErrorMessages = [];
+			draft.fullNameErrorMessages = [];
 			break;
 		default:
       throw Error('Unknown action: ' + action.type);
