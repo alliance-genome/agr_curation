@@ -6,7 +6,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
-import { MutationTypesDialog } from './MutationTypesDialog';
+import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
 import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './InheritanceModesDialog';
 import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';

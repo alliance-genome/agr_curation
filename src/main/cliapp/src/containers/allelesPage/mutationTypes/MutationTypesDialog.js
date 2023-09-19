@@ -6,17 +6,17 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { ListTableCell } from '../../components/ListTableCell';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { SearchService } from '../../service/SearchService';
-import { ValidationService } from '../../service/ValidationService';
-import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from "../../utils/utils";
-import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
-import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
+import { ListTableCell } from '../../../components/ListTableCell';
+import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
+import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { SearchService } from '../../../service/SearchService';
+import { ValidationService } from '../../../service/ValidationService';
+import { AutocompleteMultiEditor } from "../../../components/Autocomplete/AutocompleteMultiEditor";
+import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from "../../../utils/utils";
+import { SubjectAutocompleteTemplate } from '../../../components/Autocomplete/SubjectAutocompleteTemplate';
+import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 
 export const MutationTypesDialog = ({
 													originalMutationTypesData,
