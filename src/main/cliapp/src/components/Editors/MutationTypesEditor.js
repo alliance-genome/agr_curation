@@ -15,7 +15,6 @@ const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 };
 export const MutationTypesEditor = ({ props, errorMessages, onChange }) => {
-	console.log("rowData", props.rowData);
 	return (
 		<>
 			<AutocompleteMultiEditor

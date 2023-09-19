@@ -87,6 +87,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const deletionHandler  = (e, index) => {
     e.preventDefault();
     dispatch({type: "DELETE_ROW", tableType: "alleleSynonyms", showType: "showSynonyms", index: index});
+    dispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "synonymsErrorMessages", errorMessages: []});
   };
 
   return (
