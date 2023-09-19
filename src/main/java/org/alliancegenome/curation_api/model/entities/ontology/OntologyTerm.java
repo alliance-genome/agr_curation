@@ -130,7 +130,7 @@ public class OntologyTerm extends CurieAuditedObject {
 	private Integer childCount = 0;
 	
 	@JsonView(View.FieldsOnly.class)
-	private Integer descendantsCount = 0;
+	private Integer descendantCount = 0;
 
 	@Transient
 	public void addIsaChild(OntologyTerm term) {
