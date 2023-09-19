@@ -7,6 +7,7 @@ const initialAlleleState = {
 		},
 		alleleSynonyms: [],
 		alleleFullName: null, 
+		alleleMutationTypes: [],
 		references: [],
 		inCollection: {
 			name: "",
@@ -17,18 +18,22 @@ const initialAlleleState = {
 	},
 	synonymsEditingRows: {},
 	fullNameEditingRows: {},
+	mutationTypesEditingRows: {},
 	errorMessages: {},
 	synonymsErrorMessages: [],
 	fullNameErrorMessages: [],
+	mutationTypesErrorMessages: [],
 	submitted: false,
 	showSynonyms: false,
 	showFullName: false,
+	showMutationTypes: false,
 };
 
 const alleleReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
 			const allele = action.value;
+
 			if(allele?.alleleSynonyms){
 				let clonableEntities = global.structuredClone(allele.alleleSynonyms);
 				clonableEntities.forEach((entity, index) => {
@@ -41,6 +46,20 @@ const alleleReducer = (draft, action) => {
 			} else {
 				allele.alleleSynonyms = [];
 			}
+
+			if(allele?.alleleMutationTypes){
+				let clonableEntities = global.structuredClone(allele.alleleMutationTypes);
+				clonableEntities.forEach((entity, index) => {
+					entity.dataKey = index;
+					draft.mutationTypesEditingRows[`${entity.dataKey}`] = true;
+				});
+
+				allele.alleleMutationTypes = clonableEntities;
+				draft.showMutationTypes = true;
+			} else {
+				allele.alleleMutationTypes = [];
+			}
+
 			if(allele?.alleleFullName){
 				allele.alleleFullName.dataKey = 0;
 				draft.fullNameEditingRows[0] = true;
@@ -48,6 +67,7 @@ const alleleReducer = (draft, action) => {
 			} else {
 				allele.alleleFullName = null;
 			}
+
 			draft.allele = allele;
 			break;
 		case 'RESET':
@@ -92,6 +112,7 @@ const alleleReducer = (draft, action) => {
 			draft.errorMessages = {};
 			draft.synonymsErrorMessages = [];
 			draft.fullNameErrorMessages = [];
+			draft.mutationTypesErrorMessages = [];
 			break;
 		default:
       throw Error('Unknown action: ' + action.type);
