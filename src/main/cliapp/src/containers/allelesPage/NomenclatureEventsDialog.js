@@ -280,6 +280,7 @@ export const NomenclatureEventsDialog = ({
 		_localNomenclatureEvents.push({
 			dataKey : cnt,
 			internal : false,
+			obsolete: false
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
