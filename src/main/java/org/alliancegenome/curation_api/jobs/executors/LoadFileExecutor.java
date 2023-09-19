@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
+import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;

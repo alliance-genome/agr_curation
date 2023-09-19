@@ -301,9 +301,6 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		
-		if (uiEntity.getModEntityId() != null)
-			dbEntity.setModEntityId(uiEntity.getModEntityId());
-
 		DOTerm term = validateObject(uiEntity, dbEntity);
 		dbEntity.setObject(term);
 

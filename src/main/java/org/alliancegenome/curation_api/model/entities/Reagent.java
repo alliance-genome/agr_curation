@@ -12,8 +12,11 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -44,7 +47,8 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "reagent_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "reagent_dataprovider_index", columnList = "dataProvider_id"),
 	@Index(name = "reagent_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id")
+	@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "reagent_taxon_index", columnList = "taxon_curie")
 })
 
 public class Reagent extends GeneratedAuditedObject {
@@ -75,6 +79,13 @@ public class Reagent extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String modInternalId;
+	
+	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
+	private NCBITaxonTerm taxon;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

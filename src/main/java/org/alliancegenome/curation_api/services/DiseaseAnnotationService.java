@@ -103,7 +103,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			diseaseAnnotationDAO.remove(id);
 
 			if (CollectionUtils.isNotEmpty(notesToDelete))
-				annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
+				notesToDelete.forEach(note -> noteService.delete(note.getId()));
 		}
 
 		return null;

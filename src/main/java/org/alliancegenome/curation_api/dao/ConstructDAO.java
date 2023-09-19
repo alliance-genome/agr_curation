@@ -19,10 +19,10 @@ public class ConstructDAO extends BaseSQLDAO<Construct> {
 		super(Construct.class);
 	}
 
-	public List<String> findAllIdsByDataProvider(String dataProvider) {
+	public List<Long> findAllIdsByDataProvider(String dataProvider) {
 		Query jpqlQuery = entityManager.createQuery("SELECT construct.id FROM Construct construct WHERE construct.dataProvider.sourceOrganization.abbreviation = :dataProvider");
 		jpqlQuery.setParameter("dataProvider", dataProvider);
-		return (List<String>) jpqlQuery.getResultList();
+		return (List<Long>) jpqlQuery.getResultList();
 	}
 
 }

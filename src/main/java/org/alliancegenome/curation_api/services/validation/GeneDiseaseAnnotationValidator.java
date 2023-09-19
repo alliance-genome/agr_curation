@@ -55,7 +55,6 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	public GeneDiseaseAnnotation validateAnnotationCreate(GeneDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Cound not create Gene Disease Annotation";
-		;
 
 		GeneDiseaseAnnotation dbEntity = new GeneDiseaseAnnotation();
 
