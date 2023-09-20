@@ -43,7 +43,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(7)
+@Order(9)
 public class GeneITCase extends BaseITCase {
 
 	private final String GENE = "GENE:0001";

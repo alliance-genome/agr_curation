@@ -54,7 +54,11 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 
 	@Override
 	public ObjectResponse<Construct> get(String identifier) {
-		SearchResponse<Construct> ret = findByField("modEntityId", identifier);
+		SearchResponse<Construct> ret = findByField("curie", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<Construct>(ret.getResults().get(0));
+		
+		ret = findByField("modEntityId", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
 			return new ObjectResponse<Construct>(ret.getResults().get(0));
 		
@@ -85,9 +89,9 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 
 	@Transactional
 	public Construct upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		Construct annotation = constructDtoValidator.validateConstructDTO(dto, dataProvider);
+		Construct construct = constructDtoValidator.validateConstructDTO(dto, dataProvider);
 
-		return constructDAO.persist(annotation);
+		return constructDAO.persist(construct);
 	}
 
 	@Override

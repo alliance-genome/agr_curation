@@ -8,6 +8,7 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.DISEASE_
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_INGEST;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecut
 import org.alliancegenome.curation_api.jobs.executors.AgmExecutor;
 import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
+import org.alliancegenome.curation_api.jobs.executors.ConstructExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
@@ -46,12 +48,13 @@ public class BulkLoadJobExecutor {
 	@Inject ResourceDescriptorExecutor resourceDescriptorExecutor;
 	@Inject OrthologyExecutor orthologyExecutor;
 	@Inject OntologyExecutor ontologyExecutor;
+	@Inject ConstructExecutor constructExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
 
-		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, FULL_INGEST);
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, CONSTRUCT, FULL_INGEST);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -75,6 +78,9 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == GENE || loadType == FULL_INGEST) {
 				geneExecutor.runLoad(bulkLoadFile, cleanUp);
+			}
+			if (loadType == CONSTRUCT || loadType == FULL_INGEST) {
+				constructExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {

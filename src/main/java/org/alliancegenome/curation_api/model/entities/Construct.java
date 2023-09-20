@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Audited
 @Entity
@@ -38,6 +39,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "construct", description = "POJO that represents a construct")
+@ToString(exclude = {"constructComponents"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 public class Construct extends Reagent {
@@ -50,7 +52,7 @@ public class Construct extends Reagent {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
 		@Index(name = "construct_reference_construct_id_index", columnList = "construct_id"),
 		@Index(name = "construct_reference_references_curie_index", columnList = "references_curie")
@@ -60,6 +62,6 @@ public class Construct extends Reagent {
 	@IndexedEmbedded(includePaths = { "componentSymbol", "taxon.curie", "taxonText", "componentSymbol_keyword", "taxon.curie_keyword", "taxonText_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
 }

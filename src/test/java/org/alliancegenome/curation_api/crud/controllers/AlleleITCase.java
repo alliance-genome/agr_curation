@@ -51,7 +51,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(8)
+@Order(10)
 public class AlleleITCase extends BaseITCase {
 
 	private final String ALLELE = "Allele:0001";

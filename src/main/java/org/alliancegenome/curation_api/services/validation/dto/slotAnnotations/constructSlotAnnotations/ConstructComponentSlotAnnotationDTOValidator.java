@@ -40,6 +40,9 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 	public ObjectResponse<ConstructComponentSlotAnnotation> validateConstructComponentSlotAnnotationDTO(ConstructComponentSlotAnnotation annotation, ConstructComponentSlotAnnotationDTO dto) {
 		ObjectResponse<ConstructComponentSlotAnnotation> ccsaResponse = new ObjectResponse<ConstructComponentSlotAnnotation>();
 
+		if (annotation == null)
+			annotation = new ConstructComponentSlotAnnotation();
+		
 		ObjectResponse<ConstructComponentSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		ccsaResponse.addErrorMessages(saResponse.getErrorMessages());

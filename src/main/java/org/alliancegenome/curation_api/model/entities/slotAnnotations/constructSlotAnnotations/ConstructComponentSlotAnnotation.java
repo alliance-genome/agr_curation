@@ -47,7 +47,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "ConstructComponentSlotAnnotation", description = "POJO representing a construct component slot annotation")
-@Table(indexes = { @Index(name = "constructcomponentslotannotation_nametype_index", columnList = "nameType_id"), @Index(name = "nameslotannotation_synonymscope_index", columnList = "synonymScope_id") })
+@Table(indexes = { @Index(name = "constructcomponentslotannotation_singleconstruct_index", columnList = "singleConstruct_id"), @Index(name = "constructcomponentslotannotation_componentsymbol_index", columnList = "componentSymbol"), @Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_curie") })
 public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
 	@OneToOne
@@ -77,7 +77,7 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = { @Index(name = "constructcomponentsa_note_ccsa_id_index", columnList = "constructcomponentslotannotation_id"), @Index(name = "constructcomponentsa_note_relatednotes_id_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 }

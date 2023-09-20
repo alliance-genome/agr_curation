@@ -40,7 +40,11 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 
 	@Override
 	public ObjectResponse<GeneDiseaseAnnotation> get(String identifier) {
-		SearchResponse<GeneDiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		SearchResponse<GeneDiseaseAnnotation> ret = findByField("curie", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modEntityId", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
 			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
 		

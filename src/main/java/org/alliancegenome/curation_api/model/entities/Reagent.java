@@ -93,16 +93,16 @@ public class Reagent extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	protected DataProvider dataProvider;
 	
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
-	protected Agent generatedBy;
+	//@IndexedEmbedded(includeDepth = 1)
+	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	//@ManyToOne
+	//@JsonView({ View.FieldsOnly.class })
+	//protected Agent generatedBy;
 	
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
-	protected Agent manufacturedBy;
+	//@IndexedEmbedded(includeDepth = 1)
+	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	//@ManyToOne
+	//@JsonView({ View.FieldsOnly.class })
+	//protected Agent manufacturedBy;
 
 }
