@@ -7,15 +7,15 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
+import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
-import io.quarkiverse.hibernate.types.json.JsonTypes;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
@@ -46,7 +46,7 @@ public class PersonSetting extends GeneratedAuditedObject {
 	@JsonView(View.PersonSettingView.class)
 	private String settingsKey;
 
-	@Column(columnDefinition = JsonTypes.JSON)
+	@JdbcTypeCode(SqlTypes.JSON)
 	@JsonView(View.PersonSettingView.class)
 	private Map<String, Object> settingsMap;
 

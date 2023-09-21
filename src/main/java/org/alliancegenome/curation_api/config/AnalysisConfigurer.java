@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.config;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurer;
