@@ -16,10 +16,8 @@ export const MutationTypesForm = ({ state, dispatch }) => {
 
     dispatch({
       type: "ADD_ROW", 
-      showType: "showMutationTypes", 
       row: newMutationType, 
-      tableType: "alleleMutationTypes", 
-      editingRowsType: "mutationTypesEditingRows" 
+      entityType: "alleleMutationTypes", 
     })
   };
 
@@ -32,7 +30,7 @@ export const MutationTypesForm = ({ state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleMutationTypes', 
+      entityType: 'alleleMutationTypes', 
       index: props.rowIndex, 
       field: "mutationTypes", 
       value: event.target.value
@@ -42,7 +40,7 @@ export const MutationTypesForm = ({ state, dispatch }) => {
   const internalOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleMutationTypes', 
+      entityType: 'alleleMutationTypes', 
       index: props.rowIndex, 
       field: "internal", 
       value: event.target?.value?.name
@@ -54,7 +52,7 @@ export const MutationTypesForm = ({ state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleMutationTypes', 
+      entityType: 'alleleMutationTypes', 
       index: props.rowIndex, 
       field: "evidence", 
       value: event.target.value
@@ -63,8 +61,8 @@ export const MutationTypesForm = ({ state, dispatch }) => {
 
   const deletionHandler  = (e, index) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", tableType: "alleleMutationTypes", showType: "showMutationTypes", index: index});
-    dispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "mutationTypesErrorMessages", errorMessages: []});
+    dispatch({type: "DELETE_ROW", entityType: "alleleMutationTypes", index: index});
+    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleMutationTypes", errorMessages: []});
   };
 
   return (
@@ -72,18 +70,18 @@ export const MutationTypesForm = ({ state, dispatch }) => {
       table={
         <MutationTypesFormTable
           mutationTypes={state.allele?.alleleMutationTypes}
-          editingRows={state.mutationTypesEditingRows}
+          editingRows={state.entityStates.alleleMutationTypes.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.mutationTypesErrorMessages}
+          errorMessages={state.entityStates.alleleMutationTypes.errorMessages}
           mutationTypesOnChangeHandler={mutationTypesOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
         />
       }
       tableName="Mutation Types"
-      showTable={state.showMutationTypes}
+      showTable={state.entityStates.alleleMutationTypes.show}
       button={<Button label="Add Mutation Type" onClick={createNewMutationTypeHandler} className="w-6"/>}
     />
   );

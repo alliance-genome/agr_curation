@@ -17,7 +17,7 @@ import { DataProviderFormTemplate } from '../../components/Templates/DataProvide
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
-import { validateTable } from '../../utils/utils';
+import { validateAlleleDetailTable } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 
@@ -57,23 +57,23 @@ const { isLoading } =	useQuery([curie],
 			type: "SUBMIT" 
 		})
 
-		const isSynonymsErrors = await validateTable(
+		const isSynonymsErrors = await validateAlleleDetailTable(
 			"allelesynonymslotannotation", 
-			"synonymsErrorMessages", 
+			"alleleSynonyms", 
 			alleleState.allele.alleleSynonyms,
 			alleleDispatch,
 		);
 
-		const isFullNameErrors = await validateTable(
+		const isFullNameErrors = await validateAlleleDetailTable(
 			"allelefullnameslotannotation", 
-			"fullNameErrorMessages", 
+			"alleleFullName", 
 			[alleleState.allele.alleleFullName],
 			alleleDispatch,
 		);
 
-		const isMutationTypesErrors = await validateTable(
+		const isMutationTypesErrors = await validateAlleleDetailTable(
 			"allelemutationtypeslotannotation", 
-			"mutationTypesErrorMessages", 
+			"alleleMutationTypes", 
 			alleleState.allele.alleleMutationTypes,
 			alleleDispatch,
 		);
@@ -98,7 +98,6 @@ const { isLoading } =	useQuery([curie],
 				alleleDispatch(
 					{
 						type: "UPDATE_ERROR_MESSAGES", 
-						errorType: "errorMessages", 
 						errorMessages: error.response?.data?.errorMessages || {}
 					}
 				);
