@@ -136,7 +136,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 		for (Long id : idsToRemove) {
 			try {
 				String loadDescription = dataProviderName + " construct bulk load (" + md5sum + ")";
-				service.removeOrDeprecateNonUpdated(id, false, loadDescription, true);
+				service.removeOrDeprecateNonUpdated(id, false, loadDescription);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();

@@ -97,13 +97,13 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	@Override
 	@Transactional
 	public ObjectResponse<Construct> delete(Long id) {
-		constructService.removeOrDeprecateNonUpdated(id, true, "Construct DELETE API call", false);
+		constructService.removeOrDeprecateNonUpdated(id, true, "Construct DELETE API call");
 		ObjectResponse<Construct> ret = new ObjectResponse<>();
 		return ret;
 	}
 	
 	@Transactional
-	public Construct removeOrDeprecateNonUpdated(Long id, Boolean throwApiError, String loadDescription, Boolean deprecateConstruct) {
+	public Construct removeOrDeprecateNonUpdated(Long id, Boolean throwApiError, String loadDescription) {
 		Construct construct = constructDAO.find(id);
 
 		if (construct == null) {
@@ -116,8 +116,12 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 			log.error(errorMessage);
 			return null;
 		}
+		
+		Boolean anyReferencingEntities = false;
+		// TODO: implement check for any referencing entities and code for their deprecation
+		// once links between constructs and other entities have been established
 
-		if (deprecateConstruct) {
+		if (anyReferencingEntities) {
 			if (!construct.getObsolete()) {
 				construct.setObsolete(true);
 				if (authenticatedPerson.getOktaEmail() != null) {
