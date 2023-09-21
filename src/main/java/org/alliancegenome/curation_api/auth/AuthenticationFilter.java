@@ -3,8 +3,6 @@ package org.alliancegenome.curation_api.auth;
 import java.io.IOException;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.AllianceMemberDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.AllianceMember;
@@ -28,6 +26,7 @@ import io.quarkus.logging.Log;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;

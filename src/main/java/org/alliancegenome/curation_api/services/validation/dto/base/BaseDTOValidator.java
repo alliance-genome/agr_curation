@@ -3,8 +3,6 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -25,6 +23,7 @@ import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOVa
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class BaseDTOValidator {

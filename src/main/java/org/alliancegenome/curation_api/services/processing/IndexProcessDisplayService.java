@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.processing;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.model.event.index.EndIndexProcessingEvent;
 import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 import org.alliancegenome.curation_api.model.event.index.ProgressIndexProcessingEvent;
@@ -10,6 +8,7 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHandler;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class IndexProcessDisplayService implements ProcessDisplayHandler {

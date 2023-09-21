@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.healthcheck;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.model.event.index.EndIndexProcessingEvent;
 import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 import org.alliancegenome.curation_api.model.event.index.ProgressIndexProcessingEvent;
@@ -16,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @Liveness
 @ApplicationScoped

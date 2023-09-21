@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.ResourceDescriptorDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
@@ -20,6 +18,7 @@ import org.apache.commons.collections4.ListUtils;
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.services;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
@@ -16,6 +14,7 @@ import io.quarkus.logging.Log;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped

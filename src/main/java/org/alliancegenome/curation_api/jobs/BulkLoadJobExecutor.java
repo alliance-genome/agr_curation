@@ -15,8 +15,6 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.VARIANT;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
@@ -36,6 +34,7 @@ import org.alliancegenome.curation_api.jobs.executors.associations.constructAsso
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
