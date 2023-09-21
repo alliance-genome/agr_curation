@@ -32,7 +32,6 @@ public class AlleleSecondaryIdSlotAnnotation extends SecondaryIdSlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference
-	@Fetch(FetchMode.JOIN)
 	private Allele singleAllele;
 
 }

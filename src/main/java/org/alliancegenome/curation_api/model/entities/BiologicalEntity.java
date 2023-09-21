@@ -49,7 +49,6 @@ public class BiologicalEntity extends CurieAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
 	
 	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
@@ -57,7 +56,6 @@ public class BiologicalEntity extends CurieAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private DataProvider dataProvider;
 
 }

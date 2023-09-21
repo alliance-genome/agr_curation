@@ -57,7 +57,6 @@ public class Note extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private VocabularyTerm noteType;
 
 	@IndexedEmbedded(includeDepth = 1)

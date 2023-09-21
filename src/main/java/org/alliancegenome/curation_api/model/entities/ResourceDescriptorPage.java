@@ -46,7 +46,6 @@ public class ResourceDescriptorPage extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.ResourceDescriptorPageView.class })
-	@Fetch(FetchMode.JOIN)
 	private ResourceDescriptor resourceDescriptor;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

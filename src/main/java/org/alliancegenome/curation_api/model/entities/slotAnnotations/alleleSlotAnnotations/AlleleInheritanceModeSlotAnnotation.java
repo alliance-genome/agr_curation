@@ -46,21 +46,18 @@ public class AlleleInheritanceModeSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference
-	@Fetch(FetchMode.JOIN)
 	private Allele singleAllele;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private VocabularyTerm inheritanceMode;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private PhenotypeTerm phenotypeTerm;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

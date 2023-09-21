@@ -92,7 +92,6 @@ public class Person extends Agent {
 
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
-	@Fetch(FetchMode.JOIN)
 	private AllianceMember allianceMember;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

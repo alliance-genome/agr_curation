@@ -62,7 +62,6 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.VocabularyTermSetView.class })
-	@Fetch(FetchMode.JOIN)
 	private Vocabulary vocabularyTermSetVocabulary;
 
 	@IndexedEmbedded(includeDepth = 1)

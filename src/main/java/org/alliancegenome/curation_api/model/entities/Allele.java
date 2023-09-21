@@ -70,7 +70,6 @@ public class Allele extends GenomicEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private VocabularyTerm inCollection;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
@@ -97,14 +96,12 @@ public class Allele extends GenomicEntity {
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private AlleleFullNameSlotAnnotation alleleFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -123,7 +120,6 @@ public class Allele extends GenomicEntity {
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private AlleleGermlineTransmissionStatusSlotAnnotation alleleGermlineTransmissionStatus;
 
 	@IndexedEmbedded(includePaths = { "functionalImpacts.name", "phenotypeTerm.curie", "phenotypeTerm.name", "phenotypeStatement","evidence.curie", "functionalImpacts.name_keyword", "phenotypeTerm.curie_keyword", "phenotypeTerm.name_keyword", "phenotypeStatement_keyword", "evidence.curie_keyword"})

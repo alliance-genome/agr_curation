@@ -49,7 +49,6 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference
-	@Fetch(FetchMode.JOIN)
 	private Allele singleAllele;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -64,7 +63,6 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private PhenotypeTerm phenotypeTerm;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

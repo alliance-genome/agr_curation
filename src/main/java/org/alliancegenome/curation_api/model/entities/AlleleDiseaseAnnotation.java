@@ -50,14 +50,12 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_alleledasubject"))
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private Allele subject;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private Gene inferredGene;
 
 	@IndexedEmbedded(includeDepth = 2)

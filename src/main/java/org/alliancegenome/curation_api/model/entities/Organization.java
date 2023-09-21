@@ -62,6 +62,5 @@ public class Organization extends Agent {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private ResourceDescriptorPage homepageResourceDescriptorPage;
 }

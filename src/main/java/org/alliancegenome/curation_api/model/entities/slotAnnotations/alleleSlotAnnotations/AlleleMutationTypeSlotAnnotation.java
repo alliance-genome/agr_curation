@@ -41,7 +41,6 @@ public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference
-	@Fetch(FetchMode.JOIN)
 	private Allele singleAllele;
 
 	@IndexedEmbedded(includeDepth = 1)

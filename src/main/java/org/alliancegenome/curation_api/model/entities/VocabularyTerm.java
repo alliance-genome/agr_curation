@@ -70,7 +70,6 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.VocabularyTermView.class, View.VocabularyTermUpdate.class, View.VocabularyTermSetView.class })
-	@Fetch(FetchMode.JOIN)
 	private Vocabulary vocabulary;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

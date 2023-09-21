@@ -42,14 +42,12 @@ public class AuditedObject extends BaseEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView(View.FieldsOnly.class)
-	@Fetch(FetchMode.JOIN)
 	private Person createdBy;
 
 	@IndexedEmbedded(includePaths = {"uniqueId", "uniqueId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView(View.FieldsOnly.class)
-	@Fetch(FetchMode.JOIN)
 	private Person updatedBy;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))

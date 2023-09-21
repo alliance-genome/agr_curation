@@ -31,7 +31,6 @@ public class AlleleSynonymSlotAnnotation extends NameSlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference
-	@Fetch(FetchMode.JOIN)
 	private Allele singleAllele;
 
 }
