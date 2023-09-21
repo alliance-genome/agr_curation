@@ -1,0 +1,58 @@
+import React from "react";
+import { BrowserRouter } from "react-router-dom/cjs/react-router-dom";
+import { waitFor } from "@testing-library/react";
+import { renderWithClient } from '../../../tools/jest/utils';
+import { ConstructsTable } from "../ConstructsTable";
+import { setLocalStorage } from "../../../tools/jest/setupTests";
+import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
+import { data } from "../mockData/mockData.js";
+import 'core-js/features/structured-clone';
+
+describe("<ConstructsTable />", () => {
+	beforeEach(() => {
+		setupFindHandler();
+		setupSettingsHandler();
+		setupSaveSettingsHandler();
+		setupSearchHandler(data);
+	});
+
+	it("Renders without crashing", async () => {
+		let result = await renderWithClient(<BrowserRouter><ConstructsTable /></BrowserRouter>);
+		
+		await waitFor(() => {
+			expect(result);
+		});
+
+	});
+
+	it("Contains Correct Table Name", async () => {
+		let result = await renderWithClient(<BrowserRouter><ConstructsTable /></BrowserRouter>);
+
+		const tableTitle = await result.findByText(/Constructs Table/i);
+		expect(tableTitle).toBeInTheDocument();
+	});
+
+	it("Contains Correct Table Data", async () => {
+		let result = await renderWithClient(<BrowserRouter><ConstructsTable /></BrowserRouter>);
+
+		const modEntityTd = await result.findByText(/WB:WBCnstr00000001/i);
+		const nameTd = await result.findByText(/Test construct/i);
+		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
+		const referencesTd = await result.findByText(/AGRKB:101000000622406/i);
+		const updatedByCreatedByArray = await result.findAllByText("WB:curator");
+		const dateCreatedTd = await result.findByText(/2010-01-02T00:00:00Z/i);
+		const dateUpdatedTd = await result.findByText(/2012-08-03T01:00:00\+01:00/i);
+		const constructComponentTd = await result.findByText(/egl19/i);
+
+		await waitFor(() => {
+			expect(modEntityTd).toBeInTheDocument();
+			expect(nameTd).toBeInTheDocument();
+			expect(taxonTd).toBeInTheDocument();
+			expect(referencesTd).toBeInTheDocument();
+			expect(updatedByCreatedByArray.length).toEqual(2);
+			expect(dateUpdatedTd).toBeInTheDocument();
+			expect(dateCreatedTd).toBeInTheDocument();
+			expect(constructComponentTd).toBeInTheDocument();
+		});
+	});
+});
