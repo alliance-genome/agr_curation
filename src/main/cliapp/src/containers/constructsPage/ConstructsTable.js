@@ -67,7 +67,7 @@ export const ConstructsTable = () => {
 	const nameTemplate = (rowData) => {
 		return (
 			<>
-				<div className={`overflow-hidden text-overflow-ellipsis ${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
+				<div className={`overflow-hidden text-overflow-ellipsis name_${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
 				<Tooltip target={`.name_${rowData.id}`}>
 					<div dangerouslySetInnerHTML={{ __html: rowData.name }} />
 				</Tooltip>
@@ -79,7 +79,7 @@ export const ConstructsTable = () => {
 		if (rowData?.taxon) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`taxon_${rowData.id}`}>
 						{rowData.taxon.name} ({rowData.taxon.curie})
 					</EllipsisTableCell>
 					<Tooltip target={`.taxon_${rowData.id}`} content={`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>

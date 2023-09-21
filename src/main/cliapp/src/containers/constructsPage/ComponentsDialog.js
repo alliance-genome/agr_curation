@@ -87,7 +87,7 @@ export const ComponentsDialog = ({
 	const componentSymbolTemplate = (rowData) => {
 		return (
 			<>
-				<div className={`overflow-hidden text-overflow-ellipsis ${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.componentSymbol }} />
+				<div className={`overflow-hidden text-overflow-ellipsis componentSymbol_${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.componentSymbol }} />
 				<Tooltip target={`.componentSymbol_${rowData.id}`}>
 					<div dangerouslySetInnerHTML={{ __html: rowData.componentSymbol }} />
 				</Tooltip>
@@ -98,7 +98,7 @@ export const ComponentsDialog = ({
 	const taxonTextTemplate = (rowData) => {
 		return (
 			<>
-				<div className={`overflow-hidden text-overflow-ellipsis ${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.taxonText }} />
+				<div className={`overflow-hidden text-overflow-ellipsis taxonText_${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.taxonText }} />
 				<Tooltip target={`.taxonText_${rowData.id}`}>
 					<div dangerouslySetInnerHTML={{ __html: rowData.taxonText }} />
 				</Tooltip>
