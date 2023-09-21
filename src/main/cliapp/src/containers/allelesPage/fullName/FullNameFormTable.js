@@ -43,7 +43,7 @@ export const FullNameFormTable = ({
     <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
-        style={{ maxWidth: '4rem' }} frozen headerClassName='surface-0' bodyStyle={{ textAlign: 'center' }} />
+        className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column
         editor={(props) => {
           return <TableInputTextEditor

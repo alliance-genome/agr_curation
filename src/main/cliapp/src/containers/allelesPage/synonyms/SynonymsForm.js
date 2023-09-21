@@ -8,7 +8,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
   const createNewSynonymHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.alleleSynonyms?.length;
+    const dataKey = state.allele.alleleSynonyms?.length;
     const newSynonym = {
       dataKey: dataKey,
       synonymUrl: "",
@@ -21,10 +21,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
     dispatch({
       type: "ADD_ROW", 
-      showType: "showSynonyms", 
       row: newSynonym, 
-      tableType: "alleleSynonyms", 
-      editingRowsType: "synonymsEditingRows" 
+      entityType: "alleleSynonyms", 
     })
   };
 
@@ -35,7 +33,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const nameTypeOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
+      entityType: 'alleleSynonyms', 
       index: props.rowIndex, 
       field: "nameType", 
       value: event.target.value
@@ -45,7 +43,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const internalOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
+      entityType: 'alleleSynonyms', 
       index: props.rowIndex, 
       field: "internal", 
       value: event.target?.value?.name
@@ -55,7 +53,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const synonymScopeOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
+      entityType: 'alleleSynonyms', 
       index: props.rowIndex, 
       field: "synonymScope", 
       value: event.target.value
@@ -65,7 +63,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
+      entityType: 'alleleSynonyms', 
       index: rowIndex, 
       field: field, 
       value: event.target.value
@@ -77,7 +75,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
+      entityType: 'alleleSynonyms', 
       index: props.rowIndex, 
       field: "evidence", 
       value: event.target.value
@@ -86,7 +84,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
   const deletionHandler  = (e, index) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", tableType: "alleleSynonyms", showType: "showSynonyms", index: index});
+    dispatch({type: "DELETE_ROW", entityType: "alleleSynonyms", index: index});
+    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleSynonyms", errorMessages: []});
   };
 
   return (
@@ -95,11 +94,11 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
       table={
         <SynonymsFormTable
           synonyms={state.allele?.alleleSynonyms}
-          editingRows={state.synonymsEditingRows}
+          editingRows={state.entityStates.alleleSynonyms.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.synonymsErrorMessages}
+          errorMessages={state.entityStates.alleleSynonyms.errorMessages}
           textOnChangeHandler={textOnChangeHandler}
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}
@@ -108,7 +107,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
         />
       }
       tableName="Synonyms"
-      showTable={state.showSynonyms}
+      showTable={state.entityStates.alleleSynonyms.show}
       button={<Button label="Add Synonym" onClick={createNewSynonymHandler} className="w-6"/>}
     />
   );

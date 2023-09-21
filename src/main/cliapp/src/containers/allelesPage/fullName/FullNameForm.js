@@ -21,10 +21,8 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 
     dispatch({
       type: "ADD_OBJECT", 
-      showType: "showFullName", 
       value: newFullName, 
-      objectType: "alleleFullName", 
-      editingRowsType: "fullNameEditingRows" 
+      entityType: "alleleFullName", 
     })
   };
 
@@ -35,7 +33,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   const nameTypeOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      objectType: 'alleleFullName', 
+      entityType: 'alleleFullName', 
       field: "nameType", 
       value: event.target.value
     });
@@ -44,7 +42,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   const internalOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      objectType: 'alleleFullName', 
+      entityType: 'alleleFullName', 
       field: "internal", 
       value: event.target?.value?.name
     });
@@ -53,7 +51,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   const synonymScopeOnChangeHandler = (props, event) => {
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      objectType: 'alleleFullName', 
+      entityType: 'alleleFullName', 
       field: "synonymScope", 
       value: event.target.value
     });
@@ -62,7 +60,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      objectType: 'alleleFullName', 
+      entityType: 'alleleFullName', 
       field: field, 
       value: event.target.value
     });
@@ -73,7 +71,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      objectType: 'alleleFullName', 
+      entityType: 'alleleFullName', 
       field: "evidence", 
       value: event.target.value
     });
@@ -81,8 +79,8 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 
   const deletionHandler  = (e) => {
     e.preventDefault();
-    dispatch({type: "DELETE_OBJECT", objectType: "alleleFullName", showType: "showFullName"});
-    dispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "fullNameErrorMessages", errorMessages: []});
+    dispatch({type: "DELETE_OBJECT", entityType: "alleleFullName"});
+    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFullName", errorMessages: []});
   };
 
   return (
@@ -91,11 +89,11 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
       table={
         <FullNameFormTable
           name={fullNameArray}
-          editingRows={state.fullNameEditingRows}
+          editingRows={state.entityStates.alleleFullName.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.fullNameErrorMessages}
+          errorMessages={state.entityStates.alleleFullName.errorMessages}
           textOnChangeHandler={textOnChangeHandler}
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}
@@ -104,7 +102,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
         />
       }
       tableName="Full Name"
-      showTable={state.showFullName}
+      showTable={state.entityStates.alleleFullName.show}
       button={<Button label="Add Full Name" onClick={createNewFullNameHandler} disabled={state.allele?.alleleFullName} className="w-6"/>}
     />
   );
