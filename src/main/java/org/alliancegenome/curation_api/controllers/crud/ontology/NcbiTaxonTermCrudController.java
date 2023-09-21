@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.ontology;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermController;
@@ -9,6 +7,9 @@ import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.NcbiTaxonTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class NcbiTaxonTermCrudController extends BaseOntologyTermController<NcbiTaxonTermService, NCBITaxonTerm, NcbiTaxonTermDAO> implements NcbiTaxonTermCrudInterface {

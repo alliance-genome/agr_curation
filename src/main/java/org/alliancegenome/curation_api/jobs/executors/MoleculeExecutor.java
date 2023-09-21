@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.io.FileInputStream;
 import java.util.zip.GZIPInputStream;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -16,6 +15,8 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeIngestFmsDTO
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class MoleculeExecutor extends LoadFileExecutor {

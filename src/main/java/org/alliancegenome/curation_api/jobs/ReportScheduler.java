@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.time.ZonedDateTime;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
@@ -24,6 +22,8 @@ import com.cronutils.parser.CronParser;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 import io.vertx.mutiny.core.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ReportScheduler {

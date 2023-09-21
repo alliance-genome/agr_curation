@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.slotAnnotations.alleleSlotAnnotations;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
@@ -11,9 +9,13 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationService;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+
 @RequestScoped
 public class AlleleFunctionalImpactSlotAnnotationCrudController extends
-	BaseEntityCrudController<AlleleFunctionalImpactSlotAnnotationService, AlleleFunctionalImpactSlotAnnotation, AlleleFunctionalImpactSlotAnnotationDAO> implements AlleleFunctionalImpactSlotAnnotationCrudInterface {
+		BaseEntityCrudController<AlleleFunctionalImpactSlotAnnotationService, AlleleFunctionalImpactSlotAnnotation, AlleleFunctionalImpactSlotAnnotationDAO>
+		implements AlleleFunctionalImpactSlotAnnotationCrudInterface {
 
 	@Inject
 	AlleleFunctionalImpactSlotAnnotationService alleleFunctionalImpactService;

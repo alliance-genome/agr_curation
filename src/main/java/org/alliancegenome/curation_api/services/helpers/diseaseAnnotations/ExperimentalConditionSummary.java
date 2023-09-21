@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
@@ -19,6 +18,8 @@ import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOn
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class ExperimentalConditionSummary {

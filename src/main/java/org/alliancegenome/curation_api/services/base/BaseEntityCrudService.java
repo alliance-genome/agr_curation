@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
@@ -16,9 +15,8 @@ import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
-import lombok.extern.jbosslog.JBossLog;
+import jakarta.transaction.Transactional;
 
-@JBossLog
 public abstract class BaseEntityCrudService<E extends BaseEntity, D extends BaseEntityDAO<E>> {
 
 	protected BaseSQLDAO<E> dao;

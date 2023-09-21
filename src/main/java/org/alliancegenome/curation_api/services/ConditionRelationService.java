@@ -4,10 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
@@ -22,6 +19,10 @@ import org.alliancegenome.curation_api.services.validation.ConditionRelationVali
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class ConditionRelationService extends BaseEntityCrudService<ConditionRelation, ConditionRelationDAO> {

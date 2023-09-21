@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.controllers;
 import java.util.List;
 import java.util.Map;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.base.SystemSQLDAO;
@@ -12,6 +11,8 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ConditionRelationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ExperimentalConditionService;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class SystemController implements SystemControllerInterface {

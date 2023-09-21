@@ -1,11 +1,12 @@
 package org.alliancegenome.curation_api.dao;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.Query;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class AnnotationDAO extends BaseSQLDAO<Annotation> {

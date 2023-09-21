@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.orthology;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
@@ -12,6 +10,9 @@ import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthol
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class GeneToGeneOrthologyGeneratedCrudController extends BaseEntityCrudController<GeneToGeneOrthologyGeneratedService, GeneToGeneOrthologyGenerated, GeneToGeneOrthologyGeneratedDAO> implements GeneToGeneOrthologyGeneratedCrudInterface {

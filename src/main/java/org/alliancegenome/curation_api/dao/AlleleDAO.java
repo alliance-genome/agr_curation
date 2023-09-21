@@ -3,12 +3,13 @@ package org.alliancegenome.curation_api.dao;
 import java.math.BigInteger;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.Query;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {

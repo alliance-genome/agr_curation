@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.ResourceDescriptorDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -21,6 +18,9 @@ import org.alliancegenome.curation_api.services.validation.dto.ResourceDescripto
 import org.apache.commons.collections4.ListUtils;
 
 import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDescriptor, ResourceDescriptorDAO> {

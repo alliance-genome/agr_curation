@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.ontology;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermController;
@@ -9,6 +7,9 @@ import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntolog
 import org.alliancegenome.curation_api.interfaces.crud.ontology.ExperimentalConditionOntologyTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class ExperimentalConditionOntologyTermCrudController

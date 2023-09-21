@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
@@ -22,6 +21,7 @@ import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class AlleleExecutor extends LoadFileExecutor {
