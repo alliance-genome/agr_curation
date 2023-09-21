@@ -8,13 +8,10 @@ import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObjec
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import io.quarkiverse.hibernate.types.json.JsonBinaryType;
 import io.quarkiverse.hibernate.types.json.JsonTypes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,15 +29,13 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "bulkLoadFileHistory", "exception" }, callSuper = true)
-@TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @AGRCurationSchemaVersion(min = "1.2.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class BulkLoadFileException extends GeneratedAuditedObject {
 
 	// TODO: define in LinkML once class definition matured
 
-	@Type(type = JsonTypes.JSON_BIN)
 	@JsonView({ View.FieldsOnly.class })
-	@Column(columnDefinition = JsonTypes.JSON_BIN)
+	@Column(columnDefinition = JsonTypes.JSON)
 	private ObjectUpdateExceptionData exception;
 
 	@ManyToOne

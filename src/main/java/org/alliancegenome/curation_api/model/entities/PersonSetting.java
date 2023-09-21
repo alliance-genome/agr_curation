@@ -32,7 +32,6 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = "person")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(indexes = {
 	@Index(name = "personsetting_createdby_index", columnList = "createdBy_id"),
@@ -48,8 +47,7 @@ public class PersonSetting extends GeneratedAuditedObject {
 	@JsonView(View.PersonSettingView.class)
 	private String settingsKey;
 
-	@Type(type = JsonTypes.JSON_BIN)
-	@Column(columnDefinition = JsonTypes.JSON_BIN)
+	@Column(columnDefinition = JsonTypes.JSON)
 	@JsonView(View.PersonSettingView.class)
 	private Map<String, Object> settingsMap;
 
