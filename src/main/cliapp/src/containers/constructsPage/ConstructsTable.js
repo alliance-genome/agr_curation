@@ -187,18 +187,18 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 		},
 		{
-			field: "references.primaryCrossReferenceCurie",
-			header: "References",
-			body: referencesTemplate,
-			sortable: { isEnabled },
-			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-		},
-		{
 			field: "constructComponents.componentSymbol",
 			header: "Components",
 			body: componentsTemplate,
 			sortable: { isEnabled },
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
+		},
+		{
+			field: "references.primaryCrossReferenceCurie",
+			header: "References",
+			body: referencesTemplate,
+			sortable: { isEnabled },
+			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 		},
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",

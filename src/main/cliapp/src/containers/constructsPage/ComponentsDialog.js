@@ -7,6 +7,8 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { Button } from 'primereact/button';
+import { RelatedNotesDialog } from './RelatedNotesDialog';
 
 export const ComponentsDialog = ({
 	originalComponentsData,
@@ -17,6 +19,14 @@ export const ComponentsDialog = ({
 	const { originalComponents, dialog } = originalComponentsData;
 	const [localComponents, setLocalComponents] = useState(null) ;
 	const tableRef = useRef(null);
+
+	const [relatedNotesData, setRelatedNotesData] = useState({
+		relatedNotes: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
 
 	const showDialogHandler = () => {
 		let _localComponents = cloneComponents(originalComponents);
@@ -51,12 +61,25 @@ export const ComponentsDialog = ({
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
 	};
 
+	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+		let _relatedNotesData = {};
+		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
+		_relatedNotesData["dialog"] = true;
+		_relatedNotesData["isInEdit"] = isInEdit;
+		setRelatedNotesData(() => ({
+			..._relatedNotesData
+		}));
+	};
+
 	const relatedNotesTemplate = (rowData) => {
 		if (rowData?.relatedNotes) {
 			return (
-				<div>
-					{`Notes(${rowData.relatedNotes.length})`}
-				</div>
+				<Button className="p-button-text"
+					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
+					<span style={{ textDecoration: 'underline' }}>
+						{`Notes(${rowData.relatedNotes.length})`}
+					</span>
+				</Button>
 			)
 		}
 	};
@@ -101,9 +124,9 @@ export const ComponentsDialog = ({
 								<Column header="Component Symbol" />
 								<Column header="Taxon" />
 								<Column header="Taxon Text" />
-								<Column header="Internal" />
-								<Column header="Evidence" />
 								<Column header="RelatedNotes" />
+								<Column header="Evidence" />
+								<Column header="Internal" />
 							</Row>
 						</ColumnGroup>;
 
@@ -117,12 +140,18 @@ export const ComponentsDialog = ({
 						<Column field="componentSymbol" header="Mutation Type" headerClassName='surface-0' body={componentSymbolTemplate}/>
 						<Column field="taxon" header="Taxon" headerClassName='surface-0' body={taxonTemplate}/>
 						<Column field="taxonText" header="Taxon Text" headerClassName='surface-0' body={taxonTextTemplate}/>
-						<Column field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-						<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 						<Column field="relatedNotes.freeText" header="Related Notes" headerClassName='surface-0' body={relatedNotesTemplate}/>
+						<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+						<Column field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					</DataTable>
 				</Dialog>
 			</div>
+			<RelatedNotesDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				errorMessagesMainRow={errorMessagesMainRow}
+				setErrorMessagesMainRow={setErrorMessagesMainRow}
+			/>
 		</>
 	);
 };
