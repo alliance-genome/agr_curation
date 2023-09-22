@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services.validation;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Reagent;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -20,8 +19,6 @@ public class ReagentValidator extends AuditedObjectValidator<Reagent> {
 	DataProviderService dataProviderService;
 	@Inject
 	DataProviderValidator dataProviderValidator;
-	@Inject
-	DataProviderDAO dataProviderDAO;
 
 	public Reagent validateCommonReagentFields(Reagent uiEntity, Reagent dbEntity) {
 		
@@ -90,9 +87,6 @@ public class ReagentValidator extends AuditedObjectValidator<Reagent> {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
-		if (validatedDataProvider.getId() == null)
-			validatedDataProvider = dataProviderDAO.persist(validatedDataProvider);
 		
 		return validatedDataProvider;
 	}
