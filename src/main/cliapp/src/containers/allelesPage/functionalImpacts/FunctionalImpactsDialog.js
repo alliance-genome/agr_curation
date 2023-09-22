@@ -6,19 +6,19 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { ListTableCell } from '../../components/ListTableCell';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { SearchService } from '../../service/SearchService';
-import { ValidationService } from '../../service/ValidationService';
-import { autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange } from "../../utils/utils";
-import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
-import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
-import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
+import { ListTableCell } from '../../../components/ListTableCell';
+import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
+import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { SearchService } from '../../../service/SearchService';
+import { ValidationService } from '../../../service/ValidationService';
+import { autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange } from "../../../utils/utils";
+import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
+import { AutocompleteMultiEditor } from "../../../components/Autocomplete/AutocompleteMultiEditor";
+import { AutocompleteEditor } from '../../../components/Autocomplete/AutocompleteEditor';
+import { InputTextAreaEditor } from '../../../components/InputTextAreaEditor';
+import { VocabTermAutocompleteTemplate } from '../../../components/Autocomplete/VocabTermAutocompleteTemplate';
 
 export const FunctionalImpactsDialog = ({
 													originalFunctionalImpactsData,
