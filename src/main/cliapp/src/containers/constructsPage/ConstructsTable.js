@@ -177,7 +177,7 @@ export const ConstructsTable = () => {
 			header: "Name",
 			body: nameTemplate,
 			sortable: { isEnabled },
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig
+			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
 		{
 			field: "taxon.name",

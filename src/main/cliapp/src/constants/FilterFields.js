@@ -130,7 +130,7 @@ export const FIELD_SETS = Object.freeze({
   },
   constructComponentsFieldSet: {
     filterName: "constructComponentsFilter",
-    fields: ["constructComponents.componentSymbol", "constructComponents.evidence.curie", "constructComponents.taxon.curie", "constructComponents.taxon.name", "constructComponents.relatedNotes.freeText", "constructComponents.taxonText"],
+    fields: ["constructComponents.componentSymbol"],
   },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
