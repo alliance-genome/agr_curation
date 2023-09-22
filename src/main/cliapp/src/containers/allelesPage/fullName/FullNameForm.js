@@ -1,30 +1,28 @@
 import { Button } from "primereact/button";
-import { FormTableWrapper } from "../../components/FormTableWrapper";
-import { SynonymsFormTable } from "./synonyms/SynonymsFormTable";
+import { FormTableWrapper } from "../../../components/FormTableWrapper";
+import { FullNameFormTable } from "./FullNameFormTable";
 import { useRef } from "react";
 
-export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
+export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
 
-  const createNewSynonymHandler = (e) => {
+  const fullNameArray = [state.allele?.alleleFullName];
+
+  const createNewFullNameHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.alleleSynonyms?.length;
-    const newSynonym = {
-      dataKey: dataKey,
+    const newFullName = {
+      dataKey: 0,
       synonymUrl: "",
       internal: false,
-      obsolete: false,
       nameType: null,
       formatText: "",
       displayText: ""
     }
 
     dispatch({
-      type: "ADD_ROW", 
-      showType: "showSynonyms", 
-      row: newSynonym, 
-      tableType: "alleleSynonyms", 
-      editingRowsType: "synonymsEditingRows" 
+      type: "ADD_OBJECT", 
+      value: newFullName, 
+      entityType: "alleleFullName", 
     })
   };
 
@@ -34,9 +32,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
   const nameTypeOnChangeHandler = (props, event) => {
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      entityType: 'alleleFullName', 
       field: "nameType", 
       value: event.target.value
     });
@@ -44,9 +41,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
   const internalOnChangeHandler = (props, event) => {
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      entityType: 'alleleFullName', 
       field: "internal", 
       value: event.target?.value?.name
     });
@@ -54,9 +50,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
   const synonymScopeOnChangeHandler = (props, event) => {
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      entityType: 'alleleFullName', 
       field: "synonymScope", 
       value: event.target.value
     });
@@ -64,9 +59,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
   const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
-      index: rowIndex, 
+      type: 'EDIT_OBJECT', 
+      entityType: 'alleleFullName', 
       field: field, 
       value: event.target.value
     });
@@ -76,30 +70,30 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     //updates value in table input box
     setFieldValue(event.target.value);
     dispatch({ 
-      type: 'EDIT_ROW', 
-      tableType: 'alleleSynonyms', 
-      index: props.rowIndex, 
+      type: 'EDIT_OBJECT', 
+      entityType: 'alleleFullName', 
       field: "evidence", 
       value: event.target.value
     });
   }
 
-  const deletionHandler  = (e, index) => {
+  const deletionHandler  = (e) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", tableType: "alleleSynonyms", showType: "showSynonyms", index: index});
+    dispatch({type: "DELETE_OBJECT", entityType: "alleleFullName"});
+    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFullName", errorMessages: []});
   };
 
   return (
     <FormTableWrapper
       labelColumnSize={labelColumnSize}
       table={
-        <SynonymsFormTable
-          synonyms={state.allele?.alleleSynonyms}
-          editingRows={state.synonymsEditingRows}
+        <FullNameFormTable
+          name={fullNameArray}
+          editingRows={state.entityStates.alleleFullName.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.synonymsErrorMessages}
+          errorMessages={state.entityStates.alleleFullName.errorMessages}
           textOnChangeHandler={textOnChangeHandler}
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}
@@ -107,9 +101,9 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
           evidenceOnChangeHandler={evidenceOnChangeHandler}
         />
       }
-      tableName="Synonyms"
-      showTable={state.showSynonyms}
-      button={<Button label="Add Synonym" onClick={createNewSynonymHandler} style={{ width: "50%" }} />}
+      tableName="Full Name"
+      showTable={state.entityStates.alleleFullName.show}
+      button={<Button label="Add Full Name" onClick={createNewFullNameHandler} disabled={state.allele?.alleleFullName} className="w-6"/>}
     />
   );
 

@@ -6,24 +6,23 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
-import { ValidationService } from '../../service/ValidationService';
-import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
-import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../components/NameSlotAnnotationComponent';
+import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
+import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector';
+import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { ValidationService } from '../../../service/ValidationService';
+import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
+import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
 
-export const FullNameDialog = ({
-													originalFullNameData,
-													setOriginalFullNameData,
+export const SynonymsDialog = ({
+													originalSynonymsData,
+													setOriginalSynonymsData,
 													errorMessagesMainRow,
 													setErrorMessagesMainRow
 												}) => {
-	const { originalFullNames, isInEdit, dialog, rowIndex, mainRowProps } = originalFullNameData;
-	const [localFullNames, setLocalFullNames] = useState(null) ;
+	const { originalSynonyms, isInEdit, dialog, rowIndex, mainRowProps } = originalSynonymsData;
+	const [localSynonyms, setLocalSynonyms] = useState(null) ;
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -33,16 +32,16 @@ export const FullNameDialog = ({
 	const toast_topright = useRef(null);
 
 	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
-	const fullNameTypeTerms = useVocabularyTermSetService('full_name_type');
+	const synonymTypeTerms = useControlledVocabularyService('name_type');
 
 	const showDialogHandler = () => {
-		let _localFullNames = cloneFullNames(originalFullNames);
-		setLocalFullNames(_localFullNames);
+		let _localSynonyms = cloneSynonyms(originalSynonyms);
+		setLocalSynonyms(_localSynonyms);
 
 		if(isInEdit){
 			let rowsObject = {};
-			if(_localFullNames) {
-				_localFullNames.forEach((fn) => {
+			if(_localSynonyms) {
+				_localSynonyms.forEach((fn) => {
 					rowsObject[`${fn.dataKey}`] = true;
 				});
 			}
@@ -61,68 +60,68 @@ export const FullNameDialog = ({
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localFullNames = [...localFullNames];//add new note support
-		if(originalFullNames && originalFullNames[event.index]){
-			let dataKey = _localFullNames[event.index].dataKey;
-			_localFullNames[event.index] = global.structuredClone(originalFullNames[event.index]);
-			_localFullNames[event.index].dataKey = dataKey;
-			setLocalFullNames(_localFullNames);
+		let _localSynonyms = [...localSynonyms];//add new note support
+		if(originalSynonyms && originalSynonyms[event.index]){
+			let dataKey = _localSynonyms[event.index].dataKey;
+			_localSynonyms[event.index] = global.structuredClone(originalSynonyms[event.index]);
+			_localSynonyms[event.index].dataKey = dataKey;
+			setLocalSynonyms(_localSynonyms);
 		}
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInFullNames(event.data,event.index);
+		compareChangesInSynonyms(event.data,event.index);
 	};
 
-	const compareChangesInFullNames = (data, index) => {
-		if(originalFullNames && originalFullNames[index]) {
-			if (data.internal !== originalFullNames[index].internal) {
+	const compareChangesInSynonyms = (data, index) => {
+		if(originalSynonyms && originalSynonyms[index]) {
+			if (data.internal !== originalSynonyms[index].internal) {
 				rowsEdited.current++;
 			}
-			if (data.displayText !== originalFullNames[index].displayText) {
+			if (data.displayText !== originalSynonyms[index].displayText) {
 				rowsEdited.current++;
 			}
-			if (data.formatText !== originalFullNames[index].formatText) {
+			if (data.formatText !== originalSynonyms[index].formatText) {
 				rowsEdited.current++;
 			}
-			if (data.synonymUrl !== originalFullNames[index].synonymUrl) {
+			if (data.synonymUrl !== originalSynonyms[index].synonymUrl) {
 				rowsEdited.current++;
 			}
-			if ((originalFullNames[index].evidence && !data.evidence) ||
-					(!originalFullNames[index].evidence && data.evidence) ||
-					(data.evidence && (data.evidence.length !== originalFullNames[index].evidence.length))
+			if ((originalSynonyms[index].evidence && !data.evidence) ||
+					(!originalSynonyms[index].evidence && data.evidence) ||
+					(data.evidence && (data.evidence.length !== originalSynonyms[index].evidence.length))
 				) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
 					for (var i = 0; i < data.evidence.length; i++) {
-						if (data.evidence[i].curie !== originalFullNames[index].evidence[i].curie) {
+						if (data.evidence[i].curie !== originalSynonyms[index].evidence[i].curie) {
 							rowsEdited.current++;
 						}
 					}
 				}
 			}
-			if ((originalFullNames[index].synonymScope && !data.synonymScope) ||
-					(!originalFullNames[index].synonymScope && data.synonymScope) ||
-					(originalFullNames[index].synonymScope && (originalFullNames[index].synonymScope.name !== data.synonymScope.name))
+			if ((originalSynonyms[index].synonymScope && !data.synonymScope) ||
+					(!originalSynonyms[index].synonymScope && data.synonymScope) ||
+					(originalSynonyms[index].synonymScope && (originalSynonyms[index].synonymScope.name !== data.synonymScope.name))
 				) {
 				rowsEdited.current++;
 			}
-			if ((originalFullNames[index].nameType && !data.nameType) ||
-					(!originalFullNames[index].nameType && data.nameType) ||
-					(originalFullNames[index].nameType && (originalFullNames[index].nameType.name !== data.nameType.name))
+			if ((originalSynonyms[index].nameType && !data.nameType) ||
+					(!originalSynonyms[index].nameType && data.nameType) ||
+					(originalSynonyms[index].nameType && (originalSynonyms[index].nameType.name !== data.nameType.name))
 				) {
 				rowsEdited.current++;
 			}
 		}
 		
-		if (localFullNames.length > originalFullNames?.length || !originalFullNames[0]) {
+		if (localSynonyms.length > originalSynonyms?.length || !originalSynonyms) {
 			rowsEdited.current++;
 		}
 	};
 
 	const onRowEditSave = async(event) => {
-		const result = await validateFullName(localFullNames[event.index]);
+		const result = await validateSynonym(localSynonyms[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
 		let _editingRows = { ...editingRows };
@@ -137,63 +136,63 @@ export const FullNameDialog = ({
 				if(!reported) {
 					toast_topright.current.show([
 						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update AlleleFullName [' + localFullNames[event.index].id + ']', sticky: false }
+						detail: 'Could not update AlleleSynonym [' + localSynonyms[event.index].id + ']', sticky: false }
 					]);
 					reported = true;
 				}
 			});
 		} else {
 			delete _editingRows[event.index];
-			compareChangesInFullNames(event.data, event.index);
+			compareChangesInSynonyms(event.data, event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
-		let _localFullNames = [...localFullNames];
-		_localFullNames[event.index] = event.data;
+		let _localSynonyms = [...localSynonyms];
+		_localSynonyms[event.index] = event.data;
 		setEditingRows(_editingRows);
-		setLocalFullNames(_localFullNames);
+		setLocalSynonyms(_localSynonyms);
 	};
 
 	const hideDialog = () => {
 		setErrorMessages([]);
-		setOriginalFullNameData((originalFullNameData) => {
+		setOriginalSynonymsData((originalSynonymsData) => {
 			return {
-				...originalFullNameData,
+				...originalSynonymsData,
 				dialog: false,
 			};
 		});
-		let _localFullNames = [];
-		setLocalFullNames(_localFullNames);
+		let _localSynonyms = [];
+		setLocalSynonyms(_localSynonyms);
 	};
 
-	const validateFullName = async (fid) => {
+	const validateSynonym = async (fid) => {
 		let _fid = global.structuredClone(fid);
 		delete _fid.dataKey;
-		const result = await validationService.validate('allelefullnameslotannotation', _fid);
+		const result = await validationService.validate('allelesynonymslotannotation', _fid);
 		return result;
 	};
 
-	const cloneFullNames = (clonableFullNames) => {
-		let _clonableFullNames = [];
-		if (clonableFullNames?.length > 0 && clonableFullNames[0]) {
-			_clonableFullNames = global.structuredClone(clonableFullNames);
-			if(_clonableFullNames) {
+	const cloneSynonyms = (clonableSynonyms) => {
+		let _clonableSynonyms = [];
+		if (clonableSynonyms?.length > 0 && clonableSynonyms[0]) {
+			_clonableSynonyms = global.structuredClone(clonableSynonyms);
+			if(_clonableSynonyms) {
 				let counter = 0 ;
-				_clonableFullNames.forEach((name) => {
+				_clonableSynonyms.forEach((name) => {
 					name.dataKey = counter++;
 				});
 			}
 		} 
-		return _clonableFullNames;
+		return _clonableSynonyms;
 	};
 
 	const saveDataHandler = () => {
 		setErrorMessages([]);
-		for (const name of localFullNames) {
+		for (const name of localSynonyms) {
 			delete name.dataKey;
 		}
-		mainRowProps.rowData.alleleFullName = localFullNames[0] ? localFullNames[0] : null;
+		mainRowProps.rowData.alleleSynonyms = localSynonyms;
 		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleFullName = localFullNames[0] ? localFullNames[0] : null;
+		updatedAnnotations[rowIndex].alleleSynonyms = localSynonyms;
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
@@ -201,12 +200,12 @@ export const FullNameDialog = ({
 			message: "Pending Edits!"
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["alleleFullName"] = messageObject;
+		errorMessagesCopy[rowIndex]["alleleSynonyms"] = messageObject;
 		setErrorMessagesMainRow({...errorMessagesCopy});
 
-		setOriginalFullNameData((originalFullNameData) => {
+		setOriginalSynonymsData((originalSynonymsData) => {
 				return {
-					...originalFullNameData,
+					...originalSynonymsData,
 					dialog: false,
 				}
 			}
@@ -218,8 +217,8 @@ export const FullNameDialog = ({
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		let _localFullNames = [...localFullNames];
-		_localFullNames[props.rowIndex].internal = event.value.name;
+		let _localSynonyms = [...localSynonyms];
+		_localSynonyms[props.rowIndex].internal = event.value.name;
 	}
 
 	const internalEditor = (props) => {
@@ -239,8 +238,8 @@ export const FullNameDialog = ({
 	
 
 	const onSynonymScopeEditorValueChange = (props, event) => {
-		let _localFullNames = [...localFullNames];
-		_localFullNames[props.rowIndex].synonymScope = event.value;
+		let _localSynonyms = [...localSynonyms];
+		_localSynonyms[props.rowIndex].synonymScope = event.value;
 	};
 
 	const synonymScopeEditor = (props) => {
@@ -260,8 +259,8 @@ export const FullNameDialog = ({
 	};
 
 	const onNameTypeEditorValueChange = (props, event) => {
-		let _localFullNames = [...localFullNames];
-		_localFullNames[props.rowIndex].nameType = event.value;
+		let _localSynonyms = [...localSynonyms];
+		_localSynonyms[props.rowIndex].nameType = event.value;
 	};
 
 	const nameTypeEditor = (props) => {
@@ -269,7 +268,7 @@ export const FullNameDialog = ({
 			<>
 				<ControlledVocabularyDropdown
 					field="nameType"
-					options={fullNameTypeTerms}
+					options={synonymTypeTerms}
 					editorChange={onNameTypeEditorValueChange}
 					props={props}
 					showClear={false}
@@ -287,40 +286,40 @@ export const FullNameDialog = ({
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Name" icon="pi pi-plus" onClick={createNewFullNameHandler} disabled={localFullNames?.length > 0}/>
+				<Button label="New Synonym" icon="pi pi-plus" onClick={createNewSynonymHandler}/>
 				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
 			</div>
 		);
 	}
 
-	const createNewFullNameHandler = (event) => {
-		let cnt = localFullNames ? localFullNames.length : 0;
-		const _localFullNames = global.structuredClone(localFullNames);
-		_localFullNames.push({
+	const createNewSynonymHandler = (event) => {
+		let cnt = localSynonyms ? localSynonyms.length : 0;
+		const _localSynonyms = global.structuredClone(localSynonyms);
+		_localSynonyms.push({
 			dataKey : cnt,
 			internal : false,
-			nameType : fullNameTypeTerms[0]
+			nameType : synonymTypeTerms[0]
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
-		setLocalFullNames(_localFullNames);
+		setLocalSynonyms(_localSynonyms);
 	};
 
-	const handleDeleteFullName = (event, props) => {
-		let _localFullNames = global.structuredClone(localFullNames);
+	const handleDeleteSynonym = (event, props) => {
+		let _localSynonyms = global.structuredClone(localSynonyms);
 		if(props.dataKey){
-			_localFullNames.splice(props.dataKey, 1);
+			_localSynonyms.splice(props.dataKey, 1);
 		}else {
-			_localFullNames.splice(props.rowIndex, 1);
+			_localSynonyms.splice(props.rowIndex, 1);
 		}
-		setLocalFullNames(_localFullNames);
+		setLocalSynonyms(_localSynonyms);
 		rowsEdited.current++;
 	}
 
 	const deleteAction = (props) => {
 		return (
 			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteFullName(event, props) }}/>
+					onClick={(event) => { handleDeleteSynonym(event, props) }}/>
 		);
 	}
 
@@ -344,8 +343,8 @@ export const FullNameDialog = ({
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
 			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
-				<h3>Full Name</h3>
-				<DataTable value={localFullNames} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+				<h3>Synonyms</h3>
+				<DataTable value={localSynonyms} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />

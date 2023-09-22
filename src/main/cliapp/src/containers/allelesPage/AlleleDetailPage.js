@@ -16,8 +16,10 @@ import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate'
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
-import { SynonymsForm } from './SynonymsForm';
-import { validateTable } from '../../utils/utils';
+import { SynonymsForm } from './synonyms/SynonymsForm';
+import { validateAlleleDetailTable } from '../../utils/utils';
+import { FullNameForm } from './fullName/FullNameForm';
+import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -55,16 +57,30 @@ const { isLoading } =	useQuery([curie],
 			type: "SUBMIT" 
 		})
 
-		const isSynonymsErrors = await validateTable(
+		const isSynonymsErrors = await validateAlleleDetailTable(
 			"allelesynonymslotannotation", 
-			"synonymsErrorMessages", 
+			"alleleSynonyms", 
 			alleleState.allele.alleleSynonyms,
+			alleleDispatch,
+		);
+
+		const isFullNameErrors = await validateAlleleDetailTable(
+			"allelefullnameslotannotation", 
+			"alleleFullName", 
+			[alleleState.allele.alleleFullName],
+			alleleDispatch,
+		);
+
+		const isMutationTypesErrors = await validateAlleleDetailTable(
+			"allelemutationtypeslotannotation", 
+			"alleleMutationTypes", 
+			alleleState.allele.alleleMutationTypes,
 			alleleDispatch,
 		);
 
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isSynonymsErrors) return;
+				if(isSynonymsErrors || isFullNameErrors || isMutationTypesErrors) return;
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
 			onError: (error) => {
@@ -82,7 +98,6 @@ const { isLoading } =	useQuery([curie],
 				alleleDispatch(
 					{
 						type: "UPDATE_ERROR_MESSAGES", 
-						errorType: "errorMessages", 
 						errorMessages: error.response?.data?.errorMessages || {}
 					}
 				);
@@ -186,10 +201,16 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
+					<FullNameForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
 					<SynonymsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
-						labelColumnSize={labelColumnSize}
 					/>
 
 					<Divider />
@@ -201,6 +222,13 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+					/>
+
+					<Divider />
+
+					<MutationTypesForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />
