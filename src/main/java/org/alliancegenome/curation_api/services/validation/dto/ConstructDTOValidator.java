@@ -48,9 +48,25 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		ObjectResponse<Construct> constructResponse = new ObjectResponse<Construct>();
 
 		Construct construct = new Construct();
+		
+		List<Reference> references = null;
+		List<String> refCuries = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
+			references = new ArrayList<>();
+			for (String publicationId : dto.getReferenceCuries()) {
+				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
+				if (reference == null) {
+					constructResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
+				} else {
+					references.add(reference);
+					refCuries.add(reference.getCurie());
+				}
+			}
+		} 
+		
 		String constructId;
 		String identifyingField;
-		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
+		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto, refCuries);
 		
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			constructId = dto.getModEntityId();
@@ -70,6 +86,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			construct = constructList.getResults().get(0);
 		}
 		construct.setUniqueId(uniqueId);
+		construct.setReferences(references);
 		
 		ObjectResponse<Construct> reagentResponse = validateReagentDTO(construct, dto);
 		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());
@@ -79,21 +96,6 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			constructResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);;
 		} else {
 			construct.setName(dto.getName());
-		}
-
-		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
-			List<Reference> references = new ArrayList<>();
-			for (String publicationId : dto.getReferenceCuries()) {
-				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
-				if (reference == null) {
-					constructResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
-				} else {
-					references.add(reference);
-				}
-			}
-			construct.setReferences(references);
-		} else {
-			construct.setReferences(null);
 		}
 		
 		Map<String, ConstructComponentSlotAnnotation> existingComponentIds = new HashMap<>();

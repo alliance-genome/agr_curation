@@ -15,7 +15,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, ConstructComponentSlotAnnotationDTO.class })
+@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, ConstructComponentSlotAnnotationDTO.class }, submitted = true)
 public class ConstructDTO extends ReagentDTO {
 
 	@JsonView({ View.FieldsOnly.class })
