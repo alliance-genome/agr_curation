@@ -9,7 +9,9 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,12 +50,18 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 	private String dataProvider = "WB";
 	private String dataProvider2 = "RGD";
 	
+	private VocabularyTerm noteType;
+	private VocabularyTerm noteType2;
+	
 	private final String constructBulkPostEndpoint = "/api/construct/bulk/WB/constructs";
 	private final String constructBulkPostEndpointRGD = "/api/construct/bulk/RGD/constructs";
 	private final String constructGetEndpoint = "/api/construct/findBy/";
 	private final String constructTestFilePath = "src/test/resources/bulk/05_construct/";
 	
 	private void loadRequiredEntities() throws Exception {
+		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
+		noteType = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_note", false);
+		noteType2 = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary", false);
 	}
 
 	@Test
@@ -90,7 +98,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructComponents[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.constructComponents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructComponents[0].relatedNotes[0].noteType.name", is("construct_component_note")).
+			body("entity.constructComponents[0].relatedNotes[0].noteType.name", is(noteType.getName())).
 			body("entity.constructComponents[0].relatedNotes[0].freeText", is("Test construct component note")).
 			body("entity.constructComponents[0].relatedNotes[0].internal", is(true)).
 			body("entity.constructComponents[0].relatedNotes[0].obsolete", is(true)).
@@ -139,7 +147,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.constructComponents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.constructComponents[0].relatedNotes", hasSize(1)).
-			body("entity.constructComponents[0].relatedNotes[0].noteType.name", is("construct_component_summary")).
+			body("entity.constructComponents[0].relatedNotes[0].noteType.name", is(noteType2.getName())).
 			body("entity.constructComponents[0].relatedNotes[0].freeText", is("Test construct component note 2")).
 			body("entity.constructComponents[0].relatedNotes[0].internal", is(true)).
 			body("entity.constructComponents[0].relatedNotes[0].obsolete", is(false)).

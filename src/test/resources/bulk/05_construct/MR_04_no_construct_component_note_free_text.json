@@ -19,7 +19,7 @@
         "taxon_text": "Homo sapiens",
         "note_dtos": [
           {
-            "note_type_name": "construct_component_note",
+            "note_type_name": "test_construct_component_note",
             "internal": true,
             "obsolete": true,
             "created_by_curie": "CONSTRUCTTEST:Person0001",

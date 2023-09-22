@@ -20,7 +20,7 @@
         "note_dtos": [
           {
             "free_text": "Test construct component note",
-            "note_type_name": "construct_component_note",
+            "note_type_name": "test_construct_component_note",
             "internal": true,
             "obsolete": true,
             "created_by_curie": "CONSTRUCTTEST:Person0001",

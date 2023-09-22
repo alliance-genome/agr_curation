@@ -69,10 +69,10 @@ public class ConstructITCase extends BaseITCase {
 	private void loadRequiredEntities() {
 		noteTypeVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
 		alleleNoteTypeVocabulary = getVocabulary(VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
-		noteType = getVocabularyTerm(noteTypeVocabulary, "construct_component_note");
-		noteType2 = getVocabularyTerm(noteTypeVocabulary, "construct_component_summary");
+		noteType = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_note");
+		noteType2 = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary");
 		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
-		alleleNoteType = getVocabularyTerm(alleleNoteTypeVocabulary, "comment");
+		alleleNoteType = getVocabularyTerm(alleleNoteTypeVocabulary, "notes_on_origin");
 		taxon = getNCBITaxonTerm("NCBITaxon:6239");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
 		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");
@@ -597,7 +597,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.constructComponents", is("relatedNotes - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|AGRKB:000020003|construct_component_note|false|false)"));
+			body("errorMessages.constructComponents", is("relatedNotes - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|AGRKB:000020003|test_construct_component_note|false|false)"));
 		
 	}
 	

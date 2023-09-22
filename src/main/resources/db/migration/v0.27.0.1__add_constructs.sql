@@ -140,6 +140,5 @@ ALTER TABLE constructcomponentslotannotation_note_aud ADD CONSTRAINT constructco
 	
 INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('hibernate_sequence'), 'Construct Component Note Type', 'construct_component_note_type');
 
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'construct_component_note', id FROM vocabulary WHERE vocabularylabel = 'construct_component_note_type';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'construct_component_summary', id FROM vocabulary WHERE vocabularylabel = 'construct_component_note_type';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'comment', id FROM vocabulary WHERE vocabularylabel = 'construct_component_note_type';
 

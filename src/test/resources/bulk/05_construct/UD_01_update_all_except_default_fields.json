@@ -18,7 +18,7 @@
         "note_dtos": [
           {
             "free_text": "Test construct component note 2",
-            "note_type_name": "construct_component_summary",
+            "note_type_name": "test_construct_component_summary",
             "created_by_curie": "CONSTRUCTTEST:Person0002",
             "updated_by_curie": "CONSTRUCTTEST:Person0001",
             "date_created": "2022-03-19T22:10:12+00:00",
