@@ -90,7 +90,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AGMDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AGMDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -99,8 +99,8 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			try {
 				AGMDiseaseAnnotation annotation = agmDiseaseAnnotationService.upsert(annotationDTO, dataProvider);
 				history.incrementCompleted();
-				if(curiesAdded != null) {
-					curiesAdded.add(annotation.getId());
+				if(idsAdded != null) {
+					idsAdded.add(annotation.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

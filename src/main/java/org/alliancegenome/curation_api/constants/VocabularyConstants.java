@@ -36,5 +36,7 @@ public final class VocabularyConstants {
 	public static final String ORTHOLOGY_CONFIDENCE_VOCABULARY = "ortho_confidence";
 	public static final String ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET = "ortho_best_rev_score";
 	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY = "ortho_prediction_method";
+	
+	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY = "construct_component_note_type";
 
 }

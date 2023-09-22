@@ -1,0 +1,52 @@
+[
+  {
+    "mod_entity_id": "WB:Construct0001",
+    "name": "cnst2",
+    "taxon_curie": "NCBITaxon:9606",
+    "created_by_curie": "CONSTRUCTTEST:Person0002",
+    "updated_by_curie": "CONSTRUCTTEST:Person0001",
+    "date_created": "2022-03-19T22:10:12+00:00",
+    "date_updated": "2022-03-20T22:10:12+00:00",
+    "reference_curies": [
+      "PMID:25920551"
+    ],
+    "construct_component_dtos": [
+      {
+        "component_symbol": "cmp2",
+        "taxon_curie": "NCBITaxon:6239",
+        "taxon_text": "Caenorhabditis elegans",
+        "note_dtos": [
+          {
+            "free_text": "Test construct component note 2",
+            "note_type_name": "test_construct_component_summary",
+            "created_by_curie": "CONSTRUCTTEST:Person0002",
+            "updated_by_curie": "CONSTRUCTTEST:Person0001",
+            "date_created": "2022-03-19T22:10:12+00:00",
+            "date_updated": "2022-03-20T22:10:12+00:00",
+            "evidence_curies": [
+              "PMID:25920551"
+            ]
+          }
+        ],
+        "evidence_curies": [
+          "PMID:25920551"
+        ],
+        "created_by_curie": "CONSTRUCTTEST:Person0002",
+        "updated_by_curie": "CONSTRUCTTEST:Person0001",
+        "date_created": "2022-03-19T22:10:12+00:00",
+        "date_updated": "2022-03-20T22:10:12+00:00"
+      }
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "RGD",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST2:0001",
+        "page_area": "homepage2",
+        "display_name": "TEST2:0001",
+        "prefix": "TEST2"
+      }
+    }
+  }
+]

@@ -104,5 +104,4 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		return curies;
 	}
 
-
 }

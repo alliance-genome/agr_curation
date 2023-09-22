@@ -70,14 +70,15 @@ export const DataLoadsComponent = () => {
 	};
 
 	const loadTypeClasses = new Map([
-		["FULL_INGEST", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO", "GeneDTO", "AlleleDTO", "AffectedGenomicModelDTO"]],
+		["FULL_INGEST", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO", "GeneDTO", "AlleleDTO", "AffectedGenomicModelDTO", "ConstructDTO"]],
 		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO"]],
 		["GENE_DISEASE_ANNOTATION", ["GeneDiseaseAnnotationDTO"]],
 		["ALLELE_DISEASE_ANNOTATION", ["AlleleDiseaseAnnotationDTO"]],
 		["AGM_DISEASE_ANNOTATION", ["AGMDiseaseAnnotationDTO"]],
 		["GENE", ["GeneDTO"]],
 		["ALLELE", ["AlleleDTO"]],
-		["AGM", ["AffectedGenomicModelDTO"]]
+		["AGM", ["AffectedGenomicModelDTO"]],
+		["CONSTRUCT", ["ConstructDTO"]]
 		]);
 
 	useQuery(['bulkloadtable'],
@@ -342,8 +343,12 @@ export const DataLoadsComponent = () => {
 		if (rowData.loadFiles) {
 			sortedFiles = sortFilesByDate(rowData.loadFiles);
 		}
-		let latestStatus = sortedFiles[0].bulkloadStatus;
-		let latestError = sortedFiles[0].errorMessage;
+		let latestStatus = null;
+		let latestError = null;
+		if (rowData.loadFiles) {
+			latestStatus = sortedFiles[0].bulkloadStatus;
+			latestError = sortedFiles[0].errorMessage;
+		}
 		let styleClass = 'p-button-text p-button-plain';
 		if (latestStatus === 'FAILED') { styleClass = "p-button-danger"; }
 		if (latestStatus && (

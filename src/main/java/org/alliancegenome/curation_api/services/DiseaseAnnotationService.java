@@ -47,7 +47,11 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	
 	@Override
 	public ObjectResponse<DiseaseAnnotation> get(String identifier) {
-		SearchResponse<DiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		SearchResponse<DiseaseAnnotation> ret = findByField("curie", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modEntityId", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
 			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
 		
@@ -103,7 +107,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			diseaseAnnotationDAO.remove(id);
 
 			if (CollectionUtils.isNotEmpty(notesToDelete))
-				annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
+				notesToDelete.forEach(note -> noteService.delete(note.getId()));
 		}
 
 		return null;

@@ -91,7 +91,9 @@ export const SORT_FIELDS = Object.freeze([
   "vocabularyLabel",
   "vocabularyTermSetDescription",
   "synonyms.name",
-  "secondaryIdentifiers"
+  "secondaryIdentifiers",
+  "taxonText",
+  "constructComponents.componentSymbol"
 ]);
 
 
