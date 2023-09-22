@@ -27,9 +27,6 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.c
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ConstructDTOValidator extends ReagentDTOValidator {
 
@@ -48,25 +45,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		ObjectResponse<Construct> constructResponse = new ObjectResponse<Construct>();
 
 		Construct construct = new Construct();
-		
-		List<Reference> references = null;
-		List<String> refCuries = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
-			references = new ArrayList<>();
-			for (String publicationId : dto.getReferenceCuries()) {
-				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
-				if (reference == null) {
-					constructResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
-				} else {
-					references.add(reference);
-					refCuries.add(reference.getCurie());
-				}
-			}
-		} 
-		
 		String constructId;
 		String identifyingField;
-		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto, refCuries);
+		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
 		
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			constructId = dto.getModEntityId();
@@ -86,7 +67,6 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			construct = constructList.getResults().get(0);
 		}
 		construct.setUniqueId(uniqueId);
-		construct.setReferences(references);
 		
 		ObjectResponse<Construct> reagentResponse = validateReagentDTO(construct, dto);
 		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());
@@ -96,6 +76,21 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			constructResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);;
 		} else {
 			construct.setName(dto.getName());
+		}
+
+		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
+			List<Reference> references = new ArrayList<>();
+			for (String publicationId : dto.getReferenceCuries()) {
+				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
+				if (reference == null) {
+					constructResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
+				} else {
+					references.add(reference);
+				}
+			}
+			construct.setReferences(references);
+		} else {
+			construct.setReferences(null);
 		}
 		
 		Map<String, ConstructComponentSlotAnnotation> existingComponentIds = new HashMap<>();
@@ -130,10 +125,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			}
 		}
 
-		if (constructResponse.hasErrors()) {
-			log.info("ERROR: " + constructResponse.errorMessagesString());
+		if (constructResponse.hasErrors())
 			throw new ObjectValidationException(dto, constructResponse.errorMessagesString());
-		}
+
 		construct = constructDAO.persist(construct);
 
 		// Attach construct and persist SlotAnnotation objects

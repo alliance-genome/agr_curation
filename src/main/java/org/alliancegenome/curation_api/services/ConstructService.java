@@ -42,8 +42,6 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	@Inject
 	PersonService personService;
 	@Inject
-	NoteDAO noteDAO;
-	@Inject
 	ConstructComponentSlotAnnotationDAO constructComponentDAO;
 
 	@Override
@@ -159,9 +157,12 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 		if (CollectionUtils.isNotEmpty(construct.getConstructComponents())) {
 			construct.getConstructComponents().forEach(cc -> {
 				List<Note> notesToDelete = cc.getRelatedNotes();
-				constructComponentDAO.remove(cc.getId());
 				if (CollectionUtils.isNotEmpty(notesToDelete))
-					notesToDelete.forEach(note -> {noteDAO.remove(note.getId());});
+					notesToDelete.forEach(note -> {
+						constructComponentDAO.deleteAttachedNote(note.getId());
+						
+					});
+				constructComponentDAO.remove(cc.getId());
 			});
 		}
 	}
