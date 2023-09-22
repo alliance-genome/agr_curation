@@ -27,9 +27,6 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.c
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ConstructDTOValidator extends ReagentDTOValidator {
 
@@ -128,10 +125,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			}
 		}
 
-		if (constructResponse.hasErrors()) {
-			log.info("ERROR: " + constructResponse.errorMessagesString());
+		if (constructResponse.hasErrors())
 			throw new ObjectValidationException(dto, constructResponse.errorMessagesString());
-		}
+
 		construct = constructDAO.persist(construct);
 
 		// Attach construct and persist SlotAnnotation objects
