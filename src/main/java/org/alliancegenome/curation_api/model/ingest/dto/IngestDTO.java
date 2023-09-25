@@ -42,4 +42,7 @@ public class IngestDTO {
 	@JsonProperty("gene_ingest_set")
 	private List<GeneDTO> geneIngestSet;
 
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("construct_ingest_set")
+	private List<ConstructDTO> constructIngestSet;
 }

@@ -40,6 +40,9 @@ public class View {
 
 	public static class ReportHistory extends FieldsOnly {
 	}
+	
+	public static class ConstructView extends FieldsOnly {
+	}
 
 	public static class DiseaseAnnotation extends FieldsOnly {
 	}

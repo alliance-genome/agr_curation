@@ -59,7 +59,6 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	public AlleleDiseaseAnnotation validateAnnotationCreate(AlleleDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Cound not create Allele Disease Annotation";
-		;
 
 		AlleleDiseaseAnnotation dbEntity = new AlleleDiseaseAnnotation();
 

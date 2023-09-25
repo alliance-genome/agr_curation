@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
@@ -42,6 +43,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Inject AlleleDTOValidator alleleDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject PersonService personService;
+	@Inject NoteService noteService;
 
 	@Override
 	@PostConstruct
@@ -89,7 +91,10 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 				}
 			} else {
 				deleteAlleleSlotAnnotations(allele);
+				List<Note> notesToDelete = allele.getRelatedNotes();
 				alleleDAO.remove(curie);
+				if (CollectionUtils.isNotEmpty(notesToDelete))
+					notesToDelete.forEach(note -> noteService.delete(note.getId()));
 			}
 		} else {
 			log.error("Failed getting allele: " + curie);
@@ -118,4 +123,5 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms()))
 			allele.getAlleleSynonyms().forEach(as -> {alleleSynonymDAO.remove(as.getId());});
 	}
+
 }

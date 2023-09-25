@@ -24,7 +24,7 @@ public class SlotAnnotationDTOValidator extends BaseDTOValidator {
 	public <E extends SlotAnnotation, D extends SlotAnnotationDTO> ObjectResponse<E> validateSlotAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> saResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = saResponse.getEntity();
-
+		
 		List<InformationContentEntity> evidence = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getEvidenceCuries())) {
 			for (String evidenceCurie : dto.getEvidenceCuries()) {
