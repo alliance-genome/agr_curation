@@ -41,13 +41,22 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
   
   const phenotypeTermOnChangeHandler = (event, setFieldValue, props) => {
     //updates value in table input box
-    setFieldValue(event.target.value);
+    let value = null;
+    if (event.target.value !== "") {
+      if (!event.target.value?.curie) {
+        value = {curie: event.target.value};
+      } else {
+        value = event.target.value;
+      }
+
+    }
+    setFieldValue(value);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleInheritanceModes', 
       index: props.rowIndex, 
       field: "phenotypeTerm", 
-      value: event.target.value
+      value: value
     });
   }
 
