@@ -473,3 +473,9 @@ export const validateAlleleDetailTable = async (endpoint, entityType, table, dis
 	dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors});
 	return anyErrors;
 }
+
+export const processOptionalField = (eventValue) => {
+	if(!eventValue || eventValue === "") return null;
+	if (!eventValue.curie) return {curie: eventValue};
+	return eventValue;
+}

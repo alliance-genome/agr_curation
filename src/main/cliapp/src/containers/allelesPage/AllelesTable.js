@@ -7,7 +7,7 @@ import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObje
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
-import { FunctionalImpactsDialog } from './FunctionalImpactsDialog';
+import { FunctionalImpactsDialog } from './functionalImpacts/FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialog';
 import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';
 import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDialog';

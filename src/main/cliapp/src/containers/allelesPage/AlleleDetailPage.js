@@ -22,6 +22,7 @@ import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -58,7 +59,6 @@ const { isLoading } =	useQuery([curie],
 		alleleDispatch({
 			type: "SUBMIT" 
 		})
-
 		const isSynonymsErrors = await validateAlleleDetailTable(
 			"allelesynonymslotannotation", 
 			"alleleSynonyms", 
@@ -76,7 +76,7 @@ const { isLoading } =	useQuery([curie],
 		const isSecondaryIdsErrors = await validateAlleleDetailTable(
 			"allelesecondaryidslotannotation", 
 			"alleleSecondaryIds", 
-			[alleleState.allele.alleleSecondaryIds],
+			alleleState.allele.alleleSecondaryIds,
 			alleleDispatch,
 		);
 
@@ -93,10 +93,24 @@ const { isLoading } =	useQuery([curie],
 			alleleState.allele.alleleInheritanceModes,
 			alleleDispatch,
 		);
+		
+		const isFunctionalImpactsErrors = await validateAlleleDetailTable(
+			"allelefunctionalimpactslotannotation", 
+			"alleleFunctionalImpacts", 
+			alleleState.allele.alleleFunctionalImpacts,
+			alleleDispatch,
+		);
 
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isSynonymsErrors || isFullNameErrors || isSecondaryIdsErrors || isMutationTypesErrors || isInheritanceModesErrors) return;
+				if(
+					isSynonymsErrors || 
+					isFullNameErrors || 
+					isMutationTypesErrors || 
+					isFunctionalImpactsErrors || 
+					isSecondaryIdsErrors || 
+					isInheritanceModesErrors) return;
+
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
 			onError: (error) => {
@@ -250,6 +264,13 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<MutationTypesForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<FunctionalImpactsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
