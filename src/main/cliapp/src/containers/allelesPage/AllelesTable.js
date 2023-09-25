@@ -8,7 +8,7 @@ import { ErrorMessageComponent } from '../../components/Error/ErrorMessageCompon
 import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
 import { FunctionalImpactsDialog } from './functionalImpacts/FunctionalImpactsDialog';
-import { InheritanceModesDialog } from './InheritanceModesDialog';
+import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialog';
 import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';
 import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDialog';
 import { DatabaseStatusDialog } from './DatabaseStatusDialog';

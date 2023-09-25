@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { InheritanceModesFormTable } from "../inheritanceModes/InheritanceModesFormTable";
 import { useRef } from "react";
+import { processOptionalField } from "../../../utils/utils";
 
 export const InheritanceModesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -40,16 +41,9 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
   };
   
   const phenotypeTermOnChangeHandler = (event, setFieldValue, props) => {
-    //updates value in table input box
-    let value = null;
-    if (event.target.value !== "") {
-      if (!event.target.value?.curie) {
-        value = {curie: event.target.value};
-      } else {
-        value = event.target.value;
-      }
+    const value = processOptionalField(event.target.value);
 
-    }
+    //updates value in table input box
     setFieldValue(value);
     dispatch({ 
       type: 'EDIT_ROW', 

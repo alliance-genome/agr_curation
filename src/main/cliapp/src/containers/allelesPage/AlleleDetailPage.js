@@ -76,7 +76,7 @@ const { isLoading } =	useQuery([curie],
 		const isSecondaryIdsErrors = await validateAlleleDetailTable(
 			"allelesecondaryidslotannotation", 
 			"alleleSecondaryIds", 
-			[alleleState.allele.alleleSecondaryIds],
+			alleleState.allele.alleleSecondaryIds,
 			alleleDispatch,
 		);
 
@@ -91,6 +91,7 @@ const { isLoading } =	useQuery([curie],
 			"alleleinheritancemodeslotannotation", 
 			"alleleInheritanceModes", 
 			alleleState.allele.alleleInheritanceModes,
+			alleleDispatch,
 		);
 		
 		const isFunctionalImpactsErrors = await validateAlleleDetailTable(
@@ -107,6 +108,7 @@ const { isLoading } =	useQuery([curie],
 					isFullNameErrors || 
 					isMutationTypesErrors || 
 					isFunctionalImpactsErrors || 
+					isSecondaryIdsErrors || 
 					isInheritanceModesErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
