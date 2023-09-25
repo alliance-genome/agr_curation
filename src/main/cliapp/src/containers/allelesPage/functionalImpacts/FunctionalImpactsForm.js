@@ -11,6 +11,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     const dataKey = state.allele.alleleFunctionalImpacts?.length;
     const newFunctionalImpact = {
       dataKey: dataKey,
+      phenotypeStatement: "",
       internal: false,
     };
 
@@ -25,7 +26,9 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     return null;
   };
 
-  const functionalImpactsOnChangeHandler = (props, event) => {
+  const functionalImpactsOnChangeHandler = (event, setFieldValue, props) => {
+    //updates value in table input box
+    setFieldValue(event.target.value);
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleFunctionalImpacts',
@@ -35,7 +38,9 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     });
   };
 
-  const phenotypeTermOnChangeHandler = (props, event) => {
+  const phenotypeTermOnChangeHandler = (event, setFieldValue, props) => {
+    //updates value in table input box
+    setFieldValue(event.target.value);
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleFunctionalImpacts',
@@ -45,11 +50,11 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     });
   };
 
-  const phenotypeStatementOnChangeHandler = (props, event) => {
+  const phenotypeStatementOnChangeHandler = (rowIndex, event) => {
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleFunctionalImpacts',
-      index: props.rowIndex,
+      index: rowIndex,
       field: "phenotypeStatement",
       value: event.target.value
     });
@@ -76,8 +81,8 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     });
   };
 
-  const deletionHandler = (e, index) => {
-    e.preventDefault();
+  const deletionHandler = (event, index) => {
+    event.preventDefault();
     dispatch({ type: "DELETE_ROW", entityType: "alleleFunctionalImpacts", index: index });
     dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFunctionalImpacts", errorMessages: [] });
   };

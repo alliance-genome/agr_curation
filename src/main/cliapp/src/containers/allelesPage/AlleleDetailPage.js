@@ -20,8 +20,12 @@ import { SynonymsForm } from './synonyms/SynonymsForm';
 import { validateAlleleDetailTable } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
+<<<<<<< HEAD
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+=======
+import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
+>>>>>>> SCRUM-3129 update useAlleleReducer
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -58,7 +62,6 @@ const { isLoading } =	useQuery([curie],
 		alleleDispatch({
 			type: "SUBMIT" 
 		})
-
 		const isSynonymsErrors = await validateAlleleDetailTable(
 			"allelesynonymslotannotation", 
 			"alleleSynonyms", 
@@ -91,12 +94,24 @@ const { isLoading } =	useQuery([curie],
 			"alleleinheritancemodeslotannotation", 
 			"alleleInheritanceModes", 
 			alleleState.allele.alleleInheritanceModes,
+		);
+		
+		const isFunctionalImpactsErrors = await validateAlleleDetailTable(
+			"allelefunctionalimpactslotannotation", 
+			"alleleFunctionalImpacts", 
+			alleleState.allele.alleleFunctionalImpacts,
 			alleleDispatch,
 		);
 
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isSynonymsErrors || isFullNameErrors || isSecondaryIdsErrors || isMutationTypesErrors || isInheritanceModesErrors) return;
+				if(
+					isSynonymsErrors || 
+					isFullNameErrors || 
+					isMutationTypesErrors || 
+					isFunctionalImpactsErrors || 
+					isInheritanceModesErrors) return;
+
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
 			onError: (error) => {
@@ -256,7 +271,11 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
+<<<<<<< HEAD
 					<InheritanceModesForm 
+=======
+					<FunctionalImpactsForm
+>>>>>>> SCRUM-3129 update useAlleleReducer
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>

@@ -54,7 +54,7 @@ export const FunctionalImpactsFormTable = ({
           return <PhenotypeTermEditor
             props={props}
             errorMessages={errorMessages}
-            onChange={phenotypeStatementOnChangeHandler}
+            onChange={phenotypeTermOnChangeHandler}
           />;
         }}
         field="phenotypeTerm" header="Phenotype Term" headerClassName='surface-0' />
@@ -65,10 +65,10 @@ export const FunctionalImpactsFormTable = ({
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
             textOnChangeHandler={phenotypeStatementOnChangeHandler}//todo: potentially changed to textOnchangeHandler?
-            field="synonymUrl"
+            field="phenotypeStatement"
           />;
         }}
-        field="synonymUrl" header="Synonym URL" headerClassName='surface-0' />
+        field="phenotypeStatement" header="Phenotype Statement" headerClassName='surface-0' />
       <Column
         editor={(props) => {
           return <InternalEditor

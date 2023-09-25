@@ -9,7 +9,11 @@ const initialAlleleState = {
 		alleleFullName: null,
 		alleleSecondaryIds: [],
 		alleleMutationTypes: [],
+<<<<<<< HEAD
 		alleleInheritanceModes: [],
+=======
+		alleleFunctionalImpacts: [],
+>>>>>>> SCRUM-3129 update useAlleleReducer
 		references: [],
 		inCollection: {
 			name: "",
@@ -49,6 +53,13 @@ const initialAlleleState = {
 		},
 		alleleInheritanceModes: {
 			field: 'alleleInheritanceModes',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
+		},
+		alleleFunctionalImpacts: {
+			field: 'alleleFunctionalImpacts',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
