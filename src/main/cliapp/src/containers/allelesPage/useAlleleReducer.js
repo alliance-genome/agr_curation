@@ -6,7 +6,8 @@ const initialAlleleState = {
 			curie: "",
 		},
 		alleleSynonyms: [],
-		alleleFullName: null, 
+		alleleFullName: null,
+		alleleSecondaryIds: [],
 		alleleMutationTypes: [],
 		alleleInheritanceModes: [],
 		references: [],
@@ -31,6 +32,13 @@ const initialAlleleState = {
 			errorMessages: [],
 			editingRows: {},
 			type: "object",
+		},
+		alleleSecondaryIds: {
+			field: 'alleleSecondaryIds',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',

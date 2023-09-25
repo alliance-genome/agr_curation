@@ -21,6 +21,7 @@ import { validateAlleleDetailTable } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
+import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -72,6 +73,13 @@ const { isLoading } =	useQuery([curie],
 			alleleDispatch,
 		);
 
+		const isSecondaryIdsErrors = await validateAlleleDetailTable(
+			"allelesecondaryidslotannotation", 
+			"alleleSecondaryIds", 
+			[alleleState.allele.alleleSecondaryIds],
+			alleleDispatch,
+		);
+
 		const isMutationTypesErrors = await validateAlleleDetailTable(
 			"allelemutationtypeslotannotation", 
 			"alleleMutationTypes", 
@@ -88,7 +96,7 @@ const { isLoading } =	useQuery([curie],
 
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isSynonymsErrors || isFullNameErrors || isMutationTypesErrors || isInheritanceModesErrors) return;
+				if(isSynonymsErrors || isFullNameErrors || isSecondaryIdsErrors || isMutationTypesErrors || isInheritanceModesErrors) return;
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
 			onError: (error) => {
@@ -217,6 +225,13 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<SynonymsForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<SecondaryIdsForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
