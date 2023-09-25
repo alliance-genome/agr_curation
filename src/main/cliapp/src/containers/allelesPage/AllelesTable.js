@@ -14,7 +14,7 @@ import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDi
 import { DatabaseStatusDialog } from './DatabaseStatusDialog';
 import { SymbolDialog } from './SymbolDialog';
 import { FullNameDialog } from './fullName/FullNameDialog';
-import { SecondaryIdsDialog } from './SecondaryIdsDialog';
+import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
 import { SynonymsDialog } from './synonyms/SynonymsDialog';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
