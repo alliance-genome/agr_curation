@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { useRef } from "react";
 import { FunctionalImpactsFormTable } from "./FunctionalImpactsFormTable";
+import { processOptionalField } from "../../../utils/utils";
 
 export const FunctionalImpactsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -39,14 +40,16 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
   };
 
   const phenotypeTermOnChangeHandler = (event, setFieldValue, props) => {
+    const value = processOptionalField(event.target.value);
+
     //updates value in table input box
-    setFieldValue(event.target.value);
+    setFieldValue(value);
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleFunctionalImpacts',
       index: props.rowIndex,
       field: "phenotypeTerm",
-      value: event.target.value
+      value: value,
     });
   };
 

@@ -20,12 +20,9 @@ import { SynonymsForm } from './synonyms/SynonymsForm';
 import { validateAlleleDetailTable } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
-<<<<<<< HEAD
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
-=======
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
->>>>>>> SCRUM-3129 update useAlleleReducer
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -271,11 +268,14 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
-<<<<<<< HEAD
-					<InheritanceModesForm 
-=======
 					<FunctionalImpactsForm
->>>>>>> SCRUM-3129 update useAlleleReducer
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<InheritanceModesForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>

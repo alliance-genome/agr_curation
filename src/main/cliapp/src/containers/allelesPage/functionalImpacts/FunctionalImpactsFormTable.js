@@ -64,7 +64,7 @@ export const FunctionalImpactsFormTable = ({
             value={props.value}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
-            textOnChangeHandler={phenotypeStatementOnChangeHandler}//todo: potentially changed to textOnchangeHandler?
+            textOnChangeHandler={phenotypeStatementOnChangeHandler}
             field="phenotypeStatement"
           />;
         }}

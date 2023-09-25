@@ -9,11 +9,8 @@ const initialAlleleState = {
 		alleleFullName: null,
 		alleleSecondaryIds: [],
 		alleleMutationTypes: [],
-<<<<<<< HEAD
 		alleleInheritanceModes: [],
-=======
 		alleleFunctionalImpacts: [],
->>>>>>> SCRUM-3129 update useAlleleReducer
 		references: [],
 		inCollection: {
 			name: "",
