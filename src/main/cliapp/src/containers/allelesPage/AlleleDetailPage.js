@@ -20,6 +20,7 @@ import { SynonymsForm } from './synonyms/SynonymsForm';
 import { validateAlleleDetailTable } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
+import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -78,9 +79,16 @@ const { isLoading } =	useQuery([curie],
 			alleleDispatch,
 		);
 
+		const isInheritanceModesErrors = await validateAlleleDetailTable(
+			"alleleinheritancemodeslotannotation", 
+			"alleleInheritanceModes", 
+			alleleState.allele.alleleInheritanceModes,
+			alleleDispatch,
+		);
+
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isSynonymsErrors || isFullNameErrors || isMutationTypesErrors) return;
+				if(isSynonymsErrors || isFullNameErrors || isMutationTypesErrors || isInheritanceModesErrors) return;
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
 			onError: (error) => {
@@ -227,6 +235,13 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<MutationTypesForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<InheritanceModesForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>

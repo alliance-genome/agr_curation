@@ -8,6 +8,7 @@ const initialAlleleState = {
 		alleleSynonyms: [],
 		alleleFullName: null, 
 		alleleMutationTypes: [],
+		alleleInheritanceModes: [],
 		references: [],
 		inCollection: {
 			name: "",
@@ -33,6 +34,13 @@ const initialAlleleState = {
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
+		},
+		alleleInheritanceModes: {
+			field: 'alleleInheritanceModes',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
