@@ -31,6 +31,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const nameTypeOnChangeHandler = (props, event) => {
+    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
+    props.rowData.nameType = event.target.value;
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleSynonyms', 
@@ -41,6 +43,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const internalOnChangeHandler = (props, event) => {
+    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
+    props.rowData.internal = event.target.value;
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleSynonyms', 
@@ -51,6 +55,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const synonymScopeOnChangeHandler = (props, event) => {
+    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
+    props.rowData.synonymScope = event.target.value;
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleSynonyms', 
