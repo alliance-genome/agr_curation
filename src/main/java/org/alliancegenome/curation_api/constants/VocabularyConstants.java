@@ -22,6 +22,8 @@ public final class VocabularyConstants {
 	public static final String GERMLINE_TRANSMISSION_STATUS_VOCABULARY = "allele_germline_transmission_status";
 	public static final String ALLELE_NOMENCLATURE_EVENT_VOCABULARY = "allele_nomenclature_event";
 	public static final String ALLELE_NOTE_TYPES_VOCABULARY = "allele_note_type";
+	public static final String ALLELE_RELATION_VOCABULARY = "allele_relation";
+	public static final String ALLELE_GENOMIC_ENTITY_NOTE_TYPE_VOCABULARY = "allele_genomic_entity_note_type";
 
 	public static final String FULL_NAME_TYPE_TERM_SET = "full_name_type";
 	public static final String SYSTEMATIC_NAME_TYPE_TERM_SET = "systematic_name_type";
@@ -38,5 +40,6 @@ public final class VocabularyConstants {
 	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY = "ortho_prediction_method";
 	
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY = "construct_component_note_type";
+	
 
 }

@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanAndNullValueBridge;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
@@ -141,6 +142,13 @@ public class Allele extends GenomicEntity {
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
+	
+	@IndexedEmbedded(includePaths = {"object.curie", "object.geneSymbol.displayText", "object.geneSymbol.formatText", "object.geneFullName.displayText", "object.geneFullName.formatText",
+			"object.curie", "object.geneSymbol.displayText_keyword", "object.geneSymbol.formatText_keyword", "object.geneFullName.displayText_keyword", "object.geneFullName.formatText_keyword"})
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	private List<AlleleGeneAssociation> alleleGeneAssociations;
 	
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
