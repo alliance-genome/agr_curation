@@ -8,6 +8,7 @@ const initialAlleleState = {
 		alleleSynonyms: [],
 		alleleFullName: null,
 		alleleSecondaryIds: [],
+		alleleSymbol: null,
 		alleleMutationTypes: [],
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
@@ -41,7 +42,14 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: [],
 			editingRows: {},
-			type: "table",
+			type: "table"
+		},
+		alleleSymbol: {
+			field: 'alleleSymbol',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',

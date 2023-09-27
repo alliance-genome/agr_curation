@@ -25,6 +25,8 @@ import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
+import { SymbolFormEditor } from './symbols/SymbolFormEditor';
+
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -79,7 +81,14 @@ const { isLoading } =	useQuery([curie],
 			"allelesecondaryidslotannotation", 
 			"alleleSecondaryIds", 
 			alleleState.allele.alleleSecondaryIds,
-			alleleDispatch,
+			alleleDispatch
+		);
+
+		const isSymbolErrors = await validateAlleleDetailTable(
+			"allelesymbolslotannotation",
+			"alleleSymbol",
+			[alleleState.allele.alleleSymbol],
+			alleleDispatch
 		);
 
 		const isMutationTypesErrors = await validateAlleleDetailTable(
@@ -127,7 +136,8 @@ const { isLoading } =	useQuery([curie],
 					isSecondaryIdsErrors || 
 					isInheritanceModesErrors ||
 					isDatabaseStatusErrors ||
-					isRelatedNotesErrors) return;
+					isRelatedNotesErrors ||
+					isSymbolErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
@@ -252,6 +262,14 @@ const { isLoading } =	useQuery([curie],
 					<FullNameForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<SymbolFormEditor
+						state={alleleState}
+						dispatch={alleleDispatch}
+						labelColumnSize={labelColumnSize}						
 					/>
 
 					<Divider />

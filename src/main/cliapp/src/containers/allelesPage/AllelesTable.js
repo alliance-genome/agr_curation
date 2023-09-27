@@ -12,7 +12,7 @@ import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialo
 import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';
 import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDialog';
 import { DatabaseStatusDialog } from './databaseStatus/DatabaseStatusDialog';
-import { SymbolDialog } from './SymbolDialog';
+import { SymbolDialog } from './symbols/SymbolDialog';
 import { FullNameDialog } from './fullName/FullNameDialog';
 import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
 import { SynonymsDialog } from './synonyms/SynonymsDialog';
