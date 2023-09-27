@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
@@ -13,7 +15,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, DataProviderDTO.class })
+@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, DataProviderDTO.class })
 public class ReagentDTO extends AuditedObjectDTO {
 
 	@JsonView({ View.FieldsOnly.class })
@@ -27,8 +29,8 @@ public class ReagentDTO extends AuditedObjectDTO {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("data_provider_dto")
 	private DataProviderDTO dataProviderDto;
-
-	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("taxon_curie")
-	private String taxonCurie;
+	
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("secondary_identifiers")
+	private List<String> secondaryIdentifiers;
 }
