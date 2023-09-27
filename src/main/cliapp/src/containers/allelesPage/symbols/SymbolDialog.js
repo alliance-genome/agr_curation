@@ -6,15 +6,15 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
-import { ValidationService } from '../../service/ValidationService';
-import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
-import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../components/NameSlotAnnotationComponent';
+import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
+import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector';
+import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
+import { ValidationService } from '../../../service/ValidationService';
+import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
+import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
 
 export const SymbolDialog = ({
 													originalSymbolData,
