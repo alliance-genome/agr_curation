@@ -13,6 +13,7 @@ const initialAlleleState = {
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
 		alleleDatabaseStatus: null,
+		alleleGermlineTransmissionStatus: null,
 		references: [],
 		inCollection: {
 			name: "",
@@ -85,7 +86,14 @@ const initialAlleleState = {
 			errorMessages: [],
 			editingRows: {},
 			type: "table",
-		}
+		},
+		alleleGermlineTransmissionStatus: {
+			field: 'alleleGermlineTransmissionStatus',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
+		},
 	},
 	errorMessages: {},
 	submitted: false,
