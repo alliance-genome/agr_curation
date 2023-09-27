@@ -11,10 +11,12 @@ const initialAlleleState = {
 		alleleMutationTypes: [],
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
+		alleleDatabaseStatus: null,
 		references: [],
 		inCollection: {
 			name: "",
 		},
+		relatedNotes: [],
 		isExtinct: false,
 		internal: false,
 		obsolete: false,
@@ -62,6 +64,20 @@ const initialAlleleState = {
 			editingRows: {},
 			type: "table",
 		},
+		alleleDatabaseStatus: {
+			field: 'alleleDatabaseStatus',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
+		},
+		relatedNotes: {
+			field: 'relatedNotes',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
+		}
 	},
 	errorMessages: {},
 	submitted: false,
