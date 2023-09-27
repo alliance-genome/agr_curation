@@ -86,7 +86,7 @@ export const SymbolFormTable = ({
             onChangeHandler={nameTypeOnChangeHandler}
             errorMessages={errorMessages}
             rowIndex={props.rowIndex}
-            vocabType="symbol"
+            vocabType="symbol_name_type"
             field="symbol"
             showClear={false}
           />;
