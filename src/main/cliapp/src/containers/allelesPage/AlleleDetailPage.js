@@ -24,6 +24,7 @@ import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
+import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -109,6 +110,13 @@ const { isLoading } =	useQuery([curie],
 			alleleDispatch,
 		);
 
+		const isRelatedNotesErrors = await validateAlleleDetailTable(
+			"note",
+			"relatedNotes",
+			alleleState.allele.relatedNotes,
+			alleleDispatch,
+		);
+
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
 				if(
@@ -118,7 +126,8 @@ const { isLoading } =	useQuery([curie],
 					isFunctionalImpactsErrors || 
 					isSecondaryIdsErrors || 
 					isInheritanceModesErrors ||
-					isDatabaseStatusErrors) return;
+					isDatabaseStatusErrors ||
+					isRelatedNotesErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
@@ -331,6 +340,13 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+					/>
+
+					<Divider />
+
+					<RelatedNotesForm
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />

@@ -16,6 +16,7 @@ const initialAlleleState = {
 		inCollection: {
 			name: "",
 		},
+		relatedNotes: [],
 		isExtinct: false,
 		internal: false,
 		obsolete: false,
@@ -70,6 +71,13 @@ const initialAlleleState = {
 			editingRows: {},
 			type: "object",
 		},
+		relatedNotes: {
+			field: 'relatedNotes',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
+		}
 	},
 	errorMessages: {},
 	submitted: false,

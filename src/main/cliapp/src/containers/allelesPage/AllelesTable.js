@@ -16,7 +16,7 @@ import { SymbolDialog } from './SymbolDialog';
 import { FullNameDialog } from './fullName/FullNameDialog';
 import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
 import { SynonymsDialog } from './synonyms/SynonymsDialog';
-import { RelatedNotesDialog } from './RelatedNotesDialog';
+import { RelatedNotesDialog } from './relatedNotes/RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
