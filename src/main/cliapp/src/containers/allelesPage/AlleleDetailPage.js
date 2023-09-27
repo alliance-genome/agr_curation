@@ -25,7 +25,7 @@ import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
-import { SymbolFormEditor } from './symbols/SymbolFormEditor';
+import { SymbolForm } from './symbols/SymbolForm';
 
 
 export default function AlleleDetailPage(){
@@ -266,7 +266,7 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
-					<SymbolFormEditor
+					<SymbolForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 						labelColumnSize={labelColumnSize}						
