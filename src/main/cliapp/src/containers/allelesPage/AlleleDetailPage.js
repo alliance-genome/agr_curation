@@ -23,6 +23,7 @@ import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
+import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -101,6 +102,13 @@ const { isLoading } =	useQuery([curie],
 			alleleDispatch,
 		);
 
+		const isDatabaseStatusErrors = await validateAlleleDetailTable(
+			"alleledatabasestatusslotannotation",
+			"alleleDatabaseStatus",
+			[alleleState.allele.alleleDatabaseStatus],
+			alleleDispatch,
+		);
+
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
 				if(
@@ -109,7 +117,8 @@ const { isLoading } =	useQuery([curie],
 					isMutationTypesErrors || 
 					isFunctionalImpactsErrors || 
 					isSecondaryIdsErrors || 
-					isInheritanceModesErrors) return;
+					isInheritanceModesErrors ||
+					isDatabaseStatusErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
@@ -271,6 +280,13 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<FunctionalImpactsForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<DatabaseStatusForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>

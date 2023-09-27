@@ -62,6 +62,13 @@ const initialAlleleState = {
 			editingRows: {},
 			type: "table",
 		},
+		alleleDatabaseStatus: {
+			field: 'alleleDatabaseStatus',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
+		},
 	},
 	errorMessages: {},
 	submitted: false,
