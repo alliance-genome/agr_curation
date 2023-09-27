@@ -32,7 +32,7 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch }) => {
 
   const nameTypeOnChangeHandler = (props, event) => {
      // TODO -- replace with props.editorCallback() after PrimeReact upgrade
-     props.rowData.synonymScope = event.target.value;
+     props.rowData.nameType = event.target.value;
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleSymbol', 
@@ -43,7 +43,7 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch }) => {
 
   const internalOnChangeHandler = (props, event) => {
      // TODO -- replace with props.editorCallback() after PrimeReact upgrade
-     props.rowData.synonymScope = event.target.value;
+     props.rowData.internal = event.target.value;
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleSymbol', 
