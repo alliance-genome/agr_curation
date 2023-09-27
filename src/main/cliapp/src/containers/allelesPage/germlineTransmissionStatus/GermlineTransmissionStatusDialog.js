@@ -6,13 +6,13 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ValidationService } from '../../service/ValidationService';
-import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
+import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector';
+import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
+import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { ValidationService } from '../../../service/ValidationService';
+import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 
 export const GermlineTransmissionStatusDialog = ({
 													originalGermlineTransmissionStatusData,

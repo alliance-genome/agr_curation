@@ -26,6 +26,7 @@ import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbols/SymbolForm';
+import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 
 
 export default function AlleleDetailPage(){
@@ -112,6 +113,13 @@ const { isLoading } =	useQuery([curie],
 			alleleDispatch,
 		);
 
+		const isGermlineTransmissionStatusErrors = await validateAlleleDetailTable(
+			"allelegermlinetransmissionstatusslotannotation", 
+			"alleleGermlineTransmissionStatus", 
+			[alleleState.allele.alleleGermlineTransmissionStatus],
+			alleleDispatch,
+		);
+
 		const isDatabaseStatusErrors = await validateAlleleDetailTable(
 			"alleledatabasestatusslotannotation",
 			"alleleDatabaseStatus",
@@ -137,7 +145,8 @@ const { isLoading } =	useQuery([curie],
 					isInheritanceModesErrors ||
 					isDatabaseStatusErrors ||
 					isRelatedNotesErrors ||
-					isSymbolErrors) return;
+					isSymbolErrors ||
+					isGermlineTransmissionStatusErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
@@ -307,6 +316,13 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<FunctionalImpactsForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<GermilineTransmissionStatusForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
