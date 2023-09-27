@@ -11,6 +11,7 @@ const initialAlleleState = {
 		alleleMutationTypes: [],
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
+		alleleDatabaseStatus: null,
 		references: [],
 		inCollection: {
 			name: "",
