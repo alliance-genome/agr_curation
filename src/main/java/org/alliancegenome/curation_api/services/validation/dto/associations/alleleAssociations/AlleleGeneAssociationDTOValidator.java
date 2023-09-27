@@ -1,11 +1,14 @@
 package org.alliancegenome.curation_api.services.validation.dto.associations.alleleAssociations;
 
+import java.util.HashMap;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -13,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.associations.alleleAssocia
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -20,35 +24,54 @@ import org.apache.commons.lang3.StringUtils;
 public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssociationDTOValidator {
 
 	@Inject
+	AlleleGeneAssociationDAO alleleGeneAssociationDAO;
+	@Inject
 	GeneDAO geneDAO;
 	@Inject
 	VocabularyTermService  vocabularyTermService;
 
-	public AlleleGenomicEntityAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociation association, AlleleGeneAssociationDTO dto) throws ObjectValidationException {
-		ObjectResponse<AlleleGenomicEntityAssociation> assocResponse = validateAlleleGenomicEntityAssociationDTO(association, dto);
-		association = (AlleleGeneAssociation) assocResponse.getEntity();
+	public AlleleGenomicEntityAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto) throws ObjectValidationException {
+		ObjectResponse<AlleleGeneAssociation> agaResponse = new ObjectResponse<AlleleGeneAssociation>();
+				
+		AlleleGeneAssociation association = null;
+		if (StringUtils.isNotBlank(dto.getAlleleCurie()) && StringUtils.isNotBlank(dto.getGeneCurie()) && StringUtils.isNotBlank(dto.getRelationName())) {
+			HashMap<String, Object> params = new HashMap<>();
+			params.put("subject.curie", dto.getAlleleCurie());
+			params.put("relation.name", dto.getRelationName());
+			params.put("object.curie", dto.getGeneCurie());
+			
+			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
+			if (searchResponse != null && searchResponse.getResults().size() == 1)
+				association = searchResponse.getSingleResult();
+		}
+		if (association == null)
+			association = new AlleleGeneAssociation();
+			
+		ObjectResponse<AlleleGenomicEntityAssociation> ageaResponse = validateAlleleGenomicEntityAssociationDTO(association, dto);
+		agaResponse.addErrorMessages(ageaResponse.getErrorMessages());
+		association = (AlleleGeneAssociation) ageaResponse.getEntity();
 
 		if (StringUtils.isBlank(dto.getGeneCurie())) {
-			assocResponse.addErrorMessage("gene_curie", ValidationConstants.REQUIRED_MESSAGE);
+			agaResponse.addErrorMessage("gene_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			Gene gene = geneDAO.find(dto.getGeneCurie());
 			if (gene == null) {
-				assocResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneCurie() + ")");
+				agaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneCurie() + ")");
 			}
 		}
 		
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {
 			VocabularyTerm relation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY, dto.getRelationName()).getEntity();
 			if (relation == null)
-				assocResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
+				agaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
 			association.setRelation(relation);
 		} else {
-			assocResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
+			agaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
-		if (assocResponse.hasErrors())
-			throw new ObjectValidationException(dto, assocResponse.errorMessagesString());
+		if (agaResponse.hasErrors())
+			throw new ObjectValidationException(dto, agaResponse.errorMessagesString());
 		
-		return assocResponse.getEntity();
+		return agaResponse.getEntity();
 	}
 }
