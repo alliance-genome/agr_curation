@@ -16,14 +16,16 @@ import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
 
-export const SymbolDialog = ({
-													originalSymbolData,
-													setOriginalSymbolData,
+export const FullNameDialog = ({					name,
+													field,
+													endpoint,
+													originalFullNameData,
+													setOriginalFullNameData,
 													errorMessagesMainRow,
 													setErrorMessagesMainRow
 												}) => {
-	const { originalSymbols, isInEdit, dialog, rowIndex, mainRowProps } = originalSymbolData;
-	const [localSymbols, setLocalSymbols] = useState(null) ;
+	const { originalFullNames, isInEdit, dialog, rowIndex, mainRowProps } = originalFullNameData;
+	const [localFullNames, setLocalFullNames] = useState(null) ;
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -33,17 +35,17 @@ export const SymbolDialog = ({
 	const toast_topright = useRef(null);
 
 	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
-	const symbolNameTypeTerms = useVocabularyTermSetService('symbol_name_type');
+	const fullNameTypeTerms = useVocabularyTermSetService('full_name_type');
 
 	const showDialogHandler = () => {
-		let _localSymbols = cloneSymbols(originalSymbols);
-		setLocalSymbols(_localSymbols);
+		let _localFullNames = cloneFullNames(originalFullNames);
+		setLocalFullNames(_localFullNames);
 
 		if(isInEdit){
 			let rowsObject = {};
-			if(_localSymbols) {
-				_localSymbols.forEach((sym) => {
-					rowsObject[`${sym.dataKey}`] = true;
+			if(_localFullNames) {
+				_localFullNames.forEach((fn) => {
+					rowsObject[`${fn.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
@@ -61,68 +63,68 @@ export const SymbolDialog = ({
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localSymbols = [...localSymbols];//add new note support
-		if(originalSymbols && originalSymbols[event.index]){
-			let dataKey = _localSymbols[event.index].dataKey;
-			_localSymbols[event.index] = global.structuredClone(originalSymbols[event.index]);
-			_localSymbols[event.index].dataKey = dataKey;
-			setLocalSymbols(_localSymbols);
+		let _localFullNames = [...localFullNames];//add new note support
+		if(originalFullNames && originalFullNames[event.index]){
+			let dataKey = _localFullNames[event.index].dataKey;
+			_localFullNames[event.index] = global.structuredClone(originalFullNames[event.index]);
+			_localFullNames[event.index].dataKey = dataKey;
+			setLocalFullNames(_localFullNames);
 		}
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInSymbols(event.data,event.index);
+		compareChangesInFullNames(event.data,event.index);
 	};
 
-	const compareChangesInSymbols = (data, index) => {
-		if(originalSymbols && originalSymbols[index]) {
-			if (data.internal !== originalSymbols[index].internal) {
+	const compareChangesInFullNames = (data, index) => {
+		if(originalFullNames && originalFullNames[index]) {
+			if (data.internal !== originalFullNames[index].internal) {
 				rowsEdited.current++;
 			}
-			if (data.displayText !== originalSymbols[index].displayText) {
+			if (data.displayText !== originalFullNames[index].displayText) {
 				rowsEdited.current++;
 			}
-			if (data.formatText !== originalSymbols[index].formatText) {
+			if (data.formatText !== originalFullNames[index].formatText) {
 				rowsEdited.current++;
 			}
-			if (data.synonymUrl !== originalSymbols[index].synonymUrl) {
+			if (data.synonymUrl !== originalFullNames[index].synonymUrl) {
 				rowsEdited.current++;
 			}
-			if ((originalSymbols[index].evidence && !data.evidence) ||
-					(!originalSymbols[index].evidence && data.evidence) ||
-					(data.evidence && (data.evidence.length !== originalSymbols[index].evidence.length))
+			if ((originalFullNames[index].evidence && !data.evidence) ||
+					(!originalFullNames[index].evidence && data.evidence) ||
+					(data.evidence && (data.evidence.length !== originalFullNames[index].evidence.length))
 				) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
 					for (var i = 0; i < data.evidence.length; i++) {
-						if (data.evidence[i].curie !== originalSymbols[index].evidence[i].curie) {
+						if (data.evidence[i].curie !== originalFullNames[index].evidence[i].curie) {
 							rowsEdited.current++;
 						}
 					}
 				}
 			}
-			if ((originalSymbols[index].synonymScope && !data.synonymScope) ||
-					(!originalSymbols[index].synonymScope && data.synonymScope) ||
-					(originalSymbols[index].synonymScope && (originalSymbols[index].synonymScope.name !== data.synonymScope.name))
+			if ((originalFullNames[index].synonymScope && !data.synonymScope) ||
+					(!originalFullNames[index].synonymScope && data.synonymScope) ||
+					(originalFullNames[index].synonymScope && (originalFullNames[index].synonymScope.name !== data.synonymScope.name))
 				) {
 				rowsEdited.current++;
 			}
-			if ((originalSymbols[index].nameType && !data.nameType) ||
-					(!originalSymbols[index].nameType && data.nameType) ||
-					(originalSymbols[index].nameType && (originalSymbols[index].nameType.name !== data.nameType.name))
+			if ((originalFullNames[index].nameType && !data.nameType) ||
+					(!originalFullNames[index].nameType && data.nameType) ||
+					(originalFullNames[index].nameType && (originalFullNames[index].nameType.name !== data.nameType.name))
 				) {
 				rowsEdited.current++;
 			}
 		}
 		
-		if (localSymbols.length > originalSymbols?.length || !originalSymbols[0]) {
+		if (localFullNames.length > originalFullNames?.length || !originalFullNames[0]) {
 			rowsEdited.current++;
 		}
 	};
 
 	const onRowEditSave = async(event) => {
-		const result = await validateSymbol(localSymbols[event.index]);
+		const result = await validateFullName(localFullNames[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
 		let _editingRows = { ...editingRows };
@@ -137,63 +139,63 @@ export const SymbolDialog = ({
 				if(!reported) {
 					toast_topright.current.show([
 						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update AlleleSymbol [' + localSymbols[event.index].id + ']', sticky: false }
+						detail: 'Could not update ' + name + ' [' + localFullNames[event.index].id + ']', sticky: false }
 					]);
 					reported = true;
 				}
 			});
 		} else {
 			delete _editingRows[event.index];
-			compareChangesInSymbols(event.data, event.index);
+			compareChangesInFullNames(event.data, event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
-		let _localSymbols = [...localSymbols];
-		_localSymbols[event.index] = event.data;
+		let _localFullNames = [...localFullNames];
+		_localFullNames[event.index] = event.data;
 		setEditingRows(_editingRows);
-		setLocalSymbols(_localSymbols);
+		setLocalFullNames(_localFullNames);
 	};
 
 	const hideDialog = () => {
 		setErrorMessages([]);
-		setOriginalSymbolData((originalSymbolData) => {
+		setOriginalFullNameData((originalFullNameData) => {
 			return {
-				...originalSymbolData,
+				...originalFullNameData,
 				dialog: false,
 			};
 		});
-		let _localSymbols = [];
-		setLocalSymbols(_localSymbols);
+		let _localFullNames = [];
+		setLocalFullNames(_localFullNames);
 	};
 
-	const validateSymbol = async (fid) => {
+	const validateFullName = async (fid) => {
 		let _fid = global.structuredClone(fid);
 		delete _fid.dataKey;
-		const result = await validationService.validate('allelesymbolslotannotation', _fid);
+		const result = await validationService.validate(endpoint, _fid);
 		return result;
 	};
 
-	const cloneSymbols = (clonableSymbols) => {
-		let _clonableSymbols = [];
-		if (clonableSymbols?.length > 0 && clonableSymbols[0]) {
-			_clonableSymbols = global.structuredClone(clonableSymbols);
-			if(_clonableSymbols) {
+	const cloneFullNames = (clonableFullNames) => {
+		let _clonableFullNames = [];
+		if (clonableFullNames?.length > 0 && clonableFullNames[0]) {
+			_clonableFullNames = global.structuredClone(clonableFullNames);
+			if(_clonableFullNames) {
 				let counter = 0 ;
-				_clonableSymbols.forEach((name) => {
+				_clonableFullNames.forEach((name) => {
 					name.dataKey = counter++;
 				});
 			}
 		} 
-		return _clonableSymbols;
+		return _clonableFullNames;
 	};
 
 	const saveDataHandler = () => {
 		setErrorMessages([]);
-		for (const name of localSymbols) {
+		for (const name of localFullNames) {
 			delete name.dataKey;
 		}
-		mainRowProps.rowData.alleleSymbol = localSymbols[0] ? localSymbols[0] : null;
+		mainRowProps.rowData[field] = localFullNames[0] ? localFullNames[0] : null;
 		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleSymbol = localSymbols[0] ? localSymbols[0] : null;
+		updatedAnnotations[rowIndex][field] = localFullNames[0] ? localFullNames[0] : null;
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
@@ -201,12 +203,12 @@ export const SymbolDialog = ({
 			message: "Pending Edits!"
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["alleleSymbol"] = messageObject;
+		errorMessagesCopy[rowIndex][field] = messageObject;
 		setErrorMessagesMainRow({...errorMessagesCopy});
 
-		setOriginalSymbolData((originalSymbolData) => {
+		setOriginalFullNameData((originalFullNameData) => {
 				return {
-					...originalSymbolData,
+					...originalFullNameData,
 					dialog: false,
 				}
 			}
@@ -218,8 +220,8 @@ export const SymbolDialog = ({
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		let _localSymbols = [...localSymbols];
-		_localSymbols[props.rowIndex].internal = event.value.name;
+		let _localFullNames = [...localFullNames];
+		_localFullNames[props.rowIndex].internal = event.value.name;
 	}
 
 	const internalEditor = (props) => {
@@ -236,9 +238,11 @@ export const SymbolDialog = ({
 		);
 	};
 
+	
+
 	const onSynonymScopeEditorValueChange = (props, event) => {
-		let _localSymbols = [...localSymbols];
-		_localSymbols[props.rowIndex].synonymScope = event.value;
+		let _localFullNames = [...localFullNames];
+		_localFullNames[props.rowIndex].synonymScope = event.value;
 	};
 
 	const synonymScopeEditor = (props) => {
@@ -258,8 +262,8 @@ export const SymbolDialog = ({
 	};
 
 	const onNameTypeEditorValueChange = (props, event) => {
-		let _localSymbols = [...localSymbols];
-		_localSymbols[props.rowIndex].nameType = event.value;
+		let _localFullNames = [...localFullNames];
+		_localFullNames[props.rowIndex].nameType = event.value;
 	};
 
 	const nameTypeEditor = (props) => {
@@ -267,7 +271,7 @@ export const SymbolDialog = ({
 			<>
 				<ControlledVocabularyDropdown
 					field="nameType"
-					options={symbolNameTypeTerms}
+					options={fullNameTypeTerms}
 					editorChange={onNameTypeEditorValueChange}
 					props={props}
 					showClear={false}
@@ -285,15 +289,47 @@ export const SymbolDialog = ({
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
+				<Button label="New Name" icon="pi pi-plus" onClick={createNewFullNameHandler} disabled={localFullNames?.length > 0}/>
 				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
 			</div>
+		);
+	}
+
+	const createNewFullNameHandler = (event) => {
+		let cnt = localFullNames ? localFullNames.length : 0;
+		const _localFullNames = global.structuredClone(localFullNames);
+		_localFullNames.push({
+			dataKey : cnt,
+			internal : false,
+			nameType : fullNameTypeTerms[0]
+		});
+		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+		setEditingRows(_editingRows);
+		setLocalFullNames(_localFullNames);
+	};
+
+	const handleDeleteFullName = (event, props) => {
+		let _localFullNames = global.structuredClone(localFullNames);
+		if(props.dataKey){
+			_localFullNames.splice(props.dataKey, 1);
+		}else {
+			_localFullNames.splice(props.rowIndex, 1);
+		}
+		setLocalFullNames(_localFullNames);
+		rowsEdited.current++;
+	}
+
+	const deleteAction = (props) => {
+		return (
+			<Button icon="pi pi-trash" className="p-button-text"
+					onClick={(event) => { handleDeleteFullName(event, props) }}/>
 		);
 	}
 
 	let headerGroup = 
 			<ColumnGroup>
 				<Row>
-					<Column header="Actions" style={{display: isInEdit ? 'visible' : 'none'}}/>
+					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 					<Column header="Display Text" />
 					<Column header="Format Text" />
 					<Column header="Synonym Scope" />
@@ -310,11 +346,12 @@ export const SymbolDialog = ({
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
 			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
-				<h3>Symbol</h3>
-				<DataTable value={localSymbols} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+				<h3>Full Name</h3>
+				<DataTable value={localFullNames} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
+					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={(props) => displayTextEditorTemplate(props, errorMessages)} field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate}/>
 					<Column editor={(props) => formatTextEditorTemplate(props, errorMessages)} field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate}/>
 					<Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate}/>

@@ -4,6 +4,9 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ComponentsDialog } from './ComponentsDialog';
+import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
+import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
+import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
@@ -15,6 +18,18 @@ export const ConstructsTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+
+	const [synonymsData, setSynonymsData] = useState({
+		dialog: false
+	});
+
+	const [symbolData, setSymbolData] = useState({
+		dialog: false
+	});
+
+	const [fullNameData, setFullNameData] = useState({
+		dialog: false
+	});
 
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [errorMessages, setErrorMessages] = useState({});
@@ -63,31 +78,119 @@ export const ConstructsTable = () => {
 			</>
 		)
 	};
-	
-	const nameTemplate = (rowData) => {
-		return (
-			<>
-				<div className={`overflow-hidden text-overflow-ellipsis name_${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
-				<Tooltip target={`.name_${rowData.id}`}>
-					<div dangerouslySetInnerHTML={{ __html: rowData.name }} />
-				</Tooltip>
-			</>
-		)
-	}
 
-	const taxonTemplate = (rowData) => {
-		if (rowData?.taxon) {
+	const fullNameTemplate = (rowData) => {
+		if (rowData?.constructFullName) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`taxon_${rowData.id}`}>
-						{rowData.taxon.name} ({rowData.taxon.curie})
+					<Button className="p-button-text" onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
+						<EllipsisTableCell otherClasses={`fn_${rowData.id}`}>
+							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.formatText}}></div>
+						</EllipsisTableCell>
+						<Tooltip target={`.fn_${rowData.id}`}>
+							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.formatText}}/>
+						</Tooltip>
+					</Button>	
+				</>
+			)
+		}
+	};
+
+	const handleFullNameOpen = (event, rowData) => {
+		let _fullNameData = {};
+		_fullNameData["originalFullNames"] = [rowData.constructFullName];
+		_fullNameData["dialog"] = true;
+		setFullNameData(() => ({
+			..._fullNameData
+		}));
+	};
+
+	const synonymsTemplate = (rowData) => {
+		if (rowData?.constructSynonyms) {
+			const synonymSet = new Set();
+			for(var i = 0; i < rowData.constructSynonyms.length; i++){
+				if (rowData.constructSynonyms[i].displayText) {
+					synonymSet.add(rowData.constructSynonyms[i].displayText);
+				}
+			}
+			if (synonymSet.size > 0) {
+				const sortedSynonyms = Array.from(synonymSet).sort();
+				const listTemplate = (item) => {
+					return (
+						<div className='overflow-hidden text-overflow-ellipsis text-left' dangerouslySetInnerHTML={{ __html: item }} />	
+					);
+				};
+				return (
+					<>
+						<Button className="p-button-text"
+							onClick={(event) => { handleSynonymsOpen(event, rowData, false) }} >
+							<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+						</Button>
+					</>
+				);
+			}
+		}
+	};
+	
+	const handleSynonymsOpen = (event, rowData) => {
+		let _synonymsData = {};
+		_synonymsData["originalSynonyms"] = rowData.constructSynonyms;
+		_synonymsData["dialog"] = true;
+		setSynonymsData(() => ({
+			..._synonymsData
+		}));
+	};
+	
+	const symbolTemplate = (rowData) => {
+		if (rowData?.constructSymbol) {
+			return (
+				<>
+					<Button className="p-button-text" 
+						onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
+							<EllipsisTableCell otherClasses={`sym_${rowData.id}`}>
+								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.constructSymbol.formatText }} />
+							</EllipsisTableCell>
+							<Tooltip target={`.sym_${rowData.id}`}>
+								<div dangerouslySetInnerHTML={{__html: rowData.constructSymbol.formatText}}/>
+							</Tooltip>
+					</Button>
+				</>
+			)
+		}
+	};
+
+	const handleSymbolOpen = (event, rowData) => {
+		let _symbolData = {};
+		_symbolData["originalSymbols"] = [rowData.constructSymbol];
+		_symbolData["dialog"] = true;
+		setSymbolData(() => ({
+			..._symbolData
+		}));
+	};
+	
+	const secondaryIdsBodyTemplate = (rowData) => {
+		if (rowData?.secondaryIdentifiers && rowData.secondaryIdentifiers.length > 0) {
+			const sortedSecondaryIdentifiers = rowData.secondaryIdentifiers.sort();
+			const listTemplate = (secondaryIdentifier) => {
+				return (
+					<EllipsisTableCell>
+						<div dangerouslySetInnerHTML={{__html: secondaryIdentifier}}/>
 					</EllipsisTableCell>
-					<Tooltip target={`.taxon_${rowData.id}`} content={`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+				)
+			};
+			return (
+				<>
+					<div className={`sid_${rowData.id}${rowData.secondaryIdentifiers[0]}`}>
+						<ListTableCell template={listTemplate} listData={sortedSecondaryIdentifiers}/>
+					</div>
+					<Tooltip target={`.sid_${rowData.id}${rowData.secondaryIdentifiers[0]}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={sortedSecondaryIdentifiers}/>
+					</Tooltip>
 				</>
 			);
 		}
-	}
-
+	};
+	
 	const referencesTemplate = (rowData) => {
 		if (rowData && rowData.references && rowData.references.length > 0) {
 			const refStrings = getRefStrings(rowData.references);
@@ -173,18 +276,34 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
-			field: "name",
-			header: "Name",
-			body: nameTemplate,
-			sortable: { isEnabled },
-			filterConfig: FILTER_CONFIGS.nameFilterConfig
+			field: "constructSymbol.displayText",
+			header: "Symbol",
+			sortable: isEnabled,
+			body: symbolTemplate,
+			filter: true,
+			filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig
 		},
 		{
-			field: "taxon.name",
-			header: "Taxon",
-			body: taxonTemplate,
-			sortable: { isEnabled },
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+			field: "constructFullName.displayText",
+			header: "Name",
+			sortable: isEnabled,
+			filter: true,
+			body: fullNameTemplate,
+			filterConfig: FILTER_CONFIGS.constructNameFilterConfig
+		},
+		{
+			field: "constructSynonyms.displayText",
+			header: "Synonyms",
+			body: synonymsTemplate,
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig
+		},
+		{
+			field: "secondaryIdentifiers",
+			header: "Secondary IDs",
+			sortable: isEnabled,
+			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
+			body: secondaryIdsBodyTemplate
 		},
 		{
 			field: "constructComponents.componentSymbol",
@@ -284,6 +403,27 @@ export const ConstructsTable = () => {
 					widthsObject={widthsObject}
 				/>
 			</div>
+			<FullNameDialog
+				name="Construct Name"
+				field="constructFullName"
+				endpoint="constructfullnameslotannotation"
+				originalFullNameData={fullNameData}
+				setOriginalFullNameData={setFullNameData}
+			/>
+			<SymbolDialog
+				name="Construct Symbol"
+				field="constructSymbol"
+				endpoint="constructsymbolslotannotation"
+				originalSymbolData={symbolData}
+				setOriginalSymbolData={setSymbolData}
+			/>
+			<SynonymsDialog
+				name="Construct Synonym"
+				field="constructSynonyms"
+				endpoint="constructsynonymslotannotation"
+				originalSynonymsData={synonymsData}
+				setOriginalSynonymsData={setSynonymsData}
+			/>
 			<ComponentsDialog
 				originalComponentsData={componentsData}
 				setOriginalComponentsData={setComponentsData}

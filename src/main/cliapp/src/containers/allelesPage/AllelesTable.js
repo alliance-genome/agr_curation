@@ -12,10 +12,10 @@ import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialo
 import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';
 import { GermlineTransmissionStatusDialog } from './germlineTransmissionStatus/GermlineTransmissionStatusDialog';
 import { DatabaseStatusDialog } from './databaseStatus/DatabaseStatusDialog';
-import { SymbolDialog } from './symbols/SymbolDialog';
-import { FullNameDialog } from './fullName/FullNameDialog';
+import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
+import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
-import { SynonymsDialog } from './synonyms/SynonymsDialog';
+import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
 import { RelatedNotesDialog } from './relatedNotes/RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
@@ -1293,18 +1293,27 @@ export const AllelesTable = () => {
 				/>
 			</div>
 			<SymbolDialog
+				name="Allele Symbol"
+				field="alleleSymbol"
+				endpoint="allelesymbolslotannotation"
 				originalSymbolData={symbolData}
 				setOriginalSymbolData={setSymbolData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<FullNameDialog
+				name="Allele Name"
+				field="alleleFullName"
+				endpoint="allelefullnameslotannotation"
 				originalFullNameData={fullNameData}
 				setOriginalFullNameData={setFullNameData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<SynonymsDialog
+				name="Allele Synonym"
+				field="alleleSynonyms"
+				endpoint="allelesynonymslotannotation"
 				originalSynonymsData={synonymsData}
 				setOriginalSynonymsData={setSynonymsData}
 				errorMessagesMainRow={errorMessages}
