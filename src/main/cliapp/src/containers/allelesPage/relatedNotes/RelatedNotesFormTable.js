@@ -20,7 +20,6 @@ export const RelatedNotesFormTable = ({
   textOnChangeHandler,
   referencesOnChangeHandler,
 }) => {
-  console.log(relatedNotes)
 
   let headerGroup = <ColumnGroup>
     <Row>

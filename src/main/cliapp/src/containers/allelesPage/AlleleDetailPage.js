@@ -64,89 +64,33 @@ const { isLoading } =	useQuery([curie],
 		alleleDispatch({
 			type: "SUBMIT" 
 		})
-		const isSynonymsErrors = await validateAlleleDetailTable(
-			"allelesynonymslotannotation", 
-			"alleleSynonyms", 
-			alleleState.allele.alleleSynonyms,
-			alleleDispatch,
-		);
 
-		const isFullNameErrors = await validateAlleleDetailTable(
-			"allelefullnameslotannotation", 
-			"alleleFullName", 
-			[alleleState.allele.alleleFullName],
-			alleleDispatch,
-		);
+		let anyErrors = false;
 
-		const isSecondaryIdsErrors = await validateAlleleDetailTable(
-			"allelesecondaryidslotannotation", 
-			"alleleSecondaryIds", 
-			alleleState.allele.alleleSecondaryIds,
-			alleleDispatch
-		);
+		let states = Object.values(alleleState.entityStates);
 
-		const isSymbolErrors = await validateAlleleDetailTable(
-			"allelesymbolslotannotation",
-			"alleleSymbol",
-			[alleleState.allele.alleleSymbol],
-			alleleDispatch
-		);
+		states.forEach( async (state) => {
+			let table;
 
-		const isMutationTypesErrors = await validateAlleleDetailTable(
-			"allelemutationtypeslotannotation", 
-			"alleleMutationTypes", 
-			alleleState.allele.alleleMutationTypes,
-			alleleDispatch,
-		);
+			if(state.type === 'object'){
+				table = [alleleState.allele[state.field]];
+			} else {
+				table = alleleState.allele[state.field];
+			}
 
-		const isInheritanceModesErrors = await validateAlleleDetailTable(
-			"alleleinheritancemodeslotannotation", 
-			"alleleInheritanceModes", 
-			alleleState.allele.alleleInheritanceModes,
-			alleleDispatch,
-		);
+			let isError = await validateAlleleDetailTable(
+				state.endpoint,
+				state.field,
+				table,
+				alleleDispatch,
+			);
+
+			if(isError) anyErrors = true;
+		})
 		
-		const isFunctionalImpactsErrors = await validateAlleleDetailTable(
-			"allelefunctionalimpactslotannotation", 
-			"alleleFunctionalImpacts", 
-			alleleState.allele.alleleFunctionalImpacts,
-			alleleDispatch,
-		);
-
-		const isGermlineTransmissionStatusErrors = await validateAlleleDetailTable(
-			"allelegermlinetransmissionstatusslotannotation", 
-			"alleleGermlineTransmissionStatus", 
-			[alleleState.allele.alleleGermlineTransmissionStatus],
-			alleleDispatch,
-		);
-
-		const isDatabaseStatusErrors = await validateAlleleDetailTable(
-			"alleledatabasestatusslotannotation",
-			"alleleDatabaseStatus",
-			[alleleState.allele.alleleDatabaseStatus],
-			alleleDispatch,
-		);
-
-		const isRelatedNotesErrors = await validateAlleleDetailTable(
-			"note",
-			"relatedNotes",
-			alleleState.allele.relatedNotes,
-			alleleDispatch,
-		);
-
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(
-					isSynonymsErrors || 
-					isFullNameErrors || 
-					isMutationTypesErrors || 
-					isFunctionalImpactsErrors || 
-					isSecondaryIdsErrors || 
-					isInheritanceModesErrors ||
-					isDatabaseStatusErrors ||
-					isRelatedNotesErrors ||
-					isSymbolErrors ||
-					isGermlineTransmissionStatusErrors) return;
+				if(anyErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},

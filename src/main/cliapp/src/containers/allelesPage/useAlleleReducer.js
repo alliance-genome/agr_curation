@@ -26,6 +26,7 @@ const initialAlleleState = {
 	entityStates: {
 		alleleSynonyms: {
 			field: 'alleleSynonyms',
+			endpoint: 'allelesynonymslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -33,6 +34,7 @@ const initialAlleleState = {
 		},
 		alleleFullName: {
 			field: 'alleleFullName',
+			endpoint: 'allelefullnameslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -40,6 +42,7 @@ const initialAlleleState = {
 		},
 		alleleSecondaryIds: {
 			field: 'alleleSecondaryIds',
+			endpoint: 'allelesecondaryidslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -47,6 +50,7 @@ const initialAlleleState = {
 		},
 		alleleSymbol: {
 			field: 'alleleSymbol',
+			endpoint: 'allelesymbolslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -54,6 +58,7 @@ const initialAlleleState = {
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',
+			endpoint: 'allelemutationtypeslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -61,6 +66,7 @@ const initialAlleleState = {
 		},
 		alleleInheritanceModes: {
 			field: 'alleleInheritanceModes',
+			endpoint: 'alleleinheritancemodeslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -68,20 +74,7 @@ const initialAlleleState = {
 		},
 		alleleFunctionalImpacts: {
 			field: 'alleleFunctionalImpacts',
-			show: false,
-			errorMessages: [],
-			editingRows: {},
-			type: "table",
-		},
-		alleleDatabaseStatus: {
-			field: 'alleleDatabaseStatus',
-			show: false,
-			errorMessages: [],
-			editingRows: {},
-			type: "object",
-		},
-		relatedNotes: {
-			field: 'relatedNotes',
+			endpoint: 'allelefunctionalimpactslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -89,10 +82,27 @@ const initialAlleleState = {
 		},
 		alleleGermlineTransmissionStatus: {
 			field: 'alleleGermlineTransmissionStatus',
+			endpoint: 'allelegermlinetransmissionstatusslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
 			type: "object",
+		},
+		alleleDatabaseStatus: {
+			field: 'alleleDatabaseStatus',
+			endpoint: 'alleledatabasestatusslotannotation',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
+		},
+		relatedNotes: {
+			field: 'relatedNotes',
+			endpoint: 'note',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
 		},
 	},
 	errorMessages: {},
