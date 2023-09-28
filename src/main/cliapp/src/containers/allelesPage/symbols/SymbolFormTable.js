@@ -2,7 +2,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
@@ -14,7 +13,6 @@ export const SymbolFormTable = ({
   editingRows,
   onRowEditChange,
   tableRef,
-  deletionHandler,
   errorMessages,
   textOnChangeHandler,
   synonymScopeOnChangeHandler,
@@ -25,8 +23,7 @@ export const SymbolFormTable = ({
 
   let headerGroup =
     <ColumnGroup>
-      <Row>
-        <Column header="Actions" />
+      <Row>       
         <Column header="Display Text" />
         <Column header="Format Text" />
         <Column header="Synonym Scope" />
@@ -42,8 +39,6 @@ export const SymbolFormTable = ({
   return (
     <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
-      <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
-        className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column
         editor={(props) => {
           return <TableInputTextEditor
