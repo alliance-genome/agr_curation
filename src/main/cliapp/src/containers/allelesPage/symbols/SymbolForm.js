@@ -83,12 +83,10 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch }) => {
     });
   }
 
-  const deletionHandler  = (e) => {
-    e.preventDefault();
-    dispatch({type: "DELETE_OBJECT", entityType: "alleleSymbol"});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleSymbol", errorMessages: []});
-  };
 
+  const button = state.allele?.alleleSymbol ? <></> :
+    <Button label="Add Symbol" onClick={createNewSymbolHandler} disabled={state.allele?.alleleSymbol} className="w-6"/>;
+    
   return (
     <FormTableWrapper
       labelColumnSize={labelColumnSize}
@@ -98,7 +96,6 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch }) => {
           editingRows={state.entityStates.alleleSymbol.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
-          deletionHandler={deletionHandler}
           errorMessages={state.entityStates.alleleSymbol.errorMessages}
           textOnChangeHandler={textOnChangeHandler}
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
@@ -109,8 +106,7 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch }) => {
       }
       tableName="Symbol"
       showTable={state.entityStates.alleleSymbol.show}
-      button={<Button label="Add Symbol" onClick={createNewSymbolHandler} disabled={state.allele?.alleleSymbol} className="w-6"/>}
+      button={button}
     />
   );
-
 };
