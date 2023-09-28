@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import io.quarkus.logging.Log;
@@ -44,6 +45,8 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			
 			AGRCurationSchemaVersion version = GeneToGeneOrthologyGenerated.class.getAnnotation(AGRCurationSchemaVersion.class);
 			bulkLoadFile.setLinkMLSchemaVersion(version.max());
+			if (orthologyData.getMetaData() != null && StringUtils.isNotBlank(orthologyData.getMetaData().getRelease()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(orthologyData.getMetaData().getRelease());
 			
 			List<Pair<String, String>> orthoPairsLoaded = new ArrayList<>();
 			String dataProviderAbbreviation = fms.getFmsDataSubType();

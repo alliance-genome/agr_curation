@@ -52,6 +52,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 	
 	private VocabularyTerm noteType;
 	private VocabularyTerm noteType2;
+	private VocabularyTerm relation;
+	private VocabularyTerm relation2;
 	
 	private final String constructBulkPostEndpoint = "/api/construct/bulk/WB/constructs";
 	private final String constructBulkPostEndpointRGD = "/api/construct/bulk/RGD/constructs";
@@ -62,6 +64,9 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
 		noteType = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_note", false);
 		noteType2 = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary", false);
+		Vocabulary relationVocabulary = createVocabulary("construct_genomic_entity_predicate", false);
+		relation = createVocabularyTerm(relationVocabulary, "is_regulated_by", false);
+		relation2 = createVocabularyTerm(relationVocabulary, "targets", false);
 	}
 
 	@Test
@@ -77,17 +82,54 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is("WB:Construct0001")).
-			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.name", is("cnst1")).
 			body("entity.references[0].curie", is(reference)).
 			body("entity.references[0].crossReferences[0].referencedCurie", is(referenceXref)).
+			body("entity.constructSymbol.displayText", is("Ta1")).
+			body("entity.constructSymbol.formatText", is("Ta<sup>1</sup>")).
+			body("entity.constructSymbol.synonymScope.name", is("exact")).
+			body("entity.constructSymbol.synonymUrl", is("https://alliancegenome.org/test")).
+			body("entity.constructSymbol.nameType.name", is("nomenclature_symbol")).
+			body("entity.constructSymbol.evidence[0].curie", is(reference)).
+			body("entity.constructSymbol.internal", is(true)).
+			body("entity.constructSymbol.obsolete", is(true)).
+			body("entity.constructSymbol.createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
+			body("entity.constructSymbol.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
+			body("entity.constructSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructFullName.displayText", is("Test construct 1")).
+			body("entity.constructFullName.formatText", is("Test construct<sup>1</sup>")).
+			body("entity.constructFullName.synonymScope.name", is("exact")).
+			body("entity.constructFullName.synonymUrl", is("https://alliancegenome.org/test")).
+			body("entity.constructFullName.nameType.name", is("full_name")).
+			body("entity.constructFullName.evidence[0].curie", is(reference)).
+			body("entity.constructFullName.internal", is(true)).
+			body("entity.constructFullName.obsolete", is(true)).
+			body("entity.constructFullName.createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
+			body("entity.constructFullName.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
+			body("entity.constructFullName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSynonyms", hasSize(1)).
+			body("entity.constructSynonyms[0].displayText", is("Test construct synonym 1")).
+			body("entity.constructSynonyms[0].formatText", is("Test construct synonym <sup>1</sup>")).
+			body("entity.constructSynonyms[0].synonymScope.name", is("exact")).
+			body("entity.constructSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
+			body("entity.constructSynonyms[0].nameType.name", is("unspecified")).
+			body("entity.constructSynonyms[0].evidence[0].curie", is(reference)).
+			body("entity.constructSynonyms[0].internal", is(true)).
+			body("entity.constructSynonyms[0].obsolete", is(true)).
+			body("entity.constructSynonyms[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
+			body("entity.constructSynonyms[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
+			body("entity.constructSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructComponents", hasSize(1)).
 			body("entity.constructComponents[0].componentSymbol", is("cmp1")).
+			body("entity.constructComponents[0].relation.name", is(relation.getName())).
 			body("entity.constructComponents[0].taxon.curie", is("NCBITaxon:9606")).
 			body("entity.constructComponents[0].taxonText", is("Homo sapiens")).
 			body("entity.constructComponents[0].evidence[0].curie", is(reference)).
@@ -123,19 +165,55 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is("WB:Construct0001")).
-			body("entity.taxon.curie", is("NCBITaxon:9606")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.name", is("cnst2")).
 			body("entity.references", hasSize(1)).
 			body("entity.references[0].curie", is(reference2)).
 			body("entity.references[0].crossReferences[0].referencedCurie", is(referenceXref2)).
+			body("entity.constructSymbol.displayText", is("Ta1a")).
+			body("entity.constructSymbol.formatText", is("Ta<sup>1a</sup>")).
+			body("entity.constructSymbol.synonymScope.name", is("broad")).
+			body("entity.constructSymbol.synonymUrl", is("https://alliancegenome.org/test2")).
+			body("entity.constructSymbol.nameType.name", is("systematic_name")).
+			body("entity.constructSymbol.evidence[0].curie", is(reference2)).
+			body("entity.constructSymbol.internal", is(false)).
+			body("entity.constructSymbol.obsolete", is(false)).
+			body("entity.constructSymbol.createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
+			body("entity.constructSymbol.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
+			body("entity.constructSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructFullName.displayText", is("Test construct 1a")).
+			body("entity.constructFullName.formatText", is("Test construct<sup>1a</sup>")).
+			body("entity.constructFullName.synonymScope.name", is("broad")).
+			body("entity.constructFullName.synonymUrl", is("https://alliancegenome.org/test2")).
+			body("entity.constructFullName.nameType.name", is("full_name")).
+			body("entity.constructFullName.evidence[0].curie", is(reference2)).
+			body("entity.constructFullName.internal", is(false)).
+			body("entity.constructFullName.obsolete", is(false)).
+			body("entity.constructFullName.createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
+			body("entity.constructFullName.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
+			body("entity.constructFullName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSynonyms", hasSize(1)).
+			body("entity.constructSynonyms[0].displayText", is("Test construct synonym 1a")).
+			body("entity.constructSynonyms[0].formatText", is("Test construct synonym <sup>1a</sup>")).
+			body("entity.constructSynonyms[0].synonymScope.name", is("broad")).
+			body("entity.constructSynonyms[0].synonymUrl", is("https://alliancegenome.org/test2")).
+			body("entity.constructSynonyms[0].nameType.name", is("nomenclature_symbol")).
+			body("entity.constructSynonyms[0].evidence[0].curie", is(reference2)).
+			body("entity.constructSynonyms[0].internal", is(false)).
+			body("entity.constructSynonyms[0].obsolete", is(false)).
+			body("entity.constructSynonyms[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
+			body("entity.constructSynonyms[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
+			body("entity.constructSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.constructComponents", hasSize(1)).
 			body("entity.constructComponents[0].componentSymbol", is("cmp2")).
+			body("entity.constructComponents[0].relation.name", is(relation2.getName())).
 			body("entity.constructComponents[0].taxon.curie", is("NCBITaxon:6239")).
 			body("entity.constructComponents[0].taxonText", is("Caenorhabditis elegans")).
 			body("entity.constructComponents[0].evidence[0].curie", is(reference2)).
@@ -164,29 +242,48 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void constructBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_01_no_name.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_02_no_construct_component_component_symbol.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_03_no_construct_component_note_note_type.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_04_no_construct_component_note_free_text.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_05_no_data_provider_source_organization_abbreviation.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_06_no_data_provider_cross_reference_referenced_curie.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_07_no_data_provider_cross_reference_display_name.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_08_no_data_provider_cross_reference_prefix.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_09_no_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_01_no_construct_component_component_symbol.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_02_no_construct_component_note_note_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_03_no_construct_component_note_free_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_04_no_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_05_no_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_06_no_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_07_no_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_08_no_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_09_no_construct_symbol_display_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_10_no_construct_full_name_display_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_11_no_construct_synonym_display_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_12_no_construct_symbol_format_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_13_no_construct_full_name_format_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_14_no_construct_synonym_format_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_15_no_construct_symbol_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_16_no_construct_full_name_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_17_no_construct_synonym_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "MR_18_no_construct_component_relation.json");
 	}
+	
 	
 	@Test
 	@Order(4)
 	public void constructBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_01_empty_name.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_02_empty_construct_component_component_symbol.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_03_empty_construct_component_note_note_type.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_04_empty_construct_component_note_free_text.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_05_empty_data_provider_source_organization_abbreviation.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_06_empty_data_provider_cross_reference_referenced_curie.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_07_empty_data_provider_cross_reference_display_name.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_08_empty_data_provider_cross_reference_prefix.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_09_empty_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_01_empty_construct_component_component_symbol.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_02_empty_construct_component_note_note_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_03_empty_construct_component_note_free_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_04_empty_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_05_empty_data_provider_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_06_empty_data_provider_cross_reference_display_name.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_07_empty_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_08_empty_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_09_empty_construct_symbol_display_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_10_empty_construct_full_name_display_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_11_empty_construct_synonym_display_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_12_empty_construct_symbol_format_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_13_empty_construct_full_name_format_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_14_empty_construct_synonym_format_text.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_15_empty_construct_symbol_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_16_empty_construct_full_name_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_17_empty_construct_synonym_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "ER_18_empty_construct_component_relation.json");
 	}
 	
 	@Test
@@ -194,14 +291,23 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 	public void constructBulkUploadInvalidFields() throws Exception {
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_01_invalid_date_created.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_02_invalid_date_updated.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_03_invalid_taxon.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_04_invalid_reference.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_05_invalid_construct_component_evidence.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_06_invalid_construct_component_taxon.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_07_invalid_construct_component_note_note_type.json");;
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_08_invalid_data_provider_source_organization_abbreviation.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_09_invalid_data_provider_cross_reference_prefix.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_10_invalid_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_03_invalid_reference.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_04_invalid_construct_component_evidence.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_05_invalid_construct_component_taxon.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_06_invalid_construct_component_note_note_type.json");;
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_07_invalid_data_provider_source_organization_abbreviation.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_08_invalid_data_provider_cross_reference_prefix.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_09_invalid_data_provider_cross_reference_page_area.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_10_invalid_construct_symbol_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_11_invalid_construct_full_name_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_12_invalid_construct_synonym_name_type.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_13_invalid_construct_symbol_synonym_scope.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_14_invalid_construct_full_name_synonym_scope.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_15_invalid_construct_synonym_synonym_scope.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_16_invalid_construct_symbol_evidence.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_17_invalid_construct_full_name_evidence.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_18_invalid_construct_synonym_evidence.json");
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_19_invalid_construct_component_relation.json");
 	}
 	
 	@Test
@@ -219,8 +325,10 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
-			body("entity", not(hasKey("taxon"))).
-			body("entity", not(hasKey("constructComponents")));
+			body("entity", not(hasKey("constructFullName"))).
+			body("entity", not(hasKey("constructSynonyms"))).
+			body("entity", not(hasKey("constructComponents"))).
+			body("entity", not(hasKey("secondaryIdentifiers")));
 	}
 
 	@Test
@@ -234,6 +342,27 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
+			body("entity.constructSymbol", not(hasKey("synonymScope"))).
+			body("entity.constructSymbol", not(hasKey("synonymUrl"))).
+			body("entity.constructSymbol", not(hasKey("evidence"))).
+			body("entity.constructSymbol", not(hasKey("createdBy"))).
+			body("entity.constructSymbol", not(hasKey("updatedBy"))).
+			body("entity.constructSymbol", not(hasKey("dateCreated"))).
+			body("entity.constructSymbol", not(hasKey("dateUpdated"))).
+			body("entity.constructFullName", not(hasKey("synonymScope"))).
+			body("entity.constructFullName", not(hasKey("synonymUrl"))).
+			body("entity.constructFullName", not(hasKey("evidence"))).
+			body("entity.constructFullName", not(hasKey("createdBy"))).
+			body("entity.constructFullName", not(hasKey("updatedBy"))).
+			body("entity.constructFullName", not(hasKey("dateCreated"))).
+			body("entity.constructFullName", not(hasKey("dateUpdated"))).
+			body("entity.constructSynonyms[0]", not(hasKey("synonymScope"))).
+			body("entity.constructSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("entity.constructSynonyms[0]", not(hasKey("evidence"))).
+			body("entity.constructSynonyms[0]", not(hasKey("createdBy"))).
+			body("entity.constructSynonyms[0]", not(hasKey("updatedBy"))).
+			body("entity.constructSynonyms[0]", not(hasKey("dateCreated"))).
+			body("entity.constructSynonyms[0]", not(hasKey("dateUpdated"))).
 			body("entity.constructComponents[0]", not(hasKey("taxon"))).
 			body("entity.constructComponents[0]", not(hasKey("taxon_text"))).
 			body("entity.constructComponents[0]", not(hasKey("evidence"))).
@@ -280,7 +409,27 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("taxon"))).
 			body("entity", not(hasKey("references"))).
-			body("entity.constructComponents[0]", not(hasKey("taxon"))).
+			body("entity.constructSymbol", not(hasKey("synonymScope"))).
+			body("entity.constructSymbol", not(hasKey("synonymUrl"))).
+			body("entity.constructSymbol", not(hasKey("evidence"))).
+			body("entity.constructSymbol", not(hasKey("createdBy"))).
+			body("entity.constructSymbol", not(hasKey("updatedBy"))).
+			body("entity.constructSymbol", not(hasKey("dateCreated"))).
+			body("entity.constructSymbol", not(hasKey("dateUpdated"))).
+			body("entity.constructFullName", not(hasKey("synonymScope"))).
+			body("entity.constructFullName", not(hasKey("synonymUrl"))).
+			body("entity.constructFullName", not(hasKey("evidence"))).
+			body("entity.constructFullName", not(hasKey("createdBy"))).
+			body("entity.constructFullName", not(hasKey("updatedBy"))).
+			body("entity.constructFullName", not(hasKey("dateCreated"))).
+			body("entity.constructFullName", not(hasKey("dateUpdated"))).
+			body("entity.constructSynonyms[0]", not(hasKey("synonymScope"))).
+			body("entity.constructSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("entity.constructSynonyms[0]", not(hasKey("evidence"))).
+			body("entity.constructSynonyms[0]", not(hasKey("createdBy"))).
+			body("entity.constructSynonyms[0]", not(hasKey("updatedBy"))).
+			body("entity.constructSynonyms[0]", not(hasKey("dateCreated"))).
+			body("entity.constructSynonyms[0]", not(hasKey("dateUpdated"))).body("entity.constructComponents[0]", not(hasKey("taxon"))).
 			body("entity.constructComponents[0]", not(hasKey("taxon_text"))).
 			body("entity.constructComponents[0]", not(hasKey("evidence"))).
 			body("entity.constructComponents[0]", not(hasKey("createdBy"))).
@@ -304,7 +453,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 
 	@Test
 	@Order(11)
-	public void geneBulkUploadEmptyNonRequiredFields() throws Exception {
+	public void constructBulkUploadEmptyNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "EN_01_empty_non_required_fields.json");
 	}
 	

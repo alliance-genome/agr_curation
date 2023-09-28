@@ -16,30 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class GeneSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
-
 	public ObjectResponse<GeneSynonymSlotAnnotation> validateGeneSynonymSlotAnnotationDTO(GeneSynonymSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
-		ObjectResponse<GeneSynonymSlotAnnotation> gssaResponse = new ObjectResponse<GeneSynonymSlotAnnotation>();
-
 		if (annotation == null)
 			annotation = new GeneSynonymSlotAnnotation();
 
-		ObjectResponse<GeneSynonymSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
-		annotation = saResponse.getEntity();
-		gssaResponse.addErrorMessages(saResponse.getErrorMessages());
-
-		if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
-			VocabularyTerm nameType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY, dto.getNameTypeName()).getEntity();
-			if (nameType == null)
-				gssaResponse.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
-			annotation.setNameType(nameType);
-		} else {
-			gssaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
-		}
-
-		gssaResponse.setEntity(annotation);
-
-		return gssaResponse;
+		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.NAME_TYPE_VOCABULARY);
 	}
 }

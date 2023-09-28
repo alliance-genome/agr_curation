@@ -51,8 +51,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "reagent_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "reagent_dataprovider_index", columnList = "dataProvider_id"),
 	@Index(name = "reagent_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "reagent_taxon_index", columnList = "taxon_curie")
+	@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id")
 })
 
 public class Reagent extends GeneratedAuditedObject {

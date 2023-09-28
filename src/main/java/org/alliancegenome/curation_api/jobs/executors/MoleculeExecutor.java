@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeIngestFmsDTO;
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.lang3.StringUtils;
 
 @ApplicationScoped
 public class MoleculeExecutor extends LoadFileExecutor {
@@ -30,6 +31,8 @@ public class MoleculeExecutor extends LoadFileExecutor {
 				AGRCurationSchemaVersion version = Molecule.class.getAnnotation(AGRCurationSchemaVersion.class);
 				bulkLoadFile.setLinkMLSchemaVersion(version.max());
 			}
+			if (moleculeData.getMetaData() != null && StringUtils.isNotBlank(moleculeData.getMetaData().getRelease()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(moleculeData.getMetaData().getRelease());
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());

@@ -25,7 +25,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { NameSlotAnnotation.class })
 @Schema(name = "ConstructSynonymSlotAnnotation", description = "POJO representing a construct synonym slot annotation")
-@Table(indexes = { @Index(name = "constructsynonym_singleconstruct_curie_index", columnList = "singleconstruct_curie"), })
+@Table(indexes = { @Index(name = "constructsynonym_singleconstruct_id_index", columnList = "singleconstruct_id"), })
 public class ConstructSynonymSlotAnnotation extends NameSlotAnnotation {
 
 	@ManyToOne

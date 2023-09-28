@@ -79,6 +79,9 @@ public class BulkLoadFile extends GeneratedAuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
 	private String linkMLSchemaVersion;
+	
+	@JsonView({ View.FieldsOnly.class })
+	private String allianceMemberReleaseVersion;
 
 	@ManyToOne
 	private BulkLoad bulkLoad;

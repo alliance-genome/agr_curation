@@ -16,12 +16,16 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotationDTO.class, NoteDTO.class })
+@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotationDTO.class, NoteDTO.class })
 public class ConstructComponentSlotAnnotationDTO extends SlotAnnotationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("component_symbol")
 	private String componentSymbol;
+	
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("relation_name")
+	private String relationName;
 
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("note_dtos")
