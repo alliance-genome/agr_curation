@@ -82,7 +82,7 @@ export const SymbolFormTable = ({
             errorMessages={errorMessages}
             rowIndex={props.rowIndex}
             vocabType="symbol_name_type"
-            field="symbol"
+            field="nameType"
             showClear={false}
           />;
         }}
