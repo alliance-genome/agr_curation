@@ -36,18 +36,20 @@ describe("<ConstructsTable />", () => {
 		let result = await renderWithClient(<BrowserRouter><ConstructsTable /></BrowserRouter>);
 
 		const modEntityTd = await result.findByText(/WB:WBCnstr00000001/i);
-		const nameTd = await result.findByText(/Test construct/i);
-		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
-		const referencesTd = await result.findByText(/AGRKB:101000000622406/i);
+		const referencesTd = await result.findByText(/PMID:17486083/i);
 		const updatedByCreatedByArray = await result.findAllByText("WB:curator");
 		const dateCreatedTd = await result.findByText(/2010-01-02T00:00:00Z/i);
 		const dateUpdatedTd = await result.findByText(/2012-08-03T01:00:00\+01:00/i);
 		const constructComponentTd = await result.findByText(/egl19/i);
+		const symbolTd = await result.findByText(/KP273/);
+		const nameTd = await result.findByText(/King Potato 273/);
+		const synonymTd = await result.findByText(/KPot273/);
 
 		await waitFor(() => {
 			expect(modEntityTd).toBeInTheDocument();
 			expect(nameTd).toBeInTheDocument();
-			expect(taxonTd).toBeInTheDocument();
+			expect(symbolTd).toBeInTheDocument();
+			expect(synonymTd).toBeInTheDocument();
 			expect(referencesTd).toBeInTheDocument();
 			expect(updatedByCreatedByArray.length).toEqual(2);
 			expect(dateUpdatedTd).toBeInTheDocument();

@@ -25,7 +25,7 @@ import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
-import { SymbolForm } from './symbols/SymbolForm';
+import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 
 
