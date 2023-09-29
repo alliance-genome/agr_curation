@@ -108,3 +108,9 @@ ALTER TABLE constructcomponentslotannotation_aud ADD COLUMN relation_id bigint;
 ALTER TABLE constructcomponentslotannotation ADD CONSTRAINT constructcomponentslotannotation_relation_id_fk FOREIGN KEY (relation_id) REFERENCES vocabularyterm (id);
 
 CREATE INDEX constructcomponentslotannotation_relation_index ON constructcomponentslotannotation USING btree (relation_id);
+
+-- Need longer display and format text fields for long construct names
+ALTER TABLE nameslotannotation ALTER COLUMN displaytext TYPE varchar(1500);
+ALTER TABLE nameslotannotation ALTER COLUMN formattext TYPE varchar(1500);
+ALTER TABLE nameslotannotation_aud ALTER COLUMN displaytext TYPE varchar(1500);
+ALTER TABLE nameslotannotation_aud ALTER COLUMN formattext TYPE varchar(1500);
