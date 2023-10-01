@@ -18,7 +18,7 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 	@Inject
 	VocabularyTermService vocabularyTermService;
 
-	public <E extends NameSlotAnnotation> ObjectResponse<E> validateNameSlotAnnotationDTO(E annotation, NameSlotAnnotationDTO dto) {
+	public <E extends NameSlotAnnotation> ObjectResponse<E> validateNameSlotAnnotationDTO(E annotation, NameSlotAnnotationDTO dto, String nameTypeVocabularyOrSet) {
 		ObjectResponse<E> nsaResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = nsaResponse.getEntity();
 
@@ -32,6 +32,20 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 			nsaResponse.addErrorMessage("format_text", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			annotation.setFormatText(dto.getFormatText());
+		}
+		
+		if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
+			VocabularyTerm nameType;
+			if (nameTypeVocabularyOrSet.equals(VocabularyConstants.NAME_TYPE_VOCABULARY)) {
+				nameType = vocabularyTermService.getTermInVocabulary(nameTypeVocabularyOrSet, dto.getNameTypeName()).getEntity();
+			} else {
+				nameType = vocabularyTermService.getTermInVocabularyTermSet(nameTypeVocabularyOrSet, dto.getNameTypeName()).getEntity();
+			}
+			if (nameType == null)
+				nsaResponse.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
+			annotation.setNameType(nameType);
+		} else {
+			nsaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (StringUtils.isBlank(dto.getSynonymUrl())) {

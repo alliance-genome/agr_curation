@@ -13,11 +13,13 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.constructSlotAnnotations.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.NoteDTOValidator;
@@ -36,6 +38,8 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 	NoteDTOValidator noteDtoValidator;
 	@Inject
 	NoteDAO noteDAO;
+	@Inject
+	VocabularyTermService vocabularyTermService;
 	
 	public ObjectResponse<ConstructComponentSlotAnnotation> validateConstructComponentSlotAnnotationDTO(ConstructComponentSlotAnnotation annotation, ConstructComponentSlotAnnotationDTO dto) {
 		ObjectResponse<ConstructComponentSlotAnnotation> ccsaResponse = new ObjectResponse<ConstructComponentSlotAnnotation>();
@@ -51,6 +55,15 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 			ccsaResponse.addErrorMessage("component_symbol", ValidationConstants.REQUIRED_MESSAGE);;
 		} else {
 			annotation.setComponentSymbol(dto.getComponentSymbol());
+		}
+		
+		if (StringUtils.isNotEmpty(dto.getRelationName())) {
+			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY, dto.getRelationName()).getEntity();
+			if (diseaseRelation == null)
+				ccsaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
+			annotation.setRelation(diseaseRelation);
+		} else {
+			ccsaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
 		if (StringUtils.isNotBlank(dto.getTaxonCurie())) {

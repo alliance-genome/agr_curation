@@ -10,18 +10,24 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.constructs.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class ConstructValidator extends ReagentValidator {
@@ -34,6 +40,18 @@ public class ConstructValidator extends ReagentValidator {
 	ConstructComponentSlotAnnotationValidator constructComponentValidator;
 	@Inject
 	ReferenceValidator referenceValidator;
+	@Inject
+	ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
+	@Inject
+	ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
+	@Inject
+	ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
+	@Inject
+	ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
+	@Inject
+	ConstructFullNameSlotAnnotationValidator constructFullNameValidator;
+	@Inject
+	ConstructSynonymSlotAnnotationValidator constructSynonymValidator;
 	
 	private String errorMessage;
 
@@ -68,9 +86,6 @@ public class ConstructValidator extends ReagentValidator {
 
 	public Construct validateConstruct(Construct uiEntity, Construct dbEntity) {
 
-		String name = validateName(uiEntity);
-		dbEntity.setName(name);
-		
 		List<String> previousReferenceCuries = new ArrayList<String>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
 			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
@@ -91,6 +106,10 @@ public class ConstructValidator extends ReagentValidator {
 		
 		removeUnusedSlotAnnotations(uiEntity, dbEntity);
 		
+		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(uiEntity, dbEntity);
+		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(uiEntity, dbEntity);
+		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(uiEntity, dbEntity);
+		
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(uiEntity, dbEntity);
 		
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
@@ -103,6 +122,26 @@ public class ConstructValidator extends ReagentValidator {
 		
 		dbEntity = constructDAO.persist(dbEntity);
 		
+		if (symbol != null) {
+			symbol.setSingleConstruct(dbEntity);
+			constructSymbolDAO.persist(symbol);
+		}
+		dbEntity.setConstructSymbol(symbol);
+
+		if (fullName != null) {
+			fullName.setSingleConstruct(dbEntity);
+			constructFullNameDAO.persist(fullName);
+		}
+		dbEntity.setConstructFullName(fullName);
+
+		if (synonyms != null) {
+			for (ConstructSynonymSlotAnnotation syn : synonyms) {
+				syn.setSingleConstruct(dbEntity);
+				constructSynonymDAO.persist(syn);
+			}
+		}
+		dbEntity.setConstructSynonyms(synonyms);
+		
 		if (components != null) {
 			for (ConstructComponentSlotAnnotation cc : components) {
 				cc.setSingleConstruct(dbEntity);
@@ -111,15 +150,6 @@ public class ConstructValidator extends ReagentValidator {
 		}
 
 		return dbEntity;
-	}
-	
-	public String validateName(Construct uiEntity) {
-		if (StringUtils.isBlank(uiEntity.getName())) {
-			addMessageResponse("name", ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		
-		return uiEntity.getName();
 	}
 	
 	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {
@@ -155,6 +185,60 @@ public class ConstructValidator extends ReagentValidator {
 		return uniqueId;
 	}
 	
+	private ConstructSymbolSlotAnnotation validateConstructSymbol(Construct uiEntity, Construct dbEntity) {
+		String field = "constructSymbol";
+
+		if (uiEntity.getConstructSymbol() == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+
+		ObjectResponse<ConstructSymbolSlotAnnotation> symbolResponse = constructSymbolValidator.validateConstructSymbolSlotAnnotation(uiEntity.getConstructSymbol());
+		if (symbolResponse.getEntity() == null) {
+			addMessageResponse(field, symbolResponse.errorMessagesString());
+			return null;
+		}
+
+		return symbolResponse.getEntity();
+	}
+
+	private ConstructFullNameSlotAnnotation validateConstructFullName(Construct uiEntity, Construct dbEntity) {
+		if (uiEntity.getConstructFullName() == null)
+			return null;
+
+		String field = "constructFullName";
+
+		ObjectResponse<ConstructFullNameSlotAnnotation> nameResponse = constructFullNameValidator.validateConstructFullNameSlotAnnotation(uiEntity.getConstructFullName());
+		if (nameResponse.getEntity() == null) {
+			addMessageResponse(field, nameResponse.errorMessagesString());
+			return null;
+		}
+
+		return nameResponse.getEntity();
+	}
+
+	private List<ConstructSynonymSlotAnnotation> validateConstructSynonyms(Construct uiEntity, Construct dbEntity) {
+		String field = "constructSynonyms";
+
+		List<ConstructSynonymSlotAnnotation> validatedSynonyms = new ArrayList<ConstructSynonymSlotAnnotation>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getConstructSynonyms())) {
+			for (ConstructSynonymSlotAnnotation syn : uiEntity.getConstructSynonyms()) {
+				ObjectResponse<ConstructSynonymSlotAnnotation> synResponse = constructSynonymValidator.validateConstructSynonymSlotAnnotation(syn);
+				if (synResponse.getEntity() == null) {
+					addMessageResponse(field, synResponse.errorMessagesString());
+					return null;
+				}
+				syn = synResponse.getEntity();
+				validatedSynonyms.add(syn);
+			}
+		}
+
+		if (CollectionUtils.isEmpty(validatedSynonyms))
+			return null;
+
+		return validatedSynonyms;
+	}
+	
 	private List<ConstructComponentSlotAnnotation> validateConstructComponents(Construct uiEntity, Construct dbEntity) {
 		String field = "constructComponents";
 
@@ -178,8 +262,52 @@ public class ConstructValidator extends ReagentValidator {
 	}
 	
 	private void removeUnusedSlotAnnotations(Construct uiEntity, Construct dbEntity) {
+		if (dbEntity.getConstructSymbol() != null)
+			removeUnusedConstructSymbol(uiEntity, dbEntity);
+
+		if (dbEntity.getConstructFullName() != null)
+			removeUnusedConstructFullName(uiEntity, dbEntity);
+
+		if (CollectionUtils.isNotEmpty(dbEntity.getConstructSynonyms()))
+			removeUnusedConstructSynonyms(uiEntity, dbEntity);
+		
 		if (CollectionUtils.isNotEmpty(dbEntity.getConstructComponents()))
 			removeUnusedConstructComponents(uiEntity, dbEntity);
+	}
+	
+	private void removeUnusedConstructSymbol(Construct uiEntity, Construct dbEntity) {
+		Long reusedId = uiEntity.getConstructSymbol() == null ? null : uiEntity.getConstructSymbol().getId();
+		ConstructSymbolSlotAnnotation previousSymbol = dbEntity.getConstructSymbol();
+
+		if (previousSymbol != null && (reusedId == null || !previousSymbol.getId().equals(reusedId))) {
+			previousSymbol.setSingleConstruct(null);
+			constructSymbolDAO.remove(previousSymbol.getId());
+		}
+	}
+	
+	private void removeUnusedConstructFullName(Construct uiEntity, Construct dbEntity) {
+		Long reusedId = uiEntity.getConstructFullName() == null ? null : uiEntity.getConstructFullName().getId();
+		ConstructFullNameSlotAnnotation previousFullName = dbEntity.getConstructFullName();
+
+		if (previousFullName != null && (reusedId == null || !previousFullName.getId().equals(reusedId))) {
+			previousFullName.setSingleConstruct(null);
+			constructFullNameDAO.remove(previousFullName.getId());
+		}
+	}
+
+	private void removeUnusedConstructSynonyms(Construct uiEntity, Construct dbEntity) {
+		List<Long> reusedIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getConstructSynonyms()))
+			reusedIds = uiEntity.getConstructSynonyms().stream().map(ConstructSynonymSlotAnnotation::getId).collect(Collectors.toList());
+
+		if (CollectionUtils.isNotEmpty(dbEntity.getConstructSynonyms())) {
+			for (ConstructSynonymSlotAnnotation previousSynonym : dbEntity.getConstructSynonyms()) {
+				if (!reusedIds.contains(previousSynonym.getId())) {
+					previousSynonym.setSingleConstruct(null);
+					constructSynonymDAO.remove(previousSynonym.getId());
+				}
+			}
+		}
 	}
 	
 	private void removeUnusedConstructComponents(Construct uiEntity, Construct dbEntity) {

@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ReagentDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -36,6 +37,12 @@ public class ReagentDTOValidator extends AnnotationDTOValidator {
 			reagent.setModInternalId(null);
 		}
 		
+		if (CollectionUtils.isNotEmpty(dto.getSecondaryIdentifiers())) {
+			reagent.setSecondaryIdentifiers(dto.getSecondaryIdentifiers());
+		} else {
+			reagent.setSecondaryIdentifiers(null);
+		}
+		
 		if (dto.getDataProviderDto() == null) {
 			reagentResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -46,18 +53,6 @@ public class ReagentDTOValidator extends AnnotationDTOValidator {
 				reagent.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
-		
-		if (StringUtils.isNotBlank(dto.getTaxonCurie())) {
-			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
-			if (taxonResponse.getEntity() == null) {
-				reagentResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
-			}
-			reagent.setTaxon(taxonResponse.getEntity());
-		} else {
-			reagent.setTaxon(null);
-		}
-		
-		// TODO: Add validation for manufacturedBy and generatedBy once model sorted out
 
 		reagentResponse.setEntity(reagent);
 		
