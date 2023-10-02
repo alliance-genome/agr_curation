@@ -291,7 +291,7 @@ export const DataLoadsComponent = () => {
 
 	const showModRelease = (load) => {
 		if (load.backendBulkLoadType === 'RESOURCE_DESCRIPTOR' || load.backendBulkLoadType === 'ONTOLOGY') {
-			return false;
+			return null;
 		}
 		return <Column field="allianceMemberReleaseVersion" header="MOD Release" />;
 	}
