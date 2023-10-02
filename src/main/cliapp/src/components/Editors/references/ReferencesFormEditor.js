@@ -32,7 +32,7 @@ export const ReferencesFormEditor = ({
           />
         }
         errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"references"} />}
-        additionalDataField={<ReferencesAdditionalFieldData references={references}/>}
+        additionalDataField={null}
       />
     </>
   );
