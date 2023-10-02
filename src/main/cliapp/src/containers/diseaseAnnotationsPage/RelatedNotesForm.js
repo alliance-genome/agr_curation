@@ -84,6 +84,7 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 	};
 
 	const handleDeleteRelatedNote = (event, props) => {
+		event.preventDefault();
 		dispatch({type: "DELETE_ROW", tableType: "relatedNotes", showType: "showRelatedNotes", index: props.rowIndex})
 	}
 
