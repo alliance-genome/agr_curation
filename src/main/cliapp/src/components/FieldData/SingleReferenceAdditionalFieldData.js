@@ -19,5 +19,5 @@ const createCrossReferenceDivs = (resultList, crossReferences, field, shortCitat
 			resultList.push(<div key={i} className="p-info">{crossReferences[i][field]}</div>);
 		}
 	}
-	resultList.push(<div key={shortCitation} className="p-info">{shortCitation}</div>);
+	if(shortCitation) resultList.push(<div key={shortCitation} className="p-info">{shortCitation}</div>);
 }

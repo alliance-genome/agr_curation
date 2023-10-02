@@ -77,8 +77,8 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 	public static String getDiseaseAnnotationUniqueId(DiseaseAnnotation annotation) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(annotation.getSubjectCurie());
-		if (annotation.getDiseaseRelation() != null)
-			uniqueId.add(annotation.getDiseaseRelation().getName());
+		if (annotation.getRelation() != null)
+			uniqueId.add(annotation.getRelation().getName());
 		if (annotation.getNegated() != null)
 			uniqueId.add(annotation.getNegated().toString());
 		if (annotation.getObject() != null)

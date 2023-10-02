@@ -16,8 +16,18 @@ import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate'
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
-import { SynonymsForm } from './SynonymsForm';
-import { validateTable } from '../../utils/utils';
+import { SynonymsForm } from './synonyms/SynonymsForm';
+import { validateAlleleDetailTable } from '../../utils/utils';
+import { FullNameForm } from './fullName/FullNameForm';
+import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
+import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
+import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
+import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
+import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
+import { SymbolForm } from './symbol/SymbolForm';
+import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
+
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -55,16 +65,33 @@ const { isLoading } =	useQuery([curie],
 			type: "SUBMIT" 
 		})
 
-		const isSynonymsErrors = await validateTable(
-			"allelesynonymslotannotation", 
-			"synonymsErrorMessages", 
-			alleleState.allele.alleleSynonyms,
-			alleleDispatch,
-		);
+		let anyErrors = false;
 
+		let states = Object.values(alleleState.entityStates);
+
+		states.forEach( async (state) => {
+			let table;
+
+			if(state.type === 'object'){
+				table = [alleleState.allele[state.field]];
+			} else {
+				table = alleleState.allele[state.field];
+			}
+
+			let isError = await validateAlleleDetailTable(
+				state.endpoint,
+				state.field,
+				table,
+				alleleDispatch,
+			);
+
+			if(isError) anyErrors = true;
+		})
+		
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isSynonymsErrors) return;
+				if(anyErrors) return;
+
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
 			onError: (error) => {
@@ -82,7 +109,6 @@ const { isLoading } =	useQuery([curie],
 				alleleDispatch(
 					{
 						type: "UPDATE_ERROR_MESSAGES", 
-						errorType: "errorMessages", 
 						errorMessages: error.response?.data?.errorMessages || {}
 					}
 				);
@@ -186,10 +212,31 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
+					<FullNameForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<SymbolForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+						labelColumnSize={labelColumnSize}						
+					/>
+
+					<Divider />
+
 					<SynonymsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
-						labelColumnSize={labelColumnSize}
+					/>
+
+					<Divider />
+
+					<SecondaryIdsForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />
@@ -201,6 +248,41 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+					/>
+
+					<Divider />
+
+					<MutationTypesForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<FunctionalImpactsForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<GermilineTransmissionStatusForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<DatabaseStatusForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<InheritanceModesForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />
@@ -236,6 +318,13 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+					/>
+
+					<Divider />
+
+					<RelatedNotesForm
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />

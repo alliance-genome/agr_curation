@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
@@ -367,9 +368,7 @@ public class BaseITCase {
 		note.setFreeText(text);
 		note.setInternal(internal);
 		if (reference != null) {
-			List<Reference> references = new ArrayList<Reference>();
-			references.add(reference);
-			note.setReferences(references);
+			note.setReferences(List.of(reference));
 		}
 
 		return note;
@@ -633,6 +632,17 @@ public class BaseITCase {
 
 			return response.getEntity();
 	}
+	
+	public Construct getConstruct(String identifier) {
+		ObjectResponse<Construct> res = RestAssured.given().
+				when().
+				get("/api/construct/findBy/" + identifier).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefConstruct());
+
+		return res.getEntity();
+	}
 
 	public ExperimentalCondition getExperimentalCondition(String conditionSummary) {
 		ObjectResponse<ExperimentalCondition> res = RestAssured.given().
@@ -717,6 +727,11 @@ public class BaseITCase {
 
 	public TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
 		return new TypeRef<ObjectResponse<ConditionRelation>>() {
+		};
+	}
+
+	public TypeRef<ObjectResponse<Construct>> getObjectResponseTypeRefConstruct() {
+		return new TypeRef<ObjectResponse<Construct>>() {
 		};
 	}
 	

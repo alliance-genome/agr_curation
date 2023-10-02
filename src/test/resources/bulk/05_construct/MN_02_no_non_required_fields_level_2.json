@@ -1,0 +1,43 @@
+[
+  {
+    "mod_entity_id": "WB:MN02",
+    "construct_symbol_dto": {
+      "display_text": "Ta1",
+      "format_text": "Ta<sup>1</sup>",
+      "name_type_name": "nomenclature_symbol"
+    },
+    "construct_full_name_dto": {
+      "display_text": "Test construct 1",
+      "format_text": "Test construct<sup>1</sup>",
+      "name_type_name": "full_name"
+    },
+    "construct_synonym_dtos": [
+      {
+        "display_text": "Test construct synonym 1",
+        "format_text": "Test construct synonym <sup>1</sup>",
+        "name_type_name": "unspecified"
+      }
+    ],
+    "internal": true,
+    "obsolete": true,
+    "created_by_curie": "CONSTRUCTTEST:Person0001",
+    "updated_by_curie": "CONSTRUCTTEST:Person0002",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-10T22:10:12+00:00",
+    "reference_curies": [
+      "PMID:25920550"
+    ],
+    "construct_component_dtos": [
+      {
+        "component_symbol": "cmp1",
+        "relation_name": "is_regulated_by"
+      }
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "WB"
+    },
+    "secondary_identifiers": [
+      "secondary_test"
+    ]
+  }
+]

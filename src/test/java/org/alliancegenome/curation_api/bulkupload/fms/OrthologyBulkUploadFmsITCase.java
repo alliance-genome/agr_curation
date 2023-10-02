@@ -25,8 +25,8 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("06 - Orthology bulk upload - FMS")
-@Order(6)
+@DisplayName("07 - Orthology bulk upload - FMS")
+@Order(7)
 public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach

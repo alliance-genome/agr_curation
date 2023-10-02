@@ -28,7 +28,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(3)
+@Order(15)
 public class NoteITCase extends BaseITCase {
 	
 	private Vocabulary testVocabulary;

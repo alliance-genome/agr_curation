@@ -16,7 +16,6 @@ export const TableInputTextEditor = ({ value, errorMessages, textOnChangeHandler
 				id={field}
 				value={localValue}
 				onChange={onChange}
-				fieldName={field}
 			/>
 			<DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={field} />
 		</>

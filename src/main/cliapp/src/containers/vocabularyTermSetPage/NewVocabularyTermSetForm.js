@@ -143,7 +143,7 @@ export const NewVocabularyTermSetForm = ({
 		<div>
 				<Toast ref={toast_error} position="top-left" />
 				<Toast ref={toast_success} position="top-right" />
-				<Dialog visible={newVocabularyTermSetDialog} style={{ width: '450px' }} header="Add Vocabulary Term Set" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable >
+				<Dialog visible={newVocabularyTermSetDialog} style={{ width: '450px' }} header="Add Vocabulary Term Set" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>
 					<ErrorBoundary>
 						<div className='p-justify-center'>
 							<form>

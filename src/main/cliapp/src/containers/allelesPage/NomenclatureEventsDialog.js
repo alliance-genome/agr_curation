@@ -213,6 +213,29 @@ export const NomenclatureEventsDialog = ({
 		_localNomenclatureEvents[props.rowIndex].internal = event.value.name;
 	}
 
+	const obsoleteTemplate = (rowData) => {
+		return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>;
+	};
+
+	const obsoleteEditor = (props) => {
+		return (
+			<>
+				<TrueFalseDropdown
+					options={booleanTerms}
+					editorChange={onObsoleteEditorValueChange}
+					props={props}
+					field={"obsolete"}
+				/>
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"obsolete"} />
+			</>
+		);
+	};
+	
+	const onObsoleteEditorValueChange = (props, event) => {
+		let _localNomenclatureEvents = [...localNomenclatureEvents];
+		_localNomenclatureEvents[props.rowIndex].obsolete = event.value.name;
+	}
+
 	const onNomenclatureEventEditorValueChange = (props, event) => {
 		let _localNomenclatureEvents = [...localNomenclatureEvents];
 		_localNomenclatureEvents[props.rowIndex].nomenclatureEvent = event.value;
@@ -257,6 +280,7 @@ export const NomenclatureEventsDialog = ({
 		_localNomenclatureEvents.push({
 			dataKey : cnt,
 			internal : false,
+			obsolete: false
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -285,15 +309,20 @@ export const NomenclatureEventsDialog = ({
 							<Row>
 								<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 								<Column header="Nomenclature Event" />
-								<Column header="Internal" />
 								<Column header="Evidence" />
+								<Column header="Internal" />
+								<Column header="Obsolete" />
+								<Column header="Updated By" />
+								<Column header="Date Updated" />
+								<Column header="Created By" />
+								<Column header="Date Created" />
 							</Row>
 						</ColumnGroup>;
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-8' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
+			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
 				<h3>Nomenclature Events</h3>
 				<DataTable value={localNomenclatureEvents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} 
 						editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
@@ -301,8 +330,13 @@ export const NomenclatureEventsDialog = ({
 							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={(props) => nomenclatureEventEditor(props)} field="nomenclatureEvent.name" header="Nomenclature Event" headerClassName='surface-0' body={nomenclatureEventTemplate}/>
+					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) =>evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+					<Column editor={obsoleteEditor} field="obsolete" header="Obsolete" body={obsoleteTemplate} headerClassName='surface-0'/>
+					<Column field="updatedBy.uniqueId" header="Updated By" headerClassName='surface-0'/>
+					<Column field="dateUpdated" header="Date Updated" headerClassName='surface-0'/>
+					<Column field="createdBy.uniqueId" header="Created By" headerClassName='surface-0'/>
+					<Column field="dateCreated" header="Date Created" headerClassName='surface-0'/>
 				</DataTable>
 			</Dialog>
 		</div>

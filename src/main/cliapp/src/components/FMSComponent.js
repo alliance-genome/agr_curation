@@ -10,26 +10,41 @@ export const FMSComponent = () => {
 	const [snapShotDate, setSnapShotDate] = useState(0);
 	const [first, setFirst] = useState(0);
 	const [rows, setRows] = useState(20);
-	const [releases, setReleases] = useState([{ releaseVersion: '5.1.1'}]);
-	const [selectedRelease, setSelectedRelease] = useState({ releaseVersion: '5.1.1'});
+	const [releases, setReleases] = useState(null);
+	const [selectedRelease, setSelectedRelease] = useState({releaseVersion: '0'});
 
 	useEffect(() => {
 		const fmsService = new FMSService();
-		fmsService.getReleases().then(results => {
-			//console.log(results);
-			setReleases(results.reverse());
-			for(let idx of results) {
-				if(idx.releaseVersion === selectedRelease.releaseVersion) {
-					setSelectedRelease(idx);
+		
+		if (selectedRelease.releaseVersion !== '0') {
+			fmsService.getReleases().then(results => {
+				setReleases(results.sort(function(a,b){
+					return new Date(b.releaseDate) - new Date(a.releaseDate);
+				}));
+				for(let idx of results) {
+					if(idx.releaseVersion === selectedRelease.releaseVersion) {
+						setSelectedRelease(idx);
+						break;
+					}
 				}
-			}
-		});
+			});
+		} else {
+			fmsService.getNextRelease().then(result => {
+				setSelectedRelease(result);
+			});
+		}
 
-		fmsService.getSnapshot(selectedRelease.releaseVersion).then(results => {
-			//console.log(results);
-			setDataFiles(results.dataFiles);
-			setSnapShotDate(results.snapShotDate);
-		});
+		if (selectedRelease.releaseVersion !== '0') {
+			fmsService.getSnapshot(selectedRelease.releaseVersion).then(snapShot => {
+				if (typeof snapShot !== 'undefined') {
+					setDataFiles(snapShot.dataFiles);
+					setSnapShotDate(snapShot.snapShotDate);
+				} else {
+					setDataFiles([]);
+					setSnapShotDate('');
+				}
+			});
+		}
 
 	}, [selectedRelease.releaseVersion]);
 
@@ -55,9 +70,9 @@ export const FMSComponent = () => {
 	return (
 		<div>
 			<div className="card">
-				<h2>FMS Data</h2>
+				<h2>FMS Data Files</h2>
 				Release Version: <Dropdown value={selectedRelease} options={releases} optionLabel="releaseVersion" placeholder="Choose Release Version" onChange={onReleaseChange} />
-				<br />Snapshot Date: {new Date(snapShotDate).toGMTString()}
+				<br />Snapshot Date: {snapShotDate === '' ? 'No snapshot available' : new Date(snapShotDate).toGMTString()}
 				<DataTable value={dataFiles} className="p-datatable-sm"
 					paginator onPage={customPage} first={first}
 					filterDisplay="row"

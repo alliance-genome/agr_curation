@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -47,6 +48,8 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			
 			if(!checkSchemaVersion(bulkLoadFile, AlleleDiseaseAnnotationDTO.class)) return;
 			
@@ -90,17 +93,17 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Allele Disease Annotation Update for: " + dataProvider.name(), annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
 				AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationService.upsert(annotationDTO, dataProvider);
 				history.incrementCompleted();
-				if(curiesAdded != null) {
-					curiesAdded.add(annotation.getId());
+				if(idsAdded != null) {
+					idsAdded.add(annotation.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

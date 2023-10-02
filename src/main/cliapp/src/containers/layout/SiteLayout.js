@@ -223,6 +223,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
 												{ label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
 												{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
+												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Experiments', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
 																								{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
@@ -318,7 +319,8 @@ export const SiteLayout = (props) => {
 								{
 										label: 'Data files and reports', icon: 'pi pi-fw pi-sitemap',
 										items: [
-												{ label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
+												{ label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmsdatafiles' },
+												{ label: 'FMS Data Types', icon: 'pi pi-fw pi-home', to: '/fmsdatatypes' },
 												{ label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
 												{ label: 'Reports', icon: 'pi pi-fw pi-home', to: '/reports' }
 										]
@@ -330,6 +332,7 @@ export const SiteLayout = (props) => {
 											{ label: 'API UI (Swagger)', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: "_blank" },
 											{ label: 'Search index UI (cerebro)', icon: 'pi pi-fw pi-home', url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${siteContext?.apiVersion?.esHost}`, target: "_blank" },
 											{ label: 'Logs Server UI', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${siteContext?.apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
+											{ label: 'Site Health', icon: 'pi pi-fw pi-plus', to: '/healthpage' },
 									]
 							}
 						]

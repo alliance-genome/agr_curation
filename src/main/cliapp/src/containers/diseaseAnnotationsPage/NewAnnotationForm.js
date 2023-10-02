@@ -38,7 +38,7 @@ export const NewAnnotationForm = ({
 									newAnnotationDispatch,
 									searchService,
 									diseaseAnnotationService,
-									diseaseRelationsTerms,
+									relationsTerms,
 									negatedTerms,
 									setNewDiseaseAnnotation
 }) => {
@@ -437,9 +437,9 @@ export const NewAnnotationForm = ({
 
 	return(
 		<div>
-			<Toast ref={toast_error} position="top-left" />
-			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newAnnotationDialog} style={{ width: '900px' }} header={dialogHeader} modal className="p-fluid" footer={dialogFooter} onHide={hideDialog} resizeable>
+			<Toast ref={toast_error} position="top-left"/>
+			<Toast ref={toast_success} position="top-right"/>
+			<Dialog visible={newAnnotationDialog} header={dialogHeader} modal className="p-fluid w-9" footer={dialogFooter} onHide={hideDialog} maximizable>
 				<ErrorBoundary>
 				<form>
 					<div className="grid">
@@ -519,20 +519,20 @@ export const NewAnnotationForm = ({
 
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="diseaseRelation"><font color={'red'}>*</font>Disease Relation</label>
+							<label htmlFor="relation"><font color={'red'}>*</font>Disease Relation</label>
 						</div>
 						<div className={widgetColumnSize}>
 							<Dropdown
-								options={diseaseRelationsTerms}
-								value={newAnnotation.diseaseRelation}
-								name="diseaseRelation"
+								options={relationsTerms}
+								value={newAnnotation.relation}
+								name="relation"
 								optionLabel='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.diseaseRelation})}
+								className={classNames({'p-invalid': submitted && errorMessages.relation})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"relation"}/>
 						</div>
 					</div>
 
@@ -669,7 +669,7 @@ export const NewAnnotationForm = ({
 						<div className={labelColumnSize}>
 							<label>Experimental Conditions</label>
 						</div>
-						<div className="col-6">
+						<div className={classNames('col-9')} >
 							<ConditionRelationsForm
 								dispatch={newAnnotationDispatch}
 								conditionRelations={newAnnotation.conditionRelations}
