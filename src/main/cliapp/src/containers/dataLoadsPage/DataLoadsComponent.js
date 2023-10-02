@@ -289,6 +289,13 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
+	const showModRelease = (load) => {
+		if (load.backendBulkLoadType === 'RESOURCE_DESCRIPTOR' || load.backendBulkLoadType === 'ONTOLOGY') {
+			return false;
+		}
+		return <Column field="allianceMemberReleaseVersion" header="MOD Release" />;
+	}
+
 	const dynamicColumns = (loads) => {
 
 		let showFMSLoad = false;
@@ -426,6 +433,7 @@ export const DataLoadsComponent = () => {
 					<Column field="recordCount" header="Record Count" />
 					<Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="linkMLSchemaVersion" header="LinkML Schema Version" />
+					{showModRelease(load)}
 					<Column field="dateLastLoaded" header="Last Loaded" />
 					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
