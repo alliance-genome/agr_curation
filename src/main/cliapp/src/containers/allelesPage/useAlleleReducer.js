@@ -104,6 +104,11 @@ const initialAlleleState = {
 			editingRows: {},
 			type: "table",
 		},
+		references: {
+			field: 'references',
+			show: false,
+			type: "display",
+		},
 	},
 	errorMessages: {},
 	submitted: false,
@@ -126,6 +131,17 @@ const processTable = (field, allele, draft) => {
 	allele[field] = clonableEntities;
 	draft.entityStates[field].show = true;
 }
+
+const processDisplayTable = (field, allele, draft) => {
+	if(!allele) return;
+
+	if(!allele[field]) {
+		allele[field] = [];
+		return; 
+	}
+
+	draft.entityStates[field].show = true;
+}
 const processObject = (field, allele, draft) => {
 	if(!allele) return;
 
@@ -146,6 +162,7 @@ const alleleReducer = (draft, action) => {
 			states.forEach((state) => {
 				if(state.type === "table") processTable(state.field, allele, draft); 
 				if(state.type === "object") processObject(state.field, allele, draft); 
+				if(state.type === "display") processDisplayTable(state.field, allele, draft); 
 			})
 
 			draft.allele = allele;
