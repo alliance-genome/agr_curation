@@ -2,6 +2,18 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.25.0
+ * New features
+   * Display and editing of allele synonyms on allele detail page (SCRUM-3126)
+   * Keep the ontology browser term information panel in view while browsing the (SCRUM-3250)
+   * Display uniqueId error message in row edit mode of Disease Annotations table (SCRUM-3248)
+   * Display validation errors of hidden fields in row edit mode (SCRUM-3255)
+   * Enable access to curation API using admin tokens without Okta user (SCRUM-3078)
+   * Enable sorting of references by primary xref (SCRUM-2725)
+ * Fixes and maintenance
+   * Update curation system to align with LinkML v1.8.0 (SCRUM-3156)
+   * Fix short citation display, sorting, and filtering in Literature References table (SCRUM-3247)
+
 ## v0.24.0
  * New features
    * Load and display Allele 'allele_nomenclature_events' attribute (SCRUM-2340)
