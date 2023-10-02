@@ -134,6 +134,19 @@ const { isLoading } =	useQuery([curie],
 	}
 
 	const onReferenceValueChange = (event) => {
+		if(event.value.length === 0){
+			alleleDispatch({
+				type: 'TOGGLE_TABLE',
+				entityType: 'references',
+				value: false,
+			})
+		} else {
+			alleleDispatch({
+				type: 'TOGGLE_TABLE',
+				entityType: 'references',
+				value: true,
+		})}
+
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'references',

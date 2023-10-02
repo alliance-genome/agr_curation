@@ -27,7 +27,6 @@ export const ReferencesFormTable = ({
       <Column body={(data, props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column field="curie" header="Curie" />
-      {/* todo: may need to update this field */}
       <Column field="cross_references" header="Cross References" body={(data) => <CrossReferencesTemplate rowData={data} />} />
       <Column field="short_citation" header="Short Citation" />
     </DataTable>

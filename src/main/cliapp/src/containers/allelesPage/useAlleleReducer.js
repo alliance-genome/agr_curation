@@ -207,6 +207,9 @@ const alleleReducer = (draft, action) => {
 		case 'UPDATE_TABLE_ERROR_MESSAGES': 
 			draft.entityStates[action.entityType].errorMessages = action.errorMessages;
 			break;
+		case 'TOGGLE_TABLE': 
+			draft.entityStates[action.entityType].show = action.value;
+			break;
 		case 'SUBMIT':
 			draft.submitted = true;
 			draft.errorMessages = {};
