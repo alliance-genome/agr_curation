@@ -27,6 +27,7 @@ import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
+import { ReferencesForm } from './referencesTable/ReferencesForm';
 
 
 export default function AlleleDetailPage(){
@@ -69,7 +70,9 @@ const { isLoading } =	useQuery([curie],
 
 		let states = Object.values(alleleState.entityStates);
 
-		states.forEach( async (state) => {
+		states
+		.filter(state => state.type !== 'display')
+		.forEach( async (state) => {
 			let table;
 
 			if(state.type === 'object'){
@@ -131,6 +134,19 @@ const { isLoading } =	useQuery([curie],
 	}
 
 	const onReferenceValueChange = (event) => {
+		if(event.value.length === 0){
+			alleleDispatch({
+				type: 'TOGGLE_TABLE',
+				entityType: 'references',
+				value: false,
+			})
+		} else {
+			alleleDispatch({
+				type: 'TOGGLE_TABLE',
+				entityType: 'references',
+				value: true,
+		})}
+
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'references',
@@ -294,6 +310,11 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+					/>
+
+					<ReferencesForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />
