@@ -68,71 +68,71 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	}
 
 	@Transactional
-	public void processUpdate(MoleculeFmsDTO molecule) throws ObjectUpdateException {
+	public void processUpdate(MoleculeFmsDTO dto) throws ObjectUpdateException {
 		log.debug("processUpdate Molecule: ");
 
-		if (StringUtils.isBlank(molecule.getId())) {
-			log.debug(molecule.getName() + " has no ID - skipping");
-			throw new ObjectUpdateException(molecule, molecule.getId() + " has no ID - skipping");
+		if (StringUtils.isBlank(dto.getId())) {
+			log.debug(dto.getName() + " has no ID - skipping");
+			throw new ObjectUpdateException(dto, dto.getId() + " has no ID - skipping");
 		}
 
-		if (molecule.getId().startsWith("CHEBI:")) {
-			log.debug("Skipping processing of " + molecule.getId());
-			throw new ObjectUpdateException(molecule, "Skipping processing of " + molecule.getId());
+		if (dto.getId().startsWith("CHEBI:")) {
+			log.debug("Skipping processing of " + dto.getId());
+			throw new ObjectUpdateException(dto, "Skipping processing of " + dto.getId());
 		}
 
-		if (StringUtils.isBlank(molecule.getName())) {
-			log.debug(molecule.getId() + " has no name - skipping");
-			throw new ObjectUpdateException(molecule, molecule.getId() + " has no name - skipping");
+		if (StringUtils.isBlank(dto.getName())) {
+			log.debug(dto.getId() + " has no name - skipping");
+			throw new ObjectUpdateException(dto, dto.getId() + " has no name - skipping");
 		}
 
-		if (molecule.getCrossReferences() != null) {
-			for (CrossReferenceFmsDTO xrefDTO : molecule.getCrossReferences()) {
+		if (dto.getCrossReferences() != null) {
+			for (CrossReferenceFmsDTO xrefDTO : dto.getCrossReferences()) {
 				if (StringUtils.isBlank(xrefDTO.getId())) {
-					log.debug("Missing xref ID for molecule " + molecule.getId() + " - skipping");
-					throw new ObjectUpdateException(molecule, "Missing xref ID for molecule " + molecule.getId() + " - skipping");
+					log.debug("Missing xref ID for molecule " + dto.getId() + " - skipping");
+					throw new ObjectUpdateException(dto, "Missing xref ID for molecule " + dto.getId() + " - skipping");
 				}
 			}
 		}
 
 		try {
-			Molecule m = moleculeDAO.find(molecule.getId());
+			Molecule molecule = moleculeDAO.find(dto.getId());
 
-			if (m == null) {
-				m = new Molecule();
-				m.setCurie(molecule.getId());
+			if (molecule == null) {
+				molecule = new Molecule();
+				molecule.setCurie(dto.getId());
 			}
 
-			m.setName(molecule.getName());
+			molecule.setName(dto.getName());
 
 			String inchi = null;
-			if (StringUtils.isNotBlank(molecule.getInchi()))
-				inchi = molecule.getInchi();
-			m.setInchi(inchi);
+			if (StringUtils.isNotBlank(dto.getInchi()))
+				inchi = dto.getInchi();
+			molecule.setInchi(inchi);
 
 			String inchikey = null;
-			if (StringUtils.isNotBlank(molecule.getInchikey()))
-				inchikey = molecule.getInchikey();
-			m.setInchiKey(inchikey);
+			if (StringUtils.isNotBlank(dto.getInchikey()))
+				inchikey = dto.getInchikey();
+			molecule.setInchiKey(inchikey);
 
 			String iupac = null;
-			if (StringUtils.isNotBlank(molecule.getIupac()))
-				iupac = molecule.getIupac();
-			m.setIupac(iupac);
+			if (StringUtils.isNotBlank(dto.getIupac()))
+				iupac = dto.getIupac();
+			molecule.setIupac(iupac);
 
 			String formula = null;
-			if (StringUtils.isNotBlank(molecule.getFormula()))
-				formula = molecule.getFormula();
-			m.setFormula(formula);
+			if (StringUtils.isNotBlank(dto.getFormula()))
+				formula = dto.getFormula();
+			molecule.setFormula(formula);
 
 			String smiles = null;
-			if (StringUtils.isNotBlank(molecule.getSmiles()))
-				smiles = molecule.getSmiles();
-			m.setSmiles(smiles);
+			if (StringUtils.isNotBlank(dto.getSmiles()))
+				smiles = dto.getSmiles();
+			molecule.setSmiles(smiles);
 
-			if (CollectionUtils.isNotEmpty(molecule.getSynonyms())) {
+			if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
 				List<Synonym> synonyms = new ArrayList<Synonym>();
-				for (String synonymName : molecule.getSynonyms()) {
+				for (String synonymName : dto.getSynonyms()) {
 					SearchResponse<Synonym> response = synonymDAO.findByField("name", synonymName);
 					Synonym synonym;
 					if (response == null || response.getSingleResult() == null) {
@@ -144,29 +144,31 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 					}
 					synonyms.add(synonym);
 				}
-				m.setSynonyms(synonyms);
+				molecule.setSynonyms(synonyms);
 			} else {
-				m.setSynonyms(null);
+				molecule.setSynonyms(null);
 			}
 
-			m.setNamespace("molecule");
+			molecule.setNamespace("molecule");
 			
 			List<Long> currentXrefIds;
-			if (m.getCrossReferences() == null) {
+			if (molecule.getCrossReferences() == null) {
 				currentXrefIds = new ArrayList<>();
 			} else {
-				currentXrefIds = m.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
+				currentXrefIds = molecule.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
 			}
 			
 			List<Long> mergedXrefIds;
-			if (molecule.getCrossReferences() == null) {
+			if (dto.getCrossReferences() == null) {
 				mergedXrefIds = new ArrayList<>();
-				m.setCrossReferences(null);
+				molecule.setCrossReferences(null);
 			} else {
-				List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedFmsXrefList(molecule.getCrossReferences(), m.getCrossReferences());
+				List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedFmsXrefList(dto.getCrossReferences(), molecule.getCrossReferences());
 				mergedXrefIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
-				m.setCrossReferences(mergedCrossReferences);
+				molecule.setCrossReferences(mergedCrossReferences);
 			}
+			
+			moleculeDAO.persist(molecule);
 			
 			for (Long currentId : currentXrefIds) {
 				if (mergedXrefIds.contains(currentId)) {
@@ -174,10 +176,9 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 				}
 			}
 			
-			moleculeDAO.persist(m);
 	} catch (Exception e) {
 			e.printStackTrace();
-			throw new ObjectUpdateException(molecule, e.getMessage(), e.getStackTrace());
+			throw new ObjectUpdateException(dto, e.getMessage(), e.getStackTrace());
 		}
 	}
 }
