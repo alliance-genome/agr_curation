@@ -171,7 +171,7 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			moleculeDAO.persist(molecule);
 			
 			for (Long currentId : currentXrefIds) {
-				if (mergedXrefIds.contains(currentId)) {
+				if (!mergedXrefIds.contains(currentId)) {
 					crossReferenceDAO.remove(currentId);
 				}
 			}
