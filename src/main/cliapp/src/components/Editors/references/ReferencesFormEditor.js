@@ -2,7 +2,6 @@ import React from "react";
 import { AutocompleteFormMultiEditor } from '../../Autocomplete/AutocompleteFormMultiEditor';
 import { LiteratureAutocompleteTemplate } from "../../Autocomplete/LiteratureAutocompleteTemplate";
 import { FormErrorMessageComponent } from "../../Error/FormErrorMessageComponent";
-import { ReferencesAdditionalFieldData } from "../../FieldData/ReferencesAdditionalFieldData";
 import { FormFieldWrapper } from "../../FormFieldWrapper";
 import { referenceSearch } from "./utils";
 
@@ -32,7 +31,7 @@ export const ReferencesFormEditor = ({
           />
         }
         errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"references"} />}
-        additionalDataField={<ReferencesAdditionalFieldData references={references}/>}
+        additionalDataField={null}
       />
     </>
   );
