@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -12,6 +14,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -115,6 +118,20 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 	public void updateUniqueIds() {
 		uniqueIdUpdateHelper.updateDiseaseAnnotationUniqueIds();
+	}
+
+	public List<Long> getAllReferencedConditionRelationIds() {
+		List<String> daIds = diseaseAnnotationDAO.findAllIds().getResults();
+		List<Long> conditionRelationIds = new ArrayList<>();
+		daIds.forEach(idString -> {
+			DiseaseAnnotation annotation = diseaseAnnotationDAO.find(Long.parseLong(idString));
+			if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
+				List<Long> crIds = annotation.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
+				conditionRelationIds.addAll(crIds);
+			}
+		});
+		
+		return conditionRelationIds;
 	}
 
 }

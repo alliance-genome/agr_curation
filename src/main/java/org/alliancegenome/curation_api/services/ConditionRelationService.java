@@ -116,4 +116,15 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 		}
 		return conditionRelationSearchResponse;
 	}
+
+	public void deleteUnusedConditions(List<Long> inUseCrIds) {
+		List<String> crIds = conditionRelationDAO.findAllIds().getResults();
+		crIds.forEach(idString -> {
+			if (!inUseCrIds.contains(Long.parseLong(idString))) {
+				ConditionRelation cr = conditionRelationDAO.find(Long.parseLong(idString));
+				cr.setConditions(null);
+				conditionRelationDAO.remove(cr.getId());
+			}
+		});
+	}
 }

@@ -1,15 +1,20 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.ExperimentalConditionValidator;
+
+import io.quarkus.logging.Log;
 
 @RequestScoped
 public class ExperimentalConditionService extends BaseEntityCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
@@ -37,6 +42,17 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 	public ObjectResponse<ExperimentalCondition> create(ExperimentalCondition uiEntity) {
 		ExperimentalCondition dbEntity = experimentalConditionValidator.validateExperimentalConditionCreate(uiEntity);
 		return new ObjectResponse<>(experimentalConditionDAO.persist(dbEntity));
+	}
+
+	public void deleteUnusedExperiments() {
+		List<String> experimentIds = experimentalConditionDAO.findAllIds().getResults();
+		experimentIds.forEach(idString -> {
+			try {
+				experimentalConditionDAO.remove(Long.parseLong(idString));
+			} catch (ApiErrorException ex) {
+				Log.debug("Skipping deletion of experiment " + idString + " as still in use");
+			}
+		});
 	}
 
 }
