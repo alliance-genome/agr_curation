@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.ExperimentalConditionValidator;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import io.quarkus.logging.Log;
 
@@ -45,14 +46,18 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 	}
 
 	public void deleteUnusedExperiments() {
+		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		List<String> experimentIds = experimentalConditionDAO.findAllIds().getResults();
+		pdh.startProcess("Delete unused Experiments", experimentIds.size());
 		experimentIds.forEach(idString -> {
 			try {
 				experimentalConditionDAO.remove(Long.parseLong(idString));
 			} catch (ApiErrorException ex) {
 				Log.debug("Skipping deletion of experiment " + idString + " as still in use");
 			}
+			pdh.progressProcess();
 		});
+		pdh.finishProcess(null);
 	}
 
 }

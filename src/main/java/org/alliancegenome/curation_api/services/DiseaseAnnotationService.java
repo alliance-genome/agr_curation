@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdUpdateHelper;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -121,7 +122,11 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	}
 
 	public List<Long> getAllReferencedConditionRelationIds() {
+		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
+		
 		List<String> daIds = diseaseAnnotationDAO.findAllIds().getResults();
+		pdh.startProcess("Checking DAs for referenced Conditions ", daIds.size());
+		
 		List<Long> conditionRelationIds = new ArrayList<>();
 		daIds.forEach(idString -> {
 			DiseaseAnnotation annotation = diseaseAnnotationDAO.find(Long.parseLong(idString));
@@ -129,7 +134,9 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				List<Long> crIds = annotation.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
 				conditionRelationIds.addAll(crIds);
 			}
+			pdh.progressProcess();
 		});
+		pdh.finishProcess();
 		
 		return conditionRelationIds;
 	}

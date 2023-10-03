@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.ConditionRelationValidator;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -118,13 +119,18 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 	}
 
 	public void deleteUnusedConditions(List<Long> inUseCrIds) {
+		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
+		
 		List<String> crIds = conditionRelationDAO.findAllIds().getResults();
+		pdh.startProcess("Delete unused Conditions", crIds.size());
 		crIds.forEach(idString -> {
 			if (!inUseCrIds.contains(Long.parseLong(idString))) {
 				ConditionRelation cr = conditionRelationDAO.find(Long.parseLong(idString));
 				cr.setConditions(null);
 				conditionRelationDAO.remove(cr.getId());
 			}
+			pdh.progressProcess();
 		});
+		pdh.finishProcess();
 	}
 }
