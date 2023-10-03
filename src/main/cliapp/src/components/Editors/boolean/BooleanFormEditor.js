@@ -12,7 +12,8 @@ export const BooleanFormEditor = ({
   widgetColumnSize,
   labelColumnSize,
   fieldDetailsColumnSize,
-  errorMessages
+  errorMessages,
+  showClear=false
 }) => {
 
   const booleanTerms = useControlledVocabularyService("generic_boolean_terms");
@@ -32,6 +33,7 @@ export const BooleanFormEditor = ({
             optionLabel='text'
             optionValue='name'
             onChange={onValueChange}
+            showClear={showClear}
           />
         }
         errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={name} />}
