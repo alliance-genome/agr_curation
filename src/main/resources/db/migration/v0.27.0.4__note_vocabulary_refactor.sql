@@ -41,6 +41,8 @@ UPDATE note SET notetype_id = subquery.id
 DELETE FROM vocabularyterm WHERE name = 'comment' AND vocabulary_id = (
 		SELECT id FROM vocabulary WHERE vocabularylabel = 'construct_component_note_type'
 	);
+	
+UPDATE vocabularyterm SET definition = 'general comment' WHERE name = 'comment';
 
 -- Create temp table for links between new sets and terms	
 CREATE TABLE tmp_vocab_link (
@@ -105,3 +107,9 @@ UPDATE vocabularyterm SET vocabulary_id = subquery.id
 			OR vocabularylabel = 'construct_component_note_type'
 	);	
 	
+-- Delete old vocabularies
+DELETE FROM vocabulary WHERE vocabularylabel = 'allele_note_type'
+	OR vocabularylabel = 'da_note_type'
+	OR vocabularylabel = 'gene_note_type'
+	OR vocabularylabel = 'construct_component_note_type';
+
