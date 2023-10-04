@@ -30,7 +30,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	@Inject
 	VocabularyTermService  vocabularyTermService;
 
-	public AlleleGenomicEntityAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto) throws ObjectValidationException {
+	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto) throws ObjectValidationException {
 		ObjectResponse<AlleleGeneAssociation> agaResponse = new ObjectResponse<AlleleGeneAssociation>();
 				
 		AlleleGeneAssociation association = null;

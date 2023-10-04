@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.InformationContentEntityService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.AuditedObjectValidator;
 import org.alliancegenome.curation_api.services.validation.ConditionRelationValidator;
@@ -34,16 +35,30 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class EvidenceAssociationValidator extends AuditedObjectValidator<EvidenceAssociation> {
-		
+	
+	@Inject
+	InformationContentEntityService informationContentEntityService;
+	
 	public List<InformationContentEntity> validateEvidence(EvidenceAssociation uiEntity, EvidenceAssociation dbEntity) {
 		String field = "evidence";
 		if (CollectionUtils.isEmpty(uiEntity.getEvidence()))
 			return null;
 		
-		List<InformationContentEntity> evidence = new ArrayList<>();
-		// TODO: do information content entity validation here
-		
-		return evidence;
+		List<InformationContentEntity> validatedEntities = new ArrayList<>();
+		for (InformationContentEntity evidenceEntity : uiEntity.getEvidence()) {
+			evidenceEntity = informationContentEntityService.retrieveFromDbOrLiteratureService(evidenceEntity.getCurie());
+			if (evidenceEntity == null) {
+				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			}
+			if (evidenceEntity.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidence()) || !dbEntity.getEvidence().contains(evidenceEntity))) {
+				response.addErrorMessage(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
+			validatedEntities.add(evidenceEntity);
+		}
+
+		return validatedEntities;
 	}
 
 	public EvidenceAssociation validateEvidenceAssociationFields(EvidenceAssociation uiEntity, EvidenceAssociation dbEntity) {

@@ -1,0 +1,30 @@
+[
+  {
+    "allele_curie": "ALLELETEST:Allele0001",
+    "relation_name": "is_allele_of",
+    "gene_curie": "GENETEST:Gene0001",
+    "evidence_code_curie": "DATEST:Evidence0001",
+    "evidence_curies": [
+      "PMID:25920550"
+    ],
+    "internal": true,
+    "obsolete": true,
+    "created_by_curie": "ALLELETEST:Person0001",
+    "updated_by_curie": "ALLELETEST:Person0002",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-10T22:10:12+00:00",
+    "note_dto": {
+      "free_text": "Test note",
+      "note_type_name": "comment",
+      "internal": false,
+      "obsolete": true,
+      "created_by_curie": "DATEST:Person0001",
+      "updated_by_curie": "DATEST:Person0002",
+      "date_created": "2022-03-09T22:10:12+00:00",
+      "date_updated": "2022-03-10T22:10:12+00:00",
+      "evidence_curies": [
+        "PMID:25920550"
+      ]
+    }
+  }
+]
