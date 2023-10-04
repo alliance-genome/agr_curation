@@ -88,11 +88,11 @@ public class ConstructITCase extends BaseITCase {
 	private ConstructSynonymSlotAnnotation constructSynonym;
 	
 	private void loadRequiredEntities() {
-		noteTypeVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
-		alleleNoteTypeVocabulary = getVocabulary(VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
+		noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
+		alleleNoteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		noteType = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_note");
 		noteType2 = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary");
-		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
+		obsoleteNoteType = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "obsolete_type", noteTypeVocabulary, true);
 		alleleNoteType = getVocabularyTerm(alleleNoteTypeVocabulary, "notes_on_origin");
 		relationVocabulary = getVocabulary("construct_genomic_entity_predicate");
 		isRegulatedByRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");

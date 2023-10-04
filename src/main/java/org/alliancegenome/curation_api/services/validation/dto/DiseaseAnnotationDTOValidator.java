@@ -63,7 +63,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 	DataProviderDAO dataProviderDAO;
 
 	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateDiseaseAnnotationDTO(E annotation, D dto) {
-		ObjectResponse<E> daResponse = validateAnnotationDTO(annotation, dto);
+		ObjectResponse<E> daResponse = validateAnnotationDTO(annotation, dto, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 		annotation = daResponse.getEntity();
 
 		if (StringUtils.isBlank(dto.getDoTermCurie())) {

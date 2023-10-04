@@ -8,7 +8,6 @@ public final class VocabularyConstants {
 	public static final String GENETIC_SEX_VOCABULARY = "genetic_sex";
 	public static final String CONDITION_RELATION_TYPE_VOCABULARY = "condition_relation";
 	public static final String DISEASE_RELATION_VOCABULARY = "disease_relation";
-	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY = "da_note_type";
 	public static final String ECO_TERM_ABBREVIATION_VOCABULARY = "agr_da_eco_term";
 
 	public static final String GENE_DISEASE_RELATION_VOCABULARY_TERM_SET = "gene_disease_relation";
@@ -21,8 +20,7 @@ public final class VocabularyConstants {
 	public static final String ALLELE_COLLECTION_VOCABULARY = "allele_collection";
 	public static final String GERMLINE_TRANSMISSION_STATUS_VOCABULARY = "allele_germline_transmission_status";
 	public static final String ALLELE_NOMENCLATURE_EVENT_VOCABULARY = "allele_nomenclature_event";
-	public static final String ALLELE_NOTE_TYPES_VOCABULARY = "allele_note_type";
-
+	
 	public static final String FULL_NAME_TYPE_TERM_SET = "full_name_type";
 	public static final String SYSTEMATIC_NAME_TYPE_TERM_SET = "systematic_name_type";
 	public static final String SYMBOL_NAME_TYPE_TERM_SET = "symbol_name_type";
@@ -38,6 +36,11 @@ public final class VocabularyConstants {
 	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY = "ortho_prediction_method";
 	
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY = "construct_genomic_entity_predicate";
-	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY = "construct_component_note_type";
+	
+	public static final String NOTE_TYPE_VOCABULARY = "note_type";
+	public static final String ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET = "allele_note_type";
+	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
+	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
+	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
 
 }

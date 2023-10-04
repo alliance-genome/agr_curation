@@ -91,7 +91,7 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 			List<Note> notes = new ArrayList<>();
 			Set<String> noteIdentities = new HashSet<>();
 			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.hasErrors()) {
 					ccsaResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
 					break;

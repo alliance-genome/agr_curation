@@ -61,9 +61,9 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 	private final String constructTestFilePath = "src/test/resources/bulk/05_construct/";
 	
 	private void loadRequiredEntities() throws Exception {
-		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
-		noteType = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_note", false);
-		noteType2 = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary", false);
+		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
+		noteType = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_construct_component_note", noteTypeVocabulary, false);
+		noteType2 = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_construct_component_summary", noteTypeVocabulary, false);
 		Vocabulary relationVocabulary = createVocabulary("construct_genomic_entity_predicate", false);
 		relation = createVocabularyTerm(relationVocabulary, "is_regulated_by", false);
 		relation2 = createVocabularyTerm(relationVocabulary, "targets", false);
