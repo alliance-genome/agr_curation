@@ -6,13 +6,13 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ValidationService } from '../../service/ValidationService';
-import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
+import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { ValidationService } from '../../../service/ValidationService';
+import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
+import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
 
 export const NomenclatureEventsDialog = ({
 													originalNomenclatureEventsData,
