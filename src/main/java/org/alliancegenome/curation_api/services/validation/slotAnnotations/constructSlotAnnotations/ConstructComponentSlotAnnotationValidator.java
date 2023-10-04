@@ -16,9 +16,11 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotati
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
@@ -38,6 +40,8 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 	NoteValidator noteValidator;
 	@Inject
 	NoteDAO noteDAO;
+	@Inject
+	VocabularyTermService vocabularyTermService;
 	
 
 	public ObjectResponse<ConstructComponentSlotAnnotation> validateConstructComponentSlotAnnotation(ConstructComponentSlotAnnotation uiEntity) {
@@ -76,6 +80,9 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		String componentSymbol = validateComponentSymbol(uiEntity);
 		dbEntity.setComponentSymbol(componentSymbol);
 		
+		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
+		dbEntity.setRelation(relation);
+		
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
 		
@@ -108,6 +115,28 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		}
 		
 		return uiEntity.getComponentSymbol();
+	}
+	
+	private VocabularyTerm validateRelation(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
+		String field = "relation";
+		if (uiEntity.getRelation() == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+
+		VocabularyTerm relation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY, uiEntity.getRelation().getName()).getEntity();
+
+		if (relation == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+
+		if (relation.getObsolete() && (dbEntity.getRelation() == null || !relation.getName().equals(dbEntity.getRelation().getName()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+
+		return relation;
 	}
 	
 	public NCBITaxonTerm validateTaxon(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {

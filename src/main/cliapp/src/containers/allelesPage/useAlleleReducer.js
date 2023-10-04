@@ -8,13 +8,17 @@ const initialAlleleState = {
 		alleleSynonyms: [],
 		alleleFullName: null,
 		alleleSecondaryIds: [],
+		alleleSymbol: null,
 		alleleMutationTypes: [],
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
+		alleleDatabaseStatus: null,
+		alleleGermlineTransmissionStatus: null,
 		references: [],
 		inCollection: {
 			name: "",
 		},
+		relatedNotes: [],
 		isExtinct: false,
 		internal: false,
 		obsolete: false,
@@ -22,6 +26,7 @@ const initialAlleleState = {
 	entityStates: {
 		alleleSynonyms: {
 			field: 'alleleSynonyms',
+			endpoint: 'allelesynonymslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -29,6 +34,7 @@ const initialAlleleState = {
 		},
 		alleleFullName: {
 			field: 'alleleFullName',
+			endpoint: 'allelefullnameslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -36,13 +42,23 @@ const initialAlleleState = {
 		},
 		alleleSecondaryIds: {
 			field: 'alleleSecondaryIds',
+			endpoint: 'allelesecondaryidslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
-			type: "table",
+			type: "table"
+		},
+		alleleSymbol: {
+			field: 'alleleSymbol',
+			endpoint: 'allelesymbolslotannotation',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',
+			endpoint: 'allelemutationtypeslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -50,6 +66,7 @@ const initialAlleleState = {
 		},
 		alleleInheritanceModes: {
 			field: 'alleleInheritanceModes',
+			endpoint: 'alleleinheritancemodeslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
@@ -57,10 +74,40 @@ const initialAlleleState = {
 		},
 		alleleFunctionalImpacts: {
 			field: 'alleleFunctionalImpacts',
+			endpoint: 'allelefunctionalimpactslotannotation',
 			show: false,
 			errorMessages: [],
 			editingRows: {},
 			type: "table",
+		},
+		alleleGermlineTransmissionStatus: {
+			field: 'alleleGermlineTransmissionStatus',
+			endpoint: 'allelegermlinetransmissionstatusslotannotation',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
+		},
+		alleleDatabaseStatus: {
+			field: 'alleleDatabaseStatus',
+			endpoint: 'alleledatabasestatusslotannotation',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "object",
+		},
+		relatedNotes: {
+			field: 'relatedNotes',
+			endpoint: 'note',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
+		},
+		references: {
+			field: 'references',
+			show: false,
+			type: "display",
 		},
 	},
 	errorMessages: {},
@@ -84,6 +131,17 @@ const processTable = (field, allele, draft) => {
 	allele[field] = clonableEntities;
 	draft.entityStates[field].show = true;
 }
+
+const processDisplayTable = (field, allele, draft) => {
+	if(!allele) return;
+
+	if(!allele[field]) {
+		allele[field] = [];
+		return; 
+	}
+
+	draft.entityStates[field].show = true;
+}
 const processObject = (field, allele, draft) => {
 	if(!allele) return;
 
@@ -104,6 +162,7 @@ const alleleReducer = (draft, action) => {
 			states.forEach((state) => {
 				if(state.type === "table") processTable(state.field, allele, draft); 
 				if(state.type === "object") processObject(state.field, allele, draft); 
+				if(state.type === "display") processDisplayTable(state.field, allele, draft); 
 			})
 
 			draft.allele = allele;
@@ -147,6 +206,9 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'UPDATE_TABLE_ERROR_MESSAGES': 
 			draft.entityStates[action.entityType].errorMessages = action.errorMessages;
+			break;
+		case 'TOGGLE_TABLE': 
+			draft.entityStates[action.entityType].show = action.value;
 			break;
 		case 'SUBMIT':
 			draft.submitted = true;

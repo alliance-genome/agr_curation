@@ -23,6 +23,12 @@ import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
+import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
+import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
+import { SymbolForm } from './symbol/SymbolForm';
+import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
+import { ReferencesForm } from './referencesTable/ReferencesForm';
+
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -59,57 +65,35 @@ const { isLoading } =	useQuery([curie],
 		alleleDispatch({
 			type: "SUBMIT" 
 		})
-		const isSynonymsErrors = await validateAlleleDetailTable(
-			"allelesynonymslotannotation", 
-			"alleleSynonyms", 
-			alleleState.allele.alleleSynonyms,
-			alleleDispatch,
-		);
 
-		const isFullNameErrors = await validateAlleleDetailTable(
-			"allelefullnameslotannotation", 
-			"alleleFullName", 
-			[alleleState.allele.alleleFullName],
-			alleleDispatch,
-		);
+		let anyErrors = false;
 
-		const isSecondaryIdsErrors = await validateAlleleDetailTable(
-			"allelesecondaryidslotannotation", 
-			"alleleSecondaryIds", 
-			alleleState.allele.alleleSecondaryIds,
-			alleleDispatch,
-		);
+		let states = Object.values(alleleState.entityStates);
 
-		const isMutationTypesErrors = await validateAlleleDetailTable(
-			"allelemutationtypeslotannotation", 
-			"alleleMutationTypes", 
-			alleleState.allele.alleleMutationTypes,
-			alleleDispatch,
-		);
+		states
+		.filter(state => state.type !== 'display')
+		.forEach( async (state) => {
+			let table;
 
-		const isInheritanceModesErrors = await validateAlleleDetailTable(
-			"alleleinheritancemodeslotannotation", 
-			"alleleInheritanceModes", 
-			alleleState.allele.alleleInheritanceModes,
-			alleleDispatch,
-		);
+			if(state.type === 'object'){
+				table = [alleleState.allele[state.field]];
+			} else {
+				table = alleleState.allele[state.field];
+			}
+
+			let isError = await validateAlleleDetailTable(
+				state.endpoint,
+				state.field,
+				table,
+				alleleDispatch,
+			);
+
+			if(isError) anyErrors = true;
+		})
 		
-		const isFunctionalImpactsErrors = await validateAlleleDetailTable(
-			"allelefunctionalimpactslotannotation", 
-			"alleleFunctionalImpacts", 
-			alleleState.allele.alleleFunctionalImpacts,
-			alleleDispatch,
-		);
-
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(
-					isSynonymsErrors || 
-					isFullNameErrors || 
-					isMutationTypesErrors || 
-					isFunctionalImpactsErrors || 
-					isSecondaryIdsErrors || 
-					isInheritanceModesErrors) return;
+				if(anyErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
@@ -150,6 +134,19 @@ const { isLoading } =	useQuery([curie],
 	}
 
 	const onReferenceValueChange = (event) => {
+		if(event.value.length === 0){
+			alleleDispatch({
+				type: 'TOGGLE_TABLE',
+				entityType: 'references',
+				value: false,
+			})
+		} else {
+			alleleDispatch({
+				type: 'TOGGLE_TABLE',
+				entityType: 'references',
+				value: true,
+		})}
+
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'references',
@@ -238,6 +235,14 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
+					<SymbolForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+						labelColumnSize={labelColumnSize}						
+					/>
+
+					<Divider />
+
 					<SynonymsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
@@ -277,6 +282,20 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
+					<GermilineTransmissionStatusForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<DatabaseStatusForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
 					<InheritanceModesForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
@@ -291,6 +310,11 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+					/>
+
+					<ReferencesForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />
@@ -315,6 +339,14 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+						showClear={true}
+					/>
+
+					<Divider />
+
+					<RelatedNotesForm
+						state={alleleState}
+						dispatch={alleleDispatch}
 					/>
 
 					<Divider />

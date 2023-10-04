@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
@@ -45,9 +46,14 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
+@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "ConstructComponentSlotAnnotation", description = "POJO representing a construct component slot annotation")
-@Table(indexes = { @Index(name = "constructcomponentslotannotation_singleconstruct_index", columnList = "singleConstruct_id"), @Index(name = "constructcomponentslotannotation_componentsymbol_index", columnList = "componentSymbol"), @Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_curie") })
+@Table(indexes = {
+	@Index(name = "constructcomponentslotannotation_singleconstruct_index", columnList = "singleConstruct_id"),
+	@Index(name = "constructcomponentslotannotation_componentsymbol_index", columnList = "componentSymbol"),
+	@Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_curie"),
+	@Index(name = "constructcomponentslotannotation_relation_index", columnList = "relation_id")
+})
 public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
 	@OneToOne
@@ -60,6 +66,12 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	protected String componentSymbol;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	private VocabularyTerm relation;
 	
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

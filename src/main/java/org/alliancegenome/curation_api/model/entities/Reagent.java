@@ -1,10 +1,14 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.util.List;
+
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -38,7 +42,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "reagent", description = "POJO that represents a reagent")
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
 @Table(indexes = {
 	@Index(name = "reagent_curie_index", columnList = "curie"),
@@ -47,8 +51,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "reagent_modInternalId_index", columnList = "modInternalId"),
 	@Index(name = "reagent_dataprovider_index", columnList = "dataProvider_id"),
 	@Index(name = "reagent_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "reagent_taxon_index", columnList = "taxon_curie")
+	@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id")
 })
 
 public class Reagent extends GeneratedAuditedObject {
@@ -79,13 +82,6 @@ public class Reagent extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String modInternalId;
-	
-	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
-	private NCBITaxonTerm taxon;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -93,16 +89,11 @@ public class Reagent extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	protected DataProvider dataProvider;
 	
-	//@IndexedEmbedded(includeDepth = 1)
-	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	//@ManyToOne
-	//@JsonView({ View.FieldsOnly.class })
-	//protected Agent generatedBy;
-	
-	//@IndexedEmbedded(includeDepth = 1)
-	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	//@ManyToOne
-	//@JsonView({ View.FieldsOnly.class })
-	//protected Agent manufacturedBy;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@ElementCollection
+	@JsonView(View.FieldsAndLists.class)
+	@JoinTable(indexes = @Index(name = "reagent_secondaryidentifiers_reagent_id_index", columnList = "reagent_id"))
+	private List<String> secondaryIdentifiers;
 
 }

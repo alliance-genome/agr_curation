@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.controllers;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
@@ -8,7 +9,9 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.base.SystemSQLDAO;
 import org.alliancegenome.curation_api.interfaces.SystemControllerInterface;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ConditionRelationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
+import org.alliancegenome.curation_api.services.ExperimentalConditionService;
 
 @RequestScoped
 public class SystemController implements SystemControllerInterface {
@@ -17,6 +20,10 @@ public class SystemController implements SystemControllerInterface {
 	SystemSQLDAO systemSQLDAO;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	ConditionRelationService conditionRelationService;
+	@Inject
+	ExperimentalConditionService experimentalConditionService;
 	
 	@Override
 	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize,
@@ -36,5 +43,12 @@ public class SystemController implements SystemControllerInterface {
 	@Override
 	public void updateRefreshIntervalOnAllIndexes() {
 		systemSQLDAO.setRefreshInterval();
+	}
+
+	@Override
+	public void deleteUnusedConditionsAndExperiments() {
+		List<Long> inUseCrIds = diseaseAnnotationService.getAllReferencedConditionRelationIds();
+		conditionRelationService.deleteUnusedConditions(inUseCrIds);
+		experimentalConditionService.deleteUnusedExperiments();
 	}
 }

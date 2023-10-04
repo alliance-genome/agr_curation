@@ -26,6 +26,7 @@ import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 
@@ -49,6 +50,8 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			
 			if(!checkSchemaVersion(bulkLoadFile, ConstructDTO.class)) return;
 			

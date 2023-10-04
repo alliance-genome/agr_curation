@@ -124,6 +124,18 @@ export const FIELD_SETS = Object.freeze({
     filterName: "confidenceFilter",
     fields: ["confidence.name"],
   },
+  constructNameFieldSet: {
+    filterName: "constructNameFilter",
+    fields: ["constructFullName.displayText", "constructFullName.formatText"],
+  },
+  constructSymbolFieldSet: {
+    filterName: "constructSymbolFilter",
+    fields: ["constructSymbol.displayText", "constructSymbol.formatText"],
+  },
+  constructSynonymsFieldSet: {
+    filterName: "constructSynonymsFilter",
+    fields: ["constructSynonyms.displayText", "constructSynonyms.formatText"],
+  },
   constructAggregationFieldSet: {
     filterName: "constructAggregationFilter",
     fields: ['dataProvider.sourceOrganization.abbreviation'],
@@ -449,6 +461,9 @@ export const FILTER_CONFIGS = Object.freeze({
   conditionRelationSummaryFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionRelationSummaryFieldSet] },
   conditionQuantityFilterConfig:            { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionQuantityFieldSet] },
   conditionTaxonFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.conditionTaxonFieldSet] },
+  constructNameFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.constructNameFieldSet] },
+  constructSymbolFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.constructSymbolFieldSet] },
+  constructSynonymsFilterConfig:            { filterComponentType: "input", fieldSets: [FIELD_SETS.constructSynonymsFieldSet] },
   constructComponentsFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.constructComponentsFieldSet]},
   createdByFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.createdByFieldSet] },
   curieFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.curieFieldSet] },

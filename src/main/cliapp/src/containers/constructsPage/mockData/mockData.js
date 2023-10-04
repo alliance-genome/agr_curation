@@ -26,12 +26,6 @@ export const data = {
 				"id": 133503943,
 				"uniqueId": "WBCnstr00000001",
 				"modEntityId": "WB:WBCnstr00000001",
-				"taxon": {
-					"internal": false,
-					"obsolete": false,
-					"curie": "NCBITaxon:6239",
-					"name": "Caenorhabditis elegans"
-				},
 				"dataProvider": {
 					"internal": false,
 					"obsolete": false,
@@ -74,7 +68,6 @@ export const data = {
 						}
 					}
 				},
-				"name": "Test construct",
 				"references": [
 					{
 						"internal": false,
@@ -186,6 +179,50 @@ export const data = {
 								}
 							}
 						]
+					}
+				],
+				"constructSymbol": {
+					"internal": false,
+					"obsolete": false,
+					"id": 134095430,
+					"nameType": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308690,
+						"name": "nomenclature_symbol",
+						"definition": "A symbol for an object: e.g., pax6<sup>Leca2</sup>."
+					},
+					"formatText": "KP273",
+					"displayText": "KP273"
+				},
+				"constructFullName": {
+					"internal": false,
+					"obsolete": false,
+					"id": 13423325252,
+					"nameType": {
+						"internal": false,
+						"obsolete": false,
+						"id": 20308691,
+						"name": "full_name",
+						"definition": "The full length name of an entity: e.g., broad angular dumpy."
+					},
+					"formatText": "King Potato 273",
+					"displayText": "King Potato 273"
+				},
+				"constructSynonyms": [
+					{
+						"internal": false,
+						"obsolete": false,
+						"id": 134024230,
+						"nameType": {
+							"internal": false,
+							"obsolete": false,
+							"id": 20308692,
+							"name": "systematic_name",
+							"definition": "A systematic name: e.g., CG4889<sup>1</sup>."
+						},
+						"formatText": "KPot273",
+						"displayText": "KPot273"
 					}
 				]
 			}

@@ -17,8 +17,10 @@ public abstract class ConstructUniqueIdHelper {
 
 	public static String getConstructUniqueId(ConstructDTO constructDTO) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
-		uniqueId.add(constructDTO.getName());
-		uniqueId.add(constructDTO.getTaxonCurie());
+		if (constructDTO.getConstructSymbolDto() != null)
+			uniqueId.add(constructDTO.getConstructSymbolDto().getFormatText());
+		if (constructDTO.getConstructFullNameDto() != null)
+			uniqueId.add(constructDTO.getConstructFullNameDto().getFormatText());
 
 		if (CollectionUtils.isNotEmpty(constructDTO.getConstructComponentDtos())) {
 			List<String> componentIds = new ArrayList<>();
@@ -34,9 +36,10 @@ public abstract class ConstructUniqueIdHelper {
 
 	public static String getConstructUniqueId(Construct construct) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
-		uniqueId.add(construct.getName());
-		if (construct.getTaxon() != null)
-			uniqueId.add(construct.getTaxon().getCurie());
+		if (construct.getConstructSymbol() != null)
+			uniqueId.add(construct.getConstructSymbol().getFormatText());
+		if (construct.getConstructFullName() != null)
+			uniqueId.add(construct.getConstructFullName().getFormatText());
 		
 		if (CollectionUtils.isNotEmpty(construct.getConstructComponents())) {
 			List<String> componentIds = new ArrayList<>();

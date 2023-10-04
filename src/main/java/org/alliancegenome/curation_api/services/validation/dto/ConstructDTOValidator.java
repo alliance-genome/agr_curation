@@ -12,24 +12,46 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.constructSlotAnnotations.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.constructs.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class ConstructDTOValidator extends ReagentDTOValidator {
 
+	@Inject
+	ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
+	@Inject
+	ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
+	@Inject
+	ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
+	@Inject
+	ConstructSymbolSlotAnnotationDTOValidator constructSymbolDtoValidator;
+	@Inject
+	ConstructFullNameSlotAnnotationDTOValidator constructFullNameDtoValidator;
+	@Inject
+	ConstructSynonymSlotAnnotationDTOValidator constructSynonymDtoValidator;
 	@Inject
 	ConstructDAO constructDAO;
 	@Inject
@@ -72,12 +94,6 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());
 		construct = reagentResponse.getEntity();
 
-		if (StringUtils.isBlank(dto.getName())) {
-			constructResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);;
-		} else {
-			construct.setName(dto.getName());
-		}
-
 		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
 			List<Reference> references = new ArrayList<>();
 			for (String publicationId : dto.getReferenceCuries()) {
@@ -91,6 +107,67 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			construct.setReferences(references);
 		} else {
 			construct.setReferences(null);
+		}
+		
+		ConstructSymbolSlotAnnotation symbol = construct.getConstructSymbol();
+		if (dto.getConstructSymbolDto() == null) {
+			constructResponse.addErrorMessage("construct_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			ObjectResponse<ConstructSymbolSlotAnnotation> symbolResponse = constructSymbolDtoValidator.validateConstructSymbolSlotAnnotationDTO(symbol, dto.getConstructSymbolDto());
+			if (symbolResponse.hasErrors()) {
+				constructResponse.addErrorMessage("construct_symbol_dto", symbolResponse.errorMessagesString());
+			} else {
+				symbol = symbolResponse.getEntity();
+			}
+		}
+
+		ConstructFullNameSlotAnnotation fullName = construct.getConstructFullName();
+		if (construct.getConstructFullName() != null && dto.getConstructFullNameDto() == null) {
+			fullName.setSingleConstruct(null);
+			constructFullNameDAO.remove(fullName.getId());
+		}
+
+		if (dto.getConstructFullNameDto() != null) {
+			ObjectResponse<ConstructFullNameSlotAnnotation> fullNameResponse = constructFullNameDtoValidator.validateConstructFullNameSlotAnnotationDTO(fullName, dto.getConstructFullNameDto());
+			if (fullNameResponse.hasErrors()) {
+				constructResponse.addErrorMessage("construct_full_name_dto", fullNameResponse.errorMessagesString());
+			} else {
+				fullName = fullNameResponse.getEntity();
+			}
+		} else {
+			fullName = null;
+		}
+
+		Map<String, ConstructSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(construct.getConstructSynonyms())) {
+			for (ConstructSynonymSlotAnnotation existingSynonym : construct.getConstructSynonyms()) {
+				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+			}
+		}
+		
+		List<ConstructSynonymSlotAnnotation> synonyms = new ArrayList<>();
+		List<Long> synonymIdsToKeep = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getConstructSynonymDtos())) {
+			for (NameSlotAnnotationDTO synonymDTO : dto.getConstructSynonymDtos()) {
+				ObjectResponse<ConstructSynonymSlotAnnotation> synonymResponse = constructSynonymDtoValidator.validateConstructSynonymSlotAnnotationDTO(existingSynonyms.get(identityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
+				if (synonymResponse.hasErrors()) {
+					constructResponse.addErrorMessage("construct_synonym_dtos", synonymResponse.errorMessagesString());
+				} else {
+					ConstructSynonymSlotAnnotation synonym = synonymResponse.getEntity();
+					synonyms.add(synonym);
+					if (synonym.getId() != null)
+						synonymIdsToKeep.add(synonym.getId());
+				}
+			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(construct.getConstructSynonyms())) {
+			for (ConstructSynonymSlotAnnotation syn : construct.getConstructSynonyms()) {
+				if (!synonymIdsToKeep.contains(syn.getId())) {
+					syn.setSingleConstruct(null);
+					constructSynonymDAO.remove(syn.getId());
+				}
+			}
 		}
 		
 		Map<String, ConstructComponentSlotAnnotation> existingComponentIds = new HashMap<>();
@@ -132,6 +209,26 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 
 		// Attach construct and persist SlotAnnotation objects
 
+		if (symbol != null) {
+			symbol.setSingleConstruct(construct);
+			constructSymbolDAO.persist(symbol);
+		}
+		construct.setConstructSymbol(symbol);
+
+		if (fullName != null) {
+			fullName.setSingleConstruct(construct);
+			constructFullNameDAO.persist(fullName);
+		}
+		construct.setConstructFullName(fullName);
+
+		if (CollectionUtils.isNotEmpty(synonyms)) {
+			for (ConstructSynonymSlotAnnotation syn : synonyms) {
+				syn.setSingleConstruct(construct);
+				constructSynonymDAO.persist(syn);
+			}
+		}
+		construct.setConstructSynonyms(synonyms);
+		
 		if (CollectionUtils.isNotEmpty(components)) {
 			for (ConstructComponentSlotAnnotation cc : components) {
 				cc.setSingleConstruct(construct);

@@ -163,7 +163,6 @@ public class AlleleITCase extends BaseITCase {
 		obsoleteFullNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_full_name");
 		exactSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "exact");
 		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
-		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
 		obsoleteSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "obsolete");
 		reference = createReference("AGRKB:000000003", false);
 		reference2 = createReference("AGRKB:000000005", false);

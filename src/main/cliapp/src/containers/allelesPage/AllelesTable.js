@@ -10,13 +10,13 @@ import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
 import { FunctionalImpactsDialog } from './functionalImpacts/FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialog';
 import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';
-import { GermlineTransmissionStatusDialog } from './GermlineTransmissionStatusDialog';
-import { DatabaseStatusDialog } from './DatabaseStatusDialog';
-import { SymbolDialog } from './SymbolDialog';
-import { FullNameDialog } from './fullName/FullNameDialog';
+import { GermlineTransmissionStatusDialog } from './germlineTransmissionStatus/GermlineTransmissionStatusDialog';
+import { DatabaseStatusDialog } from './databaseStatus/DatabaseStatusDialog';
+import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
+import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
-import { SynonymsDialog } from './synonyms/SynonymsDialog';
-import { RelatedNotesDialog } from './RelatedNotesDialog';
+import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
+import { RelatedNotesDialog } from './relatedNotes/RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
@@ -1293,18 +1293,27 @@ export const AllelesTable = () => {
 				/>
 			</div>
 			<SymbolDialog
+				name="Allele Symbol"
+				field="alleleSymbol"
+				endpoint="allelesymbolslotannotation"
 				originalSymbolData={symbolData}
 				setOriginalSymbolData={setSymbolData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<FullNameDialog
+				name="Allele Name"
+				field="alleleFullName"
+				endpoint="allelefullnameslotannotation"
 				originalFullNameData={fullNameData}
 				setOriginalFullNameData={setFullNameData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<SynonymsDialog
+				name="Allele Synonym"
+				field="alleleSynonyms"
+				endpoint="allelesynonymslotannotation"
 				originalSynonymsData={synonymsData}
 				setOriginalSynonymsData={setSynonymsData}
 				errorMessagesMainRow={errorMessages}
