@@ -27,7 +27,7 @@ UPDATE tmp_vocab_set SET vocabularytermsetvocabulary_id = subquery.id
 INSERT INTO vocabularytermset (id, name, vocabularytermsetdescription, vocabularylabel, vocabularytermsetvocabulary_id)
 	SELECT id, name, vocabularytermsetdescription, vocabularylabel, vocabularytermsetvocabulary_id FROM tmp_vocab_set;
 	
-DROP TABLE tmp_vocab_set;
+DELETE FROM tmp_vocab_set;
 
 -- Resolve duplicate comment term
 UPDATE note SET notetype_id = subquery.id
@@ -95,7 +95,7 @@ UPDATE tmp_vocab_link SET vocabularytermsets_id = subquery.id
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id)
 	SELECT vocabularytermsets_id, memberterms_id FROM tmp_vocab_link;
 	
-DROP TABLE tmp_vocab_link;
+DELETE FROM tmp_vocab_link;
 
 -- Set all note terms to belong to general note vocabulary
 UPDATE vocabularyterm SET vocabulary_id = subquery.id 
@@ -112,4 +112,84 @@ DELETE FROM vocabulary WHERE vocabularylabel = 'allele_note_type'
 	OR vocabularylabel = 'da_note_type'
 	OR vocabularylabel = 'gene_note_type'
 	OR vocabularylabel = 'construct_component_note_type';
+	
+-- Consolidate construct relations
+UPDATE vocabulary SET vocabularylabel = 'construct_relation', name = 'Construct Relation' WHERE vocabularylabel = 'construct_genomic_entity_predicate';
+
+INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id)
+	SELECT nextval('hibernate_sequence'), 'Construct Genomic Entity Relation', 'construct_genomic_entity_relation', id
+	FROM vocabulary where vocabularylabel = 'construct_relation';
+
+-- Create vocabulary for all allele relation types
+INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('hibernate_sequence'), 'Allele Relation', 'allele_relation');
+
+-- Create sets for each allele relation type (use temporary table to avoid not null constraint)
+
+INSERT INTO tmp_vocab_set (id, name, vocabularylabel)
+	SELECT nextval('hibernate_sequence'), name, vocabularylabel
+	FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_allele_predicate'
+		OR vocabulary.vocabularylabel = 'allele_construct_predicate'
+		OR vocabulary.vocabularylabel = 'allele_generation_method_predicate';
+	
+UPDATE tmp_vocab_set SET vocabularytermsetvocabulary_id = subquery.id 
+	FROM (SELECT id FROM vocabulary WHERE vocabularylabel = 'allele_relation') AS subquery
+	WHERE vocabularytermsetvocabulary_id IS NULL;
+	
+UPDATE tmp_vocab_set SET vocabularylabel = 'allele_allele_relation', name = 'Allele Allele Association Relation' WHERE vocabularylabel = 'allele_allele_predicate';
+UPDATE tmp_vocab_set SET vocabularylabel = 'allele_construct_relation', name = 'Allele Construct Association Relation' WHERE vocabularylabel = 'allele_construct_predicate';
+UPDATE tmp_vocab_set SET vocabularylabel = 'allele_generation_method_relation', name = 'Allele Generation Method Association Relation' WHERE vocabularylabel = 'allele_generation_method_predicate';
+
+INSERT INTO vocabularytermset (id, name, vocabularytermsetdescription, vocabularylabel, vocabularytermsetvocabulary_id)
+	SELECT id, name, vocabularytermsetdescription, vocabularylabel, vocabularytermsetvocabulary_id FROM tmp_vocab_set;
+	
+DROP TABLE tmp_vocab_set;
+
+-- Populate temp table with links between new allele relation sets and terms	
+INSERT INTO tmp_vocab_link (memberterms_id)
+	SELECT id FROM vocabularyterm WHERE vocabulary_id = (
+		SELECT id from vocabulary where vocabularylabel = 'allele_allele_predicate'
+	);
+	
+UPDATE tmp_vocab_link SET vocabularytermsets_id = subquery.id
+	FROM (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'allele_allele_relation') AS subquery
+	WHERE vocabularytermsets_id IS NULL;
+
+
+INSERT INTO tmp_vocab_link (memberterms_id)
+	SELECT id FROM vocabularyterm WHERE vocabulary_id = (
+		SELECT id from vocabulary where vocabularylabel = 'allele_construct_predicate'
+	);
+	
+UPDATE tmp_vocab_link SET vocabularytermsets_id = subquery.id
+	FROM (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'allele_construct_relation') AS subquery
+	WHERE vocabularytermsets_id IS NULL;
+	
+
+INSERT INTO tmp_vocab_link (memberterms_id)
+	SELECT id FROM vocabularyterm WHERE vocabulary_id = (
+		SELECT id from vocabulary where vocabularylabel = 'allele_generation_method_predicate'
+	);
+	
+UPDATE tmp_vocab_link SET vocabularytermsets_id = subquery.id
+	FROM (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'allele_generation_method_relation') AS subquery
+	WHERE vocabularytermsets_id IS NULL;
+	
+INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id)
+	SELECT vocabularytermsets_id, memberterms_id FROM tmp_vocab_link;
+	
+DROP TABLE tmp_vocab_link;
+
+-- Set all note terms to belong to general note vocabulary
+UPDATE vocabularyterm SET vocabulary_id = subquery.id 
+	FROM (SELECT id FROM vocabulary WHERE vocabularylabel = 'allele_relation') AS subquery
+	WHERE vocabularyterm.vocabulary_id IN (
+		SELECT id FROM vocabulary WHERE vocabularylabel = 'allele_allele_predicate'
+			OR vocabularylabel = 'allele_construct_predicate'
+			OR vocabularylabel = 'allele_generation_method_predicate'
+	);	
+	
+-- Delete old vocabularies
+DELETE FROM vocabulary WHERE vocabularylabel = 'allele_allele_predicate'
+	OR vocabularylabel = 'allele_construct_predicate'
+	OR vocabularylabel = 'allele_generation_method_predicate';
 

@@ -94,10 +94,10 @@ public class ConstructITCase extends BaseITCase {
 		noteType2 = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary");
 		obsoleteNoteType = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "obsolete_type", noteTypeVocabulary, true);
 		alleleNoteType = getVocabularyTerm(alleleNoteTypeVocabulary, "notes_on_origin");
-		relationVocabulary = getVocabulary("construct_genomic_entity_predicate");
+		relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
 		isRegulatedByRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
 		targetsRelation = getVocabularyTerm(relationVocabulary, "targets");
-		obsoleteRelation = createVocabularyTerm(relationVocabulary, "obsolete_relation", true);
+		obsoleteRelation = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, "obsolete_relation", relationVocabulary, true);
 		taxon = getNCBITaxonTerm("NCBITaxon:6239");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
 		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");

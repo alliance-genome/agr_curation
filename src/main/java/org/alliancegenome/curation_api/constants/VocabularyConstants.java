@@ -35,7 +35,8 @@ public final class VocabularyConstants {
 	public static final String ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET = "ortho_best_rev_score";
 	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY = "ortho_prediction_method";
 	
-	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY = "construct_genomic_entity_predicate";
+	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
+	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 	
 	public static final String NOTE_TYPE_VOCABULARY = "note_type";
 	public static final String ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET = "allele_note_type";

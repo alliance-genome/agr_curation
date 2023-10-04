@@ -124,7 +124,7 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 			return null;
 		}
 
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY, uiEntity.getRelation().getName()).getEntity();
+		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
 
 		if (relation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
