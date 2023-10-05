@@ -56,6 +56,14 @@ const initialAlleleState = {
 			editingRows: {},
 			type: "object",
 		},
+		alleleNomenclatureEvents: {
+			field: 'alleleNomenclatureEvents',
+			endpoint: 'allelenomenclatureeventslotannotation',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
+		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',
 			endpoint: 'allelemutationtypeslotannotation',
