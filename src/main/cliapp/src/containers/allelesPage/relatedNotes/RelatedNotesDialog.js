@@ -11,6 +11,7 @@ import { DialogErrorMessageComponent } from '../../../components/Error/DialogErr
 import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
 import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
 import { ValidationService } from '../../../service/ValidationService';
 import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from '../../../utils/utils';
@@ -30,7 +31,7 @@ export const RelatedNotesDialog = ({
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const noteTypeTerms = useControlledVocabularyService('allele_note_type');
+	const noteTypeTerms = useVocabularyTermSetService('allele_note_type');
 	const validationService = new ValidationService();
 	const searchService = new SearchService();
 	const tableRef = useRef(null);
