@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api.model.entities.associations.alleleAssoci
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
@@ -37,7 +37,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "AlleleGenomicEntityAssociation", description = "POJO representing an association between an allele and a genomic entity")
 @Table(indexes = {
-	@Index(name = "allelegenomicentity_singleallele_curie_index", columnList = "singleallele_curie")
+	@Index(name = "allelegenomicentityassociation_subject_index", columnList = "subject_curie"),
+	@Index(name = "allelegenomicentityassociation_relation_index", columnList = "relation_id")
 })
 public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 
@@ -60,7 +61,7 @@ public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
+	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
 	private Note relatedNote;
 }
