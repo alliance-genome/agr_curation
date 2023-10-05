@@ -58,7 +58,7 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 
 		Note note = null;
 		if (uiEntity.getRelatedNote() != null) {
-			ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiEntity.getRelatedNote(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_NOTE_TYPE_VOCABULARY);
+			ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiEntity.getRelatedNote(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 			if (noteResponse.getEntity() == null) {
 				addMessageResponse(field, noteResponse.errorMessagesString());
 				return null;

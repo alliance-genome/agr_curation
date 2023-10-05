@@ -61,7 +61,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 		}
 		
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {
-			VocabularyTerm relation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY, dto.getRelationName()).getEntity();
+			VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
 			if (relation == null)
 				agaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
 			association.setRelation(relation);

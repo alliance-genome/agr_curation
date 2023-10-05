@@ -63,7 +63,7 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 			noteDAO.remove(noteIdToDelete);
 		}
 		if (dto.getNoteDto() != null) {
-			ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDto(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_NOTE_TYPE_VOCABULARY);
+			ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDto(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 			if (noteResponse.hasErrors()) {
 				assocResponse.addErrorMessage("note_dto", noteResponse.errorMessagesString());
 			} else {

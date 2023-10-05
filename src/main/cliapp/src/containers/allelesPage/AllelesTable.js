@@ -9,7 +9,7 @@ import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
 import { FunctionalImpactsDialog } from './functionalImpacts/FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialog';
-import { NomenclatureEventsDialog } from './NomenclatureEventsDialog';
+import { NomenclatureEventsDialog } from './nomenclatureEvents/NomenclatureEventsDialog';
 import { GermlineTransmissionStatusDialog } from './germlineTransmissionStatus/GermlineTransmissionStatusDialog';
 import { DatabaseStatusDialog } from './databaseStatus/DatabaseStatusDialog';
 import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
