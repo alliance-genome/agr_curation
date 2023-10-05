@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services.associations.alleleAssociations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -16,9 +18,11 @@ import org.alliancegenome.curation_api.dao.associations.alleleAssociations.Allel
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.alleleAssociations.AlleleGeneAssociationDTOValidator;
@@ -98,5 +102,20 @@ public class AlleleGeneAssociationService extends BaseEntityCrudService<AlleleGe
 			log.error("Failed getting allele-gene association: " + id);
 		}
 		
+	}
+	
+	public ObjectResponse<AlleleGeneAssociation> getAssociation(String alleleCurie, String relationName, String geneCurie) {
+		AlleleGeneAssociation association = null;
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("subject.curie", alleleCurie);
+		params.put("relation.name", relationName);
+		params.put("object.curie", geneCurie);
+
+		SearchResponse<AlleleGeneAssociation> resp = alleleGeneAssociationDAO.findByParams(params);
+		if (resp != null && resp.getSingleResult() != null)
+			association = resp.getSingleResult();
+		
+		return new ObjectResponse<>(association);
 	}
 }
