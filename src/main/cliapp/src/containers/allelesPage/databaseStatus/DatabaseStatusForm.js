@@ -29,8 +29,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const databaseStatusOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.databaseStatus = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleDatabaseStatus', 
@@ -40,8 +39,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const internalOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.internal = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleDatabaseStatus', 
