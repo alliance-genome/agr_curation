@@ -6,9 +6,9 @@ import { Tooltip } from 'primereact/tooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
-import { SynonymsDialog } from './SynonymsDialog';
-import { SymbolDialog } from './SymbolDialog';
-import { FullNameDialog } from './FullNameDialog';
+import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
+import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
+import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
 import { ListTableCell } from '../../components/ListTableCell';
 import { Button } from 'primereact/button';
@@ -337,14 +337,23 @@ export const GenesTable = () => {
 				/>
 			</div>
 			<FullNameDialog
+				name="Gene Name"
+				field="geneFullName"
+				endpoint="genefullnameslotannotation"
 				originalFullNameData={fullNameData}
 				setOriginalFullNameData={setFullNameData}
 			/>
 			<SymbolDialog
+				name="Gene Symbol"
+				field="geneSymbol"
+				endpoint="genesymbolslotannotation"
 				originalSymbolData={symbolData}
 				setOriginalSymbolData={setSymbolData}
 			/>
 			<SynonymsDialog
+				name="Gene Synonym"
+				field="geneSynonyms"
+				endpoint="genesynonymslotannotation"
 				originalSynonymsData={synonymsData}
 				setOriginalSynonymsData={setSynonymsData}
 			/>

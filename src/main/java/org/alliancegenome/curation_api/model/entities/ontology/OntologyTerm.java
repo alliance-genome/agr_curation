@@ -22,8 +22,6 @@ import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -127,6 +125,12 @@ public class OntologyTerm extends CurieAuditedObject {
 
 	@ManyToMany(mappedBy = "isaAncestors")
 	private Set<OntologyTerm> isaDescendants;
+	
+	@JsonView(View.FieldsOnly.class)
+	private Integer childCount = 0;
+	
+	@JsonView(View.FieldsOnly.class)
+	private Integer descendantCount = 0;
 
 	@Transient
 	public void addIsaChild(OntologyTerm term) {

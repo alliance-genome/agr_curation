@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("DO term bulk upload")
-@Order(6)
+@Order(8)
 public class DOTermBulkUploadITCase {
 
 	@BeforeEach

@@ -8,7 +8,13 @@ public class View {
 	public static class FieldsAndLists extends FieldsOnly {
 	}
 
-	public static class ConditionRelationUpdateView extends FieldsOnly {
+	public static class ConditionRelationView extends FieldsOnly {
+	}
+	
+	public static class ConditionRelationCreateView extends ConditionRelationView {
+	}
+	
+	public static class ConditionRelationUpdateView extends ConditionRelationView {
 	}
 
 	public static class VocabularyTermView extends FieldsAndLists {
@@ -33,6 +39,9 @@ public class View {
 	}
 
 	public static class ReportHistory extends FieldsOnly {
+	}
+	
+	public static class ConstructView extends FieldsOnly {
 	}
 
 	public static class DiseaseAnnotation extends FieldsOnly {

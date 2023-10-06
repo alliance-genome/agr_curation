@@ -9,6 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -20,6 +21,8 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SlotAnnotationDTO;
@@ -28,6 +31,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlot
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.constructSlotAnnotations.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -124,6 +128,24 @@ public class SlotAnnotationIdentityHelper {
 		return StringUtils.join(List.of(inheritanceMode, phenotypeTerm, phenotypeStatement, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
+	public static String constructComponentIdentity(ConstructComponentSlotAnnotation annotation) {
+		String componentSymbol = StringUtils.isBlank(annotation.getComponentSymbol()) ? "" : annotation.getComponentSymbol();
+		String taxon = annotation.getTaxon() == null ? "" : annotation.getTaxon().getCurie();
+		String taxonText = StringUtils.isBlank(annotation.getTaxonText()) ? "" : annotation.getTaxonText();
+		String notesIdentity = notesIdentity(annotation.getRelatedNotes());
+		
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+	
+	public String constructComponentDtoIdentity(ConstructComponentSlotAnnotationDTO dto) {
+		String componentSymbol = StringUtils.isBlank(dto.getComponentSymbol()) ? "" : dto.getComponentSymbol();
+		String taxon = StringUtils.isBlank(dto.getTaxonCurie()) ? "" : dto.getTaxonCurie();
+		String taxonText = StringUtils.isBlank(dto.getTaxonText()) ? "" : dto.getTaxonText();
+		String notesIdentity = noteDtosIdentity(dto.getNoteDtos());
+		
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+	
 	public static String nameSlotAnnotationIdentity(NameSlotAnnotation annotation) {
 		String displayText = StringUtils.isBlank(annotation.getDisplayText()) ? "" : annotation.getDisplayText();
 		String formatText = StringUtils.isBlank(annotation.getFormatText()) ? "" : annotation.getFormatText();
@@ -151,18 +173,73 @@ public class SlotAnnotationIdentityHelper {
 	}
 	
 	private static String slotAnnotationIdentity(SlotAnnotation annotation) {
-		String identity = "";
-		if (CollectionUtils.isNotEmpty(annotation.getEvidence())) {
-			List<String> evidenceCuries = annotation.getEvidence().stream().map(InformationContentEntity::getCurie).collect(Collectors.toList());
-			Collections.sort(evidenceCuries);
-			identity = StringUtils.join(evidenceCuries, ":");
-		}
-		
-		return identity;
+		return evidenceIdentity(annotation.getEvidence());
 	}
 	
 	private String slotAnnotationDtoIdentity(SlotAnnotationDTO dto) {
 		List<String> evidenceCuries = dto.getEvidenceCuries();
+		return evidenceIngestIdentity(evidenceCuries);
+	}
+	
+	private static String evidenceIdentity(List<InformationContentEntity> evidence) {
+		String identity = "";
+		if (CollectionUtils.isEmpty(evidence))
+			return identity;
+		
+		List<String> evidenceCuries = evidence.stream().map(InformationContentEntity::getCurie).collect(Collectors.toList());
+		Collections.sort(evidenceCuries);
+		identity = StringUtils.join(evidenceCuries, ":");
+		
+		return identity;
+	}
+	
+	public static String notesIdentity(List<Note> notes) {
+		if (CollectionUtils.isEmpty(notes))
+			return "";
+		
+		List<String> noteIdentities = new ArrayList<>();
+		for (Note note : notes) {
+			String freeText = StringUtils.isBlank(note.getFreeText()) ? "" : note.getFreeText();
+			String noteType = note.getNoteType() == null ? "" : note.getNoteType().getName();
+			String references = referencesIdentity(note.getReferences());
+			String noteIdentity = StringUtils.join(List.of(freeText, noteType, references), "|");
+			noteIdentities.add(noteIdentity);
+		}
+		Collections.sort(noteIdentities);
+		
+		return StringUtils.join(noteIdentities, "|");
+	}
+	
+	public String noteDtosIdentity(List<NoteDTO> dtos) {
+		if (CollectionUtils.isEmpty(dtos))
+			return "";
+		
+		List<String> noteIdentities = new ArrayList<>();
+		for (NoteDTO dto : dtos) {
+			String freeText = StringUtils.isBlank(dto.getFreeText()) ? "" : dto.getFreeText();
+			String noteType = StringUtils.isBlank(dto.getNoteTypeName()) ? "" : dto.getNoteTypeName();
+			String references = evidenceIngestIdentity(dto.getEvidenceCuries());
+			String noteIdentity = StringUtils.join(List.of(freeText, noteType, references), "|");
+			noteIdentities.add(noteIdentity);
+		}
+		Collections.sort(noteIdentities);
+		
+		return StringUtils.join(noteIdentities, "|");
+	}
+	
+	private static String referencesIdentity(List<Reference> references) {
+		String identity = "";
+		if (CollectionUtils.isEmpty(references))
+			return identity;
+		
+		List<String> referenceCuries = references.stream().map(InformationContentEntity::getCurie).collect(Collectors.toList());
+		Collections.sort(referenceCuries);
+		identity = StringUtils.join(referenceCuries, ":");
+		
+		return identity;
+	}
+	
+	private String evidenceIngestIdentity(List<String> evidenceCuries) {
 		if (CollectionUtils.isEmpty(evidenceCuries))
 			return "";
 		

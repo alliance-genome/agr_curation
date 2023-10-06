@@ -50,7 +50,7 @@ export const DiseaseAnnotationsTable = () => {
 	});
 	const { newAnnotationState, newAnnotationDispatch } = useNewAnnotationReducer();
 
-	const diseaseRelationsTerms = useControlledVocabularyService('disease_relation');
+	const relationsTerms = useControlledVocabularyService('disease_relation');
 	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type')
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -513,25 +513,25 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const onDiseaseRelationEditorValueChange = (props, event) => {
+	const onRelationEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
 		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].diseaseRelation = event.value;
+			updatedAnnotations[props.rowIndex].relation = event.value;
 		}
 	};
 
-	const diseaseRelationEditor = (props) => {
+	const relationEditor = (props) => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
-					field="diseaseRelation"
-					options={diseaseRelationsTerms}
-					editorChange={onDiseaseRelationEditorValueChange}
+					field="relation"
+					options={relationsTerms}
+					editorChange={onRelationEditorValueChange}
 					props={props}
 					showClear={false}
-					placeholderText={props.rowData.diseaseRelation.name}
+					placeholderText={props.rowData.relation.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"diseaseRelation"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relation"} />
 			</>
 		);
 	};
@@ -1288,11 +1288,11 @@ export const DiseaseAnnotationsTable = () => {
 		editor: (props) => subjectEditorTemplate(props),
 	},
 	{
-		field: "diseaseRelation.name",
+		field: "relation.name",
 		header: "Disease Relation",
 		sortable: isEnabled,
-		filterConfig: FILTER_CONFIGS.diseaseRelationFilterConfig,
-		editor: (props) => diseaseRelationEditor(props)
+		filterConfig: FILTER_CONFIGS.relationFilterConfig,
+		editor: (props) => relationEditor(props)
 	},
 	{
 		field: "negated",
@@ -1542,7 +1542,7 @@ export const DiseaseAnnotationsTable = () => {
 				newAnnotationState={newAnnotationState}
 				newAnnotationDispatch={newAnnotationDispatch}
 				searchService={searchService}
-				diseaseRelationsTerms={diseaseRelationsTerms}
+				relationsTerms={relationsTerms}
 				negatedTerms={booleanTerms}
 				setNewDiseaseAnnotation={setNewDiseaseAnnotation}
 			/>

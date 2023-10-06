@@ -51,7 +51,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(8)
+@Order(10)
 public class AlleleITCase extends BaseITCase {
 
 	private final String ALLELE = "Allele:0001";
@@ -162,7 +162,6 @@ public class AlleleITCase extends BaseITCase {
 		obsoleteSymbolNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_symbol_name");
 		obsoleteFullNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_full_name");
 		exactSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "exact");
-		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
 		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
 		obsoleteSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "obsolete");
 		reference = createReference("AGRKB:000000003", false);

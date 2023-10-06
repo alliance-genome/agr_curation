@@ -86,7 +86,7 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		ObjectResponse<DataProvider> response = dataProviderValidator.validateDataProvider(uiEntity, null, true);
 		if (response.getEntity() == null)
 			return response;
-		return new ObjectResponse<DataProvider>(dataProviderDAO.persist(response.getEntity()));
+		return new ObjectResponse<DataProvider>(response.getEntity());
 	}
 
 	public ObjectResponse<DataProvider> validate(DataProvider uiEntity) {

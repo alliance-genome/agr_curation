@@ -40,7 +40,11 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 
 	@Override
 	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifier) {
-		SearchResponse<AlleleDiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		SearchResponse<AlleleDiseaseAnnotation> ret = findByField("curie", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modEntityId", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
 			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
 		

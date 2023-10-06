@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -48,6 +49,8 @@ public class GeneExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			
 			if(!checkSchemaVersion(bulkLoadFile, GeneDTO.class)) return;
 
@@ -94,7 +97,7 @@ public class GeneExecutor extends LoadFileExecutor {
 	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Gene Update for: " + dataProvider.name(), genes.size());
 		genes.forEach(geneDTO -> {
 			try {

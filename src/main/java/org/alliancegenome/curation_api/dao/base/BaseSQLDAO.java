@@ -29,7 +29,7 @@ import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.ProcessDisplayService;
+import org.alliancegenome.curation_api.services.processing.IndexProcessDisplayService;
 import org.alliancegenome.curation_api.util.EsClientFactory;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -57,20 +57,14 @@ import io.quarkus.logging.Log;
 
 public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
-	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
-	String esHosts;
-	
-	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.protocol")
-	String esProtocol;
+	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts") String esHosts;
 
-	@Inject
-	protected EntityManager entityManager;
-	@Inject
-	protected SearchSession searchSession;
-	@Inject
-	protected ProcessDisplayService processDisplayService;
+	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.protocol") String esProtocol;
 
-	
+	@Inject protected EntityManager entityManager;
+	@Inject protected SearchSession searchSession;
+	@Inject protected IndexProcessDisplayService indexProcessDisplayService;
+
 	private int outerBoost = 0;
 	private int innerBoost = 0;
 
@@ -122,7 +116,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
-		
+
 		CriteriaQuery<E> all = findQuery.select(rootEntry);
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -136,7 +130,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		for (E entity : allQuery.getResultList()) {
 			String pkString;
-			try{
+			try {
 				pkString = (String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
 			} catch (ClassCastException e) {
 				pkString = Long.toString((Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
@@ -157,7 +151,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		Metamodel metaModel = entityManager.getMetamodel();
 		IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
-		
+
 		CriteriaQuery<E> all = findQuery.select(rootEntry).orderBy(cb.asc(rootEntry.get(of.getId(of.getIdType().getJavaType()).getName())));
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
@@ -256,16 +250,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		reindex(myClass, batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
-	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
-		Integer typesToIndexInParallel) {
+	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(indexProcessDisplayService);
 		ph.startProcess("Mass Index Everything");
-		MassIndexer indexer = searchSession.massIndexer(annotatedClasses).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true)
-			.mergeSegmentsOnFinish(true).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
+		MassIndexer indexer = searchSession.massIndexer(annotatedClasses).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
 				public void documentsAdded(long increment) {
 				}
 
@@ -289,21 +281,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
-		try {
-			Log.info("Waiting for Full Indexer to finish");
-			indexer.startAndWait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
+		indexer.start();
 	}
 
-	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
-		Integer typesToIndexInParallel) {
+	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 
 		Log.debug("Starting Indexing for: " + objectClass);
-		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true)
-			.mergeSegmentsOnFinish(true).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
+		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
 
 				ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 
@@ -315,7 +299,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				@Override
 				public void addToTotalCount(long increment) {
-					ph.addDisplayHandler(processDisplayService);
+					ph.addDisplayHandler(indexProcessDisplayService);
 					ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
 				}
 
@@ -331,7 +315,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 
 			});
-		// indexer.dropAndCreateSchemaOnStart(true);
+
 		indexer.transactionTimeout(transactionTimeout);
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
@@ -401,11 +385,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 										} else { // assume simple query
 											BooleanPredicateClausesStep<?> clause = p.bool();
 											if (useKeywordFields != null && useKeywordFields) {
-												clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-													.defaultOperator(booleanOperator).boost(boost + 500));
+												clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost + 500));
 											}
-											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-												.defaultOperator(booleanOperator).boost(boost));
+											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost));
 											q.should(clause);
 										}
 										innerBoost--;
@@ -503,7 +485,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			return null;
 		}
 	}
-	
+
 	public SearchResponse<E> findByParams(Map<String, Object> params) {
 		return findByParams(null, params, null);
 	}
@@ -524,7 +506,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
 		Root<E> root = query.from(myClass);
 		Root<E> countRoot = countQuery.from(myClass);
-		
+
 		// System.out.println("Root: " + root);
 		List<Predicate> restrictions = new ArrayList<>();
 		List<Predicate> countRestrictions = new ArrayList<>();
@@ -564,10 +546,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						}
 					}
 
-					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: "
-						+ column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
-						+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
+					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: "
+						+ countColumn.getParentPath().getAlias());
 				}
 			} else {
 				column = root.get(key);
@@ -580,10 +561,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 			}
 
-			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias()
-				+ " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
-				+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
+			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: "
+				+ countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
 			if (value != null) {

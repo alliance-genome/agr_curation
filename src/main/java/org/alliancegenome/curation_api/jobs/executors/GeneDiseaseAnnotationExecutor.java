@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -47,6 +48,8 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			
 			if(!checkSchemaVersion(bulkLoadFile, GeneDiseaseAnnotationDTO.class)) return;
 			
@@ -91,17 +94,17 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<GeneDiseaseAnnotationDTO> annotations, List<Long> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<GeneDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Gene Disease Annotation Update for: " + dataProvider.name(), annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {
 				GeneDiseaseAnnotation annotation = geneDiseaseAnnotationService.upsert(annotationDTO, dataProvider);
 				history.incrementCompleted();
-				if(curiesAdded != null) {
-					curiesAdded.add(annotation.getId());
+				if(idsAdded != null) {
+					idsAdded.add(annotation.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

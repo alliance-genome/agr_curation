@@ -81,7 +81,7 @@ jobs:
       - name: Run UI Tests and Build
         working-directory: src/main/cliapp
         run: |
-          npm install
+          npm ci
           npm test -- --watchAll=false
           npm run build
   test-build-docker-image:

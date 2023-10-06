@@ -12,10 +12,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.dao.OrganizationDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
@@ -24,8 +21,6 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
-import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
@@ -50,8 +45,6 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 	DataProviderService dataProviderService;
 	@Inject
 	DataProviderValidator dataProviderValidator;
-	@Inject
-	DataProviderDAO dataProviderDAO;
 
 		
 	public DataProvider validateDataProvider(Annotation uiEntity, Annotation dbEntity) {
@@ -80,9 +73,6 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
-		if (validatedDataProvider.getId() == null)
-			validatedDataProvider = dataProviderDAO.persist(validatedDataProvider);
 		
 		return validatedDataProvider;
 	}
@@ -208,8 +198,11 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 			newEntity = true;
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
-		if (uiEntity.getModEntityId() != null)
-			dbEntity.setModEntityId(uiEntity.getModEntityId());
+		String modEntityId = StringUtils.isNotBlank(uiEntity.getModEntityId()) ? uiEntity.getModEntityId() : null;
+		dbEntity.setModEntityId(modEntityId);
+		
+		String modInternalId = StringUtils.isNotBlank(uiEntity.getModInternalId()) ? uiEntity.getModInternalId() : null;
+		dbEntity.setModInternalId(modInternalId);
 
 		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
 		dbEntity.setSingleReference(singleReference);
