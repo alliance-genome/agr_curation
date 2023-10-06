@@ -39,9 +39,9 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 			assocResponse.addErrorMessage("allele_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			Allele allele = alleleDAO.find(dto.getAlleleCurie());
-			if (allele == null) {
+			if (allele == null)
 				assocResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ")");
-			}
+			association.setSubject(allele);
 		}
 		
 		if (StringUtils.isNotBlank(dto.getEvidenceCodeCurie())) {
@@ -57,11 +57,6 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 			association.setEvidenceCode(null);
 		}
 		
-		if (association.getRelatedNote() != null) {
-			Long noteIdToDelete = association.getRelatedNote().getId();
-			association.setRelatedNote(null);
-			noteDAO.remove(noteIdToDelete);
-		}
 		if (dto.getNoteDto() != null) {
 			ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDto(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 			if (noteResponse.hasErrors()) {
@@ -69,7 +64,11 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 			} else {
 				association.setRelatedNote(noteDAO.persist(noteResponse.getEntity()));
 			}
+		} else {
+			association.setRelatedNote(null);
 		}
+		
+		assocResponse.setEntity(association);
 		
 		return assocResponse;
 	}

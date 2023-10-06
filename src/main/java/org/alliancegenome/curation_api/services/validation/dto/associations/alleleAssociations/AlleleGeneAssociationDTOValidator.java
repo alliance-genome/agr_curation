@@ -20,6 +20,9 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssociationDTOValidator {
 
@@ -33,6 +36,8 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto) throws ObjectValidationException {
 		ObjectResponse<AlleleGeneAssociation> agaResponse = new ObjectResponse<AlleleGeneAssociation>();
 				
+		Long noteIdToDelete = null;
+		
 		AlleleGeneAssociation association = null;
 		if (StringUtils.isNotBlank(dto.getAlleleCurie()) && StringUtils.isNotBlank(dto.getGeneCurie()) && StringUtils.isNotBlank(dto.getRelationName())) {
 			HashMap<String, Object> params = new HashMap<>();
@@ -41,8 +46,11 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			params.put("object.curie", dto.getGeneCurie());
 			
 			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
-			if (searchResponse != null && searchResponse.getResults().size() == 1)
+			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
+				if (association.getRelatedNote() != null)
+					noteIdToDelete = association.getRelatedNote().getId();
+			}
 		}
 		if (association == null)
 			association = new AlleleGeneAssociation();
@@ -55,9 +63,9 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			agaResponse.addErrorMessage("gene_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			Gene gene = geneDAO.find(dto.getGeneCurie());
-			if (gene == null) {
+			if (gene == null)
 				agaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneCurie() + ")");
-			}
+			association.setObject(gene);
 		}
 		
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {
@@ -69,9 +77,16 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			agaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
-		if (agaResponse.hasErrors())
+		if (agaResponse.hasErrors()) {
+			log.info("ERRORS: " + agaResponse.errorMessagesString());
 			throw new ObjectValidationException(dto, agaResponse.errorMessagesString());
+		}
+			
+		association = alleleGeneAssociationDAO.persist(association);
 		
-		return agaResponse.getEntity();
+		if (noteIdToDelete != null)
+			noteDAO.remove(noteIdToDelete);
+		
+		return association; 
 	}
 }

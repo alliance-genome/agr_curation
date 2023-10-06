@@ -35,6 +35,6 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 			"curie", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
-	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	@JsonView({ View.FieldsOnly.class })
 	private Gene object;
 }

@@ -51,7 +51,6 @@ public class AlleleGeneAssociationCrudController extends
 		return alleleGeneAssociationExecutor.runLoad(dataProvider, associations);
 	}
 
-	@Override
 	public ObjectResponse<AlleleGeneAssociation> getAssociation(String alleleCurie, String relationName,
 			String geneCurie) {
 		return alleleGeneAssociationService.getAssociation(alleleCurie, relationName, geneCurie);

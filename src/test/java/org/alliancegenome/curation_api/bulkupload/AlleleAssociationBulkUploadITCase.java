@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +38,11 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 	private String relationName = "is_allele_of";
 	private String geneCurie = "GENETEST:Gene0001";
 	private String reference = "AGRKB:000000001";
+	private String reference2 = "AGRKB:000000021";
 	private String evidenceCodeCurie = "DATEST:Evidence0001";
+	private String evidenceCodeCurie2 = "DATEST:Evidence0002";
+	private String noteType = "comment";
+	private String noteType2 = "remark";
 	
 	@BeforeEach
 	public void init() {
@@ -52,11 +57,14 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 	private final String alleleGeneAssociationTestFilePath = "src/test/resources/bulk/A01_allele_association/";
 
 	private void loadRequiredEntities() throws Exception {
+		Vocabulary noteTypeVocab = getVocabulary("note_type");
+		createVocabularyTerm(noteTypeVocab, noteType2, false);
+		addVocabularyTermToSet("allele_genomic_entity_association_note_type", noteType2, noteTypeVocab, false);
 	}
 	
 	@Test
 	@Order(1)
-	public void alleleBulkUploadCheckFields() throws Exception {
+	public void alleleGeneAssociationBulkUploadCheckFields() throws Exception {
 		loadRequiredEntities();
 		
 		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "AF_01_all_fields.json");
@@ -66,7 +74,6 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
 			then().
 			statusCode(200).
-			body("entity.subject.curie", is(alleleCurie)).
 			body("entity.relation.name", is(relationName)).
 			body("entity.object.curie", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
@@ -80,13 +87,134 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.relatedNote.internal", is(false)).
 			body("entity.relatedNote.obsolete", is(true)).
-			body("entity.relatedNote.updatedBy.uniqueId", is("DATEST:Person0002")).
-			body("entity.relatedNote.createdBy.uniqueId", is("DATEST:Person0001")).
+			body("entity.relatedNote.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.relatedNote.createdBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.relatedNote.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.relatedNote.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.relatedNote.freeText", is("Test note")).
-			body("entity.relatedNote.noteType.name", is("comment")).
+			body("entity.relatedNote.noteType.name", is(noteType)).
 			body("entity.relatedNote.references[0].curie", is(reference));
+	}
+	
+	@Test
+	@Order(2)
+	public void alleleGeneAssociationBulkUploadUpdateCheckFields() throws Exception {
+		loadRequiredEntities();
+		
+		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
+	
+		RestAssured.given().
+			when().
+			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			then().
+			statusCode(200).
+			body("entity.relation.name", is(relationName)).
+			body("entity.object.curie", is(geneCurie)).
+			body("entity.evidence", hasSize(1)).
+			body("entity.evidence[0].curie", is(reference2)).
+			body("entity.evidenceCode.curie", is(evidenceCodeCurie2)).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNote.internal", is(true)).
+			body("entity.relatedNote.obsolete", is(false)).
+			body("entity.relatedNote.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.relatedNote.createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.relatedNote.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNote.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNote.freeText", is("Test note 2")).
+			body("entity.relatedNote.noteType.name", is(noteType2)).
+			body("entity.relatedNote.references[0].curie", is(reference2));
+	}
+	
+	@Test
+	@Order(3)
+	public void alleleGeneAssociationBulkUploadMissingRequiredFields() throws Exception {
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "MR_01_no_subject.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "MR_02_no_relation.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "MR_03_no_object.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "MR_04_no_related_note_note_type.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "MR_05_no_related_note_free_text.json");
+	}
+	
+	@Test
+	@Order(4)
+	public void alleleGeneAssociationBulkUploadEmptyRequiredFields() throws Exception {
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "ER_01_empty_subject.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "ER_02_empty_relation.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "ER_03_empty_object.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "ER_04_empty_related_note_note_type.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "ER_05_empty_related_note_free_text.json");
+	}
+	
+	@Test
+	@Order(5)
+	public void alleleGeneAssociationBulkUploadInvalidFields() throws Exception {
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_01_invalid_subject.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_02_invalid_relation.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_03_invalid_object.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_04_invalid_date_created.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_05_invalid_date_updated.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_06_invalid_evidence_code.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_07_invalid_evidence.json");
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "IV_08_invalid_related_note_note_type.json");
+	}
+	
+	@Test
+	@Order(6)
+	public void alleleGeneAssociationBulkUploadUpdateMissingNonRequiredFieldsLevel1() throws Exception {
+		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UM_01_update_no_non_required_fields_level_1.json");
+		
+		RestAssured.given().
+			when().
+			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("createdBy"))).
+			body("entity", not(hasKey("updatedBy"))).
+			body("entity", not(hasKey("evidence"))).
+			body("entity", not(hasKey("evidenceCode"))).
+			body("entity", not(hasKey("relatedNote")));
+	}
+	
+	@Test
+	@Order(7)
+	public void alleleGeneAssociationBulkUploadUpdateMissingNonRequiredFieldsLevel2() throws Exception {
+		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UM_02_update_no_non_required_fields_level_2.json");
+		
+		RestAssured.given().
+			when().
+			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			then().
+			statusCode(200).
+			body("entity.relatedNote", not(hasKey("createdBy"))).
+			body("entity.relatedNote", not(hasKey("updatedBy"))).
+			body("entity.relatedNote", not(hasKey("evidence")));
+	}
+	
+	@Test
+	@Order(8)
+	public void alleleGeneAssociationBulkUploadUpdateEmptyNonRequiredFieldsLevel2() throws Exception {
+		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
+		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UE_01_update_empty_non_required_fields.json");
+		
+		RestAssured.given().
+			when().
+			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("createdBy"))).
+			body("entity", not(hasKey("updatedBy"))).
+			body("entity", not(hasKey("evidence"))).
+			body("entity", not(hasKey("evidenceCode"))).
+			body("entity.relatedNote", not(hasKey("createdBy"))).
+			body("entity.relatedNote", not(hasKey("updatedBy"))).
+			body("entity.relatedNote", not(hasKey("evidence")));
 	}
 	
 }

@@ -59,13 +59,13 @@ INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_s
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'deletion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'full_deletion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'partial_deletion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '3\'_deletion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '5\'_deletion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '3''_deletion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '5''_deletion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'duplication', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'full_duplication', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'partial_duplication', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '3\'_duplication', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '5\'_duplication', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '3''_duplication', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), '5''_duplication', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'gene_fusion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'inversion', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'inversion_breakpoint', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'allele_relation';
@@ -89,13 +89,13 @@ INSERT INTO tmp_vocab_link (memberterms_id) SELECT id FROM vocabularyterm WHERE 
 	OR name = 'deletion'
 	OR name = 'full_deletion'
 	OR name = 'partial_deletion'
-	OR name = '3\'_deletion'
-	OR name = '5\'_deletion'
+	OR name = '3''_deletion'
+	OR name = '5''_deletion'
 	OR name = 'duplication'
 	OR name = 'full_duplication'
 	OR name = 'partial_duplication'
-	OR name = '3\'_duplication'
-	OR name = '5\'_duplication'
+	OR name = '3''_duplication'
+	OR name = '5''_duplication'
 	OR name = 'gene_fusion'
 	OR name = 'inversion'
 	OR name = 'inversion_breakpoint'
@@ -110,7 +110,7 @@ INSERT INTO vocabularytermset(id, name, vocabularylabel, vocabularytermsetvocabu
 INSERT INTO tmp_vocab_link (memberterms_id) SELECT id FROM vocabularyterm WHERE name = 'comment' AND vocabulary_id = (SELECT id FROM vocabulary WHERE vocabularylabel = 'note_type');
 
 UPDATE tmp_vocab_link SET vocabularytermsets_id = subquery.id
-	FROM (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'allele_gene_relation') AS subquery
+	FROM (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'allele_genomic_entity_association_note_type') AS subquery
 	WHERE vocabularytermsets_id IS NULL;
 	
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id)

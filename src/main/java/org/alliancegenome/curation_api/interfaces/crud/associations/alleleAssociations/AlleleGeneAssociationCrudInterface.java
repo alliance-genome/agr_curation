@@ -36,7 +36,7 @@ public interface AlleleGeneAssociationCrudInterface extends BaseIdCrudInterface<
 	@GET
 	@Path("/findBy")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleGeneAssociation> getAssociation(@QueryParam("allele_curie") String alleleCurie, @QueryParam("relationName") String relationName, @QueryParam("geneCurie") String geneCurie);
+	public ObjectResponse<AlleleGeneAssociation> getAssociation(@QueryParam("alleleCurie") String alleleCurie, @QueryParam("relationName") String relationName, @QueryParam("geneCurie") String geneCurie);
 	
 	@POST
 	@Path("/validate")
