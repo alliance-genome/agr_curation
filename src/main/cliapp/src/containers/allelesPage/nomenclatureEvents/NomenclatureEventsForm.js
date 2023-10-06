@@ -28,8 +28,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
   };
 
   const nomenclatureEventOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.nomenclatureEvent = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleNomenclatureEvents', 
@@ -40,8 +39,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
   };
   
   const internalOnChangeHandler = (props, event) => {
-    //temporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.internal = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleNomenclatureEvents', 
@@ -52,8 +50,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
   };
 
   const obsoleteOnChangeHandler = (props, event) => {
-    //temporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.obsolete = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleNomenclatureEvents', 

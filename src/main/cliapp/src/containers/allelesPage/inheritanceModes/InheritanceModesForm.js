@@ -31,8 +31,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
   };
 
   const inheritanceModeOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.inheritanceMode = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleInheritanceModes', 
@@ -57,8 +56,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
   }
 
   const internalOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.internal = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleInheritanceModes', 

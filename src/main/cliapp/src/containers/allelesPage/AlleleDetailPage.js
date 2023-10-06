@@ -96,6 +96,8 @@ const { isLoading } =	useQuery([curie],
 				if(anyErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
+
+				global.location.reload();
 			},
 			onError: (error) => {
 				let message;
