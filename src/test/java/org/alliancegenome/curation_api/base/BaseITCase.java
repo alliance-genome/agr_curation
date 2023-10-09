@@ -57,7 +57,7 @@ public class BaseITCase {
 	
 	private static Pattern keyPattern = Pattern.compile("^(.+)\\.([^\\.]+)$");
 
-	public VocabularyTerm addObsoleteVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary) {
+	public VocabularyTerm addVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary, Boolean obsolete) {
 		VocabularyTermSet set = getVocabularyTermSet(setName);
 		VocabularyTerm term = createVocabularyTerm(vocabulary, termName, false);
 		
@@ -73,7 +73,7 @@ public class BaseITCase {
 			then().
 			statusCode(200);
 		
-		term.setObsolete(true);
+		term.setObsolete(obsolete);
 		
 		ObjectResponse<VocabularyTerm> response = RestAssured.given().
 			contentType("application/json").

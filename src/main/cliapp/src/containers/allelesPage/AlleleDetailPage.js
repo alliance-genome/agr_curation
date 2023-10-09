@@ -28,7 +28,7 @@ import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
-
+import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -96,6 +96,8 @@ const { isLoading } =	useQuery([curie],
 				if(anyErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
+
+				global.location.reload();
 			},
 			onError: (error) => {
 				let message;
@@ -251,6 +253,13 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<SecondaryIdsForm 
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<NomenclatureEventsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>

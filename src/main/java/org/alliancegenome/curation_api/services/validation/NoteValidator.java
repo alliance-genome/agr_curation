@@ -32,13 +32,13 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 	@Inject
 	ReferenceValidator referenceValidator;
 
-	public ObjectResponse<Note> validateNote(Note uiEntity, String noteVocabularyName) {
-		Note note = validateNote(uiEntity, noteVocabularyName, false);
+	public ObjectResponse<Note> validateNote(Note uiEntity, String noteVocabularySetName) {
+		Note note = validateNote(uiEntity, noteVocabularySetName, false);
 		response.setEntity(note);
 		return response;
 	}
 
-	public Note validateNote(Note uiEntity, String noteVocabularyName, Boolean throwError) {
+	public Note validateNote(Note uiEntity, String noteVocabularySetName, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update Note: [" + uiEntity.getId() + "]";
 
@@ -58,7 +58,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		}
 		dbEntity = (Note) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
-		VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
+		VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularySetName);
 		dbEntity.setNoteType(noteType);
 
 		String freeText = validateFreeText(uiEntity);
@@ -107,7 +107,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		return singleRefResponse.getEntity();
 	}
 
-	public VocabularyTerm validateNoteType(Note uiEntity, Note dbEntity, String noteVocabularyName) {
+	public VocabularyTerm validateNoteType(Note uiEntity, Note dbEntity, String noteVocabularySetName) {
 		String field = "noteType";
 		if (uiEntity.getNoteType() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -115,7 +115,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		}
 
 		VocabularyTerm noteType;
-		if (noteVocabularyName == null) {
+		if (noteVocabularySetName == null) {
 			SearchResponse<VocabularyTerm> vtSearchResponse = vocabularyTermService.findByField("name", uiEntity.getNoteType().getName());
 			if (vtSearchResponse == null || vtSearchResponse.getSingleResult() == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -123,7 +123,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 			}
 			noteType = vtSearchResponse.getSingleResult();
 		} else {
-			noteType = vocabularyTermService.getTermInVocabulary(noteVocabularyName, uiEntity.getNoteType().getName()).getEntity();
+			noteType = vocabularyTermService.getTermInVocabularyTermSet(noteVocabularySetName, uiEntity.getNoteType().getName()).getEntity();
 			if (noteType == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;

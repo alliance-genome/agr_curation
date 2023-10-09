@@ -12,6 +12,7 @@ const initialAlleleState = {
 		alleleMutationTypes: [],
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
+		alleleNomenclatureEvents: [],
 		alleleDatabaseStatus: null,
 		alleleGermlineTransmissionStatus: null,
 		references: [],
@@ -55,6 +56,14 @@ const initialAlleleState = {
 			errorMessages: [],
 			editingRows: {},
 			type: "object",
+		},
+		alleleNomenclatureEvents: {
+			field: 'alleleNomenclatureEvents',
+			endpoint: 'allelenomenclatureeventslotannotation',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',

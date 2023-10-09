@@ -154,15 +154,16 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		loadReference(reference, referenceXref);
 		loadOrganization("OBSOLETE");
 		
-		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
+		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		Vocabulary relationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY, false);
 		Vocabulary geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, false);
 		Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, false);
 		Vocabulary diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, false);
 		Vocabulary annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, false);
 		Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, false);
-		createVocabularyTerm(noteTypeVocabulary, noteType, false);
-		createVocabularyTerm(noteTypeVocabulary, noteType2, false);
+		VocabularyTerm nt = createVocabularyTerm(noteTypeVocabulary, noteType, false);
+		VocabularyTerm nt2 = createVocabularyTerm(noteTypeVocabulary, noteType2, false);
+		createVocabularyTermSet(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET, noteTypeVocabulary, List.of(nt, nt2));
 		VocabularyTerm alleleAndGeneRelationVocabularyTerm = createVocabularyTerm(relationVocabulary, alleleAndGeneRelation, false);
 		VocabularyTerm agmRelationVocabularyTerm = createVocabularyTerm(relationVocabulary, agmRelation, false);
 		VocabularyTerm agmRelationVocabularyTerm2 = createVocabularyTerm(relationVocabulary, agmRelation2, false);

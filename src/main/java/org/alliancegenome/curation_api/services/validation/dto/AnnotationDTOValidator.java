@@ -58,7 +58,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 	@Inject
 	DataProviderDAO dataProviderDAO;
 
-	public <E extends Annotation, D extends AnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto) {
+	public <E extends Annotation, D extends AnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto, String noteTypeSet) {
 		ObjectResponse<E> annotResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = annotResponse.getEntity();
 
@@ -94,7 +94,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 			List<Note> notes = new ArrayList<>();
 			Set<String> noteIdentities = new HashSet<>();
 			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, noteTypeSet);
 				if (noteResponse.hasErrors()) {
 					annotResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
 					break;
