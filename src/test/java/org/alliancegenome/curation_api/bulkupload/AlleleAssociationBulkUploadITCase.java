@@ -55,6 +55,7 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 	private final String alleleGeneAssociationBulkPostEndpoint = "/api/allelegeneassociation/bulk/WB/associationFile";
 	private final String alleleGeneAssociationGetEndpoint = "/api/allelegeneassociation/findBy";
 	private final String alleleGeneAssociationTestFilePath = "src/test/resources/bulk/A01_allele_association/";
+	private final String alleleGetEndpoint = "/api/allele/";
 
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary noteTypeVocab = getVocabulary("note_type");
@@ -94,6 +95,13 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNote.freeText", is("Test note")).
 			body("entity.relatedNote.noteType.name", is(noteType)).
 			body("entity.relatedNote.references[0].curie", is(reference));
+		
+		RestAssured.given().
+			when().
+			get(alleleGetEndpoint + alleleCurie).
+			then().
+			statusCode(200).
+			body("entity.alleleGeneAssociations", hasSize(1));
 	}
 	
 	@Test
@@ -128,6 +136,13 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNote.freeText", is("Test note 2")).
 			body("entity.relatedNote.noteType.name", is(noteType2)).
 			body("entity.relatedNote.references[0].curie", is(reference2));
+		
+		RestAssured.given().
+			when().
+			get(alleleGetEndpoint + alleleCurie).
+			then().
+			statusCode(200).
+			body("entity.alleleGeneAssociations", hasSize(1));
 	}
 	
 	@Test

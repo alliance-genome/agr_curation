@@ -37,16 +37,10 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "AlleleGenomicEntityAssociation", description = "POJO representing an association between an allele and a genomic entity")
 @Table(indexes = {
-	@Index(name = "allelegenomicentityassociation_subject_index", columnList = "subject_curie"),
 	@Index(name = "allelegenomicentityassociation_relation_index", columnList = "relation_id")
 })
 public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 
-	@ManyToOne
-	@JsonBackReference
-	@Fetch(FetchMode.JOIN)
-	private Allele subject;
-	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne

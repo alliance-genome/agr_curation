@@ -95,7 +95,7 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Allele Disease Annotation Update for: " + dataProvider.name(), associations.size());
+		ph.startProcess("Allele Gene Association Update for: " + dataProvider.name(), associations.size());
 		associations.forEach(associationDTO -> {
 			try {
 				AlleleGeneAssociation association = alleleGeneAssociationService.upsert(associationDTO);

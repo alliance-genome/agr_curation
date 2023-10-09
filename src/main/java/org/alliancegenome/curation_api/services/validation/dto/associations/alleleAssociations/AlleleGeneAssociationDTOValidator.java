@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
@@ -59,6 +60,15 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 		agaResponse.addErrorMessages(ageaResponse.getErrorMessages());
 		association = (AlleleGeneAssociation) ageaResponse.getEntity();
 
+		if (StringUtils.isBlank(dto.getAlleleCurie())) {
+			agaResponse.addErrorMessage("allele_curie", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			Allele allele = alleleDAO.find(dto.getAlleleCurie());
+			if (allele == null)
+				agaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ")");
+			association.setSubject(allele);
+		}
+		
 		if (StringUtils.isBlank(dto.getGeneCurie())) {
 			agaResponse.addErrorMessage("gene_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -77,10 +87,8 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			agaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
-		if (agaResponse.hasErrors()) {
-			log.info("ERRORS: " + agaResponse.errorMessagesString());
+		if (agaResponse.hasErrors())
 			throw new ObjectValidationException(dto, agaResponse.errorMessagesString());
-		}
 			
 		association = alleleGeneAssociationDAO.persist(association);
 		

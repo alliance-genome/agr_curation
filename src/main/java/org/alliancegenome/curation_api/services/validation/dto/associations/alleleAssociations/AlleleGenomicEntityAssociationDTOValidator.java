@@ -35,15 +35,6 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 		ObjectResponse<E> assocResponse = validateEvidenceAssociationDTO(association, dto);
 		association = assocResponse.getEntity();
 
-		if (StringUtils.isBlank(dto.getAlleleCurie())) {
-			assocResponse.addErrorMessage("allele_curie", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			Allele allele = alleleDAO.find(dto.getAlleleCurie());
-			if (allele == null)
-				assocResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ")");
-			association.setSubject(allele);
-		}
-		
 		if (StringUtils.isNotBlank(dto.getEvidenceCodeCurie())) {
 			ECOTerm ecoTerm = ecoTermService.findByCurieOrSecondaryId(dto.getEvidenceCodeCurie());
 			if (ecoTerm == null) {

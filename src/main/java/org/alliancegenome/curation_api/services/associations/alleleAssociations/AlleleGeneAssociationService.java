@@ -55,7 +55,9 @@ public class AlleleGeneAssociationService extends BaseEntityCrudService<AlleleGe
 		AlleleGeneAssociation dbEntity = alleleGeneAssociationValidator.validateAlleleGeneAssociation(uiEntity, true, true);
 		if (dbEntity == null)
 			return null;
-		return new ObjectResponse<AlleleGeneAssociation>(alleleGeneAssociationDAO.persist(dbEntity));
+		dbEntity = alleleGeneAssociationDAO.persist(dbEntity);
+		addAssociationToAllele(dbEntity);
+		return new ObjectResponse<AlleleGeneAssociation>(dbEntity);
 	}
 
 	public ObjectResponse<AlleleGeneAssociation> validate(AlleleGeneAssociation uiEntity) {
@@ -63,8 +65,13 @@ public class AlleleGeneAssociationService extends BaseEntityCrudService<AlleleGe
 		return new ObjectResponse<AlleleGeneAssociation>(aga);
 	}
 
+	@Transactional
 	public AlleleGeneAssociation upsert(AlleleGeneAssociationDTO dto) throws ObjectUpdateException {
-		return alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto);
+		AlleleGeneAssociation association = alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto);
+		if (association != null)
+			addAssociationToAllele(association);
+		
+		return association;
 	}
 
 	public List<Long> getAlleleGeneAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
@@ -119,5 +126,17 @@ public class AlleleGeneAssociationService extends BaseEntityCrudService<AlleleGe
 		response.setEntity(association);
 		
 		return response;
+	}
+	
+	private void addAssociationToAllele(AlleleGeneAssociation association) {
+		Allele allele = association.getSubject();
+		List<AlleleGeneAssociation> currentAssociations = allele.getAlleleGeneAssociations();
+		if (currentAssociations == null)
+			currentAssociations = new ArrayList<>();
+		List<Long> currentAssociationIds = currentAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList());
+		if (!currentAssociationIds.contains(association.getId()));
+			currentAssociations.add(association);
+		allele.setAlleleGeneAssociations(currentAssociations);
+		alleleDAO.persist(allele);
 	}
 }

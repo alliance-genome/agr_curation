@@ -78,38 +78,11 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 			
 		return note;
 	}
-	
-	private Allele validateSubject(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
-		String field = "subject";
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
 
-		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getCurie());
-		if (subjectEntity == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-
-		return subjectEntity;
-
-	}
-
-	public AlleleGenomicEntityAssociation validateAlleleGenomicEntityAssociationFields(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity, Boolean validateAllele) {
+	public AlleleGenomicEntityAssociation validateAlleleGenomicEntityAssociationFields(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
 		
 		dbEntity = (AlleleGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
 
-		if (validateAllele) {
-			Allele subject = validateSubject(uiEntity, dbEntity);
-			dbEntity.setSubject(subject);
-		}
-		
 		ECOTerm evidenceCode = validateEvidenceCode(uiEntity, dbEntity);
 		dbEntity.setEvidenceCode(evidenceCode);
 
