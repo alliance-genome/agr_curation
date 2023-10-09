@@ -73,7 +73,7 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 			previousNoteId = dbEntity.getRelatedNote().getId();
 		
 		dbEntity.setRelatedNote(null);
-		if (previousNoteId != null && !Objects.equals(note.getId(), previousNoteId))
+		if (previousNoteId != null && (note == null || !Objects.equals(note.getId(), previousNoteId)))
 			noteDAO.remove(previousNoteId);
 			
 		return note;

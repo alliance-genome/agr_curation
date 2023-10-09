@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.bulkupload;
+package org.alliancegenome.curation_api.bulkupload.associations;
 
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,9 +30,9 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("06 - Allele Associations bulk upload")
-@Order(6)
-public class AlleleAssociationBulkUploadITCase extends BaseITCase {
+@DisplayName("201 - Allele Gene Associations bulk upload")
+@Order(201)
+public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
 	private String alleleCurie = "ALLELETEST:Allele0001";
 	private String relationName = "is_allele_of";
@@ -77,6 +77,7 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
 			body("entity.object.curie", is(geneCurie)).
+			body("entity.subject.curie", is(alleleCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.evidenceCode.curie", is(evidenceCodeCurie)).
@@ -101,7 +102,10 @@ public class AlleleAssociationBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + alleleCurie).
 			then().
 			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1));
+			body("entity.alleleGeneAssociations", hasSize(1)).
+			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
+			body("entity.alleleGeneAssociations[0].object.curie", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test

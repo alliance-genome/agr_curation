@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(13)
+@Order(213)
 public class NCBITaxonTermITCase {
 	private String VALID_TAXON_CURIE = "NCBITaxon:1";
 	private String INVALID_TAXON_PREFIX = "NCBI:1";

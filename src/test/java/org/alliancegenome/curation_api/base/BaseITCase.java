@@ -32,6 +32,7 @@ import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -620,6 +621,17 @@ public class BaseITCase {
 
 		return res.getEntity();
 	}
+	
+	public AlleleGeneAssociation getAlleleGeneAssociation(String alleleCurie, String relationName, String geneCurie) {
+		ObjectResponse<AlleleGeneAssociation> res = RestAssured.given().
+			when().
+			get("/api/allelegeneassociation/findBy"  + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefAlleleGeneAssociation());
+			
+		return res.getEntity();
+	}
 
 	public ConditionRelation getConditionRelation(Long id) {
 		ObjectResponse<ConditionRelation> response =
@@ -722,6 +734,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<AlleleDiseaseAnnotation>> getObjectResponseTypeRefAlleleDiseaseAnnotation() {
 		return new TypeRef<ObjectResponse <AlleleDiseaseAnnotation>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<AlleleGeneAssociation>> getObjectResponseTypeRefAlleleGeneAssociation() {
+		return new TypeRef<ObjectResponse <AlleleGeneAssociation>>() {
 		};
 	}
 

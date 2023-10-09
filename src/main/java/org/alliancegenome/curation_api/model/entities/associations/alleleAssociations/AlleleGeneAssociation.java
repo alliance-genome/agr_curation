@@ -19,7 +19,7 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -40,7 +40,8 @@ import lombok.ToString;
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
 	@ManyToOne
-	@JsonBackReference
+	@JsonView({ View.FieldsOnly.class })
+	@JsonIgnoreProperties("alleleGeneAssociations")
 	@Fetch(FetchMode.JOIN)
 	private Allele subject;
 	
