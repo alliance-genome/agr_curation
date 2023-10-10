@@ -53,7 +53,7 @@ export const NomenclatureEventsFormTable = ({
             showClear={false}
           />;
         }}
-        field="nomenclatureEvent" header="Inheritance Mode" headerClassName='surface-0' />
+        field="nomenclatureEvent" header="Nomenclature Event" headerClassName='surface-0' />
       <Column
         editor={(props) => {
           return <EvidenceEditor
@@ -82,7 +82,7 @@ export const NomenclatureEventsFormTable = ({
             obsoleteOnChangeHandler={obsoleteOnChangeHandler}
           />;
         }}
-        field="internal" header="Internal" headerClassName='surface-0' />
+        field="obsolete" header="Obsolete" headerClassName='surface-0' />
       <Column field="updatedBy.uniqueId" header="Updated By" />
       <Column field="dateUpdated" header="Date Updated" />
       <Column field="createdBy.uniqueId" header="Created By" />
