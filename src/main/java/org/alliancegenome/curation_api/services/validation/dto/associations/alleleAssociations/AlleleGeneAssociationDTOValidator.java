@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -31,7 +32,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	@Inject
 	VocabularyTermService  vocabularyTermService;
 
-	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto) throws ObjectValidationException {
+	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
 		ObjectResponse<AlleleGeneAssociation> agaResponse = new ObjectResponse<AlleleGeneAssociation>();
 				
 		Long noteIdToDelete = null;
@@ -63,7 +64,9 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			Allele allele = alleleDAO.find(dto.getAlleleCurie());
 			if (allele == null)
 				agaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ")");
-			association.setSubject(allele);
+			if (beDataProvider != null && !allele.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization))
+				agaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+			association.setSubject(allele);	
 		}
 		
 		if (StringUtils.isBlank(dto.getGeneCurie())) {

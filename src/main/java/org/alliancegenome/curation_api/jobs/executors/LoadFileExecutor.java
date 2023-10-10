@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileExce
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
-import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
+import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -194,7 +193,7 @@ public class LoadFileExecutor {
 		
 	}
 	
-	protected void runCleanup(AlleleGeneAssociationService service, BulkLoadFileHistory history, String dataProviderName, List<Long> idsBefore, List<Long> idsAfter, String md5sum) {
+	protected <S extends BaseAssociationDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> idsBefore, List<Long> idsAfter, String md5sum) {
 		Log.debug("runLoad: After: " + dataProviderName + " " + idsAfter.size());
 
 		List<Long> distinctAfter = idsAfter.stream().distinct().collect(Collectors.toList());

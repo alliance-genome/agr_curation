@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.model.entities.associations.alleleAssocia
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.alleleAssociations.AlleleGeneAssociationDTOValidator;
 
@@ -30,7 +30,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AlleleGeneAssociationService extends BaseEntityCrudService<AlleleGeneAssociation, AlleleGeneAssociationDAO> {
+public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<AlleleGeneAssociation, AlleleGeneAssociationDTO, AlleleGeneAssociationDAO> {
 
 	@Inject
 	AlleleGeneAssociationDAO alleleGeneAssociationDAO;
@@ -65,8 +65,8 @@ public class AlleleGeneAssociationService extends BaseEntityCrudService<AlleleGe
 	}
 
 	@Transactional
-	public AlleleGeneAssociation upsert(AlleleGeneAssociationDTO dto) throws ObjectUpdateException {
-		AlleleGeneAssociation association = alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto);
+	public AlleleGeneAssociation upsert(AlleleGeneAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		AlleleGeneAssociation association = alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, dataProvider);
 		if (association != null)
 			addAssociationToAllele(association);
 		
