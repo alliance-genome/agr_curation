@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(12)
+@Order(211)
 public class CHEBITermITCase {
 	private String CHEBITERMCURIE = "CH:0001";
 

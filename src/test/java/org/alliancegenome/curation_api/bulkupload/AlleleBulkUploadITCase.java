@@ -204,8 +204,6 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void alleleBulkUploadUpdateCheckFields() throws Exception {
-		loadRequiredEntities();
-		
 		checkSuccessfulBulkLoad(alleleBulkPostEndpointRGD, alleleTestFilePath + "UD_01_update_all_except_default_fields.json");
 	
 		RestAssured.given().

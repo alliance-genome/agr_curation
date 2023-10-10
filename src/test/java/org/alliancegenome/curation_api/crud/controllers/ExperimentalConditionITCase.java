@@ -33,7 +33,7 @@ import io.restassured.common.mapper.TypeRef;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(14)
+@Order(205)
 public class ExperimentalConditionITCase extends BaseITCase {
 	
 	private ZECOTerm zecoTerm;

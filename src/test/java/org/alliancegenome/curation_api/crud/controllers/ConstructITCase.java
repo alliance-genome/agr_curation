@@ -42,7 +42,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(18)
+@Order(207)
 public class ConstructITCase extends BaseITCase {
 
 	private final String CONSTRUCT = "Construct:0001";

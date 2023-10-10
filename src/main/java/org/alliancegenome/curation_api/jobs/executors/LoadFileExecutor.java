@@ -19,8 +19,8 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
-import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
+import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -186,6 +186,33 @@ public class LoadFileExecutor {
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"curie\": \"" + curie + "\"}", e.getMessage(), e.getStackTrace()));
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		
+	}
+	
+	protected <S extends BaseAssociationDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> idsBefore, List<Long> idsAfter, String md5sum) {
+		Log.debug("runLoad: After: " + dataProviderName + " " + idsAfter.size());
+
+		List<Long> distinctAfter = idsAfter.stream().distinct().collect(Collectors.toList());
+		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
+
+		List<Long> idsToRemove = ListUtils.subtract(idsBefore, distinctAfter);
+		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
+
+		history.setTotalDeleteRecords((long)idsToRemove.size());
+		
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of associations " + dataProviderName, idsToRemove.size());
+		for (Long id : idsToRemove) {
+			try {
+				service.removeAssociation(id, dataProviderName, md5sum);
+				history.incrementDeleted();
+			} catch (Exception e) {
+				history.incrementDeleteFailed();
+				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
 			}
 			ph.progressProcess();
 		}

@@ -55,6 +55,9 @@ public class View {
 
 	public static class AlleleView extends FieldsOnly {
 	}
+	
+	public static class AlleleDetailView extends AlleleView {
+	}
 
 	public static class AlleleUpdate extends AlleleView {
 	}
