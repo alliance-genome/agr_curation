@@ -1,0 +1,1 @@
+ALTER TABLE evidenceassociation DROP COLUMN singlereference_curie;
