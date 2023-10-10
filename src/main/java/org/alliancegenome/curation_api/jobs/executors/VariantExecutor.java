@@ -8,31 +8,31 @@ import java.util.zip.GZIPInputStream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
-import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.VariantService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 
 @ApplicationScoped
-public class AlleleExecutor extends LoadFileExecutor {
+public class VariantExecutor extends LoadFileExecutor {
 
 	@Inject
-	AlleleDAO alleleDAO;
+	VariantDAO variantDAO;
 	@Inject
-	AlleleService alleleService;
+	VariantService variantService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -45,25 +45,25 @@ public class AlleleExecutor extends LoadFileExecutor {
 			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
 				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			
-			if(!checkSchemaVersion(bulkLoadFile, AlleleDTO.class)) return;
+			if(!checkSchemaVersion(bulkLoadFile, VariantDTO.class)) return;
 			
-			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
-			if (alleles == null) alleles = new ArrayList<>();
+			List<VariantDTO> variants = ingestDto.getVariantIngestSet();
+			if (variants == null) variants = new ArrayList<>();
 			
 			BackendBulkDataProvider dataProvider = manual.getDataProvider();
 			
-			List<String> alleleCuriesLoaded = new ArrayList<>();
-			List<String> alleleCuriesBefore = alleleService.getCuriesByDataProvider(dataProvider.name());
-			Log.debug("runLoad: Before: total " + alleleCuriesBefore.size());
+			List<String> variantCuriesLoaded = new ArrayList<>();
+			List<String> variantCuriesBefore = variantService.getCuriesByDataProvider(dataProvider.name());
+			Log.debug("runLoad: Before: total " + variantCuriesBefore.size());
 			
-			bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
+			bulkLoadFile.setRecordCount(variants.size() + bulkLoadFile.getRecordCount());
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			
-			BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+			BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
 
-			runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
+			runLoad(history, variants, dataProvider, variantCuriesLoaded);
 			
-			if(cleanUp) runCleanup(alleleService, history, dataProvider.name(), alleleCuriesBefore, alleleCuriesLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(variantService, history, dataProvider.name(), variantCuriesBefore, variantCuriesLoaded, bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			
@@ -76,37 +76,37 @@ public class AlleleExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataProviderName, List<AlleleDTO> alleles) {
+	public APIResponse runLoad(String dataProviderName, List<VariantDTO> variants) {
 
 		List<String> curiesLoaded = new ArrayList<>();
 		
-		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+		BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		runLoad(history, alleles, dataProvider, curiesLoaded);
+		runLoad(history, variants, dataProvider, curiesLoaded);
 		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<AlleleDTO> alleles, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<VariantDTO> variants, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Allele Update for: " + dataProvider.name(), alleles.size());
-		alleles.forEach(alleleDTO -> {
+		ph.startProcess("Variant Update for: " + dataProvider.name(), variants.size());
+		variants.forEach(variantDTO -> {
 			try {
-				Allele allele = alleleService.upsert(alleleDTO, dataProvider);
+				Variant variant = variantService.upsert(variantDTO, dataProvider);
 				history.incrementCompleted();
 				if (curiesAdded != null) {
-					curiesAdded.add(allele.getCurie());
+					curiesAdded.add(variant.getCurie());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
 				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(alleleDTO, e.getMessage(), e.getStackTrace()));
+				addException(history, new ObjectUpdateExceptionData(variantDTO, e.getMessage(), e.getStackTrace()));
 			}
 
 			ph.progressProcess();

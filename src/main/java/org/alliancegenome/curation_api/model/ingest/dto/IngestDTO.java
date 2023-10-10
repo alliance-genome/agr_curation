@@ -50,6 +50,10 @@ public class IngestDTO {
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("construct_ingest_set")
 	private List<ConstructDTO> constructIngestSet;
+
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("variant_ingest_set")
+	private List<VariantDTO> variantIngestSet;
 	
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("allele_gene_association_ingest_set")
