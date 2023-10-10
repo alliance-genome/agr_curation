@@ -21,6 +21,9 @@ public final class VocabularyConstants {
 	public static final String GERMLINE_TRANSMISSION_STATUS_VOCABULARY = "allele_germline_transmission_status";
 	public static final String ALLELE_NOMENCLATURE_EVENT_VOCABULARY = "allele_nomenclature_event";
 	
+	public static final String ALLELE_RELATION_VOCABULARY = "allele_relation";
+	public static final String ALLELE_GENE_RELATION_VOCABULARY_TERM_SET = "allele_gene_relation";
+
 	public static final String FULL_NAME_TYPE_TERM_SET = "full_name_type";
 	public static final String SYSTEMATIC_NAME_TYPE_TERM_SET = "systematic_name_type";
 	public static final String SYMBOL_NAME_TYPE_TERM_SET = "symbol_name_type";
@@ -35,6 +38,7 @@ public final class VocabularyConstants {
 	public static final String ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET = "ortho_best_rev_score";
 	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY = "ortho_prediction_method";
 	
+
 	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 	
@@ -43,5 +47,6 @@ public final class VocabularyConstants {
 	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
 	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
+	public static final String ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "allele_genomic_entity_association_note_type";
 
 }

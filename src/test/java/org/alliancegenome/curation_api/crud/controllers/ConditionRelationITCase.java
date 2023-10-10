@@ -34,7 +34,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(13)
+@Order(206)
 public class ConditionRelationITCase extends BaseITCase {
 
 	private Vocabulary conditionRelationTypeVocabulary;
