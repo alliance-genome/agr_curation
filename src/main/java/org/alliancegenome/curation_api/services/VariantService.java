@@ -1,0 +1,78 @@
+package org.alliancegenome.curation_api.services;
+
+import java.util.List;
+import java.util.Objects;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
+import org.alliancegenome.curation_api.dao.VariantDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Variant;
+import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.validation.VariantValidator;
+import org.alliancegenome.curation_api.services.validation.dto.VariantDTOValidator;
+import org.apache.commons.collections.CollectionUtils;
+
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
+@RequestScoped
+public class VariantService extends BaseDTOCrudService<Variant, VariantDTO, VariantDAO> {
+
+	@Inject VariantDAO variantDAO;
+	@Inject PersonService personService;
+	@Inject NoteService noteService;
+	@Inject VariantValidator variantValidator;
+	@Inject VariantDTOValidator variantDtoValidator;
+
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(variantDAO);
+	}
+
+	@Override
+	@Transactional
+	public ObjectResponse<Variant> update(Variant uiEntity) {
+		Variant dbEntity = variantValidator.validateVariantUpdate(uiEntity);
+		return new ObjectResponse<Variant>(dbEntity);
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<Variant> create(Variant uiEntity) {
+		Variant dbEntity = variantValidator.validateVariantCreate(uiEntity);
+		return new ObjectResponse<Variant>(dbEntity);
+	}
+
+	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
+	}
+	
+	@Transactional
+	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
+		Variant variant = variantDAO.find(curie);
+		if (variant != null) {
+			List<Note> notesToDelete = variant.getRelatedNotes();
+			variantDAO.remove(curie);
+			if (CollectionUtils.isNotEmpty(notesToDelete))
+				notesToDelete.forEach(note -> noteService.delete(note.getId()));
+		} else {
+			log.error("Failed getting variant: " + curie);
+		}
+	}
+	
+	public List<String> getCuriesByDataProvider(String dataProvider) {
+		List<String> curies = variantDAO.findAllCuriesByDataProvider(dataProvider);
+		curies.removeIf(Objects::isNull);
+		return curies;
+	}
+
+}

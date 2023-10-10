@@ -43,5 +43,8 @@ public final class VocabularyConstants {
 	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
 	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
+	public static final String VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET = "variant_note_type";
+	
+	public static final String VARIANT_STATUS_VOCABULARY = "variant_status";
 
 }
