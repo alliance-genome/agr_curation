@@ -25,7 +25,6 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.alleleAssociations.AlleleGeneAssociationDTOValidator;
-import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -75,23 +74,10 @@ public class AlleleGeneAssociationService extends BaseEntityCrudService<AlleleGe
 	}
 
 	public List<Long> getAlleleGeneAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
-		List<Long> ids = new ArrayList<>();
+		List<Long> associationIds = alleleGeneAssociationDAO.findAllIdsByDataProvider(dataProvider.sourceOrganization);
+		associationIds.removeIf(Objects::isNull);
 		
-		List<String> alleleCuries = alleleDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization);
-		alleleCuries.removeIf(Objects::isNull);
-		
-		alleleCuries.forEach(curie -> {
-			Allele allele = alleleDAO.find(curie);
-			if (allele != null) {
-				if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
-					ids.addAll(allele.getAlleleGeneAssociations().stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList()));
-				}
-			} else {
-				log.error("Failed getting allele " + curie + " for cleanup of allele gene associations");
-			}
-		});
-		
-		return ids;
+		return associationIds;
 	}
 
 	public void removeAssociation(Long id, String dataProviderName, String md5sum) {
