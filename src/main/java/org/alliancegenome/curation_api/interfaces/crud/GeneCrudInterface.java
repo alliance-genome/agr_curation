@@ -36,7 +36,7 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene>, BaseDTO
 	@Override
 	@GET
 	@Path("/{curie}")
-	@JsonView(View.GeneView.class)
+	@JsonView(View.GeneDetailView.class)
 	public ObjectResponse<Gene> get(@PathParam("curie") String curie);
 
 	@POST

@@ -18,9 +18,11 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
@@ -54,6 +56,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
 	@Inject
 	GeneToGeneOrthologyService orthologyService;
+	@Inject
+	AlleleGeneAssociationService alleleGeneAssociationService;
 
 	@Override
 	@PostConstruct
@@ -96,6 +100,13 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
 				if (referencingOrthoPair != null)
 					anyReferencingEntities = true;
+			}
+			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
+				for (AlleleGeneAssociation association : gene.getAlleleGeneAssociations()) {
+					association = alleleGeneAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
+					if (association != null)
+						anyReferencingEntities = true;
+				}
 			}
 			
 			if (anyReferencingEntities) {

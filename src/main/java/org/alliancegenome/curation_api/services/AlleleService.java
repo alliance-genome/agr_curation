@@ -20,8 +20,10 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
@@ -44,6 +46,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject PersonService personService;
 	@Inject NoteService noteService;
+	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
 
 	@Override
 	@PostConstruct
@@ -75,14 +78,20 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		String loadDescription = dataProviderName + " Allele bulk load (" + md5sum + ")";
 		if (allele != null) {
 			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
-			Boolean anyReferencingDAs = false;
+			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
-					anyReferencingDAs = true;
+					anyReferencingEntities = true;
 			}
-			
-			if (anyReferencingDAs) {
+			if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
+				for (AlleleGeneAssociation association : allele.getAlleleGeneAssociations()) {
+					association = alleleGeneAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
+					if (association != null)
+						anyReferencingEntities = true;
+				}
+			}
+			if (anyReferencingEntities) {
 				if (!allele.getObsolete()) {
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 					allele.setDateUpdated(OffsetDateTime.now());

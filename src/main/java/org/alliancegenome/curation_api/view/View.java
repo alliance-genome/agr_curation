@@ -67,6 +67,9 @@ public class View {
 
 	public static class GeneView extends FieldsOnly {
 	}
+	
+	public static class GeneDetailView extends GeneView {
+	}
 
 	public static class GeneUpdate extends GeneView {
 	}

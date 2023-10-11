@@ -12,6 +12,6 @@ public abstract class BaseAssociationDTOCrudService<E extends BaseEntity, T exte
 
 	public abstract E upsert(T dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException;
 
-	public abstract void removeAssociation(Long id, String dataProviderName, String md5sum);
+	public abstract E deprecateOrDeleteAssociation(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate);
 
 }
