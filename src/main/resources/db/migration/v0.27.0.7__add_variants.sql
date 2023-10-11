@@ -10,9 +10,9 @@ ALTER TABLE variant ADD CONSTRAINT variant_varianttype_curie_fk FOREIGN KEY (var
 ALTER TABLE variant ADD CONSTRAINT variant_variantstatus_id_fk FOREIGN KEY (variantstatus_id) REFERENCES vocabularyterm (id);
 ALTER TABLE variant ADD CONSTRAINT variant_sourcegeneralconsequence_curie_fk FOREIGN KEY (sourcegeneralconsequence_curie) REFERENCES soterm (curie);
 
-CREATE INDEX variant_varianttype_index ON reagent USING btree (varianttype_curie);
-CREATE INDEX variant_variantstatus_index ON reagent USING btree (variantstatus_id);
-CREATE INDEX variant_sourcegeneralconsequence_index ON reagent USING btree (sourcegeneralconsequence_curie);
+CREATE INDEX variant_varianttype_index ON variant USING btree (varianttype_curie);
+CREATE INDEX variant_variantstatus_index ON variant USING btree (variantstatus_id);
+CREATE INDEX variant_sourcegeneralconsequence_index ON variant USING btree (sourcegeneralconsequence_curie);
 
 CREATE TABLE variant_aud (
 	curie varchar(255),
@@ -51,7 +51,7 @@ ALTER TABLE variant_note_aud ADD CONSTRAINT variant_note_aud_rev_fk FOREIGN KEY 
 	
 INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('hibernate_sequence'), 'Variant Status', 'variant_status');
 
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'live', id FROM vocabulary WHERE vocabularylabel = 'variant_status';
+-- INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'live', id FROM vocabulary WHERE vocabularylabel = 'variant_status';
 
 CREATE TABLE tmp_vocab_link (
 	vocabularytermsets_id bigint,

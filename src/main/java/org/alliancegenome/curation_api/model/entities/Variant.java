@@ -64,7 +64,10 @@ public class Variant extends GenomicEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
-	@JoinTable(indexes = { @Index(columnList = "variant_curie"), @Index(columnList = "relatedNotes_id")})
+	@JoinTable(indexes = {
+			@Index(name = "variant_note_variant_curie_index", columnList = "variant_curie"),
+			@Index(name = "variant_note_relatednotes_id_index", columnList = "relatedNotes_id")
+		})
 	private List<Note> relatedNotes;
 
 }
