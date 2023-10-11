@@ -96,8 +96,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		if (deprecateAnnotation) {
 			if (!annotation.getObsolete()) {
 				annotation.setObsolete(true);
-				if (authenticatedPerson.getOktaEmail() != null) {
-					annotation.setUpdatedBy(personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+				if (authenticatedPerson != null) {
+					annotation.setUpdatedBy(authenticatedPerson);
 				} else {
 					annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				}
