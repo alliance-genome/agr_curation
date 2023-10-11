@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
@@ -83,10 +84,17 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
 	}
 	
+	@Override
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
+	public ObjectResponse<Gene> delete(String curie) {
+		removeOrDeprecateNonUpdated(curie, "Gene DELETE API call");
+		ObjectResponse<Gene> ret = new ObjectResponse<>();
+		return ret;
+	}
+	
+	@Transactional
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
 		Gene gene = geneDAO.find(curie);
-		String loadDescription = dataProviderName + " Gene bulk load (" + md5sum + ")";
 		if (gene != null) {
 			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
 			Boolean anyReferencingEntities = false;

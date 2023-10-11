@@ -181,7 +181,8 @@ public class LoadFileExecutor {
 		ph.startProcess("Deletion/deprecation of primary objects " + dataProviderName, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				service.removeOrDeprecateNonUpdated(curie, dataProviderName, md5sum);
+				String loadDescription = dataProviderName + " association bulk load (" + md5sum + ")";
+				service.removeOrDeprecateNonUpdated(curie, loadDescription);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();

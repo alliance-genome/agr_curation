@@ -72,10 +72,17 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
 	
+	@Override
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
+	public ObjectResponse<Allele> delete(String curie) {
+		removeOrDeprecateNonUpdated(curie, "Allele DELETE API call");
+		ObjectResponse<Allele> ret = new ObjectResponse<>();
+		return ret;
+	}
+	
+	@Transactional
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
 		Allele allele = alleleDAO.find(curie);
-		String loadDescription = dataProviderName + " Allele bulk load (" + md5sum + ")";
 		if (allele != null) {
 			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
 			Boolean anyReferencingEntities = false;

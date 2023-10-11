@@ -71,9 +71,8 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
 		AffectedGenomicModel agm = agmDAO.find(curie);
-		String loadDescription = dataProviderName + " AGM bulk load (" + md5sum + ")";
 		if (agm != null) {
 			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
 			Boolean anyReferencingDAs = false;
