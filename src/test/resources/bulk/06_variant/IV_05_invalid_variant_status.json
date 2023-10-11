@@ -1,9 +1,9 @@
 [
   {
-    "curie": "VARIANTTEST:Variant0001",
+    "curie": "VARIANTTEST:IV05",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:VT001",
-    "variant_status_name": "status_test",
+    "variant_status_name": "invalid",
     "source_general_consequence_curie": "SO:SGC001",
     "internal": true,
     "obsolete": true,

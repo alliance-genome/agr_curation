@@ -1,6 +1,6 @@
 [
   {
-    "curie": "VARIANTTEST:Variant0001",
+    "curie": "VARIANTTEST:IV09",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",
@@ -17,7 +17,7 @@
       "source_organization_abbreviation": "WB",
       "cross_reference_dto": {
         "referenced_curie": "TEST:0001",
-        "page_area": "homepage",
+        "page_area": "invalid",
         "display_name": "TEST:0001",
         "prefix": "TEST"
       }

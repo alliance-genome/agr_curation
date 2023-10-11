@@ -1,0 +1,35 @@
+[
+  {
+    "curie": "VARIANTTEST:Variant0001",
+    "taxon_curie": "NCBITaxon:10116",
+    "variant_type_curie": "SO:VT002",
+    "variant_status_name": "status_test_2",
+    "source_general_consequence_curie": "SO:SGC002",
+    "created_by_curie": "VARIANTTEST:Person0002",
+    "updated_by_curie": "VARIANTTEST:Person0001",
+    "date_created": "2022-03-19T22:10:12+00:00",
+    "date_updated": "2022-03-20T22:10:12+00:00",
+    "data_provider_dto": {
+      "source_organization_abbreviation": "RGD",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST2:0001",
+        "page_area": "homepage2",
+        "display_name": "TEST2:0001",
+        "prefix": "TEST2"
+      }
+    },
+    "note_dtos": [
+      {
+        "free_text": "Test note 2",
+        "note_type_name": "test_comment",
+        "created_by_curie": "VARIANTTEST:Person0002",
+        "updated_by_curie": "VARIANTTEST:Person0001",
+        "date_created": "2022-03-19T22:10:12+00:00",
+        "date_updated": "2022-03-20T22:10:12+00:00",
+        "evidence_curies": [
+          "PMID:25920551"
+        ]
+      }
+    ]
+  }
+]

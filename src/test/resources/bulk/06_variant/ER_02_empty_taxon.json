@@ -1,7 +1,7 @@
 [
   {
-    "curie": "VARIANTTEST:Variant0001",
-    "taxon_curie": "NCBITaxon:6239",
+    "curie": "VARIANTTEST:ER02",
+    "taxon_curie": "",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",
     "source_general_consequence_curie": "SO:SGC001",

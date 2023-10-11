@@ -1,6 +1,6 @@
 [
   {
-    "curie": "VARIANTTEST:Variant0001",
+    "curie": "VARIANTTEST:MR10",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",
@@ -25,7 +25,6 @@
     "note_dtos": [
       {
         "free_text": "Test note",
-        "note_type_name": "comment",
         "internal": false,
         "obsolete": true,
         "created_by_curie": "VARIANTTEST:Person0001",

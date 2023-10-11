@@ -1,10 +1,10 @@
 [
   {
-    "curie": "VARIANTTEST:Variant0001",
+    "curie": "VARIANTTEST:IV06",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",
-    "source_general_consequence_curie": "SO:SGC001",
+    "source_general_consequence_curie": "SO:Invalid",
     "internal": true,
     "obsolete": true,
     "created_by_curie": "VARIANTTEST:Person0001",

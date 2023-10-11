@@ -1,6 +1,6 @@
 [
   {
-    "curie": "VARIANTTEST:Variant0001",
+    "curie": "VARIANTTEST:ER07",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",
@@ -19,7 +19,7 @@
         "referenced_curie": "TEST:0001",
         "page_area": "homepage",
         "display_name": "TEST:0001",
-        "prefix": "TEST"
+        "prefix": ""
       }
     },
     "note_dtos": [
