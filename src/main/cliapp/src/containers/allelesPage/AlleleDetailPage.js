@@ -8,7 +8,6 @@ import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
-import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
@@ -132,27 +131,6 @@ const { isLoading } =	useQuery([curie],
 			type: 'EDIT',
 			field: 'taxon',
 			value,
-		})
-	}
-
-	const onReferenceValueChange = (event) => {
-		if(event.value.length === 0){
-			alleleDispatch({
-				type: 'TOGGLE_TABLE',
-				entityType: 'references',
-				value: false,
-			})
-		} else {
-			alleleDispatch({
-				type: 'TOGGLE_TABLE',
-				entityType: 'references',
-				value: true,
-		})}
-
-		alleleDispatch({
-			type: 'EDIT',
-			field: 'references',
-			value: event.value,
 		})
 	}
 
@@ -311,15 +289,6 @@ const { isLoading } =	useQuery([curie],
 					/>
 
 					<Divider />
-
-					<ReferencesFormEditor 
-						references={alleleState.allele?.references} 
-						onReferencesValueChange={onReferenceValueChange} 
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={alleleState.errorMessages}
-					/>
 
 					<ReferencesForm 
 						state={alleleState}

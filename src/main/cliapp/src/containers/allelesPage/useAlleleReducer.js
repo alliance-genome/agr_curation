@@ -1,4 +1,5 @@
 import { useImmerReducer } from "use-immer";
+import { generateCrossRefSearchFields } from "./utils";
 
 const initialAlleleState = {
 	allele: {
@@ -116,7 +117,9 @@ const initialAlleleState = {
 		references: {
 			field: 'references',
 			show: false,
-			type: "display",
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
 		},
 	},
 	errorMessages: {},
@@ -161,10 +164,12 @@ const processObject = (field, allele, draft) => {
 	draft.entityStates[field].show = true;
 }
 
+
 const alleleReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
 			const allele = action.value;
+			generateCrossRefSearchFields(allele.references);
 
 			let states = Object.values(draft.entityStates);
 
@@ -186,6 +191,9 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'EDIT_ROW': 
 			draft.allele[action.entityType][action.index][action.field] = action.value;
+			break;
+		case 'REPLACE_ROW': 
+			draft.allele[action.entityType][action.index] = action.value;
 			break;
 		case 'EDIT_OBJECT': 
 			draft.allele[action.entityType][action.field] = action.value;

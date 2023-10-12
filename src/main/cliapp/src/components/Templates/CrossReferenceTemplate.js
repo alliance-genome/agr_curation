@@ -5,15 +5,15 @@ export const CrossReferencesTemplate = ({ rowData }) => {
 
   const { crossReferences, curieField } = differentiateCrossReferences(rowData);
 
-  const sortedCrossReferences = crossReferences.sort((a, b) => (a[curieField] > b[curieField]) ? 1 : -1);
+  const sortedCrossReferences = crossReferences?.sort((a, b) => (a[curieField] > b[curieField]) ? 1 : -1);
 
   return (
     <div>
       <ul type={{ listType: 'none' }}>
-        {sortedCrossReferences.map((a, index) =>
+        {sortedCrossReferences?.map((reference, index) =>
           <li key={index}>
             <EllipsisTableCell>
-              {a[curieField]}
+              {reference[curieField]}
             </EllipsisTableCell>
           </li>
         )}
@@ -33,9 +33,8 @@ const differentiateCrossReferences = (reference) => {
     crossReferences = global.structuredClone(reference.crossReferences);
     curieField = "referencedCurie";
   } else {
-    return;
+    return {};
   }
   
   return {crossReferences, curieField};
-
 };
