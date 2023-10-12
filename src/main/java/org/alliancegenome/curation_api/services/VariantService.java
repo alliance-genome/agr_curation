@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -8,6 +10,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -69,7 +72,9 @@ public class VariantService extends BaseDTOCrudService<Variant, VariantDTO, Vari
 	}
 	
 	public List<String> getCuriesByDataProvider(String dataProvider) {
-		List<String> curies = variantDAO.findAllCuriesByDataProvider(dataProvider);
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityConstants.DATA_PROVIDER, dataProvider);
+		List<String> curies = variantDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

@@ -11,6 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
@@ -135,9 +136,9 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 
 	public List<String> getCuriesByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("dataProvider.sourceOrganization.abbreviation", dataProvider.sourceOrganization);
+		params.put(EntityConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put("taxon.curie", dataProvider.canonicalTaxonCurie);
+			params.put(EntityConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		List<String> curies = geneDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 

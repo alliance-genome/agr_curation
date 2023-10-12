@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.Query;
@@ -17,12 +15,6 @@ public class VariantDAO extends BaseSQLDAO<Variant> {
 
 	protected VariantDAO() {
 		super(Variant.class);
-	}
-
-	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT variant.curie FROM Variant variant WHERE variant.dataProvider.sourceOrganization.abbreviation = :dataProvider");
-		jpqlQuery.setParameter("dataProvider", dataProvider);
-		return (List<String>) jpqlQuery.getResultList();
 	}
 
 	public void deleteAttachedNote(Long id) {

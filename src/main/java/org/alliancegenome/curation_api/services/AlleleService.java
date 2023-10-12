@@ -11,6 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
@@ -121,7 +122,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	
 	public List<String> getCuriesByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("dataProvider.sourceOrganization.abbreviation", dataProvider);
+		params.put(EntityConstants.DATA_PROVIDER, dataProvider);
 		List<String> curies = alleleDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 		return curies;
