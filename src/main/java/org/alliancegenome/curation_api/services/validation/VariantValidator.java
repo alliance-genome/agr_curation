@@ -170,7 +170,7 @@ public class VariantValidator extends GenomicEntityValidator {
 		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence()) || StringUtils.isEmpty(uiEntity.getSourceGeneralConsequence().getCurie()))
 			return null;
 		
-		SOTerm sourceGeneralConsequence = soTermDAO.find(uiEntity.getVariantType().getCurie());
+		SOTerm sourceGeneralConsequence = soTermDAO.find(uiEntity.getSourceGeneralConsequence().getCurie());
 		if (sourceGeneralConsequence == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

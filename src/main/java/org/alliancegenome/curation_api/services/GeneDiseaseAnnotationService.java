@@ -98,7 +98,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		Map<String, Object> params = new HashMap<>();
 		params.put("dataProvider.sourceOrganization.abbreviation", dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put("taxon.curie", dataProvider.canonicalTaxonCurie);
+			params.put("subject.taxon.curie", dataProvider.canonicalTaxonCurie);
 		List<String> annotationIdStrings = geneDiseaseAnnotationDAO.findFilteredIds(params);
 		annotationIdStrings.removeIf(Objects::isNull);
 		List<Long> annotationIds = annotationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());

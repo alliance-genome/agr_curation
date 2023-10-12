@@ -29,6 +29,7 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
@@ -714,6 +715,17 @@ public class BaseITCase {
 		
 		return note;
 	}
+
+	public Variant getVariant(String curie) {
+		ObjectResponse<Variant> res = RestAssured.given().
+				when().
+				get("/api/variant/" + curie).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVariant());
+
+		return res.getEntity();
+	}
 	
 	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
 		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
@@ -816,6 +828,10 @@ public class BaseITCase {
 	private TypeRef<ObjectResponse<SOTerm>> getObjectResponseTypeRefSOTerm() {
 		return new TypeRef<ObjectResponse <SOTerm>>() {
 		};
+	}
+	
+	private TypeRef<ObjectResponse<Variant>> getObjectResponseTypeRefVariant() {
+		return new TypeRef<ObjectResponse <Variant>>() { };
 	}
 	
 	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
