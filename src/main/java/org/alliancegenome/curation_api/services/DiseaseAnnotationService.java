@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
@@ -42,6 +43,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject
 	DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
+	@Inject
+	PersonDAO personDAO;
 
 	@Override
 	@PostConstruct
@@ -97,7 +100,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			if (!annotation.getObsolete()) {
 				annotation.setObsolete(true);
 				if (authenticatedPerson != null) {
-					annotation.setUpdatedBy(authenticatedPerson);
+					annotation.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
 				} else {
 					annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				}

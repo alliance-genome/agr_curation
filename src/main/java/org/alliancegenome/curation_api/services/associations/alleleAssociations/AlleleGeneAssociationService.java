@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -51,6 +52,8 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	GeneDAO geneDAO;
 	@Inject
 	PersonService personService;
+	@Inject
+	PersonDAO personDAO;
 
 	@Override
 	@PostConstruct
@@ -91,6 +94,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return associationIds;
 	}
 
+	@Transactional
 	public AlleleGeneAssociation deprecateOrDeleteAssociation(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		AlleleGeneAssociation association = alleleGeneAssociationDAO.find(id);
 		
@@ -108,7 +112,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 			if (!association.getObsolete()) {
 				association.setObsolete(true);
 				if (authenticatedPerson != null) {
-					association.setUpdatedBy(authenticatedPerson);
+					association.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
 				} else {
 					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				}
