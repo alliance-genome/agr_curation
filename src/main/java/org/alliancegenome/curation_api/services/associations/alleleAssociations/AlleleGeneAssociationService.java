@@ -91,6 +91,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return associationIds;
 	}
 
+	@Transactional
 	public AlleleGeneAssociation deprecateOrDeleteAssociation(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		AlleleGeneAssociation association = alleleGeneAssociationDAO.find(id);
 		
