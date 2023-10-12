@@ -11,8 +11,8 @@ const functionalImpactSearch = (event, setFiltered, setQuery) => {
 	const filterName = "functionalImpactFilter";
 	const otherFilters = {
 		vocabularyFilter: {
-			"vocabulary.name": {
-				queryString: "Allele Functional Impact"
+			"vocabulary.vocabularyLabel": {
+				queryString: "allele_functional_impact"
 			}
 		}
 	};
