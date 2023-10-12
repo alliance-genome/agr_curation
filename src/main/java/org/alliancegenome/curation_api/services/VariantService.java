@@ -27,7 +27,6 @@ import lombok.extern.jbosslog.JBossLog;
 public class VariantService extends BaseDTOCrudService<Variant, VariantDTO, VariantDAO> {
 
 	@Inject VariantDAO variantDAO;
-	@Inject PersonService personService;
 	@Inject NoteService noteService;
 	@Inject VariantValidator variantValidator;
 	@Inject VariantDTOValidator variantDtoValidator;
