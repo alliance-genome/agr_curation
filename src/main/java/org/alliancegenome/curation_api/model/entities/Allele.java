@@ -58,7 +58,6 @@ import lombok.ToString;
 @ToString(exclude = { "alleleGeneAssociations", "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus", "alleleNomenclatureEvents" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.7.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "allele_inCollection_index", columnList = "inCollection_id"), })
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "curie")
 public class Allele extends GenomicEntity {
 
 	@IndexedEmbedded(includePaths = {"primaryCrossReferenceCurie", "crossReferences.referencedCurie", "crossReferences.displayName", "curie", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "curie_keyword"})
