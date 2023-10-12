@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -113,16 +115,11 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 
 	public List<String> getCuriesByDataProvider(BackendBulkDataProvider dataProvider) {
-		List<String> curies;
-
-		String sourceOrg = dataProvider.sourceOrganization;
-
-		if( StringUtils.equals(sourceOrg, "RGD") ){
-			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization, dataProvider.canonicalTaxonCurie);
-		} else {
-			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization);
-		}
-
+		Map<String, Object> params = new HashMap<>();
+		params.put("dataProvider.sourceOrganization.abbreviation", dataProvider.sourceOrganization);
+		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
+			params.put("taxon.curie", dataProvider.canonicalTaxonCurie);
+		List<String> curies = geneDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 
 		return curies;

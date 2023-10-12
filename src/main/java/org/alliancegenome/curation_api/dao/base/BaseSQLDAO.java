@@ -111,6 +111,22 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			return null;
 		}
 	}
+	
+	public List<String> findFilteredIds(Map<String, Object> params) {
+		List<String> primaryKeys = new ArrayList<>();
+		SearchResponse<E> results = findByParams(params);
+		for (E entity : results.getResults()) {
+			String pkString;
+			try {
+				pkString = (String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+			} catch (ClassCastException e) {
+				pkString = Long.toString((Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
+			}
+			primaryKeys.add(pkString);
+		}
+		
+		return primaryKeys;
+	}
 
 	public SearchResponse<String> findAllIds() {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();

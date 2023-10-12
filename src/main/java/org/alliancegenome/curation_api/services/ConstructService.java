@@ -1,8 +1,11 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -10,7 +13,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -144,13 +146,13 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) { }
 
 	public List<Long> getConstructIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		List<Long> annotationIds;
-
-		annotationIds = constructDAO.findAllIdsByDataProvider(dataProvider.sourceOrganization);
-
-		annotationIds.removeIf(Objects::isNull);
-
-		return annotationIds;
+		Map<String, Object> params = new HashMap<>();
+		params.put("dataProvider.sourceOrganization.abbreviation", dataProvider.sourceOrganization);
+		List<String> constructIdStrings = constructDAO.findFilteredIds(params);
+		constructIdStrings.removeIf(Objects::isNull);
+		List<Long>  constructIds = constructIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		
+		return constructIds;
 	}
 	
 	private void deleteConstructSlotAnnotations(Construct construct) {

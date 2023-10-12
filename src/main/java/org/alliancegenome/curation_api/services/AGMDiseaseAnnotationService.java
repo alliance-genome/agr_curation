@@ -1,7 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -95,18 +98,14 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) { }
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		List<Long> annotationIds;
-
-		String sourceOrg = dataProvider.sourceOrganization;
-
-		if( StringUtils.equals(sourceOrg, "RGD") ){
-			annotationIds = agmDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider.sourceOrganization, dataProvider.canonicalTaxonCurie);
-		} else {
-			annotationIds = agmDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider.sourceOrganization);
-		}
-
-		annotationIds.removeIf(Objects::isNull);
-
+		Map<String, Object> params = new HashMap<>();
+		params.put("dataProvider.sourceOrganization.abbreviation", dataProvider.sourceOrganization);
+		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
+			params.put("taxon.curie", dataProvider.canonicalTaxonCurie);
+		List<String> annotationIdStrings = agmDiseaseAnnotationDAO.findFilteredIds(params);
+		annotationIdStrings.removeIf(Objects::isNull);
+		List<Long> annotationIds = annotationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		
 		return annotationIds;
 	}
 }

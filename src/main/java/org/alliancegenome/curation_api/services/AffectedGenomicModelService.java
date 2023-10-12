@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -99,7 +101,9 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 	
 	public List<String> getCuriesByDataProvider(String dataProvider) {
-		List<String> curies = agmDAO.findAllCuriesByDataProvider(dataProvider);
+		Map<String, Object> params = new HashMap<>();
+		params.put("dataProvider.sourceOrganization.abbreviation", dataProvider);
+		List<String> curies = agmDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}
