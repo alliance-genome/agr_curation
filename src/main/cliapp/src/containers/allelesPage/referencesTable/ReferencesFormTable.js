@@ -17,9 +17,10 @@ export const ReferencesFormTable = ({
 
 
   return (
-    <DataTable value={references} dataKey="dataKey" showGridlines editMode='row' removableSort
+    <DataTable value={references} dataKey="dataKey" showGridlines editMode='row' removableSort filterDisplay='row'
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}
-      filterDisplay='row'
+      paginator paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+      currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={10} rowsPerPageOptions={[5,10,20,50]}
     >
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />} header="Action"
         className='max-w-4rem' bodyClassName="text-center" frozen />

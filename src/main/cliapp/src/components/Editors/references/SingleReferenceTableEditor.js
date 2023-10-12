@@ -9,7 +9,7 @@ export const SingleReferenceTableEditor = ({ props, errorMessages, onChange }) =
     <>
       <AutocompleteEditor
         search={referenceSearch}
-        initialValue={props.rowData}
+        initialValue={props.rowData?.curie}
         rowProps={props}
         fieldName='references'
         valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
@@ -18,7 +18,7 @@ export const SingleReferenceTableEditor = ({ props, errorMessages, onChange }) =
       />
 			<DialogErrorMessageComponent
 				errorMessages={errorMessages[props?.rowIndex]}
-				errorField={"functionalImpacts"}
+				errorField={"references"}
 			/>
     </>
   );
