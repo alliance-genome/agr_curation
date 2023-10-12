@@ -119,6 +119,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 				association.setDateUpdated(OffsetDateTime.now());
 				return alleleGeneAssociationDAO.persist(association);
 			}
+			return association;
 		}
 		
 		Long noteId = null;
