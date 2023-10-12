@@ -111,7 +111,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		if (deprecate) {
 			if (!association.getObsolete()) {
 				association.setObsolete(true);
-				if (authenticatedPerson != null) {
+				if (authenticatedPerson.getOktaEmail() != null) {
 					association.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
 				} else {
 					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
