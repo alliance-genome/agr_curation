@@ -270,17 +270,17 @@ export const DiseaseAnnotationsTable = () => {
 
 	const inferredAlleleBodyTemplate = (rowData) => {
 		if (rowData && rowData.inferredAllele) {
-			if (rowData.inferredAllele.alleleSymbol.displayText) {
+			if (rowData.inferredAllele.alleleSymbol?.displayText) {
 				return (
 					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}
+						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele?.curie?.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleSymbol.displayText + ' (' + rowData.inferredAllele.curie + ')'
+								__html: rowData.inferredAllele.alleleSymbol?.displayText + ' (' + rowData.inferredAllele.curie + ')'
 							}}
 						/>
-						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}>
+						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie?.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleSymbol.displayText + ' (' + rowData.inferredAllele.curie + ')'
+								__html: rowData.inferredAllele.alleleSymbol?.displayText + ' (' + rowData.inferredAllele.curie + ')'
 							}}
 							/>
 						</Tooltip>
@@ -289,14 +289,14 @@ export const DiseaseAnnotationsTable = () => {
 			} else {
 				return (
 					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}
+						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele.curie?.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleFullName.displayText + ' (' + rowData.inferredAllele.curie + ')'
+								__html: rowData.inferredAllele.alleleFullName?.displayText + ' (' + rowData.inferredAllele.curie + ')'
 							}}
 						/>
-						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}>
+						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie?.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleFullName.displayText + ' (' + rowData.inferredAllele.curie + ')'
+								__html: rowData.inferredAllele.alleleFullName?.displayText + ' (' + rowData.inferredAllele.curie + ')'
 							}}
 							/>
 						</Tooltip>

@@ -92,7 +92,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) { }
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();

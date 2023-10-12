@@ -143,7 +143,7 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) { }
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
 
 	public List<Long> getConstructIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();

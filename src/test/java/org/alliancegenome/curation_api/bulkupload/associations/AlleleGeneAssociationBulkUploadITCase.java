@@ -56,6 +56,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	private final String alleleGeneAssociationGetEndpoint = "/api/allelegeneassociation/findBy";
 	private final String alleleGeneAssociationTestFilePath = "src/test/resources/bulk/A01_allele_association/";
 	private final String alleleGetEndpoint = "/api/allele/";
+	private final String geneGetEndpoint = "/api/gene/";
 
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary noteTypeVocab = getVocabulary("note_type");
@@ -106,6 +107,16 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
 			body("entity.alleleGeneAssociations[0].object.curie", is(geneCurie)).
 			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
+		
+		RestAssured.given().
+			when().
+			get(geneGetEndpoint + geneCurie).
+			then().
+			statusCode(200).
+			body("entity.alleleGeneAssociations", hasSize(1)).
+			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
+			body("entity.alleleGeneAssociations[0].object.curie", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].object", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
@@ -144,6 +155,13 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		RestAssured.given().
 			when().
 			get(alleleGetEndpoint + alleleCurie).
+			then().
+			statusCode(200).
+			body("entity.alleleGeneAssociations", hasSize(1));
+		
+		RestAssured.given().
+			when().
+			get(geneGetEndpoint + geneCurie).
 			then().
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1));
