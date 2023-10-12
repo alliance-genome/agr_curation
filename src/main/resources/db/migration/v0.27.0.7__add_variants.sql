@@ -51,7 +51,7 @@ ALTER TABLE variant_note_aud ADD CONSTRAINT variant_note_aud_rev_fk FOREIGN KEY 
 	
 INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('hibernate_sequence'), 'Variant Status', 'variant_status');
 
--- INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'live', id FROM vocabulary WHERE vocabularylabel = 'variant_status';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('hibernate_sequence'), 'public', id FROM vocabulary WHERE vocabularylabel = 'variant_status';
 
 CREATE TABLE tmp_vocab_link (
 	vocabularytermsets_id bigint,

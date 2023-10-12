@@ -57,7 +57,7 @@ public class VariantService extends BaseDTOCrudService<Variant, VariantDTO, Vari
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
 		Variant variant = variantDAO.find(curie);
 		if (variant != null) {
 			List<Note> notesToDelete = variant.getRelatedNotes();
