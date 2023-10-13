@@ -5,7 +5,7 @@ import { FormErrorMessageComponent } from "../../Error/FormErrorMessageComponent
 import { FormFieldWrapper } from "../../FormFieldWrapper";
 import { referenceSearch } from "./utils";
 
-export const ReferencesFormEditor = ({
+export const SingleReferenceFormEditor = ({
   onReferencesValueChange,
   widgetColumnSize,
   labelColumnSize,

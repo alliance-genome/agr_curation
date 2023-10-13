@@ -3,18 +3,15 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { ReferencesFormTable } from "./ReferencesFormTable";
 import { useRef } from "react";
 import { generateCrossRefSearchField } from "../utils";
+import { SingleReferenceFormEditor } from "../../../components/Editors/references/SingleReferenceFormEditor";
 
 export const ReferencesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
 
-  // dispatch({type: 'EDIT', value: filterableReferences});
-
-
-
   const createNewReferenceHandler = (e) => {
     e.preventDefault();
     const dataKey = state.allele.references?.length;
-    //todo: add filter field in here
+
     const newReference = {
       dataKey: dataKey,
     };
@@ -30,7 +27,6 @@ export const ReferencesForm = ({ state, dispatch }) => {
   const referencesOnChangeHandler = (event, setFieldValue, props) => {
     //updates value in table input box
     setFieldValue(event.target.value);
-    //todo: add filter field in here
 
     if (typeof event.target.value === 'string') return;
     const searchString = generateCrossRefSearchField(event.target.value);
@@ -76,7 +72,24 @@ export const ReferencesForm = ({ state, dispatch }) => {
       }
       tableName=""
       showTable={state.entityStates.references.show}
-      button={<Button label="Add Reference" onClick={createNewReferenceHandler} className="w-6" />}
+      button={
+          <ReferenceFieldAndButton
+            referencesOnChangeHandler={referencesOnChangeHandler}
+            state={state}
+            createNewReferenceHandler={createNewReferenceHandler}
+          />
+      }
     />
   );
 };
+
+function ReferenceFieldAndButton({ referencesOnChangeHandler, state, createNewReferenceHandler }) {
+  return (
+    <>
+      <SingleReferenceFormEditor
+        onReferencesValueChange={referencesOnChangeHandler}
+        errorMessages={state.entityStates.references.errorMessages} />
+      <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-6" />
+    </>
+  );
+}
