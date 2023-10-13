@@ -270,7 +270,7 @@ export const VariantsTable = () => {
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => (
-				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} />
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} showClear={false}/>
 			)
 		},
 		{
@@ -281,7 +281,7 @@ export const VariantsTable = () => {
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: isEnabled,
 			editor: (props) => (
-				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"} />
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"}  showClear={false}/>
 			)
 		}
 	];
@@ -311,7 +311,7 @@ export const VariantsTable = () => {
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
 					isEditable={true}
-					hasDetails={true}
+					hasDetails={false}
 					mutation={mutation}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
