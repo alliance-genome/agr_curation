@@ -21,7 +21,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AlleleService;
-import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,12 +31,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 	@Inject
 	AlleleDAO alleleDAO;
-
 	@Inject
 	AlleleService alleleService;
-	
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 

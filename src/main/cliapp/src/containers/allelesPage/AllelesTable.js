@@ -16,7 +16,7 @@ import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
 import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
 import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
-import { RelatedNotesDialog } from './relatedNotes/RelatedNotesDialog';
+import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
@@ -1366,6 +1366,7 @@ export const AllelesTable = () => {
 				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet='allele_note_type'
 			/>
 		</>
 	);

@@ -78,6 +78,7 @@ export const DataLoadsComponent = () => {
 		["GENE", ["GeneDTO"]],
 		["ALLELE", ["AlleleDTO"]],
 		["AGM", ["AffectedGenomicModelDTO"]],
+		["VARIANT", ["VariantDTO"]],
 		["CONSTRUCT", ["ConstructDTO"]],
 		["ALLELE_ASSOCIATION", ["AlleleGeneAssociationDTO"]]
 		]);

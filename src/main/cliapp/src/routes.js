@@ -14,6 +14,7 @@ import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage  } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
+import { VariantsPage} from './containers/variantsPage';
 import { ConstructsPage } from './containers/constructsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
@@ -47,6 +48,7 @@ export default (
 		<SecureRoute path="/genes" render={() => <ErrorBoundary><GenesPage /></ErrorBoundary>} />
 		<SecureRoute path="/alleles" render={() => <ErrorBoundary><AllelesPage /></ErrorBoundary>} />
 		<SecureRoute path="/allele/:curie" render={() => <ErrorBoundary><AlleleDetailPage /></ErrorBoundary>} />
+		<SecureRoute path="/variants" render={() => <ErrorBoundary><VariantsPage/></ErrorBoundary>} />
 		<SecureRoute path="/constructs" render={() => <ErrorBoundary><ConstructsPage/></ErrorBoundary>} />
 		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />
 		<SecureRoute path="/references" render={() => <ErrorBoundary><ReferencePage /></ErrorBoundary>} />

@@ -15,13 +15,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 	protected AffectedGenomicModelDAO() {
 		super(AffectedGenomicModel.class);
 	}
-
-	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT agm.curie FROM AffectedGenomicModel agm WHERE agm.dataProvider.sourceOrganization.abbreviation = :dataProvider");
-		jpqlQuery.setParameter("dataProvider", dataProvider);
-		return (List<String>) jpqlQuery.getResultList();
-	}
-
+	
 	public List<Long> findReferencingDiseaseAnnotations(String agmCurie) {
 		Query jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.subject.curie = :agmCurie");
 		jpqlQuery.setParameter("agmCurie", agmCurie);

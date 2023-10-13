@@ -13,6 +13,7 @@ export const Dashboard = () => {
 		Gene: { name: "Genes", link: "/#/genes", type: 'entity', },
 		Allele: { name: "Alleles", link: "/#/alleles", type: 'entity', },
 		AffectedGenomicModel: { name: "Affected Genomic Models", link: "/#/agms", type: 'entity', },
+		Variant: { name: "Variants", link: "/#/variants", type: "entity", },
 		DiseaseAnnotation: { name: "Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
 		AGMDiseaseAnnotation: { name: "AGM Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
 		AlleleDiseaseAnnotation: { name: "Allele Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
