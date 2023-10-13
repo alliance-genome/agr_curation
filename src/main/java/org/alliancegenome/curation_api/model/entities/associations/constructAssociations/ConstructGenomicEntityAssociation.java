@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -39,7 +40,7 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
 @Table(indexes = {
-	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "subject_curie"),
+	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "subject_id"),
 	@Index(name = "constructgenomicentityassociation_object_index", columnList = "object_curie"),
 	@Index(name = "constructgenomicentityassociation_relation_index", columnList = "relation_id")
 })
@@ -68,5 +69,9 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JoinTable(indexes = {
+			@Index(name = "cgeassociation_note_cgeassociation_id_index", columnList = "constructgenomicassociation_id"),
+			@Index(name = "cgeassociation_note_relatednotes_id_index", columnList = "relatedNotes_id")
+		})
 	private List<Note> relatedNotes;
 }

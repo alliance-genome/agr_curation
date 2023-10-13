@@ -11,7 +11,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -218,7 +217,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"freeText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"noteType - " + ValidationConstants.REQUIRED_MESSAGE))));
 	}
@@ -243,7 +242,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.relatedNote", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -272,7 +271,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	public void editConstructGenomicEntityAssociationWithMissingRequiredFieldsLevel2() {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
 	
-		Note invalidNote = association.getRelatedNote();
+		Note invalidNote = association.getRelatedNotes().get(0);
 		invalidNote.setFreeText(null);
 		invalidNote.setNoteType(null);
 		association.setRelatedNotes(List.of(invalidNote));
@@ -285,7 +284,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"freeText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"noteType - " + ValidationConstants.REQUIRED_MESSAGE))));
 	}
@@ -295,7 +294,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	public void editConstructGenomicEntityAssociationWithEmptyRequiredFieldsLevel2() {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
 		
-		Note invalidNote = association.getRelatedNote();
+		Note invalidNote = association.getRelatedNotes().get(0);
 		invalidNote.setFreeText("");
 		association.setRelatedNotes(List.of(invalidNote));
 		
@@ -307,14 +306,14 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.relatedNote", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(9)
 	public void createConstructGenomicEntityAssociationWithInvalidFields() {
-		Allele nonPersistedAllele = new Allele();
-		nonPersistedAllele.setCurie("NP:Allele01");
+		Construct nonPersistedConstruct = new Construct();
+		nonPersistedConstruct.setCurie("NP:Construct01");
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NP:Gene01");
 		Reference nonPersistedReference = new Reference();
@@ -328,7 +327,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		invalidNote.setFreeText("Invalid");
 		
 		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
-		association.setSubject(nonPersistedAllele);
+		association.setSubject(nonPersistedConstruct);
 		association.setRelation(noteType);
 		association.setObject(nonPersistedGene);
 		association.setEvidence(List.of(nonPersistedReference));
@@ -341,13 +340,12 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			post("/api/constructgeneassociation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.evidenceCode", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.INVALID_MESSAGE,
 					"references - " + ValidationConstants.INVALID_MESSAGE))));
 	}
@@ -355,8 +353,8 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	@Test
 	@Order(9)
 	public void editConstructGenomicEntityAssociationWithInvalidFields() {
-		Allele nonPersistedAllele = new Allele();
-		nonPersistedAllele.setCurie("NP:Allele01");
+		Construct nonPersistedConstruct = new Construct();
+		nonPersistedConstruct.setCurie("NP:Construct01");
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NP:Gene01");
 		Reference nonPersistedReference = new Reference();
@@ -370,7 +368,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		invalidNote.setFreeText("Invalid");
 		
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
-		association.setSubject(nonPersistedAllele);
+		association.setSubject(nonPersistedConstruct);
 		association.setRelation(noteType);
 		association.setObject(nonPersistedGene);
 		association.setEvidence(List.of(nonPersistedReference));
@@ -383,13 +381,12 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			put("/api/constructgeneassociation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.evidenceCode", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.INVALID_MESSAGE,
 					"references - " + ValidationConstants.INVALID_MESSAGE))));
 	}
@@ -399,7 +396,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	public void createConstructGenomicEntityAssociationWithObsoleteFields() {
 		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
 		
-		association.setSubject(obsoleteAllele);
+		association.setSubject(obsoleteConstruct);
 		association.setRelation(obsoleteRelation);
 		association.setObject(obsoleteGene);
 		association.setEvidence(List.of(obsoleteReference));
@@ -418,13 +415,12 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			post("/api/constructgeneassociation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.evidenceCode", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
 	}
@@ -434,12 +430,12 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	public void editConstructGenomicEntityAssociationWithObsoleteFields() {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
 		
-		association.setSubject(obsoleteAllele);
+		association.setSubject(obsoleteConstruct);
 		association.setRelation(obsoleteRelation);
 		association.setObject(obsoleteGene);
 		association.setEvidence(List.of(obsoleteReference));
 		
-		Note note = association.getRelatedNote();
+		Note note = association.getRelatedNotes().get(0);
 		note.setNoteType(obsoleteNoteType);
 		note.setReferences(List.of(obsoleteReference));
 		
@@ -452,13 +448,12 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			put("/api/constructgeneassociation").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.subject", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.object", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.evidenceCode", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
+			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
 	}
@@ -468,7 +463,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	public void editConstructGenomicEntityAssociationWithNullNonRequiredFieldsLevel2() {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
 		
-		Note editedNote = association.getRelatedNote();
+		Note editedNote = association.getRelatedNotes().get(0);
 		editedNote.setReferences(null);
 		
 		RestAssured.given().
@@ -484,8 +479,8 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct2.getId() + "&relationName=" + relation2.getName() + "&genomicEntityCurie=" + gene2.getCurie()).
 			then().
 			statusCode(200).
-			body("entity", hasKey("relatedNote")).
-			body("entity.relatedNote", not(hasKey("references")));
+			body("entity", hasKey("relatedNotes[0]")).
+			body("entity.relatedNotes[0]", not(hasKey("references")));
 	}
 	
 	@Test
@@ -494,7 +489,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
 		
 		association.setEvidence(null);
-		association.setRelatedNotes(List.of(null));
+		association.setRelatedNotes(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -506,11 +501,10 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(constructGeneAssociationGetEndpoint + "?constructId=" + construct2.getId() + "&relationName=" + relation2.getName() + "&genomicEntityCurie=" + gene2.getCurie()).
+			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct2.getId() + "&relationName=" + relation2.getName() + "&genomicEntityCurie=" + gene2.getCurie()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("evidence"))).
-			body("entity", not(hasKey("evidenceCode"))).
 			body("entity", not(hasKey("relatedNote")));
 	}
 }
