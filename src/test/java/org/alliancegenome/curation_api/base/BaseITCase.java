@@ -34,6 +34,7 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -47,6 +48,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -214,6 +216,30 @@ public class BaseITCase {
 			extract().body().as(getObjectResponseTypeRefConditionRelation());
 
 
+		return response.getEntity();
+	}
+	
+	public Construct createConstruct(String modEntityId, Boolean obsolete, VocabularyTerm symbolNameTerm) {
+		Construct construct = new Construct();
+		construct.setModEntityId(modEntityId);
+		construct.setObsolete(obsolete);
+		
+		ConstructSymbolSlotAnnotation symbol = new ConstructSymbolSlotAnnotation();
+		symbol.setNameType(symbolNameTerm);
+		symbol.setDisplayText(modEntityId);
+		symbol.setFormatText(modEntityId);
+		
+		construct.setConstructSymbol(symbol);
+
+		ObjectResponse<Construct> response = RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			post("/api/construct").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefConstruct());
+		
 		return response.getEntity();
 	}
 
@@ -656,6 +682,17 @@ public class BaseITCase {
 
 		return res.getEntity();
 	}
+	
+	public ConstructGenomicEntityAssociation getConstructGenomicEntityAssociation(Long constructId, String relationName, String genomicEntityCurie) {
+		ObjectResponse<AlleleGeneAssociation> res = RestAssured.given().
+			when().
+			get("/api/allelegeneassociation/findBy"  + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + genomicEntityCurie).
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefConstructGenomicEntityAssociation());
+			
+		return res.getEntity();
+	}
 
 	public ExperimentalCondition getExperimentalCondition(String conditionSummary) {
 		ObjectResponse<ExperimentalCondition> res = RestAssured.given().
@@ -761,6 +798,11 @@ public class BaseITCase {
 
 	public TypeRef<ObjectResponse<Construct>> getObjectResponseTypeRefConstruct() {
 		return new TypeRef<ObjectResponse<Construct>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<ConstructGenomicEntityAssociation>> getObjectResponseTypeRefConstructGenomicEntityAssociation() {
+		return new TypeRef<ObjectResponse <ConstructGenomicEntityAssociation>>() {
 		};
 	}
 	
