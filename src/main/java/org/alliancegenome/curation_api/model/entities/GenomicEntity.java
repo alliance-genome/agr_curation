@@ -2,15 +2,18 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
@@ -42,5 +45,10 @@ public class GenomicEntity extends BiologicalEntity {
 	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
+	
+	@IndexedEmbedded(includeDepth = 2)
+	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
+	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
+	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
 }

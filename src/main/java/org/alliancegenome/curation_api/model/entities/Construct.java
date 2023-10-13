@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
@@ -78,4 +79,9 @@ public class Construct extends Reagent {
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
+	
+	@IndexedEmbedded(includeDepth = 2)
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 }
