@@ -34,11 +34,11 @@ import io.quarkus.logging.Log;
 public class LoadFileExecutor {
 
 	@Inject
-	ObjectMapper mapper;
+	protected ObjectMapper mapper;
 	@Inject
-	LoadProcessDisplayService loadProcessDisplayService;
+	protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject
-	BulkLoadFileDAO bulkLoadFileDAO;
+	protected BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject
 	BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject

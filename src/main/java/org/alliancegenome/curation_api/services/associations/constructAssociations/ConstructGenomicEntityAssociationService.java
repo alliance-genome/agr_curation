@@ -91,7 +91,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		return association;
 	}
 
-	public List<Long> getConstructGenomicEntityAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<String> associationIdStrings = constructGenomicEntityAssociationDAO.findFilteredIds(params);
@@ -136,13 +136,13 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		return null;
 	}
 	
-	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(String alleleCurie, String relationName, String geneCurie) {
+	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(Long constructId, String relationName, String genomicEntityCurie) {
 		ConstructGenomicEntityAssociation association = null;
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("subject.curie", alleleCurie);
+		params.put("subject.id", constructId);
 		params.put("relation.name", relationName);
-		params.put("object.curie", geneCurie);
+		params.put("object.curie", genomicEntityCurie);
 
 		SearchResponse<ConstructGenomicEntityAssociation> resp = constructGenomicEntityAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)

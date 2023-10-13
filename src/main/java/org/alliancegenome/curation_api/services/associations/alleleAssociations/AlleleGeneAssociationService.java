@@ -13,6 +13,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
@@ -68,6 +69,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 			return null;
 		dbEntity = alleleGeneAssociationDAO.persist(dbEntity);
 		addAssociationToAllele(dbEntity);
+		addAssociationToGene(dbEntity);
 		return new ObjectResponse<AlleleGeneAssociation>(dbEntity);
 	}
 
@@ -87,9 +89,9 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return association;
 	}
 
-	public List<Long> getAlleleGeneAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("subject.dataProvider.sourceOrganization.abbreviation", dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<String> associationIdStrings = alleleGeneAssociationDAO.findFilteredIds(params);
 		associationIdStrings.removeIf(Objects::isNull);
 		List<Long> associationIds = associationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
@@ -114,7 +116,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		if (deprecate) {
 			if (!association.getObsolete()) {
 				association.setObsolete(true);
-				if (authenticatedPerson != null) {
+				if (authenticatedPerson.getId() != null) {
 					association.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
 				} else {
 					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
@@ -122,6 +124,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 				association.setDateUpdated(OffsetDateTime.now());
 				return alleleGeneAssociationDAO.persist(association);
 			}
+			return association;
 		}
 		
 		Long noteId = null;

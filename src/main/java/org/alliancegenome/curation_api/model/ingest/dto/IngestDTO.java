@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -58,5 +59,9 @@ public class IngestDTO {
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("allele_gene_association_ingest_set")
 	private List<AlleleGeneAssociationDTO> alleleGeneAssociationIngestSet;
+	
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("cosntruct_genomic_entity_association_ingest_set")
+	private List<ConstructGenomicEntityAssociationDTO> constructGenomicEntityAssociationIngestSet;
 }
 
