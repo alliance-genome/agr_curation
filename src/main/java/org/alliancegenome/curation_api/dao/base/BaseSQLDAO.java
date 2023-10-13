@@ -116,13 +116,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		List<String> primaryKeys = new ArrayList<>();
 		SearchResponse<E> results = findByParams(params);
 		for (E entity : results.getResults()) {
-			String pkString;
-			try {
-				pkString = (String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
-			} catch (ClassCastException e) {
-				pkString = Long.toString((Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
-			}
-			primaryKeys.add(pkString);
+			String pkString = returnStringId(entity);
+			if (pkString != null)
+				primaryKeys.add(pkString);
 		}
 		
 		return primaryKeys;
@@ -145,18 +141,28 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		List<String> primaryKeys = new ArrayList<>();
 
 		for (E entity : allQuery.getResultList()) {
-			String pkString;
-			try {
-				pkString = (String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
-			} catch (ClassCastException e) {
-				pkString = Long.toString((Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
-			}
-			primaryKeys.add(pkString);
+			String pkString = returnStringId(entity);
+			if (pkString != null)
+				primaryKeys.add(pkString);
 		}
 
 		results.setResults(primaryKeys);
 		results.setTotalResults(totalResults);
 		return results;
+	}
+	
+	private String returnStringId(E entity) {
+		String pkString = null;
+		try {
+			pkString = (String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+		} catch (ClassCastException e) {
+			try {
+				pkString = Long.toString((Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
+			} catch (Exception ex) {
+				Log.error("Could not convert entity ID to string: " + ex.getMessage());
+			}
+		}
+		return pkString;
 	}
 
 	public SearchResponse<E> findAll(Pagination pagination) {
