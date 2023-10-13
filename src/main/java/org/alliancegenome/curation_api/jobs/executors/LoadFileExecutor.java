@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
@@ -166,7 +167,9 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<String> curiesBefore, List<String> curiesAfter, String md5sum) {
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, BulkLoadFile bulkLoadFile, List<String> curiesBefore, List<String> curiesAfter) {
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		String dataProviderName = manual.getDataProvider().name();
 		Log.debug("runLoad: After: " + dataProviderName + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
@@ -181,7 +184,7 @@ public class LoadFileExecutor {
 		ph.startProcess("Deletion/deprecation of primary objects " + dataProviderName, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				String loadDescription = dataProviderName + " bulk load (" + md5sum + ")";
+				String loadDescription = dataProviderName + " " + manual.getBackendBulkLoadType() + " bulk load (" + bulkLoadFile.getMd5Sum() + ")";
 				service.removeOrDeprecateNonUpdated(curie, loadDescription);
 				history.incrementDeleted();
 			} catch (Exception e) {
