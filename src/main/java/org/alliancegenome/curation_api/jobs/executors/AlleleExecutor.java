@@ -63,7 +63,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 			runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
 			
-			if(cleanUp) runCleanup(alleleService, history, dataProvider.name(), alleleCuriesBefore, alleleCuriesLoaded, bulkLoadFile.getMd5Sum());
+			if(cleanUp) runCleanup(alleleService, history, bulkLoadFile, alleleCuriesBefore, alleleCuriesLoaded);
 			
 			history.finishLoad();
 			
