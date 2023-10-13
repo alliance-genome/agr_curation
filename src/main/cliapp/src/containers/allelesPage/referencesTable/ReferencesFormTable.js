@@ -24,7 +24,7 @@ export const ReferencesFormTable = ({
     >
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />} header="Action"
         className='max-w-4rem' bodyClassName="text-center" frozen />
-      <Column field="curie" editor={(props) => {
+      <Column field="select" editor={(props) => {
         return <SingleReferenceTableEditor
           props={props}
           errorMessages={errorMessages}

@@ -1,4 +1,5 @@
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { differentiateCrossReferences } from '../../containers/allelesPage/utils';
 
 export const CrossReferencesTemplate = ({ rowData }) => {
   if (!rowData) return null;
@@ -20,21 +21,4 @@ export const CrossReferencesTemplate = ({ rowData }) => {
       </ul>
     </div>
   );
-};
-
-const differentiateCrossReferences = (reference) => {
-  let crossReferences;
-  let curieField;
-
-  if (reference.cross_references) {
-    crossReferences = global.structuredClone(reference.cross_references);
-    curieField = "curie";
-  } else if (reference.crossReferences) {
-    crossReferences = global.structuredClone(reference.crossReferences);
-    curieField = "referencedCurie";
-  } else {
-    return {};
-  }
-  
-  return {crossReferences, curieField};
 };

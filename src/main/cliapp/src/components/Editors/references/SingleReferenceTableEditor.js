@@ -18,7 +18,7 @@ export const SingleReferenceTableEditor = ({ props, errorMessages, onChange }) =
       />
 			<DialogErrorMessageComponent
 				errorMessages={errorMessages[props?.rowIndex]}
-				errorField={"references"}
+				errorField={"select"}
 			/>
     </>
   );

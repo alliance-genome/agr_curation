@@ -1,26 +1,47 @@
-import { getRefString, getRefStrings } from "../../utils/utils";
-
 export const generateCrossRefSearchFields = (references) => {
-  let refString = getRefStrings(references);
+  references.forEach((reference) => {
+    reference.crossReferencesFilter = generateCrossRefSearchField(reference);
+  })
+};
 
-  refString.forEach((string, index) => {
-    //match and replace parenthesis 
-    let regex = /\(|\)/g;
-    const filteredString = string?.replace(regex, "");
+export const generateCrossRefSearchField = (reference) => {
+  const { crossReferences, curieField } = differentiateCrossReferences(reference);
 
-    references[index].crossReferencesFilter = filteredString;
-  });
+  let refStrings = crossReferences.map((crossRef) => crossRef[curieField]);
+
+  return refStrings.join();
+
 
 };
 
-export const generateCrossRefSearchField = (references) => {
-  let refString = getRefString(references);
+export const validateReferenceTable = (table, alleleDispatch, state) => {
+  const errors = [];
+  table.forEach((row, index) => {
+    if (Object.keys(row).length <= 1) {
+      errors[index] = {};
+      errors[index].select = {
+        severity: "error",
+        message: "Must select reference from dropdown"
+      };
+      alleleDispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: state.field, errorMessages: errors });
+    }
+  });
+  if (errors.length > 0) return true;
+};
 
-  //match and replace parenthesis 
-  let regex = /\(|\)/g;
-  const filteredString = refString?.replace(regex, "");
+export const differentiateCrossReferences = (reference) => {
+  let crossReferences;
+  let curieField;
 
-  return filteredString;
+  if (reference.cross_references) {
+    crossReferences = global.structuredClone(reference.cross_references);
+    curieField = "curie";
+  } else if (reference.crossReferences) {
+    crossReferences = global.structuredClone(reference.crossReferences);
+    curieField = "referencedCurie";
+  } else {
+    return {};
+  }
 
-
+  return { crossReferences, curieField };
 };
