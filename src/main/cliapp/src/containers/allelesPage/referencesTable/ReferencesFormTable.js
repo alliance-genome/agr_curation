@@ -3,15 +3,12 @@ import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { CrossReferencesTemplate } from '../../../components/Templates/CrossReferenceTemplate';
 import { ShortCitationTemplate } from '../../../components/Templates/ShortCitationTemplate';
-import { SingleReferenceTableEditor } from '../../../components/Editors/references/SingleReferenceTableEditor';
 
 export const ReferencesFormTable = ({
   references,
   editingRows,
   onRowEditChange,
-  errorMessages,
   tableRef,
-  referencesOnChangeHandler,
   deletionHandler,
 }) => {
 
@@ -24,13 +21,6 @@ export const ReferencesFormTable = ({
     >
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />} header="Action"
         className='max-w-4rem' bodyClassName="text-center" frozen />
-      <Column field="select" editor={(props) => {
-        return <SingleReferenceTableEditor
-          props={props}
-          errorMessages={errorMessages}
-          onChange={referencesOnChangeHandler}
-        />;
-      }} header="Select" />
       <Column field="curie" header="Curie" sortable filter showFilterMenu={false} filterMatchMode='contains'/>
       <Column field="crossReferences" header="Cross References" body={(data) => <CrossReferencesTemplate rowData={data} />}
         filter filterField='crossReferencesFilter' filterMatchMode='contains' showFilterMenu={false} />
