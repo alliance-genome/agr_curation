@@ -11,7 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.constants.EntityConstants;
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -97,9 +97,9 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put(EntityConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		List<String> annotationIdStrings = geneDiseaseAnnotationDAO.findFilteredIds(params);
 		annotationIdStrings.removeIf(Objects::isNull);
 		List<Long> annotationIds = annotationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());

@@ -11,7 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.constants.EntityConstants;
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -102,7 +102,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	
 	public List<String> getCuriesByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityConstants.DATA_PROVIDER, dataProvider);
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
 		List<String> curies = agmDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 		return curies;
