@@ -210,7 +210,7 @@ public class LoadFileExecutor {
 		for (Long id : idsToRemove) {
 			try {
 				String loadDescription = dataProviderName + " association bulk load (" + md5sum + ")";
-				service.deprecateOrDeleteAssociation(id, false, loadDescription, true);
+				service.deprecateOrDeleteAssociation(id, false, loadDescription, false);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();

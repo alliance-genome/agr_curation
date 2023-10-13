@@ -62,6 +62,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	
 	private final String alleleGeneAssociationGetEndpoint = "/api/allelegeneassociation/findBy";
 	private final String alleleGetEndpoint = "/api/allele/";
+	private final String geneGetEndpoint = "/api/gene/";
 	
 	private void loadRequiredEntities() {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
@@ -145,6 +146,16 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
 			body("entity.alleleGeneAssociations[0].object.curie", is(gene.getCurie())).
 			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
+		
+		RestAssured.given().
+			when().
+			get(geneGetEndpoint + gene.getCurie()).
+			then().
+			statusCode(200).
+			body("entity.alleleGeneAssociations", hasSize(1)).
+			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
+			body("entity.alleleGeneAssociations[0].object.curie", is(gene.getCurie())).
+			body("entity.alleleGeneAssociations[0].object", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
