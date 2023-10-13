@@ -449,7 +449,7 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 	return anyErrors;
 }
 
-//temporary function until useNewAnnotationReducer is refactored
+//temporary function until useNewAnnotationReducer is refactored to add table states
 export const validateAlleleDetailTable = async (endpoint, entityType, table, dispatch) => {
 	if(!table) return false;
 	const validationService = new ValidationService();
