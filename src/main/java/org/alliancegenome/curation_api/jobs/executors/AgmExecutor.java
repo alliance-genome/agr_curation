@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -23,7 +21,6 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 
@@ -41,43 +38,33 @@ public class AgmExecutor extends LoadFileExecutor {
 
 	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
-		try {
-			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			Log.info("Running with: " + manual.getDataProvider().name());
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		Log.info("Running with: " + manual.getDataProvider().name());
 
-			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
-				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
-			
-			if(!checkSchemaVersion(bulkLoadFile, AffectedGenomicModelDTO.class)) return;
-			
-			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
-			if (agms == null) agms = new ArrayList<>();
-			
-			BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		if (ingestDto == null) return;
+		
+		List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
+		if (agms == null) agms = new ArrayList<>();
+		
+		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
-			List<String> amgCuriesLoaded = new ArrayList<>();
-			List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider.name());
-			Log.debug("runLoad: Before: total " + agmCuriesBefore.size());
+		List<String> amgCuriesLoaded = new ArrayList<>();
+		List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider.name());
+		Log.debug("runLoad: Before: total " + agmCuriesBefore.size());
 
-			bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
-			bulkLoadFileDAO.merge(bulkLoadFile);
-			
-			BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
+		bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFile);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 
-			runLoad(history, agms, dataProvider, amgCuriesLoaded);
-			
-			if(cleanUp) runCleanup(affectedGenomicModelService, history, dataProvider.name(), agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
-			
-			history.finishLoad();
-			
-			trackHistory(history, bulkLoadFile);
-
-		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
-			e.printStackTrace();
-		}
+		runLoad(history, agms, dataProvider, amgCuriesLoaded);
+		
+		if(cleanUp) runCleanup(affectedGenomicModelService, history, dataProvider.name(), agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
+		
+		history.finishLoad();
+		
+		trackHistory(history, bulkLoadFile);
 	}
 
 	// Gets called from the API directly

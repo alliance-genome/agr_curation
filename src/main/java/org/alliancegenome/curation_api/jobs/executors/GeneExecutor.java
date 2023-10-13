@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -23,7 +21,6 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -42,42 +39,32 @@ public class GeneExecutor extends LoadFileExecutor {
 
 	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
-		try {
-			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			BackendBulkDataProvider dataProvider = manual.getDataProvider();
-			log.info("Running with dataProvider : " + dataProvider.name());
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		log.info("Running with dataProvider : " + dataProvider.name());
 
-			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
-				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
-			
-			if(!checkSchemaVersion(bulkLoadFile, GeneDTO.class)) return;
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		if (ingestDto == null) return;
+		
+		List<GeneDTO> genes = ingestDto.getGeneIngestSet();
+		if (genes == null) genes = new ArrayList<>();
 
-			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
-			if (genes == null) genes = new ArrayList<>();
+		List<String> geneCuriesLoaded = new ArrayList<>();
+		List<String> geneCuriesBefore = geneService.getCuriesByDataProvider(dataProvider);
+		log.debug("runLoad: Before: total " + geneCuriesBefore.size());
 
-			List<String> geneCuriesLoaded = new ArrayList<>();
-			List<String> geneCuriesBefore = geneService.getCuriesByDataProvider(dataProvider);
-			log.debug("runLoad: Before: total " + geneCuriesBefore.size());
+		bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFile);
 
-			bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
-			bulkLoadFileDAO.merge(bulkLoadFile);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
+		
+		runLoad(history, genes, dataProvider, geneCuriesLoaded);
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-			
-			runLoad(history, genes, dataProvider, geneCuriesLoaded);
-
-			if(cleanUp) runCleanup(geneService, history, dataProvider.name(), geneCuriesBefore, geneCuriesLoaded, bulkLoadFile.getMd5Sum());
-			
-			history.finishLoad();
-			
-			trackHistory(history, bulkLoadFile);
-
-		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
-			e.printStackTrace();
-		}
+		if(cleanUp) runCleanup(geneService, history, dataProvider.name(), geneCuriesBefore, geneCuriesLoaded, bulkLoadFile.getMd5Sum());
+		
+		history.finishLoad();
+		
+		trackHistory(history, bulkLoadFile);
 	}
 
 	// Gets called from the API directly

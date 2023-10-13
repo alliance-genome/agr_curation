@@ -41,43 +41,33 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
-		try {
-			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			BackendBulkDataProvider dataProvider = manual.getDataProvider();
-			log.info("Running with dataProvider: " + dataProvider.name());
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		log.info("Running with dataProvider: " + dataProvider.name());
 
-			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
-				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
-			
-			if(!checkSchemaVersion(bulkLoadFile, AGMDiseaseAnnotationDTO.class)) return;
-			
-			List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
-			if (annotations == null) annotations = new ArrayList<>();
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		if (ingestDto == null) return;
+		
+		List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
+		if (annotations == null) annotations = new ArrayList<>();
 
-			List<Long> annotationIdsLoaded = new ArrayList<>();
-			List<Long> annotationIdsBefore = new ArrayList<>();
-			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
-			annotationIdsBefore.removeIf(Objects::isNull);
-			
-			bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-			bulkLoadFileDAO.merge(bulkLoadFile);
+		List<Long> annotationIdsLoaded = new ArrayList<>();
+		List<Long> annotationIdsBefore = new ArrayList<>();
+		annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
+		annotationIdsBefore.removeIf(Objects::isNull);
+		
+		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFile);
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-			
-			runLoad(history, dataProvider, annotations, annotationIdsLoaded);
-			
-			if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
+		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		
+		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
+		
+		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
 
-			history.finishLoad();
-			
-			trackHistory(history, bulkLoadFile);
-
-		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
-			e.printStackTrace();
-		}
+		history.finishLoad();
+		
+		trackHistory(history, bulkLoadFile);
 	}
 
 	// Gets called from the API directly

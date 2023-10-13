@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.associations.alleleAssociations.AlleleGeneAssociationCrudInterface;
-import org.alliancegenome.curation_api.jobs.executors.associations.AssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -23,7 +23,7 @@ public class AlleleGeneAssociationCrudController extends
 	@Inject
 	AlleleGeneAssociationService alleleGeneAssociationService;
 	@Inject
-	AssociationExecutor alleleGeneAssociationExecutor;
+	AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 
 	@Override
 	@PostConstruct

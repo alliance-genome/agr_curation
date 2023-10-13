@@ -1,11 +1,13 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 
@@ -18,6 +20,8 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
@@ -105,6 +109,23 @@ public class LoadFileExecutor {
 			return false;
 		}
 		return true;
+	}
+	
+	protected IngestDTO readIngestFile(BulkLoadFile bulkLoadFile) {
+		try {
+			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
+			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
+			
+			if(!checkSchemaVersion(bulkLoadFile, ConstructGenomicEntityAssociationDTO.class)) return null;
+
+			return ingestDto;
+		} catch (Exception e) {
+			failLoad(bulkLoadFile, e);
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	protected boolean validSchemaVersion(String submittedSchemaVersion, Class<?> dtoClass) {

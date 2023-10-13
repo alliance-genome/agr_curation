@@ -32,7 +32,7 @@ import org.alliancegenome.curation_api.jobs.executors.OntologyExecutor;
 import org.alliancegenome.curation_api.jobs.executors.OrthologyExecutor;
 import org.alliancegenome.curation_api.jobs.executors.ResourceDescriptorExecutor;
 import org.alliancegenome.curation_api.jobs.executors.VariantExecutor;
-import org.alliancegenome.curation_api.jobs.executors.associations.AssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 
@@ -56,7 +56,7 @@ public class BulkLoadJobExecutor {
 	@Inject OntologyExecutor ontologyExecutor;
 	@Inject ConstructExecutor constructExecutor;
 	@Inject VariantExecutor variantExecutor;
-	@Inject AssociationExecutor alleleGeneAssociationExecutor;
+	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
