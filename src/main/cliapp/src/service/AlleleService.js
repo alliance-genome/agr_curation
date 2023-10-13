@@ -12,7 +12,7 @@ export class AlleleService extends BaseAuthService {
 
 	async deleteAllele(allele) { 
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`allele`, allele.id);
+		return await deletionService.delete(`allele`, allele.curie);
 	}
 
 	async getAllele(curie) { 

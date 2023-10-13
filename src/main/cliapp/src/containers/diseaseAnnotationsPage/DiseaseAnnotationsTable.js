@@ -12,7 +12,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
-import { RelatedNotesDialog } from './RelatedNotesDialog';
+import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
@@ -1551,6 +1551,8 @@ export const DiseaseAnnotationsTable = () => {
 				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet='da_note_type'
+				showReferences={false}
 			/>
 			<ConditionRelationsDialog
 				originalConditionRelationsData={conditionRelationsData}

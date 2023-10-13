@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
@@ -132,16 +135,11 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 
 	public List<String> getCuriesByDataProvider(BackendBulkDataProvider dataProvider) {
-		List<String> curies;
-
-		String sourceOrg = dataProvider.sourceOrganization;
-
-		if( StringUtils.equals(sourceOrg, "RGD") ){
-			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization, dataProvider.canonicalTaxonCurie);
-		} else {
-			curies = geneDAO.findAllCuriesByDataProvider(dataProvider.sourceOrganization);
-		}
-
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
+			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		List<String> curies = geneDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 
 		return curies;

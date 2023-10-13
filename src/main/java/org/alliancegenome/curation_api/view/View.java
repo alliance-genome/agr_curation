@@ -77,6 +77,15 @@ public class View {
 	public static class GeneCreate extends GeneView {
 	}
 
+	public static class VariantView extends FieldsOnly {
+	}
+
+	public static class VariantUpdate extends GeneView {
+	}
+
+	public static class VariantCreate extends GeneView {
+	}
+
 	public static class PersonSettingView {
 	}
 

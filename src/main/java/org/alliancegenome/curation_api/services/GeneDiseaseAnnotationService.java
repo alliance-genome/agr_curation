@@ -1,13 +1,17 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -92,18 +96,14 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		List<Long> annotationIds;
-
-		String sourceOrg = dataProvider.sourceOrganization;
-
-		if( StringUtils.equals(sourceOrg, "RGD") ){
-			annotationIds = geneDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider.sourceOrganization, dataProvider.canonicalTaxonCurie);
-		} else {
-			annotationIds = geneDiseaseAnnotationDAO.findAllAnnotationIdsByDataProvider(dataProvider.sourceOrganization);
-		}
-
-		annotationIds.removeIf(Objects::isNull);
-
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
+			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		List<String> annotationIdStrings = geneDiseaseAnnotationDAO.findFilteredIds(params);
+		annotationIdStrings.removeIf(Objects::isNull);
+		List<Long> annotationIds = annotationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		
 		return annotationIds;
 	}
 }

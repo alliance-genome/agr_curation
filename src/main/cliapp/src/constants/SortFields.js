@@ -96,7 +96,10 @@ export const SORT_FIELDS = Object.freeze([
   "synonyms.name",
   "secondaryIdentifiers",
   "taxonText",
-  "constructComponents.componentSymbol"
+  "constructComponents.componentSymbol",
+  "variantStatus.name",
+  "variantType.name",
+  "sourceGeneralConsequence.name"
 ]);
 
 
