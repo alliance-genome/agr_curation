@@ -31,7 +31,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "crossReferences" }, callSuper = true)
+@ToString(exclude = { "crossReferences", "constructGenomicEntityAssociations" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BiologicalEntity.class })
 public class GenomicEntity extends BiologicalEntity {
 

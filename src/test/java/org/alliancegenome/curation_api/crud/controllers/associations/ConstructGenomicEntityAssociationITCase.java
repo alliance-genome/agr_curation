@@ -57,6 +57,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	
 	private final String constructGenomicEntityAssociationGetEndpoint = "/api/constructgenomicentityassociation/findBy";
 	private final String constructGetEndpoint = "/api/construct/";
+	private final String geneGetEndpoint = "/api/gene/";
 	
 	private void loadRequiredEntities() {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
@@ -67,19 +68,19 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		gene = createGene("CGEA:Gene0001", "NCBITaxon:6239", false, symbolNameType);
 		gene2 = createGene("CGEA:Gene0002", "NCBITaxon:6239", false, symbolNameType);
 		obsoleteGene = createGene("CGEA:Gene0003", "NCBITaxon:6239", true, symbolNameType);
-		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
-		relation = getVocabularyTerm(relationVocabulary, "is_construct_of");
-		relation2 = getVocabularyTerm(relationVocabulary, "mutation_excludes");
-		obsoleteRelation = addVocabularyTermToSet(VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET, "is_obsolete", relationVocabulary, true);
-		reference = createReference("AGRKB:AGA0001", false);
-		reference2 = createReference("AGRKB:AGA0002", false);
-		obsoleteReference = createReference("AGRKB:AGA0003", true);
+		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
+		relation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
+		relation2 = getVocabularyTerm(relationVocabulary, "targets");
+		obsoleteRelation = getVocabularyTerm(relationVocabulary, "obsolete_relation");
+		reference = createReference("AGRKB:CGEA0001", false);
+		reference2 = createReference("AGRKB:CGEA0002", false);
+		obsoleteReference = createReference("AGRKB:CGEA0003", true);
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
-		noteType = getVocabularyTerm(noteTypeVocabulary, "comment");
-		noteType2 = getVocabularyTerm(noteTypeVocabulary, "remark");
-		obsoleteNoteType = addVocabularyTermToSet(VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "obsolete_note_type", noteTypeVocabulary, true);
-		note = createNote(noteType, "AGA Test Note", false, reference);
-		note2 = createNote(noteType2, "AGA Test Note 2", false, reference2);
+		noteType = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_note");
+		noteType2 = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary");
+		obsoleteNoteType = getVocabularyTerm(noteTypeVocabulary, "obsolete_type");
+		note = createNote(noteType, "CGEA Test Note", false, reference);
+		note2 = createNote(noteType2, "CGEA Test Note 2", false, reference2);
 	}
 	
 	@Test
@@ -100,7 +101,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			post("/api/constructgeneassociation").
+			post("/api/constructgenomicentityassociation").
 			then().
 			statusCode(200);
 		
@@ -131,10 +132,20 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			get(constructGetEndpoint + construct.getId()).
 			then().
 			statusCode(200).
-			body("entity.constructGeneAssociations", hasSize(1)).
-			body("entity.constructGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.constructGeneAssociations[0].object.curie", is(gene.getCurie())).
-			body("entity.constructGeneAssociations[0].subject", not(hasKey("constructGeneAssociations")));
+			body("entity.constructGenomicEntityAssociations", hasSize(1)).
+			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relation.getName())).
+			body("entity.constructGenomicEntityAssociations[0].object.curie", is(gene.getCurie())).
+			body("entity.constructGenomicEntityAssociations[0].subject", not(hasKey("constructGeneAssociations")));
+		
+		RestAssured.given().
+			when().
+			get(geneGetEndpoint + gene.getCurie()).
+			then().
+			statusCode(200).
+			body("entity.constructGenomicEntityAssociations", hasSize(1)).
+			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relation.getName())).
+			body("entity.constructGenomicEntityAssociations[0].object.curie", is(gene.getCurie())).
+			body("entity.constructGenomicEntityAssociations[0].subject", not(hasKey("constructGeneAssociations")));
 	}
 	
 	@Test
@@ -153,7 +164,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(200);
 		
@@ -189,7 +200,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			post("/api/constructgeneassociation").
+			post("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
@@ -213,7 +224,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			post("/api/constructgeneassociation").
+			post("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -238,7 +249,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			post("/api/constructgeneassociation").
+			post("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -257,7 +268,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
@@ -280,7 +291,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -302,7 +313,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -337,7 +348,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			post("/api/constructgeneassociation").
+			post("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
@@ -378,7 +389,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
@@ -412,7 +423,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			post("/api/constructgeneassociation").
+			post("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
@@ -445,7 +456,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
@@ -465,12 +476,13 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		
 		Note editedNote = association.getRelatedNotes().get(0);
 		editedNote.setReferences(null);
+		association.setRelatedNotes(List.of(editedNote));
 		
 		RestAssured.given().
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(200);
 		
@@ -479,7 +491,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct2.getId() + "&relationName=" + relation2.getName() + "&genomicEntityCurie=" + gene2.getCurie()).
 			then().
 			statusCode(200).
-			body("entity", hasKey("relatedNotes[0]")).
+			body("entity", hasKey("relatedNotes")).
 			body("entity.relatedNotes[0]", not(hasKey("references")));
 	}
 	
@@ -495,7 +507,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			contentType("application/json").
 			body(association).
 			when().
-			put("/api/constructgeneassociation").
+			put("/api/constructgenomicentityassociation").
 			then().
 			statusCode(200);
 		
@@ -505,6 +517,6 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("evidence"))).
-			body("entity", not(hasKey("relatedNote")));
+			body("entity", not(hasKey("relatedNotes")));
 	}
 }

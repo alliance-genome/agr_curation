@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -62,15 +63,15 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties("constructGeneAssociations")
+	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	private GenomicEntity object;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne
+	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
-			@Index(name = "cgeassociation_note_cgeassociation_id_index", columnList = "constructgenomicassociation_id"),
+			@Index(name = "cgeassociation_note_cgeassociation_id_index", columnList = "constructgenomicentityassociation_id"),
 			@Index(name = "cgeassociation_note_relatednotes_id_index", columnList = "relatedNotes_id")
 		})
 	private List<Note> relatedNotes;

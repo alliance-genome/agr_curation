@@ -31,6 +31,9 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociationValidator {
 
@@ -82,6 +85,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		dbEntity.setRelatedNotes(relatedNotes);
 
 		if (response.hasErrors()) {
+			log.info("ERRORS: " + response.errorMessagesString());
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
@@ -91,18 +95,18 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	
 	private Construct validateSubject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
 		String field = "subject";
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Construct subjectEntity = constructDAO.find(uiEntity.getSubject().getCurie());
+		Construct subjectEntity = constructDAO.find(uiEntity.getSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getId().equals(dbEntity.getSubject().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -161,7 +165,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		Set<String> validatedNoteIdentities = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (Note note : uiEntity.getRelatedNotes()) {
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.getEntity() == null) {
 					addMessageResponse(field, noteResponse.errorMessagesString());
 					return null;

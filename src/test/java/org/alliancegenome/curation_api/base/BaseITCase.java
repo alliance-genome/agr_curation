@@ -686,7 +686,7 @@ public class BaseITCase {
 	public ConstructGenomicEntityAssociation getConstructGenomicEntityAssociation(Long constructId, String relationName, String genomicEntityCurie) {
 		ObjectResponse<ConstructGenomicEntityAssociation> res = RestAssured.given().
 			when().
-			get("/api/allelegeneassociation/findBy"  + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + genomicEntityCurie).
+			get("/api/constructgenomicentityassociation/findBy"  + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + genomicEntityCurie).
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefConstructGenomicEntityAssociation());

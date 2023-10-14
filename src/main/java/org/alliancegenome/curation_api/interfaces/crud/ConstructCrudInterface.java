@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
@@ -29,9 +30,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ConstructCrudInterface extends BaseIdCrudInterface<Construct>, BaseDTOCrudControllerInterface<Construct, ConstructDTO> {
 
+	@Override
+	@GET
+	@JsonView(View.ConstructView.class)
+	@Path("/{id}")
+	public ObjectResponse<Construct> get(@PathParam("id") Long id);
+	
 	@GET
 	@Path("/findBy/{identifier}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(View.ConstructView.class)
 	public ObjectResponse<Construct> get(@PathParam("identifier") String identifier);
 
 	@PUT

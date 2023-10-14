@@ -41,7 +41,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "construct", description = "POJO that represents a construct")
-@ToString(exclude = {"constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
+@ToString(exclude = {"constructGenomicEntityAssociations", "constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 public class Construct extends Reagent {
@@ -82,6 +82,6 @@ public class Construct extends Reagent {
 	
 	@IndexedEmbedded(includeDepth = 2)
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 }

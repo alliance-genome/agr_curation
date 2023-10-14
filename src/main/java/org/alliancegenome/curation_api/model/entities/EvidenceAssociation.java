@@ -36,7 +36,7 @@ public class EvidenceAssociation extends Association {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class, View.ConstructView.class })
 	@JoinTable(indexes = {
 		@Index(name = "evidenceassociation_infocontent_evidenceassociation_id_index", columnList = "evidenceassociation_id"),
 		@Index(name = "evidenceassociation_infocontent_evidence_curie_index", columnList = "evidence_curie")
