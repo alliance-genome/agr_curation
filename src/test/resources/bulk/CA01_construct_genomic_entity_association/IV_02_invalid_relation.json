@@ -1,7 +1,7 @@
 [
   {
     "construct_identifier": "WB:Construct0001",
-    "relation_name": "is_regulated_by",
+    "relation_name": "invalid",
     "genomic_entity_curie": "GENETEST:Gene0001",
      "evidence_curies": [
       "PMID:25920550"

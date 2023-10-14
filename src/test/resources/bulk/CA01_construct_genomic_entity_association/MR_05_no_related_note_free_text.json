@@ -14,7 +14,6 @@
     "date_updated": "2022-03-10T22:10:12+00:00",
     "note_dtos": [
       {
-        "free_text": "Test note",
         "note_type_name": "comment",
         "internal": false,
         "obsolete": true,

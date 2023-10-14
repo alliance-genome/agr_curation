@@ -11,7 +11,7 @@
     "created_by_curie": "ALLELETEST:Person0001",
     "updated_by_curie": "ALLELETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
-    "date_updated": "2022-03-10T22:10:12+00:00",
+    "date_updated": "Invalid",
     "note_dtos": [
       {
         "free_text": "Test note",

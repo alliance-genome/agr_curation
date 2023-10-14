@@ -1,6 +1,6 @@
 [
   {
-    "construct_identifier": "WB:Construct0001",
+    "construct_identifier": "CONSTRUCTTEST:IV01",
     "relation_name": "is_regulated_by",
     "genomic_entity_curie": "GENETEST:Gene0001",
      "evidence_curies": [

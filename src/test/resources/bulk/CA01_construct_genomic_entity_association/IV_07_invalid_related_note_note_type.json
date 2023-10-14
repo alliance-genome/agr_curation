@@ -15,7 +15,7 @@
     "note_dtos": [
       {
         "free_text": "Test note",
-        "note_type_name": "comment",
+        "note_type_name": "invalid",
         "internal": false,
         "obsolete": true,
         "created_by_curie": "ALLELETEST:Person0001",
