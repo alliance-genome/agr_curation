@@ -797,7 +797,7 @@ public class BaseITCase {
 	}
 
 	public TypeRef<ObjectResponse<Construct>> getObjectResponseTypeRefConstruct() {
-		return new TypeRef<ObjectResponse<Construct>>() {
+		return new TypeRef<ObjectResponse <Construct>>() {
 		};
 	}
 

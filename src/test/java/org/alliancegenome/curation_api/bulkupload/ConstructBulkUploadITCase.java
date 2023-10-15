@@ -344,6 +344,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
+			body("entity", hasKey("modEntityId")).
 			body("entity.constructSymbol", not(hasKey("synonymScope"))).
 			body("entity.constructSymbol", not(hasKey("synonymUrl"))).
 			body("entity.constructSymbol", not(hasKey("evidence"))).
@@ -387,6 +388,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
+			body("entity", hasKey("modEntityId")).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -405,6 +407,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
+			body("entity", hasKey("modEntityId")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).

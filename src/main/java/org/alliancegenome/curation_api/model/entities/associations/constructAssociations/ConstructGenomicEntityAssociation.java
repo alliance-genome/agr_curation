@@ -47,6 +47,10 @@ import lombok.ToString;
 })
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
+	@IndexedEmbedded(includePaths = {"curie", "constructSymbol.displayText", "constructSymbol.formatText",
+			"constructFullName.displayText", "constructFullName.formatText", "modEntityId",
+			"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
+			"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword",})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
@@ -63,7 +67,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties("constructGenomicEntityAssociations")
+	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
 	private GenomicEntity object;
 
 	@IndexedEmbedded(includeDepth = 1)

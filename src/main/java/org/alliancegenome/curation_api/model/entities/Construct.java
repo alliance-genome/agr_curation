@@ -80,7 +80,8 @@ public class Construct extends Reagent {
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
 	
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"object.curie", "object.name", "object.symbol", 
+			"object.curie_keyword", "object.name_keyword", "object.symbol_keyword"})
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;

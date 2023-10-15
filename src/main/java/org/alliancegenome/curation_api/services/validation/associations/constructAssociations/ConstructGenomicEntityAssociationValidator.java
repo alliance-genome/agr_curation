@@ -31,9 +31,6 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociationValidator {
 
@@ -85,7 +82,6 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		dbEntity.setRelatedNotes(relatedNotes);
 
 		if (response.hasErrors()) {
-			log.info("ERRORS: " + response.errorMessagesString());
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}

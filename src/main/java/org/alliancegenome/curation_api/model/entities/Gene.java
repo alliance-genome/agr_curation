@@ -82,8 +82,8 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 	
-	@IndexedEmbedded(includePaths = {"object.curie", "object.geneSymbol.displayText", "object.geneSymbol.formatText", "object.geneFullName.displayText", "object.geneFullName.formatText",
-			"object.curie", "object.geneSymbol.displayText_keyword", "object.geneSymbol.formatText_keyword", "object.geneFullName.displayText_keyword", "object.geneFullName.formatText_keyword"})
+	@IndexedEmbedded(includePaths = {"subject.curie", "subject.alleleSymbol.displayText", "subject.alleleSymbol.formatText", "subject.alleleFullName.displayText", "subject.alleleFullName.formatText",
+			"subject.curie_keyword", "subject.alleleSymbol.displayText_keyword", "subject.alleleSymbol.formatText_keyword", "subject.alleleFullName.displayText_keyword", "subject.alleleFullName.formatText_keyword"})
 	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;

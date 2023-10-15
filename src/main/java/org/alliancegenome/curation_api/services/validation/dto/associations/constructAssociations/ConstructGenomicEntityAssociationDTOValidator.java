@@ -33,6 +33,8 @@ import org.alliancegenome.curation_api.services.validation.dto.associations.Evid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+@JBossLog
 @RequestScoped
 public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
@@ -54,15 +56,15 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
-			SearchResponse<Construct> res = constructDAO.findByField("mod_internal_id", dto.getConstructIdentifier());
+			SearchResponse<Construct> res = constructDAO.findByField("modEntityId", dto.getConstructIdentifier());
 			if (res == null || res.getSingleResult() == null)
-				res = constructDAO.findByField("mod_entity_id", dto.getConstructIdentifier());
+				res = constructDAO.findByField("modInternalId", dto.getConstructIdentifier());
 			if (res == null || res.getSingleResult() == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
 				construct = res.getSingleResult();
 				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-					assocResponse.addErrorMessage("construct_curie", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
 				}
 			}
 		} else {
@@ -87,6 +89,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		association.setSubject(construct);
 		
 		ObjectResponse<ConstructGenomicEntityAssociation> eviResponse = validateEvidenceAssociationDTO(association, dto);
+		assocResponse.addErrorMessages(eviResponse.getErrorMessages());
 		association = eviResponse.getEntity();
 		
 		if (StringUtils.isBlank(dto.getGenomicEntityCurie())) {
@@ -132,9 +135,10 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			association.setRelatedNotes(null);
 		}
 		
-		if (assocResponse.hasErrors())
+		if (assocResponse.hasErrors()) {
+			log.info(assocResponse.errorMessagesString());
 			throw new ObjectValidationException(dto, assocResponse.errorMessagesString());
-			
+		}
 		association = constructGenomicEntityAssociationDAO.persist(association);
 		
 		return association;

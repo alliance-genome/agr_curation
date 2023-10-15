@@ -30,8 +30,8 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("201 - Allele Gene Associations bulk upload")
-@Order(201)
+@DisplayName("101 - Allele Gene Associations bulk upload")
+@Order(101)
 public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
 	private String alleleCurie = "ALLELETEST:Allele0001";
