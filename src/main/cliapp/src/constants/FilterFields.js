@@ -144,6 +144,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "constructComponentsFilter",
     fields: ["constructComponents.componentSymbol"],
   },
+  constructGenomicComponentsFieldSet: {
+    filterName: "constructGenomicComponentsFilter",
+    fields: ["constructGenomicEntityAssociations.object.symbol", "constructGenomicEntityAssociations.object.name", "constructGenomicEntityAssociations.object.curie"],
+  },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
     fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
@@ -481,6 +485,7 @@ export const FILTER_CONFIGS = Object.freeze({
   constructSymbolFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.constructSymbolFieldSet] },
   constructSynonymsFilterConfig:            { filterComponentType: "input", fieldSets: [FIELD_SETS.constructSynonymsFieldSet] },
   constructComponentsFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.constructComponentsFieldSet]},
+  constructGenomicComponentsFilterConfig:   { filterComponentType: "input", fieldSets: [FIELD_SETS.constructGenomicComponentsFieldSet]},
   createdByFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.createdByFieldSet] },
   curieFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.curieFieldSet] },
 

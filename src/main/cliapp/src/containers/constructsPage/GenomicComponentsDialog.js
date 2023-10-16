@@ -10,7 +10,7 @@ import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { Button } from 'primereact/button';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 
-export const ComponentsDialog = ({
+export const GenomicComponentsDialog = ({
 	originalComponentsData,
 	setOriginalComponentsData,
 	errorMessagesMainRow,
@@ -61,6 +61,10 @@ export const ComponentsDialog = ({
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
 	};
 
+	const obsoleteTemplate = (rowData) => {
+		return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>;
+	};
+
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
 		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
@@ -84,50 +88,38 @@ export const ComponentsDialog = ({
 		}
 	};
 
-	const componentSymbolTemplate = (rowData) => {
-		return (
-			<>
-				<div className={`overflow-hidden text-overflow-ellipsis componentSymbol_${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.componentSymbol }} />
-				<Tooltip target={`.componentSymbol_${rowData.id}`}>
-					<div dangerouslySetInnerHTML={{ __html: rowData.componentSymbol }} />
-				</Tooltip>
-			</>
-		)
-	}
-
-	const taxonTextTemplate = (rowData) => {
-		return (
-			<>
-				<div className={`overflow-hidden text-overflow-ellipsis taxonText_${rowData.id}`} dangerouslySetInnerHTML={{ __html: rowData.taxonText }} />
-				<Tooltip target={`.taxonText_${rowData.id}`}>
-					<div dangerouslySetInnerHTML={{ __html: rowData.taxonText }} />
-				</Tooltip>
-			</>
-		)
-	}
-
-	const taxonTemplate = (rowData) => {
-		if (rowData?.taxon) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}>
-						{rowData.taxon.name} ({rowData.taxon.curie})
-					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.id}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-				</>
-			);
+	const componentTemplate = (rowData) => {
+		const componentDisplayValue = "";
+		if (rowData.object.geneSymbol || rowData.object.alleleSymbol) {
+			let symbolValue = rowData.object.geneSymbol ? rowData.object.geneSymbol.displayText : rowData.object.alleleSymbol.displayText;
+			componentDisplayValue = symbolValue + ' (' + rowData.object.curie + ')';
+		} else if (rowData.object.name) {
+			componentDisplayValue = rowData.object.name + ' (' + rowData.object.curie + ')';
+		} else {
+			componentDisplayValue = rowData.object.curie;
 		}
+		return (
+			<>
+				<div className={`overflow-hidden text-overflow-ellipsis component_${rowData.id}`} dangerouslySetInnerHTML={{ __html: componentDisplayValue }} />
+				<Tooltip target={`.component_${rowData.id}`}>
+					<div dangerouslySetInnerHTML={{ __html: componentDisplayValue }} />
+				</Tooltip>
+			</>
+		)
 	}
 
 	let headerGroup = 	<ColumnGroup>
 							<Row>
 								<Column header="Relation" />
-								<Column header="Component Symbol" />
-								<Column header="Taxon" />
-								<Column header="Taxon Text" />
+								<Column header="Component" />
 								<Column header="RelatedNotes" />
+								<Column header="Updated By" />
+								<Column header="Date Updated" />
+								<Column header="Created By" />
+								<Column header="Date Created" />
 								<Column header="Evidence" />
 								<Column header="Internal" />
+								<Column header="Obsolete" />
 							</Row>
 						</ColumnGroup>;
 
@@ -135,16 +127,19 @@ export const ComponentsDialog = ({
 		<>
 			<div>
 				<Dialog visible={dialog} className='w-8' modal onHide={hideDialog} closable={true} onShow={showDialogHandler} >
-					<h3>Components</h3>
+					<h3>Component Associations</h3>
 					<DataTable value={localComponents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 							ref={tableRef} >
 						<Column field="relation.name" header="Relation" headerClassName='surface-0'/>
-						<Column field="componentSymbol" header="Component Symbol" headerClassName='surface-0' body={componentSymbolTemplate}/>
-						<Column field="taxon.name" header="Taxon" headerClassName='surface-0' body={taxonTemplate}/>
-						<Column field="taxonText" header="Taxon Text" headerClassName='surface-0' body={taxonTextTemplate}/>
+						<Column field="subject.curie" header="Component" headerClassName='surface-0' body={componentTemplate}/>
 						<Column field="relatedNotes.freeText" header="Related Notes" headerClassName='surface-0' body={relatedNotesTemplate}/>
 						<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName='surface-0'/>
+						<Column field="dateUpdated" header="Date Updated" headerClassName='surface-0'/>
+						<Column field="createdBy.uniqueId" header="Created By" headerClassName='surface-0'/>
+						<Column field="dateCreated" header="Date Created" headerClassName='surface-0'/>
 						<Column field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
+						<Column field="obsolete" header="Obsolete" body={obsoleteTemplate} headerClassName='surface-0'/>
 					</DataTable>
 				</Dialog>
 			</div>

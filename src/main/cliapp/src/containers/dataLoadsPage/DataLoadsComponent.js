@@ -80,7 +80,8 @@ export const DataLoadsComponent = () => {
 		["AGM", ["AffectedGenomicModelDTO"]],
 		["VARIANT", ["VariantDTO"]],
 		["CONSTRUCT", ["ConstructDTO"]],
-		["ALLELE_ASSOCIATION", ["AlleleGeneAssociationDTO"]]
+		["ALLELE_ASSOCIATION", ["AlleleGeneAssociationDTO"]],
+		["CONSTRUCT_ASSOCIATION", ["ConstructGenomiEntityAssociationDTO"]]
 		]);
 
 	useQuery(['bulkloadtable'],

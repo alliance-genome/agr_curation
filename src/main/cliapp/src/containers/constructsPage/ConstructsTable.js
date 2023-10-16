@@ -43,6 +43,14 @@ export const ConstructsTable = () => {
 		mainRowProps: {},
 	});
 
+	const [genomicComponentsData, setGenomicComponentsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+
 	const uniqueIdBodyTemplate = (rowData) => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
@@ -219,8 +227,8 @@ export const ConstructsTable = () => {
 		if (rowData?.constructComponents) {
 			const componentSet = new Set();
 			for(var i = 0; i < rowData.constructComponents.length; i++){
-				if (rowData.constructComponents[i].componentSymbol) {
-					componentSet.add(rowData.constructComponents[i].componentSymbol);
+				if (rowData.constructComponents[i].componentSymbol && rowData.constructComponents[i].relation) {
+					componentSet.add(rowData.constructComponents[i].relation?.name + ': ' + rowData.constructComponents[i].componentSymbol);
 				}
 			}
 			if (componentSet.size > 0) {
@@ -249,6 +257,50 @@ export const ConstructsTable = () => {
 		_componentsData["originalComponents"] = rowData.constructComponents;
 		_componentsData["dialog"] = true;
 		setComponentsData(() => ({
+			..._componentsData
+		}));
+	};
+
+	const genomicComponentsTemplate = (rowData) => {
+		if (rowData?.constructGenomicEntityAssociations) {
+			const componentSet = new Set();
+			for(var i = 0; i < rowData.constructGenomicEntityAssociations.length; i++){
+				const symbolValue = "";
+				if (rowData.constructGenomicEntityAssociations[i]?.object.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.object.alleleSymbol) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.geneSymbol ? rowData.constructGenomicEntityAssociations[i].object.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].object.alleleSymbol.displayText;
+				} else if (rowData.constructGenomicEntityAssociations[i]?.object.name) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.name;
+				} else {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.curie;
+				}
+				componentSet.add(rowData.constructGenomicEntityAssociations[i]?.relation?.name + ': ' + symbolValue);
+			}
+			if (componentSet.size > 0) {
+				const sortedComponents = Array.from(componentSet).sort();
+				const listTemplate = (item) => {
+					return (
+						<span style={{ textDecoration: 'underline' }}>
+							{item && item}
+						</span>
+					);
+				};
+				return (
+					<>
+						<Button className="p-button-text"
+							onClick={(event) => { handleComponentsOpen(event, rowData) }} >
+							<ListTableCell template={listTemplate} listData={sortedComponents}/>
+						</Button>
+					</>
+				);
+			}
+		}
+	};
+	
+	const handleGenomicComponentsOpen = (event, rowData) => {
+		let _componentsData = {};
+		_componentsData["originalComponents"] = rowData.constructGenomicEntityAssociations;
+		_componentsData["dialog"] = true;
+		setGenomicComponentsData(() => ({
 			..._componentsData
 		}));
 	};
@@ -306,11 +358,18 @@ export const ConstructsTable = () => {
 			body: secondaryIdsBodyTemplate
 		},
 		{
-			field: "constructComponents.componentSymbol",
-			header: "Components",
+			field: "constructComponents.relation.name",
+			header: "Free Text Components",
 			body: componentsTemplate,
 			sortable: { isEnabled },
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
+		},
+		{
+			field: "constructGenomicEntityAssociations.relation.name",
+			header: "Component Associations",
+			body: genomicComponentsTemplate,
+			sortable: { isEnabled },
+			filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
 		},
 		{
 			field: "references.primaryCrossReferenceCurie",
@@ -425,6 +484,12 @@ export const ConstructsTable = () => {
 				setOriginalSynonymsData={setSynonymsData}
 			/>
 			<ComponentsDialog
+				originalComponentsData={componentsData}
+				setOriginalComponentsData={setComponentsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<GenomicComponentsDialog
 				originalComponentsData={componentsData}
 				setOriginalComponentsData={setComponentsData}
 				errorMessagesMainRow={errorMessages}
