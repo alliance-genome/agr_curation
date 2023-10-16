@@ -192,6 +192,7 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT_ROW': 
 			draft.allele[action.entityType][action.index][action.field] = action.value;
 			break;
+		//todo: delete? is this being used?
 		case 'REPLACE_ROW': 
 			draft.allele[action.entityType][action.index] = action.value;
 			break;
@@ -224,6 +225,7 @@ const alleleReducer = (draft, action) => {
 		case 'UPDATE_TABLE_ERROR_MESSAGES': 
 			draft.entityStates[action.entityType].errorMessages = action.errorMessages;
 			break;
+		//todo: delete? is this being used?
 		case 'TOGGLE_TABLE': 
 			draft.entityStates[action.entityType].show = action.value;
 			break;

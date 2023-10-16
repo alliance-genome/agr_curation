@@ -8,12 +8,17 @@ import { SingleReferenceFormEditor } from "../../../components/Editors/reference
 export const ReferencesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
 
-  const createNewReferenceHandler = (e) => {
-    e.preventDefault();
+  const createNewReferenceHandler = (event) => {
+    if (typeof event.target.value === 'string') return;
+
     const dataKey = state.allele.references?.length;
+    const searchString = generateCrossRefSearchField(event.target.value);
 
     const newReference = {
+      ...event.target.value,
+      shortCitation: event.target.value.short_citation,
       dataKey: dataKey,
+      crossReferencesFilter: searchString
     };
 
     dispatch({
@@ -74,7 +79,6 @@ export const ReferencesForm = ({ state, dispatch }) => {
       showTable={state.entityStates.references.show}
       button={
           <ReferenceFieldAndButton
-            referencesOnChangeHandler={referencesOnChangeHandler}
             state={state}
             createNewReferenceHandler={createNewReferenceHandler}
           />
@@ -83,11 +87,11 @@ export const ReferencesForm = ({ state, dispatch }) => {
   );
 };
 
-function ReferenceFieldAndButton({ referencesOnChangeHandler, state, createNewReferenceHandler }) {
+function ReferenceFieldAndButton({ state, createNewReferenceHandler }) {
   return (
     <>
       <SingleReferenceFormEditor
-        onReferencesValueChange={referencesOnChangeHandler}
+        onReferenceValueChange={createNewReferenceHandler}
         errorMessages={state.entityStates.references.errorMessages} />
       <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-6" />
     </>

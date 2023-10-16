@@ -1,12 +1,12 @@
 import React from "react";
-import { AutocompleteFormEditor } from "../../Autocomplete/AutocompleteFormEditor";
 import { LiteratureAutocompleteTemplate } from "../../Autocomplete/LiteratureAutocompleteTemplate";
 import { FormErrorMessageComponent } from "../../Error/FormErrorMessageComponent";
 import { FormFieldWrapper } from "../../FormFieldWrapper";
 import { referenceSearch } from "./utils";
+import { AutocompleteFormEditor } from "../../Autocomplete/AutocompleteFormEditor";
 
 export const SingleReferenceFormEditor = ({
-  onReferencesValueChange,
+  onReferenceValueChange,
   widgetColumnSize,
   labelColumnSize,
   fieldDetailsColumnSize,
@@ -25,7 +25,7 @@ export const SingleReferenceFormEditor = ({
             name="singleReference"
             fieldName='singleReference'
             initialValue={null}
-            onValueChangeHandler={onReferencesValueChange}
+            onValueChangeHandler={onReferenceValueChange}
             valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
               <LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
           />
