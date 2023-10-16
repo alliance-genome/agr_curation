@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "primereact/button";
 import { generateCrossRefSearchField } from "../utils";
 import { SingleReferenceFormEditor } from "../../../components/Editors/references/SingleReferenceFormEditor";
+import { Splitter, SplitterPanel } from "primereact/splitter";
 
 export const NewReferenceField = ({ state, dispatch }) => {
   const [reference, setReference] = useState(null);
@@ -51,12 +52,16 @@ export const NewReferenceField = ({ state, dispatch }) => {
     setReference(event.target.value);
   };
   return (
-    <>
-      <SingleReferenceFormEditor
-        reference={reference}
-        onReferenceValueChange={referencesOnChangeHandler}
-        errorMessages={state.entityStates.references.errorMessages} />
-      <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-6" />
-    </>
+    <Splitter gutterSize="0" className="border-none surface-ground">
+      <SplitterPanel size={20}>
+        <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-9" />
+      </SplitterPanel>
+      <SplitterPanel size={80}>
+        <SingleReferenceFormEditor
+          reference={reference}
+          onReferenceValueChange={referencesOnChangeHandler}
+          errorMessages={state.entityStates.references.errorMessages} />
+      </SplitterPanel>
+    </Splitter>
   );
 };

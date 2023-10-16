@@ -10,6 +10,7 @@ export const AutocompleteFormEditor = (
 		name,
 		rowProps,
 		classNames,
+		inputClassNames,
 		fieldName,
 		subField = "curie",
 		valueDisplay,
@@ -47,6 +48,7 @@ export const AutocompleteFormEditor = (
 				onHide={(e) => op.current.hide(e)}
 				onChange={(e) => onValueChangeHandler(e)}
 				className={classNames}
+				inputClassName={inputClassNames}
 			/>
 			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName}/>
 		</div>

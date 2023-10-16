@@ -37,6 +37,7 @@ export const ReferencesForm = ({ state, dispatch }) => {
             dispatch={dispatch}
           />
       }
+      includeField={true}
     />
   );
 };
