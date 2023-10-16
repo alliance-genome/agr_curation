@@ -49,7 +49,19 @@ function ReferenceFieldAndButton({ state, dispatch }) {
   const createNewReferenceHandler = (event) => {
     event.preventDefault();
 
-    if (typeof referece === 'string') return;
+    if (!reference || typeof reference === 'string'){
+
+      const errorMessages = {
+        references: "Must select reference from dropdown",
+      };
+      dispatch({
+        type: "UPDATE_TABLE_ERROR_MESSAGES",
+        entityType: "references",
+        errorMessages,
+      });
+
+      return;
+    } 
 
     const dataKey = state.allele.references?.length;
     const searchString = generateCrossRefSearchField(reference);
@@ -65,6 +77,12 @@ function ReferenceFieldAndButton({ state, dispatch }) {
       type: "ADD_ROW",
       row: newReference,
       entityType: "references",
+    });
+    setReference(null);
+    dispatch({
+      type: "UPDATE_TABLE_ERROR_MESSAGES",
+      entityType: "references",
+      errorMessages: {},
     });
   };
 

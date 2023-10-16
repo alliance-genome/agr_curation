@@ -14,6 +14,7 @@ export const generateCrossRefSearchField = (reference) => {
 
 };
 
+//todo: reevaluate if this is needed
 export const validateReferenceTable = (table, alleleDispatch, state) => {
   const errors = [];
   table.forEach((row, index) => {

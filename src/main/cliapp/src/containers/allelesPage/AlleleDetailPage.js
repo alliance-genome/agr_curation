@@ -80,6 +80,7 @@ const { isLoading } =	useQuery([curie],
 				table = alleleState.allele[state.field];
 			}
 
+			//todo: reevaluate if this is needed
 			if(state.field === "references"){
 				anyErrors = validateReferenceTable(table, alleleDispatch, state);
 				return;
