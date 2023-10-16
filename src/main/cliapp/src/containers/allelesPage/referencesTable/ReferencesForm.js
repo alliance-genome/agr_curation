@@ -1,56 +1,13 @@
 import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { ReferencesFormTable } from "./ReferencesFormTable";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { generateCrossRefSearchField } from "../utils";
 import { SingleReferenceFormEditor } from "../../../components/Editors/references/SingleReferenceFormEditor";
 
 export const ReferencesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
 
-  const createNewReferenceHandler = (event) => {
-    if (typeof event.target.value === 'string') return;
-
-    const dataKey = state.allele.references?.length;
-    const searchString = generateCrossRefSearchField(event.target.value);
-
-    const newReference = {
-      ...event.target.value,
-      shortCitation: event.target.value.short_citation,
-      dataKey: dataKey,
-      crossReferencesFilter: searchString
-    };
-
-    dispatch({
-      type: "ADD_ROW",
-      row: newReference,
-      entityType: "references",
-    });
-  };
-
-
-  const referencesOnChangeHandler = (event, setFieldValue, props) => {
-    //updates value in table input box
-    setFieldValue(event.target.value);
-
-    if (typeof event.target.value === 'string') return;
-    const searchString = generateCrossRefSearchField(event.target.value);
-
-    const newReference = {
-      ...event.target.value,
-      shortCitation: event.target.value.short_citation,
-      dataKey: props.rowIndex,
-      crossReferencesFilter: searchString
-    };
-    console.log("in onChange", newReference);
-
-    dispatch({
-      type: 'REPLACE_ROW',
-      entityType: 'references',
-      index: props.rowIndex,
-      value: newReference
-    });
-  };
 
   const onRowEditChange = (e) => {
     return null;
@@ -71,7 +28,6 @@ export const ReferencesForm = ({ state, dispatch }) => {
           errorMessages={state.entityStates.references.errorMessages}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
-          referencesOnChangeHandler={referencesOnChangeHandler}
           deletionHandler={deletionHandler}
         />
       }
@@ -80,18 +36,47 @@ export const ReferencesForm = ({ state, dispatch }) => {
       button={
           <ReferenceFieldAndButton
             state={state}
-            createNewReferenceHandler={createNewReferenceHandler}
+            dispatch={dispatch}
           />
       }
     />
   );
 };
 
-function ReferenceFieldAndButton({ state, createNewReferenceHandler }) {
+function ReferenceFieldAndButton({ state, dispatch }) {
+  const [reference, setReference] = useState(null);
+
+  const createNewReferenceHandler = (event) => {
+    event.preventDefault();
+
+    if (typeof referece === 'string') return;
+
+    const dataKey = state.allele.references?.length;
+    const searchString = generateCrossRefSearchField(reference);
+
+    const newReference = {
+      ...reference,
+      shortCitation: reference.short_citation,
+      dataKey: dataKey,
+      crossReferencesFilter: searchString
+    };
+
+    dispatch({
+      type: "ADD_ROW",
+      row: newReference,
+      entityType: "references",
+    });
+  };
+
+
+  const referencesOnChangeHandler = (event) => {
+    setReference(event.target.value);
+  };
   return (
     <>
       <SingleReferenceFormEditor
-        onReferenceValueChange={createNewReferenceHandler}
+        reference={reference}
+        onReferenceValueChange={referencesOnChangeHandler}
         errorMessages={state.entityStates.references.errorMessages} />
       <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-6" />
     </>

@@ -6,6 +6,7 @@ import { referenceSearch } from "./utils";
 import { AutocompleteFormEditor } from "../../Autocomplete/AutocompleteFormEditor";
 
 export const SingleReferenceFormEditor = ({
+  reference,
   onReferenceValueChange,
   widgetColumnSize,
   labelColumnSize,
@@ -24,7 +25,7 @@ export const SingleReferenceFormEditor = ({
             search={referenceSearch}
             name="singleReference"
             fieldName='singleReference'
-            initialValue={null}
+            initialValue={reference}
             onValueChangeHandler={onReferenceValueChange}
             valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
               <LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
