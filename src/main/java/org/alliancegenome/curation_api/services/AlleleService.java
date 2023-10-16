@@ -50,7 +50,6 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Inject AlleleDTOValidator alleleDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject PersonService personService;
-	@Inject NoteService noteService;
 	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
@@ -121,9 +120,9 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 			} else {
 				deleteAlleleSlotAnnotations(allele);
 				List<Note> notesToDelete = allele.getRelatedNotes();
-				alleleDAO.remove(curie);
 				if (CollectionUtils.isNotEmpty(notesToDelete))
-					notesToDelete.forEach(note -> noteService.delete(note.getId()));
+					notesToDelete.forEach(note -> alleleDAO.deleteAttachedNote(note.getId()));
+				alleleDAO.remove(curie);
 			}
 		} else {
 			log.error("Failed getting allele: " + curie);

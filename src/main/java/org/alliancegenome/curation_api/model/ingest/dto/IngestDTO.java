@@ -61,7 +61,7 @@ public class IngestDTO {
 	private List<AlleleGeneAssociationDTO> alleleGeneAssociationIngestSet;
 	
 	@JsonView({ View.FieldsAndLists.class })
-	@JsonProperty("cosntruct_genomic_entity_association_ingest_set")
+	@JsonProperty("construct_genomic_entity_association_ingest_set")
 	private List<ConstructGenomicEntityAssociationDTO> constructGenomicEntityAssociationIngestSet;
 }
 

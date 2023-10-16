@@ -46,3 +46,21 @@ CREATE TABLE constructgenomicentityassociation_note_aud (
 ALTER TABLE constructgenomicentityassociation_note_aud ADD PRIMARY KEY (constructgenomicentityassociation_id, relatednotes_id, rev);
 
 ALTER TABLE constructgenomicentityassociation_note_aud ADD CONSTRAINT constructgenomicentityassociation_note_aud_rev_fk FOREIGN KEY (rev) REFERENCES revinfo (rev);
+
+CREATE TABLE tmp_vocab_link (
+	vocabularytermsets_id bigint,
+	memberterms_id bigint);
+	
+INSERT INTO tmp_vocab_link (memberterms_id)
+	SELECT id FROM vocabularyterm WHERE vocabulary_id = (
+		SELECT id from vocabulary where vocabularylabel = 'construct_relation'
+	);
+	
+UPDATE tmp_vocab_link SET vocabularytermsets_id = subquery.id
+	FROM (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'construct_genomic_entity_relation') AS subquery
+	WHERE vocabularytermsets_id IS NULL;
+	
+INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id)
+	SELECT vocabularytermsets_id, memberterms_id FROM tmp_vocab_link;
+	
+DROP TABLE tmp_vocab_link;

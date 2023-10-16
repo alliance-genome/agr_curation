@@ -4,6 +4,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ComponentsDialog } from './ComponentsDialog';
+import { GenomicComponentsDialog } from './GenomicComponentsDialog';
 import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
 import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
@@ -228,7 +229,14 @@ export const ConstructsTable = () => {
 			const componentSet = new Set();
 			for(var i = 0; i < rowData.constructComponents.length; i++){
 				if (rowData.constructComponents[i].componentSymbol && rowData.constructComponents[i].relation) {
-					componentSet.add(rowData.constructComponents[i].relation?.name + ': ' + rowData.constructComponents[i].componentSymbol);
+					let relationName = "";
+					if (rowData.constructComponents[i]?.relation?.name) {
+						relationName = rowData.constructComponents[i].relation.name;
+						if (relationName.indexOf(' (RO:') !== -1) {
+							relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+						}
+					}	
+					componentSet.add(relationName + ': ' + rowData.constructComponents[i].componentSymbol);
 				}
 			}
 			if (componentSet.size > 0) {
@@ -265,7 +273,7 @@ export const ConstructsTable = () => {
 		if (rowData?.constructGenomicEntityAssociations) {
 			const componentSet = new Set();
 			for(var i = 0; i < rowData.constructGenomicEntityAssociations.length; i++){
-				const symbolValue = "";
+				let symbolValue = "";
 				if (rowData.constructGenomicEntityAssociations[i]?.object.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.object.alleleSymbol) {
 					symbolValue = rowData.constructGenomicEntityAssociations[i].object.geneSymbol ? rowData.constructGenomicEntityAssociations[i].object.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].object.alleleSymbol.displayText;
 				} else if (rowData.constructGenomicEntityAssociations[i]?.object.name) {
@@ -273,7 +281,14 @@ export const ConstructsTable = () => {
 				} else {
 					symbolValue = rowData.constructGenomicEntityAssociations[i].object.curie;
 				}
-				componentSet.add(rowData.constructGenomicEntityAssociations[i]?.relation?.name + ': ' + symbolValue);
+				let relationName = "";
+				if (rowData.constructGenomicEntityAssociations[i]?.relation?.name) {
+					relationName = rowData.constructGenomicEntityAssociations[i].relation.name;
+					if (relationName.indexOf(' (RO:') !== -1) {
+						relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+					}
+				}	
+				componentSet.add(relationName + ': ' + symbolValue);
 			}
 			if (componentSet.size > 0) {
 				const sortedComponents = Array.from(componentSet).sort();
@@ -287,7 +302,7 @@ export const ConstructsTable = () => {
 				return (
 					<>
 						<Button className="p-button-text"
-							onClick={(event) => { handleComponentsOpen(event, rowData) }} >
+							onClick={(event) => { handleGenomicComponentsOpen(event, rowData) }} >
 							<ListTableCell template={listTemplate} listData={sortedComponents}/>
 						</Button>
 					</>
@@ -358,14 +373,14 @@ export const ConstructsTable = () => {
 			body: secondaryIdsBodyTemplate
 		},
 		{
-			field: "constructComponents.relation.name",
+			field: "constructComponents.componentSymbol",
 			header: "Free Text Components",
 			body: componentsTemplate,
 			sortable: { isEnabled },
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
 		},
 		{
-			field: "constructGenomicEntityAssociations.relation.name",
+			field: "constructGenomicEntityAssociations.object.symbol",
 			header: "Component Associations",
 			body: genomicComponentsTemplate,
 			sortable: { isEnabled },
@@ -490,8 +505,8 @@ export const ConstructsTable = () => {
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<GenomicComponentsDialog
-				originalComponentsData={componentsData}
-				setOriginalComponentsData={setComponentsData}
+				originalComponentsData={genomicComponentsData}
+				setOriginalComponentsData={setGenomicComponentsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>

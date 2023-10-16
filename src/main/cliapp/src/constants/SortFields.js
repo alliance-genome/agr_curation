@@ -96,8 +96,8 @@ export const SORT_FIELDS = Object.freeze([
   "synonyms.name",
   "secondaryIdentifiers",
   "taxonText",
-  "constructComponents.relation.name",
-  "constructGenomicEntityAssociations.relation.name",
+  "constructComponents.componentSymbol",
+  "constructGenomicEntityAssociations.object.symbol",
   "variantStatus.name",
   "variantType.name",
   "sourceGeneralConsequence.name"

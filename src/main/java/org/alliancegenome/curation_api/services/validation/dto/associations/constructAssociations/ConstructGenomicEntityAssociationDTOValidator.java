@@ -33,8 +33,6 @@ import org.alliancegenome.curation_api.services.validation.dto.associations.Evid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-@JBossLog
 @RequestScoped
 public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
@@ -135,10 +133,9 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			association.setRelatedNotes(null);
 		}
 		
-		if (assocResponse.hasErrors()) {
-			log.info(assocResponse.errorMessagesString());
+		if (assocResponse.hasErrors())
 			throw new ObjectValidationException(dto, assocResponse.errorMessagesString());
-		}
+
 		association = constructGenomicEntityAssociationDAO.persist(association);
 		
 		return association;

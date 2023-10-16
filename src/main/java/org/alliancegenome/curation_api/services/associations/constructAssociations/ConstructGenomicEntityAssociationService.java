@@ -50,8 +50,6 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	@Inject
 	ConstructDAO constructDAO;
 	@Inject
-	NoteService noteService;
-	@Inject
 	GenomicEntityDAO genomicEntityDAO;
 	@Inject
 	PersonService personService;
@@ -129,9 +127,10 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		}
 		
 		List<Note> notesToDelete = association.getRelatedNotes();
-		constructGenomicEntityAssociationDAO.remove(association.getId());
 		if (CollectionUtils.isNotEmpty(notesToDelete))
-			notesToDelete.forEach(note -> noteService.delete(note.getId()));
+			notesToDelete.forEach(note -> constructGenomicEntityAssociationDAO.deleteAttachedNote(note.getId()));
+		constructGenomicEntityAssociationDAO.remove(association.getId());
+		
 		
 		return null;
 	}

@@ -16,7 +16,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class })
+@AGRCurationSchemaVersion(min = "1.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class })
 public class ConstructGenomicEntityAssociationDTO extends EvidenceAssociationDTO {
 
 	@JsonView({ View.FieldsOnly.class })

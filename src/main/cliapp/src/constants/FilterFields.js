@@ -142,11 +142,11 @@ export const FIELD_SETS = Object.freeze({
   },
   constructComponentsFieldSet: {
     filterName: "constructComponentsFilter",
-    fields: ["constructComponents.componentSymbol"],
+    fields: ["constructComponents.componentSymbol", "constructComponents.relation.name"],
   },
   constructGenomicComponentsFieldSet: {
     filterName: "constructGenomicComponentsFilter",
-    fields: ["constructGenomicEntityAssociations.object.symbol", "constructGenomicEntityAssociations.object.name", "constructGenomicEntityAssociations.object.curie"],
+    fields: ["constructGenomicEntityAssociations.object.symbol", "constructGenomicEntityAssociations.object.name", "constructGenomicEntityAssociations.object.curie", "constructGenomicEntityAssociations.relation.name"],
   },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
