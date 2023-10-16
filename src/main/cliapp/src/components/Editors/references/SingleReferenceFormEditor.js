@@ -19,7 +19,7 @@ export const SingleReferenceFormEditor = ({
         labelColumnSize={labelColumnSize}
         fieldDetailsColumnSize={fieldDetailsColumnSize}
         widgetColumnSize={widgetColumnSize}
-        fieldName="References"
+        fieldName=""
         formField={
           <AutocompleteFormEditor
             search={referenceSearch}
