@@ -57,14 +57,15 @@ public class GeneExecutor extends LoadFileExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-		
+			
 		runLoad(history, genes, dataProvider, geneCuriesLoaded);
 
-		if(cleanUp) runCleanup(geneService, history, dataProvider.name(), geneCuriesBefore, geneCuriesLoaded, bulkLoadFile.getMd5Sum());
-		
+		if(cleanUp) runCleanup(geneService, history, bulkLoadFile, geneCuriesBefore, geneCuriesLoaded);
+			
 		history.finishLoad();
-		
+			
 		trackHistory(history, bulkLoadFile);
+
 	}
 
 	// Gets called from the API directly

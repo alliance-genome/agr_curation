@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
@@ -187,7 +188,9 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<String> curiesBefore, List<String> curiesAfter, String md5sum) {
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, BulkLoadFile bulkLoadFile, List<String> curiesBefore, List<String> curiesAfter) {
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		String dataProviderName = manual.getDataProvider().name();
 		Log.debug("runLoad: After: " + dataProviderName + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
@@ -202,7 +205,7 @@ public class LoadFileExecutor {
 		ph.startProcess("Deletion/deprecation of primary objects " + dataProviderName, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				String loadDescription = dataProviderName + " association bulk load (" + md5sum + ")";
+				String loadDescription = dataProviderName + " " + manual.getBackendBulkLoadType() + " bulk load (" + bulkLoadFile.getMd5Sum() + ")";
 				service.removeOrDeprecateNonUpdated(curie, loadDescription);
 				history.incrementDeleted();
 			} catch (Exception e) {
@@ -231,7 +234,7 @@ public class LoadFileExecutor {
 		for (Long id : idsToRemove) {
 			try {
 				String loadDescription = dataProviderName + " association bulk load (" + md5sum + ")";
-				service.deprecateOrDeleteAssociation(id, false, loadDescription, true);
+				service.deprecateOrDeleteAssociation(id, false, loadDescription, false);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();

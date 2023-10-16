@@ -8,7 +8,6 @@ import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
-import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
@@ -18,6 +17,7 @@ import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { validateAlleleDetailTable } from '../../utils/utils';
+import { validateReferenceTable } from './utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
@@ -71,7 +71,6 @@ const { isLoading } =	useQuery([curie],
 		let states = Object.values(alleleState.entityStates);
 
 		states
-		.filter(state => state.type !== 'display')
 		.forEach( async (state) => {
 			let table;
 
@@ -79,6 +78,11 @@ const { isLoading } =	useQuery([curie],
 				table = [alleleState.allele[state.field]];
 			} else {
 				table = alleleState.allele[state.field];
+			}
+
+			if(state.field === "references"){
+				anyErrors = validateReferenceTable(table, alleleDispatch, state);
+				return;
 			}
 
 			let isError = await validateAlleleDetailTable(
@@ -132,27 +136,6 @@ const { isLoading } =	useQuery([curie],
 			type: 'EDIT',
 			field: 'taxon',
 			value,
-		})
-	}
-
-	const onReferenceValueChange = (event) => {
-		if(event.value.length === 0){
-			alleleDispatch({
-				type: 'TOGGLE_TABLE',
-				entityType: 'references',
-				value: false,
-			})
-		} else {
-			alleleDispatch({
-				type: 'TOGGLE_TABLE',
-				entityType: 'references',
-				value: true,
-		})}
-
-		alleleDispatch({
-			type: 'EDIT',
-			field: 'references',
-			value: event.value,
 		})
 	}
 
@@ -312,15 +295,6 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
-					<ReferencesFormEditor 
-						references={alleleState.allele?.references} 
-						onReferencesValueChange={onReferenceValueChange} 
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={alleleState.errorMessages}
-					/>
-
 					<ReferencesForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
@@ -442,3 +416,4 @@ const { isLoading } =	useQuery([curie],
 	)
 	
 };
+

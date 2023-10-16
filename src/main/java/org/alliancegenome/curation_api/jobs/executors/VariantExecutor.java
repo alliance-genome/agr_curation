@@ -54,12 +54,13 @@ public class VariantExecutor extends LoadFileExecutor {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
 
 		runLoad(history, variants, dataProvider, variantCuriesLoaded);
-		
-		if(cleanUp) runCleanup(variantService, history, dataProvider.name(), variantCuriesBefore, variantCuriesLoaded, bulkLoadFile.getMd5Sum());
-		
+			
+		if(cleanUp) runCleanup(variantService, history, bulkLoadFile, variantCuriesBefore, variantCuriesLoaded);
+			
 		history.finishLoad();
-		
+			
 		trackHistory(history, bulkLoadFile);
+
 	}
 
 	// Gets called from the API directly

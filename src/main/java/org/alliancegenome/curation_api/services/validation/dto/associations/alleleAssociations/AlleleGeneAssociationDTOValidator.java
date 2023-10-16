@@ -62,10 +62,11 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			agaResponse.addErrorMessage("allele_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			Allele allele = alleleDAO.find(dto.getAlleleCurie());
-			if (allele == null)
+			if (allele == null) {
 				agaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ")");
-			if (beDataProvider != null && !allele.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization))
+			} else if (beDataProvider != null && !allele.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				agaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+			}
 			association.setSubject(allele);	
 		}
 		

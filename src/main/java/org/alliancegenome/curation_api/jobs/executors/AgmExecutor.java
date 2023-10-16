@@ -49,7 +49,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
-		List<String> amgCuriesLoaded = new ArrayList<>();
+		List<String> agmCuriesLoaded = new ArrayList<>();
 		List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider.name());
 		Log.debug("runLoad: Before: total " + agmCuriesBefore.size());
 
@@ -58,13 +58,14 @@ public class AgmExecutor extends LoadFileExecutor {
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 
-		runLoad(history, agms, dataProvider, amgCuriesLoaded);
-		
-		if(cleanUp) runCleanup(affectedGenomicModelService, history, dataProvider.name(), agmCuriesBefore, amgCuriesLoaded, bulkLoadFile.getMd5Sum());
-		
+		runLoad(history, agms, dataProvider, agmCuriesLoaded);
+			
+		if(cleanUp) runCleanup(affectedGenomicModelService, history, bulkLoadFile, agmCuriesBefore, agmCuriesLoaded);
+			
 		history.finishLoad();
-		
+			
 		trackHistory(history, bulkLoadFile);
+
 	}
 
 	// Gets called from the API directly

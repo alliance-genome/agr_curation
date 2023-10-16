@@ -52,14 +52,15 @@ public class AlleleExecutor extends LoadFileExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
-
+		
 		runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
-		
-		if(cleanUp) runCleanup(alleleService, history, dataProvider.name(), alleleCuriesBefore, alleleCuriesLoaded, bulkLoadFile.getMd5Sum());
-		
+			
+		if(cleanUp) runCleanup(alleleService, history, bulkLoadFile, alleleCuriesBefore, alleleCuriesLoaded);
+			
 		history.finishLoad();
-		
+			
 		trackHistory(history, bulkLoadFile);
+		
 	}
 
 	// Gets called from the API directly
