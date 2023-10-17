@@ -24,9 +24,11 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
+import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
@@ -48,8 +50,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Inject AlleleDTOValidator alleleDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject PersonService personService;
-	@Inject NoteService noteService;
 	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
+	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
 	@PostConstruct
@@ -101,6 +103,13 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 						anyReferencingEntities = true;
 				}
 			}
+			if (CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
+				for (ConstructGenomicEntityAssociation association : allele.getConstructGenomicEntityAssociations()) {
+					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
+					if (association != null)
+						anyReferencingEntities = true;
+				}
+			}
 			if (anyReferencingEntities) {
 				if (!allele.getObsolete()) {
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
@@ -111,9 +120,9 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 			} else {
 				deleteAlleleSlotAnnotations(allele);
 				List<Note> notesToDelete = allele.getRelatedNotes();
-				alleleDAO.remove(curie);
 				if (CollectionUtils.isNotEmpty(notesToDelete))
-					notesToDelete.forEach(note -> noteService.delete(note.getId()));
+					notesToDelete.forEach(note -> alleleDAO.deleteAttachedNote(note.getId()));
+				alleleDAO.remove(curie);
 			}
 		} else {
 			log.error("Failed getting allele: " + curie);

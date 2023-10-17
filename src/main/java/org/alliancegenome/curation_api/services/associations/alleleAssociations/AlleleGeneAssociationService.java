@@ -69,6 +69,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 			return null;
 		dbEntity = alleleGeneAssociationDAO.persist(dbEntity);
 		addAssociationToAllele(dbEntity);
+		addAssociationToGene(dbEntity);
 		return new ObjectResponse<AlleleGeneAssociation>(dbEntity);
 	}
 
@@ -88,7 +89,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return association;
 	}
 
-	public List<Long> getAlleleGeneAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<String> associationIdStrings = alleleGeneAssociationDAO.findFilteredIds(params);

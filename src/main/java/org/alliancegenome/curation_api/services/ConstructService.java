@@ -20,9 +20,11 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.ConstructValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ConstructDTOValidator;
@@ -46,6 +48,8 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	PersonService personService;
 	@Inject
 	ConstructComponentSlotAnnotationDAO constructComponentDAO;
+	@Inject
+	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
 	@PostConstruct
@@ -119,8 +123,13 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 		}
 		
 		Boolean anyReferencingEntities = false;
-		// TODO: implement check for any referencing entities and code for their deprecation
-		// once links between constructs and other entities have been established
+		if (CollectionUtils.isNotEmpty(construct.getConstructGenomicEntityAssociations())) {
+			for (ConstructGenomicEntityAssociation association : construct.getConstructGenomicEntityAssociations()) {
+				association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
+				if (association != null)
+					anyReferencingEntities = true;
+			}
+		}
 
 		if (anyReferencingEntities) {
 			if (!construct.getObsolete()) {

@@ -12,7 +12,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -31,7 +30,7 @@ public interface AlleleGeneAssociationCrudInterface extends BaseIdCrudInterface<
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateGeneAlleleAssociations(@PathParam("dataProvider") String dataProvider, List<AlleleGeneAssociationDTO> associationData);
+	public APIResponse updateAlleleGeneAssociations(@PathParam("dataProvider") String dataProvider, List<AlleleGeneAssociationDTO> associationData);
 	
 	@GET
 	@Path("/findBy")

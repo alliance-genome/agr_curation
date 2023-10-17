@@ -30,8 +30,8 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("201 - Allele Gene Associations bulk upload")
-@Order(201)
+@DisplayName("101 - Allele Gene Associations bulk upload")
+@Order(101)
 public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
 	private String alleleCurie = "ALLELETEST:Allele0001";
@@ -54,7 +54,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 
 	private final String alleleGeneAssociationBulkPostEndpoint = "/api/allelegeneassociation/bulk/WB/associationFile";
 	private final String alleleGeneAssociationGetEndpoint = "/api/allelegeneassociation/findBy";
-	private final String alleleGeneAssociationTestFilePath = "src/test/resources/bulk/A01_allele_association/";
+	private final String alleleGeneAssociationTestFilePath = "src/test/resources/bulk/AA01_allele_gene_association/";
 	private final String alleleGetEndpoint = "/api/allele/";
 	private final String geneGetEndpoint = "/api/gene/";
 

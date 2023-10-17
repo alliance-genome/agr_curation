@@ -1,10 +1,8 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -17,7 +15,6 @@ import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
-import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -26,7 +23,6 @@ import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 
@@ -44,43 +40,33 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
-		try {
-			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			Log.info("Running with: " + manual.getDataProvider().name());
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		Log.info("Running with: " + manual.getDataProvider().name());
 
-			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
-				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
-			
-			if(!checkSchemaVersion(bulkLoadFile, ConstructDTO.class)) return;
-			
-			List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
-			if (constructs == null) constructs = new ArrayList<>();
-			
-			BackendBulkDataProvider dataProvider = manual.getDataProvider();
-			
-			List<Long> constructIdsLoaded = new ArrayList<>();
-			List<Long> constructIdsBefore = constructService.getConstructIdsByDataProvider(dataProvider);
-			Log.debug("runLoad: Before: total " + constructIdsBefore.size());
-			
-			bulkLoadFile.setRecordCount(constructs.size() + bulkLoadFile.getRecordCount());
-			bulkLoadFileDAO.merge(bulkLoadFile);
-			
-			BulkLoadFileHistory history = new BulkLoadFileHistory(constructs.size());
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		if (ingestDto == null) return;
+		
+		List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
+		if (constructs == null) constructs = new ArrayList<>();
+		
+		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		
+		List<Long> constructIdsLoaded = new ArrayList<>();
+		List<Long> constructIdsBefore = constructService.getConstructIdsByDataProvider(dataProvider);
+		Log.debug("runLoad: Before: total " + constructIdsBefore.size());
+		
+		bulkLoadFile.setRecordCount(constructs.size() + bulkLoadFile.getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFile);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(constructs.size());
 
-			runLoad(history, constructs, dataProvider, constructIdsLoaded);
-			
-			if(cleanUp) runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, bulkLoadFile.getMd5Sum());
-			
-			history.finishLoad();
-			
-			trackHistory(history, bulkLoadFile);
-
-		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
-			e.printStackTrace();
-		}
+		runLoad(history, constructs, dataProvider, constructIdsLoaded);
+		
+		if(cleanUp) runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, bulkLoadFile.getMd5Sum());
+		
+		history.finishLoad();
+		
+		trackHistory(history, bulkLoadFile);
 	}
 
 	// Gets called from the API directly
