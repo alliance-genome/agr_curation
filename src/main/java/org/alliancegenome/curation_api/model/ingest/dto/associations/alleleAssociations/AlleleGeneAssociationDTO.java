@@ -12,7 +12,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociationDTO.class })
+@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociationDTO.class }, submitted = true)
 public class AlleleGeneAssociationDTO extends AlleleGenomicEntityAssociationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
