@@ -119,7 +119,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: [],
 			editingRows: {},
-			type: "table",
+			type: "display",
 		},
 	},
 	errorMessages: {},
@@ -192,10 +192,6 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT_ROW': 
 			draft.allele[action.entityType][action.index][action.field] = action.value;
 			break;
-		//todo: delete? is this being used?
-		case 'REPLACE_ROW': 
-			draft.allele[action.entityType][action.index] = action.value;
-			break;
 		case 'EDIT_OBJECT': 
 			draft.allele[action.entityType][action.field] = action.value;
 			break;
@@ -224,10 +220,6 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'UPDATE_TABLE_ERROR_MESSAGES': 
 			draft.entityStates[action.entityType].errorMessages = action.errorMessages;
-			break;
-		//todo: delete? is this being used?
-		case 'TOGGLE_TABLE': 
-			draft.entityStates[action.entityType].show = action.value;
 			break;
 		case 'SUBMIT':
 			draft.submitted = true;

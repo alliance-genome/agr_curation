@@ -17,7 +17,6 @@ import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { validateAlleleDetailTable } from '../../utils/utils';
-import { validateReferenceTable } from './utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
@@ -71,6 +70,7 @@ const { isLoading } =	useQuery([curie],
 		let states = Object.values(alleleState.entityStates);
 
 		states
+		.filter(state => state.type !== 'display')
 		.forEach( async (state) => {
 			let table;
 
@@ -78,12 +78,6 @@ const { isLoading } =	useQuery([curie],
 				table = [alleleState.allele[state.field]];
 			} else {
 				table = alleleState.allele[state.field];
-			}
-
-			//todo: reevaluate if this is needed
-			if(state.field === "references"){
-				anyErrors = validateReferenceTable(table, alleleDispatch, state);
-				return;
 			}
 
 			let isError = await validateAlleleDetailTable(

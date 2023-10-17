@@ -19,7 +19,7 @@ export const ReferencesFormTable = ({
       paginator paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={5} rowsPerPageOptions={[5,10,20,50]}
     >
-      <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />} header="Action"
+      <Column body={(data, props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />} header="Action"
         className='min-w-4rem max-w-4rem' bodyClassName="text-center" frozen />
       <Column field="curie" header="Curie" sortable filter showFilterMenu={false} filterMatchMode='contains'/>
       <Column field="crossReferences" header="Cross References" body={(data) => <CrossReferencesTemplate rowData={data} />}

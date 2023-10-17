@@ -14,22 +14,6 @@ export const generateCrossRefSearchField = (reference) => {
 
 };
 
-//todo: reevaluate if this is needed
-export const validateReferenceTable = (table, alleleDispatch, state) => {
-  const errors = [];
-  table.forEach((row, index) => {
-    if (Object.keys(row).length <= 1) {
-      errors[index] = {};
-      errors[index].select = {
-        severity: "error",
-        message: "Must select reference from dropdown"
-      };
-      alleleDispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: state.field, errorMessages: errors });
-    }
-  });
-  if (errors.length > 0) return true;
-};
-
 export const differentiateCrossReferences = (reference) => {
   let crossReferences;
   let curieField;
