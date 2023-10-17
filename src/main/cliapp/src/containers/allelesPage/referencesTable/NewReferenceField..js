@@ -15,6 +15,7 @@ export const NewReferenceField = ({ state, dispatch }) => {
       const errorMessages = {
         references: "Must select reference from dropdown",
       };
+
       dispatch({
         type: "UPDATE_TABLE_ERROR_MESSAGES",
         entityType: "references",

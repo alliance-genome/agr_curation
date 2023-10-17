@@ -200,7 +200,7 @@ const alleleReducer = (draft, action) => {
 			draft.allele[action.entityType][action.field] = action.value;
 			break;
 		case 'ADD_ROW': 
-			draft.allele[action.entityType].push(action.row);
+			draft.allele[action.entityType].unshift(action.row);
 			draft.entityStates[action.entityType].editingRows[`${action.row.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
 			break;
