@@ -3,6 +3,7 @@ import { Button } from "primereact/button";
 import { generateCrossRefSearchField } from "../utils";
 import { SingleReferenceFormEditor } from "../../../components/Editors/references/SingleReferenceFormEditor";
 import { Splitter, SplitterPanel } from "primereact/splitter";
+import { SingleReferenceAdditionalFieldData } from "../../../components/FieldData/SingleReferenceAdditionalFieldData";
 
 export const NewReferenceField = ({ state, dispatch }) => {
   const [reference, setReference] = useState(null);
@@ -57,11 +58,14 @@ export const NewReferenceField = ({ state, dispatch }) => {
       <SplitterPanel size={20}>
         <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-9" />
       </SplitterPanel>
-      <SplitterPanel size={80}>
+      <SplitterPanel size={20}>
         <SingleReferenceFormEditor
           reference={reference}
           onReferenceValueChange={referencesOnChangeHandler}
           errorMessages={state.entityStates.references.errorMessages} />
+      </SplitterPanel>
+      <SplitterPanel size={60}>
+        <SingleReferenceAdditionalFieldData fieldData={reference} />
       </SplitterPanel>
     </Splitter>
   );
