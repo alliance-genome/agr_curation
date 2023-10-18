@@ -1,5 +1,6 @@
 import { useImmerReducer } from "use-immer";
 import { generateCrossRefSearchFields } from "./utils";
+import { getUniqueItemsByProperty } from "../../utils/utils";
 
 const initialAlleleState = {
 	allele: {
@@ -197,6 +198,9 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'ADD_ROW': 
 			draft.allele[action.entityType].unshift(action.row);
+			if (action.entityType === 'references') {
+				draft.allele[action.entityType] = getUniqueItemsByProperty(draft.allele[action.entityType], 'curie');
+			}
 			draft.entityStates[action.entityType].editingRows[`${action.row.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
 			break;
