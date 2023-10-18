@@ -1,7 +1,9 @@
 export const generateCrossRefSearchFields = (references) => {
-  references.forEach((reference) => {
-    reference.crossReferencesFilter = generateCrossRefSearchField(reference);
-  })
+  if(references) {
+    references.forEach((reference) => {
+      reference.crossReferencesFilter = generateCrossRefSearchField(reference);
+    })
+  }
 };
 
 export const generateCrossRefSearchField = (reference) => {
