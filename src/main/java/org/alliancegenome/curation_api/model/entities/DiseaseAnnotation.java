@@ -51,12 +51,12 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-@AGRCurationSchemaVersion(min = "1.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, Annotation.class })
+@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ConditionRelation.class, Note.class, SingleReferenceAssociation.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 
 @Table(indexes = { 
 	@Index(name = "DiseaseAnnotation_object_index", columnList = "object_curie"),
-	@Index(name = "DiseaseAnnotation_diseaseRelation_index", columnList = "diseaseRelation_id"),
+	@Index(name = "DiseaseAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
 	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
 	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
@@ -81,7 +81,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	private VocabularyTerm diseaseRelation;
+	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

@@ -43,7 +43,11 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 
 	@Override
 	public ObjectResponse<AGMDiseaseAnnotation> get(String identifier) {
-		SearchResponse<AGMDiseaseAnnotation> ret = findByField("modEntityId", identifier);
+		SearchResponse<AGMDiseaseAnnotation> ret = findByField("curie", identifier);
+		if (ret != null && ret.getTotalResults() == 1)
+			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+		
+		ret = findByField("modEntityId", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
 			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
 		

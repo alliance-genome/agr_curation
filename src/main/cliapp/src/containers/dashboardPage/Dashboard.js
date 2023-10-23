@@ -19,6 +19,7 @@ export const Dashboard = () => {
 		GeneDiseaseAnnotation: { name: "Gene Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
 		ExperimentalCondition: { name: "Experimental Conditions", link: "/#/experimentalConditions", type: 'entity', },
 		ConditionRelation: { name: "Condition Relations", link: "/#/conditionRelations", type: 'entity', },
+		Construct: { name: "Constructs", link: "/#/constructs", type: 'entity' },
 		Molecule: { name: "Molecules", link: "/#/molecules", type: 'entity', },
 		Reference: { name: "Literature References", link: "/#/references", type: 'entity', },
 

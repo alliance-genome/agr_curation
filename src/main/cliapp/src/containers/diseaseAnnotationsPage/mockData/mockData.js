@@ -97,7 +97,7 @@ export const data = {
 				]
 			},
 			"negated": false,
-			"diseaseRelation": {
+			"relation": {
 				"dateCreated": "2022-01-26T09:40:54.020724Z",
 				"dateUpdated": "2022-01-26T09:40:54.020726Z",
 				"internal": false,

@@ -2,7 +2,7 @@ export const SORT_FIELDS = Object.freeze([
   "uniqueId",
   "modEntityId",
   "subject.symbol",
-  "diseaseRelation.name",
+  "relation.name",
   "negated",
   "object.name",
   "singleReference.primaryCrossReferenceCurie",
@@ -63,6 +63,9 @@ export const SORT_FIELDS = Object.freeze([
   "conditionTaxon.name",
   "conditionQuantity",
   "conditionFreeText",
+  "constructFullName.displayText",
+  "constructSymbol.displayText",
+  "constructSynonyms.displayText",
   "geneFullName.displayText",
   "geneSymbol.displayText",
   "geneSecondaryIds.secondaryId",
@@ -91,7 +94,9 @@ export const SORT_FIELDS = Object.freeze([
   "vocabularyLabel",
   "vocabularyTermSetDescription",
   "synonyms.name",
-  "secondaryIdentifiers"
+  "secondaryIdentifiers",
+  "taxonText",
+  "constructComponents.componentSymbol"
 ]);
 
 

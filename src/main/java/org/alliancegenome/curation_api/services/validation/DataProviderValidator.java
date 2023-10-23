@@ -81,6 +81,9 @@ public class DataProviderValidator extends AuditedObjectValidator<DataProvider> 
 		} else {
 			if (dbXrefId != null && (uiXrefUniqueId == null || !dbXrefUniqueId.equals(uiXrefUniqueId)))
 				crossReferenceDAO.remove(dbXrefId);
+			
+			if (dbEntity.getId() == null)
+				dbEntity = dataProviderDAO.persist(dbEntity);
 		}
 		
 		response.setEntity(dbEntity);

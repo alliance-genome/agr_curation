@@ -36,7 +36,7 @@ describe("<DiseaseAnnotationsPage />", () => {
 		const uniqueIdTd = await result.findByText("MGI:5560505|DOID:0050545|AGRKB:101000000827851");
 		const modInternalIdTd = await result.findByText("mockModInternalId");
 		const subjectTd = await result.findByText(/C57BL\/6J-Rfx3/i);
-		const diseaseRelationTd = await result.findByText("is_model_of");
+		const relationTd = await result.findByText("is_model_of");
 		const negatedInternalObsoleteArray = await result.findAllByText("false");
 		const diseaseTd = await result.findByText(/visceral heterotaxy/i);
 		const referenceTd = await result.findByText(/MGI:5284969/i);
@@ -62,7 +62,7 @@ describe("<DiseaseAnnotationsPage />", () => {
 			expect(uniqueIdTd).toBeInTheDocument();
 			expect(modInternalIdTd).toBeInTheDocument();
 			expect(subjectTd).toBeInTheDocument();
-			expect(diseaseRelationTd).toBeInTheDocument();
+			expect(relationTd).toBeInTheDocument();
 			expect(negatedInternalObsoleteArray.length).toEqual(3);
 			expect(diseaseTd).toBeInTheDocument();
 			expect(referenceTd).toBeInTheDocument();

@@ -17,6 +17,10 @@ public class IngestDTO {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("linkml_version")
 	private String linkMLVersion;
+	
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("alliance_member_release_version")
+	private String allianceMemberReleaseVersion;
 
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("agm_ingest_set")
@@ -42,4 +46,7 @@ public class IngestDTO {
 	@JsonProperty("gene_ingest_set")
 	private List<GeneDTO> geneIngestSet;
 
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("construct_ingest_set")
+	private List<ConstructDTO> constructIngestSet;
 }

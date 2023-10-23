@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.interfaces;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -36,5 +37,9 @@ public interface SystemControllerInterface {
 	@GET
 	@Path("/updaterefreshindex")
 	public void updateRefreshIntervalOnAllIndexes();
+	
+	@DELETE
+	@Path("/deletedUnusedConditionsAndExperiments")
+	public void deleteUnusedConditionsAndExperiments();
 
 }

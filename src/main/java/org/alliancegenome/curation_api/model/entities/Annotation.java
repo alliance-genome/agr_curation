@@ -40,20 +40,17 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "annotation", description = "POJO that represents an annotation")
-@AGRCurationSchemaVersion(min = "1.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
 @Table(indexes = {
 	@Index(name = "annotation_curie_index", columnList = "curie"),
 	@Index(name = "annotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "annotation_modEntityId_index", columnList = "modEntityId"),
 	@Index(name = "annotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "annotation_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "annotation_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "annotation_singlereference_index", columnList = "singleReference_curie"),
 	@Index(name = "annotation_dataprovider_index", columnList = "dataProvider_id"),
 })
 
-public class Annotation extends GeneratedAuditedObject {
+public class Annotation extends SingleReferenceAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -88,12 +85,6 @@ public class Annotation extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_id_index", columnList = "conditionrelations_id")})
 	private List<ConditionRelation> conditionRelations;
-
-	@IndexedEmbedded(includeDepth = 2)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
-	private Reference singleReference;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

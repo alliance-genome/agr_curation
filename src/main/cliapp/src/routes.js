@@ -14,6 +14,7 @@ import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage  } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
+import { ConstructsPage } from './containers/constructsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { ReferencePage } from './containers/referencePage';
@@ -22,7 +23,9 @@ import { VocabulariesPage } from './containers/vocabularyPage';
 import { VocabularyTermSetPage } from './containers/vocabularyTermSetPage';
 
 import { FMSComponent } from './components/FMSComponent';
+import { FMSDataTypesComponent } from './components/FMSDataTypesComponent';
 import { MetricsComponent } from './components/MetricsComponent';
+import { HealthComponent } from './components/HealthComponent';
 
 import { SiteLayout } from './containers/layout/SiteLayout';
 //import { Login } from './Login';
@@ -44,6 +47,7 @@ export default (
 		<SecureRoute path="/genes" render={() => <ErrorBoundary><GenesPage /></ErrorBoundary>} />
 		<SecureRoute path="/alleles" render={() => <ErrorBoundary><AllelesPage /></ErrorBoundary>} />
 		<SecureRoute path="/allele/:curie" render={() => <ErrorBoundary><AlleleDetailPage /></ErrorBoundary>} />
+		<SecureRoute path="/constructs" render={() => <ErrorBoundary><ConstructsPage/></ErrorBoundary>} />
 		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />
 		<SecureRoute path="/references" render={() => <ErrorBoundary><ReferencePage /></ErrorBoundary>} />
 		<SecureRoute path="/vocabterms" render={() => <ErrorBoundary><ControlledVocabularyPage /></ErrorBoundary>} />
@@ -98,8 +102,11 @@ export default (
 		<SecureRoute path="/ontology/cmo" render={() => <ErrorBoundary><GeneralOntologyComponent name="CMO" endpoint="cmoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/bspo" render={() => <ErrorBoundary><GeneralOntologyComponent name="BSPO" endpoint="bspoterm" /></ErrorBoundary>} />
 
-		<SecureRoute path="/fmspage" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
+		<SecureRoute path="/fmsdatafiles" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
+		<SecureRoute path="/fmsdatatypes/:dataType" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />
+		<SecureRoute exact path="/fmsdatatypes" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
+		<SecureRoute path="/healthpage" render={() => <ErrorBoundary><HealthComponent /></ErrorBoundary>} />
 		<SecureRoute path="/agms" render={() => <ErrorBoundary><AffectedGenomicModelPage /></ErrorBoundary>} />
 
 	</SiteLayout>

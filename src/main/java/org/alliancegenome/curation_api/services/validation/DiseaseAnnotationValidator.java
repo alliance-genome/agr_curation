@@ -10,16 +10,10 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
-import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.dao.OrganizationDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
@@ -30,7 +24,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
-import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -55,8 +48,6 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	DataProviderService dataProviderService;
 	@Inject
 	DataProviderValidator dataProviderValidator;
-	@Inject
-	DataProviderDAO dataProviderDAO;
 
 	public DOTerm validateObject(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "object";
@@ -174,9 +165,6 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
-		if (validatedDataProvider.getId() == null)
-			validatedDataProvider = dataProviderDAO.persist(validatedDataProvider);
 		
 		return validatedDataProvider;
 	}
@@ -301,9 +289,6 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		
-		if (uiEntity.getModEntityId() != null)
-			dbEntity.setModEntityId(uiEntity.getModEntityId());
-
 		DOTerm term = validateObject(uiEntity, dbEntity);
 		dbEntity.setObject(term);
 

@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 
@@ -46,6 +47,8 @@ public class AgmExecutor extends LoadFileExecutor {
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			
 			if(!checkSchemaVersion(bulkLoadFile, AffectedGenomicModelDTO.class)) return;
 			
@@ -92,7 +95,7 @@ public class AgmExecutor extends LoadFileExecutor {
 	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
-		ph.addDisplayHandler(processDisplayService);
+		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("AGM Update for: " + dataProvider.name(), agms.size());
 		agms.forEach(agmDTO -> {
 			try {
