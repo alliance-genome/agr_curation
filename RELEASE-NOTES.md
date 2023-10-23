@@ -2,6 +2,34 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.26.0
+ * New features
+   * Improved healthcheck endpoints and added health page (#1228 and #1230)
+   * Added FMS Data Files page (#1247)
+   * Enabled display and editing of Name property of alleles on Allele Detail pages (SCRUM-3124)
+   * Expanded allele nomenclature events pop-up display to include created/updated AuditedObject properties (SCRUM-3220)
+   * Enabled display and editing of Mutation Type property of alleles on Allele Detail pages (SCRUM-3128)
+   * Enabled load and display of constructs (SCRUM-199)
+   * Enabled display and editing of ... of alleles on allele details page:
+      * Inheritance Modes (SCRUM-3132)
+      * Secondary IDs (SCRUM-3127)
+      * Database Status (SCRUM-3131)
+      * Related Notes (SCRUM-3133)
+      * Functional Impacts (SCRUM-3129)
+      * Sumbol (SCRUM-3125)
+      * GermlineTransmissionStatus (SCRUM-3130)
+   * Display crossReferences in table on allele detail page (SCRUM-3200)
+   * Display MOD release version on DataLoads page (SCRUM-3336)
+ * Fixes and maintenance
+   * Fixed drop down selection bug on Allele Detail page (SCRUM-3316)
+   * Increase readibility of experimental conditions in editing interfaces (SCRUM-3027)
+   * Fixed error on saving row in Experiments table (SCRUM-3290)
+   * Fix failing WB Molecule loads (SCRUM-3337)
+   * ConditionRelation and ExperimentalCondition cleanup (SCRUM-3306)
+   * Display next future (a.k.a current stage) release as default by @markquintontulloch (SCRUM-3268)
+   * Update to align datamodels with LinkML v1.9.0 (SCRUM-3278)
+   * Quarkus update for security fixes (SCRUM-3303)
+
 ## v0.25.0
  * New features
    * Display and editing of allele synonyms on allele detail page (SCRUM-3126)
