@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(11)
+@Order(212)
 public class DOTermITCase {
 	private String DOTERMCURIE = "DOID:10001";
 

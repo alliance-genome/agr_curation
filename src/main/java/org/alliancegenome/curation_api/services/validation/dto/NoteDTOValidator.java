@@ -32,7 +32,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 	@Inject
 	VocabularyTermService vocabularyTermService;
 
-	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String note_type_vocabulary) {
+	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String noteTypeVocabularyTermSet) {
 		Note note = new Note();
 		ObjectResponse<Note> noteResponse = validateAuditedObjectDTO(note, dto);
 
@@ -45,7 +45,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getNoteTypeName())) {
 			noteResponse.addErrorMessage("note_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			VocabularyTerm noteType = vocabularyTermService.getTermInVocabulary(note_type_vocabulary, dto.getNoteTypeName()).getEntity();
+			VocabularyTerm noteType = vocabularyTermService.getTermInVocabularyTermSet(noteTypeVocabularyTermSet, dto.getNoteTypeName()).getEntity();
 			if (noteType == null)
 				noteResponse.addErrorMessage("note_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNoteTypeName() + ")");
 			note.setNoteType(noteType);

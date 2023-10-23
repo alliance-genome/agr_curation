@@ -142,7 +142,11 @@ export const FIELD_SETS = Object.freeze({
   },
   constructComponentsFieldSet: {
     filterName: "constructComponentsFilter",
-    fields: ["constructComponents.componentSymbol"],
+    fields: ["constructComponents.componentSymbol", "constructComponents.relation.name"],
+  },
+  constructGenomicComponentsFieldSet: {
+    filterName: "constructGenomicComponentsFilter",
+    fields: ["constructGenomicEntityAssociations.object.symbol", "constructGenomicEntityAssociations.object.name", "constructGenomicEntityAssociations.object.curie", "constructGenomicEntityAssociations.relation.name"],
   },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
@@ -376,6 +380,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "smilesFilter",
     fields: ["smiles"],
   },
+  sourceGeneralConsequenceFieldSet: {
+    filterName: "sourceGeneralConsequenceFilter",
+    fields: ["sourceGeneralConsequence.name", "sourceGeneralConsequence.curie"],
+  },
   subjectFieldSet: {
     filterName: "subjectFilter",
     fields: ["subject.symbol", "subject.name", "subject.curie"],
@@ -411,6 +419,18 @@ export const FIELD_SETS = Object.freeze({
   urlTemplateFieldSet: {
     filterName: "urlTemplateFilter",
     fields: ["urlTemplate"],
+  },
+  variantAggregationFieldSet: {
+    filterName: "variantAggregationFilter",
+    fields: ['variantStatus.name', 'dataProvider.sourceOrganization.abbreviation'],
+  },
+  variantStatusFieldSet: {
+    filterName: "variantStatusFilter",
+    fields: ["variantStatus.name"],
+  },
+  variantTypeFieldSet: {
+    filterName: "variantTypeFilter",
+    fields: ["variantType.name", "variantType.curie"],
   },
   vocabularyFieldSet: {
     filterName: "vocabularyFilter",
@@ -465,6 +485,7 @@ export const FILTER_CONFIGS = Object.freeze({
   constructSymbolFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.constructSymbolFieldSet] },
   constructSynonymsFilterConfig:            { filterComponentType: "input", fieldSets: [FIELD_SETS.constructSynonymsFieldSet] },
   constructComponentsFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.constructComponentsFieldSet]},
+  constructGenomicComponentsFilterConfig:   { filterComponentType: "input", fieldSets: [FIELD_SETS.constructGenomicComponentsFieldSet]},
   createdByFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.createdByFieldSet] },
   curieFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.curieFieldSet] },
 
@@ -507,6 +528,7 @@ export const FILTER_CONFIGS = Object.freeze({
   sgdStrainBackgroundFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.sgdStrainBackgroundFieldSet], },
   singleReferenceFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.singleReferenceFieldSet] },
   smilesFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.smilesFieldSet] },
+  sourceGeneralConsequenceFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.sourceGeneralConsequenceFieldSet] },
   subjectFieldConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.subjectFieldSet] },
   subtypeFilterConfig:                      { filterComponentType: "input", fieldSets: [FIELD_SETS.subtypeFieldSet] },
   synonymsFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.synonymsFieldSet] },
@@ -515,6 +537,7 @@ export const FILTER_CONFIGS = Object.freeze({
   uniqueidFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.uniqueidFieldSet] },
   updatedByFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.updatedByFieldSet] },
   urlTemplateFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.urlTemplateFieldSet] },
+  variantTypeFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.variantTypeFieldSet] },
   vocabularyDescriptionFilterConfig:        { filterComponentType: "input", fieldSets: [FIELD_SETS.vocabularyDescriptionFieldSet] },
   vocabularyFieldSetFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.vocabularyFieldSet] },
   vocabularyMemberTermsFilterConfig:        { filterComponentType: "input", fieldSets: [FIELD_SETS.memberTermsFieldSet] },
@@ -540,7 +563,9 @@ export const FILTER_CONFIGS = Object.freeze({
   geneticSexFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticSexFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   secondaryDataProviderFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.secondaryDataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   evidenceCodesFilterConfig:				        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
-
+  variantDataProviderFilterConfig:          { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.variantAggregationFieldSet, useKeywordFields: true  },
+  variantStatusFilterConfig:                { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.variantStatusFieldSet], aggregationFieldSet: FIELD_SETS.variantAggregationFieldSet,useKeywordFields: true },
+  
   conditionRelationTypeFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.conditionRelationTypeFieldSet], aggregationFieldSet: FIELD_SETS.conditionRelationTypeFieldSet },
 
   // ALL Auto Complete Filters need to have useKeywordFields: true in order that exact matches come to the top of the list

@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,9 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AlleleService;
-import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 
@@ -32,52 +28,39 @@ public class AlleleExecutor extends LoadFileExecutor {
 
 	@Inject
 	AlleleDAO alleleDAO;
-
 	@Inject
 	AlleleService alleleService;
-	
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
-		try {
-			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-			Log.info("Running with: " + manual.getDataProvider().name());
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		Log.info("Running with: " + manual.getDataProvider().name());
 
-			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
-			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
-				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		if (ingestDto == null) return;
+		
+		List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
+		if (alleles == null) alleles = new ArrayList<>();
+		
+		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		
+		List<String> alleleCuriesLoaded = new ArrayList<>();
+		List<String> alleleCuriesBefore = alleleService.getCuriesByDataProvider(dataProvider.name());
+		Log.debug("runLoad: Before: total " + alleleCuriesBefore.size());
+		
+		bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFile);
+		
+		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+		
+		runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
 			
-			if(!checkSchemaVersion(bulkLoadFile, AlleleDTO.class)) return;
+		if(cleanUp) runCleanup(alleleService, history, bulkLoadFile, alleleCuriesBefore, alleleCuriesLoaded);
 			
-			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
-			if (alleles == null) alleles = new ArrayList<>();
+		history.finishLoad();
 			
-			BackendBulkDataProvider dataProvider = manual.getDataProvider();
-			
-			List<String> alleleCuriesLoaded = new ArrayList<>();
-			List<String> alleleCuriesBefore = alleleService.getCuriesByDataProvider(dataProvider.name());
-			Log.debug("runLoad: Before: total " + alleleCuriesBefore.size());
-			
-			bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
-			bulkLoadFileDAO.merge(bulkLoadFile);
-			
-			BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
-
-			runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
-			
-			if(cleanUp) runCleanup(alleleService, history, dataProvider.name(), alleleCuriesBefore, alleleCuriesLoaded, bulkLoadFile.getMd5Sum());
-			
-			history.finishLoad();
-			
-			trackHistory(history, bulkLoadFile);
-
-		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
-			e.printStackTrace();
-		}
+		trackHistory(history, bulkLoadFile);
+		
 	}
 
 	// Gets called from the API directly

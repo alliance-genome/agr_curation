@@ -27,8 +27,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
   };
 
   const internalOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.internal = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({
       type: 'EDIT_OBJECT',
       entityType: 'alleleGermlineTransmissionStatus',
@@ -38,8 +37,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
   };
 
   const germlineTransmissionStatusOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.germlineTransmissionStatus = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({
       type: 'EDIT_OBJECT',
       entityType: 'alleleGermlineTransmissionStatus',

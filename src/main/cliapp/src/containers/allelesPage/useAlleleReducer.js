@@ -1,4 +1,6 @@
 import { useImmerReducer } from "use-immer";
+import { generateCrossRefSearchFields } from "./utils";
+import { getUniqueItemsByProperty } from "../../utils/utils";
 
 const initialAlleleState = {
 	allele: {
@@ -12,6 +14,7 @@ const initialAlleleState = {
 		alleleMutationTypes: [],
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
+		alleleNomenclatureEvents: [],
 		alleleDatabaseStatus: null,
 		alleleGermlineTransmissionStatus: null,
 		references: [],
@@ -55,6 +58,14 @@ const initialAlleleState = {
 			errorMessages: [],
 			editingRows: {},
 			type: "object",
+		},
+		alleleNomenclatureEvents: {
+			field: 'alleleNomenclatureEvents',
+			endpoint: 'allelenomenclatureeventslotannotation',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',
@@ -107,6 +118,8 @@ const initialAlleleState = {
 		references: {
 			field: 'references',
 			show: false,
+			errorMessages: [],
+			editingRows: {},
 			type: "display",
 		},
 	},
@@ -152,10 +165,12 @@ const processObject = (field, allele, draft) => {
 	draft.entityStates[field].show = true;
 }
 
+
 const alleleReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
 			const allele = action.value;
+			generateCrossRefSearchFields(allele.references);
 
 			let states = Object.values(draft.entityStates);
 
@@ -182,7 +197,10 @@ const alleleReducer = (draft, action) => {
 			draft.allele[action.entityType][action.field] = action.value;
 			break;
 		case 'ADD_ROW': 
-			draft.allele[action.entityType].push(action.row);
+			draft.allele[action.entityType].unshift(action.row);
+			if (action.entityType === 'references') {
+				draft.allele[action.entityType] = getUniqueItemsByProperty(draft.allele[action.entityType], 'curie');
+			}
 			draft.entityStates[action.entityType].editingRows[`${action.row.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
 			break;
@@ -206,9 +224,6 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'UPDATE_TABLE_ERROR_MESSAGES': 
 			draft.entityStates[action.entityType].errorMessages = action.errorMessages;
-			break;
-		case 'TOGGLE_TABLE': 
-			draft.entityStates[action.entityType].show = action.value;
 			break;
 		case 'SUBMIT':
 			draft.submitted = true;

@@ -345,7 +345,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		Set<String> validatedNoteIdentities = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (Note note : uiEntity.getRelatedNotes()) {
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.getEntity() == null) {
 					addMessageResponse(field, noteResponse.errorMessagesString());
 					return null;

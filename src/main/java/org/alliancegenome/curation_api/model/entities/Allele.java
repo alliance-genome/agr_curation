@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanAndNullValueBridge;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
@@ -40,8 +41,10 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -52,7 +55,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus", "alleleNomenclatureEvents" }, callSuper = true)
+@ToString(exclude = { "alleleGeneAssociations", "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus", "alleleNomenclatureEvents" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.7.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "allele_inCollection_index", columnList = "inCollection_id"), })
 public class Allele extends GenomicEntity {
@@ -141,6 +144,12 @@ public class Allele extends GenomicEntity {
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
+	
+	@IndexedEmbedded(includePaths = {"object.curie", "object.geneSymbol.displayText", "object.geneSymbol.formatText", "object.geneFullName.displayText", "object.geneFullName.formatText",
+			"object.curie_keyword", "object.geneSymbol.displayText_keyword", "object.geneSymbol.formatText_keyword", "object.geneFullName.displayText_keyword", "object.geneFullName.formatText_keyword"})
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	private List<AlleleGeneAssociation> alleleGeneAssociations;
 	
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

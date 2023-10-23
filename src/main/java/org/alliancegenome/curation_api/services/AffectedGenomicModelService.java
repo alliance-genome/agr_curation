@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
@@ -9,17 +11,21 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AffectedGenomicModelDTOValidator;
+import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -39,6 +45,8 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
 	PersonService personService;
+	@Inject
+	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
 	@PostConstruct
@@ -71,19 +79,25 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) {
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
 		AffectedGenomicModel agm = agmDAO.find(curie);
-		String loadDescription = dataProviderName + " AGM bulk load (" + md5sum + ")";
 		if (agm != null) {
 			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
-			Boolean anyReferencingDAs = false;
+			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
-					anyReferencingDAs = true;
+					anyReferencingEntities = true;
+			}
+			if (CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
+				for (ConstructGenomicEntityAssociation association : agm.getConstructGenomicEntityAssociations()) {
+					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
+					if (association != null)
+						anyReferencingEntities = true;
+				}
 			}
 
-			if (anyReferencingDAs) {
+			if (anyReferencingEntities) {
 				if (!agm.getObsolete()) {
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 					agm.setDateUpdated(OffsetDateTime.now());
@@ -99,7 +113,9 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 	
 	public List<String> getCuriesByDataProvider(String dataProvider) {
-		List<String> curies = agmDAO.findAllCuriesByDataProvider(dataProvider);
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		List<String> curies = agmDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

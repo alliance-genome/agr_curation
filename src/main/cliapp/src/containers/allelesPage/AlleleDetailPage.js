@@ -8,7 +8,6 @@ import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
-import { ReferencesFormEditor } from '../../components/Editors/references/ReferencesFormEditor';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
@@ -28,7 +27,7 @@ import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
-
+import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -96,6 +95,8 @@ const { isLoading } =	useQuery([curie],
 				if(anyErrors) return;
 
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
+
+				global.location.reload();
 			},
 			onError: (error) => {
 				let message;
@@ -130,27 +131,6 @@ const { isLoading } =	useQuery([curie],
 			type: 'EDIT',
 			field: 'taxon',
 			value,
-		})
-	}
-
-	const onReferenceValueChange = (event) => {
-		if(event.value.length === 0){
-			alleleDispatch({
-				type: 'TOGGLE_TABLE',
-				entityType: 'references',
-				value: false,
-			})
-		} else {
-			alleleDispatch({
-				type: 'TOGGLE_TABLE',
-				entityType: 'references',
-				value: true,
-		})}
-
-		alleleDispatch({
-			type: 'EDIT',
-			field: 'references',
-			value: event.value,
 		})
 	}
 
@@ -257,6 +237,13 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
+					<NomenclatureEventsForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
 					<TaxonFormEditor 
 						taxon={alleleState.allele?.taxon} 
 						onTaxonValueChange={onTaxonValueChange} 
@@ -302,15 +289,6 @@ const { isLoading } =	useQuery([curie],
 					/>
 
 					<Divider />
-
-					<ReferencesFormEditor 
-						references={alleleState.allele?.references} 
-						onReferencesValueChange={onReferenceValueChange} 
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={alleleState.errorMessages}
-					/>
 
 					<ReferencesForm 
 						state={alleleState}
@@ -433,3 +411,4 @@ const { isLoading } =	useQuery([curie],
 	)
 	
 };
+
