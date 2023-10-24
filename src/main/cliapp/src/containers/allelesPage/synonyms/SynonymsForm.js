@@ -5,6 +5,7 @@ import { useRef } from "react";
 
 export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
+  const synonyms = global.structuredClone(state.allele?.alleleSynonyms);
 
   const createNewSynonymHandler = (e) => {
     e.preventDefault();
@@ -96,7 +97,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
       labelColumnSize={labelColumnSize}
       table={
         <SynonymsFormTable
-          synonyms={state.allele?.alleleSynonyms}
+          synonyms={synonyms}
           editingRows={state.entityStates.alleleSynonyms.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
