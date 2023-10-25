@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.services.validation.ExperimentalCondition
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import io.quarkus.logging.Log;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

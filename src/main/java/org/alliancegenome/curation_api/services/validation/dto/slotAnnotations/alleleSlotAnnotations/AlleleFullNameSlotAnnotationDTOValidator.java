@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.NameSlotAnnotationDTOValidator;
 
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
 
 @RequestScoped
 public class AlleleFullNameSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {

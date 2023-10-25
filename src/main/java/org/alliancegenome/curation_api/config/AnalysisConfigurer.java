@@ -1,11 +1,10 @@
 package org.alliancegenome.curation_api.config;
 
-import jakarta.inject.Named;
-
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurer;
 
 import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Named;
 
 @Dependent
 @Named("ApplicationAnalysisConfig")
