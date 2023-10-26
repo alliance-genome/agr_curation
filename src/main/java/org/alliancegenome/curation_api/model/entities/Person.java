@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -88,7 +89,7 @@ public class Person extends Agent {
 	@JsonView({ View.PersonSettingView.class })
 	private List<PersonSetting> settings;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY) // The reason for LAZY fetch is that queries are too large with the self referencing person
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	private AllianceMember allianceMember;
 
