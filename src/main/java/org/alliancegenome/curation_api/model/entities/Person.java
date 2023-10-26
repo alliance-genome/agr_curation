@@ -5,6 +5,8 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -18,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -89,8 +90,9 @@ public class Person extends Agent {
 	@JsonView({ View.PersonSettingView.class })
 	private List<PersonSetting> settings;
 
-	@ManyToOne(fetch = FetchType.LAZY) // The reason for LAZY fetch is that queries are too large with the self referencing person
+	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@Fetch(FetchMode.SELECT)
 	private AllianceMember allianceMember;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
