@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.services.validation.associations.alleleA
 
 import java.util.Objects;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -16,6 +14,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
+
+import jakarta.inject.Inject;
 
 public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociationValidator {
 
