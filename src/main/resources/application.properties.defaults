@@ -34,7 +34,8 @@ quarkus.hibernate-search-orm.elasticsearch.version=opensearch:1.2.4
 quarkus.hibernate-search-orm.elasticsearch.protocol=http
 quarkus.hibernate-search-orm.elasticsearch.read-timeout=600S
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update
-quarkus.hibernate-search-orm.automatic-indexing.synchronization.strategy=write-sync
+
+quarkus.hibernate-search-orm.indexing.plan.synchronization.strategy=write-sync
 
 quarkus.elasticsearch.devservices.enabled = false
 quarkus.devservices.enabled = false
