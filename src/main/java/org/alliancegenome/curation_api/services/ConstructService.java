@@ -160,7 +160,7 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<String> constructIdStrings = constructDAO.findFilteredIds(params);
 		constructIdStrings.removeIf(Objects::isNull);
-		List<Long>  constructIds = constructIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		List<Long> constructIds = constructIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
 		
 		return constructIds;
 	}
