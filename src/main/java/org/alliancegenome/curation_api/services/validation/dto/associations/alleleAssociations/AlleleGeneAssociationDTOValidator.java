@@ -67,7 +67,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			} else if (beDataProvider != null && !allele.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				agaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
 			}
-			association.setSubject(allele);	
+			association.setSubject(allele);
 		}
 		
 		if (StringUtils.isBlank(dto.getGeneCurie())) {
