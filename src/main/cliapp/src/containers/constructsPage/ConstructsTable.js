@@ -4,6 +4,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ComponentsDialog } from './ComponentsDialog';
+import { GenomicComponentsDialog } from './GenomicComponentsDialog';
 import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
 import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
@@ -42,6 +43,14 @@ export const ConstructsTable = () => {
 		rowIndex: null,
 		mainRowProps: {},
 	});
+
+	const [genomicComponentsData, setGenomicComponentsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
 
 	const uniqueIdBodyTemplate = (rowData) => {
 		return (
@@ -219,8 +228,15 @@ export const ConstructsTable = () => {
 		if (rowData?.constructComponents) {
 			const componentSet = new Set();
 			for(var i = 0; i < rowData.constructComponents.length; i++){
-				if (rowData.constructComponents[i].componentSymbol) {
-					componentSet.add(rowData.constructComponents[i].componentSymbol);
+				if (rowData.constructComponents[i].componentSymbol && rowData.constructComponents[i].relation) {
+					let relationName = "";
+					if (rowData.constructComponents[i]?.relation?.name) {
+						relationName = rowData.constructComponents[i].relation.name;
+						if (relationName.indexOf(' (RO:') !== -1) {
+							relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+						}
+					}	
+					componentSet.add(relationName + ': ' + rowData.constructComponents[i].componentSymbol);
 				}
 			}
 			if (componentSet.size > 0) {
@@ -249,6 +265,57 @@ export const ConstructsTable = () => {
 		_componentsData["originalComponents"] = rowData.constructComponents;
 		_componentsData["dialog"] = true;
 		setComponentsData(() => ({
+			..._componentsData
+		}));
+	};
+
+	const genomicComponentsTemplate = (rowData) => {
+		if (rowData?.constructGenomicEntityAssociations) {
+			const componentSet = new Set();
+			for(var i = 0; i < rowData.constructGenomicEntityAssociations.length; i++){
+				let symbolValue = "";
+				if (rowData.constructGenomicEntityAssociations[i]?.object.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.object.alleleSymbol) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.geneSymbol ? rowData.constructGenomicEntityAssociations[i].object.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].object.alleleSymbol.displayText;
+				} else if (rowData.constructGenomicEntityAssociations[i]?.object.name) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.name;
+				} else {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.curie;
+				}
+				let relationName = "";
+				if (rowData.constructGenomicEntityAssociations[i]?.relation?.name) {
+					relationName = rowData.constructGenomicEntityAssociations[i].relation.name;
+					if (relationName.indexOf(' (RO:') !== -1) {
+						relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+					}
+				}	
+				componentSet.add(relationName + ': ' + symbolValue);
+			}
+			if (componentSet.size > 0) {
+				const sortedComponents = Array.from(componentSet).sort();
+				const listTemplate = (item) => {
+					return (
+						<span style={{ textDecoration: 'underline' }}>
+							{item && item}
+						</span>
+					);
+				};
+				return (
+					<>
+						<Button className="p-button-text"
+							onClick={(event) => { handleGenomicComponentsOpen(event, rowData) }} >
+							<ListTableCell template={listTemplate} listData={sortedComponents}/>
+						</Button>
+					</>
+				);
+			}
+		}
+	};
+	
+	const handleGenomicComponentsOpen = (event, rowData) => {
+		let _componentsData = {};
+		_componentsData["originalComponents"] = rowData.constructGenomicEntityAssociations;
+		_componentsData["dialog"] = true;
+		setGenomicComponentsData(() => ({
 			..._componentsData
 		}));
 	};
@@ -307,10 +374,17 @@ export const ConstructsTable = () => {
 		},
 		{
 			field: "constructComponents.componentSymbol",
-			header: "Components",
+			header: "Free Text Components",
 			body: componentsTemplate,
 			sortable: { isEnabled },
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
+		},
+		{
+			field: "constructGenomicEntityAssociations.object.symbol",
+			header: "Component Associations",
+			body: genomicComponentsTemplate,
+			sortable: { isEnabled },
+			filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
 		},
 		{
 			field: "references.primaryCrossReferenceCurie",
@@ -427,6 +501,12 @@ export const ConstructsTable = () => {
 			<ComponentsDialog
 				originalComponentsData={componentsData}
 				setOriginalComponentsData={setComponentsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<GenomicComponentsDialog
+				originalComponentsData={genomicComponentsData}
+				setOriginalComponentsData={setGenomicComponentsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>

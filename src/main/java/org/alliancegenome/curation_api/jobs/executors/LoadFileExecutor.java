@@ -1,11 +1,13 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 
@@ -18,9 +20,12 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
+import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
-import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
+import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -34,11 +39,11 @@ import io.quarkus.logging.Log;
 public class LoadFileExecutor {
 
 	@Inject
-	ObjectMapper mapper;
+	protected ObjectMapper mapper;
 	@Inject
-	LoadProcessDisplayService loadProcessDisplayService;
+	protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject
-	BulkLoadFileDAO bulkLoadFileDAO;
+	protected BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject
 	BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject
@@ -107,6 +112,23 @@ public class LoadFileExecutor {
 		return true;
 	}
 	
+	protected IngestDTO readIngestFile(BulkLoadFile bulkLoadFile) {
+		try {
+			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
+			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
+			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
+			
+			if(!checkSchemaVersion(bulkLoadFile, ConstructGenomicEntityAssociationDTO.class)) return null;
+
+			return ingestDto;
+		} catch (Exception e) {
+			failLoad(bulkLoadFile, e);
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	protected boolean validSchemaVersion(String submittedSchemaVersion, Class<?> dtoClass) {
 		
 		List<String> versionRange = apiVersionInfoService.getVersionRange(dtoClass.getAnnotation(AGRCurationSchemaVersion.class));
@@ -166,7 +188,9 @@ public class LoadFileExecutor {
 		ph.finishProcess();
 	}
 	
-	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<String> curiesBefore, List<String> curiesAfter, String md5sum) {
+	protected <S extends BaseDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, BulkLoadFile bulkLoadFile, List<String> curiesBefore, List<String> curiesAfter) {
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+		String dataProviderName = manual.getDataProvider().name();
 		Log.debug("runLoad: After: " + dataProviderName + " " + curiesAfter.size());
 
 		List<String> distinctAfter = curiesAfter.stream().distinct().collect(Collectors.toList());
@@ -181,11 +205,40 @@ public class LoadFileExecutor {
 		ph.startProcess("Deletion/deprecation of primary objects " + dataProviderName, curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			try {
-				service.removeOrDeprecateNonUpdated(curie, dataProviderName, md5sum);
+				String loadDescription = dataProviderName + " " + manual.getBackendBulkLoadType() + " bulk load (" + bulkLoadFile.getMd5Sum() + ")";
+				service.removeOrDeprecateNonUpdated(curie, loadDescription);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"curie\": \"" + curie + "\"}", e.getMessage(), e.getStackTrace()));
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		
+	}
+	
+	protected <S extends BaseAssociationDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> idsBefore, List<Long> idsAfter, String md5sum) {
+		Log.debug("runLoad: After: " + dataProviderName + " " + idsAfter.size());
+
+		List<Long> distinctAfter = idsAfter.stream().distinct().collect(Collectors.toList());
+		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
+
+		List<Long> idsToRemove = ListUtils.subtract(idsBefore, distinctAfter);
+		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
+
+		history.setTotalDeleteRecords((long)idsToRemove.size());
+		
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of associations " + dataProviderName, idsToRemove.size());
+		for (Long id : idsToRemove) {
+			try {
+				String loadDescription = dataProviderName + " association bulk load (" + md5sum + ")";
+				service.deprecateOrDeleteAssociation(id, false, loadDescription, false);
+				history.incrementDeleted();
+			} catch (Exception e) {
+				history.incrementDeleteFailed();
+				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
 			}
 			ph.progressProcess();
 		}

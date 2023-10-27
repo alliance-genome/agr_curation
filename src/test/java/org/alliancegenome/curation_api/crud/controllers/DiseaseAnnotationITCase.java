@@ -45,7 +45,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(12)
+@Order(204)
 public class DiseaseAnnotationITCase extends BaseITCase {
 
 	private final String GENE_DISEASE_ANNOTATION = "GeneDisease:0001";
@@ -158,16 +158,16 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		experimentalCondition = createExperimentalCondition("Statement", "ZECO:da001", "Test");
 		experimentalCondition2 = createExperimentalCondition("Statement2", "ZECO:da002", "Test2");
 		relationVocabulary = getVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
-		noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+		noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
 		conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
 		diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
 		diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
 		annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
 		geneRelation = getVocabularyTerm(relationVocabulary, "is_marker_for");
-		obsoleteGeneRelation = addObsoleteVocabularyTermToSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, "obsolete_gene_relation", relationVocabulary);
-		obsoleteAlleleRelation = addObsoleteVocabularyTermToSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, "obsolete_allele_relation", relationVocabulary);
-		obsoleteAgmRelation = addObsoleteVocabularyTermToSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, "obsolete_agm_relation", relationVocabulary);
+		obsoleteGeneRelation = addVocabularyTermToSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, "obsolete_gene_relation", relationVocabulary, true);
+		obsoleteAlleleRelation = addVocabularyTermToSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, "obsolete_allele_relation", relationVocabulary, true);
+		obsoleteAgmRelation = addVocabularyTermToSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, "obsolete_agm_relation", relationVocabulary, true);
 		alleleAndGeneRelation = getVocabularyTerm(relationVocabulary, "is_implicated_in");
 		agmRelation = getVocabularyTerm(relationVocabulary, "is_model_of");
 		agmRelation2 = getVocabularyTerm(relationVocabulary, "is_exacerbated_model_of");
@@ -186,7 +186,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		person = createPerson("TEST:Person0001");
 		noteType = getVocabularyTerm(noteTypeVocabulary, "disease_note");
 		noteType2 = getVocabularyTerm(noteTypeVocabulary, "disease_summary");
-		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
+		obsoleteNoteType = addVocabularyTermToSet(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET, "obsolete_type", noteTypeVocabulary, true);
 		relatedNote = createNote(noteType, "Test text", false, null);
 		duplicateNote = createNote(noteType, "Test text", false, null);
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "has_condition", false);

@@ -43,7 +43,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(9)
+@Order(201)
 public class GeneITCase extends BaseITCase {
 
 	private final String GENE = "GENE:0001";
@@ -92,9 +92,9 @@ public class GeneITCase extends BaseITCase {
 		systematicNameType = getVocabularyTerm(nameType, "systematic_name");
 		fullNameType = getVocabularyTerm(nameType, "full_name");
 		obsoleteNameType = createVocabularyTerm(nameType, "obsolete_name", true);
-		obsoleteFullNameType = addObsoleteVocabularyTermToSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, "obsolete_full_name", nameType);
-		obsoleteSymbolNameType = addObsoleteVocabularyTermToSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, "obsolete_symbol_name", nameType);
-		obsoleteSystematicNameType = addObsoleteVocabularyTermToSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, "obsolete_systematic_name", nameType);
+		obsoleteFullNameType = addVocabularyTermToSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, "obsolete_full_name", nameType, true);
+		obsoleteSymbolNameType = addVocabularyTermToSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, "obsolete_symbol_name", nameType, true);
+		obsoleteSystematicNameType = addVocabularyTermToSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, "obsolete_systematic_name", nameType, true);
 		exactSynonymScope = getVocabularyTerm(synonymScope, "exact");
 		broadSynonymScope = getVocabularyTerm(synonymScope, "broad");
 		obsoleteSynonymScope = createVocabularyTerm(synonymScope, "obsolete", true);

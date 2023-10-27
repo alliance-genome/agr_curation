@@ -77,14 +77,14 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		return validatedDataProvider;
 	}
 
-	public List<Note> validateRelatedNotes(Annotation uiEntity, Annotation dbEntity) {
+	public List<Note> validateRelatedNotes(Annotation uiEntity, Annotation dbEntity, String noteTypeSet) {
 		String field = "relatedNotes";
 
 		List<Note> validatedNotes = new ArrayList<Note>();
 		Set<String> validatedNoteIdentities = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (Note note : uiEntity.getRelatedNotes()) {
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, noteTypeSet);
 				if (noteResponse.getEntity() == null) {
 					addMessageResponse(field, noteResponse.errorMessagesString());
 					return null;
@@ -192,7 +192,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		return singleRefResponse.getEntity();
 	}
 
-	public Annotation validateCommonAnnotationFields(Annotation uiEntity, Annotation dbEntity) {
+	public Annotation validateCommonAnnotationFields(Annotation uiEntity, Annotation dbEntity, String noteTypeSet) {
 		Boolean newEntity = false;
 		if (dbEntity.getId() == null)
 			newEntity = true;
@@ -213,7 +213,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity, dbEntity);
 		dbEntity.setConditionRelations(conditionRelations);
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity, noteTypeSet);
 		dbEntity.setRelatedNotes(relatedNotes);
 
 		return dbEntity;

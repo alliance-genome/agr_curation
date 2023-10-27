@@ -3,12 +3,15 @@ package org.alliancegenome.curation_api.jobs;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.DISEASE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_INGEST;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.VARIANT;
 
 import java.util.List;
 
@@ -28,6 +31,9 @@ import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
 import org.alliancegenome.curation_api.jobs.executors.OntologyExecutor;
 import org.alliancegenome.curation_api.jobs.executors.OrthologyExecutor;
 import org.alliancegenome.curation_api.jobs.executors.ResourceDescriptorExecutor;
+import org.alliancegenome.curation_api.jobs.executors.VariantExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -49,27 +55,21 @@ public class BulkLoadJobExecutor {
 	@Inject OrthologyExecutor orthologyExecutor;
 	@Inject OntologyExecutor ontologyExecutor;
 	@Inject ConstructExecutor constructExecutor;
+	@Inject VariantExecutor variantExecutor;
+	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
+	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
 
-		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, CONSTRUCT, FULL_INGEST);
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, CONSTRUCT_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {
 
 			bulkLoadFile.setRecordCount(0);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
-			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				alleleDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
-			}
-			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				agmDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
-			}
-			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
-				geneDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
-			}
 			if (loadType == AGM || loadType == FULL_INGEST) {
 				agmExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
@@ -81,6 +81,24 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == CONSTRUCT || loadType == FULL_INGEST) {
 				constructExecutor.runLoad(bulkLoadFile, cleanUp);
+			}
+			if (loadType == VARIANT || loadType == FULL_INGEST) {
+				variantExecutor.runLoad(bulkLoadFile, cleanUp);
+			}
+			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+				alleleDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
+			}
+			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+				agmDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
+			}
+			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+				geneDiseaseAnnotationExecutor.runLoad(bulkLoadFile, cleanUp);
+			}
+			if (loadType == ALLELE_ASSOCIATION || loadType == FULL_INGEST) {
+				alleleGeneAssociationExecutor.runLoad(bulkLoadFile, cleanUp);
+			}
+			if (loadType == CONSTRUCT_ASSOCIATION || loadType == FULL_INGEST) {
+				constructGenomicEntityAssociationExecutor.runLoad(bulkLoadFile, cleanUp);
 			}
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {

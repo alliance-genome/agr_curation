@@ -318,7 +318,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		List<VocabularyTerm> diseaseQualifiers = validateDiseaseQualifiers(uiEntity, dbEntity);
 		dbEntity.setDiseaseQualifiers(diseaseQualifiers);
 
-		dbEntity = (DiseaseAnnotation) validateCommonAnnotationFields(uiEntity, dbEntity);
+		dbEntity = (DiseaseAnnotation) validateCommonAnnotationFields(uiEntity, dbEntity, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 		
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);

@@ -124,7 +124,7 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 			return null;
 		}
 
-		VocabularyTerm relation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY, uiEntity.getRelation().getName()).getEntity();
+		VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation().getName()).getEntity();
 
 		if (relation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -165,7 +165,7 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		Set<String> validatedNoteIdentities = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (Note note : uiEntity.getRelatedNotes()) {
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.getEntity() == null) {
 					addMessageResponse(field, noteResponse.errorMessagesString());
 					return null;

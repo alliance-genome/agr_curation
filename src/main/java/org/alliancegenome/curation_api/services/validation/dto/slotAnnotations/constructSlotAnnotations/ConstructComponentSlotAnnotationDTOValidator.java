@@ -58,7 +58,7 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 		}
 		
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {
-			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY, dto.getRelationName()).getEntity();
+			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
 			if (diseaseRelation == null)
 				ccsaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
 			annotation.setRelation(diseaseRelation);
@@ -91,7 +91,7 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 			List<Note> notes = new ArrayList<>();
 			Set<String> noteIdentities = new HashSet<>();
 			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.hasErrors()) {
 					ccsaResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
 					break;

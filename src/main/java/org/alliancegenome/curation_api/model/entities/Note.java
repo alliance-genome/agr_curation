@@ -64,7 +64,7 @@ public class Note extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.NoteView.class, View.AlleleView.class, View.ConstructView.class })
+	@JsonView({ View.FieldsAndLists.class, View.NoteView.class, View.AlleleView.class, View.ConstructView.class, View.VariantView.class })
 	@JoinTable(indexes = { @Index(columnList = "note_id"), @Index(columnList = "references_curie")})
 	private List<Reference> references;
 }

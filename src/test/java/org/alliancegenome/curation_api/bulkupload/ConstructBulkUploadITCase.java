@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -61,12 +62,13 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 	private final String constructTestFilePath = "src/test/resources/bulk/05_construct/";
 	
 	private void loadRequiredEntities() throws Exception {
-		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
-		noteType = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_note", false);
-		noteType2 = createVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary", false);
-		Vocabulary relationVocabulary = createVocabulary("construct_genomic_entity_predicate", false);
+		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
+		noteType = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_construct_component_note", noteTypeVocabulary, false);
+		noteType2 = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_construct_component_summary", noteTypeVocabulary, false);
+		Vocabulary relationVocabulary = createVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY, false);
 		relation = createVocabularyTerm(relationVocabulary, "is_regulated_by", false);
 		relation2 = createVocabularyTerm(relationVocabulary, "targets", false);
+		createVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(relation, relation2));
 	}
 
 	@Test
@@ -342,6 +344,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
+			body("entity", hasKey("modEntityId")).
 			body("entity.constructSymbol", not(hasKey("synonymScope"))).
 			body("entity.constructSymbol", not(hasKey("synonymUrl"))).
 			body("entity.constructSymbol", not(hasKey("evidence"))).
@@ -385,6 +388,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
+			body("entity", hasKey("modEntityId")).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.constructComponents[0].relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -403,6 +407,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			get(constructGetEndpoint + "WB:Construct0001").
 			then().
 			statusCode(200).
+			body("entity", hasKey("modEntityId")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
