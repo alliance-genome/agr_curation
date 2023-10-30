@@ -218,16 +218,16 @@ export const SiteLayout = (props) => {
 								{
 										label: 'Data Tables', icon: 'pi pi-fw pi-sitemap',
 										items: [
-												{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
-												{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
 												{ label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
-												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'},
+												{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
+												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
 												{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
-												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Experiments', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
+												{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
+												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
-												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
+												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'}
 										]
 								},
 								{
@@ -340,13 +340,6 @@ export const SiteLayout = (props) => {
 				}
 		];
 
-		const sortedMenu = [...menu];
-		sortedMenu[0].items.forEach((item) => {
-			if (item.label.match("Data Tables")) {
-				item.items = item.items.sort((a, b) => a.label.localeCompare(b.label));
-			}
-		});
-
 
 		const addClass = (element, className) => {
 				if (element.classList)
@@ -383,7 +376,7 @@ export const SiteLayout = (props) => {
 								authState={authState} logout={logout} />
 
 						<div className="layout-sidebar" onClick={onSidebarClick}>
-								<AppMenu model={sortedMenu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
+								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
 						</div>
 
 						<div className="layout-main-container">
