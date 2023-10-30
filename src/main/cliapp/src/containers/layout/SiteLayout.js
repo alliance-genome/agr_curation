@@ -227,14 +227,14 @@ export const SiteLayout = (props) => {
 												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Experiments', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
-																								{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
+												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
 										]
 								},
 								{
 										label: 'Ontologies', icon: 'pi pi-fw pi-sitemap',
 										items: [
 											{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
-											{ 
+											{
 												label: 'Anatomical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
@@ -248,7 +248,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Biological Spatial Ontology (BSPO)', icon: 'pi pi-fw pi-home', to: '/ontology/bspo' },
-											{ 
+											{
 												label: 'Chemical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'Chemical Entities of Biological Interest (ChEBI)', icon: 'pi pi-fw pi-home', to: '/ontology/chebi' },
@@ -258,7 +258,7 @@ export const SiteLayout = (props) => {
 											{ label: 'Clinical Measurement Ontology (CMO)', icon: 'pi pi-fw pi-home', to: '/ontology/cmo' },
 											{ label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
 											{ label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
-											{ 
+											{
 												label: 'Experimental Condition Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'Experimental Condition Ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
@@ -272,7 +272,7 @@ export const SiteLayout = (props) => {
 											{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
 											{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
 											{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },
-											{ 
+											{
 												label: 'Phenotype Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'Ascomycete Phenotype Ontology (APO)', icon: 'pi pi-fw pi-home', to: '/ontology/apo' },
@@ -288,7 +288,7 @@ export const SiteLayout = (props) => {
 											{ label: 'Rat Strain Ontology (RS)', icon: 'pi pi-fw pi-home', to: '/ontology/rs' },
 											{ label: 'Relation Ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
 											{ label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
-											{ 
+											{
 												label: 'Stage Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'C. elegans Development Ontology (WBls)', icon: 'pi pi-fw pi-home', to: '/ontology/wbls' },
@@ -299,7 +299,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Vertebrate Trait Ontology (VT)', icon: 'pi pi-fw pi-home', to: '/ontology/vt' },
-											{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' }											
+											{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' }
 										]
 								},
 								{
@@ -340,6 +340,14 @@ export const SiteLayout = (props) => {
 				}
 		];
 
+		const sortedMenu = [...menu];
+		sortedMenu[0].items.forEach((item) => {
+			if (item.label.match("Data Tables")) {
+				item.items = item.items.sort((a, b) => a.label.localeCompare(b.label));
+			}
+		});
+
+
 		const addClass = (element, className) => {
 				if (element.classList)
 						element.classList.add(className);
@@ -375,7 +383,7 @@ export const SiteLayout = (props) => {
 								authState={authState} logout={logout} />
 
 						<div className="layout-sidebar" onClick={onSidebarClick}>
-								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
+								<AppMenu model={sortedMenu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
 						</div>
 
 						<div className="layout-main-container">
