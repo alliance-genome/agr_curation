@@ -24,6 +24,7 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.common.ValueConvert;
@@ -572,11 +573,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 			} else {
 				column = root.get(key);
-				if (column.getJavaType().equals(List.class)) {
+				if (column instanceof SqmPluralValuedSimplePath) {
 					column = root.join(key);
 				}
 				countColumn = countRoot.get(key);
-				if (countColumn.getJavaType().equals(List.class)) {
+				if (countColumn instanceof SqmPluralValuedSimplePath) {
 					countColumn = countRoot.join(key);
 				}
 			}
@@ -630,7 +631,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		countQuery.select(builder.count(countRoot));
 		countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
-		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
 		TypedQuery<E> allQuery = entityManager.createQuery(query);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
@@ -643,7 +643,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		SearchResponse<E> results = new SearchResponse<E>();
 		results.setResults(allQuery.getResultList());
+		
+		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 		results.setTotalResults(totalResults);
+		
 		return results;
 
 	}
