@@ -63,8 +63,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     });
   };
   const internalOnChangeHandler = (props, event) => {
-    //termporary solution -- replace with props.editorCallback() after PrimeReact upgrade 
-    props.rowData.internal = event.target.value;
+    //todo -- add props.editorCallback() after PrimeReact upgrade 
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleFunctionalImpacts',

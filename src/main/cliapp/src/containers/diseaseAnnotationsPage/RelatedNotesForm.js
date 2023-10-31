@@ -7,12 +7,13 @@ import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
 import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 
 export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, errorMessages, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const noteTypeTerms = useControlledVocabularyService('da_note_type');
+	const noteTypeTerms = useVocabularyTermSetService('da_note_type');
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 

@@ -51,7 +51,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(10)
+@Order(202)
 public class AlleleITCase extends BaseITCase {
 
 	private final String ALLELE = "Allele:0001";
@@ -134,7 +134,7 @@ public class AlleleITCase extends BaseITCase {
 		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScopeVocabulary = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
 		functionalImpactVocabulary = getVocabulary(VocabularyConstants.ALLELE_FUNCTIONAL_IMPACT_VOCABULARY);
-		noteTypeVocabulary = getVocabulary(VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
+		noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		databaseStatusVocabulary = getVocabulary(VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY);
 		nomenclatureEventVocabulary = getVocabulary(VocabularyConstants.ALLELE_NOMENCLATURE_EVENT_VOCABULARY);
 		dominantInheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
@@ -181,7 +181,7 @@ public class AlleleITCase extends BaseITCase {
 		obsoleteMpTerm = createMpTerm("MP:00000", true);
 		noteType = getVocabularyTerm(noteTypeVocabulary, "comment");
 		noteType2 = getVocabularyTerm(noteTypeVocabulary, "user_submitted_note");
-		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
+		obsoleteNoteType = addVocabularyTermToSet(VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, "obsolete_type", noteTypeVocabulary, true);
 		relatedNote = createNote(noteType, "Test text", false, reference);
 		alleleMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), List.of(soTerm));
 		alleleGermlineTransmissionStatus = createAlleleGermlineTransmissionStatusSlotAnnotation(List.of(reference), cellLineGTS);

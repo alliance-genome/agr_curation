@@ -44,6 +44,7 @@ describe("<ConstructsTable />", () => {
 		const symbolTd = await result.findByText(/KP273/);
 		const nameTd = await result.findByText(/King Potato 273/);
 		const synonymTd = await result.findByText(/KPot273/);
+		const constructGenomicComponentTd = await result.findByText(/lin-17/i);
 
 		await waitFor(() => {
 			expect(modEntityTd).toBeInTheDocument();
@@ -55,6 +56,7 @@ describe("<ConstructsTable />", () => {
 			expect(dateUpdatedTd).toBeInTheDocument();
 			expect(dateCreatedTd).toBeInTheDocument();
 			expect(constructComponentTd).toBeInTheDocument();
+			expect(constructGenomicComponentTd).toBeInTheDocument();
 		});
 	});
 });

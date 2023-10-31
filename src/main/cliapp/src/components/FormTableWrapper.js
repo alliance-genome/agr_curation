@@ -3,6 +3,7 @@ export const FormTableWrapper = ({
   tableName,
   showTable,
   button,
+  includeField=false,
 }) => {
   return (
     <div className="grid">
@@ -11,7 +12,7 @@ export const FormTableWrapper = ({
           <label>{tableName}</label>
         </div>
         {showTable && table}
-        <div className={`${showTable ? "pt-3" : ""} p-field p-col col-4`}>
+        <div className={`${showTable ? "pt-3" : ""} p-field p-col ${includeField ? "col-12" : "col-4"} col-4`}>
           {button}
         </div>
       </div>

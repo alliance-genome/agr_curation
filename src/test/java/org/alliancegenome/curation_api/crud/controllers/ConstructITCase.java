@@ -42,7 +42,7 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(18)
+@Order(207)
 public class ConstructITCase extends BaseITCase {
 
 	private final String CONSTRUCT = "Construct:0001";
@@ -88,16 +88,16 @@ public class ConstructITCase extends BaseITCase {
 	private ConstructSynonymSlotAnnotation constructSynonym;
 	
 	private void loadRequiredEntities() {
-		noteTypeVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY);
-		alleleNoteTypeVocabulary = getVocabulary(VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY);
+		noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
+		alleleNoteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		noteType = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_note");
 		noteType2 = getVocabularyTerm(noteTypeVocabulary, "test_construct_component_summary");
-		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
+		obsoleteNoteType = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "obsolete_type", noteTypeVocabulary, true);
 		alleleNoteType = getVocabularyTerm(alleleNoteTypeVocabulary, "notes_on_origin");
-		relationVocabulary = getVocabulary("construct_genomic_entity_predicate");
+		relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
 		isRegulatedByRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
 		targetsRelation = getVocabularyTerm(relationVocabulary, "targets");
-		obsoleteRelation = createVocabularyTerm(relationVocabulary, "obsolete_relation", true);
+		obsoleteRelation = addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, "obsolete_relation", relationVocabulary, true);
 		taxon = getNCBITaxonTerm("NCBITaxon:6239");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
 		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");

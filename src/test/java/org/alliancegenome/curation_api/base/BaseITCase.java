@@ -29,9 +29,12 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -45,6 +48,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -57,7 +61,7 @@ public class BaseITCase {
 	
 	private static Pattern keyPattern = Pattern.compile("^(.+)\\.([^\\.]+)$");
 
-	public VocabularyTerm addObsoleteVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary) {
+	public VocabularyTerm addVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary, Boolean obsolete) {
 		VocabularyTermSet set = getVocabularyTermSet(setName);
 		VocabularyTerm term = createVocabularyTerm(vocabulary, termName, false);
 		
@@ -73,7 +77,7 @@ public class BaseITCase {
 			then().
 			statusCode(200);
 		
-		term.setObsolete(true);
+		term.setObsolete(obsolete);
 		
 		ObjectResponse<VocabularyTerm> response = RestAssured.given().
 			contentType("application/json").
@@ -212,6 +216,30 @@ public class BaseITCase {
 			extract().body().as(getObjectResponseTypeRefConditionRelation());
 
 
+		return response.getEntity();
+	}
+	
+	public Construct createConstruct(String modEntityId, Boolean obsolete, VocabularyTerm symbolNameTerm) {
+		Construct construct = new Construct();
+		construct.setModEntityId(modEntityId);
+		construct.setObsolete(obsolete);
+		
+		ConstructSymbolSlotAnnotation symbol = new ConstructSymbolSlotAnnotation();
+		symbol.setNameType(symbolNameTerm);
+		symbol.setDisplayText(modEntityId);
+		symbol.setFormatText(modEntityId);
+		
+		construct.setConstructSymbol(symbol);
+
+		ObjectResponse<Construct> response = RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			post("/api/construct").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefConstruct());
+		
 		return response.getEntity();
 	}
 
@@ -620,6 +648,17 @@ public class BaseITCase {
 
 		return res.getEntity();
 	}
+	
+	public AlleleGeneAssociation getAlleleGeneAssociation(String alleleCurie, String relationName, String geneCurie) {
+		ObjectResponse<AlleleGeneAssociation> res = RestAssured.given().
+			when().
+			get("/api/allelegeneassociation/findBy"  + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefAlleleGeneAssociation());
+			
+		return res.getEntity();
+	}
 
 	public ConditionRelation getConditionRelation(Long id) {
 		ObjectResponse<ConditionRelation> response =
@@ -641,6 +680,17 @@ public class BaseITCase {
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefConstruct());
 
+		return res.getEntity();
+	}
+	
+	public ConstructGenomicEntityAssociation getConstructGenomicEntityAssociation(Long constructId, String relationName, String genomicEntityCurie) {
+		ObjectResponse<ConstructGenomicEntityAssociation> res = RestAssured.given().
+			when().
+			get("/api/constructgenomicentityassociation/findBy"  + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + genomicEntityCurie).
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefConstructGenomicEntityAssociation());
+			
 		return res.getEntity();
 	}
 
@@ -702,6 +752,17 @@ public class BaseITCase {
 		
 		return note;
 	}
+
+	public Variant getVariant(String curie) {
+		ObjectResponse<Variant> res = RestAssured.given().
+				when().
+				get("/api/variant/" + curie).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVariant());
+
+		return res.getEntity();
+	}
 	
 	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
 		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
@@ -725,13 +786,23 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<AlleleGeneAssociation>> getObjectResponseTypeRefAlleleGeneAssociation() {
+		return new TypeRef<ObjectResponse <AlleleGeneAssociation>>() {
+		};
+	}
+
 	public TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
 		return new TypeRef<ObjectResponse<ConditionRelation>>() {
 		};
 	}
 
 	public TypeRef<ObjectResponse<Construct>> getObjectResponseTypeRefConstruct() {
-		return new TypeRef<ObjectResponse<Construct>>() {
+		return new TypeRef<ObjectResponse <Construct>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<ConstructGenomicEntityAssociation>> getObjectResponseTypeRefConstructGenomicEntityAssociation() {
+		return new TypeRef<ObjectResponse <ConstructGenomicEntityAssociation>>() {
 		};
 	}
 	
@@ -799,6 +870,10 @@ public class BaseITCase {
 	private TypeRef<ObjectResponse<SOTerm>> getObjectResponseTypeRefSOTerm() {
 		return new TypeRef<ObjectResponse <SOTerm>>() {
 		};
+	}
+	
+	private TypeRef<ObjectResponse<Variant>> getObjectResponseTypeRefVariant() {
+		return new TypeRef<ObjectResponse <Variant>>() { };
 	}
 	
 	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {

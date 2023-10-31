@@ -92,7 +92,7 @@ public class Reagent extends GeneratedAuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
 	@JoinTable(indexes = @Index(name = "reagent_secondaryidentifiers_reagent_id_index", columnList = "reagent_id"))
 	private List<String> secondaryIdentifiers;
 

@@ -6,31 +6,34 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ValidationService } from '../../service/ValidationService';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from '../../utils/utils';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
-import { ListTableCell } from '../../components/ListTableCell';
-import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
-import { SearchService } from '../../service/SearchService';
+import { InputTextAreaEditor } from './InputTextAreaEditor';
+import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
+import { EllipsisTableCell } from './EllipsisTableCell';
+import { TrueFalseDropdown } from './TrueFalseDropDownSelector';
+import { useControlledVocabularyService } from '../service/useControlledVocabularyService';
+import { useVocabularyTermSetService } from '../service/useVocabularyTermSetService';
+import { ValidationService } from '../service/ValidationService';
+import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
+import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from '../utils/utils';
+import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocompleteTemplate';
+import { ListTableCell } from './ListTableCell';
+import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
+import { SearchService } from '../service/SearchService';
 
 export const RelatedNotesDialog = ({
 													originalRelatedNotesData,
 													setOriginalRelatedNotesData,
 													errorMessagesMainRow,
-													setErrorMessagesMainRow
+													setErrorMessagesMainRow,
+													noteTypeVocabularyTermSet,
+													showReferences=true
 												}) => {
 	const { originalRelatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = originalRelatedNotesData;
 	const [localRelatedNotes, setLocalRelatedNotes] = useState(null) ;
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const noteTypeTerms = useControlledVocabularyService('construct_component_note_type');
+	const noteTypeTerms = useVocabularyTermSetService(noteTypeVocabularyTermSet);
 	const validationService = new ValidationService();
 	const searchService = new SearchService();
 	const tableRef = useRef(null);
@@ -371,7 +374,9 @@ export const RelatedNotesDialog = ({
 							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 							<Column header="Note Type" />
 							<Column header="Text" />
-							<Column header="Evidence" />
+							{showReferences &&
+								<Column header="Evidence" />
+							}
 							<Column header="Internal" />
 						</Row>
 						</ColumnGroup>;
@@ -395,7 +400,9 @@ export const RelatedNotesDialog = ({
 						headerClassName='surface-0'
 						className='wrap-word max-w-35rem'
 					/>
-					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} className='wrap-word max-w-25rem'/>
+					{showReferences &&
+						<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} className='wrap-word max-w-25rem'/>
+					}
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
 			</Dialog>

@@ -1,0 +1,7 @@
+[
+  {
+    "allele_curie": "ALLELETEST:Allele0001",
+    "relation_name": "is_allele_of",
+    "gene_curie": "GENETEST:Gene0001"
+  }
+]

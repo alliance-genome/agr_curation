@@ -8,7 +8,7 @@ import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { Button } from 'primereact/button';
-import { RelatedNotesDialog } from './RelatedNotesDialog';
+import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 
 export const ComponentsDialog = ({
 	originalComponentsData,
@@ -139,7 +139,7 @@ export const ComponentsDialog = ({
 					<DataTable value={localComponents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 							ref={tableRef} >
 						<Column field="relation.name" header="Relation" headerClassName='surface-0'/>
-						<Column field="componentSymbol" header="Mutation Type" headerClassName='surface-0' body={componentSymbolTemplate}/>
+						<Column field="componentSymbol" header="Component Symbol" headerClassName='surface-0' body={componentSymbolTemplate}/>
 						<Column field="taxon.name" header="Taxon" headerClassName='surface-0' body={taxonTemplate}/>
 						<Column field="taxonText" header="Taxon Text" headerClassName='surface-0' body={taxonTextTemplate}/>
 						<Column field="relatedNotes.freeText" header="Related Notes" headerClassName='surface-0' body={relatedNotesTemplate}/>
@@ -153,6 +153,7 @@ export const ComponentsDialog = ({
 				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessagesMainRow}
 				setErrorMessagesMainRow={setErrorMessagesMainRow}
+				noteTypeVocabularyTermSet='construct_component_note_type'
 			/>
 		</>
 	);

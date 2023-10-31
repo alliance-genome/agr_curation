@@ -8,8 +8,8 @@ export const inCollectionSearch = (event, setFiltered, setQuery) => {
   const filterName = "taxonFilter";
   const otherFilters = {
     vocabularyFilter: {
-      "vocabulary.name": {
-        queryString: "Allele collection vocabulary"
+      "vocabulary.vocabularyLabel": {
+        queryString: "allele_collection"
       }
     }
   }

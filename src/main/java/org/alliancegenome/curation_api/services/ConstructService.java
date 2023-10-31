@@ -1,25 +1,30 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.ConstructValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ConstructDTOValidator;
@@ -43,6 +48,8 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	PersonService personService;
 	@Inject
 	ConstructComponentSlotAnnotationDAO constructComponentDAO;
+	@Inject
+	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
 	@PostConstruct
@@ -116,8 +123,13 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 		}
 		
 		Boolean anyReferencingEntities = false;
-		// TODO: implement check for any referencing entities and code for their deprecation
-		// once links between constructs and other entities have been established
+		if (CollectionUtils.isNotEmpty(construct.getConstructGenomicEntityAssociations())) {
+			for (ConstructGenomicEntityAssociation association : construct.getConstructGenomicEntityAssociations()) {
+				association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
+				if (association != null)
+					anyReferencingEntities = true;
+			}
+		}
 
 		if (anyReferencingEntities) {
 			if (!construct.getObsolete()) {
@@ -141,16 +153,16 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String dataProviderName, String md5sum) { }
+	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
 
 	public List<Long> getConstructIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		List<Long> annotationIds;
-
-		annotationIds = constructDAO.findAllIdsByDataProvider(dataProvider.sourceOrganization);
-
-		annotationIds.removeIf(Objects::isNull);
-
-		return annotationIds;
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		List<String> constructIdStrings = constructDAO.findFilteredIds(params);
+		constructIdStrings.removeIf(Objects::isNull);
+		List<Long>  constructIds = constructIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		
+		return constructIds;
 	}
 	
 	private void deleteConstructSlotAnnotations(Construct construct) {

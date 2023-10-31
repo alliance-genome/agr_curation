@@ -20,12 +20,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		super(Allele.class);
 	}
 
-	public List<String> findAllCuriesByDataProvider(String dataProvider) {
-		Query jpqlQuery = entityManager.createQuery("SELECT allele.curie FROM Allele allele WHERE allele.dataProvider.sourceOrganization.abbreviation = :dataProvider");
-		jpqlQuery.setParameter("dataProvider", dataProvider);
-		return (List<String>) jpqlQuery.getResultList();
-	}
-
 	public List<Long> findReferencingDiseaseAnnotationIds(String alleleCurie) {
 		Query jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.subject.curie = :alleleCurie");
 		jpqlQuery.setParameter("alleleCurie", alleleCurie);

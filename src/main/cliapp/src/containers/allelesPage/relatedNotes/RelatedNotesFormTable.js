@@ -5,7 +5,7 @@ import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { ReferencesEditor } from '../../../components/Editors/ReferencesEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
+import { VocabularyTermSetEditor } from '../../../components/Editors/VocabularyTermSetEditor';
 import { TableInputTextAreaEditor } from '../../../components/Editors/TableInputTextAreaEditor';
 
 export const RelatedNotesFormTable = ({
@@ -39,7 +39,7 @@ export const RelatedNotesFormTable = ({
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column
         editor={(props) => {
-          return <ControlledVocabularyEditor
+          return <VocabularyTermSetEditor
             props={props}
             onChangeHandler={noteTypeOnChangeHandler}
             errorMessages={errorMessages}

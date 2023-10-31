@@ -224,9 +224,6 @@ export function filterDropDownObject(inputValue, object){
 	listFields.forEach (function(subField, field) {
 		if (_object[field] && _object[field]?.length > 0) {
 			const filteredItems = [];
-			console.log(_object)
-			console.log(field)
-			console.log(_object[field])
 			_object[field].forEach((item) => {
 				let selectedItemValue = "";
 				if ((field === "synonyms" && !item.name) || subField === "") {
@@ -313,9 +310,20 @@ export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFiel
 		setFieldValue('');
 		return;
 	}
-
-	updatedRows[index][fieldName] = event.target.value;
+	let nonDuplicateRows = [];
+	if (event.target.value.length > 0) {
+		const identifier = event.target.value[0].curie ? "curie" : "id";
+		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, identifier);
+	}
+	updatedRows[index][fieldName] = nonDuplicateRows;
 	setFieldValue(updatedRows[index][fieldName]);
+}
+
+const isPropValuesEqual = (subject, target, propName) => {return subject[propName] === target[propName]};
+
+export function getUniqueItemsByProperty(items, propName) {
+	return items.filter((item, index, array) => index === array.findIndex(foundItem => isPropValuesEqual(foundItem, item, propName))
+	);
 }
 
 export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors) {
@@ -449,7 +457,7 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 	return anyErrors;
 }
 
-//temporary function until useNewAnnotationReducer is refactored
+//temporary function until useNewAnnotationReducer is refactored to add table states
 export const validateAlleleDetailTable = async (endpoint, entityType, table, dispatch) => {
 	if(!table) return false;
 	const validationService = new ValidationService();
