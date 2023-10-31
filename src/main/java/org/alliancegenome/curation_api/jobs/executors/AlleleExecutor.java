@@ -68,6 +68,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		List<String> curiesLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+		Log.info(alleles.get(0).getCurie());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, alleles, dataProvider, curiesLoaded);
 		
@@ -81,7 +82,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Allele Update for: " + dataProvider.name(), alleles.size());
-		alleles.forEach(alleleDTO -> {
+		for(AlleleDTO alleleDTO: alleles) {
 			try {
 				Allele allele = alleleService.upsert(alleleDTO, dataProvider);
 				history.incrementCompleted();
@@ -95,9 +96,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(alleleDTO, e.getMessage(), e.getStackTrace()));
 			}
-
 			ph.progressProcess();
-		});
+		}
 		ph.finishProcess();
 
 	}
