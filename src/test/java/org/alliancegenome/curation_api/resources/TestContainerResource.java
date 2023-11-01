@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
@@ -13,22 +15,30 @@ public class TestContainerResource {
 
 	public static class Initializer implements QuarkusTestResourceLifecycleManager {
 
-		private OpenSearchContainer container;
+		private OpenSearchContainer osContainer;
 		private PostgreSQLContainer pgContainer;
+		private ElasticsearchContainer esContainer;
 
 		@Override
 		public Map<String, String> start() {
 
-			container = new OpenSearchContainer("opensearchproject/opensearch:1.2.4");
+			DockerImageName esImage = DockerImageName.parse("elasticsearch:7.10.1").asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch");
+			
+			esContainer = new ElasticsearchContainer(esImage);
+			osContainer = new OpenSearchContainer("opensearchproject/opensearch:1.2.4");
 			pgContainer = new PostgreSQLContainer("postgres:14.2");
-
+			
+			
 			pgContainer.withEnv("POSTGRES_HOST_AUTH_METHOD", "trust");
 			pgContainer.withDatabaseName("curation");
 			pgContainer.withUsername("postgres");
 			pgContainer.withPassword("");
 
-			container.start();
+			esContainer.withEnv("xpack.security.enabled", "false");
+			
+			osContainer.start();
 			pgContainer.start();
+			esContainer.start();
 
 			return getConfig();
 		}
@@ -36,20 +46,13 @@ public class TestContainerResource {
 		private Map<String, String> getConfig() {
 			final Map<String, String> map = new HashMap<>();
 
-			map.put("quarkus.hibernate-search-orm.elasticsearch.hosts", container.getHost() + ":" + container.getMappedPort(9200));
-			map.put("quarkus.elasticsearch.hosts", container.getHost() + ":" + container.getMappedPort(9200));
-
-			//map.put("quarkus.hibernate-search-orm.elasticsearch.version", "openseach:1.2.4");
+			map.put("quarkus.hibernate-search-orm.elasticsearch.hosts", osContainer.getHost() + ":" + osContainer.getMappedPort(9200));
 
 			map.put("quarkus.datasource.jdbc.url", "jdbc:postgresql://" + pgContainer.getHost() + ":" + pgContainer.getMappedPort(5432) + "/curation");
 
+			map.put("quarkus.elasticsearch.hosts", esContainer.getHost() + ":" + esContainer.getMappedPort(9200));
+			
 			map.put("quarkus.hibernate-search-orm.elasticsearch.schema-management.required-status-wait-timeout", "180S");
-
-			// map.put("quarkus.elasticsearch.hosts", container.getHost() + ":" +
-			// container.getMappedPort(9200));
-			// map.put("quarkus.elasticsearch.version", "openseach:2.1.0");
-
-			// map.put("quarkus.log.level", "DEBUG");
 
 			return map;
 		}
@@ -57,8 +60,7 @@ public class TestContainerResource {
 		@Override
 		public void stop() {
 			// Don't shutdown the containers manually, the testing framework will do it for
-			// us
-			// and this prevents errors when the services shutdown before quarkus does
+			// us and this prevents errors when the services shutdown before quarkus does
 		}
 	}
 }
