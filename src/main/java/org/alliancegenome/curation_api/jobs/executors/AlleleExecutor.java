@@ -68,7 +68,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		List<String> curiesLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
-		Log.info(alleles.get(0).getCurie());
+
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, alleles, dataProvider, curiesLoaded);
 		

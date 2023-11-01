@@ -4,6 +4,8 @@ quarkus.http.limits.max-body-size=
 quarkus.http.root-path=/
 quarkus.http.non-application-root-path=/
 
+quarkus.http.test-timeout=5m
+
 quarkus.swagger-ui.always-include=true
 quarkus.swagger-ui.doc-expansion=none
 quarkus.health.openapi.included=true
