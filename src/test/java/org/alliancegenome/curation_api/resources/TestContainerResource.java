@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -17,14 +16,14 @@ public class TestContainerResource {
 
 		private OpenSearchContainer osContainer;
 		private PostgreSQLContainer pgContainer;
-		private ElasticsearchContainer esContainer;
+		//private ElasticsearchContainer esContainer;
 
 		@Override
 		public Map<String, String> start() {
 
-			DockerImageName esImage = DockerImageName.parse("elasticsearch:7.10.1").asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch");
+			DockerImageName esImage = DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch:7.10.2").asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch");
 			
-			esContainer = new ElasticsearchContainer(esImage);
+			//esContainer = new ElasticsearchContainer(esImage);
 			osContainer = new OpenSearchContainer("opensearchproject/opensearch:1.2.4");
 			pgContainer = new PostgreSQLContainer("postgres:14.2");
 			
@@ -34,11 +33,11 @@ public class TestContainerResource {
 			pgContainer.withUsername("postgres");
 			pgContainer.withPassword("");
 
-			esContainer.withEnv("xpack.security.enabled", "false");
+			//esContainer.withEnv("xpack.security.enabled", "false");
 			
 			osContainer.start();
 			pgContainer.start();
-			esContainer.start();
+			//esContainer.start();
 
 			return getConfig();
 		}
@@ -50,7 +49,8 @@ public class TestContainerResource {
 
 			map.put("quarkus.datasource.jdbc.url", "jdbc:postgresql://" + pgContainer.getHost() + ":" + pgContainer.getMappedPort(5432) + "/curation");
 
-			map.put("quarkus.elasticsearch.hosts", esContainer.getHost() + ":" + esContainer.getMappedPort(9200));
+			//map.put("quarkus.elasticsearch.hosts", esContainer.getHost() + ":" + esContainer.getMappedPort(9200));
+			//map.put("quarkus.elasticsearch.protocol", "http");
 			
 			map.put("quarkus.hibernate-search-orm.elasticsearch.schema-management.required-status-wait-timeout", "180S");
 
