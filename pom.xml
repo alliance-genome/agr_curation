@@ -182,7 +182,7 @@
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-elasticsearch-rest-high-level-client</artifactId>
-			<version>3.2.6.Final</version>
+			<version>3.2.7.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
