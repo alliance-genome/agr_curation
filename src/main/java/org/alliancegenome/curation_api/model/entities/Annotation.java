@@ -29,6 +29,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -40,13 +41,18 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "annotation", description = "POJO that represents an annotation")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
-@Table(indexes = {
-	@Index(name = "annotation_curie_index", columnList = "curie"),
-	@Index(name = "annotation_uniqueId_index", columnList = "uniqueId"),
-	@Index(name = "annotation_modEntityId_index", columnList = "modEntityId"),
-	@Index(name = "annotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "annotation_dataprovider_index", columnList = "dataProvider_id"),
-})
+@Table(
+	indexes = {
+		@Index(name = "annotation_curie_index", columnList = "curie"),
+		@Index(name = "annotation_uniqueId_index", columnList = "uniqueId"),
+		@Index(name = "annotation_modEntityId_index", columnList = "modEntityId"),
+		@Index(name = "annotation_modInternalId_index", columnList = "modInternalId"),
+		@Index(name = "annotation_dataprovider_index", columnList = "dataProvider_id"),
+	}, uniqueConstraints = {
+		@UniqueConstraint(name = "annotation_modentityid_uk", columnNames = "modEntityId"),
+		@UniqueConstraint(name = "annotation_modinternalid_uk", columnNames = "modInternalId"),
+	}
+)
 
 public class Annotation extends SingleReferenceAssociation {
 
@@ -65,14 +71,12 @@ public class Annotation extends SingleReferenceAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String modEntityId;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modInternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String modInternalId;

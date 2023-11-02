@@ -28,18 +28,22 @@ CREATE SEQUENCE public.vocabularytermset_seq      START WITH 200000000 INCREMENT
 
 DROP SEQUENCE hibernate_sequence;
 
-ALTER TABLE ONLY public.annotation                               ADD CONSTRAINT uk_5yecel87ntgvx62kmhgmlxw1y UNIQUE (modinternalid);
-ALTER TABLE ONLY public.vocabulary                               ADD CONSTRAINT uk_avxkpwi6f4x6fhb7pvsi86pog UNIQUE (vocabularylabel);
-ALTER TABLE ONLY public.reagent                                  ADD CONSTRAINT uk_eakmwvrtkqtnv0j6p5sacjith UNIQUE (modentityid);
-ALTER TABLE ONLY public.reagent                                  ADD CONSTRAINT uk_f9mv5mtgjw7yhjj8c4985i649 UNIQUE (modinternalid);
-ALTER TABLE ONLY public.vocabularytermset                        ADD CONSTRAINT uk_kovuuc5lh1hwyccs4iesimxst UNIQUE (vocabularylabel);
-ALTER TABLE ONLY public.annotation                               ADD CONSTRAINT uk_q3qsfxfry01magx331btt1dg3 UNIQUE (modentityid);
+ALTER TABLE ONLY vocabulary           RENAME CONSTRAINT uk_7a3owq9kyfv5eirj0bjkmifyf TO vocabulary_name_uk;
+ALTER TABLE ONLY vocabulary           RENAME CONSTRAINT vocabulary_vocabularylabel_key TO vocabulary_vocabularylabel_uk;
+ALTER TABLE ONLY vocabularytermset    RENAME CONSTRAINT vocabularytermset_vocabularylabel_key to vocabularytermset_vocabularylabel_uk;
 
-CREATE INDEX allelegeneassociation_object_curie_index            ON public.allelegeneassociation USING btree (object_curie);
-CREATE INDEX singlereferenceassociation_singlereference_index    ON public.singlereferenceassociation USING btree (singlereference_curie);
+ALTER TABLE ONLY public.reagent  ADD CONSTRAINT reagent_modentityid_uk UNIQUE (modentityid);
+ALTER TABLE ONLY public.reagent  ADD CONSTRAINT reagent_modinternalid_uk UNIQUE (modinternalid);
+
+ALTER INDEX singlereferenceassociation_singlereference_curie_index RENAME TO singlereferenceassociation_singlereference_index;
+
 CREATE INDEX vocabulary_vocabularylabel_index                    ON public.vocabulary USING btree (vocabularylabel);
 CREATE INDEX vocabularytermset_vocabularylabel_index             ON public.vocabularytermset USING btree (vocabularylabel);
 
 ALTER TABLE ONLY public.allelegenomicentityassociation           ADD CONSTRAINT fk1qks8xk2i7ml0qnhgx8q6ieex FOREIGN KEY (id) REFERENCES public.evidenceassociation(id);
 ALTER TABLE ONLY public.constructgenomicentityassociation        ADD CONSTRAINT fkgrhw9gxslaub14x4b0mc7v9mk FOREIGN KEY (id) REFERENCES public.evidenceassociation(id);
 ALTER TABLE ONLY public.annotation_note                          ADD CONSTRAINT fks4im5g992bpgi6wa1rp9y8vil FOREIGN KEY (annotation_id) REFERENCES public.annotation(id);
+
+ALTER TABLE ONLY allelegenomicentityassociation DROP CONSTRAINT allelegenomicentityassociation_id_fk;
+ALTER TABLE ONLY constructgenomicentityassociation DROP CONSTRAINT constructgenomicentityassociation_id_fk;
+ALTER TABLE ONLY annotation_note DROP CONSTRAINT annotation_note_annotation_id_fk;

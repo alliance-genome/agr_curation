@@ -29,6 +29,7 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -40,15 +41,20 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "reagent", description = "POJO that represents a reagent")
 @AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
-@Table(indexes = {
-	@Index(name = "reagent_curie_index", columnList = "curie"),
-	@Index(name = "reagent_uniqueId_index", columnList = "uniqueId"),
-	@Index(name = "reagent_modEntityId_index", columnList = "modEntityId"),
-	@Index(name = "reagent_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "reagent_dataprovider_index", columnList = "dataProvider_id"),
-	@Index(name = "reagent_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id")
-})
+@Table(
+	indexes = {
+		@Index(name = "reagent_curie_index", columnList = "curie"),
+		@Index(name = "reagent_uniqueId_index", columnList = "uniqueId"),
+		@Index(name = "reagent_modEntityId_index", columnList = "modEntityId"),
+		@Index(name = "reagent_modInternalId_index", columnList = "modInternalId"),
+		@Index(name = "reagent_dataprovider_index", columnList = "dataProvider_id"),
+		@Index(name = "reagent_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id")
+	}, uniqueConstraints = {
+		@UniqueConstraint(name = "reagent_modEntityId_uk", columnNames = "modEntityId"),
+		@UniqueConstraint(name = "reagent_modInternalId_uk", columnNames = "modInternalId"),
+	}
+)
 
 public class Reagent extends GeneratedAuditedObject {
 
@@ -67,14 +73,12 @@ public class Reagent extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String modEntityId;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modInternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String modInternalId;
