@@ -3,9 +3,6 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -22,6 +19,8 @@ import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class AlleleExecutor extends LoadFileExecutor {
@@ -69,6 +68,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		List<String> curiesLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
+
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, alleles, dataProvider, curiesLoaded);
 		
@@ -82,7 +82,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Allele Update for: " + dataProvider.name(), alleles.size());
-		alleles.forEach(alleleDTO -> {
+		for(AlleleDTO alleleDTO: alleles) {
 			try {
 				Allele allele = alleleService.upsert(alleleDTO, dataProvider);
 				history.incrementCompleted();
@@ -96,9 +96,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(alleleDTO, e.getMessage(), e.getStackTrace()));
 			}
-
 			ph.progressProcess();
-		});
+		}
 		ph.finishProcess();
 
 	}

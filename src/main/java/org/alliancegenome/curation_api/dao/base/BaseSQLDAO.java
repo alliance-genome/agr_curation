@@ -10,20 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.Metamodel;
-import javax.transaction.Transactional;
-
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
@@ -38,6 +24,7 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.common.ValueConvert;
@@ -54,6 +41,19 @@ import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 import org.reflections.Reflections;
 
 import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.transaction.Transactional;
 
 public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
@@ -568,24 +568,22 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						}
 					}
 
-					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: "
-						+ countColumn.getParentPath().getAlias());
+					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 				}
 			} else {
 				column = root.get(key);
-				if (column.getJavaType().equals(List.class)) {
+				if (column instanceof SqmPluralValuedSimplePath) {
 					column = root.join(key);
 				}
 				countColumn = countRoot.get(key);
-				if (countColumn.getJavaType().equals(List.class)) {
+				if (countColumn instanceof SqmPluralValuedSimplePath) {
 					countColumn = countRoot.join(key);
 				}
 			}
 
-			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: "
-				+ countColumn.getParentPath().getAlias());
+			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
 			if (value != null) {
@@ -633,7 +631,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		countQuery.select(builder.count(countRoot));
 		countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
-		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
 		TypedQuery<E> allQuery = entityManager.createQuery(query);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
@@ -646,7 +643,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		SearchResponse<E> results = new SearchResponse<E>();
 		results.setResults(allQuery.getResultList());
+		
+		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 		results.setTotalResults(totalResults);
+		
 		return results;
 
 	}

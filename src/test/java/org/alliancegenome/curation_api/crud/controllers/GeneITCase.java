@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -155,7 +154,7 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneType.curie", is(soTerm.getCurie())).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
-			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.geneSymbol.displayText", is(geneSymbol.getDisplayText())).
@@ -255,7 +254,7 @@ public class GeneITCase extends BaseITCase {
 			body("entity.geneType.curie", is(soTerm2.getCurie())).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
-			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.geneSymbol.displayText", is(editedSymbol.getDisplayText())).
