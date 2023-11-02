@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -88,8 +87,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.references[0].curie", is(reference)).
 			body("entity.references[0].crossReferences[0].referencedCurie", is(referenceXref)).
 			body("entity.constructSymbol.displayText", is("Ta1")).
@@ -102,8 +101,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructSymbol.obsolete", is(true)).
 			body("entity.constructSymbol.createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.constructSymbol.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
-			body("entity.constructSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.constructSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.constructFullName.displayText", is("Test construct 1")).
 			body("entity.constructFullName.formatText", is("Test construct<sup>1</sup>")).
 			body("entity.constructFullName.synonymScope.name", is("exact")).
@@ -114,8 +113,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructFullName.obsolete", is(true)).
 			body("entity.constructFullName.createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.constructFullName.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
-			body("entity.constructFullName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructFullName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.constructFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.constructSynonyms", hasSize(1)).
 			body("entity.constructSynonyms[0].displayText", is("Test construct synonym 1")).
 			body("entity.constructSynonyms[0].formatText", is("Test construct synonym <sup>1</sup>")).
@@ -127,8 +126,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructSynonyms[0].obsolete", is(true)).
 			body("entity.constructSynonyms[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.constructSynonyms[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
-			body("entity.constructSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.constructSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.constructComponents", hasSize(1)).
 			body("entity.constructComponents[0].componentSymbol", is("cmp1")).
 			body("entity.constructComponents[0].relation.name", is(relation.getName())).
@@ -140,16 +139,16 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].obsolete", is(true)).
 			body("entity.constructComponents[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.constructComponents[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
-			body("entity.constructComponents[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructComponents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructComponents[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.constructComponents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.constructComponents[0].relatedNotes[0].noteType.name", is(noteType.getName())).
 			body("entity.constructComponents[0].relatedNotes[0].freeText", is("Test construct component note")).
 			body("entity.constructComponents[0].relatedNotes[0].internal", is(true)).
 			body("entity.constructComponents[0].relatedNotes[0].obsolete", is(true)).
 			body("entity.constructComponents[0].relatedNotes[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
 			body("entity.constructComponents[0].relatedNotes[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
-			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
@@ -171,8 +170,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.references", hasSize(1)).
 			body("entity.references[0].curie", is(reference2)).
 			body("entity.references[0].crossReferences[0].referencedCurie", is(referenceXref2)).
@@ -186,8 +185,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructSymbol.obsolete", is(false)).
 			body("entity.constructSymbol.createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructSymbol.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
-			body("entity.constructSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.constructSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.constructFullName.displayText", is("Test construct 1a")).
 			body("entity.constructFullName.formatText", is("Test construct<sup>1a</sup>")).
 			body("entity.constructFullName.synonymScope.name", is("broad")).
@@ -198,8 +197,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructFullName.obsolete", is(false)).
 			body("entity.constructFullName.createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructFullName.updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
-			body("entity.constructFullName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructFullName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.constructFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.constructSynonyms", hasSize(1)).
 			body("entity.constructSynonyms[0].displayText", is("Test construct synonym 1a")).
 			body("entity.constructSynonyms[0].formatText", is("Test construct synonym <sup>1a</sup>")).
@@ -211,8 +210,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructSynonyms[0].obsolete", is(false)).
 			body("entity.constructSynonyms[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructSynonyms[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
-			body("entity.constructSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.constructSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.constructComponents", hasSize(1)).
 			body("entity.constructComponents[0].componentSymbol", is("cmp2")).
 			body("entity.constructComponents[0].relation.name", is(relation2.getName())).
@@ -224,8 +223,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].obsolete", is(false)).
 			body("entity.constructComponents[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructComponents[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
-			body("entity.constructComponents[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructComponents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructComponents[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.constructComponents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.constructComponents[0].relatedNotes", hasSize(1)).
 			body("entity.constructComponents[0].relatedNotes[0].noteType.name", is(noteType2.getName())).
 			body("entity.constructComponents[0].relatedNotes[0].freeText", is("Test construct component note 2")).
@@ -233,8 +232,8 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents[0].relatedNotes[0].obsolete", is(false)).
 			body("entity.constructComponents[0].relatedNotes[0].createdBy.uniqueId", is("CONSTRUCTTEST:Person0002")).
 			body("entity.constructComponents[0].relatedNotes[0].updatedBy.uniqueId", is("CONSTRUCTTEST:Person0001")).
-			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.constructComponents[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.constructComponents[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).

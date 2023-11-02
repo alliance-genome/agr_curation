@@ -1,11 +1,5 @@
 package org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -14,8 +8,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -29,6 +21,11 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -47,21 +44,18 @@ public class AlleleInheritanceModeSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference
-	@Fetch(FetchMode.JOIN)
 	private Allele singleAllele;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private VocabularyTerm inheritanceMode;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@Fetch(FetchMode.JOIN)
 	private PhenotypeTerm phenotypeTerm;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

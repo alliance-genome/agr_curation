@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -138,7 +137,7 @@ public class VariantITCase extends BaseITCase {
 			body("entity.variantType.curie", is(variantTypeTerm.getCurie())).
 			body("entity.variantStatus.name", is(variantStatus.getName())).
 			body("entity.sourceGeneralConsequence.curie", is(sgcTerm.getCurie())).
-			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.relatedNotes", hasSize(1)).
@@ -188,7 +187,7 @@ public class VariantITCase extends BaseITCase {
 			body("entity.variantType.curie", is(variantTypeTerm2.getCurie())).
 			body("entity.variantStatus.name", is(variantStatus2.getName())).
 			body("entity.sourceGeneralConsequence.curie", is(sgcTerm2.getCurie())).
-			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.taxon.curie", is(taxon2.getCurie())).

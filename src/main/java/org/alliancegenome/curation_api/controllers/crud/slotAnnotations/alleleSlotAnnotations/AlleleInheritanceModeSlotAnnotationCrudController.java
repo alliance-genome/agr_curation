@@ -1,9 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.slotAnnotations.alleleSlotAnnotations;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationCrudInterface;
@@ -11,9 +7,14 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationService;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
 @RequestScoped
 public class AlleleInheritanceModeSlotAnnotationCrudController extends
-	BaseEntityCrudController<AlleleInheritanceModeSlotAnnotationService, AlleleInheritanceModeSlotAnnotation, AlleleInheritanceModeSlotAnnotationDAO> implements AlleleInheritanceModeSlotAnnotationCrudInterface {
+		BaseEntityCrudController<AlleleInheritanceModeSlotAnnotationService, AlleleInheritanceModeSlotAnnotation, AlleleInheritanceModeSlotAnnotationDAO>
+		implements AlleleInheritanceModeSlotAnnotationCrudInterface {
 
 	@Inject
 	AlleleInheritanceModeSlotAnnotationService alleleInheritanceModeService;

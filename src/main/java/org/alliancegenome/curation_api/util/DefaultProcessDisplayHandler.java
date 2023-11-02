@@ -35,8 +35,7 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 		}
 		long time = (nowTime - lastTime);
 		long diff = (nowTime - startTime);
-		sb.append(", " + (time / 1000) + "s to process " + ProcessDisplayHandler.getBigNumber(processedAmount) + " records at " + ProcessDisplayHandler.getBigNumber((processedAmount * 1000L) / time)
-			+ "r/s");
+		sb.append(", " + (time / 1000) + "s to process " + ProcessDisplayHandler.getBigNumber(processedAmount) + " records at " + ProcessDisplayHandler.getBigNumber((processedAmount * 1000L) / time) + "r/s");
 		if (data != null) {
 			sb.append(" " + data);
 		}
@@ -61,8 +60,7 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 		String result = ProcessDisplayHandler.getHumanReadableTimeDisplay(duration);
 		String localMessage = message + "Finished: took: " + result + " to process " + ProcessDisplayHandler.getBigNumber(currentCount);
 		if (duration != 0) {
-			localMessage += " records at a rate of: " + ProcessDisplayHandler.getBigNumber((currentCount * 1000) / duration) + "r/s "
-				+ ProcessDisplayHandler.getBigNumber((currentCount * 60000) / duration) + "r/m";
+			localMessage += " records at a rate of: " + ProcessDisplayHandler.getBigNumber((currentCount * 1000) / duration) + "r/s " + ProcessDisplayHandler.getBigNumber((currentCount * 60000) / duration) + "r/m";
 		} else {
 			localMessage += " records";
 		}

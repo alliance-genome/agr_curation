@@ -1,12 +1,12 @@
 package org.alliancegenome.curation_api.dao.associations.constructAssociations;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.persistence.Query;
-
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class ConstructGenomicEntityAssociationDAO extends BaseSQLDAO<ConstructGenomicEntityAssociation> {

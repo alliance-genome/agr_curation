@@ -1,14 +1,10 @@
 package org.alliancegenome.curation_api.services.validation.dto.associations.alleleAssociations;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
@@ -18,6 +14,9 @@ import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.NoteDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.EvidenceAssociationDTOValidator;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {

@@ -1,11 +1,5 @@
 package org.alliancegenome.curation_api.model.entities.associations.alleleAssociations;
 
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -22,6 +16,11 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -35,7 +34,7 @@ import lombok.ToString;
 @Schema(name = "AlleleGeneAssociation", description = "POJO representing an association between an allele and a gene")
 @Table(indexes = {
 		@Index(name = "allelegeneassociation_subject_index", columnList = "subject_curie"),
-		@Index(name = "allelegeneassociation_object_curie_index", columnList = "object_curie")
+		@Index(name = "allelegeneassociation_object_index", columnList = "object_curie")
 		})
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
