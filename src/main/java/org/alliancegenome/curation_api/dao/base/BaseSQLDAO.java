@@ -431,6 +431,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						});
 						outerBoost--;
 					}
+					if(outerBoost == 0) {
+						b.must(p.matchAll());
+					}
 				} else {
 					b.must(p.matchAll());
 				}
