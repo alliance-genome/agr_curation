@@ -24,7 +24,9 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.sqm.internal.QuerySqmImpl;
 import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
+import org.hibernate.query.sqm.tree.select.SqmSelectStatement;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.common.ValueConvert;
@@ -38,6 +40,8 @@ import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsSt
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
 import org.reflections.Reflections;
 
 import io.quarkus.logging.Log;
@@ -504,7 +508,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Log.debug("SqlDAO: findByField: " + field + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
 		params.put(field, value);
-		SearchResponse<E> results = findByParams(null, params);
+		SearchResponse<E> results = findByParams(params);
 		Log.debug("Result List: " + results);
 		if (results.getResults().size() > 0) {
 			return results;
@@ -522,10 +526,15 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
+		Logger.Level level = Level.DEBUG;
+		if(params.containsKey("debug")) {
+			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
+		}
+		
 		if (orderByField != null) {
-			Log.debug("Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
+			Log.log(level, "Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
 		} else {
-			Log.debug("Search By Params: " + params + " for class: " + myClass);
+			Log.log(level, "Search By Params: " + params + " for class: " + myClass);
 		}
 
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -541,14 +550,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		for (String key : params.keySet()) {
 			Path<Object> column = null;
 			Path<Object> countColumn = null;
-			Log.debug("Key: " + key);
+			Log.log(level, "Key: " + key);
 			if (key.contains(".")) {
 				String[] objects = key.split("\\.");
 				for (String s : objects) {
-					Log.debug("Looking up: " + s);
+					Log.log(level, "Looking up: " + s);
 					if (column != null) {
-						Log.debug("Looking up via column: " + s);
-
+						Log.log(level, "Looking up via column: " + s);
 						Path<Object> pathColumn = column.get(s);
 						if (pathColumn.getJavaType().equals(List.class)) {
 							column = ((Join) column).join(s);
@@ -562,7 +570,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 							countColumn = pathCountColumn;
 						}
 					} else {
-						Log.debug("Looking up via root: " + s);
+						Log.log(level, "Looking up via root: " + s);
 						column = root.get(s);
 						if (column.getJavaType().equals(List.class)) {
 							column = root.join(s);
@@ -573,47 +581,52 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						}
 					}
 
-					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
+					Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+					Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 				}
 			} else {
+				Log.log(level, "Looking up via root: " + key);
 				column = root.get(key);
-				if (column instanceof SqmPluralValuedSimplePath) {
-					column = root.join(key);
-				}
 				countColumn = countRoot.get(key);
-				if (countColumn instanceof SqmPluralValuedSimplePath) {
-					countColumn = countRoot.join(key);
+				// Don't need to join to these tables if value is null, the isEmpty will catch the condition later
+				Object value = params.get(key);
+				if(value != null) {
+					if (column instanceof SqmPluralValuedSimplePath) {
+						column = root.join(key);
+					}
+					if (countColumn instanceof SqmPluralValuedSimplePath) {
+						countColumn = countRoot.join(key);
+					}
 				}
 			}
 
-			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
+			Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+			Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
 			if (value != null) {
-				Log.debug("Object Type: " + value.getClass());
+				Log.log(level, "Object Type: " + value.getClass());
 				if (value instanceof Integer) {
-					Log.debug("Integer Type: " + value);
+					Log.log(level, "Integer Type: " + value);
 					Integer desiredValue = (Integer) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
 				} else if (value instanceof Enum) {
-					Log.debug("Enum Type: " + value);
+					Log.log(level, "Enum Type: " + value);
 					restrictions.add(builder.equal(column, value));
 					countRestrictions.add(builder.equal(countColumn, value));
 				} else if (value instanceof Long) {
-					Log.debug("Long Type: " + value);
+					Log.log(level, "Long Type: " + value);
 					Long desiredValue = (Long) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
 				} else if (value instanceof Boolean) {
-					Log.debug("Boolean Type: " + value);
+					Log.log(level, "Boolean Type: " + value);
 					Boolean desiredValue = (Boolean) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
 				} else {
-					Log.debug("String Type: " + value);
+					Log.log(level, "String Type: " + value);
 					String desiredValue = (String) value;
 					restrictions.add(builder.equal(column, desiredValue));
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
@@ -645,10 +658,21 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			allQuery.setFirstResult(first);
 			allQuery.setMaxResults(pagination.getLimit());
 		}
-
-		SearchResponse<E> results = new SearchResponse<E>();
-		results.setResults(allQuery.getResultList());
 		
+		Log.log(level, query);
+		Log.log(level, allQuery);
+		Log.log(level, countQuery);
+		
+		List<E> dbResults = allQuery.getResultList();
+		SearchResponse<E> results = new SearchResponse<E>();
+		results.setResults(dbResults);
+		
+		if (level == Level.INFO) {
+			results.setDebug("true");
+			results.setEsQuery(((QuerySqmImpl)allQuery).getQueryString());
+			results.setDbQuery(((SqmSelectStatement)query).toHqlString());
+		}
+	
 		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 		results.setTotalResults(totalResults);
 		
