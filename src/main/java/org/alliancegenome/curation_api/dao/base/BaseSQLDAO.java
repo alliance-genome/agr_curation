@@ -431,6 +431,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						});
 						outerBoost--;
 					}
+					if(outerBoost == 0) {
+						b.must(p.matchAll());
+					}
+				} else {
+					b.must(p.matchAll());
 				}
 				if (params.containsKey("nonNullFieldsTable")) {
 					List<String> fields = (List<String>) params.get("nonNullFieldsTable");
