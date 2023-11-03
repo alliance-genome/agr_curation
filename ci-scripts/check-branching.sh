@@ -1,4 +1,8 @@
 #!/bin/bash
+set -e
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
 BASE=$1
 HEAD=$2
 
@@ -15,6 +19,14 @@ elif [[ $BASE == 'beta' ]]; then
         && [[ ! $HEAD == 'PRmerge/production' ]]; then
         echo "Failure: branch '${HEAD}' not allowed to merge in '${BASE}'"
         false
+    fi
+    # If HEAD is a release/* branch, ensure the release does not yet exist
+    if [[ $HEAD =~ ^release/v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+-rc[[:digit:]]+$ ]]; then
+        RELEASE=$(bash ${SCRIPT_DIR}/parse-release-branch-name.sh $HEAD)
+        if [[ ! -z $(git tag -l ${RELEASE}) ]]; then
+            echo "Failure: release '${RELEASE}' already exists."
+            false
+        fi
     fi
 elif [[ $BASE == 'alpha' ]]; then
     # Prevent direct merges from beta or production, as GH PR merge behavior merges BASE into HEAD first,
