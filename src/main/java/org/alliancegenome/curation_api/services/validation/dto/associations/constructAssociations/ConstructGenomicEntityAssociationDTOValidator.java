@@ -55,8 +55,9 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
 			SearchResponse<Construct> res = constructDAO.findByField("modEntityId", dto.getConstructIdentifier());
-			if (res == null || res.getSingleResult() == null)
+			if (res == null || res.getSingleResult() == null) {
 				res = constructDAO.findByField("modInternalId", dto.getConstructIdentifier());
+			}
 			if (res == null || res.getSingleResult() == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
