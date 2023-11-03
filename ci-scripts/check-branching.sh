@@ -11,7 +11,7 @@ if [[ $BASE == 'production' ]]; then
 elif [[ $BASE == 'beta' ]]; then
     # Only allow merges from betafix/*, release/* branches with any release (including release candidates)
     # or 'PRmerge/production' branch (for merge-back after production release)
-    if [[ ! $HEAD =~ ^betafix/ ]] && [[ ! $HEAD =~ ^release/v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+ ]] \
+    if [[ ! $HEAD =~ ^betafix/ ]] && [[ ! $HEAD =~ ^release/v?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+-rc[[:digit:]]+$ ]] \
         && [[ ! $HEAD == 'PRmerge/production' ]]; then
         echo "Failure: branch '${HEAD}' not allowed to merge in '${BASE}'"
         false
