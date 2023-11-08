@@ -7,11 +7,11 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 
 		return (
 						<Card>
-								<Splitter style={{border:'none', height:'10%'}} gutterSize="0">
-										<SplitterPanel size={50} style={{textAlign: 'left'}}>
+								<Splitter className="border-none h-3rem" gutterSize={0}>
+										<SplitterPanel size={50} className="text-left">
 												<h2>{title}</h2>
 										</SplitterPanel>
-										<SplitterPanel size={60} style={{textAlign: 'right'}}>
+										<SplitterPanel size={60} className="text-right">
 											{multiselectComponent}&nbsp;
 											{buttons}&nbsp;
 											<ConfirmButton
