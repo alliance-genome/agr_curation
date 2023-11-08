@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;

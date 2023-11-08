@@ -1,11 +1,8 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.*;
 
+import jakarta.ws.rs.core.MediaType;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.response.ObjectResponse;
