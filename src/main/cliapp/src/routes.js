@@ -18,7 +18,6 @@ import { VariantsPage} from './containers/variantsPage';
 import { ConstructsPage } from './containers/constructsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
-import { SpeciesPage} from './containers/speciesPage';
 import { ReferencePage } from './containers/referencePage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 import { VocabulariesPage } from './containers/vocabularyPage';
@@ -36,7 +35,6 @@ import { GeneralOntologyComponent } from './containers/ontologies/GeneralOntolog
 import { ResourceDescriptorsPage } from './containers/resourceDescriptorPage';
 import { ResourceDescriptorPagesPage } from './containers/resourceDescriptorPagePage';
 import ErrorBoundary from './components/Error/ErrorBoundary';
-import {SpeciesTable} from "./containers/speciesPage/SpeciesTable";
 
 export default (
 	<SiteLayout>
@@ -53,7 +51,6 @@ export default (
 		<SecureRoute path="/variants" render={() => <ErrorBoundary><VariantsPage/></ErrorBoundary>} />
 		<SecureRoute path="/constructs" render={() => <ErrorBoundary><ConstructsPage/></ErrorBoundary>} />
 		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />
-		<SecureRoute path="/species" render={() => <ErrorBoundary><SpeciesPage/></ErrorBoundary>} />
 		<SecureRoute path="/references" render={() => <ErrorBoundary><ReferencePage /></ErrorBoundary>} />
 		<SecureRoute path="/vocabterms" render={() => <ErrorBoundary><ControlledVocabularyPage /></ErrorBoundary>} />
 		<SecureRoute path="/vocabularies" render={() => <ErrorBoundary><VocabulariesPage /></ErrorBoundary>} />
