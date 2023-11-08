@@ -1,9 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
