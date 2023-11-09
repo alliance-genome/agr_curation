@@ -7,6 +7,8 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.TypeBinderRef;
@@ -53,6 +55,7 @@ public class BiologicalEntity extends CurieAuditedObject {
 			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
+	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
 	private DataProvider dataProvider;
 
