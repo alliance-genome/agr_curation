@@ -90,17 +90,17 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		HashSet<String> parentDeletes = new HashSet<>();
 
 		if(term.getIsaParents() != null) {
-			term.getIsaParents().forEach(o -> {
-				dbParents.add(o.getCurie());
-				parentDeletes.add(o.getCurie());
-			});
+			for(OntologyTerm ot: term.getIsaParents()) {
+				dbParents.add(ot.getCurie());
+				parentDeletes.add(ot.getCurie());
+			}
 		}
 		
 		if(inTerm.getIsaParents() != null) {
-			inTerm.getIsaParents().forEach(o -> {
-				incomingParents.add(o.getCurie());
-				parentAdds.add(o.getCurie());
-			});
+			for(OntologyTerm ot: inTerm.getIsaParents()) {
+				incomingParents.add(ot.getCurie());
+				parentAdds.add(ot.getCurie());
+			}
 		}
 		
 		parentDeletes.removeAll(incomingParents);
@@ -176,6 +176,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				term.setIsaAncestors(set);
 			}
 		}
+		
+		term.setChildCount(term.getIsaChildren().size());
+		term.setDescendantCount(term.getIsaDescendants().size());
 		
 		return term;
 	}
