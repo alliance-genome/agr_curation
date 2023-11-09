@@ -17,7 +17,7 @@ public class ResourceDescriptorDAO extends BaseSQLDAO<ResourceDescriptor> {
 	}
 	
 	public List<String> findAllNames() {
-		SearchResponse<ResourceDescriptor> response = findAll(null);
+		SearchResponse<ResourceDescriptor> response = findAll();
 		List<ResourceDescriptor> resourceDescriptors = response.getResults();
 		List<String> resourceDescriptorNames = resourceDescriptors.stream().map(ResourceDescriptor::getName).collect(Collectors.toList());
 		
