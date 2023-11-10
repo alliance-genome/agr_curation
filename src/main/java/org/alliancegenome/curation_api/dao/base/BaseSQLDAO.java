@@ -25,7 +25,6 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.sqm.internal.QuerySqmImpl;
-import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
 import org.hibernate.query.sqm.tree.select.SqmSelectStatement;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
@@ -383,7 +382,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
 		
-		Log.log(level, "Search: " + pagination + " Params: " + params);
+		Log.log(level, "Search: " + pagination + " Params: " + params + " class: " + myClass);
 
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
 			return p.bool(b -> {
@@ -590,17 +589,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 			} else {
 				Log.log(level, "Looking up via root: " + key);
+
 				column = root.get(key);
+				if (column.getJavaType().equals(List.class)) {
+					column = root.join(key);
+				}
 				countColumn = countRoot.get(key);
-				// Don't need to join to these tables if value is null, the isEmpty will catch the condition later
-				Object value = params.get(key);
-				if(value != null) {
-					if (column instanceof SqmPluralValuedSimplePath) {
-						column = root.join(key);
-					}
-					if (countColumn instanceof SqmPluralValuedSimplePath) {
-						countColumn = countRoot.join(key);
-					}
+				if (countColumn.getJavaType().equals(List.class)) {
+					countColumn = countRoot.join(key);
 				}
 			}
 
@@ -608,42 +604,39 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
-			if (value != null) {
-				Log.log(level, "Object Type: " + value.getClass());
-				if (value instanceof Integer) {
-					Log.log(level, "Integer Type: " + value);
-					Integer desiredValue = (Integer) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else if (value instanceof Enum) {
-					Log.log(level, "Enum Type: " + value);
-					restrictions.add(builder.equal(column, value));
-					countRestrictions.add(builder.equal(countColumn, value));
-				} else if (value instanceof Long) {
-					Log.log(level, "Long Type: " + value);
-					Long desiredValue = (Long) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else if (value instanceof Boolean) {
-					Log.log(level, "Boolean Type: " + value);
-					Boolean desiredValue = (Boolean) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else {
-					Log.log(level, "String Type: " + value);
-					String desiredValue = (String) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				}
+	
+			if(value == null) {
+				restrictions.add(builder.isEmpty(root.get(key)));
+				countRestrictions.add(builder.isEmpty(countRoot.get(key)));
+			} else if (value instanceof Integer) {
+				Log.log(level, "Integer Type: " + value);
+				Integer desiredValue = (Integer) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof Enum) {
+				Log.log(level, "Enum Type: " + value);
+				restrictions.add(builder.equal(column, value));
+				countRestrictions.add(builder.equal(countColumn, value));
+			} else if (value instanceof Long) {
+				Log.log(level, "Long Type: " + value);
+				Long desiredValue = (Long) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof Boolean) {
+				Log.log(level, "Boolean Type: " + value);
+				Boolean desiredValue = (Boolean) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof String) {
+				Log.log(level, "String Type: " + value);
+				String desiredValue = (String) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
 			} else {
-				if (column instanceof SqmPluralValuedSimplePath) {
-					restrictions.add(builder.isEmpty(root.join(key)));
-					countRestrictions.add(builder.isEmpty(countRoot.join(key)));
-				} else {
-					restrictions.add(builder.isNull(column));
-					countRestrictions.add(builder.isNull(countColumn));
-				}
+				Log.log(level, "Type Not Found for Value: " + value);
+				Log.log(level, "Type Not Found for Value: " + value.getClass());
 			}
+
 		}
 
 		if (orderByField != null) {
