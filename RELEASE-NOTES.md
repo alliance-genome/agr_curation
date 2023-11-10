@@ -2,6 +2,11 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.27.1
+ * Fixes and maintenance
+   * Automated release creation (SCRUM-3444)
+   * Added branch-tagging to latest beta and production container images (SCRUM-3415)
+
 ## v0.27.0
  * New features
    * Allele details page changes:
