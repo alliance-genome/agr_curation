@@ -48,8 +48,14 @@ export const SpeciesTable = () => {
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		},
 		{
-			field: "shortName",
-			header: "Short Name",
+			field: "displayName",
+			header: "Display Name",
+			sortable: isEnabled,
+			filter: true
+		},
+		{
+			field: "abbreviation",
+			header: "abbreviation",
 			sortable: isEnabled,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesShortNameFilterConfig
@@ -72,7 +78,7 @@ export const SpeciesTable = () => {
 		},
 		{
 			field: "sourceOrganization.abbreviation",
-			header: "Data Provider Short Name",
+			header: "Data Provider Abbreviation",
 			sortable: isEnabled,
 			//filter: true,
 			//filterConfig: FILTER_CONFIGS.sourceorganizationFilterConfig
@@ -84,7 +90,7 @@ export const SpeciesTable = () => {
 			filter: true
 		},
 		{
-			field: "assembly",
+			field: "assembly_curie",
 			header: "Assembly",
 			sortable: isEnabled,
 			filter: true

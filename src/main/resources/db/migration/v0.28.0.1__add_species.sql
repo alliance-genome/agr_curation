@@ -6,10 +6,11 @@ CREATE TABLE species(
 							 dbdateupdated timestamp without time zone,
 							 internal boolean NOT NULL DEFAULT false,
 							 obsolete boolean NOT NULL DEFAULT false,
-							 assembly varchar(255),
+							 assembly_curie varchar(255),
 							 fullname varchar(255),
 							 phylogenicorder int,
-							 shortname varchar(255),
+							 abbreviation varchar(255),
+							 displayname varchar(255),
 							 createdby_id bigint,
 							 updatedby_id bigint,
 							 sourceorganization_id bigint,
@@ -31,13 +32,14 @@ CREATE INDEX species_updatedby_index ON species USING btree(updatedby_id);
 
 CREATE TABLE species_aud (
 							 id bigint NOT NULL,
-							 shortname varchar(255),
+							 abbreviation varchar(255),
+							 displayname varchar(255),
 							 fullname varchar(255),
 							 taxon_curie varchar(255),
 							 sourceorganization_id bigint,
 							 rev integer NOT NULL,
 							 revtype smallint,
-							 assembly varchar(255),
+							 assembly_curie varchar(255),
 							 phylogenicorder int
 );
 
@@ -58,7 +60,7 @@ CREATE TABLE species_commonnames_aud (
     						rev integer NOT NULL,
     						species_id bigint NOT NULL,
     						commonnames varchar(255),
-    						retype smallint
+    						revtype smallint
 );
 
 ALTER TABLE species_commonnames_aud ADD PRIMARY KEY (species_id, rev, commonnames);
@@ -66,7 +68,17 @@ ALTER TABLE species_commonnames_aud ADD PRIMARY KEY (species_id, rev, commonname
 ALTER TABLE species_commonnames_aud ADD CONSTRAINT species_commonnames_aud_rev_fk FOREIGN KEY (species_id) REFERENCES species(id);
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:7955', 'Dre', 'Danio rerio', (SELECT id FROM organization WHERE fullname = 'Zebrafish Information Network'), 40);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:7955',
+	    'Dre',
+	    'Danio rerio',
+	    (SELECT id FROM organization WHERE fullname = 'Zebrafish Information Network'),
+	    40,
+		'RGD',
+	    'GRCz11'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -80,7 +92,16 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:2697049', 'SARS-CoV-2', 'SARS-CoV-2', (SELECT id FROM organization WHERE fullname = 'Alliance of Genome Resources'), 80);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:2697049',
+	    'SARS-CoV-2',
+	    'SARS-CoV-2',
+	    (SELECT id FROM organization WHERE fullname = 'Alliance of Genome Resources'),
+	    80,
+	    'Alliance'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -105,7 +126,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:7227', 'Dme', 'Drosophila melanogaster', (SELECT id FROM organization WHERE fullname = 'FlyBase'), 50);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:7227',
+	    'Dme',
+	    'Drosophila melanogaster',
+	    (SELECT id FROM organization WHERE fullname = 'FlyBase'),
+	    50,
+	    'FB',
+	    'R6'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -119,7 +150,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:6239', 'Cel', 'Caenorhabditis elegans', (SELECT id FROM organization WHERE fullname = 'WormBase'), 60);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:6239',
+	    'Cel',
+	    'Caenorhabditis elegans',
+	    (SELECT id FROM organization WHERE fullname = 'WormBase'),
+	    60,
+	    'WB',
+	    'WBcel235'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -132,7 +173,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:10116', 'Rno', 'Rattus norvegicus', (SELECT id FROM organization WHERE fullname = 'Rat Genome Database'), 20);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:10116',
+	    'Rno',
+	    'Rattus norvegicus',
+	    (SELECT id FROM organization WHERE fullname = 'Rat Genome Database'),
+	    20,
+	    'RGD',
+	    'Rnor_6.0'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -145,7 +196,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:10090', 'Mmu', 'Mus musculus', (SELECT id FROM organization WHERE fullname = 'Mouse Genome Informatics'), 30);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:10090',
+	    'Mmu',
+	    'Mus musculus',
+	    (SELECT id FROM organization WHERE fullname = 'Mouse Genome Informatics'),
+	    30,
+	    'MGI',
+	    'GRCm38'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -159,7 +220,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:559292', 'Sce', 'Saccharomyces cerevisiae', (SELECT id FROM organization WHERE fullname = 'Saccharomyces Genome Database'), 70);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:559292',
+	    'Sce',
+	    'Saccharomyces cerevisiae',
+	    (SELECT id FROM organization WHERE fullname = 'Saccharomyces Genome Database'),
+	    70,
+	    'SGD',
+	    'R64-2-1'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -173,7 +244,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:9606', 'Hsa', 'Homo sapiens', (SELECT id FROM organization WHERE fullname = 'Rat Genome Database'), 10);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:9606',
+	    'Hsa',
+	    'Homo sapiens',
+	    (SELECT id FROM organization WHERE fullname = 'Rat Genome Database'),
+	    10,
+	    'HUMAN',
+	    'GRCh38'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -187,7 +268,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:8355', 'Xla', 'Xenopus laevis', (SELECT id FROM organization WHERE fullname = 'Xenbase'), 46);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:8355',
+	    'Xla',
+	    'Xenopus laevis',
+	    (SELECT id FROM organization WHERE fullname = 'Xenbase'),
+	    46,
+	    'XBXL',
+	    'XL9.2'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
@@ -206,7 +297,17 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, shortname, fullname, sourceorganization_id, phylogenicorder) VALUES (nextval('species_seq'), 'NCBITaxon:8364', 'Xtr', 'Xenopus tropicalis', (SELECT id FROM organization WHERE fullname = 'Xenbase'), 45);
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceorganization_id, phylogenicorder,displayname,assembly_curie)
+	VALUES (
+	    nextval('species_seq'),
+	    'NCBITaxon:8364',
+	    'Xtr',
+	    'Xenopus tropicalis',
+	    (SELECT id FROM organization WHERE fullname = 'Xenbase'),
+	    45,
+	    'XBXT',
+		'XT9.1'
+	);
 
 INSERT INTO species_commonnames (species_id, commonnames)
 SELECT
