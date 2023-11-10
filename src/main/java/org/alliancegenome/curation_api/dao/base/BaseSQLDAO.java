@@ -378,7 +378,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-		Log.debug("Search: " + pagination + " Params: " + params);
+		Logger.Level level = Level.DEBUG;
+		if(params.containsKey("debug")) {
+			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
+		}
+		
+		Log.log(level, "Search: " + pagination + " Params: " + params);
 
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
 			return p.bool(b -> {
@@ -481,16 +486,15 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		SearchQuery<E> query = step.toQuery();
 
-		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 		SearchResponse<E> results = new SearchResponse<E>();
-
-		if (params.containsKey("debug")) {
-			results.setDebug((String) params.get("debug"));
+		if (level == Level.INFO) {
+			results.setDebug("true");
 			results.setEsQuery(query.queryString());
-			Log.info(query);
-		} else {
-			Log.debug(query);
 		}
+		Log.log(level, query);
+		
+		
+		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
 		if (aggKeys.size() > 0) {
 			Map<String, Map<String, Long>> aggregations = aggKeys.stream().collect(Collectors.toMap(AggregationKey::name, result::aggregation));
@@ -632,8 +636,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 					countRestrictions.add(builder.equal(countColumn, desiredValue));
 				}
 			} else {
-				restrictions.add(builder.isEmpty(root.get(key)));
-				countRestrictions.add(builder.isEmpty(countRoot.get(key)));
+				if (column instanceof SqmPluralValuedSimplePath) {
+					restrictions.add(builder.isEmpty(root.join(key)));
+					countRestrictions.add(builder.isEmpty(countRoot.join(key)));
+				} else {
+					restrictions.add(builder.isNull(column));
+					countRestrictions.add(builder.isNull(countColumn));
+				}
 			}
 		}
 
