@@ -482,6 +482,8 @@ export const validateAlleleDetailTable = async (endpoint, entityType, table, dis
 	return anyErrors;
 }
 
+//handles optional autocomplete fields so that a string isn't sent to the backend 
+//when a value is removed or not selected from the dropdown
 export const processOptionalField = (eventValue) => {
 	if(!eventValue || eventValue === "") return null;
 	if (!eventValue.curie) return {curie: eventValue};

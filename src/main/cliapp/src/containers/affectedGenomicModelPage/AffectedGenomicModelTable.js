@@ -138,6 +138,7 @@ export const AffectedGenomicModelTable = () => {
 				<GenericDataTable
 					endpoint="agm"
 					tableName="Affected Genomic Models"
+					dataKey="curie"
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
