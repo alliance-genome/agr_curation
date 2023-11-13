@@ -74,6 +74,7 @@ jobs:
           makeLatest: ${{ needs.shared-variables.outputs.latestrelease }}
           generateReleaseNotes: true
           skipIfReleaseExists: true
+          token: ${{ secrets.GH_PAT }}
   open-mergeback-PR-to-alpha:
     runs-on: ubuntu-20.04
     needs: [shared-variables, tag-and-release]
@@ -88,6 +89,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
       - name: create mergeback branch
         run: |
           git checkout -b ${{ env.mergeback-headbranchname }} ${{ needs.shared-variables.outputs.tagname }}
