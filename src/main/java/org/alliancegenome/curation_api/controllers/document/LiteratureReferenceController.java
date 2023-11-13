@@ -1,18 +1,15 @@
 package org.alliancegenome.curation_api.controllers.document;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseDocumentController;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.interfaces.document.LiteratureReferenceInterface;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.services.LiteratureReferenceService;
 
-import lombok.extern.jbosslog.JBossLog;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
-@JBossLog
 @RequestScoped
 public class LiteratureReferenceController extends BaseDocumentController<LiteratureReferenceService, LiteratureReference, LiteratureReferenceDAO> implements LiteratureReferenceInterface {
 

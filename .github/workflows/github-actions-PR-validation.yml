@@ -56,6 +56,9 @@ jobs:
       - name: Package API
         run: |
           mvn clean package -Dquarkus.package.type=uber-jar -ntp
+      - name: Create test containers properties file
+        run: |
+          touch ~/.testcontainers.properties
       - name: Run Integration tests
         run: |
           make integration-test

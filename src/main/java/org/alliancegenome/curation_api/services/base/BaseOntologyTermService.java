@@ -1,13 +1,11 @@
 package org.alliancegenome.curation_api.services.base;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
@@ -20,6 +18,9 @@ import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
@@ -210,8 +211,14 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public ObjectListResponse<E> getRootNodes() {
-		SearchResponse<E> t = dao.findByField("isaParents", null);
-		return new ObjectListResponse<E>(t.getResults());
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("isaParents", null);
+		SearchResponse<E> rootNodesRes = dao.findByParams(params);
+		if(rootNodesRes != null) {
+			return new ObjectListResponse<E>(rootNodesRes.getResults());
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 
 	public ObjectListResponse<E> getChildren(String curie) {

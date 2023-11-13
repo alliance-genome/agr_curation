@@ -6,9 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
@@ -33,6 +30,9 @@ import org.alliancegenome.curation_api.services.validation.dto.associations.Evid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
 @RequestScoped
 public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
@@ -55,8 +55,9 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
 			SearchResponse<Construct> res = constructDAO.findByField("modEntityId", dto.getConstructIdentifier());
-			if (res == null || res.getSingleResult() == null)
+			if (res == null || res.getSingleResult() == null) {
 				res = constructDAO.findByField("modInternalId", dto.getConstructIdentifier());
+			}
 			if (res == null || res.getSingleResult() == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {

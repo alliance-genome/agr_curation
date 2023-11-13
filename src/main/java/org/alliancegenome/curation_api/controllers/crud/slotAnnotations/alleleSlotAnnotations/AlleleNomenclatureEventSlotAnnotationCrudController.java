@@ -1,9 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.slotAnnotations.alleleSlotAnnotations;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationCrudInterface;
@@ -11,9 +7,14 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationService;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
 @RequestScoped
 public class AlleleNomenclatureEventSlotAnnotationCrudController extends
-	BaseEntityCrudController<AlleleNomenclatureEventSlotAnnotationService, AlleleNomenclatureEventSlotAnnotation, AlleleNomenclatureEventSlotAnnotationDAO> implements AlleleNomenclatureEventSlotAnnotationCrudInterface {
+		BaseEntityCrudController<AlleleNomenclatureEventSlotAnnotationService, AlleleNomenclatureEventSlotAnnotation, AlleleNomenclatureEventSlotAnnotationDAO>
+		implements AlleleNomenclatureEventSlotAnnotationCrudInterface {
 
 	@Inject
 	AlleleNomenclatureEventSlotAnnotationService alleleNomenclatureEventService;
@@ -34,7 +35,8 @@ public class AlleleNomenclatureEventSlotAnnotationCrudController extends
 		return alleleNomenclatureEventService.upsert(entity);
 	}
 
-	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validate(AlleleNomenclatureEventSlotAnnotation entity) {
+	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validate(
+			AlleleNomenclatureEventSlotAnnotation entity) {
 		return alleleNomenclatureEventService.validate(entity);
 	}
 }

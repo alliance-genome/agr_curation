@@ -2,10 +2,6 @@ package org.alliancegenome.curation_api.controllers.crud.associations.alleleAsso
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.associations.alleleAssociations.AlleleGeneAssociationCrudInterface;
@@ -15,6 +11,10 @@ import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssoc
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AlleleGeneAssociationCrudController extends
