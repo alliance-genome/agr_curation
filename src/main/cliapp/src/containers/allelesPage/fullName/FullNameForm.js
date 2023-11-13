@@ -31,7 +31,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const nameTypeOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleFullName', 
@@ -41,7 +41,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleFullName', 
@@ -51,7 +51,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const synonymScopeOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleFullName', 

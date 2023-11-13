@@ -127,6 +127,7 @@ export const LiteratureReferenceTable = () => {
 								<GenericDataTable 
 									endpoint="literature-reference" 
 									tableName="Literature References" 
+									dataKey="curie" 
 									columns={columns}	 
 									defaultColumnNames={defaultColumnNames}
 									initialTableState={initialTableState}

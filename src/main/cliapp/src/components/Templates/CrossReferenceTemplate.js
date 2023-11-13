@@ -10,7 +10,7 @@ export const CrossReferencesTemplate = ({ rowData }) => {
 
   return (
     <div>
-      <ul type={{ listType: 'none' }}>
+      <ul>
         {sortedCrossReferences?.map((reference, index) =>
           <li key={index}>
             <EllipsisTableCell>
