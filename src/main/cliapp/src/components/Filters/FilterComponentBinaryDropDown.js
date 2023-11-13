@@ -13,7 +13,6 @@ export function FilterComponentBinaryDropDown({ isEnabled, filterConfig, current
 			options={options.current}
 			showClear
 			placeholder="Select"
-			style={{ width: '100%', display: 'inline-flex' }}
 			onChange={(e) => {
 				let filter = {};
 				if(e.target.value && e.target.value.length !== 0) {
