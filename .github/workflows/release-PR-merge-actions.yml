@@ -113,7 +113,7 @@ jobs:
       - name: open PR
         id: pr-create
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           echo "gh-pr-url=$(gh pr create -B ${{ env.mergeback-basebranchname }} -H ${{ env.mergeback-headbranchname }} \
             -t 'Mergeback release ${{ needs.shared-variables.outputs.tagname }} to ${{ env.mergeback-basebranchname }}'\
@@ -121,7 +121,7 @@ jobs:
       - name: Post notification if automatic merge of base failed
         if: ${{ steps.merge-base.outcome == 'failure' }}
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
           pr-comment: |
             GH action detected a potential merge conflict with the base branch (${{ env.mergeback-basebranchname }}).
             @${{ github.event.pull_request.user.login }} please resolve the merge conflict and merge the base branch manually.
