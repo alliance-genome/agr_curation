@@ -535,11 +535,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
 		
-		if (orderByField != null) {
-			Log.log(level, "Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
-		} else {
-			Log.log(level, "Search By Params: " + params + " for class: " + myClass);
-		}
+		Log.log(level, "Pagination: " + pagination + " Params: " + params + " Order by: " + orderByField + " Class: " + myClass);
 
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> query = builder.createQuery(myClass);
@@ -608,41 +604,37 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
-			if (value != null) {
-				Log.log(level, "Object Type: " + value.getClass());
-				if (value instanceof Integer) {
-					Log.log(level, "Integer Type: " + value);
-					Integer desiredValue = (Integer) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else if (value instanceof Enum) {
-					Log.log(level, "Enum Type: " + value);
-					restrictions.add(builder.equal(column, value));
-					countRestrictions.add(builder.equal(countColumn, value));
-				} else if (value instanceof Long) {
-					Log.log(level, "Long Type: " + value);
-					Long desiredValue = (Long) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else if (value instanceof Boolean) {
-					Log.log(level, "Boolean Type: " + value);
-					Boolean desiredValue = (Boolean) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else {
-					Log.log(level, "String Type: " + value);
-					String desiredValue = (String) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				}
+			
+			if(value == null) {
+				restrictions.add(builder.isEmpty(root.get(key)));
+				countRestrictions.add(builder.isEmpty(countRoot.get(key)));
+			} else if (value instanceof Integer) {
+				Log.log(level, "Integer Type: " + value);
+				Integer desiredValue = (Integer) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof Enum) {
+				Log.log(level, "Enum Type: " + value);
+				restrictions.add(builder.equal(column, value));
+				countRestrictions.add(builder.equal(countColumn, value));
+			} else if (value instanceof Long) {
+				Log.log(level, "Long Type: " + value);
+				Long desiredValue = (Long) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof Boolean) {
+				Log.log(level, "Boolean Type: " + value);
+				Boolean desiredValue = (Boolean) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof String) {
+				Log.log(level, "String Type: " + value);
+				String desiredValue = (String) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
 			} else {
-				if (column instanceof SqmPluralValuedSimplePath) {
-					restrictions.add(builder.isEmpty(root.join(key)));
-					countRestrictions.add(builder.isEmpty(countRoot.join(key)));
-				} else {
-					restrictions.add(builder.isNull(column));
-					countRestrictions.add(builder.isNull(countColumn));
-				}
+				// Not sure what to do here as we have a non supported value
+				Log.info("Unsupprted Value: " + value);
 			}
 		}
 
