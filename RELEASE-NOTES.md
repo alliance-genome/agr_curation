@@ -2,6 +2,10 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.27.2 & v0.27.3
+ * Fixes and maintenance
+   * Fixes for permissions and dependent workflow triggering on automated release creation (SCRUM-3444)
+
 ## v0.27.1
  * Fixes and maintenance
    * Automated release creation (SCRUM-3444)
