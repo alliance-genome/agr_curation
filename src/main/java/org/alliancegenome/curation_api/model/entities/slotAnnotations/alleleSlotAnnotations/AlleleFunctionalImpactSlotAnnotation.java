@@ -10,6 +10,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -52,6 +54,7 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
+	@Fetch(FetchMode.SELECT)
 	@JoinTable(indexes = { @Index(name = "allelefunctionalimpactslotannotation_id_index", columnList = "allelefunctionalimpactslotannotation_id"),
 		@Index(name = "allelefunctionalimpactslotannotation_functionalimpacts_id_index", columnList = "functionalimpacts_id"), })
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
@@ -60,6 +63,7 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
+	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
 	private PhenotypeTerm phenotypeTerm;
 	

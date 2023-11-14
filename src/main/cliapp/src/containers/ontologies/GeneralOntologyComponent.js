@@ -157,6 +157,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 					<GenericDataTable
 						endpoint={endpoint}
 						tableName={name}
+						dataKey="curie"
 						columns={columns}
 						defaultColumnNames={defaultColumnNames}
 						initialTableState={initialTableState}

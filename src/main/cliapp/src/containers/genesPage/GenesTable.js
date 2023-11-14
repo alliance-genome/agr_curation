@@ -325,6 +325,7 @@ export const GenesTable = () => {
 				<GenericDataTable
 					endpoint="gene"
 					tableName="Genes"
+					dataKey="curie"
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}

@@ -90,8 +90,9 @@ export const GenericDataTable = (props) => {
 					setSelectedColumnNames(orderedSelectedColumnNames)
 				}
 			}
-				style={{ width: '20em', textAlign: 'center' }}
+				className='w-20rem text-center'
 				disabled={!isEnabled}
+				maxSelectedLabels={4}
 		/>);
 	};
 

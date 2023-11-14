@@ -115,6 +115,7 @@ export const MoleculesTable = () => {
 				<GenericDataTable 
 					endpoint="molecule" 
 					tableName="Molecule" 
+					dataKey="curie" 
 					columns={columns}	 
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}

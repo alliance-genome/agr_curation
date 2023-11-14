@@ -106,7 +106,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 	private VocabularyTerm getTermInVocabularyFromDB(String vocabularyLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		params.put("vocabulary.vocabularyLabel", vocabularyLabel);
+		if(vocabularyLabel != null) params.put("vocabulary.vocabularyLabel", vocabularyLabel);
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();
 	}
@@ -114,8 +114,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 	private VocabularyTerm getTermInVocabularyTermSetFromDB(String vocabularyTermSetLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		params.put("vocabularyTermSets.vocabularyLabel", vocabularyTermSetLabel);
-
+		if(vocabularyTermSetLabel != null) params.put("vocabularyTermSets.vocabularyLabel", vocabularyTermSetLabel);
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();
 	}

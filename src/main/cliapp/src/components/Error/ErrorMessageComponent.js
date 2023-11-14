@@ -5,7 +5,7 @@ import { Message }	from "primereact/message";
 export function ErrorMessageComponent({ errorField, errorMessages: errorMessagesRow }) {
 		if(errorMessagesRow){
 				return (
-						<div style={{position:"absolute", paddingTop:"25px"}}>
+						<div className="pt-1 absolute">
 								<Message
 										severity={errorMessagesRow[errorField] ? errorMessagesRow[errorField].severity : ""}
 										text={errorMessagesRow[errorField] ? errorMessagesRow[errorField].message : ""}
