@@ -1,9 +1,5 @@
 package org.alliancegenome.curation_api.controllers.crud.slotAnnotations.alleleSlotAnnotations;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationCrudInterface;
@@ -11,9 +7,14 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationService;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
 @RequestScoped
-public class AlleleSynonymSlotAnnotationCrudController extends BaseEntityCrudController<AlleleSynonymSlotAnnotationService, AlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotationDAO>
-	implements AlleleSynonymSlotAnnotationCrudInterface {
+public class AlleleSynonymSlotAnnotationCrudController extends
+		BaseEntityCrudController<AlleleSynonymSlotAnnotationService, AlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotationDAO>
+		implements AlleleSynonymSlotAnnotationCrudInterface {
 
 	@Inject
 	AlleleSynonymSlotAnnotationService alleleSynonymService;

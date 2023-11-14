@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
@@ -81,8 +80,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.geneSymbol.displayText", is("Tg1")).
 			body("entity.geneSymbol.formatText", is("Tg<sup>1</sup>")).
 			body("entity.geneSymbol.synonymScope.name", is("exact")).
@@ -93,8 +92,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSymbol.obsolete", is(true)).
 			body("entity.geneSymbol.createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSymbol.updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.geneSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.geneFullName.displayText", is("Test gene 1")).
 			body("entity.geneFullName.formatText", is("Test gene<sup>1</sup>")).
 			body("entity.geneFullName.synonymScope.name", is("exact")).
@@ -105,8 +104,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneFullName.obsolete", is(true)).
 			body("entity.geneFullName.createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneFullName.updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneFullName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneFullName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.geneFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.geneSystematicName.displayText", is("Tg1.1")).
 			body("entity.geneSystematicName.formatText", is("Tg1.1")).
 			body("entity.geneSystematicName.synonymScope.name", is("exact")).
@@ -117,8 +116,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSystematicName.obsolete", is(true)).
 			body("entity.geneSystematicName.createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSystematicName.updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSystematicName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSystematicName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSystematicName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.geneSystematicName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.geneSynonyms", hasSize(1)).
 			body("entity.geneSynonyms[0].displayText", is("Test gene synonym 1")).
 			body("entity.geneSynonyms[0].formatText", is("Test gene synonym <sup>1</sup>")).
@@ -130,8 +129,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSynonyms[0].obsolete", is(true)).
 			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.geneSecondaryIds", hasSize(1)).
 			body("entity.geneSecondaryIds[0].secondaryId", is("TEST:Secondary")).
 			body("entity.geneSecondaryIds[0].evidence[0].curie", is(requiredReference)).
@@ -139,8 +138,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSecondaryIds[0].obsolete", is(true)).
 			body("entity.geneSecondaryIds[0].createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
@@ -163,8 +162,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.geneSymbol.displayText", is("Tg1a")).
 			body("entity.geneSymbol.formatText", is("Tg<sup>1a</sup>")).
 			body("entity.geneSymbol.synonymScope.name", is("broad")).
@@ -175,8 +174,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSymbol.obsolete", is(false)).
 			body("entity.geneSymbol.createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSymbol.updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.geneSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.geneFullName.displayText", is("Test gene 1a")).
 			body("entity.geneFullName.formatText", is("Test gene<sup>1a</sup>")).
 			body("entity.geneFullName.synonymScope.name", is("broad")).
@@ -187,8 +186,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneFullName.obsolete", is(false)).
 			body("entity.geneFullName.createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneFullName.updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneFullName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneFullName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.geneFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.geneSystematicName.displayText", is("Tg1.1a")).
 			body("entity.geneSystematicName.formatText", is("Tg1.1a")).
 			body("entity.geneSystematicName.synonymScope.name", is("broad")).
@@ -199,8 +198,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSystematicName.obsolete", is(false)).
 			body("entity.geneSystematicName.createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSystematicName.updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSystematicName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSystematicName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSystematicName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.geneSystematicName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.geneSynonyms", hasSize(1)).
 			body("entity.geneSynonyms[0].displayText", is("Test gene synonym 1a")).
 			body("entity.geneSynonyms[0].formatText", is("Test gene synonym <sup>1a</sup>")).
@@ -212,8 +211,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSynonyms[0].obsolete", is(false)).
 			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.geneSecondaryIds", hasSize(1)).
 			body("entity.geneSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
 			body("entity.geneSecondaryIds[0].evidence[0].curie", is(requiredReference2)).
@@ -221,8 +220,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSecondaryIds[0].obsolete", is(false)).
 			body("entity.geneSecondaryIds[0].createdBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).

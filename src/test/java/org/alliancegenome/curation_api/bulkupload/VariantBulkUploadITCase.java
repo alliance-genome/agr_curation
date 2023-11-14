@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -90,8 +89,8 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("VARIANTTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("VARIANTTEST:Person0002")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.variantType.curie", is(variantType)).
 			body("entity.variantStatus.name", is(variantStatus)).
 			body("entity.sourceGeneralConsequence.curie", is(sourceGeneralConsequence)).
@@ -100,8 +99,8 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0].obsolete", is(true)).
 			body("entity.relatedNotes[0].updatedBy.uniqueId", is("VARIANTTEST:Person0002")).
 			body("entity.relatedNotes[0].createdBy.uniqueId", is("VARIANTTEST:Person0001")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].freeText", is("Test note")).
 			body("entity.relatedNotes[0].noteType.name", is(noteType)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference)).
@@ -127,8 +126,8 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("VARIANTTEST:Person0002")).
 			body("entity.updatedBy.uniqueId", is("VARIANTTEST:Person0001")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.variantType.curie", is(variantType2)).
 			body("entity.variantStatus.name", is(variantStatus2)).
 			body("entity.sourceGeneralConsequence.curie", is(sourceGeneralConsequence2)).
@@ -137,8 +136,8 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0].obsolete", is(false)).
 			body("entity.relatedNotes[0].updatedBy.uniqueId", is("VARIANTTEST:Person0001")).
 			body("entity.relatedNotes[0].createdBy.uniqueId", is("VARIANTTEST:Person0002")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].freeText", is("Test note 2")).
 			body("entity.relatedNotes[0].noteType.name", is(noteType2)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference2)).

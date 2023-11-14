@@ -12,9 +12,8 @@ export const ReferencesFormTable = ({
   deletionHandler,
 }) => {
 
-
   return (
-    <DataTable value={references} dataKey="dataKey" showGridlines editMode='row' removableSort filterDisplay='row'
+    <DataTable value={references} dataKey="crossReferencesFilter" showGridlines editMode='row' removableSort filterDisplay='row'
       editingRows={editingRows} resizableColumns columnResizeMode="fit" onRowEditChange={onRowEditChange} ref={tableRef}
       paginator paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={5} rowsPerPageOptions={[5,10,20,50]}

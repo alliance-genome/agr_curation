@@ -2,9 +2,6 @@ package org.alliancegenome.curation_api.services.validation.dto.associations.all
 
 import java.util.HashMap;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
@@ -21,6 +18,9 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssociationDTOValidator {
@@ -67,7 +67,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			} else if (beDataProvider != null && !allele.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 				agaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
 			}
-			association.setSubject(allele);	
+			association.setSubject(allele);
 		}
 		
 		if (StringUtils.isBlank(dto.getGeneCurie())) {

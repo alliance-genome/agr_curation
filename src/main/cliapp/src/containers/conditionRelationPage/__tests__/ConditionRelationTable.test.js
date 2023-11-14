@@ -100,8 +100,8 @@ describe("<ConditionRelationPage />", () => {
 
 		await user.click(columnSelect);
 
-		let columnToggleOptions = screen.getAllByText(/Handle/i);
-		let handleOption = columnToggleOptions[3].parentElement.querySelector('.p-checkbox');
+		let columnToggleOptions = await screen.getAllByText(/Handle/i);
+		let handleOption = columnToggleOptions[2].parentElement.querySelector('.p-checkbox');
 		
 		await act(async () => {
 			await user.click(handleOption);

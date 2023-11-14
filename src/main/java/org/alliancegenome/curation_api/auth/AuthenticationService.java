@@ -2,16 +2,16 @@ package org.alliancegenome.curation_api.auth;
 
 import java.time.Duration;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.okta.jwt.AccessTokenVerifier;
 import com.okta.jwt.Jwt;
 import com.okta.jwt.JwtVerificationException;
 import com.okta.jwt.JwtVerifiers;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 
 @ApplicationScoped
 public class AuthenticationService {
