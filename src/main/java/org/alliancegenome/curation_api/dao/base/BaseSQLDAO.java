@@ -633,8 +633,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				restrictions.add(builder.equal(column, desiredValue));
 				countRestrictions.add(builder.equal(countColumn, desiredValue));
 			} else {
-				Log.log(level, "Type Not Found for Value: " + value);
-				Log.log(level, "Type Not Found for Value: " + value.getClass());
+				if (column instanceof SqmPluralValuedSimplePath) {
+					restrictions.add(builder.isEmpty(root.get(key)));
+					countRestrictions.add(builder.isEmpty(countRoot.get(key)));
+				} else {
+					restrictions.add(builder.isNull(column));
+					countRestrictions.add(builder.isNull(countColumn));
+				}
 			}
 
 		}
