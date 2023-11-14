@@ -25,6 +25,7 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.sqm.internal.QuerySqmImpl;
+import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
 import org.hibernate.query.sqm.tree.select.SqmSelectStatement;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
@@ -382,7 +383,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
 		
-		Log.log(level, "Search: " + pagination + " Params: " + params + " class: " + myClass);
+		Log.log(level, "Search: " + pagination + " Params: " + params);
 
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
 			return p.bool(b -> {
@@ -534,11 +535,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
 		
-		if (orderByField != null) {
-			Log.log(level, "Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
-		} else {
-			Log.log(level, "Search By Params: " + params + " for class: " + myClass);
-		}
+		Log.log(level, "Pagination: " + pagination + " Params: " + params + " Order by: " + orderByField + " Class: " + myClass);
 
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> query = builder.createQuery(myClass);
@@ -589,14 +586,17 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 			} else {
 				Log.log(level, "Looking up via root: " + key);
-
 				column = root.get(key);
-				if (column.getJavaType().equals(List.class)) {
-					column = root.join(key);
-				}
 				countColumn = countRoot.get(key);
-				if (countColumn.getJavaType().equals(List.class)) {
-					countColumn = countRoot.join(key);
+				// Don't need to join to these tables if value is null, the isEmpty will catch the condition later
+				Object value = params.get(key);
+				if(value != null) {
+					if (column instanceof SqmPluralValuedSimplePath) {
+						column = root.join(key);
+					}
+					if (countColumn instanceof SqmPluralValuedSimplePath) {
+						countColumn = countRoot.join(key);
+					}
 				}
 			}
 
@@ -604,7 +604,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
-	
+			
 			if(value == null) {
 				restrictions.add(builder.isEmpty(root.get(key)));
 				countRestrictions.add(builder.isEmpty(countRoot.get(key)));
@@ -633,15 +633,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				restrictions.add(builder.equal(column, desiredValue));
 				countRestrictions.add(builder.equal(countColumn, desiredValue));
 			} else {
-				if (column instanceof SqmPluralValuedSimplePath) {
-					restrictions.add(builder.isEmpty(root.get(key)));
-					countRestrictions.add(builder.isEmpty(countRoot.get(key)));
-				} else {
-					restrictions.add(builder.isNull(column));
-					countRestrictions.add(builder.isNull(countColumn));
-				}
+				// Not sure what to do here as we have a non supported value
+				Log.info("Unsupprted Value: " + value);
 			}
-
 		}
 
 		if (orderByField != null) {
