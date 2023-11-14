@@ -2,6 +2,30 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.27.2 & v0.27.3
+ * Fixes and maintenance
+   * Fixes for permissions and dependent workflow triggering on automated release creation (SCRUM-3444)
+
+## v0.27.1
+ * Fixes and maintenance
+   * Automated release creation (SCRUM-3444)
+   * Added branch-tagging to latest beta and production container images (SCRUM-3415)
+   * Updated SSL Cert to Auto-renewed Amazon-issued Certificate
+
+## v0.27.0
+ * New features
+   * Allele details page changes:
+      * Enabled display and editing of Nomenclature Events of alleles on allele details page (SCRUM-3345)
+      * Enabled load and display of Allele-Gene associations on allele details page (SCRUM-2248)
+      * Moved allele detail page references into table (SCRUM-3353)
+   * Enabled load and display of variant table (SCRUM-3321)
+   * Enabled load and display of ConstructGenomicEntityAssociation (construct table) (SCRUM-3325)
+ * Fixes and maintenance
+   * Clean up and consolidate vocabularies into sets (SCRUM-3322)
+   * Fixed dropdown selection registration bug (SCRUM-3357)
+   * Added association classes to linkML Schema Version Table reporting compatible LinkML versions
+   * Prevent duplicates in multi-select autocomplete (SCRUM-3387)
+
 ## v0.26.0
  * New features
    * Improved healthcheck endpoints and added health page (#1228 and #1230)

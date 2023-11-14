@@ -23,9 +23,12 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: agr_curation
+        ENV_TAG: "${{github.event.release.prerelease == false && 'production' || 'beta'}}"
       run: |
         docker build --build-arg OVERWRITE_VERSION=${{ github.event.release.tag_name }} -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }}
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_TAG
   build-deploy-maven-central-package:
     needs: [build-release-image]
     runs-on: ubuntu-20.04
