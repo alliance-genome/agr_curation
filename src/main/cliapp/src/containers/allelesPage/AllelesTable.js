@@ -155,7 +155,7 @@ export const AllelesTable = () => {
 	const DetailMessage = ({curie, text, display}) => {
 		if (display) {
 			return (
-				<Message severity="info" text={<Link target="_blank" to={`#/allele/${curie}`}>{text}</Link>}/>
+				<Message severity="info" text={<Link target="_blank" to={`allele/${curie}`}>{text}</Link>}/>
 			);
 		};
 		return null;
