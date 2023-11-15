@@ -26,8 +26,10 @@ These instructions will get you a copy of the project and the API up and running
       -  [Promoting code from alpha to beta](#promoting-code-from-alpha-to-beta)
       -  [Promoting code from beta to production](#promoting-code-from-beta-to-production)
    *  [Additional deployment steps](#additional-deployment-steps)
+      -  [Pre-deployment steps](#pre-deployment-steps)
+      -  [Post-deployment steps](#post-deployment-steps)
    *  [Release versioning](#release-versioning)
-   *  [Release Creation](#release-creation)
+   *  [Manual Release Creation](#manual-release-creation)
    *  [Database](#database)
 -  [Loading Data](#loading-data)
 -  [Submitting Data](#submitting-data)
@@ -70,39 +72,57 @@ The three permanent branches in this repository represent the code to be deploye
 
 *  To make fixes to the version currently deployed on the beta environment:
 
-   -  Create a betafix branch to work on that starts off beta and have the name contain the ticket number (if applicable) and a short description.
+   -  Create a new `release/vx.y.z-rca` off beta (replacing `x`, `y`, `z` and `a` as appropriate),
+      with as version the current beta release candidate version number increased by one (`a+1`).
       ```bash
       > git checkout beta
       > git pull
-      > git checkout -b betafix/${JIRA-TICKET-NR}_short-description
+      > git checkout -b release/vx.y.z-rca
+      > git push -u origin release/vx.y.z-rca
       ```
 
-   -  Do your coding and testing, and push the branch to github
-      ```bash
-      #Coding and testing here
-      > git push origin betafix/${JIRA-TICKET-NR}_short-description
-      ```
+      Alternatively, you can use a `betafix/*` branch instead of a `release/vx.y.z-rca`
+      for changes that need merging in the beta code branch but no release creation or deployment
+      (such as certain github actions changes to fix broken workflows). Use these only when creating a new release is not an option.
 
-   -  Once coding and testing completed, submit a pull request in github to merge back to beta.
-      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#additional-deployment-steps).
+   -  If one or a few specific things need fixing then work directly on this release branch,
+      otherwise create feature branches starting from this release branch as approriate
+      (including the ticket number in the branch name) and create PRs to merge those back
+      into the release branch.
+
+   -  Once coding and testing completed, ensure you've pushed the latest changes
+      and submit a pull request in github to merge the `release/vx.y.z-rca` branch back to beta.
+      Before merging, do the [pre-deployment steps](#pre-deployment-steps) when appropriate.
+      Then merge, submitting a short description of the changes as commit message body, to trigger release creation and deployment.
+      
+   -  Once deployment completed successfully, do the require [post-deployment steps](#post-deployment-steps).
 
 *  To make fixes to the version currently deployed on the production environment:
 
-   -  Create a prodfix branch to work on that starts off production and have the name contain the ticket number and a short description.
+   -  Create a new patch release branch `release/vx.y.z` off production (replacing `x`, `y`, `z` and `a` as appropriate),
+      with as version the current production patch version number increased by one (`z+1`).
       ```bash
       > git checkout production
       > git pull
-      > git checkout -b prodfix/${JIRA-TICKET-NR}_short-description
+      > git checkout -b release/vx.y.z
+      > git push -u origin release/vx.y.z
       ```
 
-   -  Do your coding and testing, and push the branch to github
-      ```bash
-      #Coding and testing here
-      > git push origin prodfix/${JIRA-TICKET-NR}_short-description
-      ```
+      Alternatively, you can use a prodfix branch instead of a `release/vx.y.z`
+      for changes that need merging in the beta code branch but no release creation or deployment
+      (such as certain github actions changes to fix broken workflows). Use these only when creating a new release is not an option.
 
-   -  Once coding and testing completed, submit a pull request in github to merge back to production.
-      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#additional-deployment-steps).
+   -  If one or a few specific things need fixing then work directly on this release branch,
+      otherwise create feature branches starting from this release branch as approriate
+      (including the ticket number in the branch name) and create PRs to merge those back
+      into the release branch.
+
+   -  Once coding and testing completed, ensure you've pushed the latest changes
+      and submit a pull request in github to merge the `release/vx.y.z` branch back to production.
+      Make sure all approriate testing has occured, as merging this PR will deploy directly to production.
+
+      Before merging, do the [pre-deployment steps](#pre-deployment-steps) when appropriate.
+      Then merge, submitting a short description of the changes as commit message body, to trigger release creation and deployment.
 
 ### Data structure changes
 When making code changes which change any of the data structures, the supporting database schema needs to reflect these changes
@@ -332,8 +352,9 @@ The general flow from coding to a production release goes something like this:
 1. Coding and testing for most tickets happens on alpha (throughout the sprint)
 2. When a stable state of alpha gets reached (usually at sprint review),
    this stable state gets promoted to beta as a release candidate, available
-   for external user testing.
-3. On approval from the external users, and in agreement with the product manager,
+   for external user testing and testing against the latest production data
+   and for testsubmissions of new production-ready data.
+3. On approval from the external users, and in agreement with the product manager and the team,
    this release candidate gets promoted to a new stable release on production.
 
 As the code goes through the different stages, it becomes more and more stable as it gets closer to production.
@@ -367,42 +388,35 @@ As the code goes through the different stages, it becomes more and more stable a
    git checkout -b release/vx.y.z-rca <commit-sha>
    git push origin release/vx.y.z-rca
    ```
-5. Create a pull request to merge this release branch into the beta branch
-6. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
-   to deploy this code successfully to the beta environment.
-7. After prerelease creation and deployment, merge the beta branch back to alpha,
-   to make the (pre)release tag reachable from alpha (and report the correct version number through `git describe --tags`).
-
-   To do so, create a dedicated merging branch and open a PR
-   in github to merge back into alpha:
-
-   ```bash
-   git checkout beta
-   git pull #Ensure the beta branch is up-to-date before creating the new PRmerge branch
-   git checkout -b PRmerge/beta
-   git fetch origin alpha:alpha #Ensure to pull the latest alpha changes to your local alpha branch before merging
-   git merge alpha #Resolve merge-conflicts should any arise
-   git push origin PRmerge/beta
-   ```
-   Now create a PR in github to merge the `PRmerge/beta` branch into the `alpha` branch.
-
-   This dedicated merge branch is required when using github PRs to merge back, as Github's Pull Request merge strategy
-   merges the target branch (alpha) into the source branch (beta) first, before doing the opposite.
-   This must be prevented at all times, as we do not want code under active development to get
-   merged into the beta (release-candidate) branch.
+5. Create a pull request to merge this release branch into the beta branch.
+   Do not merge yet and do not enable auto-merge.
+6. Await PR approval, then do the necessary [pre-deployment steps](#pre-deployment-steps)
+   to prepare the beta environment for a successful deployement.
+7. In the above PR, click the `Merge pull request` button and 
+      * Leave the autogenerated `Merge pull request #...` commit title
+      * Provide a short description of the changes introduced in this release in the commit body textarea.
+        When deploying code as demoed during sprint review, use `As sprint review MMM DDth YYYY`
+        as the commit message body (e.g. `As sprint review Jan 19th 2022`).
+   Then hit the `confirm merge` button. This will trigger a chain of github actions workflows which will
+      a. Create a git tag (using the commit message body provided as tag message)
+      b. Create a github release (prerelease when merged in beta).
+      c. Build and deploy the application as a container to AWS
+8. In addition to the above decribed actions, merging a release-branch PR in beta will also automatically create
+   a mergeback PR to alpha to make the (pre)release tag reachable from alpha (and report the correct version number
+   in the alpha UI and version API endpoint). Assign one or a few reviewers to this PR, and merge it on approval.
 
 #### Promoting code from beta to production
 1. Look at the [beta-environment dashboard](https://beta-curation.alliancegenome.org/#/)
     and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
     investigate what caused this and fix the issue first before continuing the deployment.  
     It may be that the scheduled mass reindexing failed (run every Sunday 00:00 UTC), in which case a successful mass-reindexing must first
-    be performed on the beta environment, before continuing the deployment to the beta environment.
+    be performed on the beta environment, before continuing the deployment of new features to the beta environment.
 2. Decide on a proper release version number to be used for the new release
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for production (full) releases that means removing the release-candidate extension
    from the release number used by the latest release candidate, which will be promoted to a full release here.
-3. Create a release/v`x`.`y`.`z` branch from beta or use a specific commit
-   from history to promote if a new release canidate for the next release was already added to beta.
+3. Create a release/v`x`.`y`.`z` branch from beta, or use a specific commit from history
+   to promote if a new release canidate for the next release was already added to beta.
    ```bash
    git pull
    git checkout -b release/vx.y.z beta
@@ -414,35 +428,29 @@ As the code goes through the different stages, it becomes more and more stable a
    ```bash
    git push origin release/vx.y.z
    ```
-6. Create a pull request to merge this release branch into the production branch
-7. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
-   to deploy this code successfully to the production environment.
-8. After release creation and deployment, merge the production branch back to alpha,
-   to make the release tag reachable from alpha (and report the correct version number through `git describe --tags`).
-
-   To do so, create a dedicated merging branch and open a PR
-   in github to merge back into alpha:
-
-   ```bash
-   git checkout production
-   git pull #Ensure the beta branch is up-to-date before creating the new PRmerge branch
-   git checkout -b PRmerge/production
-   git fetch origin alpha:alpha #Ensure to pull the latest alpha changes to your local alpha branch before merging
-   git merge alpha #Resolve merge-conflicts should any arise
-   git push origin PRmerge/production
-   ```
-   Now create a PR in github to merge the `PRmerge/production` branch into the `alpha` branch.
-
-   This dedicated merge branch is required when using github PRs to merge back, as Github's Pull Request merge strategy
-   merges the target branch (alpha) into the source branch (production) first, before doing the opposite.
-   This must be prevented at all times, as we do not want code under active development to get
-   merged into the production branch.
+6. Create a pull request to merge this release branch into the production branch.
+   Do not merge yet and do not enable auto-merge.
+7. Await PR approval, then do the necessary [pre-deployment steps](#pre-deployment-steps)
+   to prepare the production environment for a successful deployement.
+8. In the above PR, click the `Merge pull request` button and 
+      * Leave the autogenerated `Merge pull request #...` commit title
+      * Provide a short description of the changes introduced in this release in the commit body textarea.
+        When deploying code as demoed during sprint review, use `As sprint review MMM DDth YYYY`
+        as the commit message body (e.g. `As sprint review Jan 19th 2022`).
+   Then hit the `confirm merge` button. This will trigger a chain of github actions workflows which will
+      a. Create a git tag (using the commit message body provided as tag message)
+      b. Create a github release (full latest release when merged in production).
+      c. Build and deploy the application as a container to AWS
+9. In addition to the above decribed actions, merging a release-branch PR in production will also automatically create
+   a mergeback PR to alpha to make the release tag reachable from alpha (and report the correct version number
+   in the alpha UI and version API endpoint). Assign one or a few reviewers to this PR, and merge it on approval.
 
 ### Additional deployment steps
 In order to successfully deploy to the beta or production environment, as few additional steps need to be taken
-after merging into the respective branch to trigger deployment and to ensure
+before and after merging into the respective branch and triggering deployment to ensure
 the new version of the application can function in a consistent state upon and after deployment.
 
+#### Pre-deployment steps
 1. Compare the environment variables set in the Elastic Beanstalk environment between the environment you want to deploy to and from (e.g. compare curation-beta to curation-alpha for deployment to beta, or curation-production to curation-beta for deployment to production). This can be done through the [EB console](https://console.aws.amazon.com/elasticbeanstalk/home?region=us-east-1#/application/overview?applicationName=curation-app), or by using the `eb printenv` CLI. Scan for relevant change:
     *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
     *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
@@ -463,8 +471,9 @@ the new version of the application can function in a consistent state upon and a
         and troubleshoot accordingly if necessary to fix any errors.
 3. Connect to the Environment's search domain and delete all indexes. A link to the Cerebro view into each environment's search indexes is available in the curation interface under `Developer Links` > `Search index UI (cerebro)` (VPN connection required).
    Alternatively, you can reach this UI manually by browsing to the [AGR Cerebro interface](http://cerebro.alliancegenome.org:9000) and entering the environment's domain endpoint manually. The domain endpoint URL can be found through the [Amazon OpenSearch console](https://us-east-1.console.aws.amazon.com/aos/home?region=us-east-1#opensearch/domains).
-4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
-5. Check the logs for the environment that you're releasing to and ensure the application started successfully
+
+#### Post-deployment steps
+1. Check the logs for the environment that you're releasing to and ensure the application started successfully
    and that all flyway migrations completed successfully. If errors occured, troubleshoot and fix accordingly.
     * If the application failed to start due to incompatible indexes (the indexes were not deleted before deployment),
       delete the indexes and restart the app-server by running
@@ -478,14 +487,14 @@ the new version of the application can function in a consistent state upon and a
           * Update to the next patch release (`z` in `vx.y.z`) for fixes to production, using the production branch as starting commit
       2. Fix the required migration files
       3. Create a PR to merge the new `release/v*` branch back into beta/production
-      4. repeat the deployment process for this new release (candidate) from the [additional-deployment-steps](#additional-deployment-steps) step 5 (release creation).
-6. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
+      4. repeat the post-deployment steps for this new release (candidate).
+2. Reindex all data types by calling the `system/reindexeverything` endpoint with default arguments (found in the
    System Endpoints section in the swagger UI) and follow-up through the log server to check for progress and errors.
-7. Once reindexing completed, look at the dashboard page (where you deployed to)
+3. Once reindexing completed, look at the dashboard page (where you deployed to)
     and ensure that for each Entity and Ontology, the number in the `Database * count`  column matches the number in the `Search index * count` column (ignore the values for `Disease Annotations` and `Literature References`). If there is a mismatch for any row,
     investigate what caused this and fix the issue first before continuing the deployment.
-8. If code to support new ontologies was added, create the respective new data loads through the Data loads page and load the new file.
-9. After completing all above steps successfully, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
+4. If code to support new ontologies was added, create the respective new data loads through the Data loads page and load the new file.
+5. After completing all above steps successfully, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
 
 
 ### Release versioning
@@ -502,8 +511,11 @@ until the product is ready for active usage by users external to the development
 production environment.
 
 
-### Release Creation
-To create a new (pre-)release and deploy to beta or production, do the following steps:
+### Manual Release Creation
+Release creation is generally automated through github actions upon merging appropriately named `release/*` branches
+into either the beta branch (for prereleases) or the production branch (for full releases).
+
+To manually create a new (pre-)release and deploy to beta or production, do the following steps:
 
 1. Ensure you're on the branch you intend to create a new release for and pull the latest code.
    ```bash
@@ -511,8 +523,7 @@ To create a new (pre-)release and deploy to beta or production, do the following
    git pull
    ```
 
-2. Confirm the release number proposed earlier through release candidates or release/* branches
-   is appropriate (see [Release versioning](#release-versioning)).
+2. Determine the approriate release number to be created (see [Release versioning](#release-versioning)).
 
 3. Ensure you have a clean working directory before continuing, you can save any local changes for later using `git stash` if needed.
 
@@ -520,25 +531,27 @@ To create a new (pre-)release and deploy to beta or production, do the following
    and provide a short description for the release. Beta releases should contain a reference to the
    date they were demoed at sprint review when applicable.
    ```bash
-   # Tag name should be the release nr to be release, prefixed with v (eg. v0.2.0-rc1)
+   # Tag name should be the release nr to be released, prefixed with v (eg. v0.2.0-rc1)
    # Tag message for beta releases can be something like 'As sprint review Jan 19th 2022'
    git tag -a vx.y.z-rca -m 'As sprint review MMM DDth YYYY'
    git push origin vx.y.z-rca
    ```
 
-5. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
+5. Check the [pre-deployment steps](#pre-deployment-steps) and perform them as appropriate.
+
+6. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
    * In the "Choose a tag" selection box, select the git tag you created in the previous step
    * Give the release a proper title including the sofware name and the release number ("AGR Curation `release tag-name`")
-   * let GitHub autogenerate a summary of all changes made in this release by clicking the "Auto-generate rease notes" button.
+   * Let GitHub autogenerate a summary of all changes made in this release by clicking the "Auto-generate rease notes" button.
    *  **Ensure** the "Set as a pre-release" checkbox at the bottom is checked appropriately.
       *  **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
       *  Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment.
 
-6. Confirm all entered details are correct and publish the release.
+7. Confirm all entered details are correct and publish the release.
 
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
 Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
-continue the remaining steps described in the [additional deployment steps section](#additional-deployment-steps).
+perform the appropriate [post-deployment steps](#post-deployment-steps).
 
 ### Database
 The Curation application connects to the postgres DB using a user called `curation_app`, which is member of a role called `curation_admins`.

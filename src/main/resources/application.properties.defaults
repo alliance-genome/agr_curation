@@ -1,10 +1,11 @@
 quarkus.http.host=0.0.0.0
-quarkus.http.cors=false
 quarkus.http.limits.max-body-size=
 quarkus.http.root-path=/
 quarkus.http.non-application-root-path=/
-
 quarkus.http.test-timeout=5m
+
+quarkus.http.cors=true
+quarkus.http.cors.origins=/.*/
 
 quarkus.swagger-ui.always-include=true
 quarkus.swagger-ui.doc-expansion=none
