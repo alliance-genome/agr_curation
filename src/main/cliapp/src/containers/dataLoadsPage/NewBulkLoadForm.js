@@ -165,18 +165,6 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 						</div>
 
 						<div className="field">
-							<label htmlFor="fileExtension">File Extension</label>
-							<InputText
-								id="bulkLoadFileExtension"
-								value={newBulkLoad.fileExtension}
-								onChange={onChange}
-								placeholder={"Select Bulk Load File Extension"}
-								name='fileExtension'
-								disabled={disableFormFields}
-							/>
-						</div>
-						
-						<div className="field">
 							<label htmlFor="backendBulkLoadType">Backend Bulk Load Type</label>
 							<Dropdown
 								id="backendBulkLoadType"
