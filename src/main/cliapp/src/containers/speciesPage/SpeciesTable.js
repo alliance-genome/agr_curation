@@ -69,19 +69,16 @@ export const SpeciesTable = () => {
 			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig
 		},
 		{
-			field: "sourceOrganization.fullName",
+			field: "dataProvider.sourceOrganization.fullName",
 			header: "Data Provider Full Name",
 			sortable: isEnabled,
-			//filter: true,
-			//body: sourceOrganizationTemplate,
-			//filterConfig: FILTER_CONFIGS.sourceorganizationFilterConfig
+			//filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig
 		},
 		{
-			field: "sourceOrganization.abbreviation",
+			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider Abbreviation",
 			sortable: isEnabled,
-			//filter: true,
-			//filterConfig: FILTER_CONFIGS.sourceorganizationFilterConfig
+			//filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig
 		},
 		{
 			field: "phylogenicOrder",

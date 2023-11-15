@@ -13,7 +13,7 @@ CREATE TABLE species(
 							 displayname varchar(255),
 							 createdby_id bigint,
 							 updatedby_id bigint,
-							 sourceOrganization_id bigint,
+							 dataprovider_id bigint,
 							 taxon_curie varchar(255)
 );
 
@@ -24,7 +24,7 @@ CREATE SEQUENCE species_seq     START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXV
 ALTER TABLE species ADD CONSTRAINT species_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
 ALTER TABLE species ADD CONSTRAINT species_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
 ALTER TABLE species ADD CONSTRAINT species_taxon_curie_fk FOREIGN KEY (taxon_curie) REFERENCES ncbitaxonterm (curie);
-ALTER TABLE species ADD CONSTRAINT species_sourceOrganization_id_fk FOREIGN KEY (sourceOrganization_id) REFERENCES organization (id);
+ALTER TABLE species ADD CONSTRAINT species_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider (id);
 
 
 CREATE INDEX species_createdby_index ON species USING btree(createdby_id);
@@ -36,7 +36,7 @@ CREATE TABLE species_aud (
 							 displayname varchar(255),
 							 fullname varchar(255),
 							 taxon_curie varchar(255),
-							 sourceOrganization_id bigint,
+							 dataprovider_id bigint,
 							 rev integer NOT NULL,
 							 revtype smallint,
 							 assembly_curie varchar(255),
@@ -67,16 +67,26 @@ ALTER TABLE species_commonnames_aud ADD PRIMARY KEY (species_id, rev, commonname
 
 ALTER TABLE species_commonnames_aud ADD CONSTRAINT species_commonnames_aud_rev_fk FOREIGN KEY (species_id) REFERENCES species(id);
 
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+    nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'ZFIN'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:7955'
+	);
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 SELECT
 	nextval('species_seq'),
 	'NCBITaxon:7955',
 	'Dre',
 	'Danio rerio',
-	(SELECT id FROM organization WHERE fullname = 'Zebrafish Information Network'),
+	currval('dataprovider_seq'),
 	40,
-	'RGD',
+	'ZFIN',
 	'GRCz11'
 WHERE EXISTS (
 			  SELECT 1
@@ -92,16 +102,32 @@ FROM
 		 ('zebrafish'),
 		 ('fish'),
 		 ('dre')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:7955'
+		  );
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname)
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'Alliance'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:2697049'
+	);
+
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname)
 SELECT
 	   nextval('species_seq'),
 	   'NCBITaxon:2697049',
 	   'SARS-CoV-2',
 	   'SARS-CoV-2',
-	   (SELECT id FROM organization WHERE fullname = 'Alliance of Genome Resources'),
+	   currval('dataprovider_seq'),
 	   80,
 	   'Alliance'
 WHERE EXISTS (
@@ -128,16 +154,34 @@ FROM
 		 ('2019-nCoV'),
 		 ('HCoV-19'),
 		 ('Human coronavirus 2019')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:2697049'
+		  );
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'FB'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:7227'
+	);
+
+
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:7227',
 	    'Dme',
 	    'Drosophila melanogaster',
-	    (SELECT id FROM organization WHERE fullname = 'FlyBase'),
+		currval('dataprovider_seq'),
 	    50,
 	    'FB',
 	    'R6'
@@ -155,17 +199,34 @@ FROM
 		 ('fly'),
 		 ('fruit fly'),
 		 ('dme')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:7227'
+		  );
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'WB'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:6239'
+	);
+
+
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:6239',
 	    'Cel',
 	    'Caenorhabditis elegans',
-	    (SELECT id FROM organization WHERE fullname = 'WormBase'),
+		currval('dataprovider_seq'),
 	    60,
 	    'WB',
 	    'WBcel235'
@@ -182,17 +243,33 @@ FROM
 	(VALUES
 		 ('worm'),
 		 ('cel')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:6239'
+		  );
 
 
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'RGD'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:10116'
+	);
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:10116',
 	    'Rno',
 	    'Rattus norvegicus',
-	    (SELECT id FROM organization WHERE fullname = 'Rat Genome Database'),
+		currval('dataprovider_seq'),
 	    20,
 	    'RGD',
 	    'Rnor_6.0'
@@ -209,17 +286,32 @@ FROM
 	(VALUES
 		 ('rat'),
 		 ('rno')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:10116'
+		  );
 
 
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'MGI'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:10090'
+	);
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:10090',
 	    'Mmu',
 	    'Mus musculus',
-	    (SELECT id FROM organization WHERE fullname = 'Mouse Genome Informatics'),
+		currval('dataprovider_seq'),
 	    30,
 	    'MGI',
 	    'GRCm38'
@@ -236,18 +328,34 @@ FROM
 	(VALUES
 		 ('mouse'),
 		 ('mmu')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:10090'
+		  );
 
 
 
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'SGD'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:559292'
+	);
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:559292',
 	    'Sce',
 	    'Saccharomyces cerevisiae',
-	    (SELECT id FROM organization WHERE fullname = 'Saccharomyces Genome Database'),
+		currval('dataprovider_seq'),
 	    70,
 	    'SGD',
 	    'R64-2-1'
@@ -264,18 +372,33 @@ FROM
 	(VALUES
 		 ('yeast'),
 		 ('sce')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:559292'
+		  );
 
 
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'RGD'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:9606'
+	);
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:9606',
 	    'Hsa',
 	    'Homo sapiens',
-	    (SELECT id FROM organization WHERE fullname = 'Rat Genome Database'),
+		currval('dataprovider_seq'),
 	    10,
 	    'HUMAN',
 	    'GRCh38'
@@ -292,18 +415,32 @@ FROM
 	(VALUES
 		 ('human'),
 		 ('hsa')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:9606'
+		  );
 
 
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'XB'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:8355'
+	);
 
-
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:8355',
 	    'Xla',
 	    'Xenopus laevis',
-	    (SELECT id FROM organization WHERE fullname = 'Xenbase'),
+		currval('dataprovider_seq'),
 	    46,
 	    'XBXL',
 	    'XL9.2'
@@ -326,17 +463,33 @@ FROM
 		 ('Common platanna'),
 		 ('Platanna'),
 		 ('African claw-toed frog')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:8355'
+		  );
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO dataprovider (id, sourceorganization_id)
+SELECT
+	nextval('dataprovider_seq'), id
+FROM organization
+WHERE organization.abbreviation = 'XB'
+  AND EXISTS (
+		SELECT 1
+		FROM ncbitaxonterm
+		WHERE curie = 'NCBITaxon:8364'
+	);
+
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:8364',
 	    'Xtr',
 	    'Xenopus tropicalis',
-	    (SELECT id FROM organization WHERE fullname = 'Xenbase'),
+		currval('dataprovider_seq'),
 	    45,
 	    'XBXT',
 		'XT9.1'
@@ -357,4 +510,9 @@ FROM
 		 ('X. tropicalis'),
 		 ('Tropical clawed frog'),
 		 ('Silurana tropicalis')
-	) AS common_names (commonnames);
+	) AS common_names (commonnames)
+WHERE EXISTS (
+			  SELECT 1
+			  FROM ncbitaxonterm
+			  WHERE curie = 'NCBITaxon:8364'
+		  );
