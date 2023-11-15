@@ -13,7 +13,7 @@ CREATE TABLE species(
 							 displayname varchar(255),
 							 createdby_id bigint,
 							 updatedby_id bigint,
-							 dataprovider_id bigint,
+							 sourceOrganization_id bigint,
 							 taxon_curie varchar(255)
 );
 
@@ -24,7 +24,7 @@ CREATE SEQUENCE species_seq     START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXV
 ALTER TABLE species ADD CONSTRAINT species_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
 ALTER TABLE species ADD CONSTRAINT species_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
 ALTER TABLE species ADD CONSTRAINT species_taxon_curie_fk FOREIGN KEY (taxon_curie) REFERENCES ncbitaxonterm (curie);
-ALTER TABLE species ADD CONSTRAINT species_dataprovider_id_id_fk FOREIGN KEY (dataprovider_id) REFERENCES organization (id);
+ALTER TABLE species ADD CONSTRAINT species_sourceOrganization_id_fk FOREIGN KEY (sourceOrganization_id) REFERENCES organization (id);
 
 
 CREATE INDEX species_createdby_index ON species USING btree(createdby_id);
@@ -36,7 +36,7 @@ CREATE TABLE species_aud (
 							 displayname varchar(255),
 							 fullname varchar(255),
 							 taxon_curie varchar(255),
-							 dataprovider_id bigint,
+							 sourceOrganization_id bigint,
 							 rev integer NOT NULL,
 							 revtype smallint,
 							 assembly_curie varchar(255),
@@ -68,7 +68,7 @@ ALTER TABLE species_commonnames_aud ADD PRIMARY KEY (species_id, rev, commonname
 ALTER TABLE species_commonnames_aud ADD CONSTRAINT species_commonnames_aud_rev_fk FOREIGN KEY (species_id) REFERENCES species(id);
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 SELECT
 	nextval('species_seq'),
 	'NCBITaxon:7955',
@@ -95,7 +95,7 @@ FROM
 	) AS common_names (commonnames);
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname)
 SELECT
 	   nextval('species_seq'),
 	   'NCBITaxon:2697049',
@@ -131,7 +131,7 @@ FROM
 	) AS common_names (commonnames);
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:7227',
@@ -159,7 +159,7 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:6239',
@@ -186,7 +186,7 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:10116',
@@ -213,7 +213,7 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:10090',
@@ -241,7 +241,7 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:559292',
@@ -269,7 +269,7 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:9606',
@@ -297,7 +297,7 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:8355',
@@ -330,7 +330,7 @@ FROM
 
 
 
-INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, phylogeneticorder,displayname,assembly_curie)
+INSERT INTO species (id, taxon_curie, abbreviation, fullname, sourceOrganization_id, phylogeneticorder,displayname,assembly_curie)
 	SELECT
 	    nextval('species_seq'),
 	    'NCBITaxon:8364',

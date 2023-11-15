@@ -64,11 +64,11 @@ public class Species extends GeneratedAuditedObject {
 	@JoinTable(indexes = @Index(name ="species_commonnames_species_id_index",columnList = "species_id"))
 	private List<String> commonNames;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
-	private DataProvider dataProvider;
+	private Organization sourceOrganization;
 
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView(View.FieldsOnly.class)
