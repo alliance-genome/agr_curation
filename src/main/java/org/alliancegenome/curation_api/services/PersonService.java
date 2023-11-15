@@ -43,6 +43,8 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 			} else {
 				Log.debug("Person not cached, caching uniqueId: (" + uniqueId + ")");
 				person = findPersonByUniqueIdOrCreateDB(uniqueId);
+				if (person != null)
+					person.getEmails().size();
 				personCacheMap.put(uniqueId, person);
 			}
 		} else {
