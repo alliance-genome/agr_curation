@@ -66,7 +66,7 @@ public class JobScheduler {
 	@PostConstruct
 	public void init() {
 		// Set any running jobs to failed as the server has restarted
-		Log.info("Init: ");
+		//Log.info("Init: ");
 		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
 		for (BulkLoadGroup g : groups.getResults()) {
 			if (g.getLoads().size() > 0) {
@@ -141,26 +141,25 @@ public class JobScheduler {
 	}
 
 	public void pendingJobs(@Observes PendingBulkLoadJobEvent event) {
-		Log.info("pendingJobs: " + event.getId());
+		//Log.info("pendingJobs: " + event.getId());
 		BulkLoad load = bulkLoadDAO.find(event.getId());
 		if(load != null) {
 			if (load.getBulkloadStatus().isPending()) {
 				load.setBulkloadStatus(load.getBulkloadStatus().getNextStatus());
 				bulkLoadDAO.merge(load);
-				Log.info("Firing Start Event: " + load.getId());
+				//Log.info("Firing Start Event: " + load.getId());
 				startedJobEvents.fire(new StartedBulkLoadJobEvent(load.getId()));
 			}
 		}
 	}
 	public void pendingFileJobs(@Observes PendingBulkLoadFileJobEvent event) {
-		Log.info("pendingFileJobs: " + event.getId());
+		//Log.info("pendingFileJobs: " + event.getId());
 		BulkLoadFile fileLoad = bulkLoadFileDAO.find(event.getId());
-		Log.info(fileLoad);
 		if(fileLoad != null) {
 			if (fileLoad.getBulkloadStatus().isPending()) {
 				fileLoad.setBulkloadStatus(fileLoad.getBulkloadStatus().getNextStatus());
 				bulkLoadFileDAO.merge(fileLoad);
-				Log.info("Firing Start Event: " + fileLoad.getId());
+				//Log.info("Firing Start Event: " + fileLoad.getId());
 				startedFileJobEvents.fire(new StartedBulkLoadFileJobEvent(fileLoad.getId()));
 			}
 		}
@@ -181,20 +180,4 @@ public class JobScheduler {
 		}
 	}
 
-
-	
-	//@Scheduled(every = "1s")
-	public void runFileJobs() {
-//		SearchResponse<BulkLoadFile> res = bulkLoadFileDAO.findAll();
-//		for (BulkLoadFile file : res.getResults()) {
-//			if (file.getBulkloadStatus() == null)
-//				file.setBulkloadStatus(JobStatus.FINISHED);
-//			if (file.getBulkloadStatus().isPending()) {
-//				file.setBulkloadStatus(file.getBulkloadStatus().getNextStatus());
-//				file.setErrorMessage(null);
-//				bulkLoadFileDAO.merge(file);
-//				bus.send("bulkloadfile", file);
-//			}
-//		}
-	}
 }

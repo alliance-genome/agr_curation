@@ -42,7 +42,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider : " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, GeneDTO.class);
 		if (ingestDto == null) return;
 		
 		List<GeneDTO> genes = ingestDto.getGeneIngestSet();

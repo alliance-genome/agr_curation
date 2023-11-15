@@ -35,7 +35,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AlleleDTO.class);
 		if (ingestDto == null) return;
 		
 		List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
