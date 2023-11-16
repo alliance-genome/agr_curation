@@ -58,7 +58,8 @@ public class Species extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	private String displayName;
 
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "commonNames_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class})
 	@JoinTable(indexes = @Index(name ="species_commonnames_species_id_index",columnList = "species_id"))

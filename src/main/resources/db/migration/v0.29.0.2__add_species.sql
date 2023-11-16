@@ -272,7 +272,7 @@ INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, p
 		currval('dataprovider_seq'),
 	    20,
 	    'RGD',
-	    'Rnor_6.0'
+	    'mRatBN7.2'
 	WHERE EXISTS (
 			SELECT 1
 			FROM ncbitaxonterm
@@ -314,7 +314,7 @@ INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, p
 		currval('dataprovider_seq'),
 	    30,
 	    'MGI',
-	    'GRCm38'
+	    'GRCm39'
 	WHERE EXISTS (
 			SELECT 1
 			FROM ncbitaxonterm
@@ -358,7 +358,7 @@ INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, p
 		currval('dataprovider_seq'),
 	    70,
 	    'SGD',
-	    'R64-2-1'
+	    'R64-3-1'
 	WHERE EXISTS (
 			SELECT 1
 			FROM ncbitaxonterm
@@ -443,7 +443,7 @@ INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, p
 		currval('dataprovider_seq'),
 	    46,
 	    'XBXL',
-	    'XL9.2'
+	    'XL10.1'
 	WHERE EXISTS (
 			SELECT 1
 			FROM ncbitaxonterm
@@ -492,7 +492,7 @@ INSERT INTO species (id, taxon_curie, abbreviation, fullname, dataprovider_id, p
 		currval('dataprovider_seq'),
 	    45,
 	    'XBXT',
-		'XT9.1'
+		'XT10.0'
 	WHERE EXISTS (
 			SELECT 1
 			FROM ncbitaxonterm

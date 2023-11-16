@@ -384,13 +384,33 @@ export const FIELD_SETS = Object.freeze({
     filterName: "sourceGeneralConsequenceFilter",
     fields: ["sourceGeneralConsequence.name", "sourceGeneralConsequence.curie"],
   },
-  speciesShortNameFieldSet: {
-	filterName: "speciesShortNameFilter",
-	fields: ["shortName"]
+  speciesTaxonCurieFieldSet: {
+	  filterName: "speciesTaxonCurieFilter",
+	  fields: ["taxon.curie"]
+  },
+  speciesFullNameFieldSet: {
+	  filterName: "speciesFullNameFilter",
+	  fields: ["fullName"]
+  },
+  speciesDisplayNameFieldSet: {
+	  filterName: "speciesDisplayNameFilter",
+	  fields: ["displayName"]
+  },
+  speciesAbbreviationFieldSet: {
+	filterName: "speciesAbbreviationFilter",
+	fields: ["abbreviation"]
   },
   speciesCommonNameFieldSet: {
 	filterName: "speciesCommonNameFilter",
 	fields: ["commonNames"]
+  },
+  speciesDataProviderFieldSet: {
+	  filterName: "speciesDataProviderFilter",
+	  fields: ["dataProvider.sourceOrganization.fullName"]
+  },
+  speciesAssemblyFieldSet: {
+	  filterName: "speciesAssemblyFilter",
+	  fields: ["assembly_curie"]
   },
   subjectFieldSet: {
     filterName: "subjectFilter",
@@ -537,8 +557,13 @@ export const FILTER_CONFIGS = Object.freeze({
   singleReferenceFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.singleReferenceFieldSet] },
   smilesFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.smilesFieldSet] },
   sourceGeneralConsequenceFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.sourceGeneralConsequenceFieldSet] },
+  speciesTaxonCurieFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesTaxonCurieFieldSet]},
+  speciesFullNameFilterConfig:				{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesFullNameFieldSet]},
+  speciesDisplayNameFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesDisplayNameFieldSet]},
   speciesCommonNameFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesCommonNameFieldSet]},
-  speciesShortNameFilterConfig:				{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesShortNameFieldSet]},
+  speciesAbbreviationFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAbbreviationFieldSet]},
+  speciesDataProviderFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesDataProviderFieldSet]},
+  speciesAssemblyFilterConfig:				{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAssemblyFieldSet]},
   subjectFieldConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.subjectFieldSet] },
   subtypeFilterConfig:                      { filterComponentType: "input", fieldSets: [FIELD_SETS.subtypeFieldSet] },
   synonymsFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.synonymsFieldSet] },

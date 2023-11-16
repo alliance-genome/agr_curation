@@ -38,27 +38,28 @@ export const SpeciesTable = () => {
 			header: "Taxon Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig
 		},
 		{
 			field: "fullName",
 			header: "Full Name",
 			sortable: isEnabled,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig
 		},
 		{
 			field: "displayName",
 			header: "Display Name",
 			sortable: isEnabled,
-			filter: true
+			filter: true,
+			filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig
 		},
 		{
 			field: "abbreviation",
-			header: "abbreviation",
+			header: "Abbreviation",
 			sortable: isEnabled,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesShortNameFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig
 		},
 		{
 			field: "commonNames",
@@ -72,17 +73,18 @@ export const SpeciesTable = () => {
 			field: "dataProvider.sourceOrganization.fullName",
 			header: "Data Provider Full Name",
 			sortable: isEnabled,
-			//filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig
+			filter: true,
+			filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig
 		},
-		{
+		/*{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider Abbreviation",
 			sortable: isEnabled,
 			//filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig
-		},
+		},*/
 		{
-			field: "phylogenicOrder",
-			header: "Phylogenic Order",
+			field: "phylogeneticOrder",
+			header: "Phylogenetic Order",
 			sortable: isEnabled,
 			filter: true
 		},
@@ -90,7 +92,8 @@ export const SpeciesTable = () => {
 			field: "assembly_curie",
 			header: "Assembly",
 			sortable: isEnabled,
-			filter: true
+			filter: true,
+			//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
 		}
 	];
 
