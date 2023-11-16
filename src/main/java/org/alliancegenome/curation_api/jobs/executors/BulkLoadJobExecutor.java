@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.jobs;
+package org.alliancegenome.curation_api.jobs.executors;
 
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
@@ -17,18 +17,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
-import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.AgmExecutor;
-import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
-import org.alliancegenome.curation_api.jobs.executors.ConstructExecutor;
-import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
-import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
-import org.alliancegenome.curation_api.jobs.executors.OntologyExecutor;
-import org.alliancegenome.curation_api.jobs.executors.OrthologyExecutor;
-import org.alliancegenome.curation_api.jobs.executors.ResourceDescriptorExecutor;
-import org.alliancegenome.curation_api.jobs.executors.VariantExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;

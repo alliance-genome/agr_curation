@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.controllers;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.interfaces.DQMSubmissionInterface;
-import org.alliancegenome.curation_api.jobs.BulkLoadManualProcessor;
+import org.alliancegenome.curation_api.jobs.processors.BulkLoadManualProcessor;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import jakarta.inject.Inject;

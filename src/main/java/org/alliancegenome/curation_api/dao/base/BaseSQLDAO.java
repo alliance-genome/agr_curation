@@ -168,6 +168,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		}
 		return pkString;
 	}
+	
+	public SearchResponse<E> findAll() {
+		return findAll(null);
+	}
 
 	public SearchResponse<E> findAll(Pagination pagination) {
 		Log.debug("SqlDAO: findAll: " + myClass);

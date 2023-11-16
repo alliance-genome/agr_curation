@@ -35,7 +35,7 @@ public class VariantExecutor extends LoadFileExecutor {
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, VariantDTO.class);
 		if (ingestDto == null) return;
 		
 		List<VariantDTO> variants = ingestDto.getVariantIngestSet();
