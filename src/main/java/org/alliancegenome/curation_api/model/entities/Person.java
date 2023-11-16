@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -61,13 +62,13 @@ public class Person extends Agent {
 	private String lastName;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
 	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> emails;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@ElementCollection
+	@ElementCollection(fetch=FetchType.EAGER)
 	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> oldEmails;

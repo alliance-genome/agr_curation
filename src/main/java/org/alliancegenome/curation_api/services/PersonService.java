@@ -44,10 +44,6 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 			} else {
 				Log.debug("Person not cached, caching uniqueId: (" + uniqueId + ")");
 				person = findPersonByUniqueIdOrCreateDB(uniqueId);
-				if (person != null) {
-					Hibernate.initialize(person.getOldEmails());
-					Hibernate.initialize(person.getEmails());
-				}
 				personCacheMap.put(uniqueId, person);
 			}
 		} else {
