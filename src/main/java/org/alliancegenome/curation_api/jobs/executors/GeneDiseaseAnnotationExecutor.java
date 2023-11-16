@@ -41,7 +41,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, GeneDiseaseAnnotationDTO.class);
 		if (ingestDto == null) return;
 		
 		List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();

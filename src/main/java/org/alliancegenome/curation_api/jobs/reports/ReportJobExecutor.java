@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.jobs;
+package org.alliancegenome.curation_api.jobs.reports;
 
 import java.io.File;
 import java.io.InputStream;

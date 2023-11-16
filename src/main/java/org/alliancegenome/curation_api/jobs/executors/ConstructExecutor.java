@@ -42,7 +42,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, ConstructDTO.class);
 		if (ingestDto == null) return;
 		
 		List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
