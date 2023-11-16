@@ -36,7 +36,6 @@ import { GeneralOntologyComponent } from './containers/ontologies/GeneralOntolog
 import { ResourceDescriptorsPage } from './containers/resourceDescriptorPage';
 import { ResourceDescriptorPagesPage } from './containers/resourceDescriptorPagePage';
 import ErrorBoundary from './components/Error/ErrorBoundary';
-import {SpeciesTable} from "./containers/speciesPage/SpeciesTable";
 
 export default (
 	<SiteLayout>
