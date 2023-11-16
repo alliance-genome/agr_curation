@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.jobs;
+package org.alliancegenome.curation_api.jobs.reports;
 
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportGroupDAO;

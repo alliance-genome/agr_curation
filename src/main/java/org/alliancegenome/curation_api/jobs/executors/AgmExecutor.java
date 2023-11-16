@@ -40,7 +40,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AffectedGenomicModelDTO.class);
 		if (ingestDto == null) return;
 		
 		List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();

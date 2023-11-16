@@ -39,7 +39,7 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, ConstructGenomicEntityAssociationDTO.class);
 		if (ingestDto == null) return;
 		
 		List<ConstructGenomicEntityAssociationDTO> associations = ingestDto.getConstructGenomicEntityAssociationIngestSet();
