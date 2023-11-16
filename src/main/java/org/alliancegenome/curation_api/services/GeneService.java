@@ -147,7 +147,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 		List<String> curies = geneDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 

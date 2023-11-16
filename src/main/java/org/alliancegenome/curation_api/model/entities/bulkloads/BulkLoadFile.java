@@ -103,7 +103,7 @@ public class BulkLoadFile extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	public String generateS3MD5Path() {
 		if (md5Sum != null && md5Sum.length() > 0) {
-			return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + "." + bulkLoad.getFileExtension() + ".gz";
+			return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + "." + bulkLoad.getBackendBulkLoadType().fileExtension + ".gz";
 		} else {
 			return null;
 		}
