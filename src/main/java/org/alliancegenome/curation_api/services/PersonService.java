@@ -10,7 +10,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.PersonValidator;
-import org.hibernate.Hibernate;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -44,10 +43,6 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 			} else {
 				Log.debug("Person not cached, caching uniqueId: (" + uniqueId + ")");
 				person = findPersonByUniqueIdOrCreateDB(uniqueId);
-				if (person != null) {
-					Hibernate.initialize(person.getOldEmails());
-					Hibernate.initialize(person.getEmails());
-				}
 				personCacheMap.put(uniqueId, person);
 			}
 		} else {
