@@ -1,7 +1,14 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -73,5 +80,33 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 
 	public void addMessageResponse(String fieldName, String message) {
 		response.addErrorMessage(fieldName, message);
+	}
+	
+	public void constructErrorMessagesFromSupplementalData(String fieldName) {
+		if (response.getSupplementalData() == null)
+			return;
+		Map<String, Object> errorMap = (Map<String, Object>) response.getSupplementalData().get("listErrorMap"); 
+		if (errorMap == null)
+			return;
+		Map<String, Object> fieldErrorMap = (Map<String, Object>) errorMap.get(fieldName);
+		if (fieldErrorMap == null)
+			return;
+		Map<String, Set<String>> consolidatedErrors = new LinkedHashMap<>();
+		for (Map.Entry<String, Object> fieldRowError : fieldErrorMap.entrySet()) {
+			Map<String, String> subfieldErrors = (Map<String, String>) fieldRowError.getValue();
+			for (Map.Entry<String, String> subfieldError : subfieldErrors.entrySet()) {
+				Set<String> consolidatedSubfieldErrors = consolidatedErrors.get(subfieldError.getKey());
+				if (consolidatedSubfieldErrors == null)
+					consolidatedSubfieldErrors = new HashSet<String>();
+				consolidatedSubfieldErrors.add(subfieldError.getValue());
+			}
+		}
+		
+		List<String> consolidatedMessages = new ArrayList<>();
+		for (Map.Entry<String, Set<String>> consolidatedError : consolidatedErrors.entrySet()) {
+			consolidatedMessages.add(consolidatedError.getKey() + " - " + consolidatedError.getValue().stream().sorted().collect(Collectors.joining("|")));
+		}
+		Collections.sort(consolidatedMessages);
+		addMessageResponse(fieldName, String.join("|", consolidatedMessages));
 	}
 }

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.response;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
+import lombok.extern.jbosslog.JBossLog;
 
+@JBossLog
 @Data
 public class APIResponse {
 
@@ -20,6 +23,9 @@ public class APIResponse {
 
 	@JsonView({ View.FieldsOnly.class })
 	private Map<String, String> errorMessages;
+	
+	@JsonView({ View.FieldsOnly.class })
+	private Map<String, Object> supplementalData;
 
 	@JsonView({ View.FieldsOnly.class })
 	private String requestDuration;
@@ -36,6 +42,27 @@ public class APIResponse {
 				errorMessages = new HashMap<>();
 			errorMessages.putAll(newErrorMessages);
 		}
+	}
+	
+	public void addErrorMessagesToSupplementalData(String fieldName, Integer rowIndex, Map<String,String> errorMessages) {
+		if (supplementalData == null)
+			supplementalData = new LinkedHashMap<>();
+		Map<String, Object> errorMap = (Map<String, Object>) supplementalData.get("listErrorMap");
+		if(errorMap == null) {
+			errorMap = new LinkedHashMap<>();
+			supplementalData.put("listErrorMap", errorMap);
+		}
+		Map<String, Object> fieldErrorMap = (Map<String, Object>) errorMap.get(fieldName);
+		if (fieldErrorMap == null) {
+			fieldErrorMap = new LinkedHashMap<>();
+			errorMap.put(fieldName, fieldErrorMap);
+		}
+		Map<Integer, Object> fieldRowErrorMap = (Map<Integer, Object>) fieldErrorMap.get(rowIndex);
+		if (fieldRowErrorMap == null)
+			fieldRowErrorMap = new LinkedHashMap<>();
+		
+		fieldRowErrorMap.put(rowIndex, errorMessages);
+		log.info(supplementalData);
 	}
 
 	public boolean hasErrors() {
