@@ -49,7 +49,7 @@ public class Species extends GeneratedAuditedObject {
 	private String fullName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "shortName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class })
 	private String abbreviation;
 
@@ -59,7 +59,7 @@ public class Species extends GeneratedAuditedObject {
 	private String displayName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "commonNames_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+	@KeywordField(name = "commonNames_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES,  normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class})
 	@JoinTable(indexes = @Index(name ="species_commonnames_species_id_index",columnList = "species_id"))

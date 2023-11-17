@@ -404,9 +404,9 @@ export const FIELD_SETS = Object.freeze({
 	filterName: "speciesCommonNameFilter",
 	fields: ["commonNames"]
   },
-  speciesDataProviderFieldSet: {
-	  filterName: "speciesDataProviderFilter",
-	  fields: ["dataProvider.sourceOrganization.fullName"]
+  speciesAggregationFieldSet: {
+  filterName: "speciesAggregationFilter",
+  fields: ['dataProvider.sourceOrganization.abbreviation'],
   },
   speciesAssemblyFieldSet: {
 	  filterName: "speciesAssemblyFilter",
@@ -562,7 +562,6 @@ export const FILTER_CONFIGS = Object.freeze({
   speciesDisplayNameFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesDisplayNameFieldSet]},
   speciesCommonNameFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesCommonNameFieldSet]},
   speciesAbbreviationFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAbbreviationFieldSet]},
-  speciesDataProviderFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesDataProviderFieldSet]},
   speciesAssemblyFilterConfig:				{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAssemblyFieldSet]},
   subjectFieldConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.subjectFieldSet] },
   subtypeFilterConfig:                      { filterComponentType: "input", fieldSets: [FIELD_SETS.subtypeFieldSet] },
@@ -597,7 +596,8 @@ export const FILTER_CONFIGS = Object.freeze({
   geneticModifierRelationFilterConfig:      { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticModifierRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticSexFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticSexFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   secondaryDataProviderFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.secondaryDataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
-  evidenceCodesFilterConfig:				        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
+  speciesDataProviderFilterConfig:			{ filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.speciesAggregationFieldSet, useKeywordFields: true },
+  evidenceCodesFilterConfig:				{ filterComponentType: "multiselect", fieldSets: [FIELD_SETS.evidenceCodesFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   variantDataProviderFilterConfig:          { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.dataProviderFieldSet], aggregationFieldSet: FIELD_SETS.variantAggregationFieldSet, useKeywordFields: true  },
   variantStatusFilterConfig:                { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.variantStatusFieldSet], aggregationFieldSet: FIELD_SETS.variantAggregationFieldSet,useKeywordFields: true },
 

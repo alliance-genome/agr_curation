@@ -228,8 +228,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
 												{ label: 'Species', icon: 'pi pi-fw pi-home', to: '/species'},
-												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'},
-												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
+												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'}
 										]
 								},
 								{
