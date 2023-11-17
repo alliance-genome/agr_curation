@@ -13,18 +13,6 @@ export const SpeciesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	/*const sourceOrganizationTemplate = (rowData) => {
-		const abbreviation = rowData?.sourceOrganization?.abbreviation;
-		const fullName = rowData?.sourceOrganization?.fullName;
-
-		console.log(rowData)
-			return (
-				<>
-					{ fullName } - { abbreviation }
-				</>
-			);
-	};*/
-
 	const commonNamesBody = (rowData) => {
 		if(Array.isArray(rowData.commonNames)) {
 			return rowData.commonNames.join(', ');
@@ -35,7 +23,7 @@ export const SpeciesTable = () => {
 	const columns = [
 		{
 			field: "taxon.curie",
-			header: "Taxon Curie",
+			header: "Taxon",
 			sortable: isEnabled,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig
@@ -70,8 +58,8 @@ export const SpeciesTable = () => {
 			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig
 		},
 		{
-			field: "dataProvider.sourceOrganization.fullName",
-			header: "Data Provider Full Name",
+			field: "dataProvider.sourceOrganization.abbreviation",
+			header: "Data Provider",
 			sortable: isEnabled,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig
@@ -85,14 +73,12 @@ export const SpeciesTable = () => {
 		{
 			field: "phylogeneticOrder",
 			header: "Phylogenetic Order",
-			sortable: isEnabled,
-			filter: true
+			sortable: false
 		},
 		{
 			field: "assembly_curie",
 			header: "Assembly",
-			sortable: isEnabled,
-			filter: true,
+			sortable: false
 			//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
 		}
 	];
