@@ -163,11 +163,10 @@ export const AllelesTable = () => {
 
 	const referencesTemplate = (rowData) => {
 		if (rowData && rowData.references && rowData.references.length > 0) {
-			const refStrings = getRefStrings(rowData.references);
-			let displayRefStrings = refStrings;
+			let refStrings = getRefStrings(rowData.references);
 			let displayDetailMessage = false;
 			if (refStrings.length > 5) {
-				displayRefStrings = refStrings.slice(0,5);
+				refStrings = refStrings.slice(0,5);
 				displayDetailMessage = true;
 			}
 			const listTemplate = (item) => {
@@ -180,12 +179,9 @@ export const AllelesTable = () => {
 			return (
 				<>
 					<div className={`${rowData.curie.replace(':','')}${rowData.references[0].curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={displayRefStrings}/>
+						<ListTableCell template={listTemplate} listData={refStrings}/>
 						<DetailMessage curie={`${rowData.curie}`} display={displayDetailMessage} text="View all references on Allele Detail Page"/>
 					</div>
-					<Tooltip target={`.${rowData.curie.replace(':','')}${rowData.references[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={refStrings}/>
-					</Tooltip>
 				</>
 			);
 
