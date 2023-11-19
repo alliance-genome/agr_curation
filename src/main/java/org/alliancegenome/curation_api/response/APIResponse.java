@@ -12,9 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @Data
 public class APIResponse {
 
@@ -44,7 +42,7 @@ public class APIResponse {
 		}
 	}
 	
-	public void addErrorMessagesToSupplementalData(String fieldName, Integer rowIndex, Map<String,String> errorMessages) {
+	public void addErrorMessagesToSupplementalData(String fieldName, Integer rowIndex, Map<String,String> fieldErrorMessages) {
 		if (supplementalData == null)
 			supplementalData = new LinkedHashMap<>();
 		Map<String, Object> errorMap = (Map<String, Object>) supplementalData.get("listErrorMap");
@@ -57,12 +55,7 @@ public class APIResponse {
 			fieldErrorMap = new LinkedHashMap<>();
 			errorMap.put(fieldName, fieldErrorMap);
 		}
-		Map<Integer, Object> fieldRowErrorMap = (Map<Integer, Object>) fieldErrorMap.get(rowIndex);
-		if (fieldRowErrorMap == null)
-			fieldRowErrorMap = new LinkedHashMap<>();
-		
-		fieldRowErrorMap.put(rowIndex, errorMessages);
-		log.info(supplementalData);
+		fieldErrorMap.put(Integer.toString(rowIndex), fieldErrorMessages);
 	}
 
 	public boolean hasErrors() {

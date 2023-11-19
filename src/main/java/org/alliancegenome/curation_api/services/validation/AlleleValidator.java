@@ -57,6 +57,7 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 

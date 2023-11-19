@@ -95,16 +95,17 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 		for (Map.Entry<String, Object> fieldRowError : fieldErrorMap.entrySet()) {
 			Map<String, String> subfieldErrors = (Map<String, String>) fieldRowError.getValue();
 			for (Map.Entry<String, String> subfieldError : subfieldErrors.entrySet()) {
-				Set<String> consolidatedSubfieldErrors = consolidatedErrors.get(subfieldError.getKey());
-				if (consolidatedSubfieldErrors == null)
-					consolidatedSubfieldErrors = new HashSet<String>();
-				consolidatedSubfieldErrors.add(subfieldError.getValue());
+				Set<String> uniqueSubfieldErrors = consolidatedErrors.get(subfieldError.getKey());
+				if (uniqueSubfieldErrors == null)
+					uniqueSubfieldErrors = new HashSet<>();
+				uniqueSubfieldErrors.add(subfieldError.getValue());
+				consolidatedErrors.put(subfieldError.getKey(), uniqueSubfieldErrors);
 			}
 		}
 		
 		List<String> consolidatedMessages = new ArrayList<>();
 		for (Map.Entry<String, Set<String>> consolidatedError : consolidatedErrors.entrySet()) {
-			consolidatedMessages.add(consolidatedError.getKey() + " - " + consolidatedError.getValue().stream().sorted().collect(Collectors.joining("|")));
+			consolidatedMessages.add(consolidatedError.getKey() + " - " + consolidatedError.getValue().stream().sorted().collect(Collectors.joining("/")));
 		}
 		Collections.sort(consolidatedMessages);
 		addMessageResponse(fieldName, String.join("|", consolidatedMessages));
