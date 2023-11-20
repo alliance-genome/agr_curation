@@ -202,7 +202,7 @@ export const ConditionRelationTable = () => {
 		{
 			field: "handle",
 			header: "Handle",
-			sortable: isInEditMode,
+			sortable: true,
 			body: (rowData) => rowData.handle,
 			filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
 			editor: (props) => handleEditor(props)
@@ -210,7 +210,7 @@ export const ConditionRelationTable = () => {
 		{
 			field: "singleReference.primaryCrossReferenceCurie",
 			header: "Reference",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
@@ -218,14 +218,14 @@ export const ConditionRelationTable = () => {
 		{
 			field: "conditionRelationType.name",
 			header: "Relation",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.conditionRelationTypeFilterConfig,
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
 			field: "conditions.conditionSummary",
 			header: "Experimental Conditions",
-			sortable: isInEditMode,
+			sortable: true,
 			body: conditionTemplate,
 			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props)

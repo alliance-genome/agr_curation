@@ -194,7 +194,7 @@ export const VariantsTable = () => {
 			field: "taxon.name",
 			header: "Taxon",
 			body: taxonTemplate,
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
@@ -202,14 +202,14 @@ export const VariantsTable = () => {
 			field: "variantType.name",
 			header: "Variant Type",
 			body: variantTypeTemplate,
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
 			editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "variantStatus.name",
 			header: "Variant Status",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantStatusFilterConfig,
 			editor: (props) => variantStatusEditor(props)
 		},
@@ -225,40 +225,40 @@ export const VariantsTable = () => {
 			field: "sourceGeneralConsequence.name",
 			header: "Source General Consequence",
 			body: sourceGeneralConsequenceTemplate,
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
 			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
@@ -268,7 +268,7 @@ export const VariantsTable = () => {
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: isInEditMode,
+			sortable: true,
 			editor: (props) => (
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} showClear={false}/>
 			)
@@ -279,7 +279,7 @@ export const VariantsTable = () => {
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: isInEditMode,
+			sortable: true,
 			editor: (props) => (
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"}  showClear={false}/>
 			)

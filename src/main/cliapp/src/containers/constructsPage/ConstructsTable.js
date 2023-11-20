@@ -345,7 +345,7 @@ export const ConstructsTable = () => {
 		{
 			field: "constructSymbol.displayText",
 			header: "Symbol",
-			sortable: isInEditMode,
+			sortable: true,
 			body: symbolTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig
@@ -353,7 +353,7 @@ export const ConstructsTable = () => {
 		{
 			field: "constructFullName.displayText",
 			header: "Name",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			body: fullNameTemplate,
 			filterConfig: FILTER_CONFIGS.constructNameFilterConfig
@@ -362,13 +362,13 @@ export const ConstructsTable = () => {
 			field: "constructSynonyms.displayText",
 			header: "Synonyms",
 			body: synonymsTemplate,
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig
 		},
 		{
 			field: "secondaryIdentifiers",
 			header: "Secondary IDs",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
 			body: secondaryIdsBodyTemplate
 		},

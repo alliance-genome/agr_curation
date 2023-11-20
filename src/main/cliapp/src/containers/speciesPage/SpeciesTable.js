@@ -24,35 +24,35 @@ export const SpeciesTable = () => {
 		{
 			field: "taxon.curie",
 			header: "Taxon",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig
 		},
 		{
 			field: "fullName",
 			header: "Full Name",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig
 		},
 		{
 			field: "displayName",
 			header: "Display Name",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig
 		},
 		{
 			field: "abbreviation",
 			header: "Abbreviation",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig
 		},
 		{
 			field: "commonNames",
 			header: "Common Names",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			body: commonNamesBody,
 			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig
@@ -60,14 +60,14 @@ export const SpeciesTable = () => {
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig
 		},
 		/*{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider Abbreviation",
-			sortable: isInEditMode,
+			sortable: true,
 			//filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig
 		},*/
 		{

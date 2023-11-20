@@ -239,21 +239,21 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "uniqueId",
 			header: "Unique ID",
-			sortable: isInEditMode,
+			sortable: true,
 			body: uniqueIdBodyTemplate,
 			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
 			field: "conditionSummary",
 			header: "Summary",
-			sortable: isInEditMode,
+			sortable: true,
 			body: summaryBodyTemplate,
 			filterConfig: FILTER_CONFIGS.conditionRelationSummaryFilterConfig,
 		},
 		{
 			field: "conditionClass.name",
 			header: "Class",
-			sortable: isInEditMode,
+			sortable: true,
 			body: conditionClassBodyTemplate,
 			filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
 			editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields)
@@ -261,7 +261,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "conditionId.name",
 			header: "Condition Term",
-			sortable: isInEditMode,
+			sortable: true,
 			body: conditionIdBodyTemplate,
 			filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm", curieAutocompleteFields)
@@ -269,7 +269,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "conditionGeneOntology.name",
 			header: "Gene Ontology",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm", curieAutocompleteFields),
 			body: conditionGeneOntologyBodyTemplate
@@ -277,7 +277,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "conditionChemical.name",
 			header: "Chemical",
-			sortable: isInEditMode,
+			sortable: true,
 			body: conditionChemicalBodyTemplate,
 			filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm", curieAutocompleteFields)
@@ -285,7 +285,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "conditionAnatomy.name",
 			header: "Anatomy",
-			sortable: isInEditMode,
+			sortable: true,
 			body: conditionAnatomyBodyTemplate,
 			filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
@@ -293,7 +293,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "conditionTaxon.name",
 			header: "Condition Taxon",
-			sortable: isInEditMode,
+			sortable: true,
 			body: conditionTaxonBodyTemplate,
 			filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
@@ -301,7 +301,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "conditionQuantity",
 			header: "Quantity",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
 			editor: (props) => freeTextEditor(props, "conditionQuantity")
 		}
@@ -309,7 +309,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: "conditionFreeText",
 			header: "Free Text",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.conditionFreeTextFilterConfig,
 			editor: (props) => freeTextEditor(props, "conditionFreeText")
 		},
@@ -318,7 +318,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Internal",
 			body: internalBodyTemplate,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: isInEditMode,
+			sortable: true,
 			editor: (props) => internalEditor(props)
 	},
 	];

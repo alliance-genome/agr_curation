@@ -45,59 +45,59 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig
 		},
 		{
 			field: "name",
 			header: "Name",
 			body: nameTemplate,
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
 		{ 	
 			field: "subtype.name",
 			header: "Sub Type",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.subtypeFilterConfig
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
-			sortable: isInEditMode,
+			sortable: true,
 			body: taxonBodyTemplate,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		},
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
-			sortable: isInEditMode,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
@@ -107,7 +107,7 @@ export const AffectedGenomicModelTable = () => {
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: isInEditMode
+			sortable: true
 		},
 		{
 			field: "obsolete",
@@ -115,7 +115,7 @@ export const AffectedGenomicModelTable = () => {
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: isInEditMode
+			sortable: true
 		}
  ];
 

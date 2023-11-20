@@ -246,7 +246,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "name",
 			header: "Name",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditorTemplate(props),
 			body: nameBodyTemplate
@@ -254,7 +254,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "abbreviation",
 			header: "Abbreviation",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
 			body: abbreviationBodyTemplate
@@ -262,14 +262,14 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "synonyms",
 			header: "Synonyms",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
 			body: synonymsBodyTemplate
 		},
 		{
 			field: "vocabulary.name",
 			header: "Vocabulary",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props),
 			body: vocabularyBodyTemplate
@@ -277,7 +277,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "definition",
 			header: "Definition",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
 			editor: (props) => definitionEditorTemplate(props),
 			body: definitionBodyTemplate
@@ -285,7 +285,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "obsolete",
 			header: "Obsolete",
-			sortable: isInEditMode,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditorTemplate(props),
 			body: obsoleteBodyTemplate
