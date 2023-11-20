@@ -8,7 +8,7 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const ResourceDescriptorsTable = () => {
-	const [isInEditMode, setIsInEditMode] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);

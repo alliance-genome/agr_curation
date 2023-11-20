@@ -33,7 +33,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const DiseaseAnnotationsTable = () => {
 
-	const [isInEditMode, setIsInEditMode] = useState(true); //needs better name
+	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
 	const [conditionRelationsData, setConditionRelationsData] = useState({
 		conditionRelations: [],
 		isInEdit: false,

@@ -21,7 +21,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 export const ExperimentalConditionsTable = () => {
 
 	const [errorMessages, setErrorMessages] = useState({});
-	const [isInEditMode, setIsInEditMode] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [newExperimentalCondition, setNewExperimentalCondition] = useState(null);
 	const { newConditionState, newConditionDispatch } = useNewConditionReducer();
 

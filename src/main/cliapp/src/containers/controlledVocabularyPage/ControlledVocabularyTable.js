@@ -34,7 +34,7 @@ export const ControlledVocabularyTable = () => {
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 
-	const [isInEditMode, setIsInEditMode] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [vocabularies, setVocabularies] = useState(null);
 	const [newTermDialog, setNewTermDialog] = useState(false);
 	const [newVocabularyDialog, setNewVocabularyDialog] = useState(false);

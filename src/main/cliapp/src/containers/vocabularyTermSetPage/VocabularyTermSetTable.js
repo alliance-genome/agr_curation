@@ -23,7 +23,7 @@ import { Tooltip } from 'primereact/tooltip';
 
 export const VocabularyTermSetTable = () => {
 
-	const [isInEditMode, setIsInEditMode] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [newVocabularyTermSet, setNewVocabularyTermSet] = useState(null);
 	const { newVocabularyTermSetState, newVocabularyTermSetDispatch } = useNewVocabularyTermSetReducer();
 

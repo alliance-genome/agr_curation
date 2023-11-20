@@ -16,7 +16,7 @@ import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObje
 
 export const GenesTable = () => {
 
-	const [isInEditMode, setIsInEditMode] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);

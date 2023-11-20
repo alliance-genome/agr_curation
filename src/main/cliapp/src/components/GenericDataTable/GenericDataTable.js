@@ -140,7 +140,7 @@ export const GenericDataTable = (props) => {
 						field={col.field}
 						header={col.header}
 						body={col.body}
-						sortable={col.sortable && isInEditMode}
+						sortable={col.sortable && !isInEditMode}
 						filter
 						editor={col.editor}
 						showFilterMenu={false}

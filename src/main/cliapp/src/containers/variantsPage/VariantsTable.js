@@ -22,7 +22,7 @@ import { ControlledVocabularyDropdown } from '../../components/ControlledVocabul
 
 export const VariantsTable = () => {
 
-	const [isInEditMode, setIsInEditMode] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;

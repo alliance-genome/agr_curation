@@ -25,7 +25,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const ConditionRelationTable = () => {
 
-	const [isInEditMode, setIsInEditMode] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [newConditionRelation, setNewConditionRelation] = useState(null);
 	const { newRelationState, newRelationDispatch } = useNewRelationReducer();
 
