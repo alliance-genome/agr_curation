@@ -45,10 +45,10 @@ public class APIResponse {
 	public void addErrorMessagesToSupplementalData(String fieldName, Integer rowIndex, Map<String,String> fieldErrorMessages) {
 		if (supplementalData == null)
 			supplementalData = new LinkedHashMap<>();
-		Map<String, Object> errorMap = (Map<String, Object>) supplementalData.get("listErrorMap");
+		Map<String, Object> errorMap = (Map<String, Object>) supplementalData.get("errorMap");
 		if(errorMap == null) {
 			errorMap = new LinkedHashMap<>();
-			supplementalData.put("listErrorMap", errorMap);
+			supplementalData.put("errorMap", errorMap);
 		}
 		Map<String, Object> fieldErrorMap = (Map<String, Object>) errorMap.get(fieldName);
 		if (fieldErrorMap == null) {

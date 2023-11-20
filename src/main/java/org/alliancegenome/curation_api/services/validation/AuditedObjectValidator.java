@@ -85,7 +85,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 	public void constructErrorMessagesFromSupplementalData(String fieldName) {
 		if (response.getSupplementalData() == null)
 			return;
-		Map<String, Object> errorMap = (Map<String, Object>) response.getSupplementalData().get("listErrorMap"); 
+		Map<String, Object> errorMap = (Map<String, Object>) response.getSupplementalData().get("errorMap"); 
 		if (errorMap == null)
 			return;
 		Map<String, Object> fieldErrorMap = (Map<String, Object>) errorMap.get(fieldName);
