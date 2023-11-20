@@ -25,6 +25,7 @@ import { VocabulariesPage } from './containers/vocabularyPage';
 import { VocabularyTermSetPage } from './containers/vocabularyTermSetPage';
 
 import { FMSComponent } from './components/FMSComponent';
+import { EntityCountsComponent } from './components/EntityCountsComponent';
 import { FMSDataTypesComponent } from './components/FMSDataTypesComponent';
 import { MetricsComponent } from './components/MetricsComponent';
 import { HealthComponent } from './components/HealthComponent';
@@ -109,6 +110,7 @@ export default (
 		<SecureRoute path="/fmsdatafiles" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/fmsdatatypes/:dataType" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />
 		<SecureRoute exact path="/fmsdatatypes" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />
+		<SecureRoute path="/entitycounts" render={() => <ErrorBoundary><EntityCountsComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
 		<SecureRoute path="/healthpage" render={() => <ErrorBoundary><HealthComponent /></ErrorBoundary>} />
 		<SecureRoute path="/agms" render={() => <ErrorBoundary><AffectedGenomicModelPage /></ErrorBoundary>} />
