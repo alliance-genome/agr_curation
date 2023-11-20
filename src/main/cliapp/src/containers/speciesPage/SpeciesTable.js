@@ -52,7 +52,7 @@ export const SpeciesTable = () => {
 		{
 			field: "commonNames",
 			header: "Common Names",
-			sortable: true,
+			sortable: false,
 			filter: true,
 			body: commonNamesBody,
 			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig
