@@ -326,7 +326,7 @@ export function getUniqueItemsByProperty(items, propName) {
 	);
 }
 
-export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors) {
+export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors) {
 	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
@@ -342,7 +342,7 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 				return _uiErrorMessages;
 			});
 
-			setIsEnabled(false);
+			setIsInEditMode(false);
 			areUiErrors.current = true;
 
 		} else {

@@ -7,7 +7,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const SpeciesTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);
@@ -24,35 +24,35 @@ export const SpeciesTable = () => {
 		{
 			field: "taxon.curie",
 			header: "Taxon",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig
 		},
 		{
 			field: "fullName",
 			header: "Full Name",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig
 		},
 		{
 			field: "displayName",
 			header: "Display Name",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig
 		},
 		{
 			field: "abbreviation",
 			header: "Abbreviation",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig
 		},
 		{
 			field: "commonNames",
 			header: "Common Names",
-			sortable: isEnabled,
+			sortable: false,
 			filter: true,
 			body: commonNamesBody,
 			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig
@@ -60,20 +60,20 @@ export const SpeciesTable = () => {
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig
 		},
 		/*{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider Abbreviation",
-			sortable: isEnabled,
+			sortable: true,
 			//filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig
 		},*/
 		{
 			field: "phylogeneticOrder",
 			header: "Phylogenetic Order",
-			sortable: false
+			sortable: true
 		},
 		{
 			field: "assembly_curie",
@@ -107,8 +107,8 @@ export const SpeciesTable = () => {
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
 					isEditable={false}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}

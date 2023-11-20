@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { ConfirmButton } from "./ConfirmButton";
 
-export function DataTableHeaderFooterTemplate({title, multiselectComponent, buttons, resetTableState, isEnabled, modReset, setToModDefault}){
+export function DataTableHeaderFooterTemplate({title, multiselectComponent, buttons, resetTableState, isInEditMode, modReset, setToModDefault}){
 
 		return (
 						<Card>
@@ -19,7 +19,7 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 												headerText={`${title} State Reset`}
 												messageText= {`Are you sure? This will reset the local state of the ${title}.`}
 												acceptHandler={resetTableState}
-												disabled={!isEnabled}
+												disabled={isInEditMode}
 												buttonClassName="ml-2"
 											/>
 											{modReset &&
@@ -28,7 +28,7 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 													headerText={`${title} MOD Default Reset`}
 													messageText= {`Are you sure? This will reset the local state of the ${title} to the MOD default settings.`}
 													acceptHandler={setToModDefault}
-													disabled={!isEnabled}
+													disabled={isInEditMode}
 													buttonClassName="ml-3"
 												/>
 											}
