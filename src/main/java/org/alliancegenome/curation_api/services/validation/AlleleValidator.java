@@ -211,7 +211,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
 
-		completeErrorMap();
+		populateMissingErrorMapEntries();
 		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);

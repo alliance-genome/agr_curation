@@ -82,7 +82,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 		response.addErrorMessage(fieldName, message);
 	}
 	
-	public void completeErrorMap() {
+	public void populateMissingErrorMapEntries() {
 		if (response.getErrorMessages() == null)
 			return;
 		
