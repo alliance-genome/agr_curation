@@ -82,6 +82,25 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 		response.addErrorMessage(fieldName, message);
 	}
 	
+	public void completeErrorMap() {
+		if (response.getErrorMessages() == null)
+			return;
+		
+		for (Map.Entry<String, String> reportedError : response.getErrorMessages().entrySet()) {
+			Boolean errorExistsInSupplementalDataMap = true;
+			if (response.getSupplementalData() == null || response.getSupplementalData().get("errorMap") == null) {
+				errorExistsInSupplementalDataMap = false;
+			} else {
+				Map<String, Object> errorMap = (Map<String, Object>) response.getSupplementalData().get("errorMap");
+				if (errorMap.get(reportedError.getKey()) == null) {
+					errorExistsInSupplementalDataMap = false;
+				}
+			}
+			if (!errorExistsInSupplementalDataMap)
+				response.addErrorMessagesToSupplementalData(reportedError.getKey(), reportedError.getValue());
+		}
+	}
+	
 	public void constructErrorMessagesFromSupplementalData(String fieldName) {
 		if (response.getSupplementalData() == null)
 			return;

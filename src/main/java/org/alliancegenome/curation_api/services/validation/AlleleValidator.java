@@ -57,7 +57,6 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -160,21 +159,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
 		dbEntity.setDataProvider(dataProvider);
 
-		List<String> previousReferenceCuries = new ArrayList<String>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
-			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
-		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
-			List<Reference> references = new ArrayList<Reference>();
-			for (Reference uiReference : uiEntity.getReferences()) {
-				Reference reference = validateReference(uiReference, previousReferenceCuries);
-				if (reference != null) {
-					references.add(reference);
-				}
-			}
-			dbEntity.setReferences(references);
-		} else {
-			dbEntity.setReferences(null);
-		}
+		List<Reference> references = validateReferences(uiEntity, dbEntity);
+		dbEntity.setReferences(references);
 
 		VocabularyTerm inCollection = validateInCollection(uiEntity, dbEntity);
 		dbEntity.setInCollection(inCollection);
@@ -225,6 +211,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
 
+		completeErrorMap();
+		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
@@ -307,19 +295,50 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return dbEntity;
 	}
 
-	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {
+	private ObjectResponse<Reference> validateReference(Reference uiEntity, List<String> previousCuries) {
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
 		if (singleRefResponse.getEntity() == null) {
-			addMessageResponse("references", singleRefResponse.errorMessagesString());
-			return null;
+			return singleRefResponse;
 		}
 
 		if (singleRefResponse.getEntity().getObsolete() && (CollectionUtils.isEmpty(previousCuries) || !previousCuries.contains(singleRefResponse.getEntity().getCurie()))) {
-			addMessageResponse("references", "curie - " + ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
+			singleRefResponse.setEntity(null);
+			singleRefResponse.addErrorMessage("curie", ValidationConstants.OBSOLETE_MESSAGE);
 		}
 
-		return singleRefResponse.getEntity();
+		return singleRefResponse;
+	}
+	
+	public List<Reference> validateReferences(Allele uiEntity, Allele dbEntity) {
+		String field = "references";
+		
+		List<Reference> validatedReferences = new ArrayList<Reference>();
+		List<String> previousReferenceCuries = new ArrayList<String>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
+			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
+		
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
+			for (int ix = 0; ix < uiEntity.getReferences().size(); ix++) {
+				ObjectResponse<Reference> refResponse = validateReference(uiEntity.getReferences().get(ix), previousReferenceCuries);
+				if (refResponse.getEntity() == null) {
+					allValid = false;
+					response.addErrorMessagesToSupplementalData(field, ix, refResponse.getErrorMessages());
+				} else {
+					validatedReferences.add(refResponse.getEntity());
+				}
+			}
+		}
+		
+		if (!allValid) {
+			constructErrorMessagesFromSupplementalData(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedReferences))
+			return null;
+
+		return validatedReferences;
 	}
 
 	private VocabularyTerm validateInCollection(Allele uiEntity, Allele dbEntity) {
@@ -538,11 +557,15 @@ public class AlleleValidator extends GenomicEntityValidator {
 				if (mtResponse.getEntity() == null) {
 					allValid = false;
 					response.addErrorMessagesToSupplementalData(field, ix, mtResponse.getErrorMessages());
-					addMessageResponse(field, mtResponse.errorMessagesString());
 				}
 				mt = mtResponse.getEntity();
 				validatedMutationTypes.add(mt);
 			}
+		}
+		
+		if (!allValid) {
+			constructErrorMessagesFromSupplementalData(field);
+			return null;
 		}
 
 		if (CollectionUtils.isEmpty(validatedMutationTypes))
@@ -589,7 +612,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> agtsResponse = alleleGermlineTransmissionStatusValidator.validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity.getAlleleGermlineTransmissionStatus());
 		if (agtsResponse.getEntity() == null) {
 			addMessageResponse(field, agtsResponse.errorMessagesString());
-			response.addErrorMessagesToSupplementalData(field, 0, agtsResponse.getErrorMessages());
+			response.addErrorMessagesToSupplementalData(field, agtsResponse.getErrorMessages());
 			return null;
 		}
 		
@@ -605,7 +628,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> adsResponse = alleleDatabaseStatusValidator.validateAlleleDatabaseStatusSlotAnnotation(uiEntity.getAlleleDatabaseStatus());
 		if (adsResponse.getEntity() == null) {
 			addMessageResponse(field, adsResponse.errorMessagesString());
-			response.addErrorMessagesToSupplementalData(field, 0, adsResponse.getErrorMessages());
+			response.addErrorMessagesToSupplementalData(field, adsResponse.getErrorMessages());
 			return null;
 		}
 		
@@ -646,7 +669,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolValidator.validateAlleleSymbolSlotAnnotation(uiEntity.getAlleleSymbol());
 		if (symbolResponse.getEntity() == null) {
 			addMessageResponse(field, symbolResponse.errorMessagesString());
-			response.addErrorMessagesToSupplementalData(field, 0, symbolResponse.getErrorMessages());
+			response.addErrorMessagesToSupplementalData(field, symbolResponse.getErrorMessages());
 			return null;
 		}
 
@@ -662,7 +685,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleFullNameSlotAnnotation> nameResponse = alleleFullNameValidator.validateAlleleFullNameSlotAnnotation(uiEntity.getAlleleFullName());
 		if (nameResponse.getEntity() == null) {
 			addMessageResponse(field, nameResponse.errorMessagesString());
-			response.addErrorMessagesToSupplementalData(field, 0, nameResponse.getErrorMessages());
+			response.addErrorMessagesToSupplementalData(field, nameResponse.getErrorMessages());
 			return null;
 		}
 

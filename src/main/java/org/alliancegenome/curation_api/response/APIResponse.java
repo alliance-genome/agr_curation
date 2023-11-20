@@ -42,7 +42,12 @@ public class APIResponse {
 		}
 	}
 	
-	public void addErrorMessagesToSupplementalData(String fieldName, Integer rowIndex, Map<String,String> fieldErrorMessages) {
+
+	public void addErrorMessagesToSupplementalData(String fieldName, Object fieldErrorMessages) {
+		addErrorMessagesToSupplementalData(fieldName, null, fieldErrorMessages);
+	}
+	
+	public void addErrorMessagesToSupplementalData(String fieldName, Integer rowIndex, Object fieldErrorMessages) {
 		if (supplementalData == null)
 			supplementalData = new LinkedHashMap<>();
 		Map<String, Object> errorMap = (Map<String, Object>) supplementalData.get("errorMap");
@@ -55,7 +60,11 @@ public class APIResponse {
 			fieldErrorMap = new LinkedHashMap<>();
 			errorMap.put(fieldName, fieldErrorMap);
 		}
-		fieldErrorMap.put(Integer.toString(rowIndex), fieldErrorMessages);
+		if (rowIndex == null) {
+			errorMap.put(fieldName, fieldErrorMessages);
+		} else {
+			fieldErrorMap.put(Integer.toString(rowIndex), fieldErrorMessages);
+		}
 	}
 
 	public boolean hasErrors() {
