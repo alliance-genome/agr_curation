@@ -227,6 +227,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
 												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
+												{ label: 'Species', icon: 'pi pi-fw pi-home', to: '/species'},
 												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'}
 										]
 								},
@@ -330,6 +331,7 @@ export const SiteLayout = (props) => {
 									label: 'Developer links', icon: 'pi pi-fw pi-sitemap',
 									items: [
 											{ label: 'Site Metrics', icon: 'pi pi-fw pi-home', to: '/metricspage' },
+											{ label: 'Entity Counts', icon: 'pi pi-fw pi-home', to: '/entitycounts'},
 											{ label: 'API UI (Swagger)', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: "_blank" },
 											{ label: 'Search index UI (cerebro)', icon: 'pi pi-fw pi-home', url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${siteContext?.apiVersion?.esHost}`, target: "_blank" },
 											{ label: 'Logs Server UI', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${siteContext?.apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
