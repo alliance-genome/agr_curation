@@ -24,7 +24,7 @@ export const Dashboard = () => {
 			});
 		}
 		setTableData(_tableData);
-	});
+	},[]);
 
 	const nameHyperlinkTemplate = (rowData) => {
 		return <a href={rowData.link}>{rowData.name}</a>
