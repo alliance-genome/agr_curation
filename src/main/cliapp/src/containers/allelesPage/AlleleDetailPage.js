@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { Toast } from 'primereact/toast';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Divider } from 'primereact/divider';
+import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
@@ -28,6 +30,7 @@ import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
+import { StickyHeader } from '../../components/StickyHeader';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -180,13 +183,13 @@ const { isLoading } =	useQuery([curie],
 		</div>
 	)
 
-	const headerText = (allele) => {
+	const headerText = () => {
 		let prefix = "Allele: "
-		if (allele.alleleSymbol?.displayText && allele?.curie) {
-			return `${prefix} ${allele.alleleSymbol.displayText} (${allele.curie})`;
+		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.curie) {
+			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.curie})`;
 		}
-		if (allele?.curie) {
-			return `${prefix} ${allele.curie}`;
+		if (alleleState.allele?.curie) {
+			return `${prefix} ${alleleState.allele.curie}`;
 		}
 		return "Allele Detail Page";
 	}
@@ -195,10 +198,18 @@ const { isLoading } =	useQuery([curie],
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
-				<form>
-
+				<StickyHeader>
+					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
+						<SplitterPanel size={80} className="flex justify-content-start ml-5 py-3 ">
+							<h1 dangerouslySetInnerHTML={{ __html: headerText()}}/>
+						</SplitterPanel>
+						<SplitterPanel size={20} className="flex justify-content-end py-3 ">
+							<Button label="Save" icon="pi pi-check" className="p-button-text p-button-lg pr-8 pt-5 " onClick={handleSubmit} />
+						</SplitterPanel>
+					</Splitter>
+				</StickyHeader>
+				<form className='mt-8'>
 					<CurieFormTemplate
 						curie={alleleState.allele?.curie}
 						widgetColumnSize={widgetColumnSize}
