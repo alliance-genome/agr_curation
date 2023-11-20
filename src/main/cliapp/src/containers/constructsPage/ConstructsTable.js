@@ -32,7 +32,7 @@ export const ConstructsTable = () => {
 		dialog: false
 	});
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
@@ -324,28 +324,28 @@ export const ConstructsTable = () => {
 		{
 			field: "uniqueId",
 			header: "Unique ID",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			body: uniqueIdBodyTemplate,
 			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
 			field: "modEntityId",
 			header: "MOD Entity ID",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			body: modEntityIdBodyTemplate,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
 			field: "modInternalId",
 			header: "MOD Internal ID",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			body: modInternalIdBodyTemplate,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "constructSymbol.displayText",
 			header: "Symbol",
-			sortable: isEnabled,
+			sortable: true,
 			body: symbolTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig
@@ -353,7 +353,7 @@ export const ConstructsTable = () => {
 		{
 			field: "constructFullName.displayText",
 			header: "Name",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			body: fullNameTemplate,
 			filterConfig: FILTER_CONFIGS.constructNameFilterConfig
@@ -362,13 +362,13 @@ export const ConstructsTable = () => {
 			field: "constructSynonyms.displayText",
 			header: "Synonyms",
 			body: synonymsTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig
 		},
 		{
 			field: "secondaryIdentifiers",
 			header: "Secondary IDs",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
 			body: secondaryIdsBodyTemplate
 		},
@@ -376,53 +376,53 @@ export const ConstructsTable = () => {
 			field: "constructComponents.componentSymbol",
 			header: "Free Text Components",
 			body: componentsTemplate,
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
 		},
 		{
 			field: "constructGenomicEntityAssociations.object.symbol",
 			header: "Component Associations",
 			body: genomicComponentsTemplate,
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
 		},
 		{
 			field: "references.primaryCrossReferenceCurie",
 			header: "References",
 			body: referencesTemplate,
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 		},
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filter: true,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
@@ -432,7 +432,7 @@ export const ConstructsTable = () => {
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: { isEnabled }
+			sortable: { isInEditMode }
 		},
 		{
 			field: "obsolete",
@@ -440,7 +440,7 @@ export const ConstructsTable = () => {
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: { isEnabled }
+			sortable: { isInEditMode }
 		}
 	];
 
@@ -470,8 +470,8 @@ export const ConstructsTable = () => {
 					initialTableState={initialTableState}
 					isEditable={false}
 					hasDetails={false}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}

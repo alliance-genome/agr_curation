@@ -6,7 +6,7 @@ import { Splitter, SplitterPanel } from 'primereact/splitter';
 
 export const FilterComponent = ({
 	filterConfig,
-	isEnabled,
+	isInEditMode,
 	onFilter,
 	aggregationFields,
 	tableState,
@@ -20,7 +20,7 @@ export const FilterComponent = ({
 						<SplitterPanel size={95} className="text-left">
 							<FilterComponentInputText
 								filterConfig={filterConfig}
-								isEnabled={isEnabled}
+								isInEditMode={isInEditMode}
 								currentFilters={tableState.filters}
 								onFilter={onFilter}
 							/>
@@ -37,7 +37,7 @@ export const FilterComponent = ({
 						<SplitterPanel size={95} className="text-left">
 							<FilterComponentBinaryDropDown
 								filterConfig={filterConfig}
-								isEnabled={isEnabled}
+								isInEditMode={isInEditMode}
 								currentFilters={tableState.filters}
 								onFilter={onFilter}
 							/>
@@ -54,7 +54,7 @@ export const FilterComponent = ({
 						<SplitterPanel size={95} className="text-left">
 							<FilterComponentMultiSelect
 								filterConfig={filterConfig}
-								isEnabled={isEnabled}
+								isInEditMode={isInEditMode}
 								currentFilters={tableState.filters}
 								onFilter={onFilter}
 								aggregationFields={aggregationFields}

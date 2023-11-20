@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { InputText } from 'primereact/inputtext';
 
-export function FilterComponentInputText({ isEnabled, filterConfig, currentFilters, onFilter }) {
+export function FilterComponentInputText({ isInEditMode, filterConfig, currentFilters, onFilter }) {
 	
 	const fieldSet = filterConfig.fieldSets[0];
 
@@ -13,7 +13,7 @@ export function FilterComponentInputText({ isEnabled, filterConfig, currentFilte
 
 	return (
 		<InputText
-			disabled={!isEnabled}
+			disabled={isInEditMode}
 			value={filterValue}
 			onChange={(e) => {
 				setFilterValue(e.target.value);

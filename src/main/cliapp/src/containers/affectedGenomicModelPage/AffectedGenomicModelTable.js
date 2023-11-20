@@ -11,7 +11,7 @@ import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObje
 
 export const AffectedGenomicModelTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);
@@ -45,59 +45,59 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig
 		},
 		{
 			field: "name",
 			header: "Name",
 			body: nameTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
 		{ 	
 			field: "subtype.name",
 			header: "Sub Type",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.subtypeFilterConfig
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
-			sortable: isEnabled,
+			sortable: true,
 			body: taxonBodyTemplate,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		},
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
@@ -107,7 +107,7 @@ export const AffectedGenomicModelTable = () => {
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: isEnabled
+			sortable: true
 		},
 		{
 			field: "obsolete",
@@ -115,7 +115,7 @@ export const AffectedGenomicModelTable = () => {
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: isEnabled
+			sortable: true
 		}
  ];
 
@@ -143,8 +143,8 @@ export const AffectedGenomicModelTable = () => {
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
 					isEditable={false}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}

@@ -8,7 +8,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const MoleculesTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);
@@ -45,21 +45,21 @@ export const MoleculesTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig, 
 		},
 		{
 			field: "name",
 			header: "Name",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig, 
 		},
 		{
 			field: "inchi",
 			header: "InChi",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			body: inChiBodyTemplate,
 			filterConfig: FILTER_CONFIGS.inchiFilterConfig, 
@@ -67,14 +67,14 @@ export const MoleculesTable = () => {
 		{
 			field: "inchiKey",
 			header: "InChiKey",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.inchiKeyFilterConfig, 
 		},
 		{
 			field: "iupac",
 			header: "IUPAC",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			body: iupacBodyTemplate,
 			filterConfig: FILTER_CONFIGS.iupacFilterConfig, 
@@ -82,14 +82,14 @@ export const MoleculesTable = () => {
 		{
 			field: "formula",
 			header: "Formula",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.formulaFilterConfig, 
 		},
 		{
 			field: "smiles",
 			header: "SMILES",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			body: smilesBodyTemplate,
 			filterConfig: FILTER_CONFIGS.smilesFilterConfig, 
@@ -120,8 +120,8 @@ export const MoleculesTable = () => {
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
 					isEditable={false}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}
