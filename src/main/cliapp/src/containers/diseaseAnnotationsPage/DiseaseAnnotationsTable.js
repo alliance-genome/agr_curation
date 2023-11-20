@@ -33,7 +33,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const DiseaseAnnotationsTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true); //needs better name
+	const [isInEditMode, setIsInEditMode] = useState(true); //needs better name
 	const [conditionRelationsData, setConditionRelationsData] = useState({
 		conditionRelations: [],
 		isInEdit: false,
@@ -1261,7 +1261,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "uniqueId",
 		header: "Unique ID",
 		body: uniqueIdBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		editor: (props) => uniqueIdEditorTemplate(props)
 	},
@@ -1269,28 +1269,28 @@ export const DiseaseAnnotationsTable = () => {
 		field: "modEntityId",
 		header: "MOD Annotation ID",
 		body: modEntityIdBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 	},
 	{
 		field: "modInternalId",
 		header: "MOD Internal ID",
 		body: modInternalIdBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 	},
 	{
 		field: "subject.symbol",
 		header: "Subject",
 		body: subjectBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.subjectFieldConfig,
 		editor: (props) => subjectEditorTemplate(props),
 	},
 	{
 		field: "relation.name",
 		header: "Disease Relation",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.relationFilterConfig,
 		editor: (props) => relationEditor(props)
 	},
@@ -1298,7 +1298,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "negated",
 		header: "Negated",
 		body: negatedTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		editor: (props) => negatedEditor(props)
 	},
@@ -1306,7 +1306,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "object.name",
 		header: "Disease",
 		body: diseaseBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.objectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
 	},
@@ -1314,7 +1314,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "singleReference.primaryCrossReferenceCurie",
 		header: "Reference",
 		body: singleReferenceBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 		editor: (props) => referenceEditorTemplate(props),
 		
@@ -1323,7 +1323,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "evidenceCodes.abbreviation",
 		header: "Evidence Code",
 		body: evidenceTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 		editor: (props) => evidenceEditorTemplate(props)
 	},
@@ -1331,7 +1331,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "with.geneSymbol.displayText",
 		header: "With",
 		body: withTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.withFilterConfig,
 		editor: (props) => withEditorTemplate(props)
 	},
@@ -1362,7 +1362,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "geneticSex.name",
 		header: "Genetic Sex",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.geneticSexFilterConfig,
 		editor: (props) => geneticSexEditor(props)
 	},
@@ -1370,7 +1370,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "diseaseQualifiers.name",
 		header: "Disease Qualifiers",
 		body: diseaseQualifiersBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
 		editor: (props) => diseaseQualifiersEditor(props)
 	},
@@ -1378,21 +1378,21 @@ export const DiseaseAnnotationsTable = () => {
 		field: "sgdStrainBackground.name",
 		header: "SGD Strain Background",
 		body: sgdStrainBackgroundBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
 		editor: (props) => sgdStrainBackgroundEditorSelector(props)
 	},
 	{
 		field: "annotationType.name",
 		header: "Annotation Type",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.annotationTypeFilterConfig,
 		editor: (props) => annotationTypeEditor(props)
 	},
 	{
 		field: "diseaseGeneticModifierRelation.name",
 		header: "Genetic Modifier Relation",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.geneticModifierRelationFilterConfig,
 		editor: (props) => geneticModifierRelationEditor(props)
 	},
@@ -1400,7 +1400,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "diseaseGeneticModifiers.symbol",
 		header: "Genetic Modifiers",
 		body: geneticModifiersBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.geneticModifiersFilterConfig,
 		editor: (props) => geneticModifiersEditorTemplate(props),
 	},
@@ -1408,14 +1408,14 @@ export const DiseaseAnnotationsTable = () => {
 		field: "inferredGene.geneSymbol.displayText",
 		header: "Inferred Gene",
 		body: inferredGeneBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 	},
 	{
 		field: "assertedGenes.geneSymbol.displayText",
 		header: "Asserted Genes",
 		body: assertedGenesBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 		editor: (props) => assertedGenesEditorTemplate(props),
 	},
@@ -1423,58 +1423,58 @@ export const DiseaseAnnotationsTable = () => {
 		field: "inferredAllele.alleleSymbol.displayText",
 		header: "Inferred Allele",
 		body: inferredAlleleBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 	},
 	{
 		field: "assertedAllele.alleleSymbol.displayText",
 		header: "Asserted Allele",
 		body: assertedAlleleBodyTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
 		editor: (props) => assertedAlleleEditorTemplate(props),
 	},
 	{
 		field: "dataProvider.sourceOrganization.abbreviation",
 		header: "Data Provider",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
 	},
 	{
 		field: "secondaryDataProvider.sourceOrganization.abbreviation",
 		header: "Secondary Data Provider",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.secondaryDataProviderFilterConfig,
 	},
 	{
 		field: "updatedBy.uniqueId",
 		header: "Updated By",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 	},
 	{
 		field: "dateUpdated",
 		header: "Date Updated",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 	},
 	{
 		field: "createdBy.uniqueId",
 		header: "Created By",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 	},
 	{
 		field: "dateCreated",
 		header: "Date Created",
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 	},
 	{
 		field: "internal",
 		header: "Internal",
 		body: internalTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.internalFilterConfig,
 		editor: (props) => internalEditor(props)
 	},
@@ -1482,7 +1482,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "obsolete",
 		header: "Obsolete",
 		body: obsoleteTemplate,
-		sortable: isEnabled,
+		sortable: isInEditMode,
 		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		editor: (props) => obsoleteEditor(props)
 	}
@@ -1522,8 +1522,8 @@ export const DiseaseAnnotationsTable = () => {
 					isEditable={true}
 					sortMapping={sortMapping}
 					mutation={mutation}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject={{errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages}}
 					headerButtons={headerButtons}

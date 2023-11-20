@@ -34,7 +34,7 @@ export const ControlledVocabularyTable = () => {
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(true);
 	const [vocabularies, setVocabularies] = useState(null);
 	const [newTermDialog, setNewTermDialog] = useState(false);
 	const [newVocabularyDialog, setNewVocabularyDialog] = useState(false);
@@ -246,7 +246,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "name",
 			header: "Name",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditorTemplate(props),
 			body: nameBodyTemplate
@@ -254,7 +254,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "abbreviation",
 			header: "Abbreviation",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
 			body: abbreviationBodyTemplate
@@ -262,14 +262,14 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "synonyms",
 			header: "Synonyms",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
 			body: synonymsBodyTemplate
 		},
 		{
 			field: "vocabulary.name",
 			header: "Vocabulary",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props),
 			body: vocabularyBodyTemplate
@@ -277,7 +277,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "definition",
 			header: "Definition",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
 			editor: (props) => definitionEditorTemplate(props),
 			body: definitionBodyTemplate
@@ -285,7 +285,7 @@ export const ControlledVocabularyTable = () => {
 		{
 			field: "obsolete",
 			header: "Obsolete",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditorTemplate(props),
 			body: obsoleteBodyTemplate
@@ -316,8 +316,8 @@ export const ControlledVocabularyTable = () => {
 					initialTableState={initialTableState}
 					isEditable={true}
 					mutation={mutation}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					headerButtons={createButtons}

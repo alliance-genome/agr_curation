@@ -25,7 +25,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const ConditionRelationTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(true);
 	const [newConditionRelation, setNewConditionRelation] = useState(null);
 	const { newRelationState, newRelationDispatch } = useNewRelationReducer();
 
@@ -202,7 +202,7 @@ export const ConditionRelationTable = () => {
 		{
 			field: "handle",
 			header: "Handle",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			body: (rowData) => rowData.handle,
 			filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
 			editor: (props) => handleEditor(props)
@@ -210,7 +210,7 @@ export const ConditionRelationTable = () => {
 		{
 			field: "singleReference.primaryCrossReferenceCurie",
 			header: "Reference",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
@@ -218,14 +218,14 @@ export const ConditionRelationTable = () => {
 		{
 			field: "conditionRelationType.name",
 			header: "Relation",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			filterConfig: FILTER_CONFIGS.conditionRelationTypeFilterConfig,
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
 			field: "conditions.conditionSummary",
 			header: "Experimental Conditions",
-			sortable: isEnabled,
+			sortable: isInEditMode,
 			body: conditionTemplate,
 			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props)
@@ -267,8 +267,8 @@ export const ConditionRelationTable = () => {
 				isEditable={true}
 				curieFields={["singleReference"]}
 				mutation={mutation}
-				isEnabled={isEnabled}
-				setIsEnabled={setIsEnabled}
+				isInEditMode={isInEditMode}
+				setIsInEditMode={setIsInEditMode}
 				toasts={{toast_topleft, toast_topright }}
 				errorObject={{errorMessages, setErrorMessages}}
 				headerButtons={headerButtons}

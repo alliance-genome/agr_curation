@@ -11,7 +11,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const LiteratureReferenceTable = () => {
 
-		const [isEnabled, setIsEnabled] = useState(true);
+		const [isInEditMode, setIsInEditMode] = useState(true);
 		const [errorMessages, setErrorMessages] = useState({});
 
 		const toast_topleft = useRef(null);
@@ -70,41 +70,41 @@ export const LiteratureReferenceTable = () => {
 		const columns = [{
 						field: "curie",
 						header: "Curie",
-						sortable: { isEnabled },
+						sortable: { isInEditMode },
 						filter: true,
 						filterConfig: FILTER_CONFIGS.curieFilterConfig, 
 				}, {
 						field: "cross_references.curie",
 						header: "Cross References",
-						sortable: isEnabled,
+						sortable: isInEditMode,
 						body: crossReferenceTemplate,
 						filter: true,
 						filterConfig: FILTER_CONFIGS.literatureCrossReferenceFilterConfig, 
 				}, {
 						field: "title",
 						header: "Title",
-						sortable: isEnabled,
+						sortable: isInEditMode,
 						filter: true,
 						body : titleTemplate,
 						filterConfig: FILTER_CONFIGS.titleFilterConfig, 
 				}, {
 						field: "abstract",
 						header: "Abstract",
-						sortable: isEnabled,
+						sortable: isInEditMode,
 						filter: true,
 						body : abstractTemplate,
 						filterConfig: FILTER_CONFIGS.abstractFilterConfig, 
 				}, {
 						field: "citation",
 						header: "Citation",
-						sortable: isEnabled,
+						sortable: isInEditMode,
 						filter: true,
 						body : citationTemplate,
 						filterConfig: FILTER_CONFIGS.citationFilterConfig, 
 				}, {
 						field: "short_citation",
 						header: "Short Citation",
-						sortable: { isEnabled },
+						sortable: { isInEditMode },
 						filter: true,
 						filterConfig: FILTER_CONFIGS.literatureShortCitationFilterConfig,
 				}
@@ -132,8 +132,8 @@ export const LiteratureReferenceTable = () => {
 									defaultColumnNames={defaultColumnNames}
 									initialTableState={initialTableState}
 									isEditable={false}
-									isEnabled={isEnabled}
-									setIsEnabled={setIsEnabled}
+									isInEditMode={isInEditMode}
+									setIsInEditMode={setIsInEditMode}
 									toasts={{toast_topleft, toast_topright }}
 									errorObject = {{errorMessages, setErrorMessages}}
 									widthsObject={widthsObject}

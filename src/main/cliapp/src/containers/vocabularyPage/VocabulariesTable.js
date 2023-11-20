@@ -15,7 +15,7 @@ import { TrueFalseDropdown } from "../../components/TrueFalseDropDownSelector";
 
 export const VocabulariesTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(true);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);
@@ -130,8 +130,8 @@ export const VocabulariesTable = () => {
 					initialTableState={initialTableState}
 					isEditable={true}
 					mutation={mutation}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}

@@ -1,14 +1,14 @@
 import React, { useRef } from "react";
 import { Dropdown } from "primereact/dropdown";
 
-export function FilterComponentBinaryDropDown({ isEnabled, filterConfig, currentFilters, onFilter }) {
+export function FilterComponentBinaryDropDown({ isInEditMode, filterConfig, currentFilters, onFilter }) {
 	const options = useRef(["true", "false"]);
 
 	const fieldSet = filterConfig.fieldSets[0];
 
 	return (
 		<Dropdown
-			disabled={!isEnabled}
+			disabled={isInEditMode}
 			value={currentFilters?.[fieldSet?.filterName]?.[fieldSet?.fields?.[0]]?.queryString}
 			options={options.current}
 			showClear
