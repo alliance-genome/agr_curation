@@ -127,6 +127,6 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 			consolidatedMessages.add(consolidatedError.getKey() + " - " + consolidatedError.getValue().stream().sorted().collect(Collectors.joining("/")));
 		}
 		Collections.sort(consolidatedMessages);
-		addMessageResponse(fieldName, String.join("|", consolidatedMessages));
+		addMessageResponse(fieldName, String.join(" | ", consolidatedMessages));
 	}
 }

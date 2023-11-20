@@ -83,14 +83,14 @@ const { isLoading } =	useQuery([curie],
 				table = alleleState.allele[state.field];
 			}
 
-			//let isError = await validateAlleleDetailTable(
-			//	state.endpoint,
-			//	state.field,
-			//	table,
-			//	alleleDispatch,
-			//);
+			let isError = await validateAlleleDetailTable(
+				state.endpoint,
+				state.field,
+				table,
+				alleleDispatch,
+			);
 
-			//if(isError) anyErrors = true;
+			if(isError) anyErrors = true;
 		})
 		
 		mutation.mutate(alleleState.allele, {

@@ -378,8 +378,9 @@ public class AlleleValidator extends GenomicEntityValidator {
 				
 					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
 					if (validatedNoteIdentities.contains(noteIdentity)) {
+						allValid = false;
 						Map<String, String> duplicateError = new HashMap<>();
-						duplicateError.put(field, ValidationConstants.DUPLICATE_MESSAGE);
+						duplicateError.put("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
 						response.addErrorMessagesToSupplementalData(field, ix, duplicateError);
 					} else {
 						validatedNoteIdentities.add(noteIdentity);
