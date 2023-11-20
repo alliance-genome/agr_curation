@@ -589,6 +589,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> agtsResponse = alleleGermlineTransmissionStatusValidator.validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity.getAlleleGermlineTransmissionStatus());
 		if (agtsResponse.getEntity() == null) {
 			addMessageResponse(field, agtsResponse.errorMessagesString());
+			response.addErrorMessagesToSupplementalData(field, 0, agtsResponse.getErrorMessages());
 			return null;
 		}
 		
@@ -604,6 +605,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> adsResponse = alleleDatabaseStatusValidator.validateAlleleDatabaseStatusSlotAnnotation(uiEntity.getAlleleDatabaseStatus());
 		if (adsResponse.getEntity() == null) {
 			addMessageResponse(field, adsResponse.errorMessagesString());
+			response.addErrorMessagesToSupplementalData(field, 0, adsResponse.getErrorMessages());
 			return null;
 		}
 		
@@ -644,6 +646,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolValidator.validateAlleleSymbolSlotAnnotation(uiEntity.getAlleleSymbol());
 		if (symbolResponse.getEntity() == null) {
 			addMessageResponse(field, symbolResponse.errorMessagesString());
+			response.addErrorMessagesToSupplementalData(field, 0, symbolResponse.getErrorMessages());
 			return null;
 		}
 
@@ -659,6 +662,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		ObjectResponse<AlleleFullNameSlotAnnotation> nameResponse = alleleFullNameValidator.validateAlleleFullNameSlotAnnotation(uiEntity.getAlleleFullName());
 		if (nameResponse.getEntity() == null) {
 			addMessageResponse(field, nameResponse.errorMessagesString());
+			response.addErrorMessagesToSupplementalData(field, 0, nameResponse.getErrorMessages());
 			return null;
 		}
 
