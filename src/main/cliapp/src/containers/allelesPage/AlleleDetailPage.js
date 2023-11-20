@@ -200,16 +200,16 @@ const { isLoading } =	useQuery([curie],
 			<Toast ref={toastSuccess} position="top-right" />
 			<ErrorBoundary>
 				<StickyHeader>
-					<Splitter className="bg-primary-reverse border-none h-5rem" gutterSize={0}>
-						<SplitterPanel size={50} className="flex justify-content-start py-3 ">
+					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
+						<SplitterPanel size={80} className="flex justify-content-start ml-5 py-3 ">
 							<h1 dangerouslySetInnerHTML={{ __html: headerText()}}/>
 						</SplitterPanel>
-						<SplitterPanel size={50} className="flex justify-content-end py-3 ">
+						<SplitterPanel size={20} className="flex justify-content-end py-3 ">
 							<Button label="Save" icon="pi pi-check" className="p-button-text p-button-lg pr-8 pt-5 " onClick={handleSubmit} />
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<form>
+				<form className='mt-8'>
 					<CurieFormTemplate
 						curie={alleleState.allele?.curie}
 						widgetColumnSize={widgetColumnSize}
