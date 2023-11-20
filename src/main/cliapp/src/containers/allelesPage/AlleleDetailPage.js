@@ -11,7 +11,6 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
-import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
 import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
@@ -416,7 +415,6 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 			</form>
-			<PageFooter handleSubmit={handleSubmit}/>
 		</ErrorBoundary>
 		</>
 	)
