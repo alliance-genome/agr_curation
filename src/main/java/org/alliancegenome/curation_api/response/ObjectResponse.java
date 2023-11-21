@@ -17,5 +17,5 @@ public class ObjectResponse<E> extends APIResponse {
 
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	private E entity;
-
+	
 }
