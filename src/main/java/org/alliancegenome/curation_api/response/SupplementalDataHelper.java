@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import io.quarkus.logging.Log;
 
-public class SupplementalDatahelper {
+public class SupplementalDataHelper {
 
 	public static final String ERROR_MAP = "errorMap";
 	

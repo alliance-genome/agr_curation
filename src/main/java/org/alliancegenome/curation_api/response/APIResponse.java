@@ -42,10 +42,10 @@ public class APIResponse {
 	}
 	
 	public void addErrorMessages(String fieldName, Object fieldErrorMessages) {
-		SupplementalDatahelper.addFieldErrorMessages(supplementalData, fieldName, fieldErrorMessages);
+		SupplementalDataHelper.addFieldErrorMessages(supplementalData, fieldName, fieldErrorMessages);
 	}
 	public void addErrorMessages(String fieldName, Integer rowIndex, Object fieldErrorMessages) {
-		SupplementalDatahelper.addRowFieldErrorMessages(supplementalData, fieldName, rowIndex, fieldErrorMessages);
+		SupplementalDataHelper.addRowFieldErrorMessages(supplementalData, fieldName, rowIndex, fieldErrorMessages);
 	}
 
 	public boolean hasErrors() {
@@ -63,12 +63,12 @@ public class APIResponse {
 			return;
 		
 		for (Map.Entry<String, String> reportedError : errorMessages.entrySet()) {
-			SupplementalDatahelper.addFieldErrorMessages(supplementalData, reportedError.getKey(), reportedError.getValue());
+			SupplementalDataHelper.addFieldErrorMessages(supplementalData, reportedError.getKey(), reportedError.getValue());
 		}
 	}
 
 	public void convertMapToErrorMessages(String fieldName) {
-		String consolidatedMessages = SupplementalDatahelper.convertMapToFieldErrorMessages(supplementalData, fieldName);
+		String consolidatedMessages = SupplementalDataHelper.convertMapToFieldErrorMessages(supplementalData, fieldName);
 		if(consolidatedMessages != null) {
 			addErrorMessage(fieldName, consolidatedMessages);
 		}
