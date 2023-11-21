@@ -74,4 +74,9 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 	public void addMessageResponse(String fieldName, String message) {
 		response.addErrorMessage(fieldName, message);
 	}
+	
+	public void convertMapToErrorMessages(String fieldName) {
+		response.convertMapToErrorMessages(fieldName);
+	}
+
 }
