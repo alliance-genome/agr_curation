@@ -200,11 +200,11 @@ const { isLoading } =	useQuery([curie],
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
-						<SplitterPanel size={80} className="flex justify-content-start ml-5 py-3 ">
+						<SplitterPanel size={70} className="flex justify-content-start ml-5 py-3 ">
 							<h1 dangerouslySetInnerHTML={{ __html: headerText()}}/>
 						</SplitterPanel>
-						<SplitterPanel size={20} className="flex justify-content-end py-3 ">
-							<Button label="Save" icon="pi pi-check" className="p-button-text p-button-lg pr-8 pt-5 " onClick={handleSubmit} />
+						<SplitterPanel size={30} className="flex justify-content-start py-3">
+							<Button label="Save" icon="pi pi-check" className="p-button-text" size='large' onClick={handleSubmit} />
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
@@ -411,13 +411,12 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
-
 					<Divider />
-
 			</form>
 		</ErrorBoundary>
 		</>
 	)
 	
 };
+
 
