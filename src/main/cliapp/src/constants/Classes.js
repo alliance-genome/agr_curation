@@ -13,6 +13,7 @@ export const CLASSES = Object.freeze({
   Construct: { name: "Constructs", link: "/#/constructs", type: 'entity' },
   Molecule: { name: "Molecules", link: "/#/molecules", type: 'entity', },
   Reference: { name: "Literature References", link: "/#/references", type: 'entity', },
+  Specie: { name: "Species", link: "/#/species", type: 'entity'},
 
   DOTerm: { name: "DO", link: "/#/ontology/do", type: 'ontology', },
   CHEBITerm: { name: "CHEBI", link: "/#/ontology/chebi", type: 'ontology', },
