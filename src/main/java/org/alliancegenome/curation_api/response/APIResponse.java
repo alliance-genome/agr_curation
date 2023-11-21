@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.response;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,7 +22,7 @@ public class APIResponse {
 	private Map<String, String> errorMessages;
 	
 	@JsonView({ View.FieldsOnly.class })
-	private Map<String, Object> supplementalData;
+	private Map<String, Object> supplementalData = new HashMap<>();
 
 	@JsonView({ View.FieldsOnly.class })
 	private String requestDuration;
@@ -42,29 +41,11 @@ public class APIResponse {
 		}
 	}
 	
-
-	public void addErrorMessagesToSupplementalData(String fieldName, Object fieldErrorMessages) {
-		addErrorMessagesToSupplementalData(fieldName, null, fieldErrorMessages);
+	public void addErrorMessages(String fieldName, Object fieldErrorMessages) {
+		SupplementalDatahelper.addFieldErrorMessages(supplementalData, fieldName, fieldErrorMessages);
 	}
-	
-	public void addErrorMessagesToSupplementalData(String fieldName, Integer rowIndex, Object fieldErrorMessages) {
-		if (supplementalData == null)
-			supplementalData = new LinkedHashMap<>();
-		Map<String, Object> errorMap = (Map<String, Object>) supplementalData.get("errorMap");
-		if(errorMap == null) {
-			errorMap = new LinkedHashMap<>();
-			supplementalData.put("errorMap", errorMap);
-		}
-		Map<String, Object> fieldErrorMap = (Map<String, Object>) errorMap.get(fieldName);
-		if (fieldErrorMap == null) {
-			fieldErrorMap = new LinkedHashMap<>();
-			errorMap.put(fieldName, fieldErrorMap);
-		}
-		if (rowIndex == null) {
-			errorMap.put(fieldName, fieldErrorMessages);
-		} else {
-			fieldErrorMap.put(Integer.toString(rowIndex), fieldErrorMessages);
-		}
+	public void addErrorMessages(String fieldName, Integer rowIndex, Object fieldErrorMessages) {
+		SupplementalDatahelper.addRowFieldErrorMessages(supplementalData, fieldName, rowIndex, fieldErrorMessages);
 	}
 
 	public boolean hasErrors() {
@@ -74,8 +55,23 @@ public class APIResponse {
 	public String errorMessagesString() {
 		if (errorMessages == null)
 			return null;
-
 		return errorMessages.entrySet().stream().map(m -> m.getKey() + " - " + m.getValue()).sorted().collect(Collectors.joining(" | "));
+	}
+	
+	public void convertErrorMessagesToMap() {
+		if (errorMessages == null)
+			return;
+		
+		for (Map.Entry<String, String> reportedError : errorMessages.entrySet()) {
+			SupplementalDatahelper.addFieldErrorMessages(supplementalData, reportedError.getKey(), reportedError.getValue());
+		}
+	}
+
+	public void convertMapToErrorMessages(String fieldName) {
+		String consolidatedMessages = SupplementalDatahelper.convertMapToFieldErrorMessages(supplementalData, fieldName);
+		if(consolidatedMessages != null) {
+			addErrorMessage(fieldName, consolidatedMessages);
+		}
 	}
 
 }
