@@ -73,7 +73,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		}
 		
 		GenomicEntity object = validateObject(uiEntity, dbEntity);
-		dbEntity.setObject(object);
+		dbEntity.setObjectGenomicEntity(object);
 
 		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
@@ -90,7 +90,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	}
 	
 	private Construct validateSubject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "subject";
+		String field = "subjectConstruct";
 		if (ObjectUtils.isEmpty(uiEntity.getSubjectConstruct())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
@@ -112,19 +112,19 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	}
 
 	private GenomicEntity validateObject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getObject()) || StringUtils.isBlank(uiEntity.getObject().getCurie())) {
-			addMessageResponse("object", ValidationConstants.REQUIRED_MESSAGE);
+		if (ObjectUtils.isEmpty(uiEntity.getObjectGenomicEntity()) || StringUtils.isBlank(uiEntity.getObjectGenomicEntity().getCurie())) {
+			addMessageResponse("objectGenomicEntity", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		GenomicEntity objectEntity = genomicEntityDAO.find(uiEntity.getObject().getCurie());
+		GenomicEntity objectEntity = genomicEntityDAO.find(uiEntity.getObjectGenomicEntity().getCurie());
 		if (objectEntity == null) {
-			addMessageResponse("object", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("objectGenomicEntity", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (objectEntity.getObsolete() && (dbEntity.getObject() == null || !objectEntity.getCurie().equals(dbEntity.getObject().getCurie()))) {
-			addMessageResponse("object", ValidationConstants.OBSOLETE_MESSAGE);
+		if (objectEntity.getObsolete() && (dbEntity.getObjectGenomicEntity() == null || !objectEntity.getCurie().equals(dbEntity.getObjectGenomicEntity().getCurie()))) {
+			addMessageResponse("objectGenomicEntity", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 

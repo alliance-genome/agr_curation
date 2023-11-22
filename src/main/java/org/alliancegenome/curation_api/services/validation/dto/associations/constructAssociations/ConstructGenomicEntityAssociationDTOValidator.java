@@ -73,9 +73,9 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		ConstructGenomicEntityAssociation association = null;
 		if (construct != null && StringUtils.isNotBlank(dto.getGenomicEntityRelationName()) && StringUtils.isNotBlank(dto.getGenomicEntityCurie())) {
 			HashMap<String, Object> params = new HashMap<>();
-			params.put("subject.id", construct.getId());
+			params.put("subjectConstruct.id", construct.getId());
 			params.put("relation.name", dto.getGenomicEntityRelationName());
-			params.put("object.curie", dto.getGenomicEntityCurie());
+			params.put("objectGenomicEntity.curie", dto.getGenomicEntityCurie());
 			
 			SearchResponse<ConstructGenomicEntityAssociation> searchResponse = constructGenomicEntityAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
@@ -97,7 +97,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			GenomicEntity genomicEntity = genomicEntityDAO.find(dto.getGenomicEntityCurie());
 			if (genomicEntity == null)
 				assocResponse.addErrorMessage("genomic_entity_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityCurie() + ")");
-			association.setObject(genomicEntity);
+			association.setObjectGenomicEntity(genomicEntity);
 		}
 		
 		if (StringUtils.isNotEmpty(dto.getGenomicEntityRelationName())) {

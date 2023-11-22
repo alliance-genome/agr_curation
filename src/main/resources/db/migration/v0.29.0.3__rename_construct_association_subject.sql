@@ -1,2 +1,0 @@
-ALTER TABLE constructgenomicentityassociation RENAME subject_id TO subjectcurie_id;
-ALTER TABLE constructgenomicentityassociation_aud RENAME subject_id TO subjectcurie_id;

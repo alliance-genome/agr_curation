@@ -139,8 +139,8 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
 	
-	@IndexedEmbedded(includePaths = {"object.curie", "object.geneSymbol.displayText", "object.geneSymbol.formatText", "object.geneFullName.displayText", "object.geneFullName.formatText",
-			"object.curie_keyword", "object.geneSymbol.displayText_keyword", "object.geneSymbol.formatText_keyword", "object.geneFullName.displayText_keyword", "object.geneFullName.formatText_keyword"})
+	@IndexedEmbedded(includePaths = {"objectGene.curie", "objectGene.geneSymbol.displayText", "objectGene.geneSymbol.formatText", "objectGene.geneFullName.displayText", "objectGene.geneFullName.formatText",
+			"objectGene.curie_keyword", "objectGene.geneSymbol.displayText_keyword", "objectGene.geneSymbol.formatText_keyword", "objectGene.geneFullName.displayText_keyword", "objectGene.geneFullName.formatText_keyword"})
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
