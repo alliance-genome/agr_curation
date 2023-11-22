@@ -460,6 +460,7 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 //temporary function until useNewAnnotationReducer is refactored to add table states
 export const validateAlleleDetailTable = async (endpoint, entityType, table, dispatch) => {
 	if(!table) return false;
+
 	const validationService = new ValidationService();
 	const results = await validate(table, endpoint, validationService);
 	const errors = [];
@@ -480,6 +481,30 @@ export const validateAlleleDetailTable = async (endpoint, entityType, table, dis
 	});
 	dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors});
 	return anyErrors;
+}
+
+
+export const processErrorMap = (errorMap, dispatch) => {
+	let tableErrors;
+	Object.keys(errorMap).forEach((entityType) => {
+		tableErrors = errorMap[entityType];
+		processTableErrors(tableErrors, dispatch, entityType);
+	});
+}
+
+export const processTableErrors = (tableErrors, dispatch, entityType) => {
+	let errors = [];
+	Object.keys(tableErrors).forEach((index) => {
+		let rowErrors = tableErrors[index];
+		errors[index] = {};
+		Object.keys(rowErrors).forEach((field) => {
+			errors[index][field] = {
+				severity: "error",
+				message: rowErrors[field]
+			};
+		});
+	});
+	dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors});
 }
 
 //handles optional autocomplete fields so that a string isn't sent to the backend 
