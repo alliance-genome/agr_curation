@@ -89,7 +89,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
-		association.setSubject(construct);
+		association.setSubjectConstruct(construct);
 		association.setObject(gene);
 		association.setRelation(relation);
 		association.setInternal(true);
@@ -152,7 +152,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	@Order(2)
 	public void editConstructGenomicEntityAssociation() {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct.getId(), relation.getName(), gene.getCurie());
-		association.setSubject(construct2);
+		association.setSubjectConstruct(construct2);
 		association.setRelation(relation2);
 		association.setObject(gene2);
 		association.setInternal(false);
@@ -213,7 +213,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	@Order(4)
 	public void createConstructGenomicEntityAssociationWithMissingRequiredFieldsLevel2() {
 		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
-		association.setSubject(construct2);
+		association.setSubjectConstruct(construct2);
 		association.setRelation(relation);
 		association.setObject(gene);
 		
@@ -237,7 +237,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	@Order(5)
 	public void createConstructGenomicEntityAssociationWithEmptyRequiredFieldsLevel2() {
 		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
-		association.setSubject(construct2);
+		association.setSubjectConstruct(construct2);
 		association.setRelation(relation);
 		association.setObject(gene);
 		
@@ -260,7 +260,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	@Order(6)
 	public void editConstructGenomicEntityAssociationWithMissingRequiredFieldsLevel1() {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
-		association.setSubject(null);
+		association.setSubjectConstruct(null);
 		association.setRelation(null);
 		association.setObject(null);
 		
@@ -338,7 +338,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		invalidNote.setFreeText("Invalid");
 		
 		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
-		association.setSubject(nonPersistedConstruct);
+		association.setSubjectConstruct(nonPersistedConstruct);
 		association.setRelation(noteType);
 		association.setObject(nonPersistedGene);
 		association.setEvidence(List.of(nonPersistedReference));
@@ -379,7 +379,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		invalidNote.setFreeText("Invalid");
 		
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
-		association.setSubject(nonPersistedConstruct);
+		association.setSubjectConstruct(nonPersistedConstruct);
 		association.setRelation(noteType);
 		association.setObject(nonPersistedGene);
 		association.setEvidence(List.of(nonPersistedReference));
@@ -407,7 +407,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	public void createConstructGenomicEntityAssociationWithObsoleteFields() {
 		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
 		
-		association.setSubject(obsoleteConstruct);
+		association.setSubjectConstruct(obsoleteConstruct);
 		association.setRelation(obsoleteRelation);
 		association.setObject(obsoleteGene);
 		association.setEvidence(List.of(obsoleteReference));
@@ -441,7 +441,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 	public void editConstructGenomicEntityAssociationWithObsoleteFields() {
 		ConstructGenomicEntityAssociation association = getConstructGenomicEntityAssociation(construct2.getId(), relation2.getName(), gene2.getCurie());
 		
-		association.setSubject(obsoleteConstruct);
+		association.setSubjectConstruct(obsoleteConstruct);
 		association.setRelation(obsoleteRelation);
 		association.setObject(obsoleteGene);
 		association.setEvidence(List.of(obsoleteReference));

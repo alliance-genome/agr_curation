@@ -69,7 +69,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 
 		if (validateConstruct) {
 			Construct subject = validateSubject(uiEntity, dbEntity);
-			dbEntity.setSubject(subject);
+			dbEntity.setSubjectConstruct(subject);
 		}
 		
 		GenomicEntity object = validateObject(uiEntity, dbEntity);
@@ -91,18 +91,18 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	
 	private Construct validateSubject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
 		String field = "subject";
-		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubjectConstruct())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Construct subjectEntity = constructDAO.find(uiEntity.getSubject().getId());
+		Construct subjectEntity = constructDAO.find(uiEntity.getSubjectConstruct().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getId().equals(dbEntity.getSubject().getId()))) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubjectConstruct() == null || !subjectEntity.getId().equals(dbEntity.getSubjectConstruct().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

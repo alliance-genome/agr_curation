@@ -54,7 +54,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	@Fetch(FetchMode.JOIN)
-	private Construct subject;
+	private Construct subjectConstruct;
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

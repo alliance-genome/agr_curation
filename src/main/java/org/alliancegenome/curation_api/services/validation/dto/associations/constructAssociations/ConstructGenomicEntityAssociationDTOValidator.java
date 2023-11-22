@@ -85,7 +85,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		if (association == null)
 			association = new ConstructGenomicEntityAssociation();
 		
-		association.setSubject(construct);
+		association.setSubjectConstruct(construct);
 		
 		ObjectResponse<ConstructGenomicEntityAssociation> eviResponse = validateEvidenceAssociationDTO(association, dto);
 		assocResponse.addErrorMessages(eviResponse.getErrorMessages());

@@ -152,7 +152,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	}
 	
 	private void addAssociationToConstruct(ConstructGenomicEntityAssociation association) {
-		Construct construct = association.getSubject();
+		Construct construct = association.getSubjectConstruct();
 		List<ConstructGenomicEntityAssociation> currentAssociations = construct.getConstructGenomicEntityAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();
