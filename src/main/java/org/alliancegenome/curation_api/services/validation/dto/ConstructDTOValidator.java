@@ -61,10 +61,10 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
 
+	private ObjectResponse<Construct> constructResponse = new ObjectResponse<Construct>();
+	
 	@Transactional
 	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
-
-		ObjectResponse<Construct> constructResponse = new ObjectResponse<Construct>();
 
 		Construct construct = new Construct();
 		String constructId;
@@ -109,98 +109,12 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			construct.setReferences(null);
 		}
 		
-		ConstructSymbolSlotAnnotation symbol = construct.getConstructSymbol();
-		if (dto.getConstructSymbolDto() == null) {
-			constructResponse.addErrorMessage("construct_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			ObjectResponse<ConstructSymbolSlotAnnotation> symbolResponse = constructSymbolDtoValidator.validateConstructSymbolSlotAnnotationDTO(symbol, dto.getConstructSymbolDto());
-			if (symbolResponse.hasErrors()) {
-				constructResponse.addErrorMessage("construct_symbol_dto", symbolResponse.errorMessagesString());
-			} else {
-				symbol = symbolResponse.getEntity();
-			}
-		}
-
-		ConstructFullNameSlotAnnotation fullName = construct.getConstructFullName();
-		if (construct.getConstructFullName() != null && dto.getConstructFullNameDto() == null) {
-			fullName.setSingleConstruct(null);
-			constructFullNameDAO.remove(fullName.getId());
-		}
-
-		if (dto.getConstructFullNameDto() != null) {
-			ObjectResponse<ConstructFullNameSlotAnnotation> fullNameResponse = constructFullNameDtoValidator.validateConstructFullNameSlotAnnotationDTO(fullName, dto.getConstructFullNameDto());
-			if (fullNameResponse.hasErrors()) {
-				constructResponse.addErrorMessage("construct_full_name_dto", fullNameResponse.errorMessagesString());
-			} else {
-				fullName = fullNameResponse.getEntity();
-			}
-		} else {
-			fullName = null;
-		}
-
-		Map<String, ConstructSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(construct.getConstructSynonyms())) {
-			for (ConstructSynonymSlotAnnotation existingSynonym : construct.getConstructSynonyms()) {
-				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
-			}
-		}
+		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(construct, dto);
+		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(construct, dto);
+		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(construct, dto);
+		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(construct, dto);
 		
-		List<ConstructSynonymSlotAnnotation> synonyms = new ArrayList<>();
-		List<Long> synonymIdsToKeep = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getConstructSynonymDtos())) {
-			for (NameSlotAnnotationDTO synonymDTO : dto.getConstructSynonymDtos()) {
-				ObjectResponse<ConstructSynonymSlotAnnotation> synonymResponse = constructSynonymDtoValidator.validateConstructSynonymSlotAnnotationDTO(existingSynonyms.get(identityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
-				if (synonymResponse.hasErrors()) {
-					constructResponse.addErrorMessage("construct_synonym_dtos", synonymResponse.errorMessagesString());
-				} else {
-					ConstructSynonymSlotAnnotation synonym = synonymResponse.getEntity();
-					synonyms.add(synonym);
-					if (synonym.getId() != null)
-						synonymIdsToKeep.add(synonym.getId());
-				}
-			}
-		}
-		
-		if (CollectionUtils.isNotEmpty(construct.getConstructSynonyms())) {
-			for (ConstructSynonymSlotAnnotation syn : construct.getConstructSynonyms()) {
-				if (!synonymIdsToKeep.contains(syn.getId())) {
-					syn.setSingleConstruct(null);
-					constructSynonymDAO.remove(syn.getId());
-				}
-			}
-		}
-		
-		Map<String, ConstructComponentSlotAnnotation> existingComponentIds = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(construct.getConstructComponents())) {
-			for (ConstructComponentSlotAnnotation existingComponent : construct.getConstructComponents()) {
-				existingComponentIds.put(SlotAnnotationIdentityHelper.constructComponentIdentity(existingComponent), existingComponent);
-			}
-		}
-		
-		List<ConstructComponentSlotAnnotation> components = new ArrayList<>();
-		List<Long> componentIdsToKeep = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getConstructComponentDtos())) {
-			for (ConstructComponentSlotAnnotationDTO componentDTO : dto.getConstructComponentDtos()) {
-				ObjectResponse<ConstructComponentSlotAnnotation> componentResponse = constructComponentDtoValidator.validateConstructComponentSlotAnnotationDTO(existingComponentIds.get(identityHelper.constructComponentDtoIdentity(componentDTO)), componentDTO);
-				if (componentResponse.hasErrors()) {
-					constructResponse.addErrorMessage("construct_component_dtos", componentResponse.errorMessagesString());
-				} else {
-					ConstructComponentSlotAnnotation component = componentResponse.getEntity();
-					components.add(component);
-					if (component.getId() != null)
-						componentIdsToKeep.add(component.getId());
-				}
-			}
-		}
-		
-		if (CollectionUtils.isNotEmpty(construct.getConstructComponents())) {
-			for (ConstructComponentSlotAnnotation cc : construct.getConstructComponents()) {
-				if (!componentIdsToKeep.contains(cc.getId())) {
-					cc.setSingleConstruct(null);
-					constructComponentDAO.remove(cc.getId());
-				}
-			}
-		}
+		constructResponse.convertErrorMessagesToMap();
 
 		if (constructResponse.hasErrors())
 			throw new ObjectValidationException(dto, constructResponse.errorMessagesString());
@@ -221,22 +135,138 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		}
 		construct.setConstructFullName(fullName);
 
-		if (CollectionUtils.isNotEmpty(synonyms)) {
+		if (construct.getConstructSynonyms() != null)
+			construct.getConstructSynonyms().clear();
+		if (synonyms != null) {
 			for (ConstructSynonymSlotAnnotation syn : synonyms) {
 				syn.setSingleConstruct(construct);
 				constructSynonymDAO.persist(syn);
 			}
+			if (construct.getConstructSynonyms() == null)
+				construct.setConstructSynonyms(new ArrayList<>());
+			construct.getConstructSynonyms().addAll(synonyms);
 		}
-		construct.setConstructSynonyms(synonyms);
 		
-		if (CollectionUtils.isNotEmpty(components)) {
-			for (ConstructComponentSlotAnnotation cc : components) {
-				cc.setSingleConstruct(construct);
-				constructComponentDAO.persist(cc);
+		if (construct.getConstructComponents() != null)
+			construct.getConstructComponents().clear();
+		if (components != null) {
+			for (ConstructComponentSlotAnnotation comp : components) {
+				comp.setSingleConstruct(construct);
+				constructComponentDAO.persist(comp);
 			}
+			if (construct.getConstructComponents() == null)
+				construct.setConstructComponents(new ArrayList<>());
+			construct.getConstructComponents().addAll(components);
 		}
-		construct.setConstructComponents(components);
 
 		return construct;
+	}
+	
+	private ConstructSymbolSlotAnnotation validateConstructSymbol(Construct construct, ConstructDTO dto) {
+		String field = "construct_symbol_dto";
+
+		if (dto.getConstructSymbolDto() == null) {
+			constructResponse.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+
+		ObjectResponse<ConstructSymbolSlotAnnotation> symbolResponse = constructSymbolDtoValidator.validateConstructSymbolSlotAnnotationDTO(construct.getConstructSymbol(), dto.getConstructSymbolDto());
+		if (symbolResponse.hasErrors()) {
+			constructResponse.addErrorMessage(field, symbolResponse.errorMessagesString());
+			constructResponse.addErrorMessages(field, symbolResponse.getErrorMessages());
+			return null;
+		}
+
+		return symbolResponse.getEntity();
+	}
+
+	private ConstructFullNameSlotAnnotation validateConstructFullName(Construct construct, ConstructDTO dto) {
+		if (dto.getConstructFullNameDto() == null)
+			return null;
+
+		String field = "construct_full_name_dto";
+
+		ObjectResponse<ConstructFullNameSlotAnnotation> nameResponse = constructFullNameDtoValidator.validateConstructFullNameSlotAnnotationDTO(construct.getConstructFullName(), dto.getConstructFullNameDto());
+		if (nameResponse.hasErrors()) {
+			constructResponse.addErrorMessage(field, nameResponse.errorMessagesString());
+			constructResponse.addErrorMessages(field, nameResponse.getErrorMessages());
+			return null;
+		}
+
+		return nameResponse.getEntity();
+	}
+
+	private List<ConstructSynonymSlotAnnotation> validateConstructSynonyms(Construct construct, ConstructDTO dto) {
+		String field = "construct_synonym_dtos";
+		
+		Map<String, ConstructSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(construct.getConstructSynonyms())) {
+			for (ConstructSynonymSlotAnnotation existingSynonym : construct.getConstructSynonyms()) {
+				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+			}
+		}
+
+		List<ConstructSynonymSlotAnnotation> validatedSynonyms = new ArrayList<ConstructSynonymSlotAnnotation>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getConstructSynonymDtos())) {
+			for (int ix = 0; ix < dto.getConstructSynonymDtos().size(); ix++) {
+				NameSlotAnnotationDTO synDto = dto.getConstructSynonymDtos().get(ix);
+				ConstructSynonymSlotAnnotation syn = existingSynonyms.remove(identityHelper.nameSlotAnnotationDtoIdentity(synDto));
+				ObjectResponse<ConstructSynonymSlotAnnotation> synResponse = constructSynonymDtoValidator.validateConstructSynonymSlotAnnotationDTO(syn, synDto);
+				if (synResponse.hasErrors()) {
+					allValid = false;
+					constructResponse.addErrorMessages(field, ix, synResponse.getErrorMessages());
+				} else {
+					validatedSynonyms.add(synResponse.getEntity());
+				}
+			}
+		}
+		
+		if (!allValid) {
+			constructResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedSynonyms))
+			return null;
+
+		return validatedSynonyms;
+	}
+	
+	private List<ConstructComponentSlotAnnotation> validateConstructComponents(Construct construct, ConstructDTO dto) {
+		String field = "construct_component_dtos";
+		
+		Map<String, ConstructComponentSlotAnnotation> existingComponents = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(construct.getConstructComponents())) {
+			for (ConstructComponentSlotAnnotation existingComponent : construct.getConstructComponents()) {
+				existingComponents.put(SlotAnnotationIdentityHelper.constructComponentIdentity(existingComponent), existingComponent);
+			}
+		}
+
+		List<ConstructComponentSlotAnnotation> validatedComponents = new ArrayList<ConstructComponentSlotAnnotation>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getConstructComponentDtos())) {
+			for (int ix = 0; ix < dto.getConstructComponentDtos().size(); ix++) {
+				ConstructComponentSlotAnnotationDTO compDto = dto.getConstructComponentDtos().get(ix);
+				ConstructComponentSlotAnnotation comp = existingComponents.remove(identityHelper.constructComponentDtoIdentity(compDto));
+				ObjectResponse<ConstructComponentSlotAnnotation> compResponse = constructComponentDtoValidator.validateConstructComponentSlotAnnotationDTO(comp, compDto);
+				if (compResponse.hasErrors()) {
+					allValid = false;
+					constructResponse.addErrorMessages(field, ix, compResponse.getErrorMessages());
+				} else {
+					validatedComponents.add(compResponse.getEntity());
+				}
+			}
+		}
+		
+		if (!allValid) {
+			constructResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedComponents))
+			return null;
+
+		return validatedComponents;
 	}
 }

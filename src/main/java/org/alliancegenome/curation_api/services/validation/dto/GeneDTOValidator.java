@@ -66,10 +66,10 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
 
+	private ObjectResponse<Gene> geneResponse = new ObjectResponse<Gene>();
+
 	@Transactional
 	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
-
-		ObjectResponse<Gene> geneResponse = new ObjectResponse<Gene>();
 
 		Gene gene = null;
 		if (StringUtils.isBlank(dto.getCurie())) {
@@ -87,116 +87,14 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
 		gene = geResponse.getEntity();
 
-		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
-		if (dto.getGeneSymbolDto() == null) {
-			geneResponse.addErrorMessage("gene_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			ObjectResponse<GeneSymbolSlotAnnotation> symbolResponse = geneSymbolDtoValidator.validateGeneSymbolSlotAnnotationDTO(symbol, dto.getGeneSymbolDto());
-			if (symbolResponse.hasErrors()) {
-				geneResponse.addErrorMessage("gene_symbol_dto", symbolResponse.errorMessagesString());
-			} else {
-				symbol = symbolResponse.getEntity();
-			}
-		}
+		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(gene, dto);
+		GeneFullNameSlotAnnotation fullName = validateGeneFullName(gene, dto);
+		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(gene, dto);
+		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(gene, dto);
+		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(gene, dto);
 
-		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
-		if (fullName != null && dto.getGeneFullNameDto() == null) {
-			fullName.setSingleGene(null);
-			geneFullNameDAO.remove(fullName.getId());
-		}
-
-		if (dto.getGeneFullNameDto() != null) {
-			ObjectResponse<GeneFullNameSlotAnnotation> fullNameResponse = geneFullNameDtoValidator.validateGeneFullNameSlotAnnotationDTO(fullName, dto.getGeneFullNameDto());
-			if (fullNameResponse.hasErrors()) {
-				geneResponse.addErrorMessage("gene_full_name_dto", fullNameResponse.errorMessagesString());
-			} else {
-				fullName = fullNameResponse.getEntity();
-			}
-		} else {
-			fullName = null;
-		}
-
-		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
-		if (systematicName != null && dto.getGeneSystematicNameDto() == null) {
-			systematicName.setSingleGene(null);
-			geneSystematicNameDAO.remove(systematicName.getId());
-		}
-
-		if (dto.getGeneSystematicNameDto() != null) {
-			ObjectResponse<GeneSystematicNameSlotAnnotation> systematicNameResponse = geneSystematicNameDtoValidator.validateGeneSystematicNameSlotAnnotationDTO(systematicName, dto.getGeneSystematicNameDto());
-			if (systematicNameResponse.hasErrors()) {
-				geneResponse.addErrorMessage("gene_systematic_name_dto", systematicNameResponse.errorMessagesString());
-			} else {
-				systematicName = systematicNameResponse.getEntity();
-			}
-		} else {
-			systematicName = null;
-		}
-
-		Map<String, GeneSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
-			for (GeneSynonymSlotAnnotation existingSynonym : gene.getGeneSynonyms()) {
-				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
-			}
-		}
+		geneResponse.convertErrorMessagesToMap();
 		
-		List<GeneSynonymSlotAnnotation> synonyms = new ArrayList<>();
-		List<Long> synonymIdsToKeep = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getGeneSynonymDtos())) {
-			for (NameSlotAnnotationDTO synonymDTO : dto.getGeneSynonymDtos()) {
-				ObjectResponse<GeneSynonymSlotAnnotation> synonymResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(existingSynonyms.get(identityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
-				if (synonymResponse.hasErrors()) {
-					geneResponse.addErrorMessage("gene_synonym_dtos", synonymResponse.errorMessagesString());
-				} else {
-					GeneSynonymSlotAnnotation synonym = synonymResponse.getEntity();
-					synonyms.add(synonym);
-					if (synonym.getId() != null)
-						synonymIdsToKeep.add(synonym.getId());
-				}
-			}
-		}
-		
-		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
-			for (GeneSynonymSlotAnnotation syn : gene.getGeneSynonyms()) {
-				if (!synonymIdsToKeep.contains(syn.getId())) {
-					syn.setSingleGene(null);
-					geneSynonymDAO.remove(syn.getId());
-				}
-			}
-		}
-
-		Map<String, GeneSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(gene.getGeneSecondaryIds())) {
-			for (GeneSecondaryIdSlotAnnotation existingSecondaryId : gene.getGeneSecondaryIds()) {
-				existingSecondaryIds.put(SlotAnnotationIdentityHelper.secondaryIdIdentity(existingSecondaryId), existingSecondaryId);
-			}
-		}
-		
-		List<GeneSecondaryIdSlotAnnotation> secondaryIds = new ArrayList<>();
-		List<Long> secondaryIdIdsToKeep = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getGeneSecondaryIdDtos())) {
-			for (SecondaryIdSlotAnnotationDTO secondaryIdDTO : dto.getGeneSecondaryIdDtos()) {
-				ObjectResponse<GeneSecondaryIdSlotAnnotation> secondaryIdResponse = geneSecondaryIdDtoValidator.validateGeneSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(identityHelper.secondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
-				if (secondaryIdResponse.hasErrors()) {
-					geneResponse.addErrorMessage("gene_secondary_id_dtos", secondaryIdResponse.errorMessagesString());
-				} else {
-					GeneSecondaryIdSlotAnnotation secondaryId = secondaryIdResponse.getEntity();
-					secondaryIds.add(secondaryId);
-					if (secondaryId.getId() != null)
-						secondaryIdIdsToKeep.add(secondaryId.getId());
-				}
-			}
-		}
-		
-		if (CollectionUtils.isNotEmpty(gene.getGeneSecondaryIds())) {
-			for (GeneSecondaryIdSlotAnnotation sid : gene.getGeneSecondaryIds()) {
-				if (!secondaryIdIdsToKeep.contains(sid.getId())) {
-					sid.setSingleGene(null);
-					geneSecondaryIdDAO.remove(sid.getId());
-				}
-			}
-		}
-
 		if (geneResponse.hasErrors())
 			throw new ObjectValidationException(dto, geneResponse.errorMessagesString());
 
@@ -222,22 +120,154 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		}
 		gene.setGeneSystematicName(systematicName);
 
-		if (CollectionUtils.isNotEmpty(synonyms)) {
+		if (gene.getGeneSynonyms() != null)
+			gene.getGeneSynonyms().clear();
+		if (synonyms != null) {
 			for (GeneSynonymSlotAnnotation syn : synonyms) {
 				syn.setSingleGene(gene);
 				geneSynonymDAO.persist(syn);
 			}
+			if (gene.getGeneSynonyms() == null)
+				gene.setGeneSynonyms(new ArrayList<>());
+			gene.getGeneSynonyms().addAll(synonyms);
 		}
-		gene.setGeneSynonyms(synonyms);
 
-		if (CollectionUtils.isNotEmpty(secondaryIds)) {
+		if (gene.getGeneSecondaryIds() != null)
+			gene.getGeneSecondaryIds().clear();
+		if (secondaryIds != null) {
 			for (GeneSecondaryIdSlotAnnotation sid : secondaryIds) {
 				sid.setSingleGene(gene);
 				geneSecondaryIdDAO.persist(sid);
 			}
+			if (gene.getGeneSecondaryIds() == null)
+				gene.setGeneSecondaryIds(new ArrayList<>());
+			gene.getGeneSecondaryIds().addAll(secondaryIds);
 		}
-		gene.setGeneSecondaryIds(secondaryIds);
-
+		
 		return gene;
+	}
+	
+	private GeneSymbolSlotAnnotation validateGeneSymbol(Gene gene, GeneDTO dto) {
+		String field = "gene_symbol_dto";
+
+		if (dto.getGeneSymbolDto() == null) {
+			geneResponse.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+
+		ObjectResponse<GeneSymbolSlotAnnotation> symbolResponse = geneSymbolDtoValidator.validateGeneSymbolSlotAnnotationDTO(gene.getGeneSymbol(), dto.getGeneSymbolDto());
+		if (symbolResponse.hasErrors()) {
+			geneResponse.addErrorMessage(field, symbolResponse.errorMessagesString());
+			geneResponse.addErrorMessages(field, symbolResponse.getErrorMessages());
+			return null;
+		}
+
+		return symbolResponse.getEntity();
+	}
+
+	private GeneFullNameSlotAnnotation validateGeneFullName(Gene gene, GeneDTO dto) {
+		if (dto.getGeneFullNameDto() == null)
+			return null;
+
+		String field = "gene_full_name_dto";
+
+		ObjectResponse<GeneFullNameSlotAnnotation> nameResponse = geneFullNameDtoValidator.validateGeneFullNameSlotAnnotationDTO(gene.getGeneFullName(), dto.getGeneFullNameDto());
+		if (nameResponse.hasErrors()) {
+			geneResponse.addErrorMessage(field, nameResponse.errorMessagesString());
+			geneResponse.addErrorMessages(field, nameResponse.getErrorMessages());
+			return null;
+		}
+
+		return nameResponse.getEntity();
+	}
+
+	private GeneSystematicNameSlotAnnotation validateGeneSystematicName(Gene gene, GeneDTO dto) {
+		if (dto.getGeneSystematicNameDto() == null)
+			return null;
+
+		String field = "gene_systematic_name_dto";
+
+		ObjectResponse<GeneSystematicNameSlotAnnotation> nameResponse = geneSystematicNameDtoValidator.validateGeneSystematicNameSlotAnnotationDTO(gene.getGeneSystematicName(), dto.getGeneSystematicNameDto());
+		if (nameResponse.hasErrors()) {
+			geneResponse.addErrorMessage(field, nameResponse.errorMessagesString());
+			geneResponse.addErrorMessages(field, nameResponse.getErrorMessages());
+			return null;
+		}
+
+		return nameResponse.getEntity();
+	}
+	
+	private List<GeneSynonymSlotAnnotation> validateGeneSynonyms(Gene gene, GeneDTO dto) {
+		String field = "gene_synonym_dtos";
+		
+		Map<String, GeneSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
+			for (GeneSynonymSlotAnnotation existingSynonym : gene.getGeneSynonyms()) {
+				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
+			}
+		}
+
+		List<GeneSynonymSlotAnnotation> validatedSynonyms = new ArrayList<GeneSynonymSlotAnnotation>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getGeneSynonymDtos())) {
+			for (int ix = 0; ix < dto.getGeneSynonymDtos().size(); ix++) {
+				NameSlotAnnotationDTO synDto = dto.getGeneSynonymDtos().get(ix);
+				GeneSynonymSlotAnnotation syn = existingSynonyms.remove(identityHelper.nameSlotAnnotationDtoIdentity(synDto));
+				ObjectResponse<GeneSynonymSlotAnnotation> synResponse = geneSynonymDtoValidator.validateGeneSynonymSlotAnnotationDTO(syn, synDto);
+				if (synResponse.hasErrors()) {
+					allValid = false;
+					geneResponse.addErrorMessages(field, ix, synResponse.getErrorMessages());
+				} else {
+					validatedSynonyms.add(synResponse.getEntity());
+				}
+			}
+		}
+		
+		if (!allValid) {
+			geneResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedSynonyms))
+			return null;
+
+		return validatedSynonyms;
+	}
+
+	private List<GeneSecondaryIdSlotAnnotation> validateGeneSecondaryIds(Gene gene, GeneDTO dto) {
+		String field = "gene_secondary_id_dtos";
+		
+		Map<String, GeneSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(gene.getGeneSecondaryIds())) {
+			for (GeneSecondaryIdSlotAnnotation existingSecondaryId : gene.getGeneSecondaryIds()) {
+				existingSecondaryIds.put(SlotAnnotationIdentityHelper.secondaryIdIdentity(existingSecondaryId), existingSecondaryId);
+			}
+		}
+
+		List<GeneSecondaryIdSlotAnnotation> validatedSecondaryIds = new ArrayList<GeneSecondaryIdSlotAnnotation>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getGeneSecondaryIdDtos())) {
+			for (int ix = 0; ix < dto.getGeneSecondaryIdDtos().size(); ix++) {
+				SecondaryIdSlotAnnotationDTO sidDto = dto.getGeneSecondaryIdDtos().get(ix);
+				GeneSecondaryIdSlotAnnotation sid = existingSecondaryIds.remove(identityHelper.secondaryIdDtoIdentity(sidDto));
+				ObjectResponse<GeneSecondaryIdSlotAnnotation> sidResponse = geneSecondaryIdDtoValidator.validateGeneSecondaryIdSlotAnnotationDTO(sid, sidDto);
+				if (sidResponse.hasErrors()) {
+					allValid = false;
+					geneResponse.addErrorMessages(field, ix, sidResponse.getErrorMessages());
+				} else {
+					validatedSecondaryIds.add(sidResponse.getEntity());
+				}
+			}
+		}
+		
+		if (!allValid) {
+			geneResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedSecondaryIds))
+			return null;
+
+		return validatedSecondaryIds;
 	}
 }
