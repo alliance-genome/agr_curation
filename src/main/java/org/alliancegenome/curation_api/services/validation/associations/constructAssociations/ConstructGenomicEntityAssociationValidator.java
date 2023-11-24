@@ -190,7 +190,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 			convertMapToErrorMessages(field);
 			return null;
 		}
-		
+
 		if (CollectionUtils.isEmpty(validatedNotes))
 			return null;
 

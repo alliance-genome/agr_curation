@@ -131,7 +131,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 			if (validatedNote.getId() == null)
 				noteDAO.persist(validatedNote);
 		}
-		
+
 		if (CollectionUtils.isEmpty(validatedNotes))
 			return null;
 

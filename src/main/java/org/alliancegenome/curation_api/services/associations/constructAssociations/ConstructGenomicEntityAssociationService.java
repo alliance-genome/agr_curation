@@ -18,7 +18,6 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -27,7 +26,6 @@ import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.constructAssociations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTOValidator;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -125,7 +123,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		}
 		
 		constructGenomicEntityAssociationDAO.remove(association.getId());
-			
+	
 		return null;
 	}
 	

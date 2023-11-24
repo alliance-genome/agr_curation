@@ -173,7 +173,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
 		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
-		
+
 		response.convertErrorMessagesToMap();
 		
 		if (response.hasErrors()) {
@@ -505,7 +505,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
 		}
-		
+
 		return nameResponse.getEntity();
 	}
 

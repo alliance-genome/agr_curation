@@ -46,7 +46,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 	DataProviderDTOValidator dataProviderDtoValidator;
 	@Inject
 	DataProviderDAO dataProviderDAO;
-	
+
 	public <E extends Annotation, D extends AnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto, String noteTypeSet) {
 		ObjectResponse<E> annotResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = annotResponse.getEntity();

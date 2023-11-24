@@ -85,7 +85,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			log.error(errorMessage);
 			return null;
 		}
-		
+
 		if (deprecateAnnotation) {
 			if (!annotation.getObsolete()) {
 				annotation.setObsolete(true);

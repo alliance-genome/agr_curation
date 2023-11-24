@@ -218,7 +218,7 @@ public class VariantValidator extends GenomicEntityValidator {
 			convertMapToErrorMessages(field);
 			return null;
 		}
-		
+
 		if (CollectionUtils.isEmpty(validatedNotes))
 			return null;
 
