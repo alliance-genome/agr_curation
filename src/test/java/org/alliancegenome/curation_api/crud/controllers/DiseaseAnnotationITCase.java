@@ -2427,7 +2427,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.relatedNotes", is(ValidationConstants.DUPLICATE_MESSAGE + " (Test text|disease_note|false|false)"));
+			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|disease_note|false|false)"));
 	}
 	
 }

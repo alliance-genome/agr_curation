@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -33,13 +30,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	@Inject
 	DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject
-	NoteService noteService;
-	@Inject
 	PersonService personService;
-	@Inject
-	DataProviderDAO dataProviderDAO;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
 	@Inject
 	DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
 	@Inject
@@ -94,7 +85,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			log.error(errorMessage);
 			return null;
 		}
-
+		
 		if (deprecateAnnotation) {
 			if (!annotation.getObsolete()) {
 				annotation.setObsolete(true);
@@ -109,11 +100,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				return annotation;
 			}
 		} else {
-			List<Note> notesToDelete = annotation.getRelatedNotes();
 			diseaseAnnotationDAO.remove(id);
-
-			if (CollectionUtils.isNotEmpty(notesToDelete))
-				notesToDelete.forEach(note -> noteService.delete(note.getId()));
 		}
 
 		return null;

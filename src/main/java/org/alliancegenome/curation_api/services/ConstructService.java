@@ -144,7 +144,6 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 				return construct;
 			}
 		} else {
-			deleteConstructSlotAnnotations(construct);
 			constructDAO.remove(id);
 		}
 
@@ -162,19 +161,5 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 		List<Long> constructIds = constructIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
 		
 		return constructIds;
-	}
-	
-	private void deleteConstructSlotAnnotations(Construct construct) {
-		if (CollectionUtils.isNotEmpty(construct.getConstructComponents())) {
-			construct.getConstructComponents().forEach(cc -> {
-				List<Note> notesToDelete = cc.getRelatedNotes();
-				if (CollectionUtils.isNotEmpty(notesToDelete))
-					notesToDelete.forEach(note -> {
-						constructComponentDAO.deleteAttachedNote(note.getId());
-						
-					});
-				constructComponentDAO.remove(cc.getId());
-			});
-		}
 	}
 }

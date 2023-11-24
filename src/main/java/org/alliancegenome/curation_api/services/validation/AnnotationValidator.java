@@ -1,12 +1,15 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
@@ -81,50 +84,54 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 
 		List<Note> validatedNotes = new ArrayList<Note>();
 		Set<String> validatedNoteIdentities = new HashSet<>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			for (Note note : uiEntity.getRelatedNotes()) {
+			for (int ix = 0; ix < uiEntity.getRelatedNotes().size(); ix++) {
+				Note note = uiEntity.getRelatedNotes().get(ix);
 				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, noteTypeSet);
 				if (noteResponse.getEntity() == null) {
-					addMessageResponse(field, noteResponse.errorMessagesString());
-					return null;
-				}
-				note = noteResponse.getEntity();
-
-				// If present, note reference should match annotation reference
-				if (CollectionUtils.isNotEmpty(note.getReferences())) {
-					for (Reference noteRef : note.getReferences()) {
-						if (!noteRef.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
-							addMessageResponse(field, "references - " + ValidationConstants.INVALID_MESSAGE);
-							return null;
+					allValid = false;
+					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				} else {
+					note = noteResponse.getEntity();
+				
+					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
+					if (validatedNoteIdentities.contains(noteIdentity)) {
+						allValid = false;
+						Map<String, String> duplicateError = new HashMap<>();
+						duplicateError.put("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
+						response.addErrorMessages(field, ix, duplicateError);
+					} else {
+						Boolean matchingRefs = true;
+						if (CollectionUtils.isNotEmpty(note.getReferences())) {
+							for (Reference noteRef : note.getReferences()) {
+								if (!noteRef.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
+									Map<String, String> noteRefErrorMessages = new HashMap<>();
+									noteRefErrorMessages.put("references", ValidationConstants.INVALID_MESSAGE + " (" + noteRef + ")");
+									response.addErrorMessages("relatedNotes", ix, noteRefErrorMessages);
+									allValid = false;
+									matchingRefs = false;
+								}
+							}
+						}
+						if (matchingRefs) {
+							validatedNoteIdentities.add(noteIdentity);
+							validatedNotes.add(note);
 						}
 					}
 				}
-				String noteIdentity = NoteIdentityHelper.noteIdentity(note);
-				if (validatedNoteIdentities.contains(noteIdentity)) {
-					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
-					return null;
-				}
-				validatedNoteIdentities.add(noteIdentity);
-				validatedNotes.add(note);
 			}
 		}
-
-		List<Long> previousNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes()))
-			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
-		List<Long> validatedNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(validatedNotes))
-			validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+		
 		for (Note validatedNote : validatedNotes) {
-			if (!previousNoteIds.contains(validatedNote.getId())) {
+			if (validatedNote.getId() == null)
 				noteDAO.persist(validatedNote);
-			}
 		}
-		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
-		for (Long id : idsToRemove) {
-			annotationDAO.deleteAttachedNote(id);
-		}
-
+		
 		if (CollectionUtils.isEmpty(validatedNotes))
 			return null;
 
@@ -213,7 +220,13 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		dbEntity.setConditionRelations(conditionRelations);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity, noteTypeSet);
-		dbEntity.setRelatedNotes(relatedNotes);
+		if (dbEntity.getRelatedNotes() != null)
+			dbEntity.getRelatedNotes().clear();
+		if (relatedNotes != null) {
+			if (dbEntity.getRelatedNotes() == null)
+				dbEntity.setRelatedNotes(new ArrayList<>());
+			dbEntity.getRelatedNotes().addAll(relatedNotes);
+		}
 
 		return dbEntity;
 	}

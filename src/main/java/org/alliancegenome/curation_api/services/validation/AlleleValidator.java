@@ -56,14 +56,11 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class AlleleValidator extends GenomicEntityValidator {
 
@@ -179,7 +176,13 @@ public class AlleleValidator extends GenomicEntityValidator {
 		}
 		
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		dbEntity.setRelatedNotes(relatedNotes);
+		if (dbEntity.getRelatedNotes() != null)
+			dbEntity.getRelatedNotes().clear();
+		if (relatedNotes != null) {
+			if (dbEntity.getRelatedNotes() == null)
+				dbEntity.setRelatedNotes(new ArrayList<>());
+			dbEntity.getRelatedNotes().addAll(relatedNotes);
+		}
 
 		List<Long> currentXrefIds;
 		if (dbEntity.getCrossReferences() == null) {
@@ -423,22 +426,11 @@ public class AlleleValidator extends GenomicEntityValidator {
 			return null;
 		}
 		
-		List<Long> previousNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes()))
-			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
-		List<Long> validatedNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(validatedNotes))
-			validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
 		for (Note validatedNote : validatedNotes) {
-			if (!previousNoteIds.contains(validatedNote.getId())) {
+			if (validatedNote.getId() == null)
 				noteDAO.persist(validatedNote);
-			}
 		}
-		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
-		for (Long id : idsToRemove) {
-			alleleDAO.deleteAttachedNote(id);
-		}
-
+		
 		if (CollectionUtils.isEmpty(validatedNotes))
 			return null;
 

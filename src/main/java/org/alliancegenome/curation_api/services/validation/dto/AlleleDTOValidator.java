@@ -2,10 +2,8 @@ package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -39,7 +37,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDTO;
@@ -65,7 +62,6 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.a
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -176,29 +172,11 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			allele.setReferences(null);
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
-			allele.getRelatedNotes().forEach(note -> {
-				alleleDAO.deleteAttachedNote(note.getId());
-			});
-		}
-		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
-			List<Note> notes = new ArrayList<>();
-			Set<String> noteIdentities = new HashSet<>();
-			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
-					break;
-				}
-				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
-				if (!noteIdentities.contains(noteIdentity)) {
-					noteIdentities.add(noteIdentity);
-					notes.add(noteDAO.persist(noteResponse.getEntity()));
-				}
-			}
-			allele.setRelatedNotes(notes);
-		} else {
-			allele.setRelatedNotes(null);
+		List<Note> relatedNotes = validateRelatedNotes(allele, dto);
+		if (relatedNotes != null) {
+			if (allele.getRelatedNotes() == null)
+				allele.setRelatedNotes(new ArrayList<>());
+			allele.getRelatedNotes().addAll(relatedNotes);
 		}
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(allele, dto);
@@ -606,6 +584,42 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			return null;
 
 		return validatedFunctionalImpacts;
+	}
+	
+	private List<Note> validateRelatedNotes(Allele allele, AlleleDTO dto) {
+		String field = "relatedNotes";
+	
+		if (allele.getRelatedNotes() != null)
+			allele.getRelatedNotes().clear();
+		
+		List<Note> validatedNotes = new ArrayList<Note>();
+		List<String> noteIdentities = new ArrayList<String>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
+			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+				if (noteResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				} else {
+					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
+					if (!noteIdentities.contains(noteIdentity)) {
+						noteIdentities.add(noteIdentity);
+						validatedNotes.add(noteDAO.persist(noteResponse.getEntity()));
+					}
+				}
+			}
+		}
+		
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedNotes))
+			return null;
+		
+		return validatedNotes;
 	}
 
 }

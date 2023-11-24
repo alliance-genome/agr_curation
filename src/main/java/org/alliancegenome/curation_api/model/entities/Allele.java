@@ -147,7 +147,7 @@ public class Allele extends GenomicEntity {
 	
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "relatedNotes_id")})
 	private List<Note> relatedNotes;
