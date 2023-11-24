@@ -44,7 +44,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
-import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationValidator;
@@ -84,8 +83,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 	AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
 	@Inject
 	AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
-	@Inject
-	AlleleFunctionalImpactSlotAnnotationService alleleFunctionalImpactService;
 	@Inject
 	AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
 	@Inject
