@@ -6,10 +6,6 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -35,17 +31,9 @@ public class ConstructValidator extends ReagentValidator {
 	@Inject
 	ConstructDAO constructDAO;
 	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject
 	ConstructComponentSlotAnnotationValidator constructComponentValidator;
 	@Inject
 	ReferenceValidator referenceValidator;
-	@Inject
-	ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
-	@Inject
-	ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
-	@Inject
-	ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
 	@Inject
 	ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
 	@Inject
@@ -121,25 +109,17 @@ public class ConstructValidator extends ReagentValidator {
 		
 		dbEntity = constructDAO.persist(dbEntity);
 		
-		if (symbol != null) {
+		if (symbol != null)
 			symbol.setSingleConstruct(dbEntity);
-			constructSymbolDAO.persist(symbol);
-		}
 		dbEntity.setConstructSymbol(symbol);
 
-		if (fullName != null) {
+		if (fullName != null)
 			fullName.setSingleConstruct(dbEntity);
-			constructFullNameDAO.persist(fullName);
-		}
 		dbEntity.setConstructFullName(fullName);
 
 		if (dbEntity.getConstructSynonyms() != null)
 			dbEntity.getConstructSynonyms().clear();
 		if (synonyms != null) {
-			for (ConstructSynonymSlotAnnotation syn : synonyms) {
-				syn.setSingleConstruct(dbEntity);
-				constructSynonymDAO.persist(syn);
-			}
 			if (dbEntity.getConstructSynonyms() == null)
 				dbEntity.setConstructSynonyms(new ArrayList<>());
 			dbEntity.getConstructSynonyms().addAll(synonyms);
@@ -148,10 +128,6 @@ public class ConstructValidator extends ReagentValidator {
 		if (dbEntity.getConstructComponents() != null)
 			dbEntity.getConstructComponents().clear();
 		if (components != null) {
-			for (ConstructComponentSlotAnnotation comp : components) {
-				comp.setSingleConstruct(dbEntity);
-				constructComponentDAO.persist(comp);
-			}
 			if (dbEntity.getConstructComponents() == null)
 				dbEntity.setConstructComponents(new ArrayList<>());
 			dbEntity.getConstructComponents().addAll(components);
@@ -241,6 +217,7 @@ public class ConstructValidator extends ReagentValidator {
 					allValid = false;
 				} else {
 					syn = synResponse.getEntity();
+					syn.setSingleConstruct(dbEntity);
 					validatedSynonyms.add(syn);
 				}
 			}
@@ -271,6 +248,7 @@ public class ConstructValidator extends ReagentValidator {
 					allValid = false;
 				} else {
 					comp = synResponse.getEntity();
+					comp.setSingleConstruct(dbEntity);
 					validatedComponents.add(comp);
 				}
 			}

@@ -7,10 +7,6 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -41,12 +37,6 @@ import jakarta.transaction.Transactional;
 public class ConstructDTOValidator extends ReagentDTOValidator {
 
 	@Inject
-	ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
-	@Inject
-	ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
-	@Inject
-	ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
-	@Inject
 	ConstructSymbolSlotAnnotationDTOValidator constructSymbolDtoValidator;
 	@Inject
 	ConstructFullNameSlotAnnotationDTOValidator constructFullNameDtoValidator;
@@ -54,8 +44,6 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 	ConstructSynonymSlotAnnotationDTOValidator constructSynonymDtoValidator;
 	@Inject
 	ConstructDAO constructDAO;
-	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
 	@Inject
 	ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
 	@Inject
@@ -110,56 +98,35 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		}
 		
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(construct, dto);
+		construct.setConstructSymbol(symbol);
+		
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(construct, dto);
+		construct.setConstructFullName(fullName);
+		
 		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(construct, dto);
+		if (construct.getConstructSynonyms() != null)
+			construct.getConstructSynonyms().clear();
+		if (synonyms != null) {
+			if (construct.getConstructSynonyms() == null)
+				construct.setConstructSynonyms(new ArrayList<>());
+			construct.getConstructSynonyms().addAll(synonyms);
+		}
+		
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(construct, dto);
+		if (construct.getConstructComponents() != null)
+			construct.getConstructComponents().clear();
+		if (synonyms != null) {
+			if (construct.getConstructComponents() == null)
+				construct.setConstructComponents(new ArrayList<>());
+			construct.getConstructComponents().addAll(components);
+		}
 		
 		constructResponse.convertErrorMessagesToMap();
 
 		if (constructResponse.hasErrors())
 			throw new ObjectValidationException(dto, constructResponse.errorMessagesString());
 
-		construct = constructDAO.persist(construct);
-
-		// Attach construct and persist SlotAnnotation objects
-
-		if (symbol != null) {
-			symbol.setSingleConstruct(construct);
-			constructSymbolDAO.persist(symbol);
-		}
-		construct.setConstructSymbol(symbol);
-
-		if (fullName != null) {
-			fullName.setSingleConstruct(construct);
-			constructFullNameDAO.persist(fullName);
-		}
-		construct.setConstructFullName(fullName);
-
-		if (construct.getConstructSynonyms() != null)
-			construct.getConstructSynonyms().clear();
-		if (synonyms != null) {
-			for (ConstructSynonymSlotAnnotation syn : synonyms) {
-				syn.setSingleConstruct(construct);
-				constructSynonymDAO.persist(syn);
-			}
-			if (construct.getConstructSynonyms() == null)
-				construct.setConstructSynonyms(new ArrayList<>());
-			construct.getConstructSynonyms().addAll(synonyms);
-		}
-		
-		if (construct.getConstructComponents() != null)
-			construct.getConstructComponents().clear();
-		if (components != null) {
-			for (ConstructComponentSlotAnnotation comp : components) {
-				comp.setSingleConstruct(construct);
-				constructComponentDAO.persist(comp);
-			}
-			if (construct.getConstructComponents() == null)
-				construct.setConstructComponents(new ArrayList<>());
-			construct.getConstructComponents().addAll(components);
-		}
-
-		return construct;
+		return constructDAO.persist(construct);
 	}
 	
 	private ConstructSymbolSlotAnnotation validateConstructSymbol(Construct construct, ConstructDTO dto) {
@@ -177,7 +144,10 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			return null;
 		}
 
-		return symbolResponse.getEntity();
+		ConstructSymbolSlotAnnotation symbol = symbolResponse.getEntity();
+		symbol.setSingleConstruct(construct);
+		
+		return symbol;
 	}
 
 	private ConstructFullNameSlotAnnotation validateConstructFullName(Construct construct, ConstructDTO dto) {
@@ -193,7 +163,10 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			return null;
 		}
 
-		return nameResponse.getEntity();
+		ConstructFullNameSlotAnnotation fullName = nameResponse.getEntity();
+		fullName.setSingleConstruct(construct);
+		
+		return fullName;
 	}
 
 	private List<ConstructSynonymSlotAnnotation> validateConstructSynonyms(Construct construct, ConstructDTO dto) {
@@ -217,7 +190,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 					allValid = false;
 					constructResponse.addErrorMessages(field, ix, synResponse.getErrorMessages());
 				} else {
-					validatedSynonyms.add(synResponse.getEntity());
+					syn = synResponse.getEntity();
+					syn.setSingleConstruct(construct);
+					validatedSynonyms.add(syn);
 				}
 			}
 		}
@@ -254,7 +229,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 					allValid = false;
 					constructResponse.addErrorMessages(field, ix, compResponse.getErrorMessages());
 				} else {
-					validatedComponents.add(compResponse.getEntity());
+					comp = compResponse.getEntity();
+					comp.setSingleConstruct(construct);
+					validatedComponents.add(comp);
 				}
 			}
 		}

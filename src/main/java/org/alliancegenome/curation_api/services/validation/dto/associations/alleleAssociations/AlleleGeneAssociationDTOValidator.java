@@ -35,8 +35,6 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
 		ObjectResponse<AlleleGeneAssociation> agaResponse = new ObjectResponse<AlleleGeneAssociation>();
 				
-		Long noteIdToDelete = null;
-		
 		AlleleGeneAssociation association = null;
 		if (StringUtils.isNotBlank(dto.getAlleleCurie()) && StringUtils.isNotBlank(dto.getGeneCurie()) && StringUtils.isNotBlank(dto.getRelationName())) {
 			HashMap<String, Object> params = new HashMap<>();
@@ -47,8 +45,6 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
-				if (association.getRelatedNote() != null)
-					noteIdToDelete = association.getRelatedNote().getId();
 			}
 		}
 		if (association == null)
@@ -92,9 +88,6 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			throw new ObjectValidationException(dto, agaResponse.errorMessagesString());
 			
 		association = alleleGeneAssociationDAO.persist(association);
-		
-		if (noteIdToDelete != null)
-			noteDAO.remove(noteIdToDelete);
 		
 		return association; 
 	}

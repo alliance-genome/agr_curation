@@ -8,11 +8,6 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
@@ -42,16 +37,6 @@ public class GeneValidator extends GenomicEntityValidator {
 	GeneDAO geneDAO;
 	@Inject
 	SoTermDAO soTermDAO;
-	@Inject
-	GeneSymbolSlotAnnotationDAO geneSymbolDAO;
-	@Inject
-	GeneFullNameSlotAnnotationDAO geneFullNameDAO;
-	@Inject
-	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
-	@Inject
-	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
-	@Inject
-	GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
 	@Inject
 	GeneSymbolSlotAnnotationValidator geneSymbolValidator;
 	@Inject
@@ -143,31 +128,21 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		dbEntity = geneDAO.persist(dbEntity);
 
-		if (symbol != null) {
+		if (symbol != null)
 			symbol.setSingleGene(dbEntity);
-			geneSymbolDAO.persist(symbol);
-		}
 		dbEntity.setGeneSymbol(symbol);
 
-		if (fullName != null) {
+		if (fullName != null)
 			fullName.setSingleGene(dbEntity);
-			geneFullNameDAO.persist(fullName);
-		}
 		dbEntity.setGeneFullName(fullName);
 
-		if (systematicName != null) {
+		if (systematicName != null)
 			systematicName.setSingleGene(dbEntity);
-			geneSystematicNameDAO.persist(systematicName);
-		}
 		dbEntity.setGeneSystematicName(systematicName);
 
 		if (dbEntity.getGeneSynonyms() != null)
 			dbEntity.getGeneSynonyms().clear();
 		if (synonyms != null) {
-			for (GeneSynonymSlotAnnotation syn : synonyms) {
-				syn.setSingleGene(dbEntity);
-				geneSynonymDAO.persist(syn);
-			}
 			if (dbEntity.getGeneSynonyms() == null)
 				dbEntity.setGeneSynonyms(new ArrayList<>());
 			dbEntity.getGeneSynonyms().addAll(synonyms);
@@ -176,10 +151,6 @@ public class GeneValidator extends GenomicEntityValidator {
 		if (dbEntity.getGeneSecondaryIds() != null)
 			dbEntity.getGeneSecondaryIds().clear();
 		if (secondaryIds != null) {
-			for (GeneSecondaryIdSlotAnnotation sid : secondaryIds) {
-				sid.setSingleGene(dbEntity);
-				geneSecondaryIdDAO.persist(sid);
-			}
 			if (dbEntity.getGeneSecondaryIds() == null)
 				dbEntity.setGeneSecondaryIds(new ArrayList<>());
 			dbEntity.getGeneSecondaryIds().addAll(secondaryIds);
@@ -267,6 +238,7 @@ public class GeneValidator extends GenomicEntityValidator {
 					allValid = false;
 				} else {
 					syn = synResponse.getEntity();
+					syn.setSingleGene(dbEntity);
 					validatedSynonyms.add(syn);
 				}
 			}
@@ -295,9 +267,11 @@ public class GeneValidator extends GenomicEntityValidator {
 				if (sidResponse.getEntity() == null) {
 					response.addErrorMessages(field, ix, sidResponse.getErrorMessages());
 					allValid = false;
+				} else {
+					sid = sidResponse.getEntity();
+					sid.setSingleGene(dbEntity);
+					validatedSecondaryIds.add(sid);
 				}
-				sid = sidResponse.getEntity();
-				validatedSecondaryIds.add(sid);
 			}
 		}
 		

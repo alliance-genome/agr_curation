@@ -124,12 +124,8 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 			}
 		}
 		
-		List<Note> notesToDelete = association.getRelatedNotes();
-		if (CollectionUtils.isNotEmpty(notesToDelete))
-			notesToDelete.forEach(note -> constructGenomicEntityAssociationDAO.deleteAttachedNote(note.getId()));
 		constructGenomicEntityAssociationDAO.remove(association.getId());
-		
-		
+			
 		return null;
 	}
 	

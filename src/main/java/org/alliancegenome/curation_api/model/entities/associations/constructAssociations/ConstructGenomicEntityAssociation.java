@@ -21,6 +21,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
@@ -71,7 +72,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
 			@Index(name = "cgeassociation_note_cgeassociation_id_index", columnList = "constructgenomicentityassociation_id"),
