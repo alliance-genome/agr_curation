@@ -58,7 +58,6 @@ import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class AlleleValidator extends GenomicEntityValidator {
@@ -151,7 +150,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return validateAllele(uiEntity, dbEntity);
 	}
 
-	@Transactional
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity) {
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
@@ -663,7 +661,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 			convertMapToErrorMessages(field);
 			return null;
 		}
-		
+
 		if (CollectionUtils.isEmpty(validatedFunctionalImpacts))
 			return null;
 
