@@ -17,7 +17,7 @@ import { DataProviderFormTemplate } from '../../components/Templates/DataProvide
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
-import { processErrorMap } from '../../utils/utils';
+import { processErrors } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
@@ -73,7 +73,9 @@ const { isLoading } =	useQuery([curie],
 			},
 			onError: (error) => {
 				let message;
-				if(error?.response?.data?.errorMessage){
+				const data = error?.response?.data;
+
+				if(data.errorMessage){
 					message = error.response.data.errorMessage;
 				} else {
 					//toast will still display even if 500 error and no errorMessages
@@ -83,14 +85,7 @@ const { isLoading } =	useQuery([curie],
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
 				]);
 
-				processErrorMap(error.response.data.supplementalData.errorMap, alleleDispatch);
-
-				alleleDispatch(
-					{
-						type: "UPDATE_ERROR_MESSAGES", 
-						errorMessages: error.response?.data?.errorMessages || {}
-					}
-				);
+				processErrors(data, alleleDispatch);
 			}
 		})
 	}
