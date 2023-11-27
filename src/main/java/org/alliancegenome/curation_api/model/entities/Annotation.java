@@ -21,6 +21,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -92,7 +93,7 @@ public class Annotation extends SingleReferenceAssociation {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_id_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;

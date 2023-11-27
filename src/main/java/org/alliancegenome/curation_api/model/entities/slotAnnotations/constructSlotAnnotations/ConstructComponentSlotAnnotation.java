@@ -55,7 +55,7 @@ import lombok.ToString;
 })
 public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
-	@OneToOne
+	@ManyToOne
 	@JsonBackReference
 	@Fetch(FetchMode.JOIN)
 	private Construct singleConstruct;

@@ -1,16 +1,16 @@
 package org.alliancegenome.curation_api.services.validation.associations.constructAssociations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.associations.constructAssociations.ConstructGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -24,7 +24,6 @@ import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -44,8 +43,6 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	VocabularyTermService vocabularyTermService;
 	@Inject
 	NoteValidator noteValidator;
-	@Inject
-	NoteDAO noteDAO;
 
 	private String errorMessage;
 
@@ -79,7 +76,13 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		dbEntity.setRelation(relation);
 		
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		dbEntity.setRelatedNotes(relatedNotes);
+		if (dbEntity.getRelatedNotes() != null)
+			dbEntity.getRelatedNotes().clear();
+		if (relatedNotes != null) {
+			if (dbEntity.getRelatedNotes() == null)
+				dbEntity.setRelatedNotes(new ArrayList<>());
+			dbEntity.getRelatedNotes().addAll(relatedNotes);
+		}
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
@@ -159,39 +162,33 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 
 		List<Note> validatedNotes = new ArrayList<Note>();
 		Set<String> validatedNoteIdentities = new HashSet<>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			for (Note note : uiEntity.getRelatedNotes()) {
+			for (int ix = 0; ix < uiEntity.getRelatedNotes().size(); ix++) {
+				Note note = uiEntity.getRelatedNotes().get(ix);
 				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.getEntity() == null) {
-					addMessageResponse(field, noteResponse.errorMessagesString());
-					return null;
-				}
-				note = noteResponse.getEntity();
+					allValid = false;
+					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				} else {
+					note = noteResponse.getEntity();
 				
-				String noteIdentity = NoteIdentityHelper.noteIdentity(note);
-				if (validatedNoteIdentities.contains(noteIdentity)) {
-					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
-					return null;
+					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
+					if (validatedNoteIdentities.contains(noteIdentity)) {
+						allValid = false;
+						Map<String, String> duplicateError = new HashMap<>();
+						duplicateError.put("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
+						response.addErrorMessages(field, ix, duplicateError);
+					} else {
+						validatedNoteIdentities.add(noteIdentity);
+						validatedNotes.add(note);
+					}
 				}
-				validatedNoteIdentities.add(noteIdentity);
-				validatedNotes.add(note);
 			}
 		}
-
-		List<Long> previousNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes()))
-			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
-		List<Long> validatedNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(validatedNotes))
-			validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
-		for (Note validatedNote : validatedNotes) {
-			if (!previousNoteIds.contains(validatedNote.getId())) {
-				noteDAO.persist(validatedNote);
-			}
-		}
-		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
-		for (Long id : idsToRemove) {
-			constructGenomicEntityAssociationDAO.deleteAttachedNote(id);
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
 		}
 
 		if (CollectionUtils.isEmpty(validatedNotes))

@@ -8,10 +8,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
@@ -50,14 +46,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
 	PersonService personService;
-	@Inject
-	GeneSymbolSlotAnnotationDAO geneSymbolDAO;
-	@Inject
-	GeneFullNameSlotAnnotationDAO geneFullNameDAO;
-	@Inject
-	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
-	@Inject
-	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
 	@Inject
 	GeneToGeneOrthologyService orthologyService;
 	@Inject
@@ -135,7 +123,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 				gene.setObsolete(true);
 				geneDAO.persist(gene);
 			} else {
-				deleteGeneSlotAnnotations(gene);
 				geneDAO.remove(curie);
 			}
 		} else {
@@ -152,22 +139,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		curies.removeIf(Objects::isNull);
 
 		return curies;
-	}
-
-	private void deleteGeneSlotAnnotations(Gene gene) {
-		if (gene.getGeneSymbol() != null)
-			geneSymbolDAO.remove(gene.getGeneSymbol().getId());
-
-		if (gene.getGeneFullName() != null)
-			geneFullNameDAO.remove(gene.getGeneFullName().getId());
-
-		if (gene.getGeneSystematicName() != null)
-			geneSystematicNameDAO.remove(gene.getGeneSystematicName().getId());
-
-		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms()))
-			gene.getGeneSynonyms().forEach(gs -> {
-				geneSynonymDAO.remove(gs.getId());
-			});
 	}
 
 }

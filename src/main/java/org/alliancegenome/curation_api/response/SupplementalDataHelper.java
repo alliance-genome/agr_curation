@@ -20,8 +20,8 @@ public class SupplementalDataHelper {
 		if(!errorMap.containsKey(fieldName)) {
 			errorMap.put(fieldName, fieldErrorMessages);
 		} else {
-			Log.warn("Error Map already contains errors for field: " + fieldName);
-			Log.warn(errorMap.get(fieldName));
+			Log.debug("Error Map already contains errors for field: " + fieldName);
+			Log.debug(errorMap.get(fieldName));
 		}
 	}
 

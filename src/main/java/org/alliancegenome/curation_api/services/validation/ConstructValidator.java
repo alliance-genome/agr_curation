@@ -6,10 +6,6 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -35,17 +31,9 @@ public class ConstructValidator extends ReagentValidator {
 	@Inject
 	ConstructDAO constructDAO;
 	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject
 	ConstructComponentSlotAnnotationValidator constructComponentValidator;
 	@Inject
 	ReferenceValidator referenceValidator;
-	@Inject
-	ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
-	@Inject
-	ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
-	@Inject
-	ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
 	@Inject
 	ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
 	@Inject
@@ -104,17 +92,16 @@ public class ConstructValidator extends ReagentValidator {
 		
 		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity);
 		
-		removeUnusedSlotAnnotations(uiEntity, dbEntity);
-		
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(uiEntity, dbEntity);
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(uiEntity, dbEntity);
 		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(uiEntity, dbEntity);
-		
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(uiEntity, dbEntity);
 		
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
 
+		response.convertErrorMessagesToMap();
+		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
@@ -122,31 +109,28 @@ public class ConstructValidator extends ReagentValidator {
 		
 		dbEntity = constructDAO.persist(dbEntity);
 		
-		if (symbol != null) {
+		if (symbol != null)
 			symbol.setSingleConstruct(dbEntity);
-			constructSymbolDAO.persist(symbol);
-		}
 		dbEntity.setConstructSymbol(symbol);
 
-		if (fullName != null) {
+		if (fullName != null)
 			fullName.setSingleConstruct(dbEntity);
-			constructFullNameDAO.persist(fullName);
-		}
 		dbEntity.setConstructFullName(fullName);
 
+		if (dbEntity.getConstructSynonyms() != null)
+			dbEntity.getConstructSynonyms().clear();
 		if (synonyms != null) {
-			for (ConstructSynonymSlotAnnotation syn : synonyms) {
-				syn.setSingleConstruct(dbEntity);
-				constructSynonymDAO.persist(syn);
-			}
+			if (dbEntity.getConstructSynonyms() == null)
+				dbEntity.setConstructSynonyms(new ArrayList<>());
+			dbEntity.getConstructSynonyms().addAll(synonyms);
 		}
-		dbEntity.setConstructSynonyms(synonyms);
 		
+		if (dbEntity.getConstructComponents() != null)
+			dbEntity.getConstructComponents().clear();
 		if (components != null) {
-			for (ConstructComponentSlotAnnotation cc : components) {
-				cc.setSingleConstruct(dbEntity);
-				constructComponentDAO.persist(cc);
-			}
+			if (dbEntity.getConstructComponents() == null)
+				dbEntity.setConstructComponents(new ArrayList<>());
+			dbEntity.getConstructComponents().addAll(components);
 		}
 
 		return dbEntity;
@@ -196,6 +180,7 @@ public class ConstructValidator extends ReagentValidator {
 		ObjectResponse<ConstructSymbolSlotAnnotation> symbolResponse = constructSymbolValidator.validateConstructSymbolSlotAnnotation(uiEntity.getConstructSymbol());
 		if (symbolResponse.getEntity() == null) {
 			addMessageResponse(field, symbolResponse.errorMessagesString());
+			response.addErrorMessages(field, symbolResponse.getErrorMessages());
 			return null;
 		}
 
@@ -211,6 +196,7 @@ public class ConstructValidator extends ReagentValidator {
 		ObjectResponse<ConstructFullNameSlotAnnotation> nameResponse = constructFullNameValidator.validateConstructFullNameSlotAnnotation(uiEntity.getConstructFullName());
 		if (nameResponse.getEntity() == null) {
 			addMessageResponse(field, nameResponse.errorMessagesString());
+			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
 		}
 
@@ -221,16 +207,25 @@ public class ConstructValidator extends ReagentValidator {
 		String field = "constructSynonyms";
 
 		List<ConstructSynonymSlotAnnotation> validatedSynonyms = new ArrayList<ConstructSynonymSlotAnnotation>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getConstructSynonyms())) {
-			for (ConstructSynonymSlotAnnotation syn : uiEntity.getConstructSynonyms()) {
+			for (int ix = 0; ix < uiEntity.getConstructSynonyms().size(); ix++) { 
+				ConstructSynonymSlotAnnotation syn = uiEntity.getConstructSynonyms().get(ix);
 				ObjectResponse<ConstructSynonymSlotAnnotation> synResponse = constructSynonymValidator.validateConstructSynonymSlotAnnotation(syn);
 				if (synResponse.getEntity() == null) {
-					addMessageResponse(field, synResponse.errorMessagesString());
-					return null;
+					response.addErrorMessages(field, ix, synResponse.getErrorMessages());
+					allValid = false;
+				} else {
+					syn = synResponse.getEntity();
+					syn.setSingleConstruct(dbEntity);
+					validatedSynonyms.add(syn);
 				}
-				syn = synResponse.getEntity();
-				validatedSynonyms.add(syn);
 			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
 		}
 
 		if (CollectionUtils.isEmpty(validatedSynonyms))
@@ -243,16 +238,25 @@ public class ConstructValidator extends ReagentValidator {
 		String field = "constructComponents";
 
 		List<ConstructComponentSlotAnnotation> validatedComponents = new ArrayList<ConstructComponentSlotAnnotation>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getConstructComponents())) {
-			for (ConstructComponentSlotAnnotation cc : uiEntity.getConstructComponents()) {
-				ObjectResponse<ConstructComponentSlotAnnotation> ccResponse = constructComponentValidator.validateConstructComponentSlotAnnotation(cc);
-				if (ccResponse.getEntity() == null) {
-					addMessageResponse(field, ccResponse.errorMessagesString());
-					return null;
+			for (int ix = 0; ix < uiEntity.getConstructComponents().size(); ix++) { 
+				ConstructComponentSlotAnnotation comp = uiEntity.getConstructComponents().get(ix);
+				ObjectResponse<ConstructComponentSlotAnnotation> synResponse = constructComponentValidator.validateConstructComponentSlotAnnotation(comp);
+				if (synResponse.getEntity() == null) {
+					response.addErrorMessages(field, ix, synResponse.getErrorMessages());
+					allValid = false;
+				} else {
+					comp = synResponse.getEntity();
+					comp.setSingleConstruct(dbEntity);
+					validatedComponents.add(comp);
 				}
-				cc = ccResponse.getEntity();
-				validatedComponents.add(cc);
 			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
 		}
 
 		if (CollectionUtils.isEmpty(validatedComponents))
@@ -261,67 +265,4 @@ public class ConstructValidator extends ReagentValidator {
 		return validatedComponents;
 	}
 	
-	private void removeUnusedSlotAnnotations(Construct uiEntity, Construct dbEntity) {
-		if (dbEntity.getConstructSymbol() != null)
-			removeUnusedConstructSymbol(uiEntity, dbEntity);
-
-		if (dbEntity.getConstructFullName() != null)
-			removeUnusedConstructFullName(uiEntity, dbEntity);
-
-		if (CollectionUtils.isNotEmpty(dbEntity.getConstructSynonyms()))
-			removeUnusedConstructSynonyms(uiEntity, dbEntity);
-		
-		if (CollectionUtils.isNotEmpty(dbEntity.getConstructComponents()))
-			removeUnusedConstructComponents(uiEntity, dbEntity);
-	}
-	
-	private void removeUnusedConstructSymbol(Construct uiEntity, Construct dbEntity) {
-		Long reusedId = uiEntity.getConstructSymbol() == null ? null : uiEntity.getConstructSymbol().getId();
-		ConstructSymbolSlotAnnotation previousSymbol = dbEntity.getConstructSymbol();
-
-		if (previousSymbol != null && (reusedId == null || !previousSymbol.getId().equals(reusedId))) {
-			previousSymbol.setSingleConstruct(null);
-			constructSymbolDAO.remove(previousSymbol.getId());
-		}
-	}
-	
-	private void removeUnusedConstructFullName(Construct uiEntity, Construct dbEntity) {
-		Long reusedId = uiEntity.getConstructFullName() == null ? null : uiEntity.getConstructFullName().getId();
-		ConstructFullNameSlotAnnotation previousFullName = dbEntity.getConstructFullName();
-
-		if (previousFullName != null && (reusedId == null || !previousFullName.getId().equals(reusedId))) {
-			previousFullName.setSingleConstruct(null);
-			constructFullNameDAO.remove(previousFullName.getId());
-		}
-	}
-
-	private void removeUnusedConstructSynonyms(Construct uiEntity, Construct dbEntity) {
-		List<Long> reusedIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(uiEntity.getConstructSynonyms()))
-			reusedIds = uiEntity.getConstructSynonyms().stream().map(ConstructSynonymSlotAnnotation::getId).collect(Collectors.toList());
-
-		if (CollectionUtils.isNotEmpty(dbEntity.getConstructSynonyms())) {
-			for (ConstructSynonymSlotAnnotation previousSynonym : dbEntity.getConstructSynonyms()) {
-				if (!reusedIds.contains(previousSynonym.getId())) {
-					previousSynonym.setSingleConstruct(null);
-					constructSynonymDAO.remove(previousSynonym.getId());
-				}
-			}
-		}
-	}
-	
-	private void removeUnusedConstructComponents(Construct uiEntity, Construct dbEntity) {
-		List<Long> reusedIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(uiEntity.getConstructComponents()))
-			reusedIds = uiEntity.getConstructComponents().stream().map(ConstructComponentSlotAnnotation::getId).collect(Collectors.toList());
-
-		if (CollectionUtils.isNotEmpty(dbEntity.getConstructComponents())) {
-			for (ConstructComponentSlotAnnotation previousComponent : dbEntity.getConstructComponents()) {
-				if (!reusedIds.contains(previousComponent.getId())) {
-					previousComponent.setSingleConstruct(null);
-					constructComponentDAO.remove(previousComponent.getId());
-				}
-			}
-		}
-	}
 }

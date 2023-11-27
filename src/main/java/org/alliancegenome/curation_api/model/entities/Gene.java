@@ -50,31 +50,31 @@ public class Gene extends GenomicEntity {
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private GeneFullNameSlotAnnotation geneFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
 	private List<GeneSynonymSlotAnnotation> geneSynonyms;
 	
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
