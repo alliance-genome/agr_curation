@@ -46,19 +46,19 @@ import lombok.ToString;
 public class Construct extends Reagent {
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private ConstructSymbolSlotAnnotation constructSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private ConstructFullNameSlotAnnotation constructFullName;
 	
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructSynonymSlotAnnotation> constructSynonyms;
@@ -74,7 +74,7 @@ public class Construct extends Reagent {
 	private List<Reference> references;
 	
 	@IndexedEmbedded(includePaths = { "relation.name", "relation.name_keyword", "componentSymbol", "taxon.curie", "taxonText", "componentSymbol_keyword", "taxon.curie_keyword", "taxonText_keyword"})
-	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;

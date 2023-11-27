@@ -14,11 +14,13 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.associations.constructAssociations.ConstructGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -41,17 +43,16 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 	@Inject
 	GenomicEntityDAO genomicEntityDAO;
 	@Inject
-	NoteDAO noteDAO;
-	@Inject
 	NoteDTOValidator noteDtoValidator;
 	@Inject
 	VocabularyTermService vocabularyTermService;
 	@Inject
 	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
+	private ObjectResponse<ConstructGenomicEntityAssociation> assocResponse = new ObjectResponse<ConstructGenomicEntityAssociation>();
+	
 	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
-		ObjectResponse<ConstructGenomicEntityAssociation> assocResponse = new ObjectResponse<ConstructGenomicEntityAssociation>();
-
+		
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
 			SearchResponse<Construct> res = constructDAO.findByField("modEntityId", dto.getConstructIdentifier());
@@ -109,29 +110,11 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			assocResponse.addErrorMessage("genomic_entity_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
-		if (CollectionUtils.isNotEmpty(association.getRelatedNotes())) {
-			association.getRelatedNotes().forEach(note -> {
-				constructGenomicEntityAssociationDAO.deleteAttachedNote(note.getId());
-			});
-		}
-		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
-			List<Note> notes = new ArrayList<>();
-			Set<String> noteIdentities = new HashSet<>();
-			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.hasErrors()) {
-					assocResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
-					break;
-				}
-				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
-				if (!noteIdentities.contains(noteIdentity)) {
-					noteIdentities.add(noteIdentity);
-					notes.add(noteDAO.persist(noteResponse.getEntity()));
-				}
-			}
-			association.setRelatedNotes(notes);
-		} else {
-			association.setRelatedNotes(null);
+		List<Note> relatedNotes = validateRelatedNotes(association, dto);
+		if (relatedNotes != null) {
+			if (association.getRelatedNotes() == null)
+				association.setRelatedNotes(new ArrayList<>());
+			association.getRelatedNotes().addAll(relatedNotes);
 		}
 		
 		if (assocResponse.hasErrors())
@@ -140,5 +123,41 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		association = constructGenomicEntityAssociationDAO.persist(association);
 		
 		return association;
+	}
+	
+	private List<Note> validateRelatedNotes(ConstructGenomicEntityAssociation association, ConstructGenomicEntityAssociationDTO dto) {
+		String field = "relatedNotes";
+	
+		if (association.getRelatedNotes() != null)
+			association.getRelatedNotes().clear();
+		
+		List<Note> validatedNotes = new ArrayList<Note>();
+		List<String> noteIdentities = new ArrayList<String>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
+			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
+				if (noteResponse.hasErrors()) {
+					allValid = false;
+					assocResponse.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				} else {
+					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
+					if (!noteIdentities.contains(noteIdentity)) {
+						noteIdentities.add(noteIdentity);
+						validatedNotes.add(noteResponse.getEntity());
+					}
+				}
+			}
+		}
+		
+		if (!allValid) {
+			assocResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedNotes))
+			return null;
+		
+		return validatedNotes;
 	}
 }

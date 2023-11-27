@@ -1,9 +1,9 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AnnotationDAO;
@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.AnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
@@ -74,37 +73,44 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 				annotation.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
-
-		if (CollectionUtils.isNotEmpty(annotation.getRelatedNotes())) {
-			annotation.getRelatedNotes().forEach(note -> {
-				annotationDAO.deleteAttachedNote(note.getId());
-			});
-		}
+		
+		if (annotation.getRelatedNotes() != null)
+			annotation.getRelatedNotes().clear();
+		
+		List<Note> validatedNotes = new ArrayList<Note>();
+		List<String> noteIdentities = new ArrayList<String>();
+		Boolean allNotesValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
-			List<Note> notes = new ArrayList<>();
-			Set<String> noteIdentities = new HashSet<>();
-			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, noteTypeSet);
+			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), noteTypeSet);
 				if (noteResponse.hasErrors()) {
-					annotResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
-					break;
-				}
-				if (CollectionUtils.isNotEmpty(noteDTO.getEvidenceCuries())) {
-					for (String noteRef : noteDTO.getEvidenceCuries()) {
-						if (!noteRef.equals(dto.getReferenceCurie())) {
-							annotResponse.addErrorMessage("relatedNotes - evidence_curies", ValidationConstants.INVALID_MESSAGE + " (" + noteRef + ")");
+					allNotesValid = false;
+					annotResponse.addErrorMessages("relatedNotes", ix, noteResponse.getErrorMessages());
+				} else {
+					if (CollectionUtils.isNotEmpty(dto.getNoteDtos().get(ix).getEvidenceCuries())) {
+						for (String noteRef : dto.getNoteDtos().get(ix).getEvidenceCuries()) {
+							if (!noteRef.equals(dto.getReferenceCurie())) {
+								Map<String, String> noteRefErrorMessages = new HashMap<>();
+								noteRefErrorMessages.put("evidence_curies", ValidationConstants.INVALID_MESSAGE + " (" + noteRef + ")");
+								annotResponse.addErrorMessages("relatedNotes", ix, noteRefErrorMessages);
+								allNotesValid = false;
+							}
 						}
 					}
-				}
-				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
-				if (!noteIdentities.contains(noteIdentity)) {
-					noteIdentities.add(noteIdentity);
-					notes.add(noteDAO.persist(noteResponse.getEntity()));
+					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
+					if (!noteIdentities.contains(noteIdentity)) {
+						noteIdentities.add(noteIdentity);
+						validatedNotes.add(noteDAO.persist(noteResponse.getEntity()));
+					}
 				}
 			}
-			annotation.setRelatedNotes(notes);
-		} else {
-			annotation.setRelatedNotes(null);
+		}
+		if (!allNotesValid)
+			annotResponse.convertMapToErrorMessages("relatedNotes");
+		if (CollectionUtils.isNotEmpty(validatedNotes) && allNotesValid) {
+			if (annotation.getRelatedNotes() == null)
+				annotation.setRelatedNotes(new ArrayList<>());
+			annotation.getRelatedNotes().addAll(validatedNotes);
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getConditionRelationDtos())) {

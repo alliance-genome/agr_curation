@@ -8,16 +8,10 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
@@ -40,11 +34,6 @@ import lombok.extern.jbosslog.JBossLog;
 public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleDAO> {
 
 	@Inject AlleleDAO alleleDAO;
-	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
-	@Inject AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
-	@Inject AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
-	@Inject AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
-	@Inject AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
 	@Inject AlleleValidator alleleValidator;
 	@Inject AlleleDTOValidator alleleDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
@@ -117,10 +106,6 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 					alleleDAO.persist(allele);
 				}
 			} else {
-				deleteAlleleSlotAnnotations(allele);
-				List<Note> notesToDelete = allele.getRelatedNotes();
-				if (CollectionUtils.isNotEmpty(notesToDelete))
-					notesToDelete.forEach(note -> alleleDAO.deleteAttachedNote(note.getId()));
 				alleleDAO.remove(curie);
 			}
 		} else {
@@ -134,23 +119,6 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		List<String> curies = alleleDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 		return curies;
-	}
-	
-	private void deleteAlleleSlotAnnotations(Allele allele) {
-		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes()))
-			allele.getAlleleMutationTypes().forEach(amt -> {alleleMutationTypeDAO.remove(amt.getId());});
-		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes()))
-			allele.getAlleleInheritanceModes().forEach(aim -> {alleleInheritanceModeDAO.remove(aim.getId());});
-		
-		if (allele.getAlleleSymbol() != null)
-			alleleSymbolDAO.remove(allele.getAlleleSymbol().getId());
-		
-		if (allele.getAlleleFullName() != null)
-			alleleFullNameDAO.remove(allele.getAlleleFullName().getId());
-		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms()))
-			allele.getAlleleSynonyms().forEach(as -> {alleleSynonymDAO.remove(as.getId());});
 	}
 
 }

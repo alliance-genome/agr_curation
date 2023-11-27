@@ -53,27 +53,15 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 	public Note validateRelatedNote(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
 		String field = "relatedNote";
 
-		Note note = null;
-		if (uiEntity.getRelatedNote() != null) {
-			ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiEntity.getRelatedNote(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
-			if (noteResponse.getEntity() == null) {
-				addMessageResponse(field, noteResponse.errorMessagesString());
-				return null;
-			}
-			note = noteResponse.getEntity();
-			if (note.getId() == null)
-				note = noteDAO.persist(note);
-		}
-
-		Long previousNoteId = null;
-		if (dbEntity.getRelatedNote() != null)
-			previousNoteId = dbEntity.getRelatedNote().getId();
-		
-		dbEntity.setRelatedNote(null);
-		if (previousNoteId != null && (note == null || !Objects.equals(note.getId(), previousNoteId)))
-			noteDAO.remove(previousNoteId);
+		if (uiEntity.getRelatedNote() == null)
+			return null;
 			
-		return note;
+		ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiEntity.getRelatedNote(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
+		if (noteResponse.getEntity() == null) {
+			addMessageResponse(field, noteResponse.errorMessagesString());
+			return null;
+		}
+		return noteResponse.getEntity();
 	}
 
 	public AlleleGenomicEntityAssociation validateAlleleGenomicEntityAssociationFields(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {

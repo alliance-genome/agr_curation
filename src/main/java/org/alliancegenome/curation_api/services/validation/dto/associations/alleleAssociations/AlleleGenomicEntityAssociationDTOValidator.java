@@ -52,7 +52,7 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 			if (noteResponse.hasErrors()) {
 				assocResponse.addErrorMessage("note_dto", noteResponse.errorMessagesString());
 			} else {
-				association.setRelatedNote(noteDAO.persist(noteResponse.getEntity()));
+				association.setRelatedNote(noteResponse.getEntity());
 			}
 		} else {
 			association.setRelatedNote(null);

@@ -15,6 +15,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
@@ -50,7 +51,7 @@ public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsOnly.class })
 	private Note relatedNote;
 }
