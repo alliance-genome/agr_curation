@@ -40,7 +40,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			HashMap<String, Object> params = new HashMap<>();
 			params.put("subject.curie", dto.getAlleleCurie());
 			params.put("relation.name", dto.getRelationName());
-			params.put("object.curie", dto.getGeneCurie());
+			params.put("objectGene.curie", dto.getGeneCurie());
 			
 			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
@@ -72,7 +72,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			Gene gene = geneDAO.find(dto.getGeneCurie());
 			if (gene == null)
 				agaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneCurie() + ")");
-			association.setObject(gene);
+			association.setObjectGene(gene);
 		}
 		
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {

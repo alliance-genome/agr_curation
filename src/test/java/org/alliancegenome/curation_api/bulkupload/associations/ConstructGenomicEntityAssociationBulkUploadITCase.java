@@ -68,8 +68,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
-			body("entity.subject.modEntityId", is(constructModEntityId)).
+			body("entity.objectGenomicEntity.curie", is(geneCurie)).
+			body("entity.subjectConstruct.modEntityId", is(constructModEntityId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.internal", is(true)).
@@ -96,8 +96,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			body("entity.modEntityId", is(constructModEntityId)).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].object.curie", is(geneCurie)).
-			body("entity.constructGenomicEntityAssociations[0].subject", not(hasKey("constructGenomicEntityAssociations")));
+			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(geneCurie)).
+			body("entity.constructGenomicEntityAssociations[0].subjectConstruct", not(hasKey("constructGenomicEntityAssociations")));
 		
 		RestAssured.given().
 			when().
@@ -106,8 +106,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].object.curie", is(geneCurie)).
-			body("entity.constructGenomicEntityAssociations[0].object", not(hasKey("constructGenomicEntityAssociations")));
+			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(geneCurie)).
+			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity", not(hasKey("constructGenomicEntityAssociations")));
 	}
 	
 	@Test
@@ -121,7 +121,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
+			body("entity.objectGenomicEntity.curie", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.internal", is(false)).
