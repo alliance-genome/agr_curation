@@ -73,8 +73,10 @@ public class JobScheduler {
 				for (BulkLoad b : g.getLoads()) {
 					for (BulkLoadFile bf : b.getLoadFiles()) {
 						if (bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
-							File file = new File(bf.getLocalFilePath());
-							if(file.exists()) file.delete();
+							if(bf.getLocalFilePath() != null) {
+								File file = new File(bf.getLocalFilePath());
+								if(file.exists()) file.delete();
+							}
 							bf.setLocalFilePath(null);
 							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 							bf.setBulkloadStatus(JobStatus.FAILED);
