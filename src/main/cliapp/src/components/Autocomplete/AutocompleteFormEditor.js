@@ -15,7 +15,7 @@ export const AutocompleteFormEditor = (
 		subField = "curie",
 		valueDisplay,
 		onValueChangeHandler,
-		disabled
+		disabled,
 	}
 ) => {
 	const [suggestions, setSuggestions] = useState([]);

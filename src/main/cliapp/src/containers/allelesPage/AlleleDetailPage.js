@@ -60,7 +60,6 @@ const { isLoading } =	useQuery([curie],
 		return alleleService.saveAllele(allele);
 	});
 
-
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		alleleDispatch({
@@ -172,7 +171,8 @@ const { isLoading } =	useQuery([curie],
 							<h1 dangerouslySetInnerHTML={{ __html: headerText()}}/>
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex justify-content-start py-3">
-							<Button label="Save" icon="pi pi-check" className="p-button-text" size='large' onClick={handleSubmit} />
+							<Button label="Save" icon="pi pi-check" className="p-button-text" size='large' loading={mutation.isLoading} 
+								onClick={handleSubmit} />
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
@@ -189,6 +189,7 @@ const { isLoading } =	useQuery([curie],
 					<FullNameForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -197,6 +198,7 @@ const { isLoading } =	useQuery([curie],
 						state={alleleState}
 						dispatch={alleleDispatch}
 						labelColumnSize={labelColumnSize}						
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -204,6 +206,7 @@ const { isLoading } =	useQuery([curie],
 					<SynonymsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -211,6 +214,7 @@ const { isLoading } =	useQuery([curie],
 					<SecondaryIdsForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -218,6 +222,7 @@ const { isLoading } =	useQuery([curie],
 					<NomenclatureEventsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -229,6 +234,7 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -236,6 +242,7 @@ const { isLoading } =	useQuery([curie],
 					<MutationTypesForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -243,6 +250,7 @@ const { isLoading } =	useQuery([curie],
 					<FunctionalImpactsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -250,6 +258,7 @@ const { isLoading } =	useQuery([curie],
 					<GermilineTransmissionStatusForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -257,6 +266,7 @@ const { isLoading } =	useQuery([curie],
 					<DatabaseStatusForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -264,6 +274,7 @@ const { isLoading } =	useQuery([curie],
 					<InheritanceModesForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -271,6 +282,7 @@ const { isLoading } =	useQuery([curie],
 					<ReferencesForm 
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -282,6 +294,7 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -296,6 +309,7 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 						showClear={true}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -303,6 +317,7 @@ const { isLoading } =	useQuery([curie],
 					<RelatedNotesForm
 						state={alleleState}
 						dispatch={alleleDispatch}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -312,6 +327,7 @@ const { isLoading } =	useQuery([curie],
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -365,6 +381,7 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+						isLoading={mutation.isLoading}
 					/>
 
 					<Divider />
@@ -378,6 +395,7 @@ const { isLoading } =	useQuery([curie],
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
+						isLoading={mutation.isLoading}
 					/>
 					<Divider />
 			</form>

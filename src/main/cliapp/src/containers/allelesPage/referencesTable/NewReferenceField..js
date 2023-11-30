@@ -5,7 +5,7 @@ import { SingleReferenceFormEditor } from "../../../components/Editors/reference
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { SingleReferenceAdditionalFieldData } from "../../../components/FieldData/SingleReferenceAdditionalFieldData";
 
-export const NewReferenceField = ({ state, dispatch }) => {
+export const NewReferenceField = ({ state, dispatch, isLoading }) => {
   const [reference, setReference] = useState(null);
 
   const createNewReferenceHandler = (event) => {
@@ -56,13 +56,15 @@ export const NewReferenceField = ({ state, dispatch }) => {
   return (
     <Splitter gutterSize="0" className="border-none surface-ground">
       <SplitterPanel size={20}>
-        <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-9" />
+        <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-9" loading={isLoading}/>
       </SplitterPanel>
       <SplitterPanel size={20}>
         <SingleReferenceFormEditor
           reference={reference}
           onReferenceValueChange={referencesOnChangeHandler}
-          errorMessages={state.entityStates.references.errorMessages} />
+          errorMessages={state.entityStates.references.errorMessages} 
+          isLoading={isLoading}
+        />
       </SplitterPanel>
       <SplitterPanel size={60}>
         <SingleReferenceAdditionalFieldData fieldData={reference} />

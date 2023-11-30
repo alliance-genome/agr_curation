@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { DatabaseStatusFormTable } from "./DatabaseStatusFormTable";
 import { useRef } from "react";
 
-export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
+export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
 
   const databaseStatusArray = [state.allele?.alleleDatabaseStatus];
@@ -79,11 +79,18 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
           databaseStatusOnChangeHandler={databaseStatusOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Database Status"
       showTable={state.entityStates.alleleDatabaseStatus.show}
-      button={<Button label="Add Database Status" onClick={createNewDatabaseStatusHandler} disabled={state.allele?.alleleDatabaseStatus} className="w-6"/>}
+      button={<Button 
+        label="Add Database Status" 
+        onClick={createNewDatabaseStatusHandler} 
+        disabled={state.allele?.alleleDatabaseStatus} 
+        className="w-6"
+        loading={isLoading}
+      />}
     />
   );
 

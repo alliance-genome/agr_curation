@@ -19,6 +19,7 @@ export const SymbolFormTable = ({
   nameTypeOnChangeHandler,
   internalOnChangeHandler,
   evidenceOnChangeHandler,
+  isLoading
 }) => {
 
   let headerGroup =
@@ -37,8 +38,9 @@ export const SymbolFormTable = ({
     </ColumnGroup>;
 
   return (
-    <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
+    <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} loading={isLoading}
+      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}
+    >
       <Column
         editor={(props) => {
           return <TableInputTextEditor

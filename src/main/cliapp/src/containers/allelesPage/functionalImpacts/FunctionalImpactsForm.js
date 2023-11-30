@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { FunctionalImpactsFormTable } from "./FunctionalImpactsFormTable";
 import { processOptionalField } from "../../../utils/utils";
 
-export const FunctionalImpactsForm = ({ state, dispatch }) => {
+export const FunctionalImpactsForm = ({ state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
   const functionalImpacts = global.structuredClone(state.allele?.alleleFunctionalImpacts);
 
@@ -107,11 +107,12 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
           phenotypeStatementOnChangeHandler={phenotypeStatementOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Functional Impacts"
       showTable={state.entityStates.alleleFunctionalImpacts.show}
-      button={<Button label="Add Functional Impact" onClick={createNewFunctionalImpactsHandler} className="w-6" />}
+      button={<Button label="Add Functional Impact" onClick={createNewFunctionalImpactsHandler} className="w-6" loading={isLoading}/>}
     />
   );
 

@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { NomenclatureEventsFormTable } from "../nomenclatureEvents/NomenclatureEventsFormTable";
 import { useRef } from "react";
 
-export const NomenclatureEventsForm = ({ state, dispatch }) => {
+export const NomenclatureEventsForm = ({ state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
   const nomenclatureEvents = global.structuredClone(state.allele?.alleleNomenclatureEvents);
 
@@ -93,11 +93,12 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
           obsoleteOnChangeHandler={obsoleteOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Nomenclature Events"
       showTable={state.entityStates.alleleNomenclatureEvents.show}
-      button={<Button label="Add Nomenclature Event" onClick={createNewNomenclatureEventHandler} className="w-6"/>}
+      button={<Button label="Add Nomenclature Event" onClick={createNewNomenclatureEventHandler} className="w-6" loading={isLoading}/>}
     />
   );
 

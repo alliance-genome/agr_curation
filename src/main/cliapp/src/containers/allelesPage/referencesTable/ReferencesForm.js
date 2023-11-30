@@ -3,7 +3,7 @@ import { ReferencesFormTable } from "./ReferencesFormTable";
 import { useRef } from "react";
 import { NewReferenceField } from "./NewReferenceField.";
 
-export const ReferencesForm = ({ state, dispatch }) => {
+export const ReferencesForm = ({ state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
 
 
@@ -27,6 +27,7 @@ export const ReferencesForm = ({ state, dispatch }) => {
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
+          isLoading={isLoading}
         />
       }
       tableName="References"
@@ -35,6 +36,7 @@ export const ReferencesForm = ({ state, dispatch }) => {
           <NewReferenceField
             state={state}
             dispatch={dispatch}
+            isLoading={isLoading}
           />
       }
       includeField={true}

@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { useRef } from "react";
 import { GermlineTransmissionStatusFormTable } from "./GermlineTransmissionStatusFormTable";
 
-export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispatch }) => {
+export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
 
   const germlineTransmissionStatusArray = [state.allele?.alleleGermlineTransmissionStatus];
@@ -77,11 +77,18 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
           germlineTransmissionStatusOnChangeHandler={germlineTransmissionStatusOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Germline Transmission Status"
       showTable={state.entityStates.alleleGermlineTransmissionStatus.show}
-      button={<Button label="Add Germline Transmission Status" onClick={createNewGermlineTransmissionStatus} disabled={state.allele?.alleleGermlineTransmissionStatus} className="w-6" />}
+      button={<Button 
+        label="Add Germline Transmission Status" 
+        onClick={createNewGermlineTransmissionStatus} 
+        disabled={state.allele?.alleleGermlineTransmissionStatus} 
+        className="w-6" 
+        loading={isLoading}
+      />}
     />
   );
 

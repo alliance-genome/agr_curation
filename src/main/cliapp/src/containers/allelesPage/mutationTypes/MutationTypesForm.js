@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { MutationTypesFormTable } from "./MutationTypesFormTable";
 import { useRef } from "react";
 
-export const MutationTypesForm = ({ state, dispatch }) => {
+export const MutationTypesForm = ({ state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
   const mutationTypes = global.structuredClone(state.allele?.alleleMutationTypes);
 
@@ -80,11 +80,12 @@ export const MutationTypesForm = ({ state, dispatch }) => {
           mutationTypesOnChangeHandler={mutationTypesOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Mutation Types"
       showTable={state.entityStates.alleleMutationTypes.show}
-      button={<Button label="Add Mutation Type" onClick={createNewMutationTypeHandler} className="w-6"/>}
+      button={<Button label="Add Mutation Type" onClick={createNewMutationTypeHandler} className="w-6" loading={isLoading}/>}
     />
   );
 

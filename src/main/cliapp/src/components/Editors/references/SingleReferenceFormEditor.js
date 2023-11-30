@@ -7,7 +7,8 @@ import { AutocompleteFormEditor } from "../../Autocomplete/AutocompleteFormEdito
 export const SingleReferenceFormEditor = ({
   reference,
   onReferenceValueChange,
-  errorMessages
+  errorMessages,
+  isLoading
 }) => {
   return (
     <>
@@ -18,6 +19,7 @@ export const SingleReferenceFormEditor = ({
         fieldName='singleReference'
         initialValue={reference}
         onValueChangeHandler={onReferenceValueChange}
+        disabled={isLoading}
         valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
           <LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
       />

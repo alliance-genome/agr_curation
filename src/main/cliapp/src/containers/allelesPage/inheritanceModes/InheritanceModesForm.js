@@ -4,7 +4,7 @@ import { InheritanceModesFormTable } from "../inheritanceModes/InheritanceModesF
 import { useRef } from "react";
 import { processOptionalField } from "../../../utils/utils";
 
-export const InheritanceModesForm = ({ state, dispatch }) => {
+export const InheritanceModesForm = ({ state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
   const inheritanceModes = global.structuredClone(state.allele?.alleleInheritanceModes);
 
@@ -110,11 +110,12 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
           textOnChangeHandler={textOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Inheritance Modes"
       showTable={state.entityStates.alleleInheritanceModes.show}
-      button={<Button label="Add Inheritance Mode" onClick={createNewInheritanceModeHandler} className="w-6"/>}
+      button={<Button label="Add Inheritance Mode" onClick={createNewInheritanceModeHandler} className="w-6"loading={isLoading}/>}
     />
   );
 

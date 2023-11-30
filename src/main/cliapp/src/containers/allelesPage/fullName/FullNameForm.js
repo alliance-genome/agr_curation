@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { FullNameFormTable } from "./FullNameFormTable";
 import { useRef } from "react";
 
-export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
+export const FullNameForm = ({ labelColumnSize, state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
 
   const fullNameArray = [state.allele?.alleleFullName];
@@ -102,11 +102,18 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Full Name"
       showTable={state.entityStates.alleleFullName.show}
-      button={<Button label="Add Full Name" onClick={createNewFullNameHandler} disabled={state.allele?.alleleFullName} className="w-6"/>}
+      button={<Button 
+        label="Add Full Name" 
+        onClick={createNewFullNameHandler} 
+        disabled={state.allele?.alleleFullName} 
+        className="w-6"
+        loading={isLoading}
+      />}
     />
   );
 

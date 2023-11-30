@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { RelatedNotesFormTable } from "../relatedNotes/RelatedNotesFormTable";
 import { useRef } from "react";
 
-export const RelatedNotesForm = ({ state, dispatch }) => {
+export const RelatedNotesForm = ({ state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
   const relatedNotes = global.structuredClone(state.allele?.relatedNotes);
 
@@ -94,11 +94,12 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
           textOnChangeHandler={textOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           referencesOnChangeHandler={referencesOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Related Notes"
       showTable={state.entityStates.relatedNotes.show}
-      button={<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-6"/>}
+      button={<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-6" loading={isLoading}/>}
     />
   );
 

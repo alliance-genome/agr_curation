@@ -12,7 +12,8 @@ export const InCollectionFormEditor = ({
   widgetColumnSize,
   labelColumnSize,
   fieldDetailsColumnSize,
-  errorMessages
+  errorMessages,
+  isLoading
 }) => {
 
   return (
@@ -30,6 +31,7 @@ export const InCollectionFormEditor = ({
             fieldName='inCollection'
             subField='name'
             onValueChangeHandler={onInCollectionValueChange}
+            disabled={isLoading}
             valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
               <VocabTermAutocompleteTemplate item={item} op={op} query={query} setAutocompleteSelectedItem={setAutocompleteSelectedItem} />}
           />

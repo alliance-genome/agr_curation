@@ -11,7 +11,8 @@ export const TaxonFormEditor = ({
   widgetColumnSize,
   labelColumnSize,
   fieldDetailsColumnSize,
-  errorMessages
+  errorMessages,
+  isLoading
 }) => {
   return (
     <>
@@ -27,6 +28,7 @@ export const TaxonFormEditor = ({
             initialValue={taxon}
             fieldName='taxon'
             onValueChangeHandler={onTaxonValueChange}
+            disabled={isLoading}
           />
         }
         errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"taxon"} />}

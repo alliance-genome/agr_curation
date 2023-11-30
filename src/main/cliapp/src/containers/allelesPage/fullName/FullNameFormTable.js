@@ -21,6 +21,7 @@ export const FullNameFormTable = ({
   nameTypeOnChangeHandler,
   internalOnChangeHandler,
   evidenceOnChangeHandler,
+  isLoading
 }) => {
 
   let headerGroup =
@@ -41,7 +42,9 @@ export const FullNameFormTable = ({
 
   return (
     <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
+      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}
+      loading={isLoading} 
+    >
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column

@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { SynonymsFormTable } from "./SynonymsFormTable";
 import { useRef } from "react";
 
-export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
+export const SynonymsForm = ({ labelColumnSize, state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
   const synonyms = global.structuredClone(state.allele?.alleleSynonyms);
 
@@ -108,11 +108,12 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Synonyms"
       showTable={state.entityStates.alleleSynonyms.show}
-      button={<Button label="Add Synonym" onClick={createNewSynonymHandler} className="w-6"/>}
+      button={<Button label="Add Synonym" onClick={createNewSynonymHandler} className="w-6" loading={isLoading}/>}
     />
   );
 

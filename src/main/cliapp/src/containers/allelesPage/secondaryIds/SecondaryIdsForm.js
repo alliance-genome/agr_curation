@@ -3,7 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { SecondaryIdsFormTable } from "../secondaryIds/SecondaryIdsFormTable";
 import { useRef } from "react";
 
-export const SecondaryIdsForm = ({ state, dispatch }) => {
+export const SecondaryIdsForm = ({ state, dispatch, isLoading }) => {
   const tableRef = useRef(null);
   const secondaryIds = global.structuredClone(state.allele?.alleleSecondaryIds);
 
@@ -80,11 +80,12 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
           textOnChangeHandler={textOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          isLoading={isLoading}
         />
       }
       tableName="Secondary IDs"
       showTable={state.entityStates.alleleSecondaryIds.show}
-      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-6"/>}
+      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-6" loading={isLoading}/>}
     />
   );
 

@@ -17,6 +17,7 @@ export const DatabaseStatusFormTable = ({
   databaseStatusOnChangeHandler,
   internalOnChangeHandler,
   evidenceOnChangeHandler,
+  isLoading,
 }) => {
 
   let headerGroup =
@@ -31,7 +32,9 @@ export const DatabaseStatusFormTable = ({
 
   return (
     <DataTable value={databaseStatuses} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
+      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}
+      loading={isLoading}
+    >
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column
