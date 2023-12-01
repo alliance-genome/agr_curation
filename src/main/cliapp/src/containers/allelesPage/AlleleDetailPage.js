@@ -30,6 +30,7 @@ import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/Ge
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { StickyHeader } from '../../components/StickyHeader';
+import { LoadingOverlay } from '../../components/LoadingOverlay';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -42,7 +43,7 @@ export default function AlleleDetailPage(){
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
 
-const { isLoading } =	useQuery([curie],
+const { isLoading: getRequestIsLoading } =	useQuery([curie],
 		() => alleleService.getAllele(curie), 
 		{
 			onSuccess: (result) => {
@@ -56,7 +57,7 @@ const { isLoading } =	useQuery([curie],
 		}
 	);
 
-	const mutation = useMutation(allele => {
+	const {isLoading: putRequestIsLoading, mutate} = useMutation(allele => {
 		return alleleService.saveAllele(allele);
 	});
 
@@ -67,7 +68,7 @@ const { isLoading } =	useQuery([curie],
 			type: "SUBMIT" 
 		})
 
-		mutation.mutate(alleleState.allele, {
+		mutate(alleleState.allele, {
 			onSuccess: () => {
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
 			},
@@ -144,7 +145,7 @@ const { isLoading } =	useQuery([curie],
 		})
 	}
 	
-	if(isLoading) return (
+	if(getRequestIsLoading) return (
 		<div className='flex align-items-center justify-content-center h-screen'>
 			<ProgressSpinner/>
 		</div>
@@ -165,6 +166,7 @@ const { isLoading } =	useQuery([curie],
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
+			<LoadingOverlay isLoading={putRequestIsLoading}/>
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
