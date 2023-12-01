@@ -76,7 +76,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.objectGene.curie", is(geneCurie)).
+			body("entity.object.curie", is(geneCurie)).
 			body("entity.subject.curie", is(alleleCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
@@ -104,7 +104,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].objectGene.curie", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].object.curie", is(geneCurie)).
 			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
 		
 		RestAssured.given().
@@ -114,8 +114,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].objectGene.curie", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].objectGene", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].object.curie", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].object", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
@@ -131,7 +131,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.objectGene.curie", is(geneCurie)).
+			body("entity.object.curie", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.evidenceCode.curie", is(evidenceCodeCurie2)).

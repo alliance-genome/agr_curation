@@ -34,7 +34,7 @@ import lombok.ToString;
 @Schema(name = "AlleleGeneAssociation", description = "POJO representing an association between an allele and a gene")
 @Table(indexes = {
 		@Index(name = "allelegeneassociation_subject_index", columnList = "subject_curie"),
-		@Index(name = "allelegeneassociation_object_index", columnList = "objectGene_curie")
+		@Index(name = "allelegeneassociation_object_index", columnList = "object_curie")
 		})
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
@@ -52,5 +52,5 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
-	private Gene objectGene;
+	private Gene object;
 }

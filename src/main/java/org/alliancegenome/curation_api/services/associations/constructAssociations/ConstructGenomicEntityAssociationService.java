@@ -131,9 +131,9 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		ConstructGenomicEntityAssociation association = null;
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("subjectConstruct.id", constructId);
+		params.put("subject.id", constructId);
 		params.put("relation.name", relationName);
-		params.put("objectGenomicEntity.curie", genomicEntityCurie);
+		params.put("object.curie", genomicEntityCurie);
 
 		SearchResponse<ConstructGenomicEntityAssociation> resp = constructGenomicEntityAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)
@@ -146,7 +146,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	}
 	
 	private void addAssociationToConstruct(ConstructGenomicEntityAssociation association) {
-		Construct construct = association.getSubjectConstruct();
+		Construct construct = association.getSubject();
 		List<ConstructGenomicEntityAssociation> currentAssociations = construct.getConstructGenomicEntityAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();
@@ -158,7 +158,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	}
 	
 	private void addAssociationToGenomicEntity(ConstructGenomicEntityAssociation association) {
-		GenomicEntity genomicEntity = association.getObjectGenomicEntity();
+		GenomicEntity genomicEntity = association.getObject();
 		List<ConstructGenomicEntityAssociation> currentAssociations = genomicEntity.getConstructGenomicEntityAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();

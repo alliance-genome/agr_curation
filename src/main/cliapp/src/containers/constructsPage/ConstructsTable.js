@@ -274,12 +274,12 @@ export const ConstructsTable = () => {
 			const componentSet = new Set();
 			for(var i = 0; i < rowData.constructGenomicEntityAssociations.length; i++){
 				let symbolValue = "";
-				if (rowData.constructGenomicEntityAssociations[i]?.objectGenomicEntity.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.objectGenomicEntity.alleleSymbol) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.geneSymbol ? rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.alleleSymbol.displayText;
-				} else if (rowData.constructGenomicEntityAssociations[i]?.objectGenomicEntity.name) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.name;
+				if (rowData.constructGenomicEntityAssociations[i]?.object.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.object.alleleSymbol) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.geneSymbol ? rowData.constructGenomicEntityAssociations[i].object.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].object.alleleSymbol.displayText;
+				} else if (rowData.constructGenomicEntityAssociations[i]?.object.name) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.name;
 				} else {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.curie;
+					symbolValue = rowData.constructGenomicEntityAssociations[i].object.curie;
 				}
 				let relationName = "";
 				if (rowData.constructGenomicEntityAssociations[i]?.relation?.name) {
@@ -380,7 +380,7 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
 		},
 		{
-			field: "constructGenomicEntityAssociations.objectGenomicEntity.symbol",
+			field: "constructGenomicEntityAssociations.object.symbol",
 			header: "Component Associations",
 			body: genomicComponentsTemplate,
 			sortable: { isInEditMode },

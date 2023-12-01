@@ -90,13 +90,13 @@ export const GenomicComponentsDialog = ({
 
 	const componentTemplate = (rowData) => {
 		let componentDisplayValue = "";
-		if (rowData.objectGenomicEntity.geneSymbol || rowData.objectGenomicEntity.alleleSymbol) {
-			let symbolValue = rowData.objectGenomicEntity.geneSymbol ? rowData.objectGenomicEntity.geneSymbol.displayText : rowData.objectGenomicEntity.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + rowData.objectGenomicEntity.curie + ')';
-		} else if (rowData.objectGenomicEntity.name) {
-			componentDisplayValue = rowData.objectGenomicEntity.name + ' (' + rowData.objectGenomicEntity.curie + ')';
+		if (rowData.object.geneSymbol || rowData.object.alleleSymbol) {
+			let symbolValue = rowData.object.geneSymbol ? rowData.object.geneSymbol.displayText : rowData.object.alleleSymbol.displayText;
+			componentDisplayValue = symbolValue + ' (' + rowData.object.curie + ')';
+		} else if (rowData.object.name) {
+			componentDisplayValue = rowData.object.name + ' (' + rowData.object.curie + ')';
 		} else {
-			componentDisplayValue = rowData.objectGenomicEntity.curie;
+			componentDisplayValue = rowData.object.curie;
 		}
 		return (
 			<>
@@ -131,7 +131,7 @@ export const GenomicComponentsDialog = ({
 					<DataTable value={localComponents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 							ref={tableRef} >
 						<Column field="relation.name" header="Relation" headerClassName='surface-0'/>
-						<Column field="objectGenomicEntity.curie" header="Component" headerClassName='surface-0' body={componentTemplate}/>
+						<Column field="object.curie" header="Component" headerClassName='surface-0' body={componentTemplate}/>
 						<Column field="relatedNotes.freeText" header="Related Notes" headerClassName='surface-0' body={relatedNotesTemplate}/>
 						<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName='surface-0'/>

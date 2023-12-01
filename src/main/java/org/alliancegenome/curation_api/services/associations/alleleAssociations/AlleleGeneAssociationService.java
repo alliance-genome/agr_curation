@@ -142,7 +142,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		Map<String, Object> params = new HashMap<>();
 		params.put("subject.curie", alleleCurie);
 		params.put("relation.name", relationName);
-		params.put("objectGene.curie", geneCurie);
+		params.put("object.curie", geneCurie);
 
 		SearchResponse<AlleleGeneAssociation> resp = alleleGeneAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)
@@ -167,7 +167,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	}
 	
 	private void addAssociationToGene(AlleleGeneAssociation association) {
-		Gene gene = association.getObjectGene();
+		Gene gene = association.getObject();
 		List<AlleleGeneAssociation> currentAssociations = gene.getAlleleGeneAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();

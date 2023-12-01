@@ -53,7 +53,7 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 		}
 		
 		Gene object = validateObject(uiEntity, dbEntity);
-		dbEntity.setObjectGene(object);
+		dbEntity.setObject(object);
 
 		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
@@ -89,19 +89,19 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	}
 
 	private Gene validateObject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getObjectGene()) || StringUtils.isBlank(uiEntity.getObjectGene().getCurie())) {
-			addMessageResponse("objectGene", ValidationConstants.REQUIRED_MESSAGE);
+		if (ObjectUtils.isEmpty(uiEntity.getObject()) || StringUtils.isBlank(uiEntity.getObject().getCurie())) {
+			addMessageResponse("object", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Gene objectEntity = geneDAO.find(uiEntity.getObjectGene().getCurie());
+		Gene objectEntity = geneDAO.find(uiEntity.getObject().getCurie());
 		if (objectEntity == null) {
-			addMessageResponse("objectGene", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("object", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (objectEntity.getObsolete() && (dbEntity.getObjectGene() == null || !objectEntity.getCurie().equals(dbEntity.getObjectGene().getCurie()))) {
-			addMessageResponse("objectGene", ValidationConstants.OBSOLETE_MESSAGE);
+		if (objectEntity.getObsolete() && (dbEntity.getObject() == null || !objectEntity.getCurie().equals(dbEntity.getObject().getCurie()))) {
+			addMessageResponse("object", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
