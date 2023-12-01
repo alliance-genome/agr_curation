@@ -23,7 +23,7 @@ import { Tooltip } from 'primereact/tooltip';
 
 export const VocabularyTermSetTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [newVocabularyTermSet, setNewVocabularyTermSet] = useState(null);
 	const { newVocabularyTermSetState, newVocabularyTermSetDispatch } = useNewVocabularyTermSetReducer();
 
@@ -193,14 +193,14 @@ export const VocabularyTermSetTable = () => {
 			field: "name",
 			header: "Name",
 			body: (rowData) => stringBodyTemplate(rowData, "name"),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditor(props)
 		},
 		{
 			field: "vocabularyTermSetVocabulary.name",
 			header: "Vocabulary",
-			sortable: isEnabled,
+			sortable: true,
 			body: (rowData) => vocabularyTemplate(rowData),
 			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props)
@@ -208,7 +208,7 @@ export const VocabularyTermSetTable = () => {
 		{
 			field: "memberTerms.name",
 			header: "Member Terms",
-			sortable: isEnabled,
+			sortable: true,
 			body: memberTermsTemplate,
 			filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
 			editor: (props) => memberTermsEditorTemplate(props)
@@ -217,7 +217,7 @@ export const VocabularyTermSetTable = () => {
 			field: "vocabularyTermSetDescription",
 			header: "Description",
 			body: (rowData) => stringBodyTemplate(rowData, "vocabularyTermSetDescription"),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
 			editor: (props) => descriptionEditor(props)
 		},
@@ -263,8 +263,8 @@ export const VocabularyTermSetTable = () => {
 				isEditable={true}
 				idFields={["vocabularyTermSetVocabulary, memberTerms"]}
 				mutation={mutation}
-				isEnabled={isEnabled}
-				setIsEnabled={setIsEnabled}
+				isInEditMode={isInEditMode}
+				setIsInEditMode={setIsInEditMode}
 				toasts={{toast_topleft, toast_topright }}
 				errorObject={{errorMessages, setErrorMessages}}
 				headerButtons={headerButtons}

@@ -16,7 +16,7 @@ import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObje
 
 export const GenesTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);
@@ -204,14 +204,14 @@ export const GenesTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig
 		},
 		{
 			field: "geneFullName.displayText",
 			header: "Name",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			body: fullNameTemplate,
 			filterConfig: FILTER_CONFIGS.geneNameFilterConfig
@@ -219,7 +219,7 @@ export const GenesTable = () => {
 		{
 			field: "geneSymbol.displayText",
 			header: "Symbol",
-			sortable: isEnabled,
+			sortable: true,
 			body: symbolTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig
@@ -228,20 +228,20 @@ export const GenesTable = () => {
 			field: "geneSynonyms.displayText",
 			header: "Synonyms",
 			body: synonymsTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.geneSynonymsFilterConfig
 		},
 		{
 			field: "geneSecondaryIds.secondaryId",
 			header: "Secondary IDs",
 			body: secondaryIdsTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.geneSecondaryIdsFilterConfig,
 		},
 		{
 			field: "geneSystematicName.displayText",
 			header: "Systematic Name",
-			sortable: isEnabled,
+			sortable: true,
 			body: systematicNameTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.geneSystematicNameFilterConfig
@@ -249,7 +249,7 @@ export const GenesTable = () => {
 		{
 			field: "taxon.name",
 			header: "Taxon",
-			sortable: isEnabled,
+			sortable: true,
 			body: taxonBodyTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
@@ -257,33 +257,33 @@ export const GenesTable = () => {
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
@@ -293,7 +293,7 @@ export const GenesTable = () => {
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: isEnabled
+			sortable: true
 		},
 		{
 			field: "obsolete",
@@ -301,7 +301,7 @@ export const GenesTable = () => {
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: isEnabled
+			sortable: true
 		}
 	];
 
@@ -325,12 +325,13 @@ export const GenesTable = () => {
 				<GenericDataTable
 					endpoint="gene"
 					tableName="Genes"
+					dataKey="curie"
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
 					isEditable={false}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}

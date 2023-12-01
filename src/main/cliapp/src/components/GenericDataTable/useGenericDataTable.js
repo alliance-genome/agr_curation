@@ -16,7 +16,7 @@ export const useGenericDataTable = ({
 	sortMapping,
 	nonNullFieldsTable,
 	mutation,
-	setIsEnabled,
+	setIsInEditMode,
 	toasts,
 	errorObject,
 	newEntity,
@@ -49,7 +49,7 @@ export const useGenericDataTable = ({
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), 
 		{
 			onSuccess: (data) => {
-				setIsEnabled(true);
+				setIsInEditMode(false);
 				setEntities(data.results);
 				setTotalRecords(data.totalResults);
 			},
@@ -137,7 +137,7 @@ export const useGenericDataTable = ({
 
 
 	const onRowEditInit = (event) => {
-		setIsEnabled(false);
+		setIsInEditMode(true);
 		const index = event.index % tableState.rows;
 		let _originalRows = global.structuredClone(originalRows);
 		_originalRows[index] = global.structuredClone(entities[index]);
@@ -148,7 +148,7 @@ export const useGenericDataTable = ({
 		const index = event.index % tableState.rows;
 		const rowsInEdit = Object.keys(editingRows).length - 1;
 		if (rowsInEdit === 0) {
-			setIsEnabled(true);
+			setIsInEditMode(false);
 		}
 
 		closeRowRef.current[index] = true;
@@ -178,13 +178,13 @@ export const useGenericDataTable = ({
 		closeRowRef.current[index] = true;
 		const rowsInEdit = Object.keys(editingRows).length - 1;
 		if (rowsInEdit === 0) {
-			setIsEnabled(true);
+			setIsInEditMode(false);
 		}
 
 		let updatedRow = global.structuredClone(event.data);//deep copy
 		
 		if(tableName === "Disease Annotations"){
-			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors);
+			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors);
 		}
 
 		if (areUiErrors.current) {
@@ -224,7 +224,7 @@ export const useGenericDataTable = ({
 				setErrorMessages({ ...errorMessagesCopy });
 			},
 			onError: (error, variables, context) => {
-				setIsEnabled(false);
+				setIsInEditMode(true);
 				let errorMessage = "";
 				if(error.response.data.errorMessage !== undefined) {
 					errorMessage = error.response.data.errorMessage;
@@ -292,7 +292,7 @@ export const useGenericDataTable = ({
 
 				const rowsInEdit = Object.keys(editingRows).length;
 				if (rowsInEdit === 0) {
-					setIsEnabled(true);
+					setIsInEditMode(false);
 				};
 			}
 
@@ -326,7 +326,7 @@ export const useGenericDataTable = ({
 				setErrorMessages({ ...errorMessagesCopy });
 			},
 			onError: (error, variables, context) => {
-				setIsEnabled(false);
+				setIsInEditMode(true);
 				let errorMessage = "";
 				if(error.response.data.errorMessage !== undefined) {
 					errorMessage = error.response.data.errorMessage;

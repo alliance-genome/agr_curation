@@ -652,7 +652,7 @@ public class BaseITCase {
 	public AlleleGeneAssociation getAlleleGeneAssociation(String alleleCurie, String relationName, String geneCurie) {
 		ObjectResponse<AlleleGeneAssociation> res = RestAssured.given().
 			when().
-			get("/api/allelegeneassociation/findBy"  + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			get("/api/allelegeneassociation/findBy" + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefAlleleGeneAssociation());
@@ -686,7 +686,7 @@ public class BaseITCase {
 	public ConstructGenomicEntityAssociation getConstructGenomicEntityAssociation(Long constructId, String relationName, String genomicEntityCurie) {
 		ObjectResponse<ConstructGenomicEntityAssociation> res = RestAssured.given().
 			when().
-			get("/api/constructgenomicentityassociation/findBy"  + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + genomicEntityCurie).
+			get("/api/constructgenomicentityassociation/findBy" + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + genomicEntityCurie).
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefConstructGenomicEntityAssociation());

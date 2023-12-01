@@ -1,17 +1,12 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.NameSlotAnnotationDTOValidator;
-import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class GeneSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {

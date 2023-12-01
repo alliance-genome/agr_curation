@@ -1,11 +1,11 @@
 package org.alliancegenome.curation_api.dao;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.persistence.Query;
-import javax.transaction.Transactional;
-
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class ReferenceDAO extends BaseSQLDAO<Reference> {

@@ -13,7 +13,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { Tooltip } from 'primereact/tooltip';
 
 export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbbreviation, hideDefinition}) => {
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const [activeTabIndex, setActiveTabIndex] = useState(0);
@@ -157,12 +157,13 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 					<GenericDataTable
 						endpoint={endpoint}
 						tableName={name}
+						dataKey="curie"
 						columns={columns}
 						defaultColumnNames={defaultColumnNames}
 						initialTableState={initialTableState}
 						isEditable={false}
-						isEnabled={isEnabled}
-						setIsEnabled={setIsEnabled}
+						isInEditMode={isInEditMode}
+						setIsInEditMode={setIsInEditMode}
 						toasts={{toast_topleft, toast_topright }}
 						errorObject = {{errorMessages, setErrorMessages}}
 						widthsObject={widthsObject}
