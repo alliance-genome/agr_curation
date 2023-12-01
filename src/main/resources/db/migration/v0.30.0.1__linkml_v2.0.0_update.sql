@@ -8,3 +8,7 @@ ALTER TABLE constructgenomicentityassociation_aud RENAME objectgenomicentity_cur
 
 ALTER TABLE allelegeneassociation RENAME objectgene_curie TO object_curie;
 ALTER TABLE allelegeneassociation_aud RENAME objectgene_curie TO object_curie;
+
+-- Random cleanup
+
+ALTER INDEX gene_taxon_index RENAME TO gene_genetype_index;

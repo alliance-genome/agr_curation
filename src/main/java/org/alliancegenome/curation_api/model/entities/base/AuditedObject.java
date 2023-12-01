@@ -8,16 +8,20 @@ import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.View.VocabularyTermSetView;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
@@ -25,19 +29,37 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@MappedSuperclass
+@Audited
+@Entity
 @ToString(exclude = { "createdBy", "updatedBy" })
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
+@Table(indexes = {
+		@Index(name = "auditedobject_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "auditedobject_updatedby_index", columnList = "updatedBy_id")
+})
 public class AuditedObject extends BaseEntity {
 
+	@Id
+	@DocumentId
+	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class, VocabularyTermSetView.class })
+	@EqualsAndHashCode.Include
+	protected Long id;
+	
 	@IndexedEmbedded(includePaths = {"uniqueId", "uniqueId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne

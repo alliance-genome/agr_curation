@@ -5,7 +5,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -40,8 +39,6 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(
 	indexes = {
-		@Index(name = "vocabulary_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "vocabulary_updatedby_index", columnList = "updatedBy_id"),
 		@Index(name = "vocabulary_name_index", columnList = "name"),
 		@Index(name = "vocabulary_vocabularylabel_index", columnList = "vocabularylabel")
 	},
@@ -50,7 +47,7 @@ import lombok.ToString;
 		@UniqueConstraint(name = "vocabulary_vocabularyLabel_uk", columnNames = "vocabularyLabel"),
 	}
 )
-public class Vocabulary extends GeneratedAuditedObject {
+public class Vocabulary extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

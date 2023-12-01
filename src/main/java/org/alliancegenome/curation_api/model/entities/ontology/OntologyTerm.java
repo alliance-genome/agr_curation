@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -48,7 +48,7 @@ import lombok.ToString;
 	@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id")
 })
-public class OntologyTerm extends CurieAuditedObject {
+public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

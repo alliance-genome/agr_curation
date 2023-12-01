@@ -38,13 +38,18 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Agent.class })
 @Table(indexes = { 
-	@Index(name = "person_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
 	@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
 	@Index(name = "person_allianceMember_index", columnList = "allianceMember_id"),
 })
 public class Person extends Agent {
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true, length = 2000)
+	@JsonView({ View.FieldsOnly.class })
+	@EqualsAndHashCode.Include
+	protected String uniqueId;
+	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "firstName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })

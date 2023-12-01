@@ -4,18 +4,14 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -27,9 +23,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -39,24 +33,13 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "reagent", description = "POJO that represents a reagent")
-@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class })
 
-@Table(
-	indexes = {
-		@Index(name = "reagent_curie_index", columnList = "curie"),
-		@Index(name = "reagent_uniqueId_index", columnList = "uniqueId"),
-		@Index(name = "reagent_modEntityId_index", columnList = "modEntityId"),
-		@Index(name = "reagent_modInternalId_index", columnList = "modInternalId"),
-		@Index(name = "reagent_dataprovider_index", columnList = "dataProvider_id"),
-		@Index(name = "reagent_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "reagent_updatedby_index", columnList = "updatedBy_id")
-	}, uniqueConstraints = {
-		@UniqueConstraint(name = "reagent_modEntityId_uk", columnNames = "modEntityId"),
-		@UniqueConstraint(name = "reagent_modInternalId_uk", columnNames = "modInternalId"),
-	}
-)
+@Table(indexes = {
+	@Index(name = "reagent_uniqueId_index", columnList = "uniqueId")
+})
 
-public class Reagent extends GeneratedAuditedObject {
+public class Reagent extends SubmittedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -65,30 +48,6 @@ public class Reagent extends GeneratedAuditedObject {
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	protected String curie;
-
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	private String modEntityId;
-	
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "modInternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	private String modInternalId;
-
-	@IndexedEmbedded(includeDepth = 2)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
-	protected DataProvider dataProvider;
-	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection

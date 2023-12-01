@@ -5,7 +5,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -41,15 +40,13 @@ import lombok.EqualsAndHashCode;
 	indexes = {
 		@Index(name = "vocabularytermset_name_index", columnList = "name"),
 		@Index(name = "vocabularytermset_vocabularylabel_index", columnList = "vocabularylabel"),
-		@Index(name = "vocabularytermset_createdby_id_index", columnList = "createdby_id"),
-		@Index(name = "vocabularytermset_updatedby_id_index", columnList = "updatedby_id"),
 		@Index(name = "vocabularytermset_vocabularytermsetvocabulary_id_index", columnList = "vocabularytermsetvocabulary_id")
 	}, uniqueConstraints = {
 		@UniqueConstraint(name = "vocabularytermset_vocabularyLabel_uk", columnNames = "vocabularyLabel"),
 	}
 )
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-public class VocabularyTermSet extends GeneratedAuditedObject {
+public class VocabularyTermSet extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

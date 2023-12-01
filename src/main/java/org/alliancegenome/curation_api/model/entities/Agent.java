@@ -15,6 +15,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @MappedSuperclass
-public class Agent extends UniqueIdAuditedObject {
+public class Agent extends AuditedObject {
 
 }
