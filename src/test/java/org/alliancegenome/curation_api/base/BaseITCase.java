@@ -247,7 +247,7 @@ public class BaseITCase {
 		DataProvider dataProvider = new DataProvider();
 		Organization sourceOrganization = getOrganization(organizationAbbreviation);
 		if (sourceOrganization == null)
-			sourceOrganization = createOrganization(organizationAbbreviation, organizationAbbreviation, false);
+			sourceOrganization = createOrganization(organizationAbbreviation, false);
 		dataProvider.setSourceOrganization(sourceOrganization);
 		dataProvider.setObsolete(obsolete);
 		
@@ -402,10 +402,9 @@ public class BaseITCase {
 		return note;
 	}
 	
-	public Organization createOrganization(String uniqueId, String abbreviation, Boolean obsolete) {
+	public Organization createOrganization(String abbreviation, Boolean obsolete) {
 		Organization organization = new Organization();
 		organization.setAbbreviation(abbreviation);
-		organization.setUniqueId(uniqueId);
 		organization.setObsolete(obsolete);
 		
 		ObjectResponse<Organization> response = RestAssured.given().
@@ -1168,7 +1167,6 @@ public class BaseITCase {
 	
 	public void loadOrganization(String abbreviation) throws Exception {
 		Organization organization = new Organization();
-		organization.setUniqueId(abbreviation);
 		organization.setAbbreviation(abbreviation);
 		organization.setObsolete(false);
 		

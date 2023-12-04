@@ -12,3 +12,6 @@ ALTER TABLE allelegeneassociation_aud RENAME objectgene_curie TO object_curie;
 -- Random cleanup
 
 ALTER INDEX gene_taxon_index RENAME TO gene_genetype_index;
+
+ALTER TABLE organization DROP COLUMN uniqueid;
+ALTER TABLE organization_aud DROP COLUMN uniqueid;
