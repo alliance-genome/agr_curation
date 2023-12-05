@@ -24,6 +24,7 @@ export const AlleleGeneAssociationsFormTable = ({
   let headerGroup = (
     <ColumnGroup>
       <Row>
+        <Column header="Actions" />
         <Column header="Relationship" />
         <Column header="Gene" />
         <Column header="Note" />
@@ -52,7 +53,7 @@ export const AlleleGeneAssociationsFormTable = ({
             showClear={false}
           />;
         }}
-        field="displayText" header="Display Text" headerClassName='surface-0' />
+        field="relation.name" header="Relationship" headerClassName='surface-0' />
       <Column
         editor={(props) => {
           return <GeneEditor
@@ -61,7 +62,7 @@ export const AlleleGeneAssociationsFormTable = ({
             onChange={geneOnChangeHandler}
           />;
         }}
-        field="object.curie" header="Gene" headerClassName='surface-0' />
+        field="objectGene" header="Gene" headerClassName='surface-0' />
       <Column
         editor={(props) => {
           return <RelatedNotesEditor
@@ -80,7 +81,7 @@ export const AlleleGeneAssociationsFormTable = ({
             errorMessages={errorMessages}
           />;
         }}
-        field="nameType" header="Name Type" headerClassName='surface-0' />
+        field="evidenceCode" header="Evidence Code" headerClassName='surface-0' />
       <Column
         editor={(props) => {
           return <EvidenceEditor

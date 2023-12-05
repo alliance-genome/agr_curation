@@ -122,6 +122,13 @@ const initialAlleleState = {
 			editingRows: {},
 			type: "display",
 		},
+		alleleGeneAssociations: {
+			field: 'alleleGeneAssociations',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			type: "table",
+		},
 	},
 	errorMessages: {},
 	submitted: false,

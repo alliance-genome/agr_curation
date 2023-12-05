@@ -1,118 +1,104 @@
 import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
-import { SynonymsFormTable } from "./SynonymsFormTable";
 import { useRef } from "react";
+import { AlleleGeneAssociationsFormTable } from "./AlleleGeneAssociationsFormTable";
 
-export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
+export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
-  const synonyms = global.structuredClone(state.allele?.alleleSynonyms);
+  const alleleGeneAssociations = global.structuredClone(state.allele?.alleleGeneAssociations);
 
-  const createNewSynonymHandler = (e) => {
+  const createNewGeneAssociationHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleSynonyms?.length;
-    const newSynonym = {
+    const dataKey = state.allele.alleleGeneAssociations?.length;
+    const newAlleleGeneAssociation = {
       dataKey: dataKey,
-      synonymUrl: "",
-      internal: false,
-      obsolete: false,
-      nameType: null,
-      formatText: "",
-      displayText: ""
-    }
+    };
 
     dispatch({
-      type: "ADD_ROW", 
-      row: newSynonym, 
-      entityType: "alleleSynonyms", 
-    })
+      type: "ADD_ROW",
+      row: newAlleleGeneAssociation,
+      entityType: "alleleGeneAssociations",
+    });
   };
 
   const onRowEditChange = (e) => {
     return null;
   };
 
-  const nameTypeOnChangeHandler = (props, event) => {
+  const alleleGeneRelationOnChangeHandler = (props, event) => {
     props.editorCallback(event.target.value);
-    dispatch({ 
-      type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
-      index: props.rowIndex, 
-      field: "nameType", 
+    dispatch({
+      type: 'EDIT_ROW',
+      entityType: 'alleleGeneAssociations',
+      index: props.rowIndex,
+      field: "alleleGeneRelation",
       value: event.target.value
     });
   };
 
-  const internalOnChangeHandler = (props, event) => {
-    props.editorCallback(event.target.value?.name);
-    dispatch({ 
-      type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
-      index: props.rowIndex, 
-      field: "internal", 
-      value: event.target?.value?.name
+  const geneOnChangeHandler = (event, setFieldValue, props) => {
+    //updates value in table input box
+    setFieldValue(event.target.value);
+    dispatch({
+      type: 'EDIT_ROW',
+      entityType: 'alleleGeneAssociations',
+      index: props.rowIndex,
+      field: "geneObject",
+      value: event.target?.value?.curie
     });
   };
 
-  const synonymScopeOnChangeHandler = (props, event) => {
-    props.editorCallback(event.target.value);
-    dispatch({ 
-      type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
-      index: props.rowIndex, 
-      field: "synonymScope", 
+  const evidenceCodeOnChangeHandler = (event, setFieldValue, props) => {
+    //updates value in table input box
+    setFieldValue(event.target.value);
+    dispatch({
+      type: 'EDIT_ROW',
+      entityType: 'alleleGeneAssociations',
+      index: props.rowIndex,
+      field: "evidenceCode",
       value: event.target.value
     });
   };
 
-  const textOnChangeHandler = (rowIndex, event, field) => {
-    dispatch({ 
-      type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
-      index: rowIndex, 
-      field: field, 
-      value: event.target.value
-    });
-  }
 
   const evidenceOnChangeHandler = (event, setFieldValue, props) => {
     //updates value in table input box
     setFieldValue(event.target.value);
-    dispatch({ 
-      type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
-      index: props.rowIndex, 
-      field: "evidence", 
+    dispatch({
+      type: 'EDIT_ROW',
+      entityType: 'alleleGeneAssociations',
+      index: props.rowIndex,
+      field: "evidence",
       value: event.target.value
     });
-  }
+  };
 
-  const deletionHandler  = (e, index) => {
+  const deletionHandler = (e, index) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", entityType: "alleleSynonyms", index: index});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleSynonyms", errorMessages: []});
+    dispatch({ type: "DELETE_ROW", entityType: "alleleGeneAssociations", index: index });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: [] });
   };
 
   return (
     <FormTableWrapper
       labelColumnSize={labelColumnSize}
       table={
-        <SynonymsFormTable
-          synonyms={synonyms}
-          editingRows={state.entityStates.alleleSynonyms.editingRows}
+        <AlleleGeneAssociationsFormTable
+          alleleGeneAssociations={alleleGeneAssociations}
+          editingRows={state.entityStates.alleleGeneAssociations.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleSynonyms.errorMessages}
-          textOnChangeHandler={textOnChangeHandler}
-          synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
-          nameTypeOnChangeHandler={nameTypeOnChangeHandler}
-          internalOnChangeHandler={internalOnChangeHandler}
+          errorMessages={state.entityStates.alleleGeneAssociations.errorMessages}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
+          alleleGeneRelationOnChangeHandler={alleleGeneRelationOnChangeHandler}
+          geneOnChangeHandler={geneOnChangeHandler}
+          evidenceCodeOnChangeHandler={evidenceCodeOnChangeHandler}
         />
       }
-      tableName="Synonyms"
-      showTable={state.entityStates.alleleSynonyms.show}
-      button={<Button label="Add Synonym" onClick={createNewSynonymHandler} className="w-6"/>}
+      tableName="Allele Gene Associations"
+      showTable={state.entityStates.alleleGeneAssociations.show}
+      button={<Button label="Add Gene Association" onClick={createNewGeneAssociationHandler} className="w-6" />}
     />
   );
 

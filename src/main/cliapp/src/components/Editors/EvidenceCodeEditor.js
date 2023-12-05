@@ -27,21 +27,21 @@ const evidenceSearch = (event, setFiltered, setInputValue) => {
   autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 };
 
-export const EvidenceCodeEditor = ({ props, errorMessages, onChange }) => {
+export const EvidenceCodeEditor = ({ props, errorMessages, onChangeHandler }) => {
   return (
     <>
       <AutocompleteEditor
         search={evidenceSearch}
-        initialValue={props.rowData.evidenceCodes}
+        initialValue={props.rowData.evidenceCode}
         rowProps={props}
-        fieldName='evidenceCodes'
+        fieldName='evidenceCode'
         valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
           <EvidenceAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
-        onValueChangeHandler={onChange}
+        onValueChangeHandler={onChangeHandler}
       />
       <ErrorMessageComponent
         errorMessages={errorMessages[props.rowIndex]}
-        errorField="evidenceCodes"
+        errorField="evidenceCode"
       />
     </>
   );

@@ -31,6 +31,7 @@ import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
+import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -303,6 +304,13 @@ const { isLoading: getRequestIsLoading } =	useQuery([curie],
 					<Divider />
 
 					<RelatedNotesForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<AlleleGeneAssociationsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>

@@ -24,16 +24,16 @@ export const GeneEditor = ({ props, errorMessages, onChange }) => {
 		<>
 			<AutocompleteEditor
 				search={geneSearch}
-				initialValue={props?.rowData?.object}
+				initialValue={props?.rowData?.objectGene?.curie}
 				rowProps={props}
-				fieldName='object'
+				fieldName='objectGene'
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 					<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent
 				errorMessages={errorMessages[props?.rowIndex]}
-				errorField={"object"}
+				errorField={"objectGene"}
 			/>
 		</>
 	);
