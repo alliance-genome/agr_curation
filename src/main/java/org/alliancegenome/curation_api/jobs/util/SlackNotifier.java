@@ -17,55 +17,62 @@ import com.slack.api.model.Attachment;
 import com.slack.api.model.Field;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
 
 @ApplicationScoped
 public class SlackNotifier {
+	
 	@ConfigProperty(name = "net")
-	String systemName = null;
+	Instance<String> systemName;
 	@ConfigProperty(name = "slack.token")
-	String slackToken = null;
+	Instance<String> slackToken;
 	@ConfigProperty(name = "slack.channels")
-	List<String> slackChannels = null;
+	Instance<List<String>> slackChannels;
 	
 	private void slackalert(String groupName, String loadName, String message, List<Field> fields) {
-
-		Slack slack = Slack.getInstance();
-
-		MethodsClient methods = slack.methods(slackToken);
 		
-		try {
-			for(String channel : slackChannels) {
-				
-				Attachment attachment = new Attachment();
-				attachment.setServiceName(groupName);
-				attachment.setPretext("An error has occured on Curation " + systemName);
-				attachment.setTitle(loadName);
-				if(systemName.equals("production")) {
-					attachment.setTitleLink("https://curation.alliancegenome.org/#/dataloads");
-					attachment.setServiceUrl("https://curation.alliancegenome.org/#/dataloads");
+		if(!systemName.get().equals("\"\"") && !slackToken.get().equals("\"\"")) {
+
+			Slack slack = Slack.getInstance();
+	
+			MethodsClient methods = slack.methods(slackToken.get());
+			
+			String systemNameString = systemName.get();
+			
+			try {
+				for(String channel : slackChannels.get()) {
+					
+					Attachment attachment = new Attachment();
+					attachment.setServiceName(groupName);
+					attachment.setPretext("An error has occured on Curation " + systemNameString);
+					attachment.setTitle(loadName);
+					if(systemNameString.equals("production")) {
+						attachment.setTitleLink("https://curation.alliancegenome.org/#/dataloads");
+						attachment.setServiceUrl("https://curation.alliancegenome.org/#/dataloads");
+					}
+					else {
+						attachment.setTitleLink("https://" + systemNameString + "-curation.alliancegenome.org/#/dataloads");
+						attachment.setServiceUrl("https://" + systemNameString + "-curation.alliancegenome.org/#/dataloads");
+					}
+					attachment.setFooter("Failure Time: ");
+					attachment.setTs(String.valueOf((new Date()).getTime() / 1000));
+					attachment.setColor("danger");
+					if(fields != null) {
+						attachment.setFields(fields);
+					}
+					List<Attachment> attachments = new ArrayList<>();
+					attachments.add(attachment);
+					ChatPostMessageRequest request = ChatPostMessageRequest.builder()
+							.channel(channel)
+							.text(message)
+							.attachments(attachments)
+							.build();
+					methods.chatPostMessage(request);
 				}
-				else {
-					attachment.setTitleLink("https://" + systemName + "-curation.alliancegenome.org/#/dataloads");
-					attachment.setServiceUrl("https://" + systemName + "-curation.alliancegenome.org/#/dataloads");
-				}
-				attachment.setFooter("Failure Time: ");
-				attachment.setTs(String.valueOf((new Date()).getTime() / 1000));
-				attachment.setColor("danger");
-				if(fields != null) {
-					attachment.setFields(fields);
-				}
-				List<Attachment> attachments = new ArrayList<>();
-				attachments.add(attachment);
-				ChatPostMessageRequest request = ChatPostMessageRequest.builder()
-						.channel(channel)
-						.text(message)
-						.attachments(attachments)
-						.build();
-				methods.chatPostMessage(request);
+				slack.close();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			slack.close();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 	}
