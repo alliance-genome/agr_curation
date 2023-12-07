@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -125,11 +126,6 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
-		}
-		
-		for (Note validatedNote : validatedNotes) {
-			if (validatedNote.getId() == null)
-				noteDAO.persist(validatedNote);
 		}
 
 		if (CollectionUtils.isEmpty(validatedNotes))

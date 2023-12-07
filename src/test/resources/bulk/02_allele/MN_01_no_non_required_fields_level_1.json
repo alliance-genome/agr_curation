@@ -1,6 +1,6 @@
 [
   {
-    "curie": "ALLELETEST:MN01",
+    "mod_entity_id": "ALLELETEST:MN01",
     "taxon_curie": "NCBITaxon:6239",
     "allele_symbol_dto": {
       "display_text": "Ta1",

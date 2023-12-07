@@ -12,11 +12,11 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociationDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociationDTO.class }, submitted = true)
 public class AlleleGeneAssociationDTO extends AlleleGenomicEntityAssociationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("gene_curie")
-	private String geneCurie;
+	@JsonProperty("gene_identifier")
+	private String geneIdentifier;
 
 }

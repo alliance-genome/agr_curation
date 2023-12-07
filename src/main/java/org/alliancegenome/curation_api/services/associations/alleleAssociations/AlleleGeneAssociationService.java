@@ -91,9 +91,8 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<String> associationIdStrings = alleleGeneAssociationDAO.findFilteredIds(params);
-		associationIdStrings.removeIf(Objects::isNull);
-		List<Long> associationIds = associationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		List<Long> associationIds = alleleGeneAssociationDAO.findFilteredIds(params);
+		associationIds.removeIf(Objects::isNull);
 		
 		return associationIds;
 	}

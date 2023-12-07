@@ -28,8 +28,8 @@ public class ConstructGenomicEntityAssociationDTO extends EvidenceAssociationDTO
 	private String genomicEntityRelationName;
 	
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("genomic_entity_curie")
-	private String genomicEntityCurie;
+	@JsonProperty("genomic_entity_identifier")
+	private String genomicEntityIdentifier;
 	
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("note_dtos")

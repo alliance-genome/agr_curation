@@ -3,8 +3,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -31,7 +31,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Alleles")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, BaseDTOCrudControllerInterface<Allele, AlleleDTO> {
+public interface AlleleCrudInterface extends SubmittedObjectCrudInterface<Allele>, BaseDTOCrudControllerInterface<Allele, AlleleDTO> {
 
 	@POST
 	@Path("/bulk/{dataProvider}/alleles")
@@ -41,8 +41,8 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@Override
 	@GET
 	@JsonView(View.AlleleDetailView.class)
-	@Path("/{curie}")
-	public ObjectResponse<Allele> get(@PathParam("curie") String curie);
+	@Path("/{identifierString}")
+	public ObjectResponse<Allele> get(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT

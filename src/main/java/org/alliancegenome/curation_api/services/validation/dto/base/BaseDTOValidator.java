@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
@@ -20,6 +21,7 @@ import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -141,5 +143,19 @@ public class BaseDTOValidator {
 		geResponse.setEntity(entity);
 
 		return geResponse;
+	}
+	
+	public String handleStringField(String string) {
+		if (StringUtils.isNotBlank(string))
+			return string;
+		
+		return null;
+	}
+	
+	public List<String> handleStringListField(List<String> list) {
+		if (CollectionUtils.isEmpty(list))
+			return null;
+		
+		return list;
 	}
 }

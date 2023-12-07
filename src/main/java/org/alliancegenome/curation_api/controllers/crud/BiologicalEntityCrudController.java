@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
+import org.alliancegenome.curation_api.controllers.base.CurieObjectCrudController;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.interfaces.crud.BiologicalEntityCrudInterface;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
@@ -11,7 +11,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class BiologicalEntityCrudController extends BaseEntityCrudController<BiologicalEntityService, BiologicalEntity, BiologicalEntityDAO> implements BiologicalEntityCrudInterface {
+public class BiologicalEntityCrudController extends CurieObjectCrudController<BiologicalEntityService, BiologicalEntity, BiologicalEntityDAO> implements BiologicalEntityCrudInterface {
 
 	@Inject
 	BiologicalEntityService biologicalEntityService;

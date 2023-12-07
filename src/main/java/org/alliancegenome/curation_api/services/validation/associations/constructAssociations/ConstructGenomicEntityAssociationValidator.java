@@ -115,18 +115,18 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	}
 
 	private GenomicEntity validateObject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getObject()) || StringUtils.isBlank(uiEntity.getObject().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getObject()) || uiEntity.getObject().getId() == null) {
 			addMessageResponse("object", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		GenomicEntity objectEntity = genomicEntityDAO.find(uiEntity.getObject().getCurie());
+		GenomicEntity objectEntity = genomicEntityDAO.find(uiEntity.getObject().getId());
 		if (objectEntity == null) {
 			addMessageResponse("object", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (objectEntity.getObsolete() && (dbEntity.getObject() == null || !objectEntity.getCurie().equals(dbEntity.getObject().getCurie()))) {
+		if (objectEntity.getObsolete() && (dbEntity.getObject() == null || !objectEntity.getId().equals(dbEntity.getObject().getId()))) {
 			addMessageResponse("object", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

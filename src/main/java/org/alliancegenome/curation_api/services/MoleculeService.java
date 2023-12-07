@@ -16,7 +16,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.base.CurieObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.MoleculeValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO> {
+public class MoleculeService extends CurieObjectCrudService<Molecule, MoleculeDAO> {
 
 	@Inject
 	MoleculeDAO moleculeDAO;
@@ -51,18 +51,25 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	}
 
 	@Transactional
-	public Molecule getByIdOrCurie(String id) {
-		Molecule molecule = moleculeDAO.getByIdOrCurie(id);
+	public Molecule getByCurie(String id) {
+		Molecule molecule = moleculeDAO.findByCurie(id);
 		if (molecule != null) {
 			molecule.getSynonyms().size();
 		}
 		return molecule;
 	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<Molecule> create(Molecule uiEntity) {
+		Molecule dbEntity = moleculeValidator.validateMoleculeCreate(uiEntity);
+		return new ObjectResponse<Molecule>(dbEntity);
+	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<Molecule> update(Molecule uiEntity) {
-		Molecule dbEntity = moleculeValidator.validateMolecule(uiEntity);
+		Molecule dbEntity = moleculeValidator.validateMoleculeUpdate(uiEntity);
 		return new ObjectResponse<>(moleculeDAO.persist(dbEntity));
 	}
 
@@ -95,7 +102,7 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 		}
 
 		try {
-			Molecule molecule = moleculeDAO.find(dto.getId());
+			Molecule molecule = moleculeDAO.findByCurie(dto.getId());
 
 			if (molecule == null) {
 				molecule = new Molecule();

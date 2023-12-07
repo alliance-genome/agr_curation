@@ -24,23 +24,10 @@ public class ReagentDTOValidator extends AnnotationDTOValidator {
 		ObjectResponse<E> reagentResponse = validateAuditedObjectDTO(reagent, dto);
 		reagent = reagentResponse.getEntity();
 
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			reagent.setModEntityId(dto.getModEntityId());
-		} else {
-			reagent.setModEntityId(null);
-		}
+		reagent.setModEntityId(handleStringField(dto.getModEntityId()));
+		reagent.setModInternalId(handleStringField(dto.getModInternalId()));
 		
-		if (StringUtils.isNotBlank(dto.getModInternalId())) {
-			reagent.setModInternalId(dto.getModInternalId());
-		} else {
-			reagent.setModInternalId(null);
-		}
-		
-		if (CollectionUtils.isNotEmpty(dto.getSecondaryIdentifiers())) {
-			reagent.setSecondaryIdentifiers(dto.getSecondaryIdentifiers());
-		} else {
-			reagent.setSecondaryIdentifiers(null);
-		}
+		reagent.setSecondaryIdentifiers(handleStringListField(dto.getSecondaryIdentifiers()));
 		
 		if (dto.getDataProviderDto() == null) {
 			reagentResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);

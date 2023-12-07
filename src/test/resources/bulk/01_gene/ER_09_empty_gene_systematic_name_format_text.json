@@ -1,6 +1,6 @@
 [
   {
-    "curie": "GENETEST:ER09",
+    "mod_entity_id": "GENETEST:ER09",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": false,

@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.CurieObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -13,6 +13,6 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Information Content Entities")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface InformationContentEntityCrudInterface extends BaseCurieCrudInterface<InformationContentEntity> {
+public interface InformationContentEntityCrudInterface extends CurieObjectCrudInterface<InformationContentEntity> {
 
 }

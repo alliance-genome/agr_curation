@@ -92,18 +92,14 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		return ret;
 	}
 
-	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
-
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
 			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-		List<String> annotationIdStrings = geneDiseaseAnnotationDAO.findFilteredIds(params);
-		annotationIdStrings.removeIf(Objects::isNull);
-		List<Long> annotationIds = annotationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
-		
+		List<Long> annotationIds = geneDiseaseAnnotationDAO.findFilteredIds(params);
+		annotationIds.removeIf(Objects::isNull);
+
 		return annotationIds;
 	}
 }

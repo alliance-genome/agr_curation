@@ -14,27 +14,27 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotationDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotationDTO.class }, submitted = true)
 public class AGMDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("agm_curie")
-	private String agmCurie;
+	@JsonProperty("agm_identifier")
+	private String agmIdentifier;
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("inferred_gene_curie")
-	private String inferredGeneCurie;
+	@JsonProperty("inferred_gene_identifier")
+	private String inferredGeneIdentifier;
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("inferred_allele_curie")
-	private String inferredAlleleCurie;
+	@JsonProperty("inferred_allele_identifier")
+	private String inferredAlleleIdentifier;
 
 	@JsonView({ View.FieldsAndLists.class })
-	@JsonProperty("asserted_gene_curies")
-	private List<String> assertedGeneCuries;
+	@JsonProperty("asserted_gene_identifiers")
+	private List<String> assertedGeneIdentifiers;
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("asserted_allele_curie")
-	private String assertedAlleleCurie;
+	@JsonProperty("asserted_allele_identifier")
+	private String assertedAlleleIdentifier;
 
 }

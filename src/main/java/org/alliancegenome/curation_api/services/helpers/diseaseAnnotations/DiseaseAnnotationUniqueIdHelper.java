@@ -59,7 +59,7 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		uniqueId.add(annotationDTO.getDoTermCurie());
 		uniqueId.add(refCurie);
 		uniqueId.addList(annotationDTO.getEvidenceCodeCuries());
-		uniqueId.addList(annotationDTO.getWithGeneCuries());
+		uniqueId.addList(annotationDTO.getWithGeneIdentifiers());
 		if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelationDtos())) {
 			uniqueId.addList(annotationDTO.getConditionRelationDtos().stream().map(conditionDTO -> {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();

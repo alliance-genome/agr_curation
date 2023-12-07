@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
+import org.alliancegenome.curation_api.controllers.base.SubmittedObjectCrudController;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.interfaces.crud.GeneCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
@@ -17,7 +17,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class GeneCrudController extends BaseDTOCrudController<GeneService, Gene, GeneDTO, GeneDAO> implements GeneCrudInterface {
+public class GeneCrudController extends SubmittedObjectCrudController<GeneService, Gene, GeneDTO, GeneDAO> implements GeneCrudInterface {
 
 	@Inject
 	GeneService geneService;

@@ -8,12 +8,13 @@ import org.alliancegenome.curation_api.model.entities.Reagent;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.alliancegenome.curation_api.services.validation.base.SubmittedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
 
-public class ReagentValidator extends AuditedObjectValidator<Reagent> {
+public class ReagentValidator extends SubmittedObjectValidator<Reagent> {
 
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
@@ -27,12 +28,12 @@ public class ReagentValidator extends AuditedObjectValidator<Reagent> {
 		Boolean newEntity = false;
 		if (dbEntity.getId() == null)
 			newEntity = true;
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
+		dbEntity = (Reagent) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 		
 		String modEntityId = StringUtils.isNotBlank(uiEntity.getModEntityId()) ? uiEntity.getModEntityId() : null;
 		dbEntity.setModEntityId(modEntityId);
 		
-		String modInternalId = StringUtils.isNotBlank(uiEntity.getModInternalId()) ? uiEntity.getModInternalId() : null;
+		String modInternalId = validateModInternalId(uiEntity);
 		dbEntity.setModInternalId(modInternalId);
 		
 		List<String> secondaryIds = CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers()) ? uiEntity.getSecondaryIdentifiers() : null;

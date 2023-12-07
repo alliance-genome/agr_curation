@@ -33,12 +33,12 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 		if (uiEntity.getEvidenceCode() == null)
 			return null;
 		
-		ECOTerm evidenceCode = ecoTermDAO.find(uiEntity.getEvidenceCode().getCurie());
+		ECOTerm evidenceCode = ecoTermDAO.find(uiEntity.getEvidenceCode().getId());
 		if (evidenceCode == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		if (evidenceCode.getObsolete() && (dbEntity.getEvidenceCode() == null || !dbEntity.getEvidenceCode().getCurie().equals(evidenceCode.getCurie()))) {
+		if (evidenceCode.getObsolete() && (dbEntity.getEvidenceCode() == null || !dbEntity.getEvidenceCode().getId().equals(evidenceCode.getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

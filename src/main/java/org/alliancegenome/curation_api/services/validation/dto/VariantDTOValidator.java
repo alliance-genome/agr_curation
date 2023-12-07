@@ -9,12 +9,14 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
@@ -46,16 +48,25 @@ public class VariantDTOValidator extends BaseDTOValidator {
 	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Variant variant = null;
-		if (StringUtils.isBlank(dto.getCurie())) {
-			variantResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isNotBlank(dto.getModEntityId())) {
+			SearchResponse<Variant> response = variantDAO.findByField("modEntityId", dto.getModEntityId());
+			if (response != null && response.getSingleResult() != null)
+				variant = response.getSingleResult();
 		} else {
-			variant = variantDAO.find(dto.getCurie());
+			if (StringUtils.isBlank(dto.getModInternalId())) {
+				variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
+			} else {
+				SearchResponse<Variant> response = variantDAO.findByField("modInternalId", dto.getModInternalId());
+				if (response != null && response.getSingleResult() != null)
+					variant = response.getSingleResult();
+			}
 		}
 
 		if (variant == null)
 			variant = new Variant();
 
-		variant.setCurie(dto.getCurie());
+		variant.setModEntityId(dto.getModEntityId());
+		variant.setModInternalId(dto.getModInternalId());
 
 		ObjectResponse<Variant> geResponse = validateGenomicEntityDTO(variant, dto, dataProvider);
 		variantResponse.addErrorMessages(geResponse.getErrorMessages());

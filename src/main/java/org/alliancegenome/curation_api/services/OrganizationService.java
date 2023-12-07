@@ -38,11 +38,11 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 				org = orgCacheMap.get(orgId);
 			} else {
 				Log.debug("Org not cached, caching org: (" + orgId + ")");
-				org = organizationDAO.find(orgId);
+				org = organizationDAO.find(Long.parseLong(orgId));
 				orgCacheMap.put(orgId, org);
 			}
 		} else {
-			org = organizationDAO.find(orgId);
+			org = organizationDAO.find(Long.parseLong(orgId));
 			orgRequest = new Date();
 		}
 

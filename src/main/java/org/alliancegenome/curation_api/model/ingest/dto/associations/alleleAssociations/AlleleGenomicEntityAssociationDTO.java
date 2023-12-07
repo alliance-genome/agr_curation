@@ -18,8 +18,8 @@ import lombok.Setter;
 public class AlleleGenomicEntityAssociationDTO extends EvidenceAssociationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("allele_curie")
-	private String alleleCurie;
+	@JsonProperty("allele_identifier")
+	private String alleleIdentifier;
 	
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("relation_name")

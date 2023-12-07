@@ -49,7 +49,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AlleleValidator extends GenomicEntityValidator {
+public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	@Inject
 	AlleleDAO alleleDAO;
@@ -86,16 +86,17 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 	public Allele validateAlleleUpdate(Allele uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not update Allele: [" + uiEntity.getCurie() + "]";
+		errorMessage = "Could not update Allele: [" + uiEntity.getIdentifier() + "]";
 
-		String curie = validateCurie(uiEntity);
-		if (curie == null) {
+		Long id = uiEntity.getId();
+		if (id == null) {
+			addMessageResponse("No Allele ID provided");
 			throw new ApiErrorException(response);
 		}
 
-		Allele dbEntity = alleleDAO.find(curie);
+		Allele dbEntity = alleleDAO.find(id);
 		if (dbEntity == null) {
-			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("id", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
 
@@ -106,7 +107,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 	public Allele validateAlleleCreate(Allele uiEntity) {
 		response = new ObjectResponse<>();
-		errorMessage = "Could not create Allele: [" + uiEntity.getCurie() + "]";
+		errorMessage = "Could not create Allele";
 
 		Allele dbEntity = new Allele();
 		String curie = validateCurie(uiEntity);
@@ -119,11 +120,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity) {
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
-		dbEntity.setTaxon(taxon);
-		
-		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
-		dbEntity.setDataProvider(dataProvider);
+		dbEntity = (Allele) validateGenomicEntityFields(uiEntity, dbEntity);
 
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
@@ -146,23 +143,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			dbEntity.getRelatedNotes().addAll(relatedNotes);
 		}
 
-		List<Long> currentXrefIds;
-		if (dbEntity.getCrossReferences() == null) {
-			currentXrefIds = new ArrayList<>();
-		} else {
-			currentXrefIds = dbEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
-		}
-		
-		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
-		dbEntity.setCrossReferences(crossReferences);
-		List<Long> mergedIds = crossReferences == null ? new ArrayList<>() :
-			crossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
-		for (Long currentXrefId : currentXrefIds) {
-			if (!mergedIds.contains(currentXrefId)) {
-				crossReferenceDAO.remove(currentXrefId);
-			}
-		}
-		
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(uiEntity, dbEntity);

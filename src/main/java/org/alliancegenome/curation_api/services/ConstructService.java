@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
@@ -14,13 +13,12 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Construct;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
-import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.ConstructValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ConstructDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -33,7 +31,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO, ConstructDAO> {
+public class ConstructService extends SubmittedObjectCrudService<Construct, ConstructDTO, ConstructDAO> {
 
 	@Inject
 	ConstructDAO constructDAO;
@@ -151,14 +149,13 @@ public class ConstructService extends BaseDTOCrudService<Construct, ConstructDTO
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
+	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) { }
 
 	public List<Long> getConstructIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<String> constructIdStrings = constructDAO.findFilteredIds(params);
-		constructIdStrings.removeIf(Objects::isNull);
-		List<Long> constructIds = constructIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		List<Long> constructIds = constructDAO.findFilteredIds(params);
+		constructIds.removeIf(Objects::isNull);
 		
 		return constructIds;
 	}

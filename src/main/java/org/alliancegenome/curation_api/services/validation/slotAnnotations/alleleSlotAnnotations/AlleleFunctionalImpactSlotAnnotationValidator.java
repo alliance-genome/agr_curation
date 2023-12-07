@@ -113,11 +113,11 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 		if (uiEntity.getPhenotypeTerm() == null)
 			return null;
 		
-		PhenotypeTerm phenotypeTerm = phenotypeTermDAO.find(uiEntity.getPhenotypeTerm().getCurie());
+		PhenotypeTerm phenotypeTerm = phenotypeTermDAO.find(uiEntity.getPhenotypeTerm().getId());
 		if (phenotypeTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getCurie().equals(dbEntity.getPhenotypeTerm().getCurie()))) {
+		} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getId().equals(dbEntity.getPhenotypeTerm().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

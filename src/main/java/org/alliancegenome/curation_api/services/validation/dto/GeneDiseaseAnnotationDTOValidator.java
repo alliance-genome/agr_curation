@@ -51,16 +51,16 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		Reference validatedReference = refResponse.getEntity().getSingleReference();
 		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
 
-		if (StringUtils.isBlank(dto.getGeneCurie())) {
-			gdaResponse.addErrorMessage("gene_curie", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isBlank(dto.getGeneIdentifier())) {
+			gdaResponse.addErrorMessage("gene_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			gene = geneDAO.find(dto.getGeneCurie());
+			gene = geneDAO.findByIdentifierString(dto.getGeneIdentifier());
 			if (gene == null) {
-				gdaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneCurie() + ")");
+				gdaResponse.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ")");
 			} else {
 				String annotationId;
 				String identifyingField;
-				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getGeneCurie(), refCurie);
+				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getGeneIdentifier(), refCurie);
 				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
@@ -84,7 +84,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				
 				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !gene.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
 						!dataProvider.sourceOrganization.equals(gene.getDataProvider().getSourceOrganization().getAbbreviation())) {
-					gdaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneCurie() + ") for " + dataProvider.name() + " load");
+					gdaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ") for " + dataProvider.name() + " load");
 				}
 			}
 		}
@@ -92,10 +92,10 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		annotation.setSingleReference(validatedReference);
 
 		AffectedGenomicModel sgdStrainBackground = null;
-		if (StringUtils.isNotBlank(dto.getSgdStrainBackgroundCurie())) {
-			sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackgroundCurie());
+		if (StringUtils.isNotBlank(dto.getSgdStrainBackgroundIdentifier())) {
+			sgdStrainBackground = affectedGenomicModelDAO.findByIdentifierString(dto.getSgdStrainBackgroundIdentifier());
 			if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
-				gdaResponse.addErrorMessage("sgd_strain_background_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSgdStrainBackgroundCurie() + ")");
+				gdaResponse.addErrorMessage("sgd_strain_background_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSgdStrainBackgroundIdentifier() + ")");
 			}
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);

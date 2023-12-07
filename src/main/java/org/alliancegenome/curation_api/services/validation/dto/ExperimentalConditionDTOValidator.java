@@ -103,7 +103,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
 		NCBITaxonTerm conditionTaxon = null;
 		if (StringUtils.isNotBlank(dto.getConditionTaxonCurie())) {
-			conditionTaxon = ncbiTaxonTermDAO.find(dto.getConditionTaxonCurie());
+			conditionTaxon = ncbiTaxonTermDAO.findByCurie(dto.getConditionTaxonCurie());
 			if (conditionTaxon == null) {
 				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxonCurie());
 			}

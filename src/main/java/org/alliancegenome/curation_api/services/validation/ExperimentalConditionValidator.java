@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -122,15 +123,15 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ZECOTerm validateConditionClass(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionClass";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionClass()) || StringUtils.isBlank(uiEntity.getConditionClass().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionClass()) || uiEntity.getConditionClass().getId() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		ZECOTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
+		ZECOTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getId());
 		if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (zecoTerm.getObsolete() && (dbEntity.getConditionClass() == null || !zecoTerm.getCurie().equals(dbEntity.getConditionClass().getCurie()))) {
+		} else if (zecoTerm.getObsolete() && (dbEntity.getConditionClass() == null || !zecoTerm.getId().equals(dbEntity.getConditionClass().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -139,14 +140,14 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ExperimentalConditionOntologyTerm validateConditionId(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionId";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionId()) || StringUtils.isBlank(uiEntity.getConditionId().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionId()) || uiEntity.getConditionId().getId() == null) {
 			return null;
 		}
-		ExperimentalConditionOntologyTerm ecOntologyTerm = ecOntologyTermDAO.find(uiEntity.getConditionId().getCurie());
+		ExperimentalConditionOntologyTerm ecOntologyTerm = ecOntologyTermDAO.find(uiEntity.getConditionId().getId());
 		if (ecOntologyTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (ecOntologyTerm.getObsolete() && (dbEntity.getConditionId() == null || !ecOntologyTerm.getCurie().equals(dbEntity.getConditionId().getCurie()))) {
+		} else if (ecOntologyTerm.getObsolete() && (dbEntity.getConditionId() == null || !ecOntologyTerm.getId().equals(dbEntity.getConditionId().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -155,14 +156,14 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public GOTerm validateConditionGeneOntology(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionGeneOntology";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionGeneOntology()) || StringUtils.isBlank(uiEntity.getConditionGeneOntology().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionGeneOntology()) || uiEntity.getConditionGeneOntology().getId() == null) {
 			return null;
 		}
-		GOTerm goTerm = goTermDAO.find(uiEntity.getConditionGeneOntology().getCurie());
+		GOTerm goTerm = goTermDAO.find(uiEntity.getConditionGeneOntology().getId());
 		if (goTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (goTerm.getObsolete() && (dbEntity.getConditionGeneOntology() == null || !goTerm.getCurie().equals(dbEntity.getConditionGeneOntology().getCurie()))) {
+		} else if (goTerm.getObsolete() && (dbEntity.getConditionGeneOntology() == null || !goTerm.getId().equals(dbEntity.getConditionGeneOntology().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -171,14 +172,14 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public AnatomicalTerm validateConditionAnatomy(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionAnatomy";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionAnatomy()) || StringUtils.isBlank(uiEntity.getConditionAnatomy().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionAnatomy()) || uiEntity.getConditionAnatomy().getId() == null) {
 			return null;
 		}
-		AnatomicalTerm anatomicalTerm = anatomicalTermDAO.find(uiEntity.getConditionAnatomy().getCurie());
+		AnatomicalTerm anatomicalTerm = anatomicalTermDAO.find(uiEntity.getConditionAnatomy().getId());
 		if (anatomicalTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (anatomicalTerm.getObsolete() && (dbEntity.getConditionAnatomy() == null || !anatomicalTerm.getCurie().equals(dbEntity.getConditionAnatomy().getCurie()))) {
+		} else if (anatomicalTerm.getObsolete() && (dbEntity.getConditionAnatomy() == null || !anatomicalTerm.getId().equals(dbEntity.getConditionAnatomy().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -187,14 +188,14 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ChemicalTerm validateConditionChemical(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionChemical";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionChemical()) || StringUtils.isBlank(uiEntity.getConditionChemical().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionChemical()) || uiEntity.getConditionChemical().getId() == null) {
 			return null;
 		}
-		ChemicalTerm chemicalTerm = chemicalTermDAO.find(uiEntity.getConditionChemical().getCurie());
+		ChemicalTerm chemicalTerm = chemicalTermDAO.find(uiEntity.getConditionChemical().getId());
 		if (chemicalTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (chemicalTerm.getObsolete() && (dbEntity.getConditionChemical() == null || !chemicalTerm.getCurie().equals(dbEntity.getConditionChemical().getCurie()))) {
+		} else if (chemicalTerm.getObsolete() && (dbEntity.getConditionChemical() == null || !chemicalTerm.getId().equals(dbEntity.getConditionChemical().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -203,17 +204,17 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public NCBITaxonTerm validateConditionTaxon(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionTaxon";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionTaxon()) || StringUtils.isBlank(uiEntity.getConditionTaxon().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionTaxon()) || uiEntity.getConditionTaxon().getId() == null) {
 			return null;
 		}
-		NCBITaxonTerm taxonTerm = ncbiTaxonTermDAO.find(uiEntity.getConditionTaxon().getCurie());
+		NCBITaxonTerm taxonTerm = ncbiTaxonTermDAO.find(uiEntity.getConditionTaxon().getId());
 		if (taxonTerm == null) {
 			taxonTerm = ncbiTaxonTermDAO.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
 		}
 		if (taxonTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (taxonTerm.getObsolete() && (dbEntity.getConditionTaxon() == null || !taxonTerm.getCurie().equals(dbEntity.getConditionTaxon().getCurie()))) {
+		} else if (taxonTerm.getObsolete() && (dbEntity.getConditionTaxon() == null || !taxonTerm.getId().equals(dbEntity.getConditionTaxon().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

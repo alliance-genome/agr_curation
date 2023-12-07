@@ -1,10 +1,10 @@
-package org.alliancegenome.curation_api.services.validation;
+package org.alliancegenome.curation_api.services.validation.base;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 import org.apache.commons.lang3.StringUtils;
 
-public class CurieAuditedObjectValidator extends AuditedObjectValidator<CurieObject> {
+public class CurieObjectValidator extends AuditedObjectValidator<CurieObject> {
 
 	public String validateCurie(CurieObject uiEntity) {
 		String curie = uiEntity.getCurie();

@@ -1,6 +1,6 @@
 [
   {
-    "curie": "VARIANTTEST:MR02",
+    "mod_entity_id": "VARIANTTEST:MR02",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",
     "source_general_consequence_curie": "SO:SGC001",

@@ -52,7 +52,7 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 	
 	
 	private NCBITaxonTerm getTaxonFromDB(String taxonCurie) {
-		NCBITaxonTerm taxon = ncbiTaxonTermDAO.find(taxonCurie);
+		NCBITaxonTerm taxon = ncbiTaxonTermDAO.findByCurie(taxonCurie);
 		if (taxon == null) {
 			taxon = ncbiTaxonTermDAO.downloadAndSave(taxonCurie);
 			if (taxon == null) {

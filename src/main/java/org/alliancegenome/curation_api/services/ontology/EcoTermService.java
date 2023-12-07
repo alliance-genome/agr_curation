@@ -37,7 +37,7 @@ public class EcoTermService extends BaseOntologyTermService<ECOTerm, EcoTermDAO>
 		if (res != null && res.getTotalResults() == 1) {
 			List<VocabularyTerm> ecoVocabularyTerms = res.getResults().get(0).getMemberTerms();
 			ecoVocabularyTerms.forEach((ecoVocabularyTerm) -> {
-				ECOTerm ecoTerm = ecoTermDAO.find(ecoVocabularyTerm.getName());
+				ECOTerm ecoTerm = ecoTermDAO.findByCurie(ecoVocabularyTerm.getName());
 				if (ecoTerm != null) {
 					ecoTerm.setAbbreviation(ecoVocabularyTerm.getAbbreviation());
 					List<String> subsets = ecoTerm.getSubsets();

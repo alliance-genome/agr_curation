@@ -48,18 +48,18 @@ public class AgmExecutor extends LoadFileExecutor {
 		
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
-		List<String> agmCuriesLoaded = new ArrayList<>();
-		List<String> agmCuriesBefore = affectedGenomicModelService.getCuriesByDataProvider(dataProvider.name());
-		Log.debug("runLoad: Before: total " + agmCuriesBefore.size());
+		List<Long> agmIdsLoaded = new ArrayList<>();
+		List<Long> agmIdsBefore = affectedGenomicModelService.getIdsByDataProvider(dataProvider.name());
+		Log.debug("runLoad: Before: total " + agmIdsBefore.size());
 
 		bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 
-		runLoad(history, agms, dataProvider, agmCuriesLoaded);
+		runLoad(history, agms, dataProvider, agmIdsLoaded);
 			
-		if(cleanUp) runCleanup(affectedGenomicModelService, history, bulkLoadFile, agmCuriesBefore, agmCuriesLoaded);
+		if(cleanUp) runCleanup(affectedGenomicModelService, history, bulkLoadFile, agmIdsBefore, agmIdsLoaded);
 			
 		history.finishLoad();
 			
@@ -70,16 +70,16 @@ public class AgmExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad(String dataProviderName, List<AffectedGenomicModelDTO> agms) {
 
-		List<String> curiesLoaded = new ArrayList<>();
+		List<Long> idsLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		runLoad(history, agms, dataProvider, curiesLoaded);
+		runLoad(history, agms, dataProvider, idsLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
 	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -88,8 +88,8 @@ public class AgmExecutor extends LoadFileExecutor {
 			try {
 				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO, dataProvider);
 				history.incrementCompleted();
-				if(curiesAdded != null) {
-					curiesAdded.add(agm.getCurie());
+				if(idsAdded != null) {
+					idsAdded.add(agm.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

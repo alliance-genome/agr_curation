@@ -49,16 +49,16 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		Reference validatedReference = refResponse.getEntity().getSingleReference();
 		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
 
-		if (StringUtils.isBlank(dto.getAlleleCurie())) {
-			adaResponse.addErrorMessage("allele_curie", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isBlank(dto.getAlleleIdentifier())) {
+			adaResponse.addErrorMessage("allele_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			allele = alleleDAO.find(dto.getAlleleCurie());
+			allele = alleleDAO.findByIdentifierString(dto.getAlleleIdentifier());
 			if (allele == null) {
-				adaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ")");
+				adaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
 			} else {
 				String annotationId;
 				String identifyingField;
-				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAlleleCurie(), refCurie);
+				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAlleleIdentifier(), refCurie);
 				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
@@ -82,7 +82,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				
 				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !allele.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
 						!dataProvider.sourceOrganization.equals(allele.getDataProvider().getSourceOrganization().getAbbreviation())) {
-					adaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleCurie() + ") for " + dataProvider.name() + " load");
+					adaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ") for " + dataProvider.name() + " load");
 				}
 			}
 		}
@@ -101,21 +101,21 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
-		if (StringUtils.isNotBlank(dto.getInferredGeneCurie())) {
-			Gene inferredGene = geneDAO.find(dto.getInferredGeneCurie());
+		if (StringUtils.isNotBlank(dto.getInferredGeneIdentifier())) {
+			Gene inferredGene = geneDAO.findByIdentifierString(dto.getInferredGeneIdentifier());
 			if (inferredGene == null)
-				adaResponse.addErrorMessage("inferred_gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredGeneCurie() + ")");
+				adaResponse.addErrorMessage("inferred_gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredGeneIdentifier() + ")");
 			annotation.setInferredGene(inferredGene);
 		} else {
 			annotation.setInferredGene(null);
 		}
 
-		if (CollectionUtils.isNotEmpty(dto.getAssertedGeneCuries())) {
+		if (CollectionUtils.isNotEmpty(dto.getAssertedGeneIdentifiers())) {
 			List<Gene> assertedGenes = new ArrayList<>();
-			for (String assertedGeneCurie : dto.getAssertedGeneCuries()) {
-				Gene assertedGene = geneDAO.find(assertedGeneCurie);
+			for (String assertedGeneIdentifier : dto.getAssertedGeneIdentifiers()) {
+				Gene assertedGene = geneDAO.findByIdentifierString(assertedGeneIdentifier);
 				if (assertedGene == null) {
-					adaResponse.addErrorMessage("asserted_gene_curies", ValidationConstants.INVALID_MESSAGE + " (" + assertedGeneCurie + ")");
+					adaResponse.addErrorMessage("asserted_gene_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + assertedGeneIdentifier + ")");
 				} else {
 					assertedGenes.add(assertedGene);
 				}

@@ -45,39 +45,27 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 
 		ObjectResponse<GeneToGeneOrthologyGenerated> orthologyResponse = new ObjectResponse<GeneToGeneOrthologyGenerated>();
 
-		String subjectGeneCurie = null;
-		String objectGeneCurie = null;
+		String subjectGeneIdentifier = null;
+		String objectGeneIdentifier = null;
 		
 		GeneToGeneOrthologyGenerated orthoPair = null;
 
 		if (StringUtils.isBlank(dto.getGene1())) {
 			orthologyResponse.addErrorMessage("gene1", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			subjectGeneCurie = convertToAgrCurie(dto.getGene1(), dto.getGene1Species());
+			subjectGeneIdentifier = convertToModCurie(dto.getGene1(), dto.getGene1Species());
 		}
 		if (StringUtils.isBlank(dto.getGene2())) {
 			orthologyResponse.addErrorMessage("gene2", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			objectGeneCurie = convertToAgrCurie(dto.getGene2(), dto.getGene2Species());
+			objectGeneIdentifier = convertToModCurie(dto.getGene2(), dto.getGene2Species());
 		}
 		
-		if (subjectGeneCurie != null && objectGeneCurie != null) {
-			Map<String, Object> params = new HashMap<>();
-			params.put("subjectGene.curie", subjectGeneCurie);
-			params.put("objectGene.curie", objectGeneCurie);
-			SearchResponse<GeneToGeneOrthologyGenerated> searchResponse = generatedOrthologyDAO.findByParams(params);
-			if (searchResponse != null && searchResponse.getSingleResult() != null)
-				orthoPair = searchResponse.getSingleResult();
-		}
-
-		if (orthoPair == null)
-			orthoPair = new GeneToGeneOrthologyGenerated();
-
 		Gene subjectGene = null;
 		if (StringUtils.isNotBlank(dto.getGene1())) {
-			subjectGene = geneDAO.find(subjectGeneCurie);
+			subjectGene = geneDAO.findByIdentifierString(subjectGeneIdentifier);
 			if (subjectGene == null) {
-				orthologyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE + " (" + subjectGeneCurie + ")");
+				orthologyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE + " (" + subjectGeneIdentifier + ")");
 			} else {
 				if (dto.getGene1Species() == null) {
 					orthologyResponse.addErrorMessage("gene1Species", ValidationConstants.REQUIRED_MESSAGE);
@@ -92,13 +80,12 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 				}
 			}
 		}
-		orthoPair.setSubjectGene(subjectGene);
 		
 		Gene objectGene = null;
 		if (StringUtils.isNotBlank(dto.getGene2())) {
-			objectGene = geneDAO.find(objectGeneCurie);
+			objectGene = geneDAO.findByIdentifierString(objectGeneIdentifier);
 			if (objectGene == null) {
-				orthologyResponse.addErrorMessage("gene2", ValidationConstants.INVALID_MESSAGE + " (" + objectGeneCurie + ")");
+				orthologyResponse.addErrorMessage("gene2", ValidationConstants.INVALID_MESSAGE + " (" + objectGeneIdentifier + ")");
 			} else {
 				if (dto.getGene2Species() == null) {
 					orthologyResponse.addErrorMessage("gene2Species", ValidationConstants.REQUIRED_MESSAGE);
@@ -113,6 +100,20 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 				}
 			}
 		}
+		
+		if (subjectGene != null && objectGene != null) {
+			Map<String, Object> params = new HashMap<>();
+			params.put("subjectGene.id", subjectGene.getId());
+			params.put("objectGene.id", objectGene.getId());
+			SearchResponse<GeneToGeneOrthologyGenerated> searchResponse = generatedOrthologyDAO.findByParams(params);
+			if (searchResponse != null && searchResponse.getSingleResult() != null)
+				orthoPair = searchResponse.getSingleResult();
+		}
+
+		if (orthoPair == null)
+			orthoPair = new GeneToGeneOrthologyGenerated();
+
+		orthoPair.setSubjectGene(subjectGene);	
 		orthoPair.setObjectGene(objectGene);
 
 		VocabularyTerm isBestScore = null;
@@ -212,7 +213,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		return false;
 	}
 
-	private String convertToAgrCurie(String curie, Integer taxonId) {
+	private String convertToModCurie(String curie, Integer taxonId) {
 		curie = curie.replaceFirst("^DRSC:", "");
 		if (curie.indexOf(":") == -1) {
 			String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonId(taxonId);

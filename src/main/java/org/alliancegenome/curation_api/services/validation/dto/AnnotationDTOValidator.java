@@ -51,17 +51,8 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 		ObjectResponse<E> annotResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = annotResponse.getEntity();
 
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			annotation.setModEntityId(dto.getModEntityId());
-		} else {
-			annotation.setModEntityId(null);
-		}
-		
-		if (StringUtils.isNotBlank(dto.getModInternalId())) {
-			annotation.setModInternalId(dto.getModInternalId());
-		} else {
-			annotation.setModInternalId(null);
-		}
+		annotation.setModEntityId(handleStringField(dto.getModEntityId()));
+		annotation.setModInternalId(handleStringField(dto.getModInternalId()));
 		
 		if (dto.getDataProviderDto() == null) {
 			annotResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);

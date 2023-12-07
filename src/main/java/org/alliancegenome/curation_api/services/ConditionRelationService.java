@@ -121,11 +121,11 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 	public void deleteUnusedConditions(List<Long> inUseCrIds) {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		
-		List<String> crIds = conditionRelationDAO.findAllIds().getResults();
+		List<Long> crIds = conditionRelationDAO.findAllIds().getResults();
 		pdh.startProcess("Delete unused Conditions", crIds.size());
-		crIds.forEach(idString -> {
-			if (!inUseCrIds.contains(Long.parseLong(idString))) {
-				ConditionRelation cr = conditionRelationDAO.find(Long.parseLong(idString));
+		crIds.forEach(crId -> {
+			if (!inUseCrIds.contains(crId)) {
+				ConditionRelation cr = conditionRelationDAO.find(crId);
 				cr.setConditions(null);
 				conditionRelationDAO.remove(cr.getId());
 			}

@@ -113,12 +113,12 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	public List<Long> getAllReferencedConditionRelationIds() {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		
-		List<String> daIds = diseaseAnnotationDAO.findAllIds().getResults();
+		List<Long> daIds = diseaseAnnotationDAO.findAllIds().getResults();
 		pdh.startProcess("Checking DAs for referenced Conditions ", daIds.size());
 		
 		List<Long> conditionRelationIds = new ArrayList<>();
-		daIds.forEach(idString -> {
-			DiseaseAnnotation annotation = diseaseAnnotationDAO.find(Long.parseLong(idString));
+		daIds.forEach(daId -> {
+			DiseaseAnnotation annotation = diseaseAnnotationDAO.find(daId);
 			if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
 				List<Long> crIds = annotation.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
 				conditionRelationIds.addAll(crIds);

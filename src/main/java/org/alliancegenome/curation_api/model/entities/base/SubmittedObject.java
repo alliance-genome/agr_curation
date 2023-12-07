@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
@@ -16,6 +17,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
@@ -24,6 +26,7 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -68,4 +71,17 @@ public class SubmittedObject extends CurieObject {
 	@JsonView({ View.FieldsOnly.class })
 	private DataProvider dataProvider;
 
+	
+	@Transient
+	@JsonIgnore
+	public String getIdentifier() {
+		if (StringUtils.isNotBlank(curie))
+			return curie;
+		if (StringUtils.isNotBlank(modEntityId))
+			return modEntityId;
+		if (StringUtils.isNotBlank(modInternalId))
+			return modInternalId;
+		return null;
+	}
+	
 }

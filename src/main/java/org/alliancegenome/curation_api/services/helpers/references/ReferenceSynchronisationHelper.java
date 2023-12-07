@@ -36,7 +36,7 @@ public class ReferenceSynchronisationHelper {
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
 
 		if (litRef != null) {
-			Reference ref = referenceDAO.find(litRef.getCurie());
+			Reference ref = referenceDAO.findByIdentifierString(curie);
 			if (ref == null)
 				ref = new Reference();
 			ref = copyLiteratureReferenceFields(litRef, ref);
@@ -73,10 +73,10 @@ public class ReferenceSynchronisationHelper {
 
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		
-		SearchResponse<String> response = referenceDAO.findAllIds();
+		SearchResponse<Long> response = referenceDAO.findAllIds();
 		pdh.startProcess("Reference Sync", response.getTotalResults());
-		for (String refCurie : response.getResults()) {
-			synchroniseReference(refCurie);
+		for (Long refId : response.getResults()) {
+			synchroniseReference(refId);
 			pdh.progressProcess();
 		}
 		pdh.finishProcess();
@@ -121,13 +121,13 @@ public class ReferenceSynchronisationHelper {
 	}
 
 	@Transactional
-	public ObjectResponse<Reference> synchroniseReference(String curie) {
-		Reference ref = referenceDAO.find(curie);
+	public ObjectResponse<Reference> synchroniseReference(Long id) {
+		Reference ref = referenceDAO.find(id);
 		ObjectResponse<Reference> response = new ObjectResponse<>();
 		if (ref == null)
 			return response;
 
-		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
+		LiteratureReference litRef = fetchLiteratureServiceReference(ref.getCurie());
 		if (litRef == null) {
 			ref.setObsolete(true);
 		} else {

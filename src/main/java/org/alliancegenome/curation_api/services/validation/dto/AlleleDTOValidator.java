@@ -33,6 +33,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlot
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
@@ -97,16 +98,19 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		
 		Allele allele = null;
-		if (StringUtils.isBlank(dto.getCurie())) {
-			alleleResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isNotBlank(dto.getModEntityId())) {
+			SearchResponse<Allele> response = alleleDAO.findByField("modEntityId", dto.getModEntityId());
+			if (response != null && response.getSingleResult() != null)
+				allele = response.getSingleResult();
 		} else {
-			allele = alleleDAO.find(dto.getCurie());
+			alleleResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (allele == null)
 			allele = new Allele();
 
-		allele.setCurie(dto.getCurie());
+		allele.setModEntityId(dto.getModEntityId());
+		allele.setModInternalId(handleStringField(dto.getModInternalId()));
 
 		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto, dataProvider);
 		alleleResponse.addErrorMessages(geResponse.getErrorMessages());

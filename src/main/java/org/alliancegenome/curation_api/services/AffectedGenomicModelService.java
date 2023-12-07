@@ -17,7 +17,7 @@ import org.alliancegenome.curation_api.model.entities.associations.constructAsso
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
-import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AffectedGenomicModelDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -30,7 +30,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> {
+public class AffectedGenomicModelService extends SubmittedObjectCrudService<AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> {
 
 	@Inject
 	AffectedGenomicModelDAO agmDAO;
@@ -78,10 +78,10 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
-		AffectedGenomicModel agm = agmDAO.find(curie);
+	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+		AffectedGenomicModel agm = agmDAO.find(id);
 		if (agm != null) {
-			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
+			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(id);
 			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
@@ -104,19 +104,19 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 					agmDAO.persist(agm);
 				}
 			} else {
-				agmDAO.remove(curie);
+				agmDAO.remove(id);
 			}
 		} else {
-			log.error("Failed getting AGM: " + curie);
+			log.error("Failed getting AGM: " + id);
 		}
 	}
 	
-	public List<String> getCuriesByDataProvider(String dataProvider) {
+	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
-		List<String> curies = agmDAO.findFilteredIds(params);
-		curies.removeIf(Objects::isNull);
-		return curies;
+		List<Long> ids = agmDAO.findFilteredIds(params);
+		ids.removeIf(Objects::isNull);
+		return ids;
 	}
 
 }

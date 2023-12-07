@@ -5,7 +5,7 @@
     "updated_by_curie": "",
     "date_created": "",
     "date_updated": "",
-    "agm_curie": "DATEST:AGM0001",
+    "agm_identifier": "DATEST:AGM0001",
     "do_term_curie": "DATEST:Disease0001",
     "data_provider_dto": {
       "internal": false,
@@ -24,16 +24,16 @@
       "DATEST:Evidence0001"
     ],
     "condition_relation_dtos": [],
-    "disease_genetic_modifier_curies": [],
+    "disease_genetic_modifier_identifiers": [],
     "disease_genetic_modifier_relation_name": "",
-    "with_gene_curies": [],
+    "with_gene_identifiers": [],
     "reference_curie": "PMID:25920554",
     "note_dtos": [],
     "annotation_type_name": "",
     "disease_qualifier_names": [],
-    "inferred_gene_curie": "",
-    "asserted_gene_curies": [],
-    "inferred_allele_curie": "",
-    "asserted_allele_curie": ""
+    "inferred_gene_identifier": "",
+    "asserted_gene_identifiers": [],
+    "inferred_allele_identifier": "",
+    "asserted_allele_identifier": ""
   }
 ]

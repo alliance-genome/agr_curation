@@ -3,8 +3,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -31,7 +31,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Variants")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface VariantCrudInterface extends BaseCurieCrudInterface<Variant>, BaseDTOCrudControllerInterface<Variant, VariantDTO> {
+public interface VariantCrudInterface extends SubmittedObjectCrudInterface<Variant>, BaseDTOCrudControllerInterface<Variant, VariantDTO> {
 
 	@POST
 	@Path("/bulk/{dataProvider}/variants")
@@ -41,8 +41,8 @@ public interface VariantCrudInterface extends BaseCurieCrudInterface<Variant>, B
 	@Override
 	@GET
 	@JsonView(View.VariantView.class)
-	@Path("/{curie}")
-	public ObjectResponse<Variant> get(@PathParam("curie") String curie);
+	@Path("/{identifierString}")
+	public ObjectResponse<Variant> get(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT

@@ -45,7 +45,6 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		setSQLDao(agmDiseaseAnnotationDAO);
 	}
 
-	@Override
 	public ObjectResponse<AGMDiseaseAnnotation> get(String identifier) {
 		SearchResponse<AGMDiseaseAnnotation> ret = findByField("curie", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
@@ -95,17 +94,13 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		return ret;
 	}
 
-	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
-
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
 			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-		List<String> annotationIdStrings = agmDiseaseAnnotationDAO.findFilteredIds(params);
-		annotationIdStrings.removeIf(Objects::isNull);
-		List<Long> annotationIds = annotationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		List<Long> annotationIds = agmDiseaseAnnotationDAO.findFilteredIds(params);
+		annotationIds.removeIf(Objects::isNull);
 		
 		return annotationIds;
 	}

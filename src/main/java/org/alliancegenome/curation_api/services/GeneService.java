@@ -19,7 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
-import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
@@ -34,7 +34,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
+public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> {
 
 	@Inject
 	GeneDAO geneDAO;
@@ -79,24 +79,24 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	
 	@Override
 	@Transactional
-	public ObjectResponse<Gene> delete(String curie) {
-		removeOrDeprecateNonUpdated(curie, "Gene DELETE API call");
+	public ObjectResponse<Gene> delete(Long id) {
+		removeOrDeprecateNonUpdated(id, "Gene DELETE API call");
 		ObjectResponse<Gene> ret = new ObjectResponse<>();
 		return ret;
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
-		Gene gene = geneDAO.find(curie);
+	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+		Gene gene = geneDAO.find(id);
 		if (gene != null) {
-			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
+			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(id);
 			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
 					anyReferencingEntities = true;
 			}
-			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(curie);
+			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(id);
 			for (Long orthId : referencingOrthologyPairs) {
 				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
 				if (referencingOrthoPair != null)
@@ -123,22 +123,22 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 				gene.setObsolete(true);
 				geneDAO.persist(gene);
 			} else {
-				geneDAO.remove(curie);
+				geneDAO.remove(id);
 			}
 		} else {
-			log.error("Failed getting gene: " + curie);
+			log.error("Failed getting gene: " + id);
 		}	
 	}
 
-	public List<String> getCuriesByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
-		List<String> curies = geneDAO.findFilteredIds(params);
-		curies.removeIf(Objects::isNull);
+		List<Long> ids = geneDAO.findFilteredIds(params);
+		ids.removeIf(Objects::isNull);
 
-		return curies;
+		return ids;
 	}
 
 }

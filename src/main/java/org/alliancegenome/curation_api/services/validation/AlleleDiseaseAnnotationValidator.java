@@ -90,18 +90,18 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	}
 
 	private Allele validateSubject(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || uiEntity.getSubject().getId() == null) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getCurie());
+		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getId().equals(dbEntity.getSubject().getId()))) {
 			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -113,13 +113,13 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		if (uiEntity.getInferredGene() == null)
 			return null;
 
-		Gene inferredGene = geneDAO.find(uiEntity.getInferredGene().getCurie());
+		Gene inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
 		if (inferredGene == null) {
 			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null || !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie()))) {
+		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null || !inferredGene.getId().equals(dbEntity.getInferredGene().getId()))) {
 			addMessageResponse("inferredGene", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -132,16 +132,16 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			return null;
 
 		List<Gene> assertedGenes = new ArrayList<Gene>();
-		List<String> previousCuries = new ArrayList<String>();
+		List<Long> previousIds = new ArrayList<Long>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes()))
-			previousCuries = dbEntity.getAssertedGenes().stream().map(Gene::getCurie).collect(Collectors.toList());
+			previousIds = dbEntity.getAssertedGenes().stream().map(Gene::getId).collect(Collectors.toList());
 		for (Gene gene : uiEntity.getAssertedGenes()) {
-			Gene assertedGene = geneDAO.find(gene.getCurie());
+			Gene assertedGene = geneDAO.find(gene.getId());
 			if (assertedGene == null) {
 				addMessageResponse("assertedGenes", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
-			if (assertedGene.getObsolete() && !previousCuries.contains(assertedGene.getCurie())) {
+			if (assertedGene.getObsolete() && !previousIds.contains(assertedGene.getId())) {
 				addMessageResponse("assertedGenes", ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}
