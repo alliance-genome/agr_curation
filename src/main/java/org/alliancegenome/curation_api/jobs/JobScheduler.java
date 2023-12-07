@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
+import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
@@ -54,6 +55,8 @@ public class JobScheduler {
 	BulkLoadGroupDAO groupDAO;
 	@Inject
 	BulkLoadDAO bulkLoadDAO;
+	@Inject
+	SlackNotifier slackNotifier;
 
 	@ConfigProperty(name = "bulk.data.loads.schedulingEnabled")
 	Boolean loadSchedulingEnabled;
@@ -80,6 +83,7 @@ public class JobScheduler {
 							bf.setLocalFilePath(null);
 							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 							bf.setBulkloadStatus(JobStatus.FAILED);
+							slackNotifier.slackalert(bf.getErrorMessage());
 							bulkLoadFileDAO.merge(bf);
 						}
 					}
@@ -90,6 +94,7 @@ public class JobScheduler {
 					if (b.getBulkloadStatus().isRunning()) {
 						b.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 						b.setBulkloadStatus(JobStatus.FAILED);
+						slackNotifier.slackalert(b.getErrorMessage());
 						bulkLoadDAO.merge(b);
 					}
 				}
@@ -131,6 +136,7 @@ public class JobScheduler {
 									bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
 									bsl.setErrorMessage(e.getLocalizedMessage());
 									bsl.setBulkloadStatus(JobStatus.FAILED);
+									slackNotifier.slackalert(bsl.getErrorMessage());
 									Log.error(e.getLocalizedMessage());
 									bulkLoadDAO.merge(bsl);
 								}

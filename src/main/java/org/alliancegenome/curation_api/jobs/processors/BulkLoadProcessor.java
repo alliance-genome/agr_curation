@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.jobs.executors.BulkLoadJobExecutor;
+import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.fms.DataFile;
@@ -59,6 +60,9 @@ public class BulkLoadProcessor {
 	
 	@Inject
 	BulkLoadJobExecutor bulkLoadJobExecutor;
+	
+	@Inject
+	SlackNotifier slackNotifier;
 
 	@Inject
 	Event<PendingBulkLoadFileJobEvent> pendingFileJobEvents;
@@ -121,6 +125,7 @@ public class BulkLoadProcessor {
 				// bulkLoadFile.generateS3MD5Path());
 				bulkLoadFile.setErrorMessage("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
 				bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+				slackNotifier.slackalert(bulkLoadFile.getErrorMessage());
 			}
 			// log.info("Saving File: " + bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
@@ -133,6 +138,7 @@ public class BulkLoadProcessor {
 		} else if (bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
 			bulkLoadFile.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path() + " Local and remote file missing");
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			slackNotifier.slackalert(bulkLoadFile.getErrorMessage());
 		}
 		log.info("Syncing with S3 Finished");
 	}
