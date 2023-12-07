@@ -101,14 +101,14 @@ public class LoadFileExecutor {
 		if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
 			bulkLoadFile.setErrorMessage("Missing Schema Version");
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFile.getErrorMessage());
+			slackNotifier.slackalert(bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			return false;
 		}
 		if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass)) {
 			bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFile.getErrorMessage());
+			slackNotifier.slackalert(bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			return false;
 		}
@@ -260,7 +260,7 @@ public class LoadFileExecutor {
 		}
 		bulkLoadFile.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-		slackNotifier.slackalert(bulkLoadFile.getErrorMessage());
+		slackNotifier.slackalert(bulkLoadFile);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
 }

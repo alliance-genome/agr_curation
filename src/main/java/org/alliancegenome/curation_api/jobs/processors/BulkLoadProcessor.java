@@ -125,7 +125,7 @@ public class BulkLoadProcessor {
 				// bulkLoadFile.generateS3MD5Path());
 				bulkLoadFile.setErrorMessage("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
 				bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-				slackNotifier.slackalert(bulkLoadFile.getErrorMessage());
+				slackNotifier.slackalert(bulkLoadFile);
 			}
 			// log.info("Saving File: " + bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
@@ -138,7 +138,7 @@ public class BulkLoadProcessor {
 		} else if (bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
 			bulkLoadFile.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path() + " Local and remote file missing");
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFile.getErrorMessage());
+			slackNotifier.slackalert(bulkLoadFile);
 		}
 		log.info("Syncing with S3 Finished");
 	}

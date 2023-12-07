@@ -83,7 +83,7 @@ public class JobScheduler {
 							bf.setLocalFilePath(null);
 							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 							bf.setBulkloadStatus(JobStatus.FAILED);
-							slackNotifier.slackalert(bf.getErrorMessage());
+							slackNotifier.slackalert(bf);
 							bulkLoadFileDAO.merge(bf);
 						}
 					}
@@ -94,7 +94,7 @@ public class JobScheduler {
 					if (b.getBulkloadStatus().isRunning()) {
 						b.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 						b.setBulkloadStatus(JobStatus.FAILED);
-						slackNotifier.slackalert(b.getErrorMessage());
+						slackNotifier.slackalert(b);
 						bulkLoadDAO.merge(b);
 					}
 				}
