@@ -224,6 +224,7 @@ public class BulkLoadProcessor {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);
+		slackNotifier.slackalert(bulkLoad);
 		bulkLoadDAO.merge(bulkLoad);
 		log.info("Load: " + bulkLoad.getName() + " is finished");
 	}
@@ -242,6 +243,7 @@ public class BulkLoadProcessor {
 		bulkLoadFile.setErrorMessage(message);
 		bulkLoadFile.setBulkloadStatus(status);
 		bulkLoadFile.setDateLastLoaded(OffsetDateTime.now());
+		slackNotifier.slackalert(bulkLoadFile);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		log.info("Load File: " + bulkLoadFile.getMd5Sum() + " is finished");
 	}

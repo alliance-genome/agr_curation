@@ -136,7 +136,7 @@ public class JobScheduler {
 									bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
 									bsl.setErrorMessage(e.getLocalizedMessage());
 									bsl.setBulkloadStatus(JobStatus.FAILED);
-									slackNotifier.slackalert(bsl.getErrorMessage());
+									slackNotifier.slackalert(bsl);
 									Log.error(e.getLocalizedMessage());
 									bulkLoadDAO.merge(bsl);
 								}

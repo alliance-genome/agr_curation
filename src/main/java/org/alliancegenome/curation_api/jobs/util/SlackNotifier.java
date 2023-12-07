@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.jobs.util;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.slack.api.Slack;
@@ -19,7 +21,7 @@ public class SlackNotifier {
 	@ConfigProperty(name = "slack.channels")
 	List<String> slackChannels = null;
 	
-	public void slackalert(String message) {
+	private void slackalert(String message) {
 
 		Slack slack = Slack.getInstance();
 
@@ -38,5 +40,15 @@ public class SlackNotifier {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void slackalert(BulkLoad bulkLoad) {
+		
+		
+	}
+
+	public void slackalert(BulkLoadFile bulkLoadFile) {
+		
+		
 	}
 }
