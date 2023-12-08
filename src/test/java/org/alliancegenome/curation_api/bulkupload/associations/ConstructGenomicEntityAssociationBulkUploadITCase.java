@@ -68,7 +68,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
+			body("entity.object.modEntityId", is(geneCurie)).
 			body("entity.subject.modEntityId", is(constructModEntityId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
@@ -96,7 +96,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			body("entity.modEntityId", is(constructModEntityId)).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].object.curie", is(geneCurie)).
+			body("entity.constructGenomicEntityAssociations[0].object.modEntityId", is(geneCurie)).
 			body("entity.constructGenomicEntityAssociations[0].subject", not(hasKey("constructGenomicEntityAssociations")));
 		
 		RestAssured.given().
@@ -106,7 +106,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].object.curie", is(geneCurie)).
+			body("entity.constructGenomicEntityAssociations[0].object.modEntityId", is(geneCurie)).
 			body("entity.constructGenomicEntityAssociations[0].object", not(hasKey("constructGenomicEntityAssociations")));
 	}
 	
@@ -121,7 +121,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
+			body("entity.object.modEntityId", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.internal", is(false)).
