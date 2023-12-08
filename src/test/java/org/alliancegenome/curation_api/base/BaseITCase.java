@@ -121,12 +121,12 @@ public class BaseITCase {
 			body("history.completedRecords", is(1));
 	}
 	
-	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String subtypeName, String name, Boolean obsolete) {
+	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String taxonCurie, String subtypeName, String name, Boolean obsolete) {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 		
 		AffectedGenomicModel model = new AffectedGenomicModel();
-		model.setCurie(curie);
+		model.setModEntityId(modEntityId);
 		model.setTaxon(getNCBITaxonTerm(taxonCurie));
 		model.setSubtype(subtype);
 		model.setName(name);
@@ -142,17 +142,17 @@ public class BaseITCase {
 		return model;
 	}
 
-	public Allele createAllele(String curie, String taxonCurie, Boolean obsolete, VocabularyTerm symbolNameTerm) {
+	public Allele createAllele(String modEntityId, String taxonCurie, Boolean obsolete, VocabularyTerm symbolNameTerm) {
 		Allele allele = new Allele();
-		allele.setCurie(curie);
+		allele.setModEntityId(modEntityId);
 		allele.setTaxon(getNCBITaxonTerm(taxonCurie));
 		allele.setObsolete(obsolete);
 		allele.setInternal(false);
 		
 		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
 		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(curie);
-		symbol.setFormatText(curie);
+		symbol.setDisplayText(modEntityId);
+		symbol.setFormatText(modEntityId);
 		
 		allele.setAlleleSymbol(symbol);
 
@@ -166,9 +166,9 @@ public class BaseITCase {
 		return allele;
 	}
 	
-	public BiologicalEntity createBiologicalEntity(String curie, String taxonCurie) {
+	public BiologicalEntity createBiologicalEntity(String modEntityId, String taxonCurie) {
 		BiologicalEntity bioEntity = new BiologicalEntity();
-		bioEntity.setCurie(curie);
+		bioEntity.setModEntityId(modEntityId);
 		bioEntity.setTaxon(getNCBITaxonTerm(taxonCurie));
 		
 		RestAssured.given().
@@ -315,16 +315,16 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Gene createGene(String curie, String taxonCurie, Boolean obsolete, VocabularyTerm symbolNameTerm) {
+	public Gene createGene(String modEntityId, String taxonCurie, Boolean obsolete, VocabularyTerm symbolNameTerm) {
 		Gene gene = new Gene();
-		gene.setCurie(curie);
+		gene.setModEntityId(modEntityId);
 		gene.setTaxon(getNCBITaxonTerm(taxonCurie));
 		gene.setObsolete(obsolete);
 		
 		GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
 		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(curie);
-		symbol.setFormatText(curie);
+		symbol.setDisplayText(modEntityId);
+		symbol.setFormatText(modEntityId);
 		
 		gene.setGeneSymbol(symbol);
 
@@ -604,10 +604,10 @@ public class BaseITCase {
 		return zfaTerm;
 	}
 
-	public AffectedGenomicModel getAffectedGenomicModel(String curie) {
+	public AffectedGenomicModel getAffectedGenomicModel(String identifier) {
 		ObjectResponse<AffectedGenomicModel> res = RestAssured.given().
 				when().
-				get("/api/agm/" + curie).
+				get("/api/agm/" + identifier).
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefAffectedGenomicModel());
@@ -626,10 +626,10 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
-	public Allele getAllele(String curie) {
+	public Allele getAllele(String identifier) {
 		ObjectResponse<Allele> res = RestAssured.given().
 				when().
-				get("/api/allele/" + curie).
+				get("/api/allele/" + identifier).
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefAllele());
@@ -648,10 +648,10 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 	
-	public AlleleGeneAssociation getAlleleGeneAssociation(String alleleCurie, String relationName, String geneCurie) {
+	public AlleleGeneAssociation getAlleleGeneAssociation(Long alleleId, String relationName, Long geneId) {
 		ObjectResponse<AlleleGeneAssociation> res = RestAssured.given().
 			when().
-			get("/api/allelegeneassociation/findBy" + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			get("/api/allelegeneassociation/findBy" + "?alleleId=" + alleleId + "&relationName=" + relationName + "&geneId=" + geneId).
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefAlleleGeneAssociation());
@@ -682,10 +682,10 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 	
-	public ConstructGenomicEntityAssociation getConstructGenomicEntityAssociation(Long constructId, String relationName, String genomicEntityCurie) {
+	public ConstructGenomicEntityAssociation getConstructGenomicEntityAssociation(Long constructId, String relationName, Long genomicEntityId) {
 		ObjectResponse<ConstructGenomicEntityAssociation> res = RestAssured.given().
 			when().
-			get("/api/constructgenomicentityassociation/findBy" + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + genomicEntityCurie).
+			get("/api/constructgenomicentityassociation/findBy" + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityId=" + genomicEntityId).
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefConstructGenomicEntityAssociation());
@@ -704,10 +704,10 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
-	public Gene getGene(String curie) {
+	public Gene getGene(String identifier) {
 		ObjectResponse<Gene> res = RestAssured.given().
 				when().
-				get("/api/gene/" + curie).
+				get("/api/gene/" + identifier).
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefGene());
@@ -999,12 +999,12 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public void loadAffectedGenomicModel(String curie, String name, String taxonCurie, String subtypeName, DataProvider dataProvider) throws Exception {
+	public void loadAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, DataProvider dataProvider) throws Exception {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 		
 		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setCurie(curie);
+		agm.setModEntityId(modEntityId);
 		agm.setTaxon(getNCBITaxonTerm(taxonCurie));
 		agm.setName(name);
 		agm.setSubtype(subtype);
@@ -1018,9 +1018,9 @@ public class BaseITCase {
 			statusCode(200);
 	}
 
-	public void loadAllele(String curie, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) throws Exception {
+	public void loadAllele(String identifier, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) throws Exception {
 		Allele allele = new Allele();
-		allele.setCurie(curie);
+		allele.setModEntityId(identifier);
 		allele.setTaxon(getNCBITaxonTerm(taxonCurie));
 		allele.setInternal(false);
 		allele.setDataProvider(dataProvider);
@@ -1105,16 +1105,16 @@ public class BaseITCase {
 			statusCode(200);
 	}
 	
-	public void loadGene(String curie, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) {
+	public void loadGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) {
 			Gene gene = new Gene();
-			gene.setCurie(curie);
+			gene.setModEntityId(modEntityId);
 			gene.setTaxon(getNCBITaxonTerm(taxonCurie));
 			gene.setDataProvider(dataProvider);
 			
 			GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
 			symbol.setNameType(symbolNameTerm);
-			symbol.setDisplayText(curie);
-			symbol.setFormatText(curie);
+			symbol.setDisplayText(modEntityId);
+			symbol.setFormatText(modEntityId);
 			
 			gene.setGeneSymbol(symbol);
 

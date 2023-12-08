@@ -23,6 +23,8 @@ import org.alliancegenome.curation_api.model.entities.associations.alleleAssocia
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
@@ -47,9 +49,13 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	@Inject
 	AlleleDAO alleleDAO;
 	@Inject
+	AlleleService alleleService;
+	@Inject
 	NoteDAO noteDAO;
 	@Inject
 	GeneDAO geneDAO;
+	@Inject
+	GeneService geneService;
 	@Inject
 	PersonService personService;
 	@Inject
@@ -135,13 +141,13 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return null;
 	}
 	
-	public ObjectResponse<AlleleGeneAssociation> getAssociation(String alleleCurie, String relationName, String geneCurie) {
+	public ObjectResponse<AlleleGeneAssociation> getAssociation(Long alleleId, String relationName, Long geneId) {
 		AlleleGeneAssociation association = null;
-		
+
 		Map<String, Object> params = new HashMap<>();
-		params.put("subject.curie", alleleCurie);
+		params.put("subject.id", alleleId);
 		params.put("relation.name", relationName);
-		params.put("object.curie", geneCurie);
+		params.put("object.id", geneId);
 
 		SearchResponse<AlleleGeneAssociation> resp = alleleGeneAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)

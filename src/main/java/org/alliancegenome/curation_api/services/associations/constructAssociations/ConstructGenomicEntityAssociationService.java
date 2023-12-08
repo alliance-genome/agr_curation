@@ -126,13 +126,13 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		return null;
 	}
 	
-	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(Long constructId, String relationName, String genomicEntityCurie) {
+	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(Long constructId, String relationName, Long genomicEntityId) {
 		ConstructGenomicEntityAssociation association = null;
 		
 		Map<String, Object> params = new HashMap<>();
 		params.put("subject.id", constructId);
 		params.put("relation.name", relationName);
-		params.put("object.curie", genomicEntityCurie);
+		params.put("object.id", genomicEntityId);
 
 		SearchResponse<ConstructGenomicEntityAssociation> resp = constructGenomicEntityAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)

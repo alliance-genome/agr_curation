@@ -205,7 +205,7 @@ public class AlleleITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		Allele allele = new Allele();
-		allele.setCurie(ALLELE);
+		allele.setModEntityId(ALLELE);
 		allele.setTaxon(taxon);
 		allele.setInCollection(mmpInCollection);
 		allele.setReferences(List.of(reference));
@@ -237,7 +237,7 @@ public class AlleleITCase extends BaseITCase {
 			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
-			body("entity.curie", is(ALLELE)).
+			body("entity.modEntityId", is(ALLELE)).
 			body("entity.taxon.curie", is(taxon.getCurie())).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -296,7 +296,7 @@ public class AlleleITCase extends BaseITCase {
 	public void editAllele() {
 		Allele allele = getAllele(ALLELE);
 		allele.setCreatedBy(person);
-		allele.setCurie(ALLELE);
+		allele.setModEntityId(ALLELE);
 		allele.setTaxon(taxon2);
 		allele.setInCollection(wgsInCollection);
 		allele.setReferences(List.of(reference2));
@@ -391,7 +391,7 @@ public class AlleleITCase extends BaseITCase {
 			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
-			body("entity.curie", is(ALLELE)).
+			body("entity.modEntityId", is(ALLELE)).
 			body("entity.inCollection.name", is(wgsInCollection.getName())).
 			body("entity.references[0].curie", is(reference2.getCurie())).
 			body("entity.dateCreated", is(datetime2.toString())).
@@ -459,16 +459,16 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modInternalId")).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(4)
-	public void editAlleleWithMissingCurie() {
+	public void editAlleleWithMissingModEntityId() {
 		Allele allele = getAllele(ALLELE);
-		allele.setCurie(null);
+		allele.setModEntityId(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -478,7 +478,7 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modInternalId"));
 	}
 	
 	@Test
@@ -506,7 +506,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(6)
 	public void createAlleleWithEmptyRequiredFields() {
 		Allele allele = new Allele();
-		allele.setCurie("");
+		allele.setModEntityId("");
 		allele.setTaxon(taxon);
 		allele.setInCollection(mmpInCollection);
 		allele.setReferences(List.of(reference));
@@ -531,14 +531,14 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modInternalId"));
 	}
 	
 	@Test
 	@Order(7)
-	public void editAlleleWithEmptyCurie() {
+	public void editAlleleWithEmptyModEntityId() {
 		Allele allele = getAllele(ALLELE);
-		allele.setCurie("");
+		allele.setModEntityId("");
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -548,14 +548,14 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modInternalId"));
 	}
 	
 	@Test
 	@Order(8)
 	public void createAlleleWithMissingRequiredFieldsLevel2() {
 		Allele allele = new Allele();
-		allele.setCurie("Allele:0008");
+		allele.setModEntityId("Allele:0008");
 		allele.setTaxon(taxon);
 		
 		AlleleMutationTypeSlotAnnotation invalidMutationType = new AlleleMutationTypeSlotAnnotation();
@@ -697,7 +697,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(10)
 	public void createAlleleWithEmptyRequiredFieldsLevel2() {
 		Allele allele = new Allele();
-		allele.setCurie("Allele:0010");
+		allele.setModEntityId("Allele:0010");
 		allele.setTaxon(taxon);
 		
 		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(null, "", symbolNameType, null, null);
@@ -802,7 +802,7 @@ public class AlleleITCase extends BaseITCase {
 		invalidNote.setFreeText("Invalid");
 		
 		Allele allele = new Allele();
-		allele.setCurie("Allele:0012");
+		allele.setModEntityId("Allele:0012");
 		allele.setTaxon(nonPersistedTaxon);
 		allele.setInCollection(dominantInheritanceMode);
 		allele.setReferences(List.of(nonPersistedReference));
@@ -1010,7 +1010,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(14)
 	public void createAlleleWithObsoleteFields() {
 		Allele allele = new Allele();
-		allele.setCurie("Allele:0012");
+		allele.setModEntityId("Allele:0012");
 		allele.setTaxon(obsoleteTaxon);
 		allele.setInCollection(obsoleteCollection);
 		allele.setReferences(List.of(obsoleteReference));
@@ -1359,7 +1359,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(19)
 	public void createAlleleWithOnlyRequiredFieldsLevel1() {
 		Allele allele = new Allele();
-		allele.setCurie("ALLELE:0019");
+		allele.setModEntityId("ALLELE:0019");
 		allele.setTaxon(taxon);
 		allele.setAlleleSymbol(alleleSymbol);
 		
@@ -1376,7 +1376,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(20)
 	public void createAlleleWithOnlyRequiredFieldsLevel2() {
 		Allele allele = new Allele();
-		allele.setCurie("ALLELE:0020");
+		allele.setModEntityId("ALLELE:0020");
 		allele.setTaxon(taxon);
 
 		AlleleMutationTypeSlotAnnotation minimalAlleleMutationType = createAlleleMutationTypeSlotAnnotation(null, List.of(soTerm));
@@ -1417,7 +1417,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(21)
 	public void createAlleleWithDuplicateNote() {
 		Allele allele = new Allele();
-		allele.setCurie("ALLELE:0021");
+		allele.setModEntityId("ALLELE:0021");
 		allele.setTaxon(taxon);
 		
 		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);

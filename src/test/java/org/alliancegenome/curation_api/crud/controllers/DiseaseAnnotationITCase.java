@@ -202,11 +202,11 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
 		nonPersistedAllele = new Allele();
-		nonPersistedAllele.setCurie("ALLELE:Invalid");
+		nonPersistedAllele.setModEntityId("ALLELE:Invalid");
 		nonPersistedGene = new Gene();
-		nonPersistedGene.setCurie("GENE:Invalid");
+		nonPersistedGene.setModEntityId("GENE:Invalid");
 		nonPersistedAgm = new AffectedGenomicModel();
-		nonPersistedAgm.setCurie("AGM:Invalid");
+		nonPersistedAgm.setModEntityId("AGM:Invalid");
 		nonPersistedReference = new Reference();
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		nonPersistedCondition = new ExperimentalCondition();
@@ -253,8 +253,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is("GENE:da0001|is_implicated_in|false|DOID:da0001|AGRKB:100000005|ECO:da00001|HGNC:1|has_condition|ZECO:da001|severity|ameliorated_by|SGD:da0002")).
 			body("entity.modEntityId", is(GENE_DISEASE_ANNOTATION)).
-			body("entity.subject.curie", is(gene.getCurie())).
-			body("entity.object.curie", is(doTerm.getCurie())).
+			body("entity.subject.modEntityId", is(gene.getModEntityId())).
+			body("entity.object.modEntityId", is(doTerm.getCurie())).
 			body("entity.relation.name", is(alleleAndGeneRelation.getName())).
 			body("entity.negated", is(false)).
 			body("entity.internal", is(false)).
@@ -266,11 +266,11 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.geneticSex.name", is(geneticSex.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation.getName())).
-			body("entity.diseaseGeneticModifiers[0].curie", is(agm2.getCurie())).
+			body("entity.diseaseGeneticModifiers[0].modEntityId", is(agm2.getModEntityId())).
 			body("entity.annotationType.name", is(annotationType.getName())).
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier.getName())).
-			body("entity.with[0].curie", is(withGene.getCurie())).
-			body("entity.sgdStrainBackground.curie", is(agm.getCurie())).
+			body("entity.with[0].modEntityId", is(withGene.getModEntityId())).
+			body("entity.sgdStrainBackground.modEntityId", is(agm.getModEntityId())).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].noteType.name", is(relatedNote.getNoteType().getName())).
 			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
@@ -324,8 +324,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is("ALLELE:da0001|is_implicated_in|false|DOID:da0001|AGRKB:100000005|ECO:da00001|HGNC:1|has_condition|ZECO:da001|severity|ameliorated_by|SGD:da0002")).
 			body("entity.modEntityId", is(ALLELE_DISEASE_ANNOTATION)).
-			body("entity.subject.curie", is(allele.getCurie())).
-			body("entity.object.curie", is(doTerm.getCurie())).
+			body("entity.subject.modEntityId", is(allele.getModEntityId())).
+			body("entity.object.modEntityId", is(doTerm.getCurie())).
 			body("entity.relation.name", is(alleleAndGeneRelation.getName())).
 			body("entity.negated", is(false)).
 			body("entity.internal", is(false)).
@@ -337,10 +337,10 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.geneticSex.name", is(geneticSex.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation.getName())).
-			body("entity.diseaseGeneticModifiers[0].curie", is(agm2.getCurie())).
+			body("entity.diseaseGeneticModifiers[0].modEntityId", is(agm2.getModEntityId())).
 			body("entity.annotationType.name", is(annotationType.getName())).
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier.getName())).
-			body("entity.with[0].curie", is(withGene.getCurie())).
+			body("entity.with[0].modEntityId", is(withGene.getModEntityId())).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].noteType.name", is(relatedNote.getNoteType().getName())).
 			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
@@ -353,9 +353,9 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.conditionRelations[0].internal", is(false)).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation())).
 			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation())).
-			body("entity.inferredGene.curie", is(gene.getCurie())).
+			body("entity.inferredGene.modEntityId", is(gene.getModEntityId())).
 			body("entity.assertedGenes", hasSize(1)).
-			body("entity.assertedGenes[0].curie", is(gene2.getCurie()));
+			body("entity.assertedGenes[0].modEntityId", is(gene2.getModEntityId()));
 	}
 	
 	@Test
@@ -399,8 +399,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is("SGD:da0001|is_model_of|false|DOID:da0001|AGRKB:100000005|ECO:da00001|HGNC:1|has_condition|ZECO:da001|severity|ameliorated_by|SGD:da0002")).
 			body("entity.modEntityId", is(AGM_DISEASE_ANNOTATION)).
-			body("entity.subject.curie", is(agm.getCurie())).
-			body("entity.object.curie", is(doTerm.getCurie())).
+			body("entity.subject.modEntityId", is(agm.getModEntityId())).
+			body("entity.object.modEntityId", is(doTerm.getCurie())).
 			body("entity.relation.name", is(agmRelation.getName())).
 			body("entity.negated", is(false)).
 			body("entity.internal", is(false)).
@@ -412,10 +412,10 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.geneticSex.name", is(geneticSex.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation.getName())).
-			body("entity.diseaseGeneticModifiers[0].curie", is(agm2.getCurie())).
+			body("entity.diseaseGeneticModifiers[0].modEntityId", is(agm2.getModEntityId())).
 			body("entity.annotationType.name", is(annotationType.getName())).
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier.getName())).
-			body("entity.with[0].curie", is(withGene.getCurie())).
+			body("entity.with[0].modEntityId", is(withGene.getModEntityId())).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].noteType.name", is(relatedNote.getNoteType().getName())).
 			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
@@ -428,11 +428,11 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.conditionRelations[0].internal", is(false)).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation())).
 			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation())).
-			body("entity.inferredGene.curie", is(gene.getCurie())).
+			body("entity.inferredGene.modEntityId", is(gene.getModEntityId())).
 			body("entity.assertedGenes", hasSize(1)).
-			body("entity.assertedGenes[0].curie", is(gene2.getCurie())).
-			body("entity.inferredAllele.curie", is(allele.getCurie())).
-			body("entity.assertedAllele.curie", is(allele2.getCurie()));
+			body("entity.assertedGenes[0].modEntityId", is(gene2.getModEntityId())).
+			body("entity.inferredAllele.modEntityId", is(allele.getModEntityId())).
+			body("entity.assertedAllele.modEntityId", is(allele2.getModEntityId()));
 	}
 	
 	@Test
@@ -487,8 +487,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is("GENE:da0002|is_marker_for|true|DOID:da0002|AGRKB:100000006|ECO:da00002|HGNC:2|induced_by|ZECO:da002|onset|exacerbated_by|SGD:da0001")).
 			body("entity.modEntityId", is(GENE_DISEASE_ANNOTATION)).
-			body("entity.subject.curie", is(gene2.getCurie())).
-			body("entity.object.curie", is(doTerm2.getCurie())).
+			body("entity.subject.modEntityId", is(gene2.getModEntityId())).
+			body("entity.object.modEntityId", is(doTerm2.getCurie())).
 			body("entity.relation.name", is(geneRelation.getName())).
 			body("entity.negated", is(true)).
 			body("entity.internal", is(true)).
@@ -500,11 +500,11 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.geneticSex.name", is(geneticSex2.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2.getName())).
-			body("entity.diseaseGeneticModifiers[0].curie", is(agm.getCurie())).
+			body("entity.diseaseGeneticModifiers[0].modEntityId", is(agm.getModEntityId())).
 			body("entity.annotationType.name", is(annotationType2.getName())).
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier2.getName())).
-			body("entity.with[0].curie", is(withGene2.getCurie())).
-			body("entity.sgdStrainBackground.curie", is(agm2.getCurie())).
+			body("entity.with[0].modEntityId", is(withGene2.getModEntityId())).
+			body("entity.sgdStrainBackground.modEntityId", is(agm2.getModEntityId())).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].noteType.name", is(editedNote.getNoteType().getName())).
 			body("entity.relatedNotes[0].freeText", is(editedNote.getFreeText())).
@@ -571,8 +571,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is("ALLELE:da0002|is_implicated_in|true|DOID:da0002|AGRKB:100000006|ECO:da00002|HGNC:2|induced_by|ZECO:da002|onset|exacerbated_by|SGD:da0001")).
 			body("entity.modEntityId", is(ALLELE_DISEASE_ANNOTATION)).
-			body("entity.subject.curie", is(allele2.getCurie())).
-			body("entity.object.curie", is(doTerm2.getCurie())).
+			body("entity.subject.modEntityId", is(allele2.getModEntityId())).
+			body("entity.object.modEntityId", is(doTerm2.getCurie())).
 			body("entity.relation.name", is(alleleAndGeneRelation.getName())).
 			body("entity.negated", is(true)).
 			body("entity.internal", is(true)).
@@ -584,10 +584,10 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.geneticSex.name", is(geneticSex2.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2.getName())).
-			body("entity.diseaseGeneticModifiers[0].curie", is(agm.getCurie())).
+			body("entity.diseaseGeneticModifiers[0].modEntityId", is(agm.getModEntityId())).
 			body("entity.annotationType.name", is(annotationType2.getName())).
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier2.getName())).
-			body("entity.with[0].curie", is(withGene2.getCurie())).
+			body("entity.with[0].modEntityId", is(withGene2.getModEntityId())).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].noteType.name", is(editedNote.getNoteType().getName())).
 			body("entity.relatedNotes[0].freeText", is(editedNote.getFreeText())).
@@ -600,9 +600,9 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.conditionRelations[0].internal", is(true)).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation())).
 			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation())).
-			body("entity.inferredGene.curie", is(gene2.getCurie())).
+			body("entity.inferredGene.modEntityId", is(gene2.getModEntityId())).
 			body("entity.assertedGenes", hasSize(1)).
-			body("entity.assertedGenes[0].curie", is(gene.getCurie()));
+			body("entity.assertedGenes[0].modEntityId", is(gene.getModEntityId()));
 	}
 	
 	@Test
@@ -660,8 +660,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is("SGD:da0002|is_exacerbated_model_of|true|DOID:da0002|AGRKB:100000006|ECO:da00002|HGNC:2|induced_by|ZECO:da002|onset|exacerbated_by|SGD:da0001")).
 			body("entity.modEntityId", is(AGM_DISEASE_ANNOTATION)).
-			body("entity.subject.curie", is(agm2.getCurie())).
-			body("entity.object.curie", is(doTerm2.getCurie())).
+			body("entity.subject.modEntityId", is(agm2.getModEntityId())).
+			body("entity.object.modEntityId", is(doTerm2.getCurie())).
 			body("entity.relation.name", is(agmRelation2.getName())).
 			body("entity.negated", is(true)).
 			body("entity.internal", is(true)).
@@ -673,10 +673,10 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.geneticSex.name", is(geneticSex2.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2.getName())).
-			body("entity.diseaseGeneticModifiers[0].curie", is(agm.getCurie())).
+			body("entity.diseaseGeneticModifiers[0].modEntityId", is(agm.getModEntityId())).
 			body("entity.annotationType.name", is(annotationType2.getName())).
 			body("entity.diseaseQualifiers[0].name", is(diseaseQualifier2.getName())).
-			body("entity.with[0].curie", is(withGene2.getCurie())).
+			body("entity.with[0].modEntityId", is(withGene2.getModEntityId())).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].noteType.name", is(editedNote.getNoteType().getName())).
 			body("entity.relatedNotes[0].freeText", is(editedNote.getFreeText())).
@@ -689,11 +689,11 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.conditionRelations[0].internal", is(true)).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider2.getSourceOrganization().getAbbreviation())).
 			body("entity.secondaryDataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation())).
-			body("entity.inferredGene.curie", is(gene2.getCurie())).
+			body("entity.inferredGene.modEntityId", is(gene2.getModEntityId())).
 			body("entity.assertedGenes", hasSize(1)).
-			body("entity.assertedGenes[0].curie", is(gene.getCurie())).
-			body("entity.inferredAllele.curie", is(allele2.getCurie())).
-			body("entity.assertedAllele.curie", is(allele.getCurie()));
+			body("entity.assertedGenes[0].modEntityId", is(gene.getModEntityId())).
+			body("entity.inferredAllele.modEntityId", is(allele2.getModEntityId())).
+			body("entity.assertedAllele.modEntityId", is(allele.getModEntityId()));
 	}
 	
 	@Test

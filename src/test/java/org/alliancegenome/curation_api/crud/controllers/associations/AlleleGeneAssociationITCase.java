@@ -114,12 +114,12 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + allele.getCurie() + "&relationName=" + relation.getName() + "&geneCurie=" + gene.getCurie()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relation.getName() + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relation.getName())).
-			body("entity.object.curie", is(gene.getCurie())).
-			body("entity.subject.curie", is(allele.getCurie())).
+			body("entity.object.modEntityId", is(gene.getModEntityId())).
+			body("entity.subject.modEntityId", is(allele.getModEntityId())).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference.getCurie())).
 			body("entity.evidenceCode.curie", is(ecoTerm.getCurie())).
@@ -142,7 +142,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].object.curie", is(gene.getCurie())).
+			body("entity.alleleGeneAssociations[0].object.modEntityId", is(gene.getModEntityId())).
 			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
 		
 		RestAssured.given().
@@ -152,14 +152,14 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].object.curie", is(gene.getCurie())).
+			body("entity.alleleGeneAssociations[0].object.modEntityId", is(gene.getModEntityId())).
 			body("entity.alleleGeneAssociations[0].object", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
 	@Order(2)
 	public void editAlleleGeneAssociation() {
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele.getCurie(), relation.getName(), gene.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele.getId(), relation.getName(), gene.getId());
 		association.setSubject(allele2);
 		association.setRelation(relation2);
 		association.setObject(gene2);
@@ -179,12 +179,12 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + allele2.getCurie() + "&relationName=" + relation2.getName() + "&geneCurie=" + gene2.getCurie()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele2.getId() + "&relationName=" + relation2.getName() + "&geneId=" + gene2.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relation2.getName())).
-			body("entity.object.curie", is(gene2.getCurie())).
-			body("entity.subject.curie", is(allele2.getCurie())).
+			body("entity.object.modEntityId", is(gene2.getModEntityId())).
+			body("entity.subject.modEntityId", is(allele2.getModEntityId())).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2.getCurie())).
 			body("entity.evidenceCode.curie", is(ecoTerm2.getCurie())).
@@ -269,7 +269,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Test
 	@Order(6)
 	public void editAlleleGeneAssociationWithMissingRequiredFieldsLevel1() {
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getCurie(), relation2.getName(), gene2.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 		association.setSubject(null);
 		association.setRelation(null);
 		association.setObject(null);
@@ -290,7 +290,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Test
 	@Order(7)
 	public void editAlleleGeneAssociationWithMissingRequiredFieldsLevel2() {
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getCurie(), relation2.getName(), gene2.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 	
 		Note invalidNote = association.getRelatedNote();
 		invalidNote.setFreeText(null);
@@ -313,7 +313,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Test
 	@Order(8)
 	public void editAlleleGeneAssociationWithEmptyRequiredFieldsLevel2() {
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getCurie(), relation2.getName(), gene2.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 		
 		Note invalidNote = association.getRelatedNote();
 		invalidNote.setFreeText("");
@@ -334,9 +334,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Order(9)
 	public void createAlleleGeneAssociationWithInvalidFields() {
 		Allele nonPersistedAllele = new Allele();
-		nonPersistedAllele.setCurie("NP:Allele01");
+		nonPersistedAllele.setModEntityId("NP:Allele01");
 		Gene nonPersistedGene = new Gene();
-		nonPersistedGene.setCurie("NP:Gene01");
+		nonPersistedGene.setModEntityId("NP:Gene01");
 		Reference nonPersistedReference = new Reference();
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		ECOTerm nonPersistedEcoTerm = new ECOTerm();
@@ -377,9 +377,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Order(9)
 	public void editAlleleGeneAssociationWithInvalidFields() {
 		Allele nonPersistedAllele = new Allele();
-		nonPersistedAllele.setCurie("NP:Allele01");
+		nonPersistedAllele.setModEntityId("NP:Allele01");
 		Gene nonPersistedGene = new Gene();
-		nonPersistedGene.setCurie("NP:Gene01");
+		nonPersistedGene.setModEntityId("NP:Gene01");
 		Reference nonPersistedReference = new Reference();
 		nonPersistedReference.setCurie("AGRKB:Invalid");
 		ECOTerm nonPersistedEcoTerm = new ECOTerm();
@@ -390,7 +390,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		invalidNote.setReferences(List.of(nonPersistedReference));
 		invalidNote.setFreeText("Invalid");
 		
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getCurie(), relation2.getName(), gene2.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 		association.setSubject(nonPersistedAllele);
 		association.setRelation(noteType);
 		association.setObject(nonPersistedGene);
@@ -455,7 +455,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Test
 	@Order(11)
 	public void editAlleleGeneAssociationWithObsoleteFields() {
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getCurie(), relation2.getName(), gene2.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 		
 		association.setSubject(obsoleteAllele);
 		association.setRelation(obsoleteRelation);
@@ -490,7 +490,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Test
 	@Order(12)
 	public void editAlleleGeneAssociationWithNullNonRequiredFieldsLevel2() {
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getCurie(), relation2.getName(), gene2.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 		
 		Note editedNote = association.getRelatedNote();
 		editedNote.setReferences(null);
@@ -505,7 +505,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + allele2.getCurie() + "&relationName=" + relation2.getName() + "&geneCurie=" + gene2.getCurie()).
+			get(alleleGeneAssociationGetEndpoint + "?allleleId=" + allele2.getId() + "&relationName=" + relation2.getName() + "&geneId=" + gene2.getId()).
 			then().
 			statusCode(200).
 			body("entity", hasKey("relatedNote")).
@@ -515,7 +515,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Test
 	@Order(13)
 	public void editAlleleGeneAssociationWithNullNonRequiredFieldsLevel1() {
-		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getCurie(), relation2.getName(), gene2.getCurie());
+		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 		
 		association.setEvidence(null);
 		association.setEvidenceCode(null);
@@ -531,7 +531,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + allele2.getCurie() + "&relationName=" + relation2.getName() + "&geneCurie=" + gene2.getCurie()).
+			get(alleleGeneAssociationGetEndpoint + "?allleleId=" + allele2.getId() + "&relationName=" + relation2.getName() + "&geneId=" + gene2.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("evidence"))).
