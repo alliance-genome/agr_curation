@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -18,6 +17,7 @@ import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthol
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
@@ -34,7 +34,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 	@Inject
 	GeneToGeneOrthologyGeneratedDAO generatedOrthologyDAO;
 	@Inject
-	GeneDAO geneDAO;
+	GeneService geneService;
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject
@@ -63,7 +63,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		
 		Gene subjectGene = null;
 		if (StringUtils.isNotBlank(dto.getGene1())) {
-			subjectGene = geneDAO.findByIdentifierString(subjectGeneIdentifier);
+			subjectGene = geneService.findByIdentifierString(subjectGeneIdentifier);
 			if (subjectGene == null) {
 				orthologyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE + " (" + subjectGeneIdentifier + ")");
 			} else {
@@ -83,7 +83,7 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		
 		Gene objectGene = null;
 		if (StringUtils.isNotBlank(dto.getGene2())) {
-			objectGene = geneDAO.findByIdentifierString(objectGeneIdentifier);
+			objectGene = geneService.findByIdentifierString(objectGeneIdentifier);
 			if (objectGene == null) {
 				orthologyResponse.addErrorMessage("gene2", ValidationConstants.INVALID_MESSAGE + " (" + objectGeneIdentifier + ")");
 			} else {

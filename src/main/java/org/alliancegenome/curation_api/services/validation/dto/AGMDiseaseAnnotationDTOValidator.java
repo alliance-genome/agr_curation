@@ -6,9 +6,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -21,6 +18,9 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
+import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -37,11 +37,11 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 	@Inject
 	VocabularyTermService vocabularyTermService;
 	@Inject
-	AffectedGenomicModelDAO agmDAO;
+	AffectedGenomicModelService agmService;
 	@Inject
-	GeneDAO geneDAO;
+	GeneService geneService;
 	@Inject
-	AlleleDAO alleleDAO;
+	AlleleService alleleService;
 
 	public AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException, ObjectValidationException {
 
@@ -58,7 +58,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		if (StringUtils.isBlank(dto.getAgmIdentifier())) {
 			adaResponse.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			agm = agmDAO.findByIdentifierString(dto.getAgmIdentifier());
+			agm = agmService.findByIdentifierString(dto.getAgmIdentifier());
 			if (agm == null) {
 				adaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ")");
 			} else {
@@ -108,7 +108,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		}
 
 		if (StringUtils.isNotBlank(dto.getInferredGeneIdentifier())) {
-			Gene inferredGene = geneDAO.findByIdentifierString(dto.getInferredGeneIdentifier());
+			Gene inferredGene = geneService.findByIdentifierString(dto.getInferredGeneIdentifier());
 			if (inferredGene == null)
 				adaResponse.addErrorMessage("inferred_gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredGeneIdentifier() + ")");
 			annotation.setInferredGene(inferredGene);
@@ -119,7 +119,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		if (CollectionUtils.isNotEmpty(dto.getAssertedGeneIdentifiers())) {
 			List<Gene> assertedGenes = new ArrayList<>();
 			for (String assertedGeneIdentifier : dto.getAssertedGeneIdentifiers()) {
-				Gene assertedGene = geneDAO.findByIdentifierString(assertedGeneIdentifier);
+				Gene assertedGene = geneService.findByIdentifierString(assertedGeneIdentifier);
 				if (assertedGene == null) {
 					adaResponse.addErrorMessage("asserted_gene_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + assertedGeneIdentifier + ")");
 				} else {
@@ -132,7 +132,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		}
 
 		if (StringUtils.isNotBlank(dto.getInferredAlleleIdentifier())) {
-			Allele inferredAllele = alleleDAO.findByIdentifierString(dto.getInferredAlleleIdentifier());
+			Allele inferredAllele = alleleService.findByIdentifierString(dto.getInferredAlleleIdentifier());
 			if (inferredAllele == null)
 				adaResponse.addErrorMessage("inferred_allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredAlleleIdentifier() + ")");
 			annotation.setInferredAllele(inferredAllele);
@@ -141,7 +141,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		}
 
 		if (StringUtils.isNotBlank(dto.getAssertedAlleleIdentifier())) {
-			Allele assertedAllele = alleleDAO.findByIdentifierString(dto.getAssertedAlleleIdentifier());
+			Allele assertedAllele = alleleService.findByIdentifierString(dto.getAssertedAlleleIdentifier());
 			if (assertedAllele == null)
 				adaResponse.addErrorMessage("asserted_allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAssertedAlleleIdentifier() + ")");
 			annotation.setAssertedAllele(assertedAllele);

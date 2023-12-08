@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services.validation.dto;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -21,6 +20,7 @@ import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +40,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 	@Inject
 	AnatomicalTermService anatomicalTermService;
 	@Inject
-	NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject
 	GoTermService goTermService;
 	@Inject
@@ -103,10 +103,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
 		NCBITaxonTerm conditionTaxon = null;
 		if (StringUtils.isNotBlank(dto.getConditionTaxonCurie())) {
-			conditionTaxon = ncbiTaxonTermDAO.findByCurie(dto.getConditionTaxonCurie());
-			if (conditionTaxon == null) {
-				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxonCurie());
-			}
+			conditionTaxon = ncbiTaxonTermService.getTaxonFromDB(dto.getConditionTaxonCurie());
 			if (conditionTaxon == null)
 				ecResponse.addErrorMessage("condition_taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionTaxonCurie() + ")");
 		}

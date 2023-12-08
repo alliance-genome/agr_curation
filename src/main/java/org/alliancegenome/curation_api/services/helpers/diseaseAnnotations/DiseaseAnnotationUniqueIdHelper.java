@@ -47,9 +47,9 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		return uniqueId.getUniqueId();
 	}
 
-	public static String getDiseaseAnnotationUniqueId(DiseaseAnnotationDTO annotationDTO, String subjectCurie, String refCurie) {
+	public static String getDiseaseAnnotationUniqueId(DiseaseAnnotationDTO annotationDTO, String subjectIdentifier, String refCurie) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
-		uniqueId.add(subjectCurie);
+		uniqueId.add(subjectIdentifier);
 		uniqueId.add(annotationDTO.getDiseaseRelationName());
 		if (annotationDTO.getNegated()) {
 			uniqueId.add(annotationDTO.getNegated().toString());
@@ -70,7 +70,7 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		}
 		uniqueId.addList(annotationDTO.getDiseaseQualifierNames());
 		uniqueId.add(annotationDTO.getDiseaseGeneticModifierRelationName());
-		uniqueId.addList(annotationDTO.getDiseaseGeneticModifierCuries());
+		uniqueId.addList(annotationDTO.getDiseaseGeneticModifierIdentifiers());
 		return uniqueId.getUniqueId();
 	}
 
@@ -87,8 +87,7 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 			uniqueId.add(annotation.getSingleReference().getCurie());
 		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes()))
 			uniqueId.addList(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()));
-		if (CollectionUtils.isNotEmpty(annotation.getWith()))
-			uniqueId.addList(annotation.getWith().stream().map(Gene::getCurie).collect(Collectors.toList()));
+		uniqueId.addSubmittedObjectList(annotation.getWith());
 		if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
 			uniqueId.addList(annotation.getConditionRelations().stream().map(condition -> {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
@@ -101,8 +100,7 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 			uniqueId.addList(annotation.getDiseaseQualifiers().stream().map(VocabularyTerm::getName).collect(Collectors.toList()));
 		if (annotation.getDiseaseGeneticModifierRelation() != null)
 			uniqueId.add(annotation.getDiseaseGeneticModifierRelation().getName());
-		if (CollectionUtils.isNotEmpty(annotation.getDiseaseGeneticModifiers()))
-			uniqueId.addList(annotation.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getCurie).collect(Collectors.toList()));
+		uniqueId.addSubmittedObjectList(annotation.getDiseaseGeneticModifiers());
 		return uniqueId.getUniqueId();
 	}
 
@@ -138,7 +136,7 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		return uniqueId.getUniqueId();
 	}
 
-	public String getEvidenceCurie(EvidenceFmsDTO dto) {
+	public String getEvidenceCuri(EvidenceFmsDTO dto) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 
 		if (dto.getPublication().getCrossReference() != null) {

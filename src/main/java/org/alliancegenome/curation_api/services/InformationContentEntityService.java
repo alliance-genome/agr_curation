@@ -23,7 +23,7 @@ public class InformationContentEntityService extends CurieObjectCrudService<Info
 	}
 
 	public InformationContentEntity retrieveFromDbOrLiteratureService(String curieOrXref) {
-		InformationContentEntity ice = informationContentEntityDAO.findByCurie(curieOrXref);
+		InformationContentEntity ice = findByCurie(curieOrXref);
 		if (ice == null)
 			ice = referenceService.retrieveFromDbOrLiteratureService(curieOrXref);
 

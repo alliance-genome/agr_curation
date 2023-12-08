@@ -1,10 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
-import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
-import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
+import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 
 import jakarta.annotation.PostConstruct;
@@ -12,19 +12,19 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class BiologicalEntityService extends SubmittedObjectCrudService<BiologicalEntity, BiologicalEntityDTO, BiologicalEntityDAO> {
+public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEntity, GenomicEntityDTO, GenomicEntityDAO> {
 
 	@Inject
-	BiologicalEntityDAO biologicalEntityDAO;
+	GenomicEntityDAO genomicEntityDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(biologicalEntityDAO);
+		setSQLDao(genomicEntityDAO);
 	}
 
 	@Override
-	public BiologicalEntity upsert(BiologicalEntityDTO dto, BackendBulkDataProvider dataProvider)
+	public GenomicEntity upsert(GenomicEntityDTO dto, BackendBulkDataProvider dataProvider)
 			throws ObjectUpdateException {
 		return null;
 	}

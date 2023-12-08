@@ -21,9 +21,9 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -45,6 +45,8 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 	ExperimentalConditionOntologyTermDAO ecOntologyTermDAO;
 	@Inject
 	NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	@Inject
+	NcbiTaxonTermService ncbiTaxonTermService;
 
 	private String errorMessage;
 
@@ -209,7 +211,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		NCBITaxonTerm taxonTerm = ncbiTaxonTermDAO.find(uiEntity.getConditionTaxon().getId());
 		if (taxonTerm == null) {
-			taxonTerm = ncbiTaxonTermDAO.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
+			taxonTerm = ncbiTaxonTermService.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
 		}
 		if (taxonTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

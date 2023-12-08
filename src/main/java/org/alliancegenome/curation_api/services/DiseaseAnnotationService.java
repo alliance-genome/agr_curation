@@ -42,7 +42,6 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		setSQLDao(diseaseAnnotationDAO);
 	}
 	
-	@Override
 	public ObjectResponse<DiseaseAnnotation> get(String identifier) {
 		SearchResponse<DiseaseAnnotation> ret = findByField("curie", identifier);
 		if (ret != null && ret.getTotalResults() == 1)

@@ -91,51 +91,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		entityManager.persist(entities);
 		return entities;
 	}
-	
-	public E findByCurie(String curie) {
-		Log.debug("SqlDAO: findByCurie: " + curie + " " + myClass);
-		if (curie != null) {
-			SearchResponse<E> response = findByField("curie", curie);
-			if (response == null || response.getSingleResult() == null) {
-				Log.debug("Entity Not Found: " + curie);
-				return null;
-			}
-			E entity = response.getSingleResult();
-			Log.debug("Entity Found: " + entity);
-			return entity;
-		} else {
-			Log.debug("Input Param is null: " + curie);
-			return null;
-		}
-	}
-
-	public E findByIdentifierString(String id) {
-		Log.debug("SqlDAO: findByIdentifierString: " + id + " " + myClass);
-		if (id != null) {
-			SearchResponse<E> response = null;
-			if (id.startsWith("AGRKB:")) {
-				response = findByField("curie", id);
-			} else {
-				if (response == null || response.getSingleResult() == null) {
-					response = findByField("modEntityId", id);
-					if (response == null || response.getSingleResult() == null)
-						response = findByField("modInternalId", id);
-				}
-			}
-			
-			if (response == null || response.getSingleResult() == null) {
-				Log.debug("Entity Not Found: " + id);
-				return null;
-			}
-			
-			E entity = response.getSingleResult();
-			Log.debug("Entity Found: " + entity);
-			return entity;
-		} else {
-			Log.debug("Input Param is null: " + id);
-			return null;
-		}
-	}
 
 	public E find(Long id) {
 		Log.debug("SqlDAO: find: " + id + " " + myClass);

@@ -6,9 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
@@ -18,6 +16,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.BiologicalEntityService;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
@@ -40,9 +40,9 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 	@Inject
 	VocabularyTermService vocabularyTermService;
 	@Inject
-	GeneDAO geneDAO;
+	GeneService geneService;
 	@Inject
-	BiologicalEntityDAO biologicalEntityDAO;
+	BiologicalEntityService biologicalEntityService;
 	@Inject
 	DataProviderDTOValidator dataProviderDtoValidator;
 	@Inject
@@ -90,7 +90,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 				if (!withIdentifier.startsWith("HGNC:")) {
 					daResponse.addErrorMessage("with_gene_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + withIdentifier + ")");
 				} else {
-					Gene withGene = geneDAO.findByIdentifierString(withIdentifier);
+					Gene withGene = geneService.findByIdentifierString(withIdentifier);
 					if (withGene == null) {
 						daResponse.addErrorMessage("with_gene_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + withIdentifier + ")");
 					} else {
@@ -141,7 +141,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
 				List<BiologicalEntity> diseaseGeneticModifiers = new ArrayList<>();
 				for (String modifierIdentifier : dto.getDiseaseGeneticModifierIdentifiers()) {
-					BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.findByIdentifierString(modifierIdentifier);
+					BiologicalEntity diseaseGeneticModifier = biologicalEntityService.findByIdentifierString(modifierIdentifier);
 					if (diseaseGeneticModifier == null) {
 						daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + modifierIdentifier + ")");
 					} else {

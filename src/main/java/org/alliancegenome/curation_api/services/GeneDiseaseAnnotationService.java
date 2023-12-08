@@ -42,7 +42,6 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		setSQLDao(geneDiseaseAnnotationDAO);
 	}
 
-	@Override
 	public ObjectResponse<GeneDiseaseAnnotation> get(String identifier) {
 		SearchResponse<GeneDiseaseAnnotation> ret = findByField("curie", identifier);
 		if (ret != null && ret.getTotalResults() == 1)

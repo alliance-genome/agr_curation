@@ -40,7 +40,7 @@ public class ReferenceService extends CurieObjectCrudService<Reference, Referenc
 		Reference reference = null;
 
 		if (curieOrXref.startsWith("AGRKB:")) {
-			reference = referenceDAO.findByIdentifierString(curieOrXref);
+			reference = findByCurie(curieOrXref);
 		} else {
 			SearchResponse<Reference> response = referenceDAO.findByField("crossReferences.referencedCurie", curieOrXref);
 			List<Reference> nonObsoleteRefs = new ArrayList<>();

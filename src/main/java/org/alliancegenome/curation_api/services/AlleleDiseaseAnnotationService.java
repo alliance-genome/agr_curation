@@ -41,7 +41,6 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		setSQLDao(alleleDiseaseAnnotationDAO);
 	}
 
-	@Override
 	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifier) {
 		SearchResponse<AlleleDiseaseAnnotation> ret = findByField("curie", identifier);
 		if (ret != null && ret.getTotalResults() == 1)

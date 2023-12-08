@@ -2,9 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -17,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -30,9 +29,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject
-	AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject
-	GeneDAO geneDAO;
+	AffectedGenomicModelService affectedGenomicModelService;
 	@Inject
 	NoteDAO noteDAO;
 	@Inject
@@ -54,7 +51,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		if (StringUtils.isBlank(dto.getGeneIdentifier())) {
 			gdaResponse.addErrorMessage("gene_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			gene = geneDAO.findByIdentifierString(dto.getGeneIdentifier());
+			gene = geneService.findByIdentifierString(dto.getGeneIdentifier());
 			if (gene == null) {
 				gdaResponse.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ")");
 			} else {
@@ -93,7 +90,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 
 		AffectedGenomicModel sgdStrainBackground = null;
 		if (StringUtils.isNotBlank(dto.getSgdStrainBackgroundIdentifier())) {
-			sgdStrainBackground = affectedGenomicModelDAO.findByIdentifierString(dto.getSgdStrainBackgroundIdentifier());
+			sgdStrainBackground = affectedGenomicModelService.findByIdentifierString(dto.getSgdStrainBackgroundIdentifier());
 			if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
 				gdaResponse.addErrorMessage("sgd_strain_background_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSgdStrainBackgroundIdentifier() + ")");
 			}

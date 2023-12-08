@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
 
-public class SubmittedObjectValidator<E extends SubmittedObject> extends CurieObjectValidator {
+public class SubmittedObjectValidator<E extends SubmittedObject> extends AuditedObjectValidator<SubmittedObject> {
 
 	@Inject DataProviderService dataProviderService;
 	@Inject DataProviderValidator dataProviderValidator;
@@ -29,6 +29,15 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends CurieOb
 		dbEntity.setDataProvider(dataProvider);
 		
 		return dbEntity;
+	}
+	
+	public String validateCurie(E uiEntity) {
+		String curie = handleStringField(uiEntity.getCurie());
+		if (curie != null && !curie.startsWith("AGRKB:")) {
+			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		return curie;
 	}
 	
 	public String validateModInternalId(E uiEntity) {

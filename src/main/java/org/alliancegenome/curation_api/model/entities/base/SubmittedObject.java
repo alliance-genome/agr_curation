@@ -84,4 +84,14 @@ public class SubmittedObject extends CurieObject {
 		return null;
 	}
 	
+	@Transient
+	@JsonIgnore
+	public String getSubmittedIdentifier() {
+		if (StringUtils.isNotBlank(modEntityId))
+			return modEntityId;
+		if (StringUtils.isNotBlank(modInternalId))
+			return modInternalId;
+		return null;
+	}
+	
 }

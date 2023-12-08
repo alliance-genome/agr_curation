@@ -52,7 +52,7 @@ public class MoleculeService extends CurieObjectCrudService<Molecule, MoleculeDA
 
 	@Transactional
 	public Molecule getByCurie(String id) {
-		Molecule molecule = moleculeDAO.findByCurie(id);
+		Molecule molecule = findByCurie(id);
 		if (molecule != null) {
 			molecule.getSynonyms().size();
 		}
@@ -102,7 +102,7 @@ public class MoleculeService extends CurieObjectCrudService<Molecule, MoleculeDA
 		}
 
 		try {
-			Molecule molecule = moleculeDAO.findByCurie(dto.getId());
+			Molecule molecule = findByCurie(dto.getId());
 
 			if (molecule == null) {
 				molecule = new Molecule();

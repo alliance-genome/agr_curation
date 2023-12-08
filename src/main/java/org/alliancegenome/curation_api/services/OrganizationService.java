@@ -28,7 +28,6 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		setSQLDao(organizationDAO);
 	}
 
-	@Override
 	public ObjectResponse<Organization> get(String orgId) {
 		
 		Organization org = null;
