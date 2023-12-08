@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { AlleleGeneAssociationsFormTable } from "./AlleleGeneAssociationsFormTable";
+import { generateCurieSearchField } from "../utils";
 
 export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
@@ -31,7 +32,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       type: 'EDIT_ROW',
       entityType: 'alleleGeneAssociations',
       index: props.rowIndex,
-      field: "alleleGeneRelation",
+      field: "relation",
       value: event.target.value
     });
   };
@@ -59,7 +60,6 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
   };
 
   const evidenceCodeOnChangeHandler = (event, setFieldValue, props) => {
-    //updates value in table input box
     setFieldValue(event.target.value);
     dispatch({
       type: 'EDIT_ROW',
@@ -72,14 +72,22 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
 
 
   const evidenceOnChangeHandler = (event, setFieldValue, props) => {
+    const newEvidence = event.target.value;
+    const newAssociation = {
+      ...alleleGeneAssociations[props.rowIndex],
+      evidence: newEvidence,
+      curieSearchFilter: generateCurieSearchField(newEvidence),
+    }
+
     //updates value in table input box
-    setFieldValue(event.target.value);
+    setFieldValue(newEvidence);
+
     dispatch({
-      type: 'EDIT_ROW',
+      type: 'REPLACE_ROW',
       entityType: 'alleleGeneAssociations',
       index: props.rowIndex,
       field: "evidence",
-      value: event.target.value
+      value: newAssociation,
     });
   };
 

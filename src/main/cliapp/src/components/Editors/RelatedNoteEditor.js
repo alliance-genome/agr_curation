@@ -15,7 +15,6 @@ export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRel
     _relatedNotesData["dialogIsVisible"] = true;
     _relatedNotesData["rowIndex"] = index;
     _relatedNotesData["errorMessages"] = errorMessages;
-    // _relatedNotesData["mainRowProps"] = rowProps;
     setRelatedNotesData(() => ({
       ..._relatedNotesData
     }));
@@ -34,7 +33,7 @@ export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRel
             <EditMessageTooltip object="allele" />
           </Button>
         </div>
-        <ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }} />
+        <ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={"relatedNote"} style={{ 'fontSize': '1em' }} />
       </>
     );
   } else {
@@ -50,7 +49,7 @@ export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRel
             <EditMessageTooltip />
           </Button>
         </div>
-        <ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }} />
+        <ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={"relatedNote"} style={{ 'fontSize': '1em' }} />
       </>
     );
   }

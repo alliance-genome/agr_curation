@@ -3,7 +3,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
 import { GeneEditor } from '../../../components/Editors/GeneEditor';
 import { RelatedNoteEditor } from '../../../components/Editors/RelatedNoteEditor';
 import { EvidenceCodeEditor } from '../../../components/Editors/EvidenceCodeEditor';
@@ -55,7 +54,7 @@ export const AlleleGeneAssociationsFormTable = ({
               showClear={false}
             />;
           }}
-          field="relation.name" header="Relationship" headerClassName='surface-0' />
+          field="relation" header="Relationship" headerClassName='surface-0' />
         <Column
           editor={(props) => {
             return <GeneEditor
@@ -114,8 +113,8 @@ export const AlleleGeneAssociationsFormTable = ({
               onChange={evidenceOnChangeHandler}
             />;
           }}
-          filter filterField='crossReferencesFilter' filterMatchMode='contains' showFilterMenu={false}
-          field="evidence.curie" header="Evidence" headerClassName='surface-0' />
+          filter filterField='curieSearchFilter' filterMatchMode='contains' showFilterMenu={false}
+          field="evidence.curie" sortable sortField="curieSearchFilter" header="Evidence" headerClassName='surface-0' />
         <Column field="updatedBy.uniqueId" header="Updated By" />
         <Column field="dateUpdated" header="Date Updated" />
       </DataTable>

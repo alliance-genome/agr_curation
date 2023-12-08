@@ -1,5 +1,5 @@
 import { useImmerReducer } from "use-immer";
-import { generateCrossRefSearchFields } from "./utils";
+import { generateCrossRefSearchFields, generateCurieSearchFields } from "./utils";
 import { getUniqueItemsByProperty } from "../../utils/utils";
 
 const initialAlleleState = {
@@ -15,6 +15,7 @@ const initialAlleleState = {
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
 		alleleNomenclatureEvents: [],
+		alleleGeneAssociations: [],
 		alleleDatabaseStatus: null,
 		alleleGermlineTransmissionStatus: null,
 		references: [],
@@ -178,7 +179,7 @@ const alleleReducer = (draft, action) => {
 		case 'SET':
 			const allele = action.value;
 			generateCrossRefSearchFields(allele.references);
-			generateCrossRefSearchFields(allele.alleleGeneAssociations.evidence);
+			generateCurieSearchFields(allele.alleleGeneAssociations, 'evidence');
 
 			let states = Object.values(draft.entityStates);
 
@@ -200,6 +201,9 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'EDIT_ROW': 
 			draft.allele[action.entityType][action.index][action.field] = action.value;
+			break;
+		case 'REPLACE_ROW': 
+			draft.allele[action.entityType][action.index] = action.value;
 			break;
 		case 'EDIT_OBJECT': 
 			draft.allele[action.entityType][action.field] = action.value;
