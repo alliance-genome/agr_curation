@@ -94,6 +94,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
           alleleGeneRelationOnChangeHandler={alleleGeneRelationOnChangeHandler}
           geneOnChangeHandler={geneOnChangeHandler}
           evidenceCodeOnChangeHandler={evidenceCodeOnChangeHandler}
+          dispatch={dispatch}
         />
       }
       tableName="Allele Gene Associations"

@@ -178,6 +178,7 @@ const alleleReducer = (draft, action) => {
 		case 'SET':
 			const allele = action.value;
 			generateCrossRefSearchFields(allele.references);
+			generateCrossRefSearchFields(allele.alleleGeneAssociations.evidence);
 
 			let states = Object.values(draft.entityStates);
 
