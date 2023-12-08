@@ -107,8 +107,12 @@ public class SlackNotifier {
 			}
 			fields.add(new Field("MD5Sum", bulkLoadFile.getMd5Sum(), true));
 			fields.add(new Field("File Size", String.valueOf(bulkLoadFile.getFileSize()), true));
-			fields.add(new Field("LinkML Version", bulkLoadFile.getLinkMLSchemaVersion(), true));
-			fields.add(new Field("Alliance Member Release Version", bulkLoadFile.getAllianceMemberReleaseVersion(), false));
+			if(bulkLoadFile.getLinkMLSchemaVersion() != null) {
+				fields.add(new Field("LinkML Version", bulkLoadFile.getLinkMLSchemaVersion(), true));
+			}
+			if(bulkLoadFile.getAllianceMemberReleaseVersion() != null) {
+				fields.add(new Field("Alliance Member Release Version", bulkLoadFile.getAllianceMemberReleaseVersion(), false));
+			}
 			
 			slackalert(
 					bulkLoadFile.getBulkLoad().getGroup().getName(),
