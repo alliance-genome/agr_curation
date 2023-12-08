@@ -64,7 +64,7 @@ public interface VocabularyTermSetCrudInterface extends BaseIdCrudInterface<Voca
 	@Override
 	@POST
 	@Path("/search")
-	@Tag(name = "Search Database Browsing Endpoints")
+	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.VocabularyTermSetView.class })
 	public SearchResponse<VocabularyTermSet> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit,
 		@RequestBody HashMap<String, Object> params);
