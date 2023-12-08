@@ -8,6 +8,7 @@ import { GeneEditor } from '../../../components/Editors/GeneEditor';
 import { RelatedNoteEditor } from '../../../components/Editors/RelatedNoteEditor';
 import { EvidenceCodeEditor } from '../../../components/Editors/EvidenceCodeEditor';
 import { RelatedNotesDialogEditOnly } from '../../../components/RelatedNotesDialogEditOnly';
+import { VocabularyTermSetEditor } from '../../../components/Editors/VocabularyTermSetEditor';
 
 export const AlleleGeneAssociationsFormTable = ({
   alleleGeneAssociations,
@@ -44,8 +45,7 @@ export const AlleleGeneAssociationsFormTable = ({
           className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
         <Column
           editor={(props) => {
-            // does this need to be a term set editor instead?
-            return <ControlledVocabularyEditor
+            return <VocabularyTermSetEditor
               props={props}
               onChangeHandler={alleleGeneRelationOnChangeHandler}
               errorMessages={errorMessages}
