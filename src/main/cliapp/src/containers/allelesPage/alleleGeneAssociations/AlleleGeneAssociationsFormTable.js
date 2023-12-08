@@ -5,7 +5,7 @@ import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
 import { GeneEditor } from '../../../components/Editors/GeneEditor';
-import { RelatedNotesEditor } from '../../../components/Editors/RelatedNotesEditor';
+import { RelatedNoteEditor } from '../../../components/Editors/RelatedNoteEditor';
 import { EvidenceCodeEditor } from '../../../components/Editors/EvidenceCodeEditor';
 import { RelatedNotesDialogEditOnly } from '../../../components/RelatedNotesDialogEditOnly';
 
@@ -20,6 +20,7 @@ export const AlleleGeneAssociationsFormTable = ({
   alleleGeneRelationOnChangeHandler,
   geneOnChangeHandler,
   evidenceCodeOnChangeHandler,
+  relatedNoteOnChangeHandler,
   dispatch,
 }) => {
 
@@ -75,9 +76,9 @@ export const AlleleGeneAssociationsFormTable = ({
         />
         <Column
           editor={(props) => {
-            return <RelatedNotesEditor
+            return <RelatedNoteEditor
               rowProps={props}
-              relatedNotes={props.relatedNotes}
+              relatedNote={alleleGeneAssociations[props.rowIndex].relatedNote}
               errorMessages={errorMessages}
               rowIndex={props.rowIndex}
               rows={props.rows}
@@ -123,6 +124,8 @@ export const AlleleGeneAssociationsFormTable = ({
         setRelatedNotesData={setRelatedNotesData}
         errorMessagesMainRow={errorMessages}
         dispatch={dispatch}
+        singleValue={true}
+        onChange={relatedNoteOnChangeHandler}
       />
     </>
   );

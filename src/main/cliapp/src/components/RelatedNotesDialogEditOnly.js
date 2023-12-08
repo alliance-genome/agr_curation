@@ -3,48 +3,40 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from './Actions/DeletionAction';
 import { InputTextAreaEditor } from './InputTextAreaEditor';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
 import { InternalEditor } from './Editors/InternalEditor';
-import { EllipsisTableCell } from './EllipsisTableCell';
-import { TrueFalseDropdown } from './TrueFalseDropDownSelector';
-import { useControlledVocabularyService } from '../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../service/useVocabularyTermSetService';
 import { ValidationService } from '../service/ValidationService';
 import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from '../utils/utils';
-import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocompleteTemplate';
-import { ListTableCell } from './ListTableCell';
-import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
-import { SearchService } from '../service/SearchService';
+import { validate } from '../utils/utils';
 
 export const RelatedNotesDialogEditOnly = ({
   relatedNotesData,
   errorMessagesMainRow,
-  setErrorMessagesMainRow,
+  dispatch,
   setRelatedNotesData,
+  singleValue = false,
+  onChange,
 }) => {
   const {
     originalRelatedNotes,
     dialogIsVisible,
     rowIndex,
   } = relatedNotesData;
-	const [errorMessages, setErrorMessages] = useState([]);
+  const [errorMessages, setErrorMessages] = useState([]);
+  const validationService = new ValidationService();
   const tableRef = useRef(null);
-  //todo: may need to move or change to state object
   const [editingRows, setEditingRows] = useState({});
-  //todo: may need to change
   const noteTypeTerms = useVocabularyTermSetService("allele_genomic_entity_association_note_type");
-  //todo: may need to move or change to state object
   const [localRelatedNotes, setLocalRelatedNotes] = useState([]);
 
-  //todo: pull out into a util method? Is this used elsewhere?
   const cloneNotes = (clonableNotes) => {
-    let _clonableNotes = global.structuredClone(clonableNotes) || [{ dataKey: 0 }];
+    if (!clonableNotes) return [{ dataKey: 0 }];
+    let _clonableNotes = global.structuredClone(clonableNotes);
     _clonableNotes.forEach((note, index) => {
       note.dataKey = index;
     });
@@ -54,7 +46,6 @@ export const RelatedNotesDialogEditOnly = ({
   const showDialogHandler = () => {
     let _localRelatedNotes = cloneNotes(originalRelatedNotes);
     setLocalRelatedNotes(_localRelatedNotes);
-    console.log("_localRelatedNotes", _localRelatedNotes);
 
     let rowsObject = {};
     _localRelatedNotes.forEach((note) => {
@@ -65,26 +56,21 @@ export const RelatedNotesDialogEditOnly = ({
 
   const deletionHandler = (e, index) => {
     e.preventDefault();
-    let _localRelatedNotes = global.structuredClone(localRelatedNotes); 
+    let _localRelatedNotes = global.structuredClone(localRelatedNotes);
     _localRelatedNotes.splice(index, 1);
-		setLocalRelatedNotes(_localRelatedNotes);
+    setLocalRelatedNotes(_localRelatedNotes);
   };
 
   const updateLocalRelatedNotes = (index, field, value) => {
     const _localRelatedNotes = global.structuredClone(localRelatedNotes);
     _localRelatedNotes[index][field] = value;
     setLocalRelatedNotes(_localRelatedNotes);
-  }
-//Editors section
+  };
   const onNoteTypeEditorValueChange = (props, event) => {
     props.editorCallback(event.target.value);
-    //todo: props.index exist?
-    //todo: noteType correct?
-    updateLocalRelatedNotes(props.index, "noteType", event.target.value);
+    updateLocalRelatedNotes(props.rowIndex, "noteType", event.target.value);
   };
 
-  //todo: pull into it's own component?
-  //is there one already?
   const noteTypeEditor = (props) => {
     return (
       <>
@@ -101,14 +87,11 @@ export const RelatedNotesDialogEditOnly = ({
     );
   };
 
-	const onFreeTextEditorValueChange = (event, props) => {
+  const onFreeTextEditorValueChange = (event, props) => {
     props.editorCallback(event.target.value);
-    //todo: props.index exist?
-    //todo: freeText correct?
-    updateLocalRelatedNotes(props.index, "freeText", event.target.value);
-	};
+    updateLocalRelatedNotes(props.rowIndex, "freeText", event.target.value);
+  };
 
-  //todo: is this or could this be it's own component?
   const freeTextEditor = (props, fieldName, errorMessages) => {
     return (
       <>
@@ -123,51 +106,77 @@ export const RelatedNotesDialogEditOnly = ({
     );
   };
 
-	const internalOnChangeHandler = (props, event) => {
+  const internalOnChangeHandler = (props, event) => {
     props.editorCallback(event.target.value);
-    //todo: props.index exist?
-    //todo: internal correct?
-    updateLocalRelatedNotes(props.index, "internal", event.target.value);
-	}
-
-  const saveDataHandler = () => {
-    //todo:
-    //will call the reducer update method in here if there are no errors
-    // setErrorMessages([]);
-    // for (const note of localRelatedNotes) {
-    // 	delete note.dataKey;
-    // }
-    // mainRowProps.rowData.relatedNotes = localRelatedNotes;
-    // let updatedAnnotations = [...mainRowProps.props.value];
-    // updatedAnnotations[rowIndex].relatedNotes = localRelatedNotes;
-
-    // const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
-    // let messageObject = {
-    // 	severity: "warn",
-    // 	message: "Pending Edits!"
-    // };
-    // errorMessagesCopy[rowIndex] = {};
-    // errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
-    // dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: [] });
-    // setErrorMessagesMainRow({...errorMessagesCopy});
-
-    // setOriginalRelatedNotesData((originalRelatedNotesData) => {
-    // 		return {
-    // 			...originalRelatedNotesData,
-    // 			dialog: false,
-    // 		}
-    // 	}
-    // );
+    updateLocalRelatedNotes(props.rowIndex, "internal", event.target.value);
   };
 
-  //todo: this will need to be updated
+  const validateTable = async () => {
+    const results = await validate(localRelatedNotes, 'note', validationService);
+    const errors = [];
+    let anyErrors = false;
+    results.forEach((result, index) => {
+      const { isError, data } = result;
+      if (isError) {
+        errors[index] = {};
+        if (!data) return;
+        Object.keys(data).forEach((field) => {
+          errors[index][field] = {
+            severity: "error",
+            message: data[field]
+          };
+        });
+        anyErrors = true;
+      }
+    });
+    setErrorMessages(errors);
+    return anyErrors;
+  };
+
+  const saveDataHandler = async () => {
+    setErrorMessages([]);
+    const anyErrors = await validateTable();
+    if (anyErrors) return;
+    onChange(rowIndex, localRelatedNotes);
+
+    const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
+    let messageObject = {
+      severity: "warn",
+      message: "Pending Edits!"
+    };
+    errorMessagesCopy[rowIndex] = {};
+    errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: errorMessagesCopy });
+
+    setRelatedNotesData((relatedNotesData) => {
+      return {
+        ...relatedNotesData,
+        dialogIsVisible: false,
+      };
+    }
+    );
+  };
+
+  const createNewNoteHandler = () => {
+    let cnt = localRelatedNotes ? localRelatedNotes.length : 0;
+    localRelatedNotes.push({
+      dataKey: cnt,
+      noteType: {
+        name: ""
+      },
+      internal: false
+    });
+    let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+    setEditingRows(_editingRows);
+  };
+
   const hideDialog = () => {
     setErrorMessages([]);
     setRelatedNotesData((relatedNotesData) => {
-    	return {
-    		...relatedNotesData,
-    		dialogIsVisible: false,
-    	};
+      return {
+        ...relatedNotesData,
+        dialogIsVisible: false,
+      };
     });
     let _localRelatedNotes = [];
     setLocalRelatedNotes(_localRelatedNotes);
@@ -177,6 +186,8 @@ export const RelatedNotesDialogEditOnly = ({
     return (
       <div>
         <Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
+        <Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}
+          disabled={singleValue && localRelatedNotes.length > 0} />
         <Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} />
       </div>
     );
@@ -196,7 +207,6 @@ export const RelatedNotesDialogEditOnly = ({
   };
 
 
-  console.log("editingRows", editingRows);
   return (
     <div>
       <Dialog visible={dialogIsVisible} className='w-8' modal onHide={hideDialog} closable onShow={showDialogHandler} footer={footerTemplate}>

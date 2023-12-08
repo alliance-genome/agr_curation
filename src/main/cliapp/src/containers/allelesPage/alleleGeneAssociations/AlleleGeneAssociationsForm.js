@@ -1,6 +1,6 @@
+import { useRef } from "react";
 import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
-import { useRef } from "react";
 import { AlleleGeneAssociationsFormTable } from "./AlleleGeneAssociationsFormTable";
 
 export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch }) => {
@@ -33,6 +33,16 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       index: props.rowIndex,
       field: "alleleGeneRelation",
       value: event.target.value
+    });
+  };
+
+  const relatedNoteOnChangeHandler = (rowIndex, value) => {
+    dispatch({
+      type: 'EDIT_ROW',
+      entityType: 'alleleGeneAssociations',
+      index: rowIndex,
+      field: "relatedNote",
+      value: value[0]
     });
   };
 
@@ -93,6 +103,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
           evidenceOnChangeHandler={evidenceOnChangeHandler}
           alleleGeneRelationOnChangeHandler={alleleGeneRelationOnChangeHandler}
           geneOnChangeHandler={geneOnChangeHandler}
+          relatedNoteOnChangeHandler={relatedNoteOnChangeHandler}
           evidenceCodeOnChangeHandler={evidenceCodeOnChangeHandler}
           dispatch={dispatch}
         />

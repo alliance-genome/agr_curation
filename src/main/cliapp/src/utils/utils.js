@@ -424,7 +424,7 @@ export const removeInvalidSorts = (currentSorts) => {
 	return currentSortsCopy;
 }
 
-const validate = async (entities, endpoint, validationService) => {
+export const validate = async (entities, endpoint, validationService) => {
 	const validationResultsArray = [];
 	for (const entity of entities) {
 		const result = await validationService.validate(endpoint, entity);
