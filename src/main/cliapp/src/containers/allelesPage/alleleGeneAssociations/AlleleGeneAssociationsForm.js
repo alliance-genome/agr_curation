@@ -76,7 +76,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     const newAssociation = {
       ...alleleGeneAssociations[props.rowIndex],
       evidence: newEvidence,
-      curieSearchFilter: generateCurieSearchField(newEvidence),
+      evidenceCurieSearchFilter: generateCurieSearchField(newEvidence),
     }
 
     //updates value in table input box
@@ -118,7 +118,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       }
       tableName="Allele Gene Associations"
       showTable={state.entityStates.alleleGeneAssociations.show}
-      button={<Button label="Add Gene Association" onClick={createNewGeneAssociationHandler} className="w-6" />}
+      button={<Button label="Add Gene Association" onClick={createNewGeneAssociationHandler} className="w-6 p-button-text" />}
     />
   );
 

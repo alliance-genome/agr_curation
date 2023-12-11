@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { MultiSelect } from 'primereact/multiselect';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { GeneEditor } from '../../../components/Editors/GeneEditor';
@@ -32,6 +33,27 @@ export const AlleleGeneAssociationsFormTable = ({
     errorMessages,
   });
 
+  //todo: pull out into it's own compoenent?
+  const getRelationFilterOptions = () => {
+    if (!alleleGeneAssociations) return []; 
+    const relationNames = new Set();
+    for(const association of alleleGeneAssociations){ 
+      const name = association?.relation?.name;
+      if(!name) continue;
+      relationNames.add(name);
+    };
+    return Array.from(relationNames);
+  };
+
+  const relationshipFilterTemplate = (options) => {
+    return <MultiSelect
+      value={options.value}
+      options={getRelationFilterOptions()}
+      onChange={(e) => options.filterApplyCallback(e.value)}
+      className="p-column-filter"
+    />;
+  };
+
   return (
     <>
       <DataTable value={alleleGeneAssociations} dataKey="dataKey" showGridlines editMode='row'
@@ -54,7 +76,17 @@ export const AlleleGeneAssociationsFormTable = ({
               showClear={false}
             />;
           }}
-          field="relation" header="Relationship" headerClassName='surface-0' />
+          field="relation"
+          header="Relationship"
+          headerClassName='surface-0'
+          filter
+          sortable
+          filterField="relation.name"
+          sortField="relation.name"
+          filterMatchMode="in"
+          showFilterMenu={false}
+          filterElement={relationshipFilterTemplate}
+        />
         <Column
           editor={(props) => {
             return <GeneEditor
@@ -77,17 +109,20 @@ export const AlleleGeneAssociationsFormTable = ({
           editor={(props) => {
             return <RelatedNoteEditor
               rowProps={props}
-              relatedNote={alleleGeneAssociations[props.rowIndex].relatedNote}
+              relatedNote={props.rowData.relatedNote}
               errorMessages={errorMessages}
               rowIndex={props.rowIndex}
               rows={props.rows}
               setRelatedNotesData={setRelatedNotesData}
             />;
           }}
-          field="relatedNotes" header="Notes" headerClassName='surface-0'
+          field="relatedNote" header="Note" headerClassName='surface-0'
           filter
-          sortable
+          filterField="relatedNote.freeText"
+          filterMatchMode='contains'
           showFilterMenu={false}
+          sortable
+          sortField="relatedNote.freeText"
         />
         <Column
           editor={(props) => {
@@ -113,8 +148,8 @@ export const AlleleGeneAssociationsFormTable = ({
               onChange={evidenceOnChangeHandler}
             />;
           }}
-          filter filterField='curieSearchFilter' filterMatchMode='contains' showFilterMenu={false}
-          field="evidence.curie" sortable sortField="curieSearchFilter" header="Evidence" headerClassName='surface-0' />
+          filter filterField='evidenceCurieSearchFilter' filterMatchMode='contains' showFilterMenu={false}
+          field="evidence.curie" sortable sortField="evidenceCurieSearchFilter" header="Evidence" headerClassName='surface-0' />
         <Column field="updatedBy.uniqueId" header="Updated By" />
         <Column field="dateUpdated" header="Date Updated" />
       </DataTable>
@@ -125,6 +160,7 @@ export const AlleleGeneAssociationsFormTable = ({
         dispatch={dispatch}
         singleValue={true}
         onChange={relatedNoteOnChangeHandler}
+        errorField='relatedNote'
       />
     </>
   );

@@ -40,6 +40,6 @@ export const generateCurieSearchField = (entities) => {
 export const generateCurieSearchFields = (entities, subArrayField) => {
   if(!entities) return;
   entities.forEach((entity) => {
-    entity.curieSearchFilter = generateCurieSearchField(entity[subArrayField]);
+    entity.evidenceCurieSearchFilter = generateCurieSearchField(entity[subArrayField]);
   });
 };

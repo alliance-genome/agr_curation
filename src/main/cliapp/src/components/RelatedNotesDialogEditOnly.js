@@ -21,6 +21,7 @@ export const RelatedNotesDialogEditOnly = ({
   setRelatedNotesData,
   singleValue = false,
   onChange,
+  errorField = "relatedNotes"
 }) => {
   const {
     originalRelatedNotes,
@@ -145,9 +146,8 @@ export const RelatedNotesDialogEditOnly = ({
       message: "Pending Edits!"
     };
     errorMessagesCopy[rowIndex] = {};
-    errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
+    errorMessagesCopy[rowIndex][errorField] = messageObject;
     dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: errorMessagesCopy });
-
     setRelatedNotesData((relatedNotesData) => {
       return {
         ...relatedNotesData,
