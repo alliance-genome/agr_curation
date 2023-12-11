@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { MultiSelect } from 'primereact/multiselect';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { GeneEditor } from '../../../components/Editors/GeneEditor';
@@ -9,6 +8,7 @@ import { RelatedNoteEditor } from '../../../components/Editors/RelatedNoteEditor
 import { EvidenceCodeEditor } from '../../../components/Editors/EvidenceCodeEditor';
 import { RelatedNotesDialogEditOnly } from '../../../components/RelatedNotesDialogEditOnly';
 import { VocabularyTermSetEditor } from '../../../components/Editors/VocabularyTermSetEditor';
+import { RelationshipFilterTemplate } from './RelationshipFilterTemplate';
 
 export const AlleleGeneAssociationsFormTable = ({
   alleleGeneAssociations,
@@ -32,27 +32,6 @@ export const AlleleGeneAssociationsFormTable = ({
     mainRowProps: {},
     errorMessages,
   });
-
-  //todo: pull out into it's own compoenent?
-  const getRelationFilterOptions = () => {
-    if (!alleleGeneAssociations) return []; 
-    const relationNames = new Set();
-    for(const association of alleleGeneAssociations){ 
-      const name = association?.relation?.name;
-      if(!name) continue;
-      relationNames.add(name);
-    };
-    return Array.from(relationNames);
-  };
-
-  const relationshipFilterTemplate = (options) => {
-    return <MultiSelect
-      value={options.value}
-      options={getRelationFilterOptions()}
-      onChange={(e) => options.filterApplyCallback(e.value)}
-      className="p-column-filter"
-    />;
-  };
 
   return (
     <>
@@ -85,7 +64,9 @@ export const AlleleGeneAssociationsFormTable = ({
           sortField="relation.name"
           filterMatchMode="in"
           showFilterMenu={false}
-          filterElement={relationshipFilterTemplate}
+          filterElement={(props) => {
+            return <RelationshipFilterTemplate options={props} alleleGeneAssociations={alleleGeneAssociations} />
+          }}
         />
         <Column
           editor={(props) => {
