@@ -47,7 +47,7 @@ export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRel
               Add Note
               <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
             </span>&nbsp;&nbsp;&nbsp;&nbsp;
-            <EditMessageTooltip />
+            <EditMessageTooltip object="allele"/>
           </Button>
         </div>
         <ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={"relatedNote"} style={{ 'fontSize': '1em' }} />

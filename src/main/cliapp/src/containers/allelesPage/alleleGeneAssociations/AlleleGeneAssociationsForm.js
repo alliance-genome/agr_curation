@@ -3,6 +3,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { AlleleGeneAssociationsFormTable } from "./AlleleGeneAssociationsFormTable";
 import { generateCurieSearchField } from "../utils";
+import { processOptionalField } from "../../../utils/utils";
 
 export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
@@ -70,13 +71,14 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
   };
 
   const evidenceCodeOnChangeHandler = (event, setFieldValue, props) => {
-    setFieldValue(event.target.value);
+    const value = processOptionalField(event.target.value);
+    setFieldValue(value);
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleGeneAssociations',
       index: props.rowIndex,
       field: "evidenceCode",
-      value: event.target.value
+      value: value
     });
   };
 
