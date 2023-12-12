@@ -15,6 +15,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     const dataKey = Math.floor(Math.random() * 10000);
     const newAlleleGeneAssociation = {
       dataKey: dataKey,
+      subject: state.allele,
     };
 
     dispatch({
@@ -63,7 +64,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       type: 'EDIT_ROW',
       entityType: 'alleleGeneAssociations',
       index: props.rowIndex,
-      field: "geneObject",
+      field: "objectGene",
       value: event.target.value
     });
   };

@@ -81,8 +81,8 @@ export const AlleleGeneAssociationsFormTable = ({
           headerClassName='surface-0'
           filter
           sortable
-          filterField="geneObject.curie"
-          sortField="geneObject.curie"
+          filterField="objectGene.curie"
+          sortField="objectGene.curie"
           showFilterMenu={false}
           filterMatchMode='contains'
         />

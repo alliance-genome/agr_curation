@@ -7,6 +7,7 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
+import { AlleleGeneAssociationService } from '../../service/AlleleGeneAssociationService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
@@ -32,11 +33,13 @@ import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsF
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
+import { validateAlleleDetailTable } from '../../utils/utils';
 
 export default function AlleleDetailPage() {
 	const { curie } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const alleleService = new AlleleService();
+	const alleleGeneAssociationService = new AlleleGeneAssociationService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 
@@ -58,8 +61,12 @@ export default function AlleleDetailPage() {
 		}
 	);
 
-	const { isLoading: putRequestIsLoading, mutate } = useMutation(allele => {
+	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
 		return alleleService.saveAllele(allele);
+	});
+
+	const { isLoading: agaPutRequestIsLoading, mutate: agaMutate } = useMutation(alleleGeneAssociations => {
+		return alleleGeneAssociationService.saveAlleleGeneAssociations(alleleGeneAssociations);
 	});
 
 
@@ -69,8 +76,20 @@ export default function AlleleDetailPage() {
 			type: "SUBMIT"
 		});
 
-		mutate(alleleState.allele, {
+		const table = alleleState.allele.alleleGeneAssociations;
+		let isError = await validateAlleleDetailTable(
+			"allelegeneassociation",
+			"alleleGeneAssociations",
+			table,
+			alleleDispatch,
+		);
+		if(!isError){
+			agaMutate(alleleState.allele.alleleGeneAssociations);
+		}
+
+		alleleMutate(alleleState.allele, {
 			onSuccess: () => {
+				if(isError) return;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
 			onError: (error) => {
@@ -167,7 +186,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={putRequestIsLoading} />
+			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading || agaPutRequestIsLoading)} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

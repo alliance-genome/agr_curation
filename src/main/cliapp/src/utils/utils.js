@@ -457,6 +457,31 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 	return anyErrors;
 }
 
+//temporary function until useNewAnnotationReducer is refactored to add table states
+export const validateAlleleDetailTable = async (endpoint, entityType, table, dispatch) => {
+	if(!table) return false;
+	const validationService = new ValidationService();
+	const results = await validate(table, endpoint, validationService);
+	const errors = [];
+	let anyErrors = false;
+	results.forEach((result, index) => {
+		const {isError, data} = result;
+		if (isError) {
+			errors[index] = {};
+			if (!data) return;
+			Object.keys(data).forEach((field) => {
+				errors[index][field] = {
+					severity: "error",
+					message: data[field]
+				};
+			});
+			anyErrors = true;
+		}
+	});
+	dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors});
+	return anyErrors;
+}
+
 export const processErrors = (data, dispatch) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;

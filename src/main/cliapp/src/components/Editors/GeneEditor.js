@@ -24,7 +24,7 @@ export const GeneEditor = ({ props, errorMessages, onChange }) => {
 		<>
 			<AutocompleteEditor
 				search={geneSearch}
-				initialValue={props?.rowData?.geneObject?.curie}
+				initialValue={props?.rowData?.objectGene?.curie}
 				rowProps={props}
 				fieldName='objectGene'
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
