@@ -59,7 +59,10 @@ export const RelatedNotesDialogEditOnly = ({
     e.preventDefault();
     let _localRelatedNotes = global.structuredClone(localRelatedNotes);
     _localRelatedNotes.splice(index, 1);
+    let _errorMessages = global.structuredClone(errorMessages);
+    _errorMessages.splice(index, 1);
     setLocalRelatedNotes(_localRelatedNotes);
+    setErrorMessages(_errorMessages);
   };
 
   const updateLocalRelatedNotes = (index, field, value) => {
@@ -109,7 +112,7 @@ export const RelatedNotesDialogEditOnly = ({
 
   const internalOnChangeHandler = (props, event) => {
     props.editorCallback(event.target.value);
-    updateLocalRelatedNotes(props.rowIndex, "internal", event.target.value);
+    updateLocalRelatedNotes(props.rowIndex, "internal", event.target.value.name);
   };
 
   const validateTable = async () => {
@@ -138,7 +141,7 @@ export const RelatedNotesDialogEditOnly = ({
     setErrorMessages([]);
     const anyErrors = await validateTable();
     if (anyErrors) return;
-    onChange(rowIndex, localRelatedNotes);
+    onChange(rowIndex, localRelatedNotes, relatedNotesData.rowProps);
 
     const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
     let messageObject = {
@@ -153,8 +156,8 @@ export const RelatedNotesDialogEditOnly = ({
         ...relatedNotesData,
         dialogIsVisible: false,
       };
-    }
-    );
+    });
+    setLocalRelatedNotes([]);
   };
 
   const createNewNoteHandler = () => {

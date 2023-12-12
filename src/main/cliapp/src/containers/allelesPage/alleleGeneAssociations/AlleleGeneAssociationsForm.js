@@ -10,7 +10,9 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
 
   const createNewGeneAssociationHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleGeneAssociations?.length;
+    const updatedErrorMessages = global.structuredClone(state.entityStates.alleleGeneAssociations.errorMessages);
+    updatedErrorMessages.unshift({});
+    const dataKey = Math.floor(Math.random() * 10000);
     const newAlleleGeneAssociation = {
       dataKey: dataKey,
     };
@@ -19,6 +21,12 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       type: "ADD_ROW",
       row: newAlleleGeneAssociation,
       entityType: "alleleGeneAssociations",
+    });
+    
+    dispatch({ 
+      type: "UPDATE_TABLE_ERROR_MESSAGES", 
+      entityType: "alleleGeneAssociations", 
+      errorMessages: updatedErrorMessages 
     });
   };
 
@@ -37,7 +45,8 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     });
   };
 
-  const relatedNoteOnChangeHandler = (rowIndex, value) => {
+  const relatedNoteOnChangeHandler = (rowIndex, value, rowProps) => {
+    rowProps.editorCallback(value[0]);
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleGeneAssociations',
@@ -55,7 +64,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       entityType: 'alleleGeneAssociations',
       index: props.rowIndex,
       field: "geneObject",
-      value: event.target?.value?.curie
+      value: event.target.value
     });
   };
 
@@ -79,6 +88,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       evidenceCurieSearchFilter: generateCurieSearchField(newEvidence),
     }
 
+
     //updates value in table input box
     setFieldValue(newEvidence);
 
@@ -93,8 +103,10 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
 
   const deletionHandler = (e, index) => {
     e.preventDefault();
+    const updatedErrorMessages = global.structuredClone(state.entityStates.alleleGeneAssociations.errorMessages);
+    updatedErrorMessages.splice(index,1);
     dispatch({ type: "DELETE_ROW", entityType: "alleleGeneAssociations", index: index });
-    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: [] });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: updatedErrorMessages });
   };
 
   return (

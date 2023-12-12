@@ -15,6 +15,7 @@ export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRel
     _relatedNotesData["dialogIsVisible"] = true;
     _relatedNotesData["rowIndex"] = index;
     _relatedNotesData["errorMessages"] = errorMessages;
+    _relatedNotesData["rowProps"] = rowProps;
     setRelatedNotesData(() => ({
       ..._relatedNotesData
     }));
