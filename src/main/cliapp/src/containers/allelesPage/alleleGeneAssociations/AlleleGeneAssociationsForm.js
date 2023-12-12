@@ -105,8 +105,9 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
   const deletionHandler = (e, index) => {
     e.preventDefault();
     const updatedErrorMessages = global.structuredClone(state.entityStates.alleleGeneAssociations.errorMessages);
+    const agaId = alleleGeneAssociations[index].id;
     updatedErrorMessages.splice(index,1);
-    dispatch({ type: "DELETE_ROW", entityType: "alleleGeneAssociations", index: index });
+    dispatch({ type: "DELETE_ROW", entityType: "alleleGeneAssociations", index: index, id: agaId });
     dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: updatedErrorMessages });
   };
 

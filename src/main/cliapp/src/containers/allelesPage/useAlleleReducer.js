@@ -128,6 +128,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: [],
 			editingRows: {},
+			rowsToDelete: [],
 			type: "table",
 		},
 	},
@@ -225,6 +226,9 @@ const alleleReducer = (draft, action) => {
 			draft.allele[action.entityType].splice(action.index, 1);
 			if(draft.allele[action.entityType].length === 0){
 				draft.entityStates[action.entityType].show = false;
+			}
+			if(action.id){
+				draft.entityStates[action.entityType].rowsToDelete.push(action.id)
 			}
 			break;
 		case 'DELETE_OBJECT': 

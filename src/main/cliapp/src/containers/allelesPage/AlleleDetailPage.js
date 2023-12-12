@@ -85,6 +85,9 @@ export default function AlleleDetailPage() {
 		);
 		if(!isError){
 			agaMutate(alleleState.allele.alleleGeneAssociations);
+			alleleState.entityStates.alleleGeneAssociations.rowsToDelete.forEach((id) => {
+				alleleGeneAssociationService.deleteAlleleGeneAssociation(id);
+			})
 		}
 
 		alleleMutate(alleleState.allele, {
