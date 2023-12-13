@@ -35,7 +35,17 @@ export const RelatedNotesDialogEditOnly = ({
   const [localRelatedNotes, setLocalRelatedNotes] = useState([]);
 
   const cloneNotes = (clonableNotes) => {
-    if (!clonableNotes) return [{ dataKey: 0 }];
+    if (!clonableNotes) {
+      return [
+        {
+          dataKey: 0,
+          noteType: {
+            name: defaultValues['noteType'] || " "
+          },
+          internal: false
+        }
+      ];
+    }
     let _clonableNotes = global.structuredClone(clonableNotes);
     _clonableNotes.forEach((note, index) => {
       note.dataKey = index;
