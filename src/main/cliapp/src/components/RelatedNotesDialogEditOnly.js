@@ -9,9 +9,8 @@ import { DeleteAction } from './Actions/DeletionAction';
 import { InputTextAreaEditor } from './InputTextAreaEditor';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
 import { InternalEditor } from './Editors/InternalEditor';
-import { useVocabularyTermSetService } from '../service/useVocabularyTermSetService';
 import { ValidationService } from '../service/ValidationService';
-import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
+import { VocabularyTermSetEditor } from './Editors/VocabularyTermSetEditor';
 import { validate } from '../utils/utils';
 
 export const RelatedNotesDialogEditOnly = ({
@@ -21,6 +20,7 @@ export const RelatedNotesDialogEditOnly = ({
   setRelatedNotesData,
   singleValue = false,
   onChange,
+  defaultValues,
   errorField = "relatedNotes"
 }) => {
   const {
@@ -32,7 +32,6 @@ export const RelatedNotesDialogEditOnly = ({
   const validationService = new ValidationService();
   const tableRef = useRef(null);
   const [editingRows, setEditingRows] = useState({});
-  const noteTypeTerms = useVocabularyTermSetService("allele_genomic_entity_association_note_type");
   const [localRelatedNotes, setLocalRelatedNotes] = useState([]);
 
   const cloneNotes = (clonableNotes) => {
@@ -78,15 +77,16 @@ export const RelatedNotesDialogEditOnly = ({
   const noteTypeEditor = (props) => {
     return (
       <>
-        <ControlledVocabularyDropdown
-          field="noteType"
-          options={noteTypeTerms.sort((a, b) => (a.name > b.name) ? 1 : -1)}
-          editorChange={onNoteTypeEditorValueChange}
+        <VocabularyTermSetEditor
           props={props}
+          onChangeHandler={onNoteTypeEditorValueChange}
+          errorMessages={errorMessages}
+          rowIndex={props.rowIndex}
+          vocabType="allele_genomic_entity_association_note_type"
+          field="noteType"
           showClear={false}
-          dataKey='id'
+          placeholder={defaultValues.noteType}
         />
-        <DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
       </>
     );
   };
@@ -162,14 +162,16 @@ export const RelatedNotesDialogEditOnly = ({
 
   const createNewNoteHandler = () => {
     let cnt = localRelatedNotes ? localRelatedNotes.length : 0;
-    localRelatedNotes.push({
+    const _localRelatedNotes = global.structuredClone(localRelatedNotes);
+    _localRelatedNotes.push({
       dataKey: cnt,
       noteType: {
-        name: ""
+        name: defaultValues['noteType'] || " "
       },
       internal: false
     });
     let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+    setLocalRelatedNotes(_localRelatedNotes);
     setEditingRows(_editingRows);
   };
 

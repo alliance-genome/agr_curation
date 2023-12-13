@@ -24,6 +24,8 @@ export const AlleleGeneAssociationsFormTable = ({
   relatedNoteOnChangeHandler,
   dispatch,
 }) => {
+  const [rows, setRows] = useState(5);
+  const [first, setFirst] = useState(0);
 
   const [relatedNotesData, setRelatedNotesData] = useState({
     relatedNotes: [],
@@ -32,14 +34,18 @@ export const AlleleGeneAssociationsFormTable = ({
     mainRowProps: {},
     errorMessages,
   });
+  const onPage = (options) => {
+    setRows(options.rows);
+    setFirst(options.first);
+  }
 
   return (
     <>
       <DataTable value={alleleGeneAssociations} dataKey="dataKey" showGridlines editMode='row'
-        removableSort filterDisplay='row'
+        removableSort filterDisplay='row' onPage={onPage}
         editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}
         paginator paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={5} rowsPerPageOptions={[5, 10, 20, 50]}
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} first={first} rowsPerPageOptions={[5, 10, 20, 50]}
       >
         <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
           className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
@@ -141,6 +147,7 @@ export const AlleleGeneAssociationsFormTable = ({
         dispatch={dispatch}
         singleValue={true}
         onChange={relatedNoteOnChangeHandler}
+        defaultValues={{noteType: "comment"}}
         errorField='relatedNote'
       />
     </>

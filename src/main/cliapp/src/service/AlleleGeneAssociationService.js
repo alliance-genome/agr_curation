@@ -1,4 +1,5 @@
 import { BaseAuthService } from './BaseAuthService';
+import { DeletionService } from './DeletionService';
 
 export class AlleleGeneAssociationService extends BaseAuthService {
   saveAlleleGeneAssociation(updatedAssociation) {
@@ -8,6 +9,11 @@ export class AlleleGeneAssociationService extends BaseAuthService {
   createAlleleGeneAssociation(updatedAssociation) {
     return this.api.post(`/allelegeneassociation`, updatedAssociation);
   }
+
+	async deleteAlleleGeneAssociation(id) { 
+		const deletionService = new DeletionService();
+		return await deletionService.delete(`allelegeneassociation`, id);
+	}
 
   saveAlleleGeneAssociations(updatedAssociations) {
     updatedAssociations.forEach(updatedAssociation => {
