@@ -81,7 +81,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
       }
       tableName="Germline Transmission Status"
       showTable={state.entityStates.alleleGermlineTransmissionStatus.show}
-      button={<Button label="Add Germline Transmission Status" onClick={createNewGermlineTransmissionStatus} disabled={state.allele?.alleleGermlineTransmissionStatus} className="w-6" />}
+      button={<Button label="Add Germline Transmission Status" onClick={createNewGermlineTransmissionStatus} disabled={state.allele?.alleleGermlineTransmissionStatus} className="w-4  p-button-text" />}
     />
   );
 
