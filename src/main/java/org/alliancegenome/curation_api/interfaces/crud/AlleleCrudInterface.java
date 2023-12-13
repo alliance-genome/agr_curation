@@ -49,6 +49,11 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@Path("/")
 	@JsonView(View.AlleleView.class)
 	public ObjectResponse<Allele> update(Allele entity);
+	
+	@PUT
+	@Path("/updateDetail")
+	@JsonView(View.AlleleDetailView.class)
+	public ObjectResponse<Allele> updateDetail(Allele entity);
 
 	@Override
 	@POST

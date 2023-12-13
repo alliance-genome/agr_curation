@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
@@ -21,6 +22,7 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotation;
@@ -85,6 +87,9 @@ public class ConstructITCase extends BaseITCase {
 	private ConstructSymbolSlotAnnotation constructSymbol;
 	private ConstructFullNameSlotAnnotation constructFullName;
 	private ConstructSynonymSlotAnnotation constructSynonym;
+	private Gene gene;
+	private Gene gene2;
+	private VocabularyTerm geAssociationRelation;
 	
 	private void loadRequiredEntities() {
 		noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
@@ -126,7 +131,11 @@ public class ConstructITCase extends BaseITCase {
 		constructSymbol = createConstructSymbolSlotAnnotation(List.of(reference), "Test symbol", symbolNameType, exactSynonymScope, "https://test.org");
 		constructFullName = createConstructFullNameSlotAnnotation(List.of(reference), "Test name", fullNameType, exactSynonymScope, "https://test.org");
 		constructSynonym = createConstructSynonymSlotAnnotation(List.of(reference), "Test synonym", systematicNameType, exactSynonymScope, "https://test.org");
-		
+		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
+		gene = createGene("TEST:AssociatedGenomicEntity1", "NCBITaxon:6239", false, symbolNameType);
+		gene2 = createGene("TEST:AssociatedGenomicEntity2", "NCBITaxon:6239", false, symbolNameType);
+		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
+		geAssociationRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
 	}
 	
 	@Test
@@ -907,6 +916,77 @@ public class ConstructITCase extends BaseITCase {
 			body("errorMessages", is(aMapWithSize(1))).
 			body("errorMessages.constructComponents", is("relatedNotes - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|AGRKB:000020003|test_construct_component_note|false|false)"));
 		
+	}
+	
+	@Test
+	@Order(18)
+	public void updateConstructWithNewAssociations() {
+		Construct construct = getConstruct(CONSTRUCT);
+		
+		ConstructGenomicEntityAssociation geAssociation = new ConstructGenomicEntityAssociation();
+		geAssociation.setObjectGenomicEntity(gene);
+		geAssociation.setRelation(geAssociationRelation);
+		construct.setConstructGenomicEntityAssociations(List.of(geAssociation));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/construct/findBy/" + CONSTRUCT).
+			then().
+			statusCode(200).
+			body("entity", hasKey("constructGenomicEntityAssociations")).
+			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(gene.getCurie()));
+	}
+	
+	@Test
+	@Order(19)
+	public void updateConstructRemoveAssociations() {
+		Construct construct = getConstruct(CONSTRUCT);
+		
+		construct.setConstructGenomicEntityAssociations(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/construct/findBy/" + CONSTRUCT).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("constructGenomicEntityAssociations")));
+	}
+	
+	@Test
+	@Order(20)
+	public void updateConstructWithInvalidAssociations() {
+		Construct construct = getConstruct(CONSTRUCT);
+		
+		ConstructGenomicEntityAssociation geneAssociation = new ConstructGenomicEntityAssociation();
+		geneAssociation.setObjectGenomicEntity(gene);
+		geneAssociation.setRelation(systematicNameType);
+		construct.setConstructGenomicEntityAssociations(List.of(geneAssociation));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.constructGenomicEntityAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	private ConstructComponentSlotAnnotation createConstructComponentSlotAnnotation (VocabularyTerm relation, List<InformationContentEntity> evidence, String symbol, NCBITaxonTerm taxon, String taxonText, List<Note> notes) {
