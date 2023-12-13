@@ -9,23 +9,17 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Audited
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @JsonSubTypes({ @JsonSubTypes.Type(value = Reference.class, name = "Reference") })
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "informationcontent_createdby_index", columnList = "createdBy_id"), @Index(name = "informationcontent_updatedby_index", columnList = "updatedBy_id"), })
 public class InformationContentEntity extends CurieObject {
 
 }

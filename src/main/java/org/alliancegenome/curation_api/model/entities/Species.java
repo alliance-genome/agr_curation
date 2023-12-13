@@ -32,6 +32,7 @@ import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Audited
 @Entity
@@ -39,6 +40,7 @@ import lombok.NoArgsConstructor;
 @Indexed
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE,dependencies = { AuditedObject.class })
 public class Species extends AuditedObject {
 

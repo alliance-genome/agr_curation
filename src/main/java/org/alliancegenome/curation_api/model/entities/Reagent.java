@@ -20,18 +20,17 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
+@ToString(callSuper = true)
 @Schema(name = "reagent", description = "POJO that represents a reagent")
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class })
 
@@ -52,7 +51,7 @@ public class Reagent extends SubmittedObject {
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
-	@JoinTable(indexes = @Index(name = "reagent_secondaryidentifiers_reagent_id_index", columnList = "reagent_id"))
+	@JoinTable(indexes = @Index(name = "reagent_secondaryidentifiers_reagent_index", columnList = "reagent_id"))
 	private List<String> secondaryIdentifiers;
 
 }

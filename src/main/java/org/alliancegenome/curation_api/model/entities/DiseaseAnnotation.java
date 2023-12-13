@@ -53,7 +53,7 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 
 @Table(indexes = { 
-	@Index(name = "DiseaseAnnotation_object_index", columnList = "object_curie"),
+	@Index(name = "DiseaseAnnotation_object_index", columnList = "object_id"),
 	@Index(name = "DiseaseAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
 	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
@@ -86,14 +86,20 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "evidencecodes_curie")})
+	@JoinTable(indexes = {
+		@Index(name = "diseaseannotation_ecoterm_diseaseannotation_index", columnList = "diseaseannotation_id"),
+		@Index(name = "diseaseannotation_ecoterm_evidencecodes_index", columnList = "evidencecodes_id")
+	})
 	private List<ECOTerm> evidenceCodes;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "with_curie") })
+	@JoinTable(indexes = {
+		@Index(name = "diseaseannotation_gene_diseaseannotation_index", columnList = "diseaseannotation_id"),
+		@Index(name = "diseaseannotation_gene_with_index", columnList = "with_id")
+	})
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> with;
 
@@ -107,7 +113,10 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "diseasequalifiers_id")})
+	@JoinTable(indexes = {
+		@Index(name = "diseaseannotation_vocabularyterm_diseaseannotation_index", columnList = "diseaseannotation_id"),
+		@Index(name = "diseaseannotation_vocabularyterm_diseasequalifiers_index", columnList = "diseasequalifiers_id")
+	})
 	private List<VocabularyTerm> diseaseQualifiers;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -128,7 +137,10 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "diseasegeneticmodifiers_curie")})
+	@JoinTable(indexes = {
+		@Index(name = "diseaseannotation_biologicalentity_diseaseannotation_index", columnList = "diseaseannotation_id"),
+		@Index(name = "diseaseannotation_biologicalentity_dgms_index", columnList = "diseasegeneticmodifiers_id")
+	})
 	private List<BiologicalEntity> diseaseGeneticModifiers;
 
 	@IndexedEmbedded(includeDepth = 1)

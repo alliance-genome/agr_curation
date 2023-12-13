@@ -36,7 +36,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"resourcePages"})
+@ToString(exclude = {"resourcePages"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Schema(name = "ResourceDescriptor", description = "Annotation class representing a resource descriptor")
 public class ResourceDescriptor extends AuditedObject {

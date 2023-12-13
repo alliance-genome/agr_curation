@@ -42,7 +42,7 @@ import lombok.ToString;
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
 @Table(indexes = {
 	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "subject_id"),
-	@Index(name = "constructgenomicentityassociation_object_index", columnList = "object_curie"),
+	@Index(name = "constructgenomicentityassociation_object_index", columnList = "object_id"),
 	@Index(name = "constructgenomicentityassociation_relation_index", columnList = "relation_id")
 })
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
@@ -75,8 +75,8 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
-			@Index(name = "cgeassociation_note_cgeassociation_id_index", columnList = "constructgenomicentityassociation_id"),
-			@Index(name = "cgeassociation_note_relatednotes_id_index", columnList = "relatedNotes_id")
+			@Index(name = "cgeassociation_note_cgeassociation_index", columnList = "constructgenomicentityassociation_id"),
+			@Index(name = "cgeassociation_note_relatednotes_index", columnList = "relatedNotes_id")
 		})
 	private List<Note> relatedNotes;
 }

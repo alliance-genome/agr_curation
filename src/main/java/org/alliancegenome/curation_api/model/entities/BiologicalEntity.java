@@ -19,8 +19,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -33,13 +31,12 @@ import lombok.ToString;
 @Audited
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
-@Inheritance(strategy = InheritanceType.JOINED)
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class })
 @Table(indexes = {
-	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie")
+	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_id")
 })
 public class BiologicalEntity extends SubmittedObject {
 

@@ -29,6 +29,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Audited
 @Indexed
@@ -36,6 +37,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "VocabularyTermSet", description = "POJO that represents the Vocabulary Term Set")
+@ToString(callSuper = true)
 @Table(
 	indexes = {
 		@Index(name = "vocabularytermset_name_index", columnList = "name"),

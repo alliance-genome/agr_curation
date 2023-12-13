@@ -7,16 +7,15 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
+@ToString(callSuper = true)
 @Schema(name = "association", description = "POJO that represents an association")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Association extends AuditedObject {

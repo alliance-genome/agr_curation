@@ -19,7 +19,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,9 +37,9 @@ public class GenomicEntity extends BiologicalEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JoinTable(indexes = { 
-		@Index(columnList = "genomicentity_curie, crossreferences_id", name = "genomicentity_crossreference_ge_curie_xref_id_index"),
-		@Index(columnList = "genomicentity_curie", name = "genomicentity_crossreference_genomicentity_curie_index"),
-		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_id_index")
+		@Index(columnList = "genomicentity_id, crossreferences_id", name = "genomicentity_crossreference_ge_xref_index"),
+		@Index(columnList = "genomicentity_id", name = "genomicentity_crossreference_genomicentity_index"),
+		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")
 	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;

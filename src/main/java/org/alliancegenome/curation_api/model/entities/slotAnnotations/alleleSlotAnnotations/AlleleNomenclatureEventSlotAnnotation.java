@@ -30,8 +30,8 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleNomenclatureSlotAnnotation", description = "POJO representing an allele nomenclature event slot annotation")
-@Table(indexes = { @Index(name = "allelenomenclatureevent_singleallele_curie_index", columnList = "singleallele_curie"),
-		@Index(name = "allelenomenclatureevent_nomenclatureevent_id_index", columnList = "nomenclatureevent_id")})
+@Table(indexes = { @Index(name = "allelenomenclatureevent_singleallele_index", columnList = "singleallele_id"),
+		@Index(name = "allelenomenclatureevent_nomenclatureevent_index", columnList = "nomenclatureevent_id")})
 public class AlleleNomenclatureEventSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne

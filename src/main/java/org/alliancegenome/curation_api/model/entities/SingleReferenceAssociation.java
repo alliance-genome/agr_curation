@@ -29,7 +29,7 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 
 @Table(indexes = { 
-	@Index(name = "singlereferenceassociation_singlereference_index", columnList = "singleReference_curie")
+	@Index(name = "singlereferenceassociation_singlereference_index", columnList = "singleReference_id")
 })
 
 public class SingleReferenceAssociation extends Association {

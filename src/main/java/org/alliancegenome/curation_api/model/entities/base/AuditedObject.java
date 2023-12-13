@@ -34,6 +34,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -46,6 +48,7 @@ import lombok.ToString;
 @Entity
 @ToString(exclude = { "createdBy", "updatedBy" })
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(indexes = {
 		@Index(name = "auditedobject_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "auditedobject_updatedby_index", columnList = "updatedBy_id")

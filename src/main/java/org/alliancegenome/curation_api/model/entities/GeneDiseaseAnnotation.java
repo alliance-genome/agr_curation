@@ -17,8 +17,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import lombok.Data;
@@ -39,7 +37,6 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinColumn(foreignKey = @ForeignKey(name = "fk_genedasubject"))
 	@JsonView({ View.FieldsOnly.class })
 	private Gene subject;
 

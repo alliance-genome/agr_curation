@@ -34,7 +34,6 @@ import lombok.ToString;
 
 @Audited
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)

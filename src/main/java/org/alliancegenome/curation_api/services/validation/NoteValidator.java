@@ -80,6 +80,9 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		} else {
 			dbEntity.setReferences(null);
 		}
+		
+		if (dbEntity.getInternal() == null)
+			dbEntity.setInternal(true);
 
 		if (response.hasErrors()) {
 			if (throwError) {

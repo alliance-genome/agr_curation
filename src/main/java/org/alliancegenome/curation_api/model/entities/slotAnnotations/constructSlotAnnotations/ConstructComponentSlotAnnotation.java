@@ -50,7 +50,7 @@ import lombok.ToString;
 @Table(indexes = {
 	@Index(name = "constructcomponentslotannotation_singleconstruct_index", columnList = "singleConstruct_id"),
 	@Index(name = "constructcomponentslotannotation_componentsymbol_index", columnList = "componentSymbol"),
-	@Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_curie"),
+	@Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_id"),
 	@Index(name = "constructcomponentslotannotation_relation_index", columnList = "relation_id")
 })
 public class ConstructComponentSlotAnnotation extends SlotAnnotation {
@@ -89,6 +89,6 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
-	@JoinTable(indexes = { @Index(name = "constructcomponentsa_note_ccsa_id_index", columnList = "constructcomponentslotannotation_id"), @Index(name = "constructcomponentsa_note_relatednotes_id_index",columnList = "relatednotes_id")})
+	@JoinTable(indexes = { @Index(name = "constructcomponentsa_note_ccsa_index", columnList = "constructcomponentslotannotation_id"), @Index(name = "constructcomponentsa_note_relatednotes_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 }

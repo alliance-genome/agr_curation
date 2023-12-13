@@ -33,8 +33,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociation.class })
 @Schema(name = "AlleleGeneAssociation", description = "POJO representing an association between an allele and a gene")
 @Table(indexes = {
-		@Index(name = "allelegeneassociation_subject_index", columnList = "subject_curie"),
-		@Index(name = "allelegeneassociation_object_index", columnList = "object_curie")
+		@Index(name = "allelegeneassociation_subject_index", columnList = "subject_id"),
+		@Index(name = "allelegeneassociation_object_index", columnList = "object_id")
 		})
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 

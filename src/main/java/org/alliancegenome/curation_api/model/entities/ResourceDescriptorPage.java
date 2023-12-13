@@ -31,7 +31,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString()
+@ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = { @Index(name = "resourcedescriptorpage_resourcedescriptor_id_index", columnList = "resourcedescriptor_id")})
 @Schema(name = "ResourceDescriptorPage", description = "Annotation class representing a resource descriptor page")

@@ -23,8 +23,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
@@ -38,7 +36,6 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "construct", description = "POJO that represents a construct")
 @ToString(exclude = {"constructGenomicEntityAssociations", "constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
@@ -68,8 +65,8 @@ public class Construct extends Reagent {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
-		@Index(name = "construct_reference_construct_id_index", columnList = "construct_id"),
-		@Index(name = "construct_reference_references_curie_index", columnList = "references_curie")
+		@Index(name = "construct_reference_construct_index", columnList = "construct_id"),
+		@Index(name = "construct_reference_references_index", columnList = "references_id")
 	})
 	private List<Reference> references;
 	

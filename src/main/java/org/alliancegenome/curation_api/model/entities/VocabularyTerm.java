@@ -37,7 +37,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "vocabulary", "vocabularyTermSets" })
+@ToString(exclude = { "vocabulary", "vocabularyTermSets" }, callSuper = true)
 @Table(indexes = { 
 	@Index(name = "vocabularyterm_name_index", columnList = "name"),
 	@Index(name = "vocabularyterm_vocabulary_id_index", columnList = "vocabulary_id")

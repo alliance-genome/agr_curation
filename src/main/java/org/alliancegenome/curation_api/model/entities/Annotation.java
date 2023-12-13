@@ -25,8 +25,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -35,12 +33,13 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
+@ToString(callSuper = true)
 @Schema(name = "annotation", description = "POJO that represents an annotation")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 
@@ -88,14 +87,14 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_id_index", columnList = "conditionrelations_id")})
+	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_index", columnList = "conditionrelations_id")})
 	private List<ConditionRelation> conditionRelations;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
-	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_id_index",columnList = "relatednotes_id")})
+	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includeDepth = 2)

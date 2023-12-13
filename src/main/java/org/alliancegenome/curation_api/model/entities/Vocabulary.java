@@ -34,7 +34,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
+@ToString(callSuper = true)
 @Schema(name = "Vocabulary", description = "POJO that represents the Vocabulary")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(

@@ -47,7 +47,6 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinColumn(foreignKey = @ForeignKey(name = "fk_agmdasubject"))
 	@JsonView({ View.FieldsOnly.class })
 	private AffectedGenomicModel subject;
 
@@ -69,7 +68,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = @Index(columnList = "agmdiseaseannotation_id"))
+	@JoinTable(indexes = @Index(name = "agmdiseaseannotation_gene_agmdiseaseannotation_index", columnList = "agmdiseaseannotation_id"))
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> assertedGenes;
 

@@ -35,9 +35,9 @@ import lombok.ToString;
 @ToString(exclude = { }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {
-		@Index(name = "variant_varianttype_index", columnList = "varianttype_curie"),
+		@Index(name = "variant_varianttype_index", columnList = "varianttype_id"),
 		@Index(name = "variant_variantstatus_index", columnList = "variantstatus_id"),
-		@Index(name = "variant_sourcegeneralconsequence_index", columnList = "sourcegeneralconsequence_curie")
+		@Index(name = "variant_sourcegeneralconsequence_index", columnList = "sourcegeneralconsequence_id")
 	})
 public class Variant extends GenomicEntity {
 
@@ -65,8 +65,8 @@ public class Variant extends GenomicEntity {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
 	@JoinTable(indexes = {
-			@Index(name = "variant_note_variant_curie_index", columnList = "variant_curie"),
-			@Index(name = "variant_note_relatednotes_id_index", columnList = "relatedNotes_id")
+			@Index(name = "variant_note_variant_index", columnList = "variant_id"),
+			@Index(name = "variant_note_relatednotes_index", columnList = "relatedNotes_id")
 		})
 	private List<Note> relatedNotes;
 

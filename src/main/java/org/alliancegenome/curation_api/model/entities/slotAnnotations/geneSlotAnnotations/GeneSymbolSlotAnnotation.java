@@ -24,7 +24,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { NameSlotAnnotation.class })
 @Schema(name = "GeneSymbolSlotAnnotation", description = "POJO representing a gene symbol slot annotation")
-@Table(indexes = { @Index(name = "genesymbol_singlegene_curie_index", columnList = "singlegene_curie"), })
+@Table(indexes = { @Index(name = "genesymbol_singlegene_index", columnList = "singlegene_id"), })
 public class GeneSymbolSlotAnnotation extends NameSlotAnnotation {
 
 	@OneToOne

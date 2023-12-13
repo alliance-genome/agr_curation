@@ -21,9 +21,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -41,7 +39,7 @@ import lombok.EqualsAndHashCode;
 @JsonTypeName("AlleleDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
-@Table(indexes = { @Index(name = "AlleleDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_curie"), @Index(name = "AlleleDiseaseAnnotation_Subject_index", columnList = "subject_curie")})
+@Table(indexes = { @Index(name = "AlleleDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id"), @Index(name = "AlleleDiseaseAnnotation_Subject_index", columnList = "subject_id")})
 public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 2)
@@ -49,7 +47,6 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinColumn(foreignKey = @ForeignKey(name = "fk_alleledasubject"))
 	@JsonView({ View.FieldsOnly.class })
 	private Allele subject;
 
@@ -64,7 +61,10 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = { @Index(columnList = "allelediseaseannotation_id"), @Index(columnList = "assertedgenes_curie")})
+	@JoinTable(indexes = {
+		@Index(name = "allelediseaseannotationgene_diseaseannotation_index", columnList = "allelediseaseannotation_id"),
+		@Index(name = "allelediseaseannotationgene_assertedgenes_index", columnList = "assertedgenes_id")
+	})
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> assertedGenes;
 

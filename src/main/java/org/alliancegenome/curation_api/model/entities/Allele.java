@@ -62,7 +62,11 @@ public class Allele extends GenomicEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany(fetch = FetchType.EAGER)
 	@Fetch(FetchMode.JOIN)
-	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "references_curie"), @Index(columnList = "allele_curie, references_curie") })
+	@JoinTable(indexes = {
+		@Index(name = "allele_reference_allele_index", columnList = "allele_id"),
+		@Index(name = "allele_reference_references_index", columnList = "references_id"),
+		@Index(name = "allele_reference_allele_references_index", columnList = "allele_id, references_id")
+	})
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<Reference> references;
 
@@ -151,7 +155,9 @@ public class Allele extends GenomicEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
-	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "relatedNotes_id")})
+	@JoinTable(indexes = {
+		@Index(name = "allele_note_allele_index", columnList = "allele_id"),
+		@Index(name = "allele_note_relatednotes_index", columnList = "relatedNotes_id")})
 	private List<Note> relatedNotes;
 
 }

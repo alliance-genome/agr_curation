@@ -51,7 +51,9 @@ public class Reference extends InformationContentEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsOnly.class})
-	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_id")})
+	@JoinTable(indexes = {
+		@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
+		@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")})
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 

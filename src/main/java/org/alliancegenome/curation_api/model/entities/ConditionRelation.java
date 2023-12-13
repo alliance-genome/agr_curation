@@ -28,12 +28,14 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Audited
 @Entity
 @Data
 @Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ExperimentalCondition.class })
 public class ConditionRelation extends UniqueIdAuditedObject {

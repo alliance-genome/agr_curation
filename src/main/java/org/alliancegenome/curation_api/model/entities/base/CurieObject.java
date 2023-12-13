@@ -24,10 +24,9 @@ import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
 @Audited
 @Entity
-@ToString(callSuper = true)
+@ToString(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(
 	indexes = {

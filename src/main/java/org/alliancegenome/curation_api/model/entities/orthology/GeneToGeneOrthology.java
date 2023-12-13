@@ -32,8 +32,8 @@ import lombok.ToString;
 @Schema(name = "GeneToGeneOrthology", description = "POJO that represents orthology between two genes")
 @AGRCurationSchemaVersion(min = "1.7.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
-	@Index(name = "genetogeneorthology_subjectgene_index", columnList = "subjectgene_curie"),
-	@Index(name = "genetogeneorthology_objectgene_index", columnList = "objectgene_curie")
+	@Index(name = "genetogeneorthology_subjectgene_index", columnList = "subjectgene_id"),
+	@Index(name = "genetogeneorthology_objectgene_index", columnList = "objectgene_id")
 })
 public class GeneToGeneOrthology extends AuditedObject {
 
