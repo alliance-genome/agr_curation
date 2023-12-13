@@ -77,6 +77,26 @@ export default function AlleleDetailPage() {
 		});
 
 		const table = alleleState.allele.alleleGeneAssociations;
+		let uiErrors = false;
+		table.forEach((association, index) => {
+			const gene = association.objectGene;
+			if (!gene || typeof gene === 'string') {
+				const updatedErrorMessages = global.structuredClone(alleleState.entityStates.alleleGeneAssociations.errorMessages);
+
+				const errorMessage = {
+					...updatedErrorMessages[index],
+					objectGene: {message: "Must select gene from dropdown", severity: "error"},
+				};
+				updatedErrorMessages[index] = errorMessage; 
+				alleleDispatch({
+					type: "UPDATE_TABLE_ERROR_MESSAGES",
+					entityType: "alleleGeneAssociations",
+					errorMessages: updatedErrorMessages,
+				});
+				uiErrors = true;
+			}
+		});
+		if(uiErrors) return;
 		let isError = await validateAlleleDetailTable(
 			"allelegeneassociation",
 			"alleleGeneAssociations",
