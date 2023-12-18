@@ -19,21 +19,21 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-	const { 
-		tableName, 
-		isInEditMode, 
-		aggregationFields, 
-		endpoint, 
-		columns, 
-		headerButtons, 
-		deletionEnabled, 
+	const {
+		tableName,
+		isInEditMode,
+		aggregationFields,
+		endpoint,
+		columns,
+		headerButtons,
+		deletionEnabled,
 		handleDuplication,
 		duplicationEnabled,
 		hasDetails=false,
-		dataKey = 'id', 
+		dataKey = 'id',
 		deprecateOption = false,
 		modReset = false,
-		highlightObsolete = true 
+		highlightObsolete = true
 	} = props;
 
 	const {
@@ -133,7 +133,7 @@ export const GenericDataTable = (props) => {
 			return filteredColumns.map((col) => {
 				if(col){
 					return <Column
-						style={{'minWidth':`${tableState.columnWidths[col.field]}vw`, 'maxWidth': `${tableState.columnWidths[col.field]}vw`}}
+						style={{'minWidth':`${tableState.columnWidths[col.field]}vw`, 'maxWidth': `${tableState.columnWidths[col.field]}vw`, padding: '5px 10px 5px' }}
 						headerClassName='surface-0'
 						columnKey={col.field}
 						key={col.field}
@@ -145,6 +145,7 @@ export const GenericDataTable = (props) => {
 						editor={col.editor}
 						showFilterMenu={false}
 						filterElement={() => filterComponentTemplate(col.filterConfig)}
+						headerStyle={{ padding: '1rem' }}
 					/>;
 				} else {
 					return null;
@@ -187,7 +188,7 @@ export const GenericDataTable = (props) => {
 
 	const deleteAction = (props, disabled) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text" disabled={disabled}
+			<Button icon="pi pi-trash" className="p-button-text" disabled={disabled} style={{padding:'0rem', fontSize: '1rem'}}
 					onClick={() => showDeleteOrDeprecateDialog(props)}/>
 		);
 	}
@@ -260,37 +261,38 @@ export const GenericDataTable = (props) => {
 					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel}
 					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange}
 					sortMode="multiple" removableSort={true} onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-					onColReorder={colReorderHandler} reorderableColumns= {true} 
+					onColReorder={colReorderHandler} reorderableColumns= {true}
 					resizableColumns= {true} columnResizeMode="expand" showGridlines= {true} onColumnResizeEnd={handleColumnResizeEnd}
 					paginator={!isInEditMode} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} 
+					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 					rowClassName = {(props) => getRowClass(props)}>
 					{props.isEditable &&
-						<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
-							headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'
+						<Column field='rowEditor' rowEditor style={{maxWidth: '3rem', minWidth: '3rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
+							style={{ padding: '0rem', fontSize: '1rem' }}
+							headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'
 						/>
 					}
 					{deletionEnabled &&
-						<Column field="delete" 
-						editor={(props) => deleteAction(props, true)} 
+						<Column field="delete"
+						editor={(props) => deleteAction(props, true)}
 						body={(props) => deleteAction(props, isInEditMode)} filterElement={rowEditorFilterNameHeader}
-						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
+						showFilterMenu={false} style={{ padding: '0rem', maxWidth: '3rem', minWidth: '3rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
 					{duplicationEnabled &&
-						<Column field="duplicate" 
-						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>} 
-						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode}/>} 
-						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
+						<Column field="duplicate"
+						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>}
+						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode}/>}
+						showFilterMenu={false} style={{ padding: '0rem', maxWidth: '3rem', minWidth: '3rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
 					{hasDetails &&
-						<Column field="details" 
-						editor={(props) => <EntityDetailsAction curie={props.rowData?.curie} disabled={true}/>} 
-						body={(props) => <EntityDetailsAction curie={props?.curie} disabled={isInEditMode}/>} 
-						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
+						<Column field="details"
+						editor={(props) => <EntityDetailsAction curie={props.rowData?.curie} disabled={true}/>}
+						body={(props) => <EntityDetailsAction curie={props?.curie} disabled={isInEditMode}/>}
+						showFilterMenu={false} style={{maxWidth: '3rem', minWidth: '3rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
 					{columnList}

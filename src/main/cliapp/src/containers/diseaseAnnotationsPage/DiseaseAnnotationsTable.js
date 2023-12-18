@@ -99,7 +99,7 @@ export const DiseaseAnnotationsTable = () => {
 			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
 			newAnnotationDispatch({type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: true});
 		}
-		
+
 		if(rowData.type === "AlleleDiseaseAnnotation") {
 			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
 		}
@@ -107,7 +107,7 @@ export const DiseaseAnnotationsTable = () => {
 		if(rowData.relatedNotes && rowData.relatedNotes.length > 0){
 			newAnnotationDispatch({type: "SET_RELATED_NOTES_EDITING_ROWS", relatedNotes: rowData.relatedNotes})
 		}
-		
+
 		if(rowData.conditionRelations && rowData.conditionRelations.length > 0){
 			newAnnotationDispatch({type: "SET_CONDITION_RELATIONS_EDITING_ROWS", conditionRelations: rowData.conditionRelations})
 		}
@@ -215,7 +215,7 @@ export const DiseaseAnnotationsTable = () => {
 			};
 			return (
 				<>
-					<div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
+					<div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ margin: '-1rem' }}>
 						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
@@ -1317,7 +1317,7 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 		editor: (props) => referenceEditorTemplate(props),
-		
+
 	},
 	{
 		field: "evidenceCodes.abbreviation",
