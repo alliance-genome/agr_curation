@@ -215,7 +215,7 @@ export const DiseaseAnnotationsTable = () => {
 			};
 			return (
 				<>
-					<div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ margin: '-1rem' }}>
+					<div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ margin: '-30px 0px -30px 0px', padding: '1rem ' }}>
 						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
