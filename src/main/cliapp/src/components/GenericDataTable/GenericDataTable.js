@@ -269,8 +269,7 @@ export const GenericDataTable = (props) => {
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 					rowClassName = {(props) => getRowClass(props)}>
 					{props.isEditable &&
-						<Column field='rowEditor' rowEditor style={{maxWidth: '3rem', minWidth: '3rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
-							style={{ padding: '0rem', fontSize: '1rem' }}
+						<Column field='rowEditor' rowEditor style={{maxWidth: '3rem', minWidth: '3rem', padding: '0rem', fontSize: '1rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
 							headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'
 						/>
 					}
