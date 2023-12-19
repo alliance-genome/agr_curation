@@ -188,7 +188,7 @@ export const GenericDataTable = (props) => {
 
 	const deleteAction = (props, disabled) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text" disabled={disabled} style={{padding:'0rem', fontSize: '1rem'}}
+			<Button icon="pi pi-trash" className="p-button-text p-0 text-base" disabled={disabled}
 					onClick={() => showDeleteOrDeprecateDialog(props)}/>
 		);
 	}
@@ -269,44 +269,44 @@ export const GenericDataTable = (props) => {
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 					rowClassName = {(props) => getRowClass(props)}>
 					{props.isEditable &&
-						<Column field='rowEditor' rowEditor style={{maxWidth: '3rem', minWidth: '3rem', padding: '0rem', fontSize: '1rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
-							headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'
+						<Column field='rowEditor' rowEditor className={"p-text-center p-0 min-w-3rem max-w-3rem text-base"} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
+								bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0 w-3rem sticky'
 						/>
 					}
 					{deletionEnabled &&
 						<Column field="delete"
 						editor={(props) => deleteAction(props, true)}
 						body={(props) => deleteAction(props, isInEditMode)} filterElement={rowEditorFilterNameHeader}
-						showFilterMenu={false} style={{ padding: '0rem', maxWidth: '3rem', minWidth: '3rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
-						frozen headerClassName='surface-0'/>
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{duplicationEnabled &&
 						<Column field="duplicate"
 						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>}
 						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode}/>}
-						showFilterMenu={false} style={{ padding: '0rem', maxWidth: '3rem', minWidth: '3rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
-						frozen headerClassName='surface-0'/>
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{hasDetails &&
 						<Column field="details"
 						editor={(props) => <EntityDetailsAction curie={props.rowData?.curie} disabled={true}/>}
 						body={(props) => <EntityDetailsAction curie={props?.curie} disabled={isInEditMode}/>}
-						showFilterMenu={false} style={{maxWidth: '3rem', minWidth: '3rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '3rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
-						frozen headerClassName='surface-0'/>
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{columnList}
 				</DataTable>
 
-			 	<Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+			 	<Dialog visible={deleteDialog} className="w-30rem" header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
 					<div className="confirmation-content">
-						<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+						<i className="pi pi-exclamation-triangle mr-3 text-4xl" />
 						{<span>Warning: You are about to delete this data object from the database. This cannot be undone. Please confirm deletion or cancel.</span>}
 					</div>
 				</Dialog>
 
-				<Dialog visible={deprecateDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deprecateDialogFooter} onHide={hideDeprecateDialog}>
+				<Dialog visible={deprecateDialog} className="w-30rem" header="Confirm Deletion" modal footer={deprecateDialogFooter} onHide={hideDeprecateDialog}>
 					<div className="confirmation-content">
-						<p><i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />Warning: You are about to delete this data object from the database.  This cannot be undone.  Please confirm the following information or deprecate instead:</p><br/>
+						<p><i className="pi pi-exclamation-triangle mr-3 text-4xl" />Warning: You are about to delete this data object from the database.  This cannot be undone.  Please confirm the following information or deprecate instead:</p><br/>
 					</div>
 					<div>
 						<Checkbox onChange={e => setAllowDelete(!allowDelete)} checked={allowDelete}></Checkbox>
@@ -314,25 +314,25 @@ export const GenericDataTable = (props) => {
 					</div>
 				</Dialog>
 
-				<Dialog visible={errorDialog} style={{ width: '450px' }} header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
+				<Dialog visible={errorDialog} className="w-30rem" header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
 					<div className="error-message-dialog">
-						<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+						<i className="pi pi-ban mr-3 text-4xl" />
 						{<span>ERROR: The data object you are trying to delete is in use by other data objects. Remove data connections to all other data objects and try to delete again.</span>}
 					</div>
 					<hr/>
 					<div className="error-message-detail">
-						{<span style={{fontSize: '0.85rem'}}>{deletionErrorMessage}</span>}
+						{<span className="text-sm">{deletionErrorMessage}</span>}
 					</div>
 				</Dialog>
 
-				<Dialog visible={exceptionDialog} style={{ width: '550px' }} header="Exception" modal footer={exceptionDialogFooter} onHide={hideExceptionDialog}>
+				<Dialog visible={exceptionDialog} className="w-34rem" header="Exception" modal footer={exceptionDialogFooter} onHide={hideExceptionDialog}>
 					<div className="error-message-dialog">
-						<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+						<i className="pi pi-ban mr-3 text-4xl" />
 						{<span>Exception Occurred!!</span>}
 					</div>
 					<hr/>
 					<div className="error-message-detail">
-						{<span style={{fontSize: '0.85rem'}}>{exceptionMessage}</span>}
+						{<span className="text-sm">{exceptionMessage}</span>}
 					</div>
 				</Dialog>
 			</div>
