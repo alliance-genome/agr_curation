@@ -32,7 +32,7 @@ export const GeneEditor = ({ props, errorMessages, onChange }) => {
 					onValueChangeHandler={onChange}
 				/>
 			<DialogErrorMessageComponent
-				errorMessages={errorMessages[props?.rowIndex]}
+				errorMessages={errorMessages[props?.rowData?.dataKey]}
 				errorField={"objectGene"}
 			/>
 		</>

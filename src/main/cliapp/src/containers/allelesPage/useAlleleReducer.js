@@ -1,5 +1,5 @@
 import { useImmerReducer } from "use-immer";
-import { generateCrossRefSearchFields, generateCurieSearchFields } from "./utils";
+import { addDataKey, generateCrossRefSearchFields, generateCurieSearchFields } from "./utils";
 import { getUniqueItemsByProperty } from "../../utils/utils";
 
 const initialAlleleState = {
@@ -121,14 +121,13 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: [],
 			editingRows: {},
-			type: "display",
+			type: "table",
 		},
 		alleleGeneAssociations: {
 			field: 'alleleGeneAssociations',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
-			rowsToDelete: [],
 			type: "table",
 		},
 	},
@@ -146,7 +145,7 @@ const processTable = (field, allele, draft) => {
 
 	let clonableEntities = global.structuredClone(allele[field]);
 	clonableEntities.forEach((entity, index) => {
-		entity.dataKey = index;
+		addDataKey(entity);
 		draft.entityStates[field].editingRows[`${entity.dataKey}`] = true;
 	});
 
@@ -169,8 +168,8 @@ const processObject = (field, allele, draft) => {
 
 	if(!allele[field]) return; 
 
-	allele[field].dataKey = 0;
-	draft.entityStates[field].editingRows[0] = true;
+	addDataKey(allele[field]);
+	draft.entityStates[field].editingRows[allele[field].dataKey] = true;
 	draft.entityStates[field].show = true;
 }
 
@@ -223,12 +222,13 @@ const alleleReducer = (draft, action) => {
 			draft.entityStates[action.entityType].show = true;
 			break;
 		case 'DELETE_ROW':
-			draft.allele[action.entityType].splice(action.index, 1);
-			if(draft.allele[action.entityType].length === 0){
-				draft.entityStates[action.entityType].show = false;
+			const table = draft.allele[action.entityType];
+			const index = table.findIndex(row => row.dataKey === action.dataKey);
+			if (index !== -1) {
+				draft.allele[action.entityType].splice(index, 1);
 			}
-			if(action.id){
-				draft.entityStates[action.entityType].rowsToDelete.push(action.id)
+			if(table.length === 0){
+				draft.entityStates[action.entityType].show = false;
 			}
 			break;
 		case 'DELETE_OBJECT': 

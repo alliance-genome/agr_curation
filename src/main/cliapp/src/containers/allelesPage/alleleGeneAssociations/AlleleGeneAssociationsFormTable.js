@@ -60,7 +60,7 @@ export const AlleleGeneAssociationsFormTable = ({
         paginator paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} first={first} rowsPerPageOptions={[5, 10, 20, 50]}
       >
-        <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
+        <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props.rowData?.dataKey} />}
           className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
         <Column
           editor={(props) => {

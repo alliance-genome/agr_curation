@@ -40,7 +40,7 @@ export const EvidenceCodeEditor = ({ props, errorMessages, onChangeHandler }) =>
         onValueChangeHandler={onChangeHandler}
       />
       <ErrorMessageComponent
-        errorMessages={errorMessages[props.rowIndex]}
+        errorMessages={errorMessages[props?.rowData?.dataKey]}
         errorField="evidenceCode"
       />
     </>

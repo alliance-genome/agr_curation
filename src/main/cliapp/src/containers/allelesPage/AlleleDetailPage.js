@@ -7,7 +7,6 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
-import { AlleleGeneAssociationService } from '../../service/AlleleGeneAssociationService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
@@ -18,7 +17,7 @@ import { DataProviderFormTemplate } from '../../components/Templates/DataProvide
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
-import { processErrors } from '../../utils/utils';
+import { processErrors } from './utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
@@ -33,13 +32,12 @@ import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsF
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { validateAlleleDetailTable } from '../../utils/utils';
+import { validateRequiredAutosuggestField } from './utils';
 
 export default function AlleleDetailPage() {
 	const { curie } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const alleleService = new AlleleService();
-	const alleleGeneAssociationService = new AlleleGeneAssociationService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 
@@ -61,14 +59,9 @@ export default function AlleleDetailPage() {
 		}
 	);
 
-	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
-		return alleleService.saveAllele(allele);
+	const { isLoading: putRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
+		return alleleService.saveAlleleDetail(allele);
 	});
-
-	const { isLoading: agaPutRequestIsLoading, mutate: agaMutate } = useMutation(alleleGeneAssociations => {
-		return alleleGeneAssociationService.saveAlleleGeneAssociations(alleleGeneAssociations);
-	});
-
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -76,43 +69,26 @@ export default function AlleleDetailPage() {
 			type: "SUBMIT"
 		});
 
-		const table = alleleState.allele.alleleGeneAssociations;
-		let uiErrors = false;
-		table.forEach((association, index) => {
-			const gene = association.objectGene;
-			if (!gene || typeof gene === 'string') {
-				const updatedErrorMessages = global.structuredClone(alleleState.entityStates.alleleGeneAssociations.errorMessages);
-
-				const errorMessage = {
-					...updatedErrorMessages[index],
-					objectGene: {message: "Must select gene from dropdown", severity: "error"},
-				};
-				updatedErrorMessages[index] = errorMessage; 
-				alleleDispatch({
-					type: "UPDATE_TABLE_ERROR_MESSAGES",
-					entityType: "alleleGeneAssociations",
-					errorMessages: updatedErrorMessages,
-				});
-				uiErrors = true;
-			}
-		});
-		if(uiErrors) return;
-		let isError = await validateAlleleDetailTable(
-			"allelegeneassociation",
-			"alleleGeneAssociations",
-			table,
+		const areUiErrors = validateRequiredAutosuggestField(
+			alleleState.allele.alleleGeneAssociations,
+			alleleState.entityStates.alleleGeneAssociations.errorMessages,
 			alleleDispatch,
+			"alleleGeneAssociations",
+			"objectGene",
 		);
-		if(!isError){
-			agaMutate(alleleState.allele.alleleGeneAssociations);
-			alleleState.entityStates.alleleGeneAssociations.rowsToDelete.forEach((id) => {
-				alleleGeneAssociationService.deleteAlleleGeneAssociation(id);
-			})
-		}
+
+
+		if(areUiErrors) return;
+
+		//todo: move or change logic
+		// const _allele = global.structuredClone(alleleState.allele);
+		// for(let i = 0; i < _allele.references.length; i++){
+		// 	delete _allele.references[i].dataKey;
+		// }
+		// console.log(JSON.parse(JSON.stringify(_allele.references)));
 
 		alleleMutate(alleleState.allele, {
 			onSuccess: () => {
-				if(isError) return;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
 			onError: (error) => {
@@ -129,7 +105,7 @@ export default function AlleleDetailPage() {
 					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false }
 				]);
 
-				processErrors(data, alleleDispatch);
+				processErrors(data, alleleDispatch, alleleState.allele);
 			}
 		});
 	};
@@ -209,7 +185,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading || agaPutRequestIsLoading)} />
+			<LoadingOverlay isLoading={putRequestIsLoading} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

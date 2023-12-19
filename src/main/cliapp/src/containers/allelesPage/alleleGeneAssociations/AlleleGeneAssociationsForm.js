@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { AlleleGeneAssociationsFormTable } from "./AlleleGeneAssociationsFormTable";
-import { generateCurieSearchField } from "../utils";
+import { addDataKey, generateCurieSearchField } from "../utils";
 import { processOptionalField } from "../../../utils/utils";
 
 export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch }) => {
@@ -12,12 +12,12 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
   const createNewGeneAssociationHandler = (e) => {
     e.preventDefault();
     const updatedErrorMessages = global.structuredClone(state.entityStates.alleleGeneAssociations.errorMessages);
-    updatedErrorMessages.unshift({});
-    const dataKey = Math.floor(Math.random() * 10000);
     const newAlleleGeneAssociation = {
-      dataKey: dataKey,
       subject: state.allele,
     };
+
+    addDataKey(newAlleleGeneAssociation);
+    updatedErrorMessages[newAlleleGeneAssociation.dataKey] = {};
 
     dispatch({
       type: "ADD_ROW",
@@ -104,12 +104,11 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     });
   };
 
-  const deletionHandler = (e, index) => {
+  const deletionHandler = (e, dataKey) => {
     e.preventDefault();
     const updatedErrorMessages = global.structuredClone(state.entityStates.alleleGeneAssociations.errorMessages);
-    const agaId = alleleGeneAssociations[index].id;
-    updatedErrorMessages.splice(index,1);
-    dispatch({ type: "DELETE_ROW", entityType: "alleleGeneAssociations", index: index, id: agaId });
+    delete updatedErrorMessages[dataKey];
+    dispatch({ type: "DELETE_ROW", entityType: "alleleGeneAssociations", dataKey });
     dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: updatedErrorMessages });
   };
 
