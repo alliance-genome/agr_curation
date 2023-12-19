@@ -127,7 +127,6 @@ public class AlleleITCase extends BaseITCase {
 	private DataProvider obsoleteDataProvider;
 	private Organization nonPersistedOrganization;
 	private Gene gene;
-	private Gene gene2;
 	private VocabularyTerm geneAssociationRelation;
 	
 	
@@ -204,7 +203,6 @@ public class AlleleITCase extends BaseITCase {
 		nonPersistedOrganization.setAbbreviation("INV");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", false, symbolNameType);
-		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", false, symbolNameType);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
 		
@@ -1455,7 +1453,7 @@ public class AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setObjectGene(gene);
+		geneAssociation.setObject(gene);
 		geneAssociation.setRelation(geneAssociationRelation);
 		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 		
@@ -1473,7 +1471,7 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", hasKey("alleleGeneAssociations")).
-			body("entity.alleleGeneAssociations[0].objectGene.curie", is(gene.getCurie()));
+			body("entity.alleleGeneAssociations[0].object.modEntityId", is(gene.getModEntityId()));
 	}
 	
 	@Test
@@ -1505,7 +1503,7 @@ public class AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setObjectGene(gene);
+		geneAssociation.setObject(gene);
 		geneAssociation.setRelation(dominantInheritanceMode);
 		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 		

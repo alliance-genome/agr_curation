@@ -531,7 +531,7 @@ CREATE TABLE submittedobject_aud (
 	PRIMARY KEY (id, rev)
 	);
 	
-CREATE SEQUENCE auditedobject_seq START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE auditedobject_seq START WITH 200250000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
 -- Add id equivalents of curie columns 
 
@@ -1033,7 +1033,7 @@ UPDATE dataprovider t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id A
 UPDATE dataprovider t SET sourceorganization_id = a.id FROM auditedobject a WHERE t.sourceorganization_id = a.old_id AND a.tablename = 'organization';
 UPDATE dataprovider t SET crossreference_id = a.id FROM auditedobject a WHERE t.crossreference_id = a.old_id AND a.tablename = 'crossreference';
 UPDATE diseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE diseaseannotation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE diseaseannotation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE diseaseannotation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
 UPDATE diseaseannotation t SET diseasegeneticmodifierrelation_id = a.id FROM auditedobject a WHERE t.diseasegeneticmodifierrelation_id = a.old_id AND a.tablename = 'vocabularyterm';
 UPDATE diseaseannotation t SET annotationtype_id = a.id FROM auditedobject a WHERE t.annotationtype_id = a.old_id AND a.tablename = 'vocabularyterm';
@@ -1128,7 +1128,7 @@ UPDATE ontologyterm_isa_parent_children t SET isaparents_id = a.id FROM auditedo
 UPDATE ontologyterm_secondaryidentifiers t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE ontologyterm_subsets t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE ontologyterm_synonym t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_synonym t SET synonyms_id = a.id FROM auditedobject a WHERE t.synonyms_id = a.old_id AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_synonym t SET synonyms_id = a.id FROM auditedobject a WHERE t.synonyms_id = a.old_id AND a.tablename = 'synonym';
 UPDATE organization t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'organization';
 UPDATE organization t SET homepageresourcedescriptorpage_id = a.id FROM auditedobject a WHERE t.homepageresourcedescriptorpage_id = a.old_id AND a.tablename = 'resourcedescriptorpage';
 UPDATE patoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
