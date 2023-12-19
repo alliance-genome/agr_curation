@@ -50,7 +50,13 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity);
+		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false);
+		return new ObjectResponse<Allele>(dbEntity);
+	}
+	
+	@Transactional
+	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
+		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
 		return new ObjectResponse<Allele>(dbEntity);
 	}
 	

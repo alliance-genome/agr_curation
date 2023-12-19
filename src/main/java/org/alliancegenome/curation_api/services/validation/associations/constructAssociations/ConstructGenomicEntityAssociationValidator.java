@@ -31,7 +31,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociationValidator {
+public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociationValidator<ConstructGenomicEntityAssociation> {
 
 	@Inject
 	ConstructDAO constructDAO;
@@ -46,9 +46,15 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 
 	private String errorMessage;
 
+	public ObjectResponse<ConstructGenomicEntityAssociation> validateConstructGenomicEntityAssociation(ConstructGenomicEntityAssociation uiEntity) {
+		ConstructGenomicEntityAssociation geAssociation = validateConstructGenomicEntityAssociation(uiEntity, false, false);
+		response.setEntity(geAssociation);
+		return response;
+	}
+	
 	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociation(ConstructGenomicEntityAssociation uiEntity, Boolean throwError, Boolean validateConstruct) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not create/update Allele Gene Association: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not create/update Construct GenomicEntity Association: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		ConstructGenomicEntityAssociation dbEntity = null;
@@ -85,8 +91,12 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		}
 
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorMessage);
-			throw new ApiErrorException(response);
+			if (throwError) {
+				response.setErrorMessage(errorMessage);
+				throw new ApiErrorException(response);
+			} else {
+				return null;
+			}
 		}
 
 		return dbEntity;

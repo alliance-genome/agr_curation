@@ -44,11 +44,12 @@ public class GenomicEntity extends BiologicalEntity {
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 	
+
 	@IndexedEmbedded(includePaths = {"subject.curie", "subject.constructSymbol.displayText", "subject.constructSymbol.formatText",
 			"subject.constructFullName.displayText", "subject.constructFullName.formatText", "subject.modEntityId",
 			"subject.curie_keyword", "subject.constructSymbol.displayText_keyword", "subject.constructSymbol.formatText_keyword",
 			"subject.constructFullName.displayText_keyword", "subject.constructFullName.formatText_keyword", "subject.modEntityId_keyword",})
-	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 

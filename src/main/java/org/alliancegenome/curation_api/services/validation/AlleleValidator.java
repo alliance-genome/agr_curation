@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
@@ -33,6 +34,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationValidator;
@@ -45,6 +47,7 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -74,6 +77,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject
 	AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
 	@Inject
+	AlleleGeneAssociationValidator alleleGeneAssociationValidator;
+	@Inject
 	NoteValidator noteValidator;
 	@Inject
 	VocabularyTermService vocabularyTermService;
@@ -84,7 +89,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	private String errorMessage;
 
-	public Allele validateAlleleUpdate(Allele uiEntity) {
+	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Allele: [" + uiEntity.getIdentifier() + "]";
 
@@ -102,7 +107,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateAllele(uiEntity, dbEntity);
+		return validateAllele(uiEntity, dbEntity, updateAllAssociations);
 	}
 
 	public Allele validateAlleleCreate(Allele uiEntity) {
@@ -115,10 +120,10 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		return validateAllele(uiEntity, dbEntity);
+		return validateAllele(uiEntity, dbEntity, true);
 	}
 
-	public Allele validateAllele(Allele uiEntity, Allele dbEntity) {
+	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations) {
 
 		dbEntity = (Allele) validateGenomicEntityFields(uiEntity, dbEntity);
 
@@ -154,6 +159,11 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
 
+		List<AlleleGeneAssociation> geneAssociations = null;
+		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
+			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
+		}
+		
 		response.convertErrorMessagesToMap();
 		
 		if (response.hasErrors()) {
@@ -227,6 +237,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			dbEntity.getAlleleFunctionalImpacts().addAll(functionalImpacts);
 		}
 		
+		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
+			if (dbEntity.getAlleleGeneAssociations() != null)
+				dbEntity.getAlleleGeneAssociations().clear();
+			if (geneAssociations != null) {
+				if (dbEntity.getAlleleGeneAssociations() == null)
+					dbEntity.setAlleleGeneAssociations(new ArrayList<>());
+				dbEntity.getAlleleGeneAssociations().addAll(geneAssociations);
+			}
+		}
 		return dbEntity;
 	}
 
@@ -580,5 +599,36 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			return null;
 
 		return validatedFunctionalImpacts;
+	}
+
+	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
+		String field = "alleleGeneAssociations";
+
+		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleGeneAssociations())) {
+			for (int ix = 0; ix < uiEntity.getAlleleGeneAssociations().size(); ix++) {
+				AlleleGeneAssociation ga = uiEntity.getAlleleGeneAssociations().get(ix);
+				ObjectResponse<AlleleGeneAssociation> gaResponse = alleleGeneAssociationValidator.validateAlleleGeneAssociation(ga);
+				if (gaResponse.getEntity() == null) {
+					allValid = false;
+					response.addErrorMessages(field, ix, gaResponse.getErrorMessages());
+				} else {
+					ga = gaResponse.getEntity();
+					ga.setSubject(dbEntity);
+					validatedGeneAssociations.add(ga);
+				}
+			}
+		}
+		
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedGeneAssociations))
+			return null;
+
+		return validatedGeneAssociations;
 	}
 }

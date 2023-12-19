@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -18,7 +19,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociationValidator {
+public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociationValidator<AlleleGeneAssociation> {
 
 	@Inject
 	GeneDAO geneDAO;
@@ -28,6 +29,12 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	VocabularyTermService vocabularyTermService;
 
 	private String errorMessage;
+	
+	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociation(AlleleGeneAssociation uiEntity) {
+		AlleleGeneAssociation geneAssociation = validateAlleleGeneAssociation(uiEntity, false, false);
+		response.setEntity(geneAssociation);
+		return response;
+	}
 
 	public AlleleGeneAssociation validateAlleleGeneAssociation(AlleleGeneAssociation uiEntity, Boolean throwError, Boolean validateAllele) {
 		response = new ObjectResponse<>(uiEntity);
@@ -59,8 +66,12 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 		dbEntity.setRelation(relation);
 
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorMessage);
-			throw new ApiErrorException(response);
+			if (throwError) {
+				response.setErrorMessage(errorMessage);
+				throw new ApiErrorException(response);
+			} else {
+				return null;
+			}
 		}
 
 		return dbEntity;
