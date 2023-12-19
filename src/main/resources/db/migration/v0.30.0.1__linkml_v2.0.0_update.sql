@@ -11,971 +11,1923 @@ ALTER TABLE allelegeneassociation_aud RENAME objectgene_curie TO object_curie;
 
 -- Random cleanup
 
-ALTER INDEX gene_taxon_index RENAME TO gene_genetype_index;
-
 ALTER TABLE organization DROP COLUMN IF EXISTS uniqueid;
 ALTER TABLE organization_aud DROP COLUMN IF EXISTS uniqueid;
 
-DROP TABLE paperhandle;
-DROP TABLE paperhandle_aud;
+DROP TABLE IF EXISTS paperhandle;
+DROP TABLE IF EXISTS paperhandle_aud;
+
+ALTER TABLE agmdiseaseannotation DROP COLUMN IF EXISTS predicate;
+ALTER TABLE allelediseaseannotation DROP COLUMN IF EXISTS predicate;
+ALTER TABLE genediseaseannotation DROP COLUMN IF EXISTS predicate;
+
+ALTER TABLE synonym ALTER COLUMN name SET DATA TYPE text;
+
+ALTER TABLE person_aud ADD COLUMN uniqueid varchar (2000);
 
 -- Drop indexes and constraints
 
-ALTER TABLE affectedgenomicmodel DROP CONSTRAINT affectedgenomicmodel_pkey;
 ALTER TABLE affectedgenomicmodel DROP CONSTRAINT fkke1qw7ijaa33fqv1bifsiwiv9;
-
-ALTER TABLE affectedgenomicmodel_aud DROP CONSTRAINT affectedgenomicmodel_aud_pkey;
 ALTER TABLE affectedgenomicmodel_aud DROP CONSTRAINT fkd6m9in16kh1tqvln37a13r3hx;
-
 ALTER TABLE agmdiseaseannotation DROP CONSTRAINT agmdiseaseannotation_assertedallele_curie_fk;
-ALTER TABLE agmdiseaseannotation DROP CONSTRAINT fk_agmdasubject
+ALTER TABLE agmdiseaseannotation DROP CONSTRAINT fk_agmdasubject;
 ALTER TABLE agmdiseaseannotation DROP CONSTRAINT fko9dilcfxv6tw0oaeds0yss8op;
 ALTER TABLE agmdiseaseannotation RENAME CONSTRAINT fkp1rktcpoyvnr2f756ncdb8k24 TO agmdiseaseannotation_id_fk;
 ALTER TABLE agmdiseaseannotation DROP CONSTRAINT fktj1uj3to13fi4q32bc2p65lah;
-
 ALTER TABLE agmdiseaseannotation_aud RENAME CONSTRAINT fkl6x226295n9ms1kugrsi88efp TO agmdiseaseannotation_aud_id_rev_fk;
-
 ALTER TABLE agmdiseaseannotation_gene DROP CONSTRAINT agmdiseaseannotation_gene_assertedgenes_curie_fk;
 ALTER INDEX idxbcpc5ib23w0ssq0wskm99vxmq RENAME TO agmdiseaseannotation_gene_agmdiseaseannotation_index;
-
 ALTER TABLE agmdiseaseannotation_gene_aud RENAME CONSTRAINT fkrbw9608l4haci5t3w3ll9xmcu TO agmdiseaseannotation_gene_aud_rev_fk;
-
-ALTER TABLE allele DROP CONSTRAINT allele_pkey;
 ALTER TABLE allele DROP CONSTRAINT fk42r7586hi59wcwakfyr30l6l3;
-
-ALTER TABLE allele_aud DROP CONSTRAINT allele_aud_pkey;
 ALTER TABLE allele_aud DROP CONSTRAINT fkc4cub43jynmwqke9rpwpglhkt;
-
 ALTER TABLE allele_note DROP CONSTRAINT allele_note_allele_curie_fk;
 ALTER TABLE allele_note DROP CONSTRAINT uk_3ja9wii4jxp0krcfpturumjhb;
 ALTER TABLE allele_note RENAME CONSTRAINT allele_note_relatednotes_id_key TO allele_note_relatednotes_id_uk;
 ALTER INDEX idx3ja9wii4jxp0krcfpturumjhb RENAME TO allele_note_relatednotes_index;
 DROP INDEX idx50j986kkb5ymfepkamokl1q9w;
-
-ALTER TABLE allele_note_aud DROP CONSTRAINT allele_note_aud_pkey;
-
 ALTER TABLE allele_reference DROP CONSTRAINT allele_reference_allele_curie_fk;
 ALTER TABLE allele_reference DROP CONSTRAINT allele_reference_references_curie_fk;
-DROP INDEX idx4jhjumoyh806jhpi2c0cf3t7w;
+DROP INDEX idxce99mr9ponwii377kkwpess1l;
 DROP INDEX idxo6e5hexti6nfdj1v6ytnlwjvd;
 DROP INDEX idxsfk08sqo0k364ixvsd8iui53i;
-
-ALTER TABLE allele_reference_aud DROP CONSTRAINT allele_reference_aud_pkey;
 ALTER TABLE allele_reference_aud RENAME CONSTRAINT fkhuya942qqdhsi6m0v37njxh30 TO allele_reference_aud_rev_fk;
-
 ALTER TABLE alleledatabasestatusslotannotation DROP CONSTRAINT alleledatabasestatus_singleallele_curie_fk;
 ALTER INDEX alleledatabasestatus_databasestatus_id_index RENAME TO alleledatabasestatus_databasestatus_index;
 DROP INDEX alleledatabasestatus_singleallele_curie_index;
-
 ALTER TABLE allelediseaseannotation DROP CONSTRAINT fk_alleledasubject;
 ALTER TABLE allelediseaseannotation RENAME CONSTRAINT fk3unb0kaxocbodllqe35hu4w0c TO allelediseaseannotation_id_fk;
 ALTER TABLE allelediseaseannotation DROP CONSTRAINT fknecrivvmqgg2ifhppubrjy5ey;
 DROP INDEX allelediseaseannotation_inferredgene_index;
 DROP INDEX allelediseaseannotation_subject_index;
-
 ALTER TABLE allelediseaseannotation_gene DROP CONSTRAINT allelediseaseannotation_gene_assertedgenes_curie_fk;
 ALTER INDEX idxgb71atjgxqcgqnronvuprq8g4 RENAME TO allelediseaseannotationgene_diseaseannotation_index;
 DROP INDEX idxf6sdkewbxohussr4fs7440vj5;
-
-ALTER TABLE allelefullnameslotannotation DROP CONSTRAINT allelefullname_singleallele_curie_fk;
+ALTER TABLE allelefullnameslotannotation DROP CONSTRAINT allelefullnameslotannotation_singleallele_curie_fk;
 DROP INDEX allelefullname_singleallele_curie_index;
-
 ALTER TABLE allelefunctionalimpactslotannotation DROP CONSTRAINT allelefunctionalimpactslotannotation_singleallele_curie_fk;
 ALTER TABLE allelefunctionalimpactslotannotation RENAME CONSTRAINT fkng1x5duqyvks0enxdtr7andrl TO allelefunctionalimpactslotannotation_id_fk;
 ALTER TABLE allelefunctionalimpactslotannotation DROP CONSTRAINT allelefunctionalimpactslotannotation_phenotypeterm_curie_fk;
-
 ALTER TABLE allelefunctionalimpactslotannotation_vocabularyterm RENAME CONSTRAINT allelefunctionalimpactsa_vocabterm_afisa_curie_fk TO allelefunctionalimpactsa_vocabterm_afisa_id_fk;
 ALTER TABLE allelefunctionalimpactslotannotation_vocabularyterm RENAME CONSTRAINT allelefunctionalimpactsa_vocabterm_functionimpacts_id_fk TO allelefunctionalimpactsa_vocabterm_functionalimpacts_id_fk;
 ALTER INDEX allelefunctionalimpactslotannotation_functionalimpacts_id_index RENAME TO allelefunctionalimpactsa_vocabterm_functionalimpacts_index;
-ALTER INDEX allelefunctionalimpactslotannotation_id_index TO allelefunctionalimpactsa_vocabterm_afisa_index;
-
+ALTER INDEX allelefunctionalimpactslotannotation_id_index RENAME TO allelefunctionalimpactsa_vocabterm_afisa_index;
 ALTER TABLE allelegeneassociation DROP CONSTRAINT allelegeneassociation_object_curie_fk;
 ALTER TABLE allelegeneassociation DROP CONSTRAINT allelegeneassociation_subject_curie_fk;
 DROP INDEX allelegeneassociation_object_index;
 DROP INDEX allelegeneassociation_subject_index;
-
 ALTER TABLE allelegenomicentityassociation DROP CONSTRAINT allelegenomicentityassociation_evidencecode_curie_fk;
 ALTER TABLE allelegenomicentityassociation RENAME CONSTRAINT fk1qks8xk2i7ml0qnhgx8q6ieex TO allelegenomicentityassociation_id_fk;
-
 ALTER TABLE allelegermlinetransmissionstatusslotannotation DROP CONSTRAINT allelegermlinetransmissionstatus_singleallele_curie_fk;
 ALTER TABLE allelegermlinetransmissionstatusslotannotation RENAME CONSTRAINT fkimjfrsvtapxj0gl4ocsfc68iy TO allelegermlinetransmissionstatus_id_fk;
 ALTER INDEX allelegermlinetransmissionstatus_status_id_index RENAME TO allelegermlinetransmissionstatus_status_index;
-
 ALTER TABLE alleleinheritancemodeslotannotation DROP CONSTRAINT alleleinheritancemodeslotannotation_phenotypeterm_curie_fk;
 ALTER TABLE alleleinheritancemodeslotannotation DROP CONSTRAINT fkcgj3a3skh2a666q8wvehcs1pw;
 DROP INDEX alleleinheritancemode_phenotypeterm_curie_index;
 DROP INDEX alleleinheritancemode_singleallele_curie_index;
 ALTER INDEX alleleinheritancemode_inheritancemode_id_index RENAME TO alleleinheritancemode_inheritancemode_index;
-
-ALTER TABLE allelemutationtypeslotannotation DROP CONSTRAINT allelemutationtypeslotannotation_singleallele_curie_fk;
+ALTER TABLE allelemutationtypeslotannotation RENAME CONSTRAINT allelemutationtypeslotannotationtype_id_fk TO allelemutationtypeslotannotation_id_fk;
+ALTER TABLE allelemutationtypeslotannotation DROP CONSTRAINT allelemutationtypeslotannotationtype_singleallele_curie_fk;
 DROP INDEX allelemutationtype_singleallele_curie_index;
-
 ALTER TABLE allelemutationtypeslotannotation_soterm RENAME CONSTRAINT allelemutationtypeslotannotation_aud_amsa_id_fk TO allelemutationtypesa_soterm_amsa_id_fk;
 ALTER TABLE allelemutationtypeslotannotation_soterm DROP CONSTRAINT allelemutationtypeslotannotation_aud_mutationtypes_curie_fk;
 ALTER INDEX allelemutationtypeslotannotation_id_index RENAME TO allelemutationtypesa_soterm_amsa_index;
-
 ALTER TABLE allelenomenclatureeventslotannotation DROP CONSTRAINT allelenomenclatureeventslotannotation_singleallele_curie_fk;
 DROP INDEX allelenomenclatureevent_singleallele_curie_index;
 ALTER INDEX allelenomenclatureevent_nomenclatureevent_id_index RENAME TO allelenomenclatureevent_nomenclatureevent_index;
-
 ALTER TABLE allelesecondaryidslotannotation DROP CONSTRAINT allelesecondaryidslotannotation_singleallele_curie_fk;
 ALTER TABLE allelesecondaryidslotannotation RENAME CONSTRAINT fko6369ool2dxdy8odi2i9brj4r TO allelesecondaryidslotannotation_id_fk;
 DROP INDEX allelesecondaryid_singleallele_curie_index;
-
 ALTER TABLE allelesymbolslotannotation DROP CONSTRAINT allelesymbolslotannotation_singleallele_curie_fk;
 DROP INDEX allelesymbol_singleallele_curie_index;
-
 ALTER TABLE allelesynonymslotannotation DROP CONSTRAINT allelesynonymslotannotation_singleallele_curie_fk;
 DROP INDEX allelesynonym_singleallele_curie_index;
-
-ALTER TABLE anatomicalterm DROP CONSTRAINT anatomicalterm_pkey;
 ALTER TABLE anatomicalterm DROP CONSTRAINT fkfepti479fro1b09ybaltkofqu;
-
-ALTER TABLE anatomicalterm_aud DROP CONSTRAINT antomicalterm_aud_pkey;
 ALTER TABLE anatomicalterm_aud DROP CONSTRAINT fkan2c886jcsep01s7rqibfghfh;
-
 ALTER INDEX annotation_conditionrelation_annotation_id_index RENAME TO annotation_conditionrelation_annotation_index;
 ALTER INDEX annotation_conditionrelation_conditionrelations_id_index RENAME TO annotation_conditionrelation_conditionrelations_index;
-
 ALTER TABLE annotation_note RENAME CONSTRAINT fks4im5g992bpgi6wa1rp9y8vil TO annotation_note_annotation_id_fk;
 ALTER INDEX annotation_note_annotation_id_index RENAME TO annotation_note_annotation_index;
 ALTER INDEX annotation_note_relatednotes_id_index RENAME TO annotation_note_relatednotes_index;
-
-ALTER TABLE apoterm DROP CONSTRAINT apoterm_pkey;
 ALTER TABLE apoterm DROP CONSTRAINT apoterm_curie_fk;
-
-ALTER TABLE apoterm_aud DROP CONSTRAINT apoterm_aud_pkey;
 ALTER TABLE apoterm_aud DROP CONSTRAINT apoterm_aud_curie_rev_fk;
-
-ALTER TABLE atpterm DROP CONSTRAINT atpterm_pkey;
 ALTER TABLE atpterm DROP CONSTRAINT fksnxpka3rhxycguxrcyfyobtjf;
-
-ALTER TABLE atpterm_aud DROP CONSTRAINT atpterm_aud_pkey;
 ALTER TABLE atpterm_aud DROP CONSTRAINT fki65mb9a7b4el107fk4ox2f0kd;
-
-ALTER TABLE biologicalentity DROP CONSTRAINT biologicalentity_pkey;
 ALTER TABLE biologicalentity DROP CONSTRAINT fk5c19vicptarinu2wgj7xyhhum;
 DROP INDEX biologicalentity_taxon_index;
-
-ALTER TABLE biologicalentity_aud DROP CONSTRAINT biologicalentity_aud_pkey;
 ALTER TABLE biologicalentity_aud DROP CONSTRAINT fk5hkwd2k49xql5qy0aby85qtad;
-
-ALTER TABLE bspoterm_aud DROP CONSTRAINT bspoterm_aud_pkey;
+ALTER TABLE bspoterm DROP CONSTRAINT bspoterm_curie_fk;
 ALTER TABLE bspoterm_aud DROP CONSTRAINT bspoterm_aud_curie_rev_fk;
-
 ALTER TABLE bulkload_aud DROP CONSTRAINT fkhhh8994753467hwa33blp22dc;
-
 ALTER TABLE bulkloadfile_aud DROP CONSTRAINT fk7sl5m81qa11sr40chch9vg6uj;
-
 ALTER TABLE bulkloadfileexception_aud DROP CONSTRAINT fkm7op2ir0vi9pwcctl39kqbo70;
-
 ALTER TABLE bulkloadfilehistory_aud DROP CONSTRAINT fkppa5tcqtwv560svqkq6b958hc;
-
 ALTER TABLE bulkloadgroup_aud DROP CONSTRAINT fk722g0iotb8v01pq0cej3w7gke;
-
-ALTER TABLE chebiterm DROP CONSTRAINT chebiterm_pkey;
 ALTER TABLE chebiterm DROP CONSTRAINT fk7enwyeblw2xt5yo5co0keko5f;
-
-ALTER TABLE chebiterm_aud DROP CONSTRAINT chebiterm_aud_pkey;
 ALTER TABLE chebiterm_aud DROP CONSTRAINT fk7grscrrhdcw9ek6agi78j4ca1;
-
-ALTER TABLE chemicalterm DROP CONSTRAINT chemicalterm_pkey;
 ALTER TABLE chemicalterm DROP CONSTRAINT fk2fegif3wy9egh5r2yy8wplrwu;
-
-ALTER TABLE chemicalterm_aud DROP CONSTRAINT chemicalterm_aud_pkey;
 ALTER TABLE chemicalterm_aud DROP CONSTRAINT fkieeg5x1a11dqom8dw4valm169;
-
-ALTER TABLE clterm DROP CONSTRAINT clterm_pkey;
 ALTER TABLE clterm DROP CONSTRAINT clterm_curie_fk;
-
-ALTER TABLE clterm_aud DROP CONSTRAINT clterm_aud_pkey;
 ALTER TABLE clterm_aud DROP CONSTRAINT clterm_aud_curie_rev_fk;
-
-ALTER TABLE cmoterm DROP CONSTRAINT clterm_pkey;
-ALTER TABLE cmoterm DROP CONSTRAINT clterm_curie_fk;
-
-ALTER TABLE cmoterm_aud DROP CONSTRAINT cmoterm_aud_pkey;
+ALTER TABLE cmoterm DROP CONSTRAINT cmoterm_curie_fk;
 ALTER TABLE cmoterm_aud DROP CONSTRAINT cmoterm_aud_curie_rev_fk;
-
 ALTER TABLE conditionrelation RENAME CONSTRAINT fkn8t4joy3iheftpbxt0omvxl52 TO conditionrelation_conditionrelationtype_id_fk;
 ALTER TABLE conditionrelation DROP CONSTRAINT conditionrelation_singlereference_curie_fk;
-
 ALTER TABLE conditionrelation_aud DROP CONSTRAINT fkkcw0iu1vmw6ttm7g645947yyy;
-
 ALTER TABLE construct_reference DROP CONSTRAINT construct_reference_references_curie_fk;
-ALTER INDEX construct_reference_construct_id_index TO construct_reference_construct_index;
+ALTER INDEX construct_reference_construct_id_index RENAME TO construct_reference_construct_index;
 DROP INDEX construct_reference_references_curie_index;
-
 ALTER TABLE constructcomponentslotannotation DROP CONSTRAINT constructcomponentslotannotation_taxon_curie_fk;
 DROP INDEX constructcomponentslotannotation_taxon_index;
-
 ALTER INDEX constructcomponentsa_note_ccsa_id_index RENAME TO constructcomponentsa_note_ccsa_index;
-ALTER INDEX constructcomponentsa_note_relatednotes_id_index RENAME TO constructcomponentsa_note_relatednotes_index
-
+ALTER INDEX constructcomponentsa_note_relatednotes_id_index RENAME TO constructcomponentsa_note_relatednotes_index;
 ALTER INDEX constructfullname_singleconstruct_id_index RENAME TO constructfullname_singleconstruct_index;
-
 ALTER TABLE constructgenomicentityassociation DROP CONSTRAINT constructgenomicentityassociation_object_curie_fk;
 ALTER TABLE constructgenomicentityassociation RENAME CONSTRAINT fkgrhw9gxslaub14x4b0mc7v9mk TO constructgenomicentityassociation_id_fk;
 DROP INDEX constructgenomicentityassociation_object_index;
-
 ALTER INDEX cgeassociation_note_cgeassociation_id_index RENAME TO cgeassociation_note_cgeassociation_index;
 ALTER INDEX cgeassociation_note_relatednotes_id_index RENAME TO cgeassociation_note_relatednotes_index;
-
 ALTER INDEX constructsymbol_singleconstruct_id_index RENAME TO constructsymbol_singleconstruct_index;
-
 ALTER INDEX constructsynonym_singleconstruct_id_index RENAME TO constructsynonym_singleconstruct_index;
-
 ALTER TABLE crossreference_aud DROP CONSTRAINT fkricj7nn0u0fec2l2r2fo7al55;
-
 ALTER TABLE curationreport_aud DROP CONSTRAINT fks2fh7j9mb60yfxyd83gklhgmo;
-
 ALTER TABLE curationreportgroup_aud DROP CONSTRAINT fk7pl1pmjstb9eqi80e353a06v8;
-
 ALTER TABLE curationreporthistory_aud DROP CONSTRAINT fk5mffk8y6qajllde8m24dwjn9v;
-
-ALTER TABLE daoterm DROP CONSTRAINT daoterm_pkey;
 ALTER TABLE daoterm DROP CONSTRAINT fk3xjbjyyuqqyvspspeael1m7fe;
-
-ALTER TABLE daoterm_aud DROP CONSTRAINT daoterm_aud_pkey;
 ALTER TABLE daoterm_aud DROP CONSTRAINT fkgif1cep78abowfodb5rxvoq1x;
-
 ALTER TABLE dataprovider_aud DROP CONSTRAINT fk66rd9ltf5l9paxmvyr63tcqwf;
-
 ALTER TABLE diseaseannotation DROP CONSTRAINT diseaseannotation_object_curie_fk;
 DROP INDEX diseaseannotation_object_index;
-
 ALTER TABLE diseaseannotation_biologicalentity DROP CONSTRAINT diseaseannotation_biologicalentity_dgm_curie_fk;
 ALTER INDEX idxa408leg4b6rrhx0e0e35yno7t RENAME TO diseaseannotation_biologicalentity_diseaseannotation_index;
 DROP INDEX idxon9a94gwp0jl6t2sfjqv0iwa5;
-
-ALTER TABLE diseaseannotation_ecoterm RENAME CONSTRAINT idxon9a94gwp0jl6t2sfjqv0iwa5 TO diseaseannotation_ecoterm_diseaseannotation_id_fk;
+ALTER TABLE diseaseannotation_ecoterm RENAME CONSTRAINT fk43rw1jai2kqggx518nsu8c4me TO diseaseannotation_ecoterm_diseaseannotation_id_fk;
 ALTER TABLE diseaseannotation_ecoterm DROP CONSTRAINT fkp79bf46xsyojpvjjguoe3vuuu;
 DROP INDEX idx3u0swr7xss7wjjve7ocd08u27;
 ALTER INDEX idxntbiegjxs3ooqy894m4y5vgwb RENAME TO diseaseannotation_ecoterm_diseaseannotation_index;
-
 ALTER TABLE diseaseannotation_gene DROP CONSTRAINT fk6akpr16qusnfom0fdhjjevkb2;
 ALTER TABLE diseaseannotation_gene RENAME CONSTRAINT fky4jlhsgseecd3gkxjtwp28ba TO diseaseannotation_gene_diseaseannotation_id_fk;
 DROP INDEX idxc8bxs3ggb4rt2kmnqja0js5mq;
 ALTER INDEX idxj6eavg6eannqn6uhvja6p4enf RENAME TO diseaseannotation_gene_diseaseannotation_index;
-
 ALTER TABLE diseaseannotation_vocabularyterm RENAME CONSTRAINT fk7jhlm01yyrnyd26c5extqi9iv TO diseaseannotation_vocabularyterm_diseasequalifiers_id_fk;
 ALTER TABLE diseaseannotation_vocabularyterm RENAME CONSTRAINT fkb7dg8qvpicnh87s0162sn62gl TO diseaseannotation_vocabularyterm_diseaseannotation_id_fk;
 ALTER INDEX idxbnb14fsatd291upd9af38fnyp RENAME TO diseaseannotation_vocabularyterm_diseasequalifiers_index;
 ALTER INDEX idxc8oiw5qoippfjl0b6s9oegiss RENAME TO diseaseannotation_vocabularyterm_diseaseannotation_index;
-
-ALTER TABLE doterm DROP CONSTRAINT doterm_pkey;
 ALTER TABLE doterm DROP CONSTRAINT fkp8el2duba9ym3l6gd5dy43swk;
-
-ALTER TABLE doterm_aud DROP CONSTRAINT doterm_aud_pkey;
 ALTER TABLE doterm_aud DROP CONSTRAINT fkkgu80ih0f55tskr386gucsqh2;
-
-ALTER TABLE dpoterm DROP CONSTRAINT dpoterm_pkey;
 ALTER TABLE dpoterm DROP CONSTRAINT dpoterm_curie_fk;
-
-ALTER TABLE dpoterm_aud DROP CONSTRAINT dpoterm_aud_pkey;
 ALTER TABLE dpoterm_aud DROP CONSTRAINT dpoterm_aud_curie_rev_fk;
-
-ALTER TABLE ecoterm DROP CONSTRAINT doterm_pkey;
 ALTER TABLE ecoterm DROP CONSTRAINT fkskvp24kfp723htxmk0m9ev4ns;
-
-ALTER TABLE ecoterm_aud DROP CONSTRAINT doterm_aud_pkey;
 ALTER TABLE ecoterm_aud DROP CONSTRAINT fkrdtwy8r0gnnh6numgdbgi9e6s;
-
-ALTER TABLE emapaterm DROP CONSTRAINT emapaterm_pkey;
 ALTER TABLE emapaterm DROP CONSTRAINT fkcm3tpjo7lxsx61pj7gs5y9f9u;
-
-ALTER TABLE emapaterm_aud DROP CONSTRAINT emapaterm_aud_pkey;
 ALTER TABLE emapaterm_aud DROP CONSTRAINT fkaipxoy4lm50q9mphk2yp7whyh;
-
 ALTER TABLE evidenceassociation_informationcontententity DROP CONSTRAINT evidenceassociation_infocontent_evidence_curie_fk;
 ALTER INDEX evidenceassociation_infocontent_evidenceassociation_id_index RENAME TO evidenceassociation_infocontent_evidenceassociation_index;
 DROP INDEX evidenceassociation_infocontent_evidence_curie_index;
-
 ALTER TABLE experimentalcondition DROP CONSTRAINT fk2rmhalgeg6rghpat78b2cpcoc;
 ALTER TABLE experimentalcondition DROP CONSTRAINT fkagp6m2xqeu7bapu5hyh2pmha9;
 ALTER TABLE experimentalcondition DROP CONSTRAINT fkcl89ywjgllce228a0uo8fd0ee;
 ALTER TABLE experimentalcondition DROP CONSTRAINT fkhi2109btsx06x2u9kdg7y7xp0;
 ALTER TABLE experimentalcondition DROP CONSTRAINT fkp0oqdnt9bmx68i84neufkcb3a;
 ALTER TABLE experimentalcondition DROP CONSTRAINT fksso9a3875a8t0ver6u6qciuap;
-
-ALTER TABLE experimentalconditionontologyterm DROP CONSTRAINT experimentalconditionontologyterm_pkey;
 ALTER TABLE experimentalconditionontologyterm DROP CONSTRAINT fk5jlaea2evnqnrlf72jglhqq6p;
-
-ALTER TABLE experimentalconditionontologyterm_aud DROP CONSTRAINT experimentalconditionontologyterm_aud_pkey;
 ALTER TABLE experimentalconditionontologyterm_aud DROP CONSTRAINT fkkr4o08hq0jboq6g4ou5gmn8xd;
-
-ALTER TABLE fbdvterm DROP CONSTRAINT fbdvterm_pkey;
 ALTER TABLE fbdvterm DROP CONSTRAINT fkn7q3y19l70sef1h4f9ippnjoa;
-
-ALTER TABLE fbdvterm_aud DROP CONSTRAINT fbdvterm_aud_pkey;
 ALTER TABLE fbdvterm_aud DROP CONSTRAINT fkvtaradvq4e6fdjecf2m4ujap;
-
-ALTER TABLE gene DROP CONSTRAINT gene_pkey;
 ALTER TABLE gene DROP CONSTRAINT fk9v4jtwy759c3cfub0uxye5rue;
 ALTER TABLE gene DROP CONSTRAINT fkiaxg0dhug3stym3gjovw598w1;
 DROP INDEX gene_taxon_index;
-
-ALTER TABLE gene_aud DROP CONSTRAINT gene_aud_pkey;
 ALTER TABLE gene_aud DROP CONSTRAINT fk4n82maba8vniaxet7w2w1sfg4;
-
 ALTER TABLE genediseaseannotation RENAME CONSTRAINT fk3j5deigrhrwln0srh51vtw3m8 TO genediseaseannotation_id_fk;
 ALTER TABLE genediseaseannotation DROP CONSTRAINT fk51h0w9jsd45qw5f3v2v0o28mu;
 ALTER TABLE genediseaseannotation DROP CONSTRAINT fk_genedasubject;
-
 ALTER TABLE genefullnameslotannotation DROP CONSTRAINT genefullnameslotannotation_singlegene_curie_fk;
 DROP INDEX genefullname_singlegene_curie_index;
-
 ALTER TABLE genesecondaryidslotannotation DROP CONSTRAINT fkhtdt6peje2s446u44ax3knp14;
 ALTER TABLE genesecondaryidslotannotation RENAME CONSTRAINT fkq0oks812epecjvubiasibhw2s TO genesecondaryidslotannotation_id_fk;
 DROP INDEX genesecondaryid_singlegene_curie_index;
-
 ALTER TABLE genesymbolslotannotation DROP CONSTRAINT genesymbolslotannotation_singlegene_curie_fk;
 DROP INDEX genesymbol_singlegene_curie_index;
-
 ALTER TABLE genesynonymslotannotation DROP CONSTRAINT genesynonymslotannotation_singlegene_curie_fk;
 DROP INDEX genesynonym_singlegene_curie_index;
-
 ALTER TABLE genesystematicnameslotannotation DROP CONSTRAINT genesystematicnameslotannotation_singlegene_curie_fk;
 DROP INDEX genesystematicname_singlegene_curie_index;
-
 ALTER TABLE genetogeneorthology DROP CONSTRAINT genetogeneorthology_objectgene_curie_fk;
 ALTER TABLE genetogeneorthology DROP CONSTRAINT genetogeneorthology_subjectgene_curie_fk;
 DROP INDEX genetogeneorthology_objectgene_index;
 DROP INDEX genetogeneorthology_subjectgene_index;
-
 ALTER TABLE genetogeneorthologycurated DROP CONSTRAINT genetogeneorthologycurated_evidencecode_curie_fk;
 ALTER TABLE genetogeneorthologycurated DROP CONSTRAINT genetogeneorthologycurated_singlereference_curie_fk;
 DROP INDEX genetogeneorthologycurated_evidencecode_index;
 DROP INDEX genetogeneorthologycurated_singlereference_index;
-
-ALTER TABLE genomicentity DROP CONSTRAINT genomicentity_pkey;
 ALTER TABLE genomicentity DROP CONSTRAINT fkhi54si7gksfs3f6jrbytaddbi;
-
-ALTER TABLE genomicentity_aud DROP CONSTRAINT genomicentity_aud_pkey;
 ALTER TABLE genomicentity_aud DROP CONSTRAINT fknd0sic0qo3ko71w4d9k5urg48;
-
 ALTER TABLE genomicentity_crossreference DROP CONSTRAINT fk9b9qofiu2sump8fnfxgux1lvl;
 ALTER INDEX genomicentity_crossreference_crossreferences_id_index RENAME TO genomicentity_crossreference_crossreferences_index;
 DROP INDEX genomicentity_crossreference_ge_curie_xref_id_index;
 DROP INDEX genomicentity_crossreference_genomicentity_curie_index;
-
-ALTER TABLE goterm DROP CONSTRAINT goterm_pkey;
 ALTER TABLE goterm DROP CONSTRAINT fk4gf262ba8btx03wi3vl5vhfao;
-
-ALTER TABLE goterm_aud DROP CONSTRAINT goterm_aud_pkey;
 ALTER TABLE goterm_aud DROP CONSTRAINT fk4kjm9hm06yutma1ilq04h967s;
-
-ALTER TABLE hpterm DROP CONSTRAINT hpterm_pkey;
 ALTER TABLE hpterm DROP CONSTRAINT hpterm_curie_fk;
-
-ALTER TABLE hpterm_aud DROP CONSTRAINT hpterm_aud_pkey;
 ALTER TABLE hpterm_aud DROP CONSTRAINT hpterm_aud_curie_rev_fk;
-
-ALTER TABLE materm DROP CONSTRAINT materm_pkey;
+ALTER TABLE informationcontententity_aud DROP CONSTRAINT informationcontententity_aud_rev_fk;
 ALTER TABLE materm DROP CONSTRAINT fktlgqvrv4vuh8gqihevh6adya4;
-
-ALTER TABLE materm_aud DROP CONSTRAINT materm_aud_pkey;
 ALTER TABLE materm_aud DROP CONSTRAINT fk7lfprbh8k8mnw9yf8ywp7xieg;
-
-ALTER TABLE miterm DROP CONSTRAINT miterm_pkey;
 ALTER TABLE miterm DROP CONSTRAINT miterm_curie_fk;
-
-ALTER TABLE miterm_aud DROP CONSTRAINT miterm_aud_pkey;
 ALTER TABLE miterm_aud DROP CONSTRAINT miterm_aud_curie_rev_fk;
-
-ALTER TABLE mmoterm DROP CONSTRAINT mmoterm_pkey;
 ALTER TABLE mmoterm DROP CONSTRAINT mmoterm_curie_fk;
-
-ALTER TABLE mmoterm_aud DROP CONSTRAINT mmoterm_aud_pkey;
 ALTER TABLE mmoterm_aud DROP CONSTRAINT mmoterm_aud_curie_rev_fk;
-
-ALTER TABLE mmusdvterm DROP CONSTRAINT mmusdvterm_pkey;
 ALTER TABLE mmusdvterm DROP CONSTRAINT fkmkv8r93hlnf06oa8xy2usdq9g;
-
-ALTER TABLE mmusdvterm_aud DROP CONSTRAINT mmusdvterm_aud_pkey;
 ALTER TABLE mmusdvterm_aud DROP CONSTRAINT fk19prhk8fikp11bpxxm2tqxh6u;
-
-ALTER TABLE modterm DROP CONSTRAINT modterm_pkey;
 ALTER TABLE modterm DROP CONSTRAINT modterm_curie_fk;
-
-ALTER TABLE modterm_aud DROP CONSTRAINT modterm_aud_pkey;
 ALTER TABLE modterm_aud DROP CONSTRAINT modterm_aud_curie_rev_fk;
-
-ALTER TABLE molecule DROP CONSTRAINT molecule_pkey;
 ALTER TABLE molecule DROP CONSTRAINT fknnf79fdaivbnqu0p9kes1jtd1;
-
-ALTER TABLE molecule_aud DROP CONSTRAINT molecule_aud_pkey;
 ALTER TABLE molecule_aud DROP CONSTRAINT fkcbo1onn61w7v5ivh1e1h2tcd7;
-
-ALTER TABLE mpathterm DROP CONSTRAINT mpathterm_pkey;
 ALTER TABLE mpathterm DROP CONSTRAINT mpathterm_curie_fk;
-
-ALTER TABLE mpathterm_aud DROP CONSTRAINT mpathterm_aud_pkey;
 ALTER TABLE mpathterm_aud DROP CONSTRAINT mpathterm_aud_curie_rev_fk;
-
-ALTER TABLE mpterm DROP CONSTRAINT mpterm_pkey;
 ALTER TABLE mpterm DROP CONSTRAINT fkorn5mvrebk70b70o3sepp2fwe;
-
-ALTER TABLE mpterm_aud DROP CONSTRAINT mpterm_aud_pkey;
 ALTER TABLE mpterm_aud DROP CONSTRAINT fkjw611qjy95wa8gjjthb1uptjy;
-
-ALTER TABLE ncbitaxonterm DROP CONSTRAINT ncbitaxonterm_pkey;
 ALTER TABLE ncbitaxonterm DROP CONSTRAINT fk47k37g37jc1e4wdt76ajmn0xk;
-
-ALTER TABLE ncbitaxonterm_aud DROP CONSTRAINT ncbitaxonterm_aud_pkey;
 ALTER TABLE ncbitaxonterm_aud DROP CONSTRAINT fkap27v3trsn5u9q93qb8ikabrf;
-
 ALTER TABLE note_aud DROP CONSTRAINT fk1r4uoh4rg9vyahvb8bpd6dfn7;
-
 ALTER TABLE note_reference RENAME CONSTRAINT fknr8td9rfl6vd6cstukci0e0qq TO note_reference_note_id_fk;
 ALTER TABLE note_reference DROP CONSTRAINT note_reference_references_curie_fk;
 ALTER INDEX idxk4kbcn96bs4gafx883i9sj7my RENAME TO note_reference_note_index;
-
-ALTER TABLE obiterm DROP CONSTRAINT obiterm_pkey;
 ALTER TABLE obiterm DROP CONSTRAINT obiterm_curie_fk;
-
-ALTER TABLE obiterm_aud DROP CONSTRAINT obiterm_aud_pkey;
 ALTER TABLE obiterm_aud DROP CONSTRAINT obiterm_aud_curie_rev_fk;
-
-ALTER TABLE ontologyterm DROP CONSTRAINT ontologyterm_pkey;
-
-ALTER TABLE ontologyterm_aud DROP CONSTRAINT ontologyterm_aud_pkey;
 ALTER TABLE ontologyterm_aud DROP CONSTRAINT fkdxjp2u3w3xoi7p9j7huceg2ts;
-
 ALTER TABLE ontologyterm_crossreference DROP CONSTRAINT fk3e1a40poh1ehjk91h42bx7i45;
 DROP INDEX ontologyterm_crossreference_ontologyterm_curie_index;
 ALTER INDEX ontologyterm_crossreference_crossreferences_id_index RENAME TO ontologyterm_crossreference_crossreferences_index;
-
 ALTER TABLE ontologyterm_definitionurls DROP CONSTRAINT fknhkhso5kmei3t37mkhodkkfgt;
 DROP INDEX idx171k63a40d8huvbhohveql7so;
-
 ALTER TABLE ontologyterm_isa_ancestor_descendant DROP CONSTRAINT ontologyterm_ancestor_descendant_pkey;
 ALTER TABLE ontologyterm_isa_ancestor_descendant DROP CONSTRAINT fkh6pn8ibta2l7jnov2ds2dqyyt;
 ALTER TABLE ontologyterm_isa_ancestor_descendant DROP CONSTRAINT fk62tk8kyfxk80w7n06w0d4o5yf;
 DROP INDEX idxll2agbrj7gqreke3x7hr8wvi8;
 DROP INDEX idxss79m7jisaqcm3kfq5r7gro16;
-
 ALTER TABLE ontologyterm_isa_parent_children DROP CONSTRAINT ontologyterm_parent_children_pkey;
 ALTER TABLE ontologyterm_isa_parent_children DROP CONSTRAINT fkhjjhjxsp6gacmykm0bwijv0tj;
 ALTER TABLE ontologyterm_isa_parent_children DROP CONSTRAINT fkqrefoml52l7b5nr5w3diqr5er;
 DROP INDEX idx1wx6c7akkhro1m34rawo283t0;
 DROP INDEX idx91kybf28ecbonyxlh4s46c756;
-
 ALTER TABLE ontologyterm_secondaryidentifiers DROP CONSTRAINT fkpkg5jfw6wypf4v43bpb4ergu7;
 DROP INDEX idxsvjjbf5eugfrbue5yo4jgarpn;
-
 ALTER TABLE ontologyterm_subsets DROP CONSTRAINT fkchq4ex53obwegdhgxrovd5r53;
 DROP INDEX idxips7lcqafkikxweue2p0h13t9;
-
 ALTER TABLE ontologyterm_synonym RENAME CONSTRAINT fk4uyg8s1tkgg3vp1cb8dn3vyvr TO ontologyterm_synonym_synonyms_id_fk;
 ALTER TABLE ontologyterm_synonym DROP CONSTRAINT fkjf8xunyry3dy9njpqb01tvjsr;
 DROP INDEX ontologyterm_synonym_ontologyterm_curie_index;
-
 ALTER TABLE organization_aud DROP CONSTRAINT organization_aud_rev_fk;
-
-ALTER TABLE patoterm DROP CONSTRAINT patoterm_pkey;
 ALTER TABLE patoterm DROP CONSTRAINT patoterm_curie_fk;
-
-ALTER TABLE patoterm_aud DROP CONSTRAINT patoterm_aud_pkey;
 ALTER TABLE patoterm_aud DROP CONSTRAINT patoterm_aud_curie_rev_fk;
-
 ALTER TABLE person_aud DROP CONSTRAINT fkqbm2y5o4elhanxeq26reu73yd;
-
-ALTER TABLE phenotypeterm DROP CONSTRAINT phenotypeterm_pkey;
 ALTER TABLE phenotypeterm DROP CONSTRAINT fk4ymq8h2kdhq6ix6sfb4q4fn7a;
-
-ALTER TABLE phenotypeterm_aud DROP CONSTRAINT phenotypeterm_aud_pkey;
 ALTER TABLE phenotypeterm_aud DROP CONSTRAINT fksap791c8unrey4xnqcydm8kv1;
-
-ALTER TABLE pwterm DROP CONSTRAINT pwterm_pkey;
 ALTER TABLE pwterm DROP CONSTRAINT pwterm_curie_fk;
-
-ALTER TABLE pwterm_aud DROP CONSTRAINT pwterm_aud_pkey;
 ALTER TABLE pwterm_aud DROP CONSTRAINT pwterm_aud_curie_rev_fk;
-
 ALTER TABLE reagent_aud DROP CONSTRAINT reagent_aud_rev_fk;
-
 ALTER INDEX reagent_secondaryidentifiers_reagent_id_index RENAME TO reagent_secondaryidentifiers_reagent_index;
-
-ALTER reference DROP CONSTRAINT reference_pkey;
-ALTER reference DROP CONSTRAINT fk17o77er2650ydtr1dhtd0y5kn;
-
-ALTER reference_aud DROP CONSTRAINT reference_aud_pkey;
-ALTER reference_aud DROP CONSTRAINT fk897g2lxdu1btxkcikigm6j4wo;
-ALTER reference_aud DROP CONSTRAINT reference_aud_curie_rev_fk;
-
+ALTER TABLE reference DROP CONSTRAINT fk17o77er2650ydtr1dhtd0y5kn;
+ALTER TABLE reference_aud DROP CONSTRAINT fk897g2lxdu1btxkcikigm6j4wo;
+ALTER TABLE reference_aud DROP CONSTRAINT reference_aud_curie_rev_fk;
 ALTER TABLE reference_crossreference DROP CONSTRAINT reference_crossreference_reference_curie_fk;
 DROP INDEX idx5f73olsmf7f70k9nimewmv2ov;
 ALTER INDEX reference_crossreference_crossreferences_id_index RENAME TO reference_crossreference_crossreferences_index;
 DROP INDEX idx8o0l1xsm13k7qe0btnlr0x32j;
-
 ALTER TABLE resourcedescriptor_aud DROP CONSTRAINT resourcedescriptor_aud_rev_fk;
-
 ALTER TABLE resourcedescriptorpage_aud DROP CONSTRAINT resourcedescriptorpage_aud_rev_fk;
--- Add columns
+ALTER TABLE roterm DROP CONSTRAINT fkyqhfu00n2xcrfg2w4iv9wwx8;
+ALTER TABLE roterm_aud DROP CONSTRAINT fk8wmlph21s6vviddt2tx63fhqn;
+ALTER TABLE rsterm DROP CONSTRAINT rsterm_curie_fk;
+ALTER TABLE rsterm_aud DROP CONSTRAINT rsterm_aud_curie_rev_fk;
+ALTER TABLE singlereferenceassociation DROP CONSTRAINT singlereferenceassociation_singlereference_curie_fk;
+DROP INDEX singlereferenceassociation_singlereference_index;
+ALTER TABLE slotannotation_aud DROP CONSTRAINT slotannotation_aud_rev_fk;
+ALTER TABLE slotannotation_informationcontententity DROP CONSTRAINT slotannotation_informationcontententity_evidence_curie_fk;
+DROP INDEX slotannotation_informationcontententity_evidence_curie_index;
+ALTER INDEX slotannotation_informationcontententity_slotannotation_id_index RENAME TO slotannotation_informationcontententity_slotannotation_index;
+ALTER TABLE soterm DROP CONSTRAINT fkri7tkc9slvpex9v83peovegyt;
+ALTER TABLE soterm_aud DROP CONSTRAINT fk5i3iqfnxf9hxjq6jmay2gm68g;
+ALTER TABLE species DROP CONSTRAINT species_taxon_curie_fk;
+ALTER TABLE species_aud DROP CONSTRAINT species_aud_rev_fk;
+ALTER TABLE stageterm DROP CONSTRAINT fkas58x03rc132q00y838dv1gsb;
+ALTER TABLE stageterm_aud DROP CONSTRAINT fkbe4dl5s3i7ga7hqryddog2g0f;
+ALTER TABLE synonym_aud DROP CONSTRAINT fk8y4re95uhgku1km6nsauced0b;
+ALTER TABLE uberonterm DROP CONSTRAINT uberonterm_curie_fk;
+ALTER TABLE uberonterm_aud DROP CONSTRAINT uberonterm_aud_curie_rev_fk;
+ALTER TABLE variant DROP CONSTRAINT variant_curie_fk;
+ALTER TABLE variant DROP CONSTRAINT variant_sourcegeneralconsequence_curie_fk;
+ALTER TABLE variant DROP CONSTRAINT variant_varianttype_curie_fk;
+DROP INDEX variant_sourcegeneralconsequence_index;
+DROP INDEX variant_varianttype_index;
+ALTER TABLE variant_aud DROP CONSTRAINT variant_aud_curie_rev_fk;
+ALTER TABLE variant_note DROP CONSTRAINT variant_note_variant_curie_fk;
+DROP INDEX variant_note_variant_curie_index;
+ALTER INDEX variant_note_relatednotes_id_index RENAME TO variant_note_relatednotes_index;
+ALTER TABLE vocabulary_aud DROP CONSTRAINT fk2pe60ji8kxipj6qf3cd6hjda5;
+ALTER TABLE vocabularyterm_aud DROP CONSTRAINT fkfg8df1h10nehkt3pw4cebbde8;
+ALTER TABLE vocabularytermset_aud DROP CONSTRAINT fkkqfblby0u8l1h2i3fm7h4ynlh;
+ALTER TABLE vtterm DROP CONSTRAINT vtterm_curie_fk;
+ALTER TABLE vtterm_aud DROP CONSTRAINT vtterm_aud_curie_rev_fk;
+ALTER TABLE wbbtterm DROP CONSTRAINT fkqnxqrnadcxojeti2ienobdqh0;
+ALTER TABLE wbbtterm_aud DROP CONSTRAINT fkhu85m34h8hf95s453u3m4ed8y;
+ALTER TABLE wblsterm DROP CONSTRAINT fk4k9uvngmwim574bm5mu5q4203;
+ALTER TABLE wblsterm_aud DROP CONSTRAINT fkbug8ndvvjf8e7e3rpcih06j63;
+ALTER TABLE wbphenotypeterm DROP CONSTRAINT fkhonuwqm6g91le1xigmik3yrwl;
+ALTER TABLE wbphenotypeterm_aud DROP CONSTRAINT fk48fs5fxgn3sfvyyiqpgoquuma;
+ALTER TABLE xbaterm DROP CONSTRAINT fkcnuymf0pvlgwcfd918o4pgs5n;
+ALTER TABLE xbaterm_aud DROP CONSTRAINT fkha6obinkag86qlcpemxmgv4ly;
+ALTER TABLE xbedterm DROP CONSTRAINT fkc0dct519510hodhd9d7phfq6g;
+ALTER TABLE xbedterm_aud DROP CONSTRAINT fkshxj981p427yuk4qgtvcirp5k;
+ALTER TABLE xbsterm DROP CONSTRAINT fkn8tvxj5qdpjssxjl9jneqst92;
+ALTER TABLE xbsterm_aud DROP CONSTRAINT fkij9o8qar117chfev5ghkupl3o;
+ALTER TABLE xcoterm DROP CONSTRAINT fk35ywtb8qiadqbwsb706ebu81c;
+ALTER TABLE xcoterm_aud DROP CONSTRAINT fknlbuiyo3i6daerkmpim317bd3;
+ALTER TABLE xpoterm DROP CONSTRAINT fkqeoygtsa6sf94gw089ugocoph;
+ALTER TABLE xpoterm_aud DROP CONSTRAINT fkbqybirrf1obv6esgeaj8os211;
+ALTER TABLE xsmoterm DROP CONSTRAINT fk36v85u2ghsukqljkkh1jxmtlx;
+ALTER TABLE xsmoterm_aud DROP CONSTRAINT fkjdlhxyvw79i14932dqdb1bx8f;
+ALTER TABLE zecoterm DROP CONSTRAINT fkqd3f6hcopl67fwai6viq07t88;
+ALTER TABLE zecoterm_aud DROP CONSTRAINT fke5wuchgyjhb2orgvht50q2dah;
+ALTER TABLE zfaterm DROP CONSTRAINT fk572s3xiqi0y4gjblq8xjyk3f7;
+ALTER TABLE zfaterm_aud DROP CONSTRAINT fks66s1k4fon0to2kk7qfsm1xon;
+ALTER TABLE zfsterm DROP CONSTRAINT fknkrcnh3l23ol126v9w61nk079;
+ALTER TABLE zfsterm_aud DROP CONSTRAINT fk27dwwh5ekpa60ug4ystuwwn6w;
+
+ALTER TABLE affectedgenomicmodel DROP CONSTRAINT affectedgenomicmodel_pkey;
+ALTER TABLE affectedgenomicmodel_aud DROP CONSTRAINT affectedgenomicmodel_aud_pkey;
+ALTER TABLE allele DROP CONSTRAINT allele_pkey;
+ALTER TABLE allele_aud DROP CONSTRAINT allele_aud_pkey;
+ALTER TABLE allele_note_aud DROP CONSTRAINT allele_note_aud_pkey;
+ALTER TABLE allele_reference_aud DROP CONSTRAINT allele_reference_aud_pkey;
+ALTER TABLE anatomicalterm DROP CONSTRAINT anatomicalterm_pkey;
+ALTER TABLE anatomicalterm_aud DROP CONSTRAINT anatomicalterm_aud_pkey;
+ALTER TABLE apoterm DROP CONSTRAINT apoterm_pkey;
+ALTER TABLE apoterm_aud DROP CONSTRAINT apoterm_aud_pkey;
+ALTER TABLE atpterm DROP CONSTRAINT atpterm_pkey;
+ALTER TABLE atpterm_aud DROP CONSTRAINT atpterm_aud_pkey;
+ALTER TABLE biologicalentity DROP CONSTRAINT biologicalentity_pkey;
+ALTER TABLE biologicalentity_aud DROP CONSTRAINT biologicalentity_aud_pkey;
+ALTER TABLE bspoterm DROP CONSTRAINT bspoterm_pkey;
+ALTER TABLE bspoterm_aud DROP CONSTRAINT bspoterm_aud_pkey;
+ALTER TABLE chebiterm DROP CONSTRAINT chebiterm_pkey;
+ALTER TABLE chebiterm_aud DROP CONSTRAINT chebiterm_aud_pkey;
+ALTER TABLE chemicalterm DROP CONSTRAINT chemicalterm_pkey;
+ALTER TABLE chemicalterm_aud DROP CONSTRAINT chemicalterm_aud_pkey;
+ALTER TABLE clterm DROP CONSTRAINT clterm_pkey;
+ALTER TABLE clterm_aud DROP CONSTRAINT clterm_aud_pkey;
+ALTER TABLE cmoterm DROP CONSTRAINT cmoterm_pkey;
+ALTER TABLE cmoterm_aud DROP CONSTRAINT cmoterm_aud_pkey;
+ALTER TABLE daoterm DROP CONSTRAINT daoterm_pkey;
+ALTER TABLE daoterm_aud DROP CONSTRAINT daoterm_aud_pkey;
+ALTER TABLE doterm DROP CONSTRAINT doterm_pkey;
+ALTER TABLE doterm_aud DROP CONSTRAINT doterm_aud_pkey;
+ALTER TABLE dpoterm DROP CONSTRAINT dpoterm_pkey;
+ALTER TABLE dpoterm_aud DROP CONSTRAINT dpoterm_aud_pkey;
+ALTER TABLE ecoterm DROP CONSTRAINT ecoterm_pkey;
+ALTER TABLE ecoterm_aud DROP CONSTRAINT ecoterm_aud_pkey;
+ALTER TABLE emapaterm DROP CONSTRAINT emapaterm_pkey;
+ALTER TABLE emapaterm_aud DROP CONSTRAINT emapaterm_aud_pkey;
+ALTER TABLE experimentalconditionontologyterm DROP CONSTRAINT experimentalconditionontologyterm_pkey;
+ALTER TABLE experimentalconditionontologyterm_aud DROP CONSTRAINT experimentalconditionontologyterm_aud_pkey;
+ALTER TABLE fbdvterm DROP CONSTRAINT IF EXISTS fbdvterm_pkey;
+ALTER TABLE fbdvterm_aud DROP CONSTRAINT fbdvterm_aud_pkey;
+ALTER TABLE gene DROP CONSTRAINT gene_pkey;
+ALTER TABLE gene_aud DROP CONSTRAINT gene_aud_pkey;
+ALTER TABLE genomicentity DROP CONSTRAINT genomicentity_pkey;
+ALTER TABLE genomicentity_aud DROP CONSTRAINT genomicentity_aud_pkey;
+ALTER TABLE goterm DROP CONSTRAINT goterm_pkey;
+ALTER TABLE goterm_aud DROP CONSTRAINT goterm_aud_pkey;
+ALTER TABLE hpterm DROP CONSTRAINT hpterm_pkey;
+ALTER TABLE hpterm_aud DROP CONSTRAINT hpterm_aud_pkey;
+ALTER TABLE informationcontententity DROP CONSTRAINT informationcontententity_pkey;
+ALTER TABLE informationcontententity_aud DROP CONSTRAINT informationcontententity_aud_pkey;
+ALTER TABLE materm DROP CONSTRAINT materm_pkey;
+ALTER TABLE materm_aud DROP CONSTRAINT materm_aud_pkey;
+ALTER TABLE miterm DROP CONSTRAINT miterm_pkey;
+ALTER TABLE miterm_aud DROP CONSTRAINT miterm_aud_pkey;
+ALTER TABLE mmoterm DROP CONSTRAINT mmoterm_pkey;
+ALTER TABLE mmoterm_aud DROP CONSTRAINT mmoterm_aud_pkey;
+ALTER TABLE mmusdvterm DROP CONSTRAINT IF EXISTS mmusdvterm_pkey;
+ALTER TABLE mmusdvterm_aud DROP CONSTRAINT mmusdvterm_aud_pkey;
+ALTER TABLE modterm DROP CONSTRAINT modterm_pkey;
+ALTER TABLE modterm_aud DROP CONSTRAINT modterm_aud_pkey;
+ALTER TABLE molecule DROP CONSTRAINT molecule_pkey;
+ALTER TABLE molecule_aud DROP CONSTRAINT molecule_aud_pkey;
+ALTER TABLE mpathterm DROP CONSTRAINT mpathterm_pkey;
+ALTER TABLE mpathterm_aud DROP CONSTRAINT mpathterm_aud_pkey;
+ALTER TABLE mpterm DROP CONSTRAINT mpterm_pkey;
+ALTER TABLE mpterm_aud DROP CONSTRAINT mpterm_aud_pkey;
+ALTER TABLE ncbitaxonterm DROP CONSTRAINT ncbitaxonterm_pkey;
+ALTER TABLE ncbitaxonterm_aud DROP CONSTRAINT ncbitaxonterm_aud_pkey;
+ALTER TABLE obiterm DROP CONSTRAINT obiterm_pkey;
+ALTER TABLE obiterm_aud DROP CONSTRAINT obiterm_aud_pkey;
+ALTER TABLE ontologyterm DROP CONSTRAINT ontologyterm_pkey;
+ALTER TABLE ontologyterm_aud DROP CONSTRAINT ontologyterm_aud_pkey;
+ALTER TABLE patoterm DROP CONSTRAINT patoterm_pkey;
+ALTER TABLE patoterm_aud DROP CONSTRAINT patoterm_aud_pkey;
+ALTER TABLE phenotypeterm DROP CONSTRAINT phenotypeterm_pkey;
+ALTER TABLE phenotypeterm_aud DROP CONSTRAINT phenotypeterm_aud_pkey;
+ALTER TABLE pwterm DROP CONSTRAINT pwterm_pkey;
+ALTER TABLE pwterm_aud DROP CONSTRAINT pwterm_aud_pkey;
+ALTER TABLE reference DROP CONSTRAINT reference_pkey;
+ALTER TABLE reference_aud DROP CONSTRAINT reference_aud_pkey;
+ALTER TABLE roterm DROP CONSTRAINT roterm_pkey;
+ALTER TABLE roterm_aud DROP CONSTRAINT roterm_aud_pkey;
+ALTER TABLE rsterm DROP CONSTRAINT rsterm_pkey;
+ALTER TABLE rsterm_aud DROP CONSTRAINT rsterm_aud_pkey;
+ALTER TABLE soterm DROP CONSTRAINT soterm_pkey;
+ALTER TABLE soterm_aud DROP CONSTRAINT soterm_aud_pkey;
+ALTER TABLE stageterm DROP CONSTRAINT stageterm_pkey;
+ALTER TABLE stageterm_aud DROP CONSTRAINT stageterm_aud_pkey;
+ALTER TABLE uberonterm DROP CONSTRAINT uberonterm_pkey;
+ALTER TABLE uberonterm_aud DROP CONSTRAINT uberonterm_aud_pkey;
+ALTER TABLE variant DROP CONSTRAINT variant_pkey;
+ALTER TABLE variant_aud DROP CONSTRAINT variant_aud_pkey;
+ALTER TABLE vtterm DROP CONSTRAINT vtterm_pkey;
+ALTER TABLE vtterm_aud DROP CONSTRAINT vtterm_aud_pkey;
+ALTER TABLE wbbtterm DROP CONSTRAINT wbbtterm_pkey;
+ALTER TABLE wbbtterm_aud DROP CONSTRAINT IF EXISTS wbbtterm_aud_pkey;
+ALTER TABLE wblsterm DROP CONSTRAINT wblsterm_pkey;
+ALTER TABLE wblsterm_aud DROP CONSTRAINT IF EXISTS wblsterm_aud_pkey;
+ALTER TABLE wbphenotypeterm DROP CONSTRAINT wbphenotypeterm_pkey;
+ALTER TABLE wbphenotypeterm_aud DROP CONSTRAINT wbphenotypeterm_aud_pkey;
+ALTER TABLE xbaterm DROP CONSTRAINT xbaterm_pkey;
+ALTER TABLE xbaterm_aud DROP CONSTRAINT IF EXISTS xbaterm_aud_pkey;
+ALTER TABLE xbedterm DROP CONSTRAINT xbedterm_pkey;
+ALTER TABLE xbedterm_aud DROP CONSTRAINT IF EXISTS xbedterm_aud_pkey;
+ALTER TABLE xbsterm DROP CONSTRAINT xbsterm_pkey;
+ALTER TABLE xbsterm_aud DROP CONSTRAINT IF EXISTS xbsterm_aud_pkey;
+ALTER TABLE xcoterm DROP CONSTRAINT xcoterm_pkey;
+ALTER TABLE xcoterm_aud DROP CONSTRAINT IF EXISTS xcoterm_aud_pkey;
+ALTER TABLE xpoterm DROP CONSTRAINT xpoterm_pkey;
+ALTER TABLE xpoterm_aud DROP CONSTRAINT IF EXISTS xpoterm_aud_pkey;
+ALTER TABLE xsmoterm DROP CONSTRAINT xsmoterm_pkey;
+ALTER TABLE xsmoterm_aud DROP CONSTRAINT IF EXISTS xsmoterm_aud_pkey;
+ALTER TABLE zecoterm DROP CONSTRAINT zecoterm_pkey;
+ALTER TABLE zecoterm_aud DROP CONSTRAINT IF EXISTS zecoterm_aud_pkey;
+ALTER TABLE zfaterm DROP CONSTRAINT zfaterm_pkey;
+ALTER TABLE zfaterm_aud DROP CONSTRAINT IF EXISTS zfaterm_aud_pkey;
+ALTER TABLE zfsterm DROP CONSTRAINT zfsterm_pkey;
+ALTER TABLE zfsterm_aud DROP CONSTRAINT IF EXISTS zfsterm_aud_pkey;
+
+-- Create tables
+
+CREATE TABLE auditedobject (
+	id bigint PRIMARY KEY,
+	old_id bigint,
+	old_curie varchar(255),
+	tablename varchar(255),
+	createdby_id bigint,
+	updatedby_id bigint,
+	datecreated timestamp without time zone,
+	dateupdated timestamp without time zone,
+	dbdatecreated timestamp without time zone,
+	dbdateupdated timestamp without time zone,
+	internal boolean NOT NULL DEFAULT false,
+	obsolete boolean NOT NULL DEFAULT false
+	);
+
+CREATE TABLE auditedobject_aud (
+	id bigint NOT NULL,
+	createdby_id bigint,
+	updatedby_id bigint,
+	datecreated timestamp without time zone,
+	dateupdated timestamp without time zone,
+	dbdatecreated timestamp without time zone,
+	dbdateupdated timestamp without time zone,
+	internal boolean,
+	obsolete boolean,
+	rev integer NOT NULL,
+	revtype smallint,
+	PRIMARY KEY (id, rev)
+	);	
+	
+CREATE TABLE curieobject (
+	id bigint PRIMARY KEY,
+	curie varchar(255)
+	);
+
+CREATE TABLE curieobject_aud (
+	id bigint NOT NULL,
+	curie varchar(255),
+	rev integer NOT NULL,
+	PRIMARY KEY (id, rev)
+	);
+	
+CREATE TABLE submittedobject (
+	id bigint PRIMARY KEY,
+	modentityid varchar(255),
+	modinternalid varchar(255),
+	dataprovider_id bigint
+	);
+
+CREATE TABLE submittedobject_aud (
+	id bigint NOT NULL,
+	modentityid varchar(255),
+	modinternalid varchar(255),
+	dataprovider_id bigint,
+	rev integer NOT NULL,
+	PRIMARY KEY (id, rev)
+	);
+	
+CREATE SEQUENCE auditedobject_seq START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
+
+-- Add id equivalents of curie columns 
+
+ALTER TABLE affectedgenomicmodel ADD COLUMN id bigint;
+ALTER TABLE agmdiseaseannotation ADD COLUMN inferredallele_id bigint;
+ALTER TABLE agmdiseaseannotation ADD COLUMN inferredgene_id bigint;
+ALTER TABLE agmdiseaseannotation ADD COLUMN assertedallele_id bigint;
+ALTER TABLE agmdiseaseannotation ADD COLUMN subject_id bigint;
+ALTER TABLE agmdiseaseannotation_gene ADD COLUMN assertedgenes_id bigint;
+ALTER TABLE allele ADD COLUMN id bigint;
+ALTER TABLE allele_note ADD COLUMN allele_id bigint;
+ALTER TABLE allele_reference ADD COLUMN allele_id bigint;
+ALTER TABLE allele_reference ADD COLUMN references_id bigint;
+ALTER TABLE alleledatabasestatusslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelediseaseannotation ADD COLUMN inferredgene_id bigint;
+ALTER TABLE allelediseaseannotation ADD COLUMN subject_id bigint;
+ALTER TABLE allelediseaseannotation_gene ADD COLUMN assertedgenes_id bigint;	
+ALTER TABLE allelefullnameslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelefunctionalimpactslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelefunctionalimpactslotannotation ADD COLUMN phenotypeterm_id bigint; 
+ALTER TABLE allelegeneassociation ADD COLUMN subject_id bigint;
+ALTER TABLE allelegeneassociation ADD COLUMN object_id bigint;
+ALTER TABLE allelegenomicentityassociation ADD COLUMN evidencecode_id bigint;
+ALTER TABLE allelegermlinetransmissionstatusslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE alleleinheritancemodeslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE alleleinheritancemodeslotannotation ADD COLUMN phenotypeterm_id bigint;
+ALTER TABLE allelemutationtypeslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelemutationtypeslotannotation_soterm ADD COLUMN mutationtypes_id bigint;
+ALTER TABLE allelenomenclatureeventslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelesecondaryidslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelesymbolslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelesynonymslotannotation ADD COLUMN singleallele_id bigint;
+ALTER TABLE anatomicalterm ADD COLUMN id bigint;
+ALTER TABLE apoterm ADD COLUMN id bigint;
+ALTER TABLE atpterm ADD COLUMN id bigint;
+ALTER TABLE biologicalentity ADD COLUMN id bigint;
+ALTER TABLE biologicalentity ADD COLUMN taxon_id bigint;
+ALTER TABLE bspoterm ADD COLUMN id bigint;
+ALTER TABLE chebiterm ADD COLUMN id bigint;
+ALTER TABLE chemicalterm ADD COLUMN id bigint;
+ALTER TABLE clterm ADD COLUMN id bigint;
+ALTER TABLE cmoterm ADD COLUMN id bigint;
+ALTER TABLE conditionrelation ADD COLUMN singlereference_id bigint;
+ALTER TABLE construct_reference ADD COLUMN references_id bigint;
+ALTER TABLE constructcomponentslotannotation ADD COLUMN taxon_id bigint;
+ALTER TABLE constructgenomicentityassociation ADD COLUMN object_id bigint;
+ALTER TABLE daoterm ADD COLUMN id bigint;
+ALTER TABLE diseaseannotation ADD COLUMN object_id bigint;
+ALTER TABLE diseaseannotation_biologicalentity ADD COLUMN diseasegeneticmodifiers_id bigint;
+ALTER TABLE diseaseannotation_ecoterm ADD COLUMN evidencecodes_id bigint;
+ALTER TABLE diseaseannotation_gene ADD COLUMN with_id bigint;
+ALTER TABLE doterm ADD COLUMN id bigint;
+ALTER TABLE dpoterm ADD COLUMN id bigint;
+ALTER TABLE ecoterm ADD COLUMN id bigint;
+ALTER TABLE emapaterm ADD COLUMN id bigint;
+ALTER TABLE evidenceassociation_informationcontententity ADD COLUMN evidence_id bigint;
+ALTER TABLE experimentalcondition ADD COLUMN conditionanatomy_id bigint;
+ALTER TABLE experimentalcondition ADD COLUMN conditionchemical_id bigint;
+ALTER TABLE experimentalcondition ADD COLUMN conditionclass_id bigint;
+ALTER TABLE experimentalcondition ADD COLUMN conditiongeneontology_id bigint;
+ALTER TABLE experimentalcondition ADD COLUMN conditionid_id bigint;
+ALTER TABLE experimentalcondition ADD COLUMN conditiontaxon_id bigint;
+ALTER TABLE experimentalconditionontologyterm ADD COLUMN id bigint;
+ALTER TABLE fbdvterm ADD COLUMN id bigint;
+ALTER TABLE gene ADD COLUMN id bigint;
+ALTER TABLE gene ADD COLUMN genetype_id bigint;
+ALTER TABLE genediseaseannotation ADD COLUMN sgdstrainbackground_id bigint;
+ALTER TABLE genediseaseannotation ADD COLUMN subject_id bigint;
+ALTER TABLE genefullnameslotannotation ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesecondaryidslotannotation ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesymbolslotannotation ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesynonymslotannotation ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesystematicnameslotannotation ADD COLUMN singlegene_id bigint;
+ALTER TABLE genetogeneorthology ADD COLUMN subjectgene_id bigint;
+ALTER TABLE genetogeneorthology ADD COLUMN objectgene_id bigint;
+ALTER TABLE genetogeneorthologycurated ADD COLUMN singlereference_id bigint;
+ALTER TABLE genetogeneorthologycurated ADD COLUMN evidencecode_id bigint;
+ALTER TABLE genomicentity ADD COLUMN id bigint;
+ALTER TABLE genomicentity_crossreference ADD COLUMN genomicentity_id bigint;
+ALTER TABLE goterm ADD COLUMN id bigint;
+ALTER TABLE hpterm ADD COLUMN id bigint;
+ALTER TABLE informationcontententity ADD COLUMN id bigint;
+ALTER TABLE materm ADD COLUMN id bigint;
+ALTER TABLE miterm ADD COLUMN id bigint;
+ALTER TABLE mmoterm ADD COLUMN id bigint;
+ALTER TABLE mmusdvterm ADD COLUMN id bigint;
+ALTER TABLE modterm ADD COLUMN id bigint;
+ALTER TABLE molecule ADD COLUMN id bigint;
+ALTER TABLE mpathterm ADD COLUMN id bigint;
+ALTER TABLE mpterm ADD COLUMN id bigint;
+ALTER TABLE ncbitaxonterm ADD COLUMN id bigint;
+ALTER TABLE note_reference ADD COLUMN references_id bigint;
+ALTER TABLE obiterm ADD COLUMN id bigint;
+ALTER TABLE ontologyterm ADD COLUMN id bigint;
+ALTER TABLE ontologyterm_crossreference ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_definitionurls ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_isa_ancestor_descendant ADD COLUMN isadescendants_id bigint;
+ALTER TABLE ontologyterm_isa_ancestor_descendant ADD COLUMN isaancestors_id bigint;
+ALTER TABLE ontologyterm_isa_parent_children ADD COLUMN isachildren_id bigint;
+ALTER TABLE ontologyterm_isa_parent_children ADD COLUMN isaparents_id bigint;
+ALTER TABLE ontologyterm_secondaryidentifiers ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_subsets ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_synonym ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE patoterm ADD COLUMN id bigint;
+ALTER TABLE phenotypeterm ADD COLUMN id bigint;
+ALTER TABLE pwterm ADD COLUMN id bigint;
+ALTER TABLE reference ADD COLUMN id bigint;
+ALTER TABLE reference_crossreference ADD COLUMN reference_id bigint;
+ALTER TABLE roterm ADD COLUMN id bigint;
+ALTER TABLE rsterm ADD COLUMN id bigint;
+ALTER TABLE singlereferenceassociation ADD COLUMN singlereference_id bigint;
+ALTER TABLE slotannotation_informationcontententity ADD COLUMN evidence_id bigint;
+ALTER TABLE soterm ADD COLUMN id bigint;
+ALTER TABLE species ADD COLUMN taxon_id bigint;
+ALTER TABLE stageterm ADD COLUMN id bigint;
+ALTER TABLE uberonterm ADD COLUMN id bigint;
+ALTER TABLE variant ADD COLUMN id bigint;
+ALTER TABLE variant ADD COLUMN varianttype_id bigint;
+ALTER TABLE variant ADD COLUMN sourcegeneralconsequence_id bigint;
+ALTER TABLE variant_note ADD COLUMN variant_id bigint;
+ALTER TABLE vtterm ADD COLUMN id bigint;
+ALTER TABLE wbbtterm ADD COLUMN id bigint;
+ALTER TABLE wblsterm ADD COLUMN id bigint;
+ALTER TABLE wbphenotypeterm ADD COLUMN id bigint;
+ALTER TABLE xbaterm ADD COLUMN id bigint;
+ALTER TABLE xbedterm ADD COLUMN id bigint;
+ALTER TABLE xbsterm ADD COLUMN id bigint;
+ALTER TABLE xcoterm ADD COLUMN id bigint;
+ALTER TABLE xpoterm ADD COLUMN id bigint;
+ALTER TABLE xsmoterm ADD COLUMN id bigint;
+ALTER TABLE zecoterm ADD COLUMN id bigint;
+ALTER TABLE zfaterm ADD COLUMN id bigint;
+ALTER TABLE zfsterm ADD COLUMN id bigint;
+
+ALTER TABLE affectedgenomicmodel_aud ADD COLUMN id bigint;
+ALTER TABLE agmdiseaseannotation_aud ADD COLUMN inferredallele_id bigint;
+ALTER TABLE agmdiseaseannotation_aud ADD COLUMN inferredgene_id bigint;
+ALTER TABLE agmdiseaseannotation_aud ADD COLUMN assertedallele_id bigint;
+ALTER TABLE agmdiseaseannotation_aud ADD COLUMN subject_id bigint;
+ALTER TABLE agmdiseaseannotation_gene_aud ADD COLUMN assertedgenes_id bigint;
+ALTER TABLE allele_aud ADD COLUMN id bigint;
+ALTER TABLE allele_note_aud ADD COLUMN allele_id bigint;
+ALTER TABLE allele_reference_aud ADD COLUMN allele_id bigint;
+ALTER TABLE allele_reference_aud ADD COLUMN references_id bigint;
+ALTER TABLE alleledatabasestatusslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelediseaseannotation_aud ADD COLUMN inferredgene_id bigint;
+ALTER TABLE allelediseaseannotation_aud ADD COLUMN subject_id bigint;
+ALTER TABLE allelediseaseannotation_gene_aud ADD COLUMN assertedgenes_id bigint;	
+ALTER TABLE allelefullnameslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelefunctionalimpactslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelefunctionalimpactslotannotation_aud ADD COLUMN phenotypeterm_id bigint; 
+ALTER TABLE allelegeneassociation_aud ADD COLUMN subject_id bigint;
+ALTER TABLE allelegeneassociation_aud ADD COLUMN object_id bigint;
+ALTER TABLE allelegenomicentityassociation_aud ADD COLUMN evidencecode_id bigint;
+ALTER TABLE allelegermlinetransmissionstatusslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE alleleinheritancemodeslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE alleleinheritancemodeslotannotation_aud ADD COLUMN phenotypeterm_id bigint;
+ALTER TABLE allelemutationtypeslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelemutationtypeslotannotation_soterm_aud ADD COLUMN mutationtypes_id bigint;
+ALTER TABLE allelenomenclatureeventslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelesecondaryidslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelesymbolslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE allelesynonymslotannotation_aud ADD COLUMN singleallele_id bigint;
+ALTER TABLE anatomicalterm_aud ADD COLUMN id bigint;
+ALTER TABLE apoterm_aud ADD COLUMN id bigint;
+ALTER TABLE atpterm_aud ADD COLUMN id bigint;
+ALTER TABLE biologicalentity_aud ADD COLUMN id bigint;
+ALTER TABLE biologicalentity_aud ADD COLUMN taxon_id bigint;
+ALTER TABLE bspoterm_aud ADD COLUMN id bigint;
+ALTER TABLE chebiterm_aud ADD COLUMN id bigint;
+ALTER TABLE chemicalterm_aud ADD COLUMN id bigint;
+ALTER TABLE clterm_aud ADD COLUMN id bigint;
+ALTER TABLE cmoterm_aud ADD COLUMN id bigint;
+ALTER TABLE conditionrelation_aud ADD COLUMN singlereference_id bigint;
+ALTER TABLE construct_reference_aud ADD COLUMN references_id bigint;
+ALTER TABLE constructcomponentslotannotation_aud ADD COLUMN taxon_id bigint;
+ALTER TABLE constructgenomicentityassociation_aud ADD COLUMN object_id bigint;
+ALTER TABLE daoterm_aud ADD COLUMN id bigint;
+ALTER TABLE diseaseannotation_aud ADD COLUMN object_id bigint;
+ALTER TABLE diseaseannotation_biologicalentity_aud ADD COLUMN diseasegeneticmodifiers_id bigint;
+ALTER TABLE diseaseannotation_ecoterm_aud ADD COLUMN evidencecodes_id bigint;
+ALTER TABLE diseaseannotation_gene_aud ADD COLUMN with_id bigint;
+ALTER TABLE doterm_aud ADD COLUMN id bigint;
+ALTER TABLE dpoterm_aud ADD COLUMN id bigint;
+ALTER TABLE ecoterm_aud ADD COLUMN id bigint;
+ALTER TABLE emapaterm_aud ADD COLUMN id bigint;
+ALTER TABLE evidenceassociation_informationcontententity_aud ADD COLUMN evidence_id bigint;
+ALTER TABLE experimentalcondition_aud ADD COLUMN conditionanatomy_id bigint;
+ALTER TABLE experimentalcondition_aud ADD COLUMN conditionchemical_id bigint;
+ALTER TABLE experimentalcondition_aud ADD COLUMN conditionclass_id bigint;
+ALTER TABLE experimentalcondition_aud ADD COLUMN conditiongeneontology_id bigint;
+ALTER TABLE experimentalcondition_aud ADD COLUMN conditionid_id bigint;
+ALTER TABLE experimentalcondition_aud ADD COLUMN conditiontaxon_id bigint;
+ALTER TABLE experimentalconditionontologyterm_aud ADD COLUMN id bigint;
+ALTER TABLE fbdvterm_aud ADD COLUMN id bigint;
+ALTER TABLE gene_aud ADD COLUMN id bigint;
+ALTER TABLE gene_aud ADD COLUMN genetype_id bigint;
+ALTER TABLE genediseaseannotation_aud ADD COLUMN sgdstrainbackground_id bigint;
+ALTER TABLE genediseaseannotation_aud ADD COLUMN subject_id bigint;
+ALTER TABLE genefullnameslotannotation_aud ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesecondaryidslotannotation_aud ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesymbolslotannotation_aud ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesynonymslotannotation_aud ADD COLUMN singlegene_id bigint;
+ALTER TABLE genesystematicnameslotannotation_aud ADD COLUMN singlegene_id bigint;
+ALTER TABLE genetogeneorthology_aud ADD COLUMN subjectgene_id bigint;
+ALTER TABLE genetogeneorthology_aud ADD COLUMN objectgene_id bigint;
+ALTER TABLE genetogeneorthologycurated_aud ADD COLUMN singlereference_id bigint;
+ALTER TABLE genetogeneorthologycurated_aud ADD COLUMN evidencecode_id bigint;
+ALTER TABLE genomicentity_aud ADD COLUMN id bigint;
+ALTER TABLE genomicentity_crossreference_aud ADD COLUMN genomicentity_id bigint;
+ALTER TABLE goterm_aud ADD COLUMN id bigint;
+ALTER TABLE hpterm_aud ADD COLUMN id bigint;
+ALTER TABLE informationcontententity_aud ADD COLUMN id bigint;
+ALTER TABLE materm_aud ADD COLUMN id bigint;
+ALTER TABLE miterm_aud ADD COLUMN id bigint;
+ALTER TABLE mmoterm_aud ADD COLUMN id bigint;
+ALTER TABLE mmusdvterm_aud ADD COLUMN id bigint;
+ALTER TABLE modterm_aud ADD COLUMN id bigint;
+ALTER TABLE molecule_aud ADD COLUMN id bigint;
+ALTER TABLE mpathterm_aud ADD COLUMN id bigint;
+ALTER TABLE mpterm_aud ADD COLUMN id bigint;
+ALTER TABLE ncbitaxonterm_aud ADD COLUMN id bigint;
+ALTER TABLE note_reference_aud ADD COLUMN references_id bigint;
+ALTER TABLE obiterm_aud ADD COLUMN id bigint;
+ALTER TABLE ontologyterm_aud ADD COLUMN id bigint;
+ALTER TABLE ontologyterm_crossreference_aud ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_definitionurls_aud ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_isa_ancestor_descendant_aud ADD COLUMN isadescendants_id bigint;
+ALTER TABLE ontologyterm_isa_ancestor_descendant_aud ADD COLUMN isaancestors_id bigint;
+ALTER TABLE ontologyterm_isa_parent_children_aud ADD COLUMN isachildren_id bigint;
+ALTER TABLE ontologyterm_isa_parent_children_aud ADD COLUMN isaparents_id bigint;
+ALTER TABLE ontologyterm_secondaryidentifiers_aud ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_subsets_aud ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE ontologyterm_synonym_aud ADD COLUMN ontologyterm_id bigint;
+ALTER TABLE patoterm_aud ADD COLUMN id bigint;
+ALTER TABLE phenotypeterm_aud ADD COLUMN id bigint;
+ALTER TABLE pwterm_aud ADD COLUMN id bigint;
+ALTER TABLE reference_aud ADD COLUMN id bigint;
+ALTER TABLE reference_crossreference_aud ADD COLUMN reference_id bigint;
+ALTER TABLE roterm_aud ADD COLUMN id bigint;
+ALTER TABLE rsterm_aud ADD COLUMN id bigint;
+ALTER TABLE singlereferenceassociation_aud ADD COLUMN singlereference_id bigint;
+ALTER TABLE slotannotation_informationcontententity_aud ADD COLUMN evidence_id bigint;
+ALTER TABLE soterm_aud ADD COLUMN id bigint;
+ALTER TABLE species_aud ADD COLUMN taxon_id bigint;
+ALTER TABLE stageterm_aud ADD COLUMN id bigint;
+ALTER TABLE uberonterm_aud ADD COLUMN id bigint;
+ALTER TABLE variant_aud ADD COLUMN id bigint;
+ALTER TABLE variant_aud ADD COLUMN varianttype_id bigint;
+ALTER TABLE variant_aud ADD COLUMN sourcegeneralconsequence_id bigint;
+ALTER TABLE variant_note_aud ADD COLUMN variant_id bigint;
+ALTER TABLE vtterm_aud ADD COLUMN id bigint;
+ALTER TABLE wbbtterm_aud ADD COLUMN id bigint;
+ALTER TABLE wblsterm_aud ADD COLUMN id bigint;
+ALTER TABLE wbphenotypeterm_aud ADD COLUMN id bigint;
+ALTER TABLE xbaterm_aud ADD COLUMN id bigint;
+ALTER TABLE xbedterm_aud ADD COLUMN id bigint;
+ALTER TABLE xbsterm_aud ADD COLUMN id bigint;
+ALTER TABLE xcoterm_aud ADD COLUMN id bigint;
+ALTER TABLE xpoterm_aud ADD COLUMN id bigint;
+ALTER TABLE xsmoterm_aud ADD COLUMN id bigint;
+ALTER TABLE zecoterm_aud ADD COLUMN id bigint;
+ALTER TABLE zfaterm_aud ADD COLUMN id bigint;
+ALTER TABLE zfsterm_aud ADD COLUMN id bigint;
+
+-- Move data around
+
+SET session_replication_role = 'replica';
+
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'association', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM association;
+	
+INSERT INTO auditedobject (tablename, id, old_curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'biologicalentity', nextval('auditedobject_seq'), curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM biologicalentity;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'bulkload', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM bulkload;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'bulkloadfile', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM bulkloadfile;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'bulkloadfileexception', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM bulkloadfileexception;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'bulkloadfilehistory', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM bulkloadfilehistory;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'bulkloadgroup', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM bulkloadgroup;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'conditionrelation', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM conditionrelation;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'crossreference', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM crossreference;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'dataprovider', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM dataprovider;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'experimentalcondition', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM experimentalcondition;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'genetogeneorthology', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM genetogeneorthology;
+	
+INSERT INTO auditedobject (tablename, id, old_curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'informationcontententity', nextval('auditedobject_seq'), curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM informationcontententity;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'note', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM note;
+	
+INSERT INTO auditedobject (tablename, id, old_curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'ontologyterm', nextval('auditedobject_seq'), curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM ontologyterm;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'organization', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM organization;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'person', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM person;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'personsetting', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM personsetting;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'reagent', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM reagent;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'resourcedescriptor', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM resourcedescriptor;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'resourcedescriptorpage', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM resourcedescriptorpage;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'slotannotation', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM slotannotation;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'species', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM species;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'synonym', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM synonym;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'vocabulary', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM vocabulary;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'vocabularyterm', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM vocabularyterm;
+	
+INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT 'vocabularytermset', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM vocabularytermset;
+	
+CREATE INDEX old_id_index ON auditedobject USING btree (old_id, tablename);
+CREATE INDEX old_curie_index ON auditedobject USING btree (old_curie, tablename);
+
+UPDATE affectedgenomicmodel t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE affectedgenomicmodel t SET subtype_id = a.id FROM auditedobject a WHERE t.subtype_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE agmdiseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE agmdiseaseannotation t SET inferredallele_id = a.id FROM auditedobject a WHERE t.inferredallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE agmdiseaseannotation t SET assertedallele_id = a.id FROM auditedobject a WHERE t.assertedallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE agmdiseaseannotation t SET inferredgene_id = a.id FROM auditedobject a WHERE t.inferredgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE agmdiseaseannotation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE agmdiseaseannotation_gene t SET agmdiseaseannotation_id = a.id FROM auditedobject a WHERE t.agmdiseaseannotation_id = a.old_id AND a.tablename = 'association';
+UPDATE agmdiseaseannotation_gene t SET assertedgenes_id = a.id FROM auditedobject a WHERE t.assertedgenes_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allele t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allele t SET incollection_id = a.id FROM auditedobject a WHERE t.incollection_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE allele_note t SET allele_id = a.id FROM auditedobject a WHERE t.allele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allele_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
+UPDATE allele_reference t SET allele_id = a.id FROM auditedobject a WHERE t.allele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allele_reference t SET references_id = a.id FROM auditedobject a WHERE t.references_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE alleledatabasestatusslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE alleledatabasestatusslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE alleledatabasestatusslotannotation t SET databasestatus_id = a.id FROM auditedobject a WHERE t.databasestatus_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE allelediseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE allelediseaseannotation t SET inferredgene_id = a.id FROM auditedobject a WHERE t.inferredgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelediseaseannotation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelediseaseannotation_gene t SET allelediseaseannotation_id = a.id FROM auditedobject a WHERE t.allelediseaseannotation_id = a.old_id AND a.tablename = 'association';
+UPDATE allelediseaseannotation_gene t SET assertedgenes_id = a.id FROM auditedobject a WHERE t.assertedgenes_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelefullnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelefullnameslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelefunctionalimpactslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelefunctionalimpactslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelefunctionalimpactslotannotation t SET phenotypeterm_id = a.id FROM auditedobject a WHERE t.phenotypeterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE allelefunctionalimpactslotannotation_vocabularyterm t SET allelefunctionalimpactslotannotation_id = a.id FROM auditedobject a WHERE t.allelefunctionalimpactslotannotation_id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelefunctionalimpactslotannotation_vocabularyterm t SET functionalimpacts_id = a.id FROM auditedobject a WHERE t.functionalimpacts_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE allelegeneassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE allelegeneassociation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelegeneassociation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelegenomicentityassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE allelegenomicentityassociation t SET evidencecode_id = a.id FROM auditedobject a WHERE t.evidencecode_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE allelegenomicentityassociation t SET relatednote_id = a.id FROM auditedobject a WHERE t.relatednote_id = a.old_id AND a.tablename = 'note';
+UPDATE allelegenomicentityassociation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE allelegermlinetransmissionstatusslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelegermlinetransmissionstatusslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelegermlinetransmissionstatusslotannotation t SET germlinetransmissionstatus_id = a.id FROM auditedobject a WHERE t.germlinetransmissionstatus_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE alleleinheritancemodeslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE alleleinheritancemodeslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE alleleinheritancemodeslotannotation t SET inheritancemode_id = a.id FROM auditedobject a WHERE t.inheritancemode_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE alleleinheritancemodeslotannotation t SET phenotypeterm_id = a.id FROM auditedobject a WHERE t.phenotypeterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE allelemutationtypeslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelemutationtypeslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelemutationtypeslotannotation_soterm t SET allelemutationtypeslotannotation_id = a.id FROM auditedobject a WHERE t.allelemutationtypeslotannotation_id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelemutationtypeslotannotation_soterm t SET mutationtypes_id = a.id FROM auditedobject a WHERE t.mutationtypes_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE allelenomenclatureeventslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelenomenclatureeventslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelenomenclatureeventslotannotation t SET nomenclatureevent_id = a.id FROM auditedobject a WHERE t.nomenclatureevent_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE allelesecondaryidslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelesecondaryidslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelesymbolslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelesymbolslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE allelesynonymslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE allelesynonymslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE alliancemember t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'organization';
+UPDATE anatomicalterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE annotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE annotation t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
+UPDATE annotation_conditionrelation t SET annotation_id = a.id FROM auditedobject a WHERE t.annotation_id = a.old_id AND a.tablename = 'association';
+UPDATE annotation_conditionrelation t SET conditionrelations_id = a.id FROM auditedobject a WHERE t.conditionrelations_id = a.old_id AND a.tablename = 'conditionrelation';
+UPDATE annotation_note t SET annotation_id = a.id FROM auditedobject a WHERE t.annotation_id = a.old_id AND a.tablename = 'association';
+UPDATE annotation_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
+UPDATE apoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE association t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE atpterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE biologicalentity t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE biologicalentity t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE bspoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE bulkfmsload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
+UPDATE bulkload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
+UPDATE bulkload t SET group_id = a.id FROM auditedobject a WHERE t.group_id = a.old_id AND a.tablename = 'bulkloadgroup';
+UPDATE bulkloadfile t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadfile';
+UPDATE bulkloadfile t SET bulkload_id = a.id FROM auditedobject a WHERE t.bulkload_id = a.old_id AND a.tablename = 'bulkload';
+UPDATE bulkloadfileexception t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadfileexception';
+UPDATE bulkloadfileexception t SET bulkloadfilehistory_id = a.id FROM auditedobject a WHERE t.bulkloadfilehistory_id = a.old_id AND a.tablename = 'bulkloadfilehistory';
+UPDATE bulkloadfilehistory t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadfilehistory';
+UPDATE bulkloadfilehistory t SET bulkloadfile_id = a.id FROM auditedobject a WHERE t.bulkloadfile_id = a.old_id AND a.tablename = 'bulkloadfile';
+UPDATE bulkloadgroup t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadgroup';
+UPDATE bulkmanualload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
+UPDATE bulkscheduledload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
+UPDATE bulkurlload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
+UPDATE chebiterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE chemicalterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE clterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE cmoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE conditionrelation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'conditionrelation';
+UPDATE conditionrelation t SET conditionrelationtype_id = a.id FROM auditedobject a WHERE t.conditionrelationtype_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE conditionrelation t SET singlereference_id = a.id FROM auditedobject a WHERE t.singlereference_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE conditionrelation_experimentalcondition t SET conditionrelation_id = a.id FROM auditedobject a WHERE t.conditionrelation_id = a.old_id AND a.tablename = 'conditionrelation';
+UPDATE conditionrelation_experimentalcondition t SET conditions_id = a.id FROM auditedobject a WHERE t.conditions_id = a.old_id AND a.tablename = 'experimentalcondition';
+UPDATE construct t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'reagent';
+UPDATE construct_reference t SET construct_id = a.id FROM auditedobject a WHERE t.construct_id = a.old_id AND a.tablename = 'reagent';
+UPDATE construct_reference t SET references_id = a.id FROM auditedobject a WHERE t.references_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE constructcomponentslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE constructcomponentslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
+UPDATE constructcomponentslotannotation t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE constructcomponentslotannotation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE constructcomponentslotannotation_note t SET constructcomponentslotannotation_id = a.id FROM auditedobject a WHERE t.constructcomponentslotannotation_id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE constructcomponentslotannotation_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
+UPDATE constructfullnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE constructfullnameslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
+UPDATE constructgenomicentityassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE constructgenomicentityassociation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_id = a.old_id AND a.tablename = 'reagent';
+UPDATE constructgenomicentityassociation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE constructgenomicentityassociation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE constructgenomicentityassociation_note t SET constructgenomicentityassociation_id = a.id FROM auditedobject a WHERE t.constructgenomicentityassociation_id = a.old_id AND a.tablename = 'association';
+UPDATE constructgenomicentityassociation_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
+UPDATE constructsymbolslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE constructsymbolslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
+UPDATE constructsynonymslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE constructsynonymslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
+UPDATE crossreference t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'crossreference';
+UPDATE crossreference t SET resourcedescriptorpage_id = a.id FROM auditedobject a WHERE t.resourcedescriptorpage_id = a.old_id AND a.tablename = 'resourcedescriptorpage';
+UPDATE daoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE dataprovider t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'dataprovider';
+UPDATE dataprovider t SET sourceorganization_id = a.id FROM auditedobject a WHERE t.sourceorganization_id = a.old_id AND a.tablename = 'organization';
+UPDATE dataprovider t SET crossreference_id = a.id FROM auditedobject a WHERE t.crossreference_id = a.old_id AND a.tablename = 'crossreference';
+UPDATE diseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE diseaseannotation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE diseaseannotation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE diseaseannotation t SET diseasegeneticmodifierrelation_id = a.id FROM auditedobject a WHERE t.diseasegeneticmodifierrelation_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE diseaseannotation t SET annotationtype_id = a.id FROM auditedobject a WHERE t.annotationtype_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE diseaseannotation t SET geneticsex_id = a.id FROM auditedobject a WHERE t.geneticsex_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE diseaseannotation t SET secondarydataprovider_id = a.id FROM auditedobject a WHERE t.secondarydataprovider_id = a.old_id AND a.tablename = 'dataprovider';
+UPDATE diseaseannotation_biologicalentity t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
+UPDATE diseaseannotation_biologicalentity t SET diseasegeneticmodifiers_id = a.id FROM auditedobject a WHERE t.diseasegeneticmodifiers_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE diseaseannotation_ecoterm t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
+UPDATE diseaseannotation_ecoterm t SET evidencecodes_id = a.id FROM auditedobject a WHERE t.evidencecodes_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE diseaseannotation_gene t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
+UPDATE diseaseannotation_gene t SET with_id = a.id FROM auditedobject a WHERE t.with_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE diseaseannotation_vocabularyterm t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
+UPDATE diseaseannotation_vocabularyterm t SET diseasequalifiers_id = a.id FROM auditedobject a WHERE t.diseasequalifiers_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE doterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE dpoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ecoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE emapaterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE evidenceassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE evidenceassociation_informationcontententity t SET evidenceassociation_id = a.id FROM auditedobject a WHERE t.evidenceassociation_id = a.old_id AND a.tablename = 'association';
+UPDATE evidenceassociation_informationcontententity t SET evidence_id = a.id FROM auditedobject a WHERE t.evidence_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE experimentalcondition t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'experimentalcondition';
+UPDATE experimentalcondition t SET conditionanatomy_id = a.id FROM auditedobject a WHERE t.conditionanatomy_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE experimentalcondition t SET conditionchemical_id = a.id FROM auditedobject a WHERE t.conditionchemical_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE experimentalcondition t SET conditionclass_id = a.id FROM auditedobject a WHERE t.conditionclass_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE experimentalcondition t SET conditiongeneontology_id = a.id FROM auditedobject a WHERE t.conditiongeneontology_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE experimentalcondition t SET conditionid_id = a.id FROM auditedobject a WHERE t.conditionid_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE experimentalcondition t SET conditiontaxon_id = a.id FROM auditedobject a WHERE t.conditiontaxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE experimentalconditionontologyterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE fbdvterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE gene t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE gene t SET genetype_id = a.id FROM auditedobject a WHERE t.genetype_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE genediseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE genediseaseannotation t SET sgdstrainbackground_id = a.id FROM auditedobject a WHERE t.sgdstrainbackground_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genediseaseannotation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genefullnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE genefullnameslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genesecondaryidslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE genesecondaryidslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genesymbolslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE genesymbolslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genesynonymslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE genesynonymslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genesystematicnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE genesystematicnameslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genetogeneorthology t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'genetogeneorthology';
+UPDATE genetogeneorthology t SET subjectgene_id = a.id FROM auditedobject a WHERE t.subjectgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genetogeneorthology t SET objectgene_id = a.id FROM auditedobject a WHERE t.objectgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genetogeneorthologycurated t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'genetogeneorthology';
+UPDATE genetogeneorthologycurated t SET singlereference_id = a.id FROM auditedobject a WHERE t.singlereference_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE genetogeneorthologycurated t SET evidencecode_id = a.id FROM auditedobject a WHERE t.evidencecode_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE genetogeneorthologygenerated t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'genetogeneorthology';
+UPDATE genetogeneorthologygenerated t SET isbestscore_id = a.id FROM auditedobject a WHERE t.isbestscore_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE genetogeneorthologygenerated t SET isbestscorereverse_id = a.id FROM auditedobject a WHERE t.isbestscorereverse_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE genetogeneorthologygenerated t SET confidence_id = a.id FROM auditedobject a WHERE t.confidence_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE genetogeneorthologygenerated_predictionmethodsmatched t SET genetogeneorthologygenerated_id = a.id FROM auditedobject a WHERE t.genetogeneorthologygenerated_id = a.old_id AND a.tablename = 'genetogeneorthology';
+UPDATE genetogeneorthologygenerated_predictionmethodsmatched t SET predictionmethodsmatched_id = a.id FROM auditedobject a WHERE t.predictionmethodsmatched_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE genetogeneorthologygenerated_predictionmethodsnotcalled t SET genetogeneorthologygenerated_id = a.id FROM auditedobject a WHERE t.genetogeneorthologygenerated_id = a.old_id AND a.tablename = 'genetogeneorthology';
+UPDATE genetogeneorthologygenerated_predictionmethodsnotcalled t SET predictionmethodsnotcalled_id = a.id FROM auditedobject a WHERE t.predictionmethodsnotcalled_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE genetogeneorthologygenerated_predictionmethodsnotmatched t SET genetogeneorthologygenerated_id = a.id FROM auditedobject a WHERE t.genetogeneorthologygenerated_id = a.old_id AND a.tablename = 'genetogeneorthology';
+UPDATE genetogeneorthologygenerated_predictionmethodsnotmatched t SET predictionmethodsnotmatched_id = a.id FROM auditedobject a WHERE t.predictionmethodsnotmatched_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE genomicentity t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genomicentity_crossreference t SET genomicentity_id = a.id FROM auditedobject a WHERE t.genomicentity_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE genomicentity_crossreference t SET crossreferences_id = a.id FROM auditedobject a WHERE t.crossreferences_id = a.old_id AND a.tablename = 'crossreference';
+UPDATE goterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE hpterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE informationcontententity t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE materm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE miterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE mmoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE mmusdvterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE modterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE molecule t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE mpathterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE mpterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE nameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE nameslotannotation t SET nametype_id = a.id FROM auditedobject a WHERE t.nametype_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE nameslotannotation t SET synonymscope_id = a.id FROM auditedobject a WHERE t.synonymscope_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE ncbitaxonterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE note t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'note';
+UPDATE note t SET notetype_id = a.id FROM auditedobject a WHERE t.notetype_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE note_reference t SET note_id = a.id FROM auditedobject a WHERE t.note_id = a.old_id AND a.tablename = 'note';
+UPDATE note_reference t SET references_id = a.id FROM auditedobject a WHERE t.references_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE obiterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_crossreference t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_crossreference t SET crossreferences_id = a.id FROM auditedobject a WHERE t.crossreferences_id = a.old_id AND a.tablename = 'crossreference';
+UPDATE ontologyterm_definitionurls t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_isa_ancestor_descendant t SET isadescendants_id = a.id FROM auditedobject a WHERE t.isadescendants_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_isa_ancestor_descendant t SET isaancestors_id = a.id FROM auditedobject a WHERE t.isaancestors_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_isa_parent_children t SET isachildren_id = a.id FROM auditedobject a WHERE t.isachildren_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_isa_parent_children t SET isaparents_id = a.id FROM auditedobject a WHERE t.isaparents_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_secondaryidentifiers t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_subsets t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_synonym t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE ontologyterm_synonym t SET synonyms_id = a.id FROM auditedobject a WHERE t.synonyms_id = a.old_id AND a.tablename = 'ontologyterm';
+UPDATE organization t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'organization';
+UPDATE organization t SET homepageresourcedescriptorpage_id = a.id FROM auditedobject a WHERE t.homepageresourcedescriptorpage_id = a.old_id AND a.tablename = 'resourcedescriptorpage';
+UPDATE patoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE person t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'person';
+UPDATE person t SET alliancemember_id = a.id FROM auditedobject a WHERE t.alliancemember_id = a.old_id AND a.tablename = 'organization';
+UPDATE person_emails t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
+UPDATE person_oldemails t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
+UPDATE personsetting t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'personsetting';
+UPDATE phenotypeterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE pwterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE reagent t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'reagent';
+UPDATE reagent t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
+UPDATE reagent_secondaryidentifiers t SET reagent_id = a.id FROM auditedobject a WHERE t.reagent_id = a.old_id AND a.tablename = 'reagent';
+UPDATE reference t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE reference_crossreference t SET reference_id = a.id FROM auditedobject a WHERE t.reference_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE reference_crossreference t SET crossreferences_id = a.id FROM auditedobject a WHERE t.crossreferences_id = a.old_id AND a.tablename = 'crossreference';
+UPDATE resourcedescriptor t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'resourcedescriptor';
+UPDATE resourcedescriptor_synonyms t SET resourcedescriptor_id = a.id FROM auditedobject a WHERE t.resourcedescriptor_id = a.old_id AND a.tablename = 'resourcedescriptor';
+UPDATE resourcedescriptorpage t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'resourcedescriptorpage';
+UPDATE resourcedescriptorpage t SET resourcedescriptor_id = a.id FROM auditedobject a WHERE t.resourcedescriptor_id = a.old_id AND a.tablename = 'resourcedescriptor';
+UPDATE roterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE rsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE secondaryidslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE singlereferenceassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
+UPDATE singlereferenceassociation t SET singlereference_id = a.id FROM auditedobject a WHERE t.singlereference_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE slotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE slotannotation_informationcontententity t SET slotannotation_id = a.id FROM auditedobject a WHERE t.slotannotation_id = a.old_id AND a.tablename = 'slotannotation';
+UPDATE slotannotation_informationcontententity t SET evidence_id = a.id FROM auditedobject a WHERE t.evidence_curie = a.old_curie AND a.tablename = 'informationcontententity';
+UPDATE soterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE species t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'species';
+UPDATE species t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE species_commonnames t SET species_id = a.id FROM auditedobject a WHERE t.species_id = a.old_id AND a.tablename = 'species';
+UPDATE stageterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE synonym t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'synonym';
+UPDATE uberonterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE variant t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE variant t SET varianttype_id = a.id FROM auditedobject a WHERE t.varianttype_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE variant t SET sourcegeneralconsequence_id = a.id FROM auditedobject a WHERE t.sourcegeneralconsequence_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE variant t SET variantstatus_id = a.id FROM auditedobject a WHERE t.variantstatus_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE variant_note t SET variant_id = a.id FROM auditedobject a WHERE t.variant_curie = a.old_curie AND a.tablename = 'biologicalentity';
+UPDATE variant_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
+UPDATE vocabulary t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'vocabulary';
+UPDATE vocabularyterm t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE vocabularyterm t SET vocabulary_id = a.id FROM auditedobject a WHERE t.vocabulary_id = a.old_id AND a.tablename = 'vocabulary';
+UPDATE vocabularyterm_synonyms t SET vocabularyterm_id = a.id FROM auditedobject a WHERE t.vocabularyterm_id = a.old_id AND a.tablename = 'vocabularyterm';
+UPDATE vocabularytermset t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'vocabularytermset';
+UPDATE vocabularytermset t SET vocabularytermsetvocabulary_id = a.id FROM auditedobject a WHERE t.vocabularytermsetvocabulary_id = a.old_id AND a.tablename = 'vocabulary';
+UPDATE vocabularytermset_vocabularyterm t SET vocabularytermsets_id = a.id FROM auditedobject a WHERE t.vocabularytermsets_id = a.old_id AND a.tablename = 'vocabularytermset';
+UPDATE vocabularytermset_vocabularyterm t SET memberterms_id = a.id FROM auditedobject a WHERE t.memberterms_id = a.old_id AND a.tablename = 'vocabularyterm';;
+UPDATE vtterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE wbbtterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE wblsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE wbphenotypeterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE xbaterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE xbedterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE xbsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE xcoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE xpoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE xsmoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE zecoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE zfaterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE zfsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+
+INSERT INTO submittedobject (id, modentityid, dataprovider_id) SELECT id, curie, dataprovider_id FROM biologicalentity;
+INSERT INTO submittedobject (id, modentityid, modinternalid, dataprovider_id) SELECT id, modentityid, modinternalid, dataprovider_id FROM reagent;
+
+INSERT INTO curieobject (id) SELECT id FROM submittedobject;
+INSERT INTO curieobject (id, curie) SELECT id, curie FROM ontologyterm;
+INSERT INTO curieobject (id, curie) SELECT id, curie FROM informationcontententity;
+
+SET session_replication_role = 'origin';
 
 -- Add constraints and indexes
+ALTER TABLE auditedobject ADD CONSTRAINT auditedobject_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
+ALTER TABLE auditedobject ADD CONSTRAINT auditedobject_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
+CREATE INDEX auditedobject_createdby_index ON auditedobject USING btree (createdby_id);
+CREATE INDEX auditedobject_updatedby_index ON auditedobject USING btree (updatedby_id);
 
-ALTER TABLE affectedgenomicmodel ADD PRIMARY KEY (id);
+ALTER TABLE auditedobject_aud ADD CONSTRAINT auditedobject_aud_rev_fk FOREIGN KEY (rev) REFERENCES revinfo (rev);
+
+ALTER TABLE curieobject ADD CONSTRAINT curieobject_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
+CREATE INDEX curieobject_curie_index ON curieobject USING btree (curie);
+ALTER TABLE curieobject ADD CONSTRAINT curieobject_curie_uk UNIQUE (curie);
+
+ALTER TABLE curieobject_aud ADD CONSTRAINT curieobject_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider (id);
+CREATE INDEX submittedobject_modentityid_index ON submittedobject USING btree (modentityid);
+CREATE INDEX submittedobject_modinternalid_index ON submittedobject USING btree (modinternalid);
+CREATE INDEX submittedobject_dataprovider_index ON submittedobject USING btree (dataprovider_id);
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modentityid_uk UNIQUE (modentityid);
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modinternalid_uk UNIQUE (modinternalid);
+
+ALTER TABLE submittedobject_aud ADD CONSTRAINT submittedobject_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES curieobject_aud (id, rev);
+
+ALTER TABLE affectedgenomicmodel ADD CONSTRAINT affectedgenomicmodel_pkey PRIMARY KEY (id);
+ALTER TABLE affectedgenomicmodel_aud ADD CONSTRAINT affectedgenomicmodel_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE allele ADD CONSTRAINT allele_pkey PRIMARY KEY (id);
+ALTER TABLE allele_aud ADD CONSTRAINT allele_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE allele_note_aud ADD CONSTRAINT allele_note_aud_pkey PRIMARY KEY (allele_id, relatednotes_id, rev);
+ALTER TABLE allele_reference_aud ADD CONSTRAINT allele_reference_aud_pkey PRIMARY KEY (allele_id, references_id, rev);
+ALTER TABLE anatomicalterm ADD CONSTRAINT anatomicalterm_pkey PRIMARY KEY (id);
+ALTER TABLE anatomicalterm_aud ADD CONSTRAINT anatomicalterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE apoterm ADD CONSTRAINT apoterm_pkey PRIMARY KEY (id);
+ALTER TABLE apoterm_aud ADD CONSTRAINT apoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE atpterm ADD CONSTRAINT atpterm_pkey PRIMARY KEY (id);
+ALTER TABLE atpterm_aud ADD CONSTRAINT atpterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_pkey PRIMARY KEY (id);
+ALTER TABLE biologicalentity_aud ADD CONSTRAINT biologicalentity_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE bspoterm ADD CONSTRAINT bspoterm_pkey PRIMARY KEY (id);
+ALTER TABLE bspoterm_aud ADD CONSTRAINT bspoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE chebiterm ADD CONSTRAINT chebiterm_pkey PRIMARY KEY (id);
+ALTER TABLE chebiterm_aud ADD CONSTRAINT chebiterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE chemicalterm ADD CONSTRAINT chemicalterm_pkey PRIMARY KEY (id);
+ALTER TABLE chemicalterm_aud ADD CONSTRAINT chemicalterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE clterm ADD CONSTRAINT clterm_pkey PRIMARY KEY (id);
+ALTER TABLE clterm_aud ADD CONSTRAINT clterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE cmoterm ADD CONSTRAINT cmoterm_pkey PRIMARY KEY (id);
+ALTER TABLE cmoterm_aud ADD CONSTRAINT cmoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE daoterm ADD CONSTRAINT daoterm_pkey PRIMARY KEY (id);
+ALTER TABLE daoterm_aud ADD CONSTRAINT daoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE doterm ADD CONSTRAINT doterm_pkey PRIMARY KEY (id);
+ALTER TABLE doterm_aud ADD CONSTRAINT doterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE dpoterm ADD CONSTRAINT dpoterm_pkey PRIMARY KEY (id);
+ALTER TABLE dpoterm_aud ADD CONSTRAINT dpoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE ecoterm ADD CONSTRAINT ecoterm_pkey PRIMARY KEY (id);
+ALTER TABLE ecoterm_aud ADD CONSTRAINT ecoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE emapaterm ADD CONSTRAINT emapaterm_pkey PRIMARY KEY (id);
+ALTER TABLE emapaterm_aud ADD CONSTRAINT emapaterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE experimentalconditionontologyterm ADD CONSTRAINT experimentalconditionontologyterm_pkey PRIMARY KEY (id);
+ALTER TABLE experimentalconditionontologyterm_aud ADD CONSTRAINT experimentalconditionontologyterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE fbdvterm ADD CONSTRAINT fbdvterm_pkey PRIMARY KEY (id);
+ALTER TABLE fbdvterm_aud ADD CONSTRAINT fbdvterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE gene ADD CONSTRAINT gene_pkey PRIMARY KEY (id);
+ALTER TABLE gene_aud ADD CONSTRAINT gene_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE genomicentity ADD CONSTRAINT genomicentity_pkey PRIMARY KEY (id);
+ALTER TABLE genomicentity_aud ADD CONSTRAINT genomicentity_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE goterm ADD CONSTRAINT goterm_pkey PRIMARY KEY (id);
+ALTER TABLE goterm_aud ADD CONSTRAINT goterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE hpterm ADD CONSTRAINT hpterm_pkey PRIMARY KEY (id);
+ALTER TABLE hpterm_aud ADD CONSTRAINT hpterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_pkey PRIMARY KEY (id);
+ALTER TABLE informationcontententity_aud ADD CONSTRAINT informationcontententity_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE materm ADD CONSTRAINT materm_pkey PRIMARY KEY (id);
+ALTER TABLE materm_aud ADD CONSTRAINT materm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE miterm ADD CONSTRAINT miterm_pkey PRIMARY KEY (id);
+ALTER TABLE miterm_aud ADD CONSTRAINT miterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE mmoterm ADD CONSTRAINT mmoterm_pkey PRIMARY KEY (id);
+ALTER TABLE mmoterm_aud ADD CONSTRAINT mmoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE mmusdvterm ADD CONSTRAINT mmusdvterm_pkey PRIMARY KEY (id);
+ALTER TABLE mmusdvterm_aud ADD CONSTRAINT mmusdvterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE modterm ADD CONSTRAINT modterm_pkey PRIMARY KEY (id);
+ALTER TABLE modterm_aud ADD CONSTRAINT modterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE molecule ADD CONSTRAINT molecule_pkey PRIMARY KEY (id);
+ALTER TABLE molecule_aud ADD CONSTRAINT molecule_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE mpathterm ADD CONSTRAINT mpathterm_pkey PRIMARY KEY (id);
+ALTER TABLE mpathterm_aud ADD CONSTRAINT mpathterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE mpterm ADD CONSTRAINT mpterm_pkey PRIMARY KEY (id);
+ALTER TABLE mpterm_aud ADD CONSTRAINT mpterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE ncbitaxonterm ADD CONSTRAINT ncbitaxonterm_pkey PRIMARY KEY (id);
+ALTER TABLE ncbitaxonterm_aud ADD CONSTRAINT ncbitaxonterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE obiterm ADD CONSTRAINT obiterm_pkey PRIMARY KEY (id);
+ALTER TABLE obiterm_aud ADD CONSTRAINT obiterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_pkey PRIMARY KEY (id);
+ALTER TABLE ontologyterm_aud ADD CONSTRAINT ontologyterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE ontologyterm_isa_parent_children ADD CONSTRAINT ontologyterm_isa_parent_children_pkey PRIMARY KEY (isachildren_id, isaparents_id);
+ALTER TABLE ontologyterm_isa_ancestor_descendant ADD CONSTRAINT ontologyterm_isa_ancestor_descendant_pkey PRIMARY KEY (isadescendants_id, isaancestors_id);
+ALTER TABLE patoterm ADD CONSTRAINT patoterm_pkey PRIMARY KEY (id);
+ALTER TABLE patoterm_aud ADD CONSTRAINT patoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE phenotypeterm ADD CONSTRAINT phenotypeterm_pkey PRIMARY KEY (id);
+ALTER TABLE phenotypeterm_aud ADD CONSTRAINT phenotypeterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE pwterm ADD CONSTRAINT pwterm_pkey PRIMARY KEY (id);
+ALTER TABLE pwterm_aud ADD CONSTRAINT pwterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE reference ADD CONSTRAINT reference_pkey PRIMARY KEY (id);
+ALTER TABLE reference_aud ADD CONSTRAINT reference_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE roterm ADD CONSTRAINT roterm_pkey PRIMARY KEY (id);
+ALTER TABLE roterm_aud ADD CONSTRAINT roterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE rsterm ADD CONSTRAINT rsterm_pkey PRIMARY KEY (id);
+ALTER TABLE rsterm_aud ADD CONSTRAINT rsterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE soterm ADD CONSTRAINT soterm_pkey PRIMARY KEY (id);
+ALTER TABLE soterm_aud ADD CONSTRAINT soterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE stageterm ADD CONSTRAINT stageterm_pkey PRIMARY KEY (id);
+ALTER TABLE stageterm_aud ADD CONSTRAINT stageterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE uberonterm ADD CONSTRAINT uberonterm_pkey PRIMARY KEY (id);
+ALTER TABLE uberonterm_aud ADD CONSTRAINT uberonterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE variant ADD CONSTRAINT variant_pkey PRIMARY KEY (id);
+ALTER TABLE variant_aud ADD CONSTRAINT variant_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE vtterm ADD CONSTRAINT vtterm_pkey PRIMARY KEY (id);
+ALTER TABLE vtterm_aud ADD CONSTRAINT vtterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE wbbtterm ADD CONSTRAINT wbbtterm_pkey PRIMARY KEY (id);
+ALTER TABLE wbbtterm_aud ADD CONSTRAINT wbbtterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE wblsterm ADD CONSTRAINT wblsterm_pkey PRIMARY KEY (id);
+ALTER TABLE wblsterm_aud ADD CONSTRAINT wblsterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE wbphenotypeterm ADD CONSTRAINT wbphenotypeterm_pkey PRIMARY KEY (id);
+ALTER TABLE wbphenotypeterm_aud ADD CONSTRAINT wbphenotypeterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE xbaterm ADD CONSTRAINT xbaterm_pkey PRIMARY KEY (id);
+ALTER TABLE xbaterm_aud ADD CONSTRAINT xbaterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE xbedterm ADD CONSTRAINT xbedterm_pkey PRIMARY KEY (id);
+ALTER TABLE xbedterm_aud ADD CONSTRAINT xbedterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE xbsterm ADD CONSTRAINT xbsterm_pkey PRIMARY KEY (id);
+ALTER TABLE xbsterm_aud ADD CONSTRAINT xbsterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE xcoterm ADD CONSTRAINT xcoterm_pkey PRIMARY KEY (id);
+ALTER TABLE xcoterm_aud ADD CONSTRAINT xcoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE xpoterm ADD CONSTRAINT xpoterm_pkey PRIMARY KEY (id);
+ALTER TABLE xpoterm_aud ADD CONSTRAINT xpoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE xsmoterm ADD CONSTRAINT xsmoterm_pkey PRIMARY KEY (id);
+ALTER TABLE xsmoterm_aud ADD CONSTRAINT xsmoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE zecoterm ADD CONSTRAINT zecoterm_pkey PRIMARY KEY (id);
+ALTER TABLE zecoterm_aud ADD CONSTRAINT zecoterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE zfaterm ADD CONSTRAINT zfaterm_pkey PRIMARY KEY (id);
+ALTER TABLE zfaterm_aud ADD CONSTRAINT zfaterm_aud_pkey PRIMARY KEY (id, rev);
+ALTER TABLE zfsterm ADD CONSTRAINT zfsterm_pkey PRIMARY KEY (id);
+ALTER TABLE zfsterm_aud ADD CONSTRAINT zfsterm_aud_pkey PRIMARY KEY (id, rev);
+
 ALTER TABLE affectedgenomicmodel ADD CONSTRAINT affectedgenomicmodel_id_fk FOREIGN KEY (id) REFERENCES genomicentity (id);
-
-ALTER TABLE affectedgenomicmodel_aud ADD PRIMARY KEY (id, rev);
 ALTER TABLE affectedgenomicmodel_aud ADD CONSTRAINT affectedgenomicmodel_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES genomicentity_aud (id, rev);
-
-ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_subject_id_fk (subject_id) REFERENCES affectedgenomicmodel (id);
-ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_assertedallele_id_fk (assertedallele_id) REFERENCES allele (id);
-ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_inferredallele_id_fk (inferredallele_id) REFERENCES allele (id);
-ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_inferredgene_id_fk (inferredgene_id) REFERENCES gene (id);
-
-ALTER TABLE agmdiseaseannotation_gene ADD CONSTRAINT agmdiseaseannotation_gene_assertedgenes_id_fk (assertedgenes_id) REFERENCES gene (id);
-
-ALTER TABLE allele ADD PRIMARY KEY (id);
+ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES affectedgenomicmodel (id);
+ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_assertedallele_id_fk FOREIGN KEY (assertedallele_id) REFERENCES allele (id);
+ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_inferredallele_id_fk FOREIGN KEY (inferredallele_id) REFERENCES allele (id);
+ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_inferredgene_id_fk FOREIGN KEY (inferredgene_id) REFERENCES gene (id);
+ALTER TABLE agmdiseaseannotation_gene ADD CONSTRAINT agmdiseaseannotation_gene_assertedgenes_id_fk FOREIGN KEY (assertedgenes_id) REFERENCES gene (id);
 ALTER TABLE allele ADD CONSTRAINT allele_id_fk FOREIGN KEY (id) REFERENCES genomicentity (id);
-
-ALTER TABLE allele_aud ADD PRIMARY KEY (id, rev);
 ALTER TABLE allele_aud ADD CONSTRAINT allele_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES genomicentity_aud (id, rev);
-
 ALTER TABLE allele_note ADD CONSTRAINT allele_note_allele_id_fk FOREIGN KEY (allele_id) REFERENCES allele (id);
 CREATE INDEX allele_note_allele_index ON allele_note USING btree (allele_id);
-
-ALTER TABLE allele_note_aud ADD PRIMARY KEY (allele_id, relatednotes_id, rev);
-
 ALTER TABLE allele_reference ADD CONSTRAINT allele_reference_allele_id_fk FOREIGN KEY (allele_id) REFERENCES allele (id);
 ALTER TABLE allele_reference ADD CONSTRAINT allele_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX allele_reference_allele_index ON allele_reference USING btree (allele_id);
 CREATE INDEX allele_reference_references_index ON allele_reference USING btree (references_id);
 CREATE INDEX allele_reference_allele_references_index ON allele_reference USING btree (allele_id, references_id);
-
-ALTER TABLE allele_reference_aud ADD PRIMARY KEY (allele_id, references_id, rev);
-
-ALTER TABLE alleledatabasestatusslotannotation ADD CONSTRAINT alleledatabasestatus_singleallele_id_fk FOREIGN KEY (allele_id) REFERENCES allele (id);
-CREATE INDEX alleledatabasestatus_singleallele_index ON alleledatabasestatusslotannotation USING btree (allele_id);
-
+ALTER TABLE alleledatabasestatusslotannotation ADD CONSTRAINT alleledatabasestatus_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
+CREATE INDEX alleledatabasestatus_singleallele_index ON alleledatabasestatusslotannotation USING btree (singleallele_id);
 ALTER TABLE allelediseaseannotation ADD CONSTRAINT allelediseaseannoation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES allele (id);
 ALTER TABLE allelediseaseannotation ADD CONSTRAINT allelediseaseannotation_inferredgene_id_fk FOREIGN KEY (inferredgene_id) REFERENCES gene (id);
 CREATE INDEX allelediseaseannotation_inferredgene_index ON allelediseaseannotation USING btree (inferredgene_id);
 CREATE INDEX allelediseaseannotation_subject_index ON allelediseaseannotation USING btree (subject_id);
-
-ALTER TABLE allelediseaseannotation_gene ADD CONSTRAINT allelediseaseannotation_gene_assertedgenes_id_fk;
+ALTER TABLE allelediseaseannotation_gene ADD CONSTRAINT allelediseaseannotation_gene_assertedgenes_id_fk FOREIGN KEY (assertedgenes_id) REFERENCES gene (id);
 CREATE INDEX allelediseaseannotationgene_assertedgenes_index ON allelediseaseannotation_gene USING btree (assertedgenes_id);
-
-CREATE INDEX allelefullname_singleallele_index ON allelefullnameslotannotation USING btree (allele_id);
-
+CREATE INDEX allelefullname_singleallele_index ON allelefullnameslotannotation USING btree (singleallele_id);
 ALTER TABLE allelefunctionalimpactslotannotation ADD CONSTRAINT allelefunctionalimpactslotannotation_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 ALTER TABLE allelefunctionalimpactslotannotation ADD CONSTRAINT allelefunctionalimpactslotannotation_phenotypeterm_id_fk FOREIGN KEY (phenotypeterm_id) REFERENCES phenotypeterm (id);
 CREATE INDEX allelefunctionalimpact_singleallele_index ON allelefunctionalimpactslotannotation USING btree (singleallele_id);
 CREATE INDEX allelefunctionalimpact_phenotypeterm_index ON allelefunctionalimpactslotannotation USING btree (phenotypeterm_id);
-
 ALTER TABLE allelegeneassociation ADD CONSTRAINT allelegeneassociation_object_id_fk FOREIGN KEY (object_id) REFERENCES gene (id);
 ALTER TABLE allelegeneassociation ADD CONSTRAINT allelegeneassociation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES allele (id);
 CREATE INDEX allelegeneassociation_object_index ON allelegeneassociation USING btree (object_id);
 CREATE INDEX allelegeneassociation_subject_index ON allelegeneassociation USING btree (subject_id);
-
 ALTER TABLE allelegenomicentityassociation ADD CONSTRAINT allelegenomicentityassociation_evidencecode_id_fk FOREIGN KEY (evidencecode_id) REFERENCES ecoterm (id);
-
 ALTER TABLE allelegermlinetransmissionstatusslotannotation ADD CONSTRAINT allelegermlinetransmissionstatus_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX allelegermlinetransmissionstatus_singleallele_index ON allelegermlinetransmissionstatusslotannotation USING btree (singleallele_id);
-
 ALTER TABLE alleleinheritancemodeslotannotation ADD CONSTRAINT alleleinheritancemode_phenotypeterm_id_fk FOREIGN KEY (phenotypeterm_id) REFERENCES phenotypeterm (id);
 ALTER TABLE alleleinheritancemodeslotannotation ADD CONSTRAINT alleleinheritancemode_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX alleleinheritancemode_phenotypeterm_index ON alleleinheritancemodeslotannotation USING btree (phenotypeterm_id);
 CREATE INDEX alleleinheritancemode_singleallele_index ON alleleinheritancemodeslotannotation USING btree (singleallele_id);
-
 ALTER TABLE allelemutationtypeslotannotation ADD CONSTRAINT allelemutationtype_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX allelemutationtype_singleallele_index ON allelemutationtypeslotannotation USING btree (singleallele_id);
-
 ALTER TABLE allelemutationtypeslotannotation_soterm ADD CONSTRAINT allelemutationtypesa_soterm_mutationtypes_id_fk FOREIGN KEY (mutationtypes_id) REFERENCES soterm (id);
 CREATE INDEX allelemutationtypesa_soterm_mutationtypes_index ON allelemutationtypeslotannotation_soterm USING btree (mutationtypes_id);
-
 ALTER TABLE allelenomenclatureeventslotannotation ADD CONSTRAINT allelenomenclatureeventslotannotation_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX allelenomenclatureevent_singleallele_index ON allelenomenclatureeventslotannotation USING btree (singleallele_id);
-
 ALTER TABLE allelesecondaryidslotannotation ADD CONSTRAINT allelesecondaryidslotannotation_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX allelesecondaryid_singleallele_index ON allelesecondaryidslotannotation USING btree (singleallele_id);
-
 ALTER TABLE allelesymbolslotannotation ADD CONSTRAINT allelesymbolslotannotation_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX allelesymbol_singleallele_index ON allelesymbolslotannotation USING btree (singleallele_id);
-
 ALTER TABLE allelesynonymslotannotation ADD CONSTRAINT allelesynonymslotannotation_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX allelesynonym_singleallele_index ON allelesynonymslotannotation USING btree (singleallele_id);
-
-ALTER TABLE anatomicalterm ADD PRIMARY KEY (id);
 ALTER TABLE anatomicalterm ADD CONSTRAINT anatomicalterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE anatomicalterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE anatomicalterm_aud ADD CONSTRAINT anatomicalterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE apoterm ADD PRIMARY KEY (id);
+ALTER TABLE anatomicalterm_aud ADD CONSTRAINT anatomicalterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE apoterm ADD CONSTRAINT apoterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
-
-ALTER TABLE apoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE apoterm_aud ADD CONSTRAINT apoterm_aud_id_rev_fk (id, rev) REFERENCES phenotypeterm_aud (id, rev);
-
-ALTER TABLE atpterm ADD PRIMARY KEY (id);
+ALTER TABLE apoterm_aud ADD CONSTRAINT apoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES phenotypeterm_aud (id, rev);
 ALTER TABLE atpterm ADD CONSTRAINT atpterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE atpterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE atpterm_aud ADD CONSTRAINT atpterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE biologicalentity ADD PRIMARY KEY (id);
+ALTER TABLE atpterm_aud ADD CONSTRAINT atpterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_id_fk FOREIGN KEY (id) REFERENCES submittedobject (id);
 ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_taxon_id_fk FOREIGN KEY (taxon_id) REFERENCES ncbitaxonterm (id);
 CREATE INDEX biologicalentity_taxon_index ON biologicalentity USING btree (taxon_id);
-
-ALTER TABLE biologicalentity_aud ADD PRIMARY KEY (id, rev);
 ALTER TABLE biologicalentity_aud ADD CONSTRAINT biologicalentity_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES submittedobject_aud (id, rev);
-
-ALTER TABLE bspoterm ADD PRIMARY KEY (id);
 ALTER TABLE bspoterm ADD CONSTRAINT bspoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE bspoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE bspoterm_aud ADD CONSTRAINT bspoterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
+ALTER TABLE bspoterm_aud ADD CONSTRAINT bspoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE bulkload ADD CONSTRAINT bulkload_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE bulkload_aud ADD CONSTRAINT bulkload_aud_id_rev_fk (id, rev) REFRENCES auditedobject_aud (id, rev);
-
+ALTER TABLE bulkload_aud ADD CONSTRAINT bulkload_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE bulkloadfile ADD CONSTRAINT bulkloadfile_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE bulkloadfile_aud ADD CONSTRAINT bulkloadfile_aud_id_rev_fk (id, rev) REFRENCES auditedobject_aud (id, rev);
-
+ALTER TABLE bulkloadfile_aud ADD CONSTRAINT bulkloadfile_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE bulkloadfileexception ADD CONSTRAINT bulkloadfileexception_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE bulkloadfileexception_aud ADD CONSTRAINT bulkloadfileexception_aud_id_rev_fk (id, rev) REFRENCES auditedobject_aud (id, rev);
-
+ALTER TABLE bulkloadfileexception_aud ADD CONSTRAINT bulkloadfileexception_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE bulkloadfilehistory ADD CONSTRAINT bulkloadfilehistory_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE bulkloadfilehistory_aud ADD CONSTRAINT bulkloadfilehistory_aud_id_rev_fk (id, rev) REFRENCES auditedobject_aud (id, rev);
-
+ALTER TABLE bulkloadfilehistory_aud ADD CONSTRAINT bulkloadfilehistory_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE bulkloadgroup ADD CONSTRAINT bulkloadgroup_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE bulkloadgroup_aud ADD CONSTRAINT bulkloadgroup_aud_id_rev_fk (id, rev) REFRENCES auditedobject_aud (id, rev);
-
-ALTER TABLE chebiterm ADD PRIMARY KEY (id);
+ALTER TABLE bulkloadgroup_aud ADD CONSTRAINT bulkloadgroup_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE chebiterm ADD CONSTRAINT chebiterm_id_fk FOREIGN KEY (id) REFERENCES chemicalterm (id);
-
-ALTER TABLE chebiterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE chebiterm_aud ADD CONSTRAINT chebiterm_aud_id_rev_fk (id, rev) REFERENCES chemicalterm_aud (id, rev);
-
-ALTER TABLE chemicalterm ADD PRIMARY KEY (id);
+ALTER TABLE chebiterm_aud ADD CONSTRAINT chebiterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES chemicalterm_aud (id, rev);
 ALTER TABLE chemicalterm ADD CONSTRAINT chemicalterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE chemicalterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE chemicalterm_aud ADD CONSTRAINT chemicalterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE clterm ADD PRIMARY KEY (id);
+ALTER TABLE chemicalterm_aud ADD CONSTRAINT chemicalterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE clterm ADD CONSTRAINT clterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
-
-ALTER TABLE clterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE clterm_aud ADD CONSTRAINT clterm_aud_id_rev_fk (id, rev) REFERENCES anatomicalterm_aud (id, rev);
-
-ALTER TABLE cmoterm ADD PRIMARY KEY (id);
+ALTER TABLE clterm_aud ADD CONSTRAINT clterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
 ALTER TABLE cmoterm ADD CONSTRAINT cmoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE cmoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE cmoterm_aud ADD CONSTRAINT cmoterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
+ALTER TABLE cmoterm_aud ADD CONSTRAINT cmoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE conditionrelation ADD CONSTRAINT conditionrelation_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE conditionrelation ADD CONSTRAINT conditionrelation_singlereference_id_fk FOREIGN KEY (singlereference_id) REFERENCES reference (id);
-
 ALTER TABLE conditionrelation_aud ADD CONSTRAINT conditionrelation_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
-
 ALTER TABLE construct_reference ADD CONSTRAINT construct_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX construct_reference_references_index ON construct_reference USING btree (references_id);
-
 ALTER TABLE constructcomponentslotannotation ADD CONSTRAINT constructcomponentslotannotation_taxon_id_fk FOREIGN KEY (taxon_id) REFERENCES ncbitaxonterm (id);
 CREATE INDEX constructcomponentslotannotation_taxon_index ON constructcomponentslotannotation USING btree (taxon_id);
-
-ALTER TABLE constructgenomicentityassociation ADD CONSTRAINT constructgenomicentityassociation_object_id_fk FOREIGN KEY (genomicentity_id) REFERENCES genomicentity (id);
+ALTER TABLE constructgenomicentityassociation ADD CONSTRAINT constructgenomicentityassociation_object_id_fk FOREIGN KEY (object_id) REFERENCES genomicentity (id);
 CREATE INDEX constructgenomicentityassociation_object_index ON constructgenomicentityassociation USING btree (object_id);
-
 ALTER TABLE crossreference ADD CONSTRAINT crossreference_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
 ALTER TABLE crossreference_aud ADD CONSTRAINT crossreference_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
-
 ALTER TABLE curationreport ADD CONSTRAINT curationreport_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
 ALTER TABLE curationreport_aud ADD CONSTRAINT curationreport_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
-
 ALTER TABLE curationreportgroup ADD CONSTRAINT curationreportgroup_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
 ALTER TABLE curationreportgroup_aud ADD CONSTRAINT curationreportgroup_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
-
 ALTER TABLE curationreporthistory ADD CONSTRAINT curationreporthistory_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
 ALTER TABLE curationreportgroup_aud ADD CONSTRAINT curationreporthistory_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
-
-ALTER TABLE daoterm ADD PRIMARY KEY (id);
 ALTER TABLE daoterm ADD CONSTRAINT daoterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
-
-ALTER TABLE daoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE daoterm_aud ADD CONSTRAINT daoterm_aud_id_rev_fk (id, rev) REFERENCES anatomicalterm_aud (id, rev);
-
+ALTER TABLE daoterm_aud ADD CONSTRAINT daoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
 ALTER TABLE dataprovider ADD CONSTRAINT dataprovider_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
 ALTER TABLE dataprovider_aud ADD CONSTRAINT dataprovider_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
-
-ALTER TABLE diseaseannotation ADD CONSTRINAT diseaseannotation_object_id_fk FOREIGN KEY (object_id) REFERENCES doterm (id);
+ALTER TABLE diseaseannotation ADD CONSTRAINT diseaseannotation_object_id_fk FOREIGN KEY (object_id) REFERENCES doterm (id);
 CREATE INDEX diseaseannotation_object_index ON diseaseannotation USING btree (object_id);
-
 ALTER TABLE diseaseannotation_biologicalentity ADD CONSTRAINT diseaseannotation_biologicalentity_dgm_id_fk FOREIGN KEY (diseasegeneticmodifiers_id) REFERENCES biologicalentity (id);
 CREATE INDEX diseaseannotation_biologicalentity_dgms_index ON diseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
-
 ALTER TABLE diseaseannotation_ecoterm ADD CONSTRAINT diseaseannotation_ecoterm_evidencecodes_id_fk FOREIGN KEY (evidencecodes_id) REFERENCES ecoterm (id);
 CREATE INDEX diseaseannotation_ecoterm_evidencecodes_index ON diseaseannotation_ecoterm USING btree (evidencecodes_id);
-
 ALTER TABLE diseaseannotation_gene ADD CONSTRAINT diseaseannotation_gene_with_id_fk FOREIGN KEY (with_id) REFERENCES gene (id);
 CREATE INDEX diseaseannotation_gene_with_index ON diseaseannotation_gene USING btree (with_id);
-
-ALTER TABLE doterm ADD PRIMARY KEY (id);
 ALTER TABLE doterm ADD CONSTRAINT doterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE doterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE doterm_aud ADD CONSTRAINT doterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE dpoterm ADD PRIMARY KEY (id);
+ALTER TABLE doterm_aud ADD CONSTRAINT doterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE dpoterm ADD CONSTRAINT dpoterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
-
-ALTER TABLE dpoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE dpoterm_aud ADD CONSTRAINT dpoterm_aud_id_rev_fk (id, rev) REFERENCES phenotypeterm_aud (id, rev);
-
-ALTER TABLE ecoterm ADD PRIMARY KEY (id);
+ALTER TABLE dpoterm_aud ADD CONSTRAINT dpoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES phenotypeterm_aud (id, rev);
 ALTER TABLE ecoterm ADD CONSTRAINT ecoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE ecoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE ecoterm_aud ADD CONSTRAINT ecoterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE emapaterm ADD PRIMARY KEY (id);
+ALTER TABLE ecoterm_aud ADD CONSTRAINT ecoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE emapaterm ADD CONSTRAINT emapaterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
-
-ALTER TABLE emapaterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE emapaterm_aud ADD CONSTRAINT emapaterm_aud_id_rev_fk (id, rev) REFERENCES anatomicalterm_aud (id, rev);
-
+ALTER TABLE emapaterm_aud ADD CONSTRAINT emapaterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
 ALTER TABLE evidenceassociation_informationcontententity ADD CONSTRAINT evidenceassociation_infocontent_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
 CREATE INDEX evidenceassociation_infocontent_evidence_index ON evidenceassociation_informationcontententity USING btree (evidence_id);
-
 ALTER TABLE experimentalcondition ADD CONSTRAINT experimentalcondition_conditionchemical_id_fk FOREIGN KEY (conditionchemical_id) REFERENCES chemicalterm (id);
 ALTER TABLE experimentalcondition ADD CONSTRAINT experimentalcondition_conditionid_id_fk FOREIGN KEY (conditionid_id) REFERENCES experimentalconditionontologyterm (id);
-ALTER TABLE experimentalcondition ADD CONSTRAINT experimentalcondition_conditiontaxon_id_fk FOREIGN KEY (conditiontaxon_id) REFERENCES ncbitaxontermterm (id);
+ALTER TABLE experimentalcondition ADD CONSTRAINT experimentalcondition_conditiontaxon_id_fk FOREIGN KEY (conditiontaxon_id) REFERENCES ncbitaxonterm (id);
 ALTER TABLE experimentalcondition ADD CONSTRAINT experimentalcondition_conditiongeneontology_id_fk FOREIGN KEY (conditiongeneontology_id) REFERENCES goterm (id);
 ALTER TABLE experimentalcondition ADD CONSTRAINT experimentalcondition_conditionclass_id_fk FOREIGN KEY (conditionclass_id) REFERENCES zecoterm (id);
 ALTER TABLE experimentalcondition ADD CONSTRAINT experimentalcondition_conditionanatomy_id_fk FOREIGN KEY (conditionanatomy_id) REFERENCES anatomicalterm (id);
-
-ALTER TABLE experimentalconditionontologyterm ADD PRIMARY KEY (id);
 ALTER TABLE experimentalconditionontologyterm ADD CONSTRAINT experimentalconditionontologyterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE experimentalconditionontologyterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE experimentalconditionontologyterm_aud ADD CONSTRAINT experimentalconditionontologyterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE fbdvterm ADD PRIMARY KEY (id);
+ALTER TABLE experimentalconditionontologyterm_aud ADD CONSTRAINT experimentalconditionontologyterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE fbdvterm ADD CONSTRAINT fbdvterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
-
-ALTER TABLE fbdvterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE fbdvterm_aud ADD CONSTRAINT fbdvterm_aud_id_rev_fk (id, rev) REFERENCES stageterm_aud (id, rev);
-
-ALTER TABLE gene ADD PRIMARY KEY (id);
+ALTER TABLE fbdvterm_aud ADD CONSTRAINT fbdvterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES stageterm_aud (id, rev);
 ALTER TABLE gene ADD CONSTRAINT gene_id_fk FOREIGN KEY (id) REFERENCES genomicentity (id);
 ALTER TABLE gene ADD CONSTRAINT gene_genetype_id_fk FOREIGN KEY (genetype_id) REFERENCES soterm (id);
 CREATE INDEX gene_genetype_index ON gene USING btree (genetype_id);
-
-ALTER TABLE gene_aud ADD PRIMARY_KEY (id, rev);
 ALTER TABLE gene_aud ADD CONSTRAINT gene_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES genomicentity_aud (id, rev);
-
 ALTER TABLE genediseaseannotation ADD CONSTRAINT genediseaseannotation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES gene (id);
-ALTER TABLE genediseaseannotation ADD CONSTRAINT genediseaseannotation_sgdstrainbackground_id_fk (sgdstrainbackground_id) REFERENCES affectedgenomicmodel (id);
-
-ALTER TABLE genefullnameslotannotation ADD CONSTRAINT genefullnameslotannotation_singlegene_id_fk (singlegene_id) REFERENCES gene (id);
+ALTER TABLE genediseaseannotation ADD CONSTRAINT genediseaseannotation_sgdstrainbackground_id_fk FOREIGN KEY (sgdstrainbackground_id) REFERENCES affectedgenomicmodel (id);
+ALTER TABLE genefullnameslotannotation ADD CONSTRAINT genefullnameslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
 CREATE INDEX genefullname_singlegene_index ON genefullnameslotannotation USING btree (singlegene_id);
-
-ALTER TABLE genesecondaryidslotannotation ADD CONSTRAINT genesecondaryidslotannotation_singlegene_id_fk (singlegene_id) REFERENCES gene (id);
+ALTER TABLE genesecondaryidslotannotation ADD CONSTRAINT genesecondaryidslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
 CREATE INDEX genesecondaryid_singlegene_index ON genesecondaryidslotannotation USING btree (singlegene_id);
-
-ALTER TABLE genesymbolslotannotation ADD CONSTRAINT genesymbolslotannotation_singlegene_id_fk (singlegene_id) REFERENCES gene (id);
+ALTER TABLE genesymbolslotannotation ADD CONSTRAINT genesymbolslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
 CREATE INDEX genesymbol_singlegene_index ON genesymbolslotannotation USING btree (singlegene_id);
-
-ALTER TABLE genesynonymslotannotation ADD CONSTRAINT genesynonymslotannotation_singlegene_id_fk (singlegene_id) REFERENCES gene (id);
+ALTER TABLE genesynonymslotannotation ADD CONSTRAINT genesynonymslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
 CREATE INDEX genesynonym_singlegene_index ON genesynonymslotannotation USING btree (singlegene_id);
-
-ALTER TABLE genesystematicnameslotannotation ADD CONSTRAINT genesystematicnameslotannotation_singlegene_id_fk (singlegene_id) REFERENCES gene (id);
+ALTER TABLE genesystematicnameslotannotation ADD CONSTRAINT genesystematicnameslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
 CREATE INDEX genesystematicname_singlegene_index ON genesystematicnameslotannotation USING btree (singlegene_id);
-
 ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_object_id_fk FOREIGN KEY (object_id) REFERENCES gene (id);
-ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_subject_id_fk FOREIGN KEY (subject_id) REFERENCES gene (id);
-CREATE INDEX genetogeneorthology_object_index ON genetogeneorthology USING btree (object_id);
-CREATE INDEX genetogeneorthology_subject_index ON genetogeneorthology USING btree (subject_id);
-
+ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_objectgene_id_fk FOREIGN KEY (objectgene_id) REFERENCES gene (id);
+ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_subjectgene_id_fk FOREIGN KEY (subjectgene_id) REFERENCES gene (id);
+CREATE INDEX genetogeneorthology_object_index ON genetogeneorthology USING btree (objectgene_id);
+CREATE INDEX genetogeneorthology_subject_index ON genetogeneorthology USING btree (subjectgene_id);
 ALTER TABLE genetogeneorthologycurated ADD CONSTRAINT genetogeneorthologycurated_evidencecode_id_fk FOREIGN KEY (evidencecode_id) REFERENCES ecoterm (id);
 ALTER TABLE genetogeneorthologycurated ADD CONSTRAINT genetogeneorthologycurated_singlereference_id_fk FOREIGN KEY (singlereference_id) REFERENCES reference (id);
 CREATE INDEX genetogeneorthologycurated_evidencecode_index ON genetogeneorthologycurated USING btree (evidencecode_id);
 CREATE INDEX genetogeneorthologycurated_singlereference_index ON genetogeneorthologycurated USING btree (singlereference_id);
-
-ALTER TABLE genomicentity ADD PRIMARY KEY (id);
 ALTER TABLE genomicentity ADD CONSTRAINT genomicentity_id_fk FOREIGN KEY (id) REFERENCES biologicalentity (id);
-
-ALTER TABLE genomicentity_aud ADD PRIMARY_KEY (id, rev);
 ALTER TABLE genomicentity_aud ADD CONSTRAINT genomicentity_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES biologicalentity_aud (id, rev);
-
 ALTER TABLE genomicentity_crossreference ADD CONSTRAINT genomicentitycrossreference_genomicentity_id_fk FOREIGN KEY (genomicentity_id) REFERENCES genomicentity (id);
 CREATE INDEX genomicentity_crossreference_ge_xref_index ON genomicentity_crossreference USING btree (genomicentity_id, crossreferences_id);
 CREATE INDEX genomicentity_crossreference_genomicentity_index ON genomicentity_crossreference USING btree (genomicentity_id);
-
-ALTER TABLE goterm ADD PRIMARY KEY (id);
 ALTER TABLE goterm ADD CONSTRAINT goterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE goterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE goterm_aud ADD CONSTRAINT goterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE hpterm ADD PRIMARY KEY (id);
+ALTER TABLE goterm_aud ADD CONSTRAINT goterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE hpterm ADD CONSTRAINT hpterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
-
-ALTER TABLE hpterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE hpterm_aud ADD CONSTRAINT hpterm_aud_id_rev_fk (id, rev) REFERENCES phenotypeterm_aud (id, rev);
-
-ALTER TABLE materm ADD PRIMARY KEY (id);
+ALTER TABLE hpterm_aud ADD CONSTRAINT hpterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES phenotypeterm_aud (id, rev);
+ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
+ALTER TABLE informationcontententity_aud ADD CONSTRAINT informationcontententity_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES curieobject_aud (id, rev);
 ALTER TABLE materm ADD CONSTRAINT materm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
-
-ALTER TABLE materm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE materm_aud ADD CONSTRAINT materm_aud_id_rev_fk (id, rev) REFERENCES anatomicalterm_aud (id, rev);
-
-ALTER TABLE miterm ADD PRIMARY KEY (id);
+ALTER TABLE materm_aud ADD CONSTRAINT materm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
 ALTER TABLE miterm ADD CONSTRAINT miterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE miterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE miterm_aud ADD CONSTRAINT miterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE mmoterm ADD PRIMARY KEY (id);
+ALTER TABLE miterm_aud ADD CONSTRAINT miterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE mmoterm ADD CONSTRAINT mmoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE mmoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE mmoterm_aud ADD CONSTRAINT mmoterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE mmusdvterm ADD PRIMARY KEY (id);
+ALTER TABLE mmoterm_aud ADD CONSTRAINT mmoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE mmusdvterm ADD CONSTRAINT mmusdvterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
-
-ALTER TABLE mmusdvterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE mmusdvterm_aud ADD CONSTRAINT mmusdvterm_aud_id_rev_fk (id, rev) REFERENCES stageterm_aud (id, rev);
-
-ALTER TABLE modterm ADD PRIMARY KEY (id);
+ALTER TABLE mmusdvterm_aud ADD CONSTRAINT mmusdvterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES stageterm_aud (id, rev);
 ALTER TABLE modterm ADD CONSTRAINT modterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE modterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE modterm_aud ADD CONSTRAINT modterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE molecule ADD PRIMARY KEY (id);
+ALTER TABLE modterm_aud ADD CONSTRAINT modterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE molecule ADD CONSTRAINT molecule_id_fk FOREIGN KEY (id) REFERENCES chemicalterm (id);
-
-ALTER TABLE molecule_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE molecule_aud ADD CONSTRAINT molecule_aud_id_rev_fk (id, rev) REFERENCES chemicalterm_aud (id, rev);
-
-ALTER TABLE mpathterm ADD PRIMARY KEY (id);
+ALTER TABLE molecule_aud ADD CONSTRAINT molecule_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES chemicalterm_aud (id, rev);
 ALTER TABLE mpathterm ADD CONSTRAINT mpathterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE mpathterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE mpathterm_aud ADD CONSTRAINT mpathterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE mpterm ADD PRIMARY KEY (id);
+ALTER TABLE mpathterm_aud ADD CONSTRAINT mpathterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE mpterm ADD CONSTRAINT mpterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
-
-ALTER TABLE mpterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE mpterm_aud ADD CONSTRAINT mpterm_aud_id_rev_fk (id, rev) REFERENCES phenotypeterm_aud (id, rev);
-
-ALTER TABLE ncbitaxonterm ADD PRIMARY KEY (id);
+ALTER TABLE mpterm_aud ADD CONSTRAINT mpterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES phenotypeterm_aud (id, rev);
 ALTER TABLE ncbitaxonterm ADD CONSTRAINT ncbitaxonterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE ncbitaxonterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE ncbitaxonterm_aud ADD CONSTRAINT ncbitaxonterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
+ALTER TABLE ncbitaxonterm_aud ADD CONSTRAINT ncbitaxonterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE note ADD CONSTRAINT note_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE note_aud ADD CONSTRAINT note_aud_id_rev_fk (id, rev) REFRENCES auditedobject_aud (id, rev);
-
+ALTER TABLE note_aud ADD CONSTRAINT note_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE note_reference ADD CONSTRAINT note_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX note_reference_references_index ON note_reference USING btree (references_id);
-
-ALTER TABLE obiterm ADD PRIMARY KEY (id);
 ALTER TABLE obiterm ADD CONSTRAINT obiterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE obiterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE obiterm_aud ADD CONSTRAINT obiterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE ontologyterm ADD PRIMARY KEY (id);
+ALTER TABLE obiterm_aud ADD CONSTRAINT obiterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
-
-ALTER TABLE ontologyterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE ontologyterm_aud ADD CONSTRAINT ontologyterm_aud_id_rev_fk (id, rev) REFERENCES curieobject_aud (id, rev);
-
+ALTER TABLE ontologyterm_aud ADD CONSTRAINT ontologyterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES curieobject_aud (id, rev);
 ALTER TABLE ontologyterm_crossreference ADD CONSTRAINT ontologyterm_crossreference_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_crossreference_ontologyterm_index ON ontologyterm_crossreference USING btree (ontologyterm_id);
-
 ALTER TABLE ontologyterm_definitionurls ADD CONSTRAINT ontologyterm_definitionurls_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_definitionurls_ontologyterm_index ON ontologyterm_definitionurls USING btree (ontologyterm_id);
-
-ALTER TABLE ontologyterm_isa_ancestor_descendant ADD PRIMARY KEY (isadescendants_id, isaancestors_id);
 ALTER TABLE ontologyterm_isa_ancestor_descendant ADD CONSTRAINT ontologyterm_isa_ancestor_descendant_isaancestors_id_fk FOREIGN KEY (isaancestors_id) REFERENCES ontologyterm(id);
 ALTER TABLE ontologyterm_isa_ancestor_descendant ADD CONSTRAINT ontologyterm_isa_ancestor_descendant_isadescendants_id_fk FOREIGN KEY (isadescendants_id) REFERENCES ontologyterm(id);
 CREATE INDEX ontologyterm_isa_ancestor_descendant_isaancestors_index ON ontologyterm_isa_ancestor_descendant USING btree (isaancestors_id);
 CREATE INDEX ontologyterm_isa_ancestor_descendant_isadescendants_index ON ontologyterm_isa_ancestor_descendant USING btree (isadescendants_id);
-
-ALTER TABLE ontologyterm_isa_parent_children ADD PRIMARY KEY (isachildren_id, isaparents_id);
 ALTER TABLE ontologyterm_isa_parent_children ADD CONSTRAINT ontologyterm_isa_parent_children_isachildren_id_fk FOREIGN KEY (isachildren_id) REFERENCES ontologyterm (id);
 ALTER TABLE ontologyterm_isa_parent_children ADD CONSTRAINT ontologyterm_isa_parent_children_isaparents_id_fk FOREIGN KEY (isaparents_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_isa_parent_children_isachildren_index ON ontologyterm_isa_parent_children USING btree (isachildren_id);
 CREATE INDEX ontologyterm_isa_parent_children_isaparents_index ON ontologyterm_isa_parent_children USING btree (isaparents_id);
-
 ALTER TABLE ontologyterm_secondaryidentifiers ADD CONSTRAINT ontologyterm_secondaryidentifiers_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_secondaryidentifiers_ontologyterm_index ON ontologyterm_secondaryidentifiers USING btree (ontologyterm_id);
-
 ALTER TABLE ontologyterm_subsets ADD CONSTRAINT ontologyterm_subsets_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_subsets_ontologyterm_index ON ontologyterm_subsets USING btree (ontologyterm_id);
-
 ALTER TABLE ontologyterm_synonym ADD CONSTRAINT ontologyterm_synonym_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_synonym_ontologyterm_index ON ontologyterm_synonym USING btree (ontologyterm_id);
-
 ALTER TABLE organization ADD CONSTRAINT organization_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE organization_aud ADD CONSTRAINT organization_aud_id_rev_fk (id, rev) REFERENCES auditedobject_aud (id, rev);
-
-ALTER TABLE patoterm ADD PRIMARY KEY (id);
+ALTER TABLE organization_aud ADD CONSTRAINT organization_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE patoterm ADD CONSTRAINT patoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE patoterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE patoterm_aud ADD CONSTRAINT patoterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
+ALTER TABLE patoterm_aud ADD CONSTRAINT patoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE person ADD CONSTRAINT person_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE person_aud ADD CONSTRAINT person_aud_id_rev_fk (id, rev) REFERENCES auditedobject_aud (id, rev);
-
-ALTER TABLE phenotypeterm ADD PRIMARY KEY (id);
+ALTER TABLE person_aud ADD CONSTRAINT person_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE phenotypeterm ADD CONSTRAINT phenotypeterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE phenotypeterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE phenotypeterm_aud ADD CONSTRAINT phenotypeterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
-ALTER TABLE pwterm ADD PRIMARY KEY (id);
+ALTER TABLE phenotypeterm_aud ADD CONSTRAINT phenotypeterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE pwterm ADD CONSTRAINT pwterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-
-ALTER TABLE pwterm_aud ADD PRIMARY KEY (id, rev);
-ALTER TABLE pwterm_aud ADD CONSTRAINT pwterm_aud_id_rev_fk (id, rev) REFERENCES ontologyterm_aud (id, rev);
-
+ALTER TABLE pwterm_aud ADD CONSTRAINT pwterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
 ALTER TABLE reagent ADD CONSTRAINT reagent_id_fk FOREIGN KEY (id) REFERENCES submittedobject (id);
-
-ALTER TABLE reagent_aud ADD PRIMARY KEY (id, rev);
 ALTER TABLE reagent_aud ADD CONSTRAINT reagent_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES submittedobject_aud (id, rev);
-
-ALTER TABLE reference ADD PRIMARY KEY (id);
 ALTER TABLE reference ADD CONSTRAINT reference_id_fk FOREIGN KEY (id) REFERENCES informationcontententity (id);
-
-ALTER TABLE reference_aud ADD PRIMARY KEY (id, rev);
 ALTER TABLE reference_aud ADD CONSTRAINT reference_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES informationcontententity_aud (id, rev);
-
 ALTER TABLE reference_crossreference ADD CONSTRAINT reference_crossreference_reference_id_fk FOREIGN KEY (reference_id) REFERENCES reference (id);
 CREATE INDEX reference_crossreference_reference_index ON reference_crossreference USING btree (reference_id);
-
 ALTER TABLE resourcedescriptor ADD CONSTRAINT resourcedescriptor_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-
-ALTER TABLE resourcedescriptor_aud ADD CONSTRAINT resourcedescriptor_aud_id_rev_fk (id, rev) REFERENCES auditedobject_aud (id, rev);
-
+ALTER TABLE resourcedescriptor_aud ADD CONSTRAINT resourcedescriptor_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
 ALTER TABLE resourcedescriptorpage ADD CONSTRAINT resourcedescriptorpage_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
+ALTER TABLE resourcedescriptorpage_aud ADD CONSTRAINT resourcedescriptorpage_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+ALTER TABLE roterm ADD CONSTRAINT roterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
+ALTER TABLE roterm_aud ADD CONSTRAINT roterm_aud_id_rev_fk FOREIGN KEY (id, rev)  REFERENCES ontologyterm_aud (id, rev);
+ALTER TABLE rsterm ADD CONSTRAINT rsterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
+ALTER TABLE rsterm_aud ADD CONSTRAINT rsterm_aud_id_rev_fk FOREIGN KEY (id, rev)  REFERENCES ontologyterm_aud (id, rev);
+ALTER TABLE singlereferenceassociation ADD CONSTRAINT singlereferenceassociation_singlereference_id_fk FOREIGN KEY (singlereference_id) REFERENCES reference (id);
+CREATE INDEX singlereferenceassociation_singlereference_index ON singlereferenceassociation USING btree (singlereference_id);
+ALTER TABLE slotannotation ADD CONSTRAINT slotannotation_id_fk FOREIGN KEY (id) REFERENCES auditedobject(id);
+ALTER TABLE slotannotation_aud ADD CONSTRAINT slotannotation_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+ALTER TABLE slotannotation_informationcontententity ADD CONSTRAINT slotannotation_informationcontententity_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
+CREATE INDEX slotannotation_informationcontententity_evidence_index ON slotannotation_informationcontententity USING btree (evidence_id);
+ALTER TABLE soterm ADD CONSTRAINT soterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
+ALTER TABLE soterm_aud ADD CONSTRAINT soterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
+ALTER TABLE species ADD CONSTRAINT species_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
+ALTER TABLE species ADD CONSTRAINT species_taxon_id_fk FOREIGN KEY (taxon_id) REFERENCES ncbitaxonterm (id);
+ALTER TABLE species_aud ADD CONSTRAINT species_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+ALTER TABLE stageterm ADD CONSTRAINT stageterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
+ALTER TABLE stageterm_aud ADD CONSTRAINT stageterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
+ALTER TABLE synonym_aud ADD CONSTRAINT synonym_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+ALTER TABLE uberonterm ADD CONSTRAINT uberonterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
+ALTER TABLE uberonterm_aud ADD CONSTRAINT uberonterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
+ALTER TABLE variant ADD CONSTRAINT variant_id_fk FOREIGN KEY (id) REFERENCES genomicentity (id);
+ALTER TABLE variant ADD CONSTRAINT variant_sourcegeneralconsequence_id_fk FOREIGN KEY (sourcegeneralconsequence_id) REFERENCES soterm (id);
+ALTER TABLE variant ADD CONSTRAINT variant_varianttype_id_fk FOREIGN KEY (varianttype_id) REFERENCES soterm (id);
+CREATE INDEX variant_sourcegeneralconsequence_index ON variant USING btree (sourcegeneralconsequence_id);
+CREATE INDEX variant_varianttype_index ON variant USING btree (varianttype_id);
+ALTER TABLE variant_aud ADD CONSTRAINT variant_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES genomicentity_aud (id, rev);
+ALTER TABLE variant_note ADD CONSTRAINT variant_note_variant_id_fk FOREIGN KEY (variant_id) REFERENCES variant (id);
+CREATE INDEX variant_note_variant_index ON variant_note USING btree (variant_id);
+ALTER TABLE vocabulary ADD CONSTRAINT vocabulary_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
+ALTER TABLE vocabulary_aud ADD CONSTRAINT vocabulary_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+ALTER TABLE vocabularyterm ADD CONSTRAINT vocabularyterm_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
+ALTER TABLE vocabularyterm_aud ADD CONSTRAINT vocabularyterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+ALTER TABLE vocabularytermset ADD CONSTRAINT vocabularytermset_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
+ALTER TABLE vocabularytermset_aud ADD CONSTRAINT vocabularytermset_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES auditedobject_aud (id, rev);
+ALTER TABLE vtterm ADD CONSTRAINT vtterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
+ALTER TABLE vtterm_aud ADD CONSTRAINT vtterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
+ALTER TABLE wbbtterm ADD CONSTRAINT wbbtterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
+ALTER TABLE wbbtterm_aud ADD CONSTRAINT wbbtterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
+ALTER TABLE wblsterm ADD CONSTRAINT wblsterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
+ALTER TABLE wblsterm_aud ADD CONSTRAINT wblsterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES stageterm_aud (id, rev);
+ALTER TABLE wbphenotypeterm ADD CONSTRAINT wbphenotypeterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
+ALTER TABLE wbphenotypeterm_aud ADD CONSTRAINT wbphenotypeterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES phenotypeterm_aud (id, rev);
+ALTER TABLE xbaterm ADD CONSTRAINT xbaterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
+ALTER TABLE xbaterm_aud ADD CONSTRAINT xbaterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
+ALTER TABLE xbedterm ADD CONSTRAINT xbedterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
+ALTER TABLE xbedterm_aud ADD CONSTRAINT xbedterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES ontologyterm_aud (id, rev);
+ALTER TABLE xbsterm ADD CONSTRAINT xbsterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
+ALTER TABLE xbsterm_aud ADD CONSTRAINT xbsterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES stageterm_aud (id, rev);
+ALTER TABLE xcoterm ADD CONSTRAINT xcoterm_id_fk FOREIGN KEY (id) REFERENCES experimentalconditionontologyterm (id);
+ALTER TABLE xcoterm_aud ADD CONSTRAINT xcoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES experimentalconditionontologyterm_aud (id, rev);
+ALTER TABLE xpoterm ADD CONSTRAINT xpoterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
+ALTER TABLE xpoterm_aud ADD CONSTRAINT xpoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES phenotypeterm_aud (id, rev);
+ALTER TABLE xsmoterm ADD CONSTRAINT xsmoterm_id_fk FOREIGN KEY (id) REFERENCES chemicalterm (id);
+ALTER TABLE xsmoterm_aud ADD CONSTRAINT xsmoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES chemicalterm_aud (id, rev);
+ALTER TABLE zecoterm ADD CONSTRAINT zecoterm_id_fk FOREIGN KEY (id) REFERENCES experimentalconditionontologyterm (id);
+ALTER TABLE zecoterm_aud ADD CONSTRAINT zecoterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES experimentalconditionontologyterm_aud (id, rev);
+ALTER TABLE zfaterm ADD CONSTRAINT zfaterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
+ALTER TABLE zfaterm_aud ADD CONSTRAINT zfaterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
+ALTER TABLE zfsterm ADD CONSTRAINT zfsterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
+ALTER TABLE zfsterm_aud ADD CONSTRAINT zfsterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES stageterm_aud (id, rev);
 
-ALTER TABLE resourcedescriptorpage_aud ADD CONSTRAINT resourcedescriptorpage_aud_id_rev_fk (id, rev) REFERENCES auditedobject_aud (id, rev);
+-- Remove old columns 
+
+ALTER TABLE affectedgenomicmodel DROP COLUMN curie;
+ALTER TABLE agmdiseaseannotation DROP COLUMN inferredallele_curie;
+ALTER TABLE agmdiseaseannotation DROP COLUMN inferredgene_curie;
+ALTER TABLE agmdiseaseannotation DROP COLUMN assertedallele_curie;
+ALTER TABLE agmdiseaseannotation DROP COLUMN subject_curie;
+ALTER TABLE agmdiseaseannotation_gene DROP COLUMN assertedgenes_curie;
+ALTER TABLE allele DROP COLUMN curie;
+ALTER TABLE allele_note DROP COLUMN allele_curie;
+ALTER TABLE allele_reference DROP COLUMN allele_curie;
+ALTER TABLE allele_reference DROP COLUMN references_curie;
+ALTER TABLE alleledatabasestatusslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE allelediseaseannotation DROP COLUMN inferredgene_curie;
+ALTER TABLE allelediseaseannotation DROP COLUMN subject_curie;
+ALTER TABLE allelediseaseannotation_gene DROP COLUMN assertedgenes_curie;	
+ALTER TABLE allelefullnameslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE allelefunctionalimpactslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE allelefunctionalimpactslotannotation DROP COLUMN phenotypeterm_curie; 
+ALTER TABLE allelegeneassociation DROP COLUMN subject_curie;
+ALTER TABLE allelegeneassociation DROP COLUMN object_curie;
+ALTER TABLE allelegenomicentityassociation DROP COLUMN evidencecode_curie;
+ALTER TABLE allelegermlinetransmissionstatusslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE alleleinheritancemodeslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE alleleinheritancemodeslotannotation DROP COLUMN phenotypeterm_curie;
+ALTER TABLE allelemutationtypeslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE allelemutationtypeslotannotation_soterm DROP COLUMN mutationtypes_curie;
+ALTER TABLE allelenomenclatureeventslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE allelesecondaryidslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE allelesymbolslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE allelesynonymslotannotation DROP COLUMN singleallele_curie;
+ALTER TABLE anatomicalterm DROP COLUMN curie;
+ALTER TABLE apoterm DROP COLUMN curie;
+ALTER TABLE atpterm DROP COLUMN curie;
+ALTER TABLE biologicalentity DROP COLUMN curie;
+ALTER TABLE biologicalentity DROP COLUMN taxon_curie;
+ALTER TABLE bspoterm DROP COLUMN curie;
+ALTER TABLE chebiterm DROP COLUMN curie;
+ALTER TABLE chemicalterm DROP COLUMN curie;
+ALTER TABLE clterm DROP COLUMN curie;
+ALTER TABLE cmoterm DROP COLUMN curie;
+ALTER TABLE conditionrelation DROP COLUMN singlereference_curie;
+ALTER TABLE construct_reference DROP COLUMN references_curie;
+ALTER TABLE constructcomponentslotannotation DROP COLUMN taxon_curie;
+ALTER TABLE constructgenomicentityassociation DROP COLUMN object_curie;
+ALTER TABLE daoterm DROP COLUMN curie;
+ALTER TABLE diseaseannotation DROP COLUMN object_curie;
+ALTER TABLE diseaseannotation_biologicalentity DROP COLUMN diseasegeneticmodifiers_curie;
+ALTER TABLE diseaseannotation_ecoterm DROP COLUMN evidencecodes_curie;
+ALTER TABLE diseaseannotation_gene DROP COLUMN with_curie;
+ALTER TABLE doterm DROP COLUMN curie;
+ALTER TABLE dpoterm DROP COLUMN curie;
+ALTER TABLE ecoterm DROP COLUMN curie;
+ALTER TABLE emapaterm DROP COLUMN curie;
+ALTER TABLE evidenceassociation_informationcontententity DROP COLUMN evidence_curie;
+ALTER TABLE experimentalcondition DROP COLUMN conditionanatomy_curie;
+ALTER TABLE experimentalcondition DROP COLUMN conditionchemical_curie;
+ALTER TABLE experimentalcondition DROP COLUMN conditionclass_curie;
+ALTER TABLE experimentalcondition DROP COLUMN conditiongeneontology_curie;
+ALTER TABLE experimentalcondition DROP COLUMN conditionid_curie;
+ALTER TABLE experimentalcondition DROP COLUMN conditiontaxon_curie;
+ALTER TABLE experimentalconditionontologyterm DROP COLUMN curie;
+ALTER TABLE fbdvterm DROP COLUMN curie;
+ALTER TABLE gene DROP COLUMN curie;
+ALTER TABLE gene DROP COLUMN genetype_curie;
+ALTER TABLE genediseaseannotation DROP COLUMN sgdstrainbackground_curie;
+ALTER TABLE genediseaseannotation DROP COLUMN subject_curie;
+ALTER TABLE genefullnameslotannotation DROP COLUMN singlegene_curie;
+ALTER TABLE genesecondaryidslotannotation DROP COLUMN singlegene_curie;
+ALTER TABLE genesymbolslotannotation DROP COLUMN singlegene_curie;
+ALTER TABLE genesynonymslotannotation DROP COLUMN singlegene_curie;
+ALTER TABLE genesystematicnameslotannotation DROP COLUMN singlegene_curie;
+ALTER TABLE genetogeneorthology DROP COLUMN subjectgene_curie;
+ALTER TABLE genetogeneorthology DROP COLUMN objectgene_curie;
+ALTER TABLE genetogeneorthologycurated DROP COLUMN singlereference_curie;
+ALTER TABLE genetogeneorthologycurated DROP COLUMN evidencecode_curie;
+ALTER TABLE genomicentity DROP COLUMN curie;
+ALTER TABLE genomicentity_crossreference DROP COLUMN genomicentity_curie;
+ALTER TABLE goterm DROP COLUMN curie;
+ALTER TABLE hpterm DROP COLUMN curie;
+ALTER TABLE informationcontententity DROP COLUMN curie;
+ALTER TABLE materm DROP COLUMN curie;
+ALTER TABLE miterm DROP COLUMN curie;
+ALTER TABLE mmoterm DROP COLUMN curie;
+ALTER TABLE mmusdvterm DROP COLUMN curie;
+ALTER TABLE modterm DROP COLUMN curie;
+ALTER TABLE molecule DROP COLUMN curie;
+ALTER TABLE mpathterm DROP COLUMN curie;
+ALTER TABLE mpterm DROP COLUMN curie;
+ALTER TABLE ncbitaxonterm DROP COLUMN curie;
+ALTER TABLE note_reference DROP COLUMN references_curie;
+ALTER TABLE obiterm DROP COLUMN curie;
+ALTER TABLE ontologyterm DROP COLUMN curie;
+ALTER TABLE ontologyterm_crossreference DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_definitionurls DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_isa_ancestor_descendant DROP COLUMN isadescendants_curie;
+ALTER TABLE ontologyterm_isa_ancestor_descendant DROP COLUMN isaancestors_curie;
+ALTER TABLE ontologyterm_isa_parent_children DROP COLUMN isachildren_curie;
+ALTER TABLE ontologyterm_isa_parent_children DROP COLUMN isaparents_curie;
+ALTER TABLE ontologyterm_secondaryidentifiers DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_subsets DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_synonym DROP COLUMN ontologyterm_curie;
+ALTER TABLE patoterm DROP COLUMN curie;
+ALTER TABLE phenotypeterm DROP COLUMN curie;
+ALTER TABLE pwterm DROP COLUMN curie;
+ALTER TABLE reference DROP COLUMN curie;
+ALTER TABLE reference_crossreference DROP COLUMN reference_curie;
+ALTER TABLE roterm DROP COLUMN curie;
+ALTER TABLE rsterm DROP COLUMN curie;
+ALTER TABLE singlereferenceassociation DROP COLUMN singlereference_curie;
+ALTER TABLE slotannotation_informationcontententity DROP COLUMN evidence_curie;
+ALTER TABLE soterm DROP COLUMN curie;
+ALTER TABLE species DROP COLUMN taxon_curie;
+ALTER TABLE stageterm DROP COLUMN curie;
+ALTER TABLE uberonterm DROP COLUMN curie;
+ALTER TABLE variant DROP COLUMN curie;
+ALTER TABLE variant DROP COLUMN varianttype_curie;
+ALTER TABLE variant DROP COLUMN sourcegeneralconsequence_curie;
+ALTER TABLE variant_note DROP COLUMN variant_curie;
+ALTER TABLE vtterm DROP COLUMN curie;
+ALTER TABLE wbbtterm DROP COLUMN curie;
+ALTER TABLE wblsterm DROP COLUMN curie;
+ALTER TABLE wbphenotypeterm DROP COLUMN curie;
+ALTER TABLE xbaterm DROP COLUMN curie;
+ALTER TABLE xbedterm DROP COLUMN curie;
+ALTER TABLE xbsterm DROP COLUMN curie;
+ALTER TABLE xcoterm DROP COLUMN curie;
+ALTER TABLE xpoterm DROP COLUMN curie;
+ALTER TABLE xsmoterm DROP COLUMN curie;
+ALTER TABLE zecoterm DROP COLUMN curie;
+ALTER TABLE zfaterm DROP COLUMN curie;
+ALTER TABLE zfsterm DROP COLUMN curie;
+
+ALTER TABLE affectedgenomicmodel_aud DROP COLUMN curie;
+ALTER TABLE agmdiseaseannotation_aud DROP COLUMN inferredallele_curie;
+ALTER TABLE agmdiseaseannotation_aud DROP COLUMN inferredgene_curie;
+ALTER TABLE agmdiseaseannotation_aud DROP COLUMN assertedallele_curie;
+ALTER TABLE agmdiseaseannotation_aud DROP COLUMN subject_curie;
+ALTER TABLE agmdiseaseannotation_gene_aud DROP COLUMN assertedgenes_curie;
+ALTER TABLE allele_aud DROP COLUMN curie;
+ALTER TABLE allele_note_aud DROP COLUMN allele_curie;
+ALTER TABLE allele_reference_aud DROP COLUMN allele_curie;
+ALTER TABLE allele_reference_aud DROP COLUMN references_curie;
+ALTER TABLE alleledatabasestatusslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE allelediseaseannotation_aud DROP COLUMN inferredgene_curie;
+ALTER TABLE allelediseaseannotation_aud DROP COLUMN subject_curie;
+ALTER TABLE allelediseaseannotation_gene_aud DROP COLUMN assertedgenes_curie;	
+ALTER TABLE allelefullnameslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE allelefunctionalimpactslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE allelefunctionalimpactslotannotation_aud DROP COLUMN phenotypeterm_curie; 
+ALTER TABLE allelegeneassociation_aud DROP COLUMN subject_curie;
+ALTER TABLE allelegeneassociation_aud DROP COLUMN object_curie;
+ALTER TABLE allelegenomicentityassociation_aud DROP COLUMN evidencecode_curie;
+ALTER TABLE allelegermlinetransmissionstatusslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE alleleinheritancemodeslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE alleleinheritancemodeslotannotation_aud DROP COLUMN phenotypeterm_curie;
+ALTER TABLE allelemutationtypeslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE allelemutationtypeslotannotation_soterm_aud DROP COLUMN mutationtypes_curie;
+ALTER TABLE allelenomenclatureeventslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE allelesecondaryidslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE allelesymbolslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE allelesynonymslotannotation_aud DROP COLUMN singleallele_curie;
+ALTER TABLE anatomicalterm_aud DROP COLUMN curie;
+ALTER TABLE apoterm_aud DROP COLUMN curie;
+ALTER TABLE atpterm_aud DROP COLUMN curie;
+ALTER TABLE biologicalentity_aud DROP COLUMN curie;
+ALTER TABLE biologicalentity_aud DROP COLUMN taxon_curie;
+ALTER TABLE bspoterm_aud DROP COLUMN curie;
+ALTER TABLE chebiterm_aud DROP COLUMN curie;
+ALTER TABLE chemicalterm_aud DROP COLUMN curie;
+ALTER TABLE clterm_aud DROP COLUMN curie;
+ALTER TABLE cmoterm_aud DROP COLUMN curie;
+ALTER TABLE conditionrelation_aud DROP COLUMN singlereference_curie;
+ALTER TABLE construct_reference_aud DROP COLUMN references_curie;
+ALTER TABLE constructcomponentslotannotation_aud DROP COLUMN taxon_curie;
+ALTER TABLE constructgenomicentityassociation_aud DROP COLUMN object_curie;
+ALTER TABLE daoterm_aud DROP COLUMN curie;
+ALTER TABLE diseaseannotation_aud DROP COLUMN object_curie;
+ALTER TABLE diseaseannotation_biologicalentity_aud DROP COLUMN diseasegeneticmodifiers_curie;
+ALTER TABLE diseaseannotation_ecoterm_aud DROP COLUMN evidencecodes_curie;
+ALTER TABLE diseaseannotation_gene_aud DROP COLUMN with_curie;
+ALTER TABLE doterm_aud DROP COLUMN curie;
+ALTER TABLE dpoterm_aud DROP COLUMN curie;
+ALTER TABLE ecoterm_aud DROP COLUMN curie;
+ALTER TABLE emapaterm_aud DROP COLUMN curie;
+ALTER TABLE evidenceassociation_informationcontententity_aud DROP COLUMN evidence_curie;
+ALTER TABLE experimentalcondition_aud DROP COLUMN conditionanatomy_curie;
+ALTER TABLE experimentalcondition_aud DROP COLUMN conditionchemical_curie;
+ALTER TABLE experimentalcondition_aud DROP COLUMN conditionclass_curie;
+ALTER TABLE experimentalcondition_aud DROP COLUMN conditiongeneontology_curie;
+ALTER TABLE experimentalcondition_aud DROP COLUMN conditionid_curie;
+ALTER TABLE experimentalcondition_aud DROP COLUMN conditiontaxon_curie;
+ALTER TABLE experimentalconditionontologyterm_aud DROP COLUMN curie;
+ALTER TABLE fbdvterm_aud DROP COLUMN curie;
+ALTER TABLE gene_aud DROP COLUMN curie;
+ALTER TABLE gene_aud DROP COLUMN genetype_curie;
+ALTER TABLE genediseaseannotation_aud DROP COLUMN sgdstrainbackground_curie;
+ALTER TABLE genediseaseannotation_aud DROP COLUMN subject_curie;
+ALTER TABLE genefullnameslotannotation_aud DROP COLUMN singlegene_curie;
+ALTER TABLE genesecondaryidslotannotation_aud DROP COLUMN singlegene_curie;
+ALTER TABLE genesymbolslotannotation_aud DROP COLUMN singlegene_curie;
+ALTER TABLE genesynonymslotannotation_aud DROP COLUMN singlegene_curie;
+ALTER TABLE genesystematicnameslotannotation_aud DROP COLUMN singlegene_curie;
+ALTER TABLE genetogeneorthology_aud DROP COLUMN subjectgene_curie;
+ALTER TABLE genetogeneorthology_aud DROP COLUMN objectgene_curie;
+ALTER TABLE genetogeneorthologycurated_aud DROP COLUMN singlereference_curie;
+ALTER TABLE genetogeneorthologycurated_aud DROP COLUMN evidencecode_curie;
+ALTER TABLE genomicentity_aud DROP COLUMN curie;
+ALTER TABLE genomicentity_crossreference_aud DROP COLUMN genomicentity_curie;
+ALTER TABLE goterm_aud DROP COLUMN curie;
+ALTER TABLE hpterm_aud DROP COLUMN curie;
+ALTER TABLE informationcontententity_aud DROP COLUMN curie;
+ALTER TABLE materm_aud DROP COLUMN curie;
+ALTER TABLE miterm_aud DROP COLUMN curie;
+ALTER TABLE mmoterm_aud DROP COLUMN curie;
+ALTER TABLE mmusdvterm_aud DROP COLUMN curie;
+ALTER TABLE modterm_aud DROP COLUMN curie;
+ALTER TABLE molecule_aud DROP COLUMN curie;
+ALTER TABLE mpathterm_aud DROP COLUMN curie;
+ALTER TABLE mpterm_aud DROP COLUMN curie;
+ALTER TABLE ncbitaxonterm_aud DROP COLUMN curie;
+ALTER TABLE note_reference_aud DROP COLUMN references_curie;
+ALTER TABLE obiterm_aud DROP COLUMN curie;
+ALTER TABLE ontologyterm_aud DROP COLUMN curie;
+ALTER TABLE ontologyterm_crossreference_aud DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_definitionurls_aud DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_isa_ancestor_descendant_aud DROP COLUMN isadescendants_curie;
+ALTER TABLE ontologyterm_isa_ancestor_descendant_aud DROP COLUMN isaancestors_curie;
+ALTER TABLE ontologyterm_isa_parent_children_aud DROP COLUMN isachildren_curie;
+ALTER TABLE ontologyterm_isa_parent_children_aud DROP COLUMN isaparents_curie;
+ALTER TABLE ontologyterm_secondaryidentifiers_aud DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_subsets_aud DROP COLUMN ontologyterm_curie;
+ALTER TABLE ontologyterm_synonym_aud DROP COLUMN ontologyterm_curie;
+ALTER TABLE patoterm_aud DROP COLUMN curie;
+ALTER TABLE phenotypeterm_aud DROP COLUMN curie;
+ALTER TABLE pwterm_aud DROP COLUMN curie;
+ALTER TABLE reference_aud DROP COLUMN curie;
+ALTER TABLE reference_crossreference_aud DROP COLUMN reference_curie;
+ALTER TABLE roterm_aud DROP COLUMN curie;
+ALTER TABLE rsterm_aud DROP COLUMN curie;
+ALTER TABLE singlereferenceassociation_aud DROP COLUMN singlereference_curie;
+ALTER TABLE slotannotation_informationcontententity_aud DROP COLUMN evidence_curie;
+ALTER TABLE soterm_aud DROP COLUMN curie;
+ALTER TABLE species_aud DROP COLUMN taxon_curie;
+ALTER TABLE stageterm_aud DROP COLUMN curie;
+ALTER TABLE uberonterm_aud DROP COLUMN curie;
+ALTER TABLE variant_aud DROP COLUMN curie;
+ALTER TABLE variant_aud DROP COLUMN varianttype_curie;
+ALTER TABLE variant_aud DROP COLUMN sourcegeneralconsequence_curie;
+ALTER TABLE variant_note_aud DROP COLUMN variant_curie;
+ALTER TABLE vtterm_aud DROP COLUMN curie;
+ALTER TABLE wbbtterm_aud DROP COLUMN curie;
+ALTER TABLE wblsterm_aud DROP COLUMN curie;
+ALTER TABLE wbphenotypeterm_aud DROP COLUMN curie;
+ALTER TABLE xbaterm_aud DROP COLUMN curie;
+ALTER TABLE xbedterm_aud DROP COLUMN curie;
+ALTER TABLE xbsterm_aud DROP COLUMN curie;
+ALTER TABLE xcoterm_aud DROP COLUMN curie;
+ALTER TABLE xpoterm_aud DROP COLUMN curie;
+ALTER TABLE xsmoterm_aud DROP COLUMN curie;
+ALTER TABLE zecoterm_aud DROP COLUMN curie;
+ALTER TABLE zfaterm_aud DROP COLUMN curie;
+ALTER TABLE zfsterm_aud DROP COLUMN curie;
+
+ALTER TABLE auditedobject DROP COLUMN old_id;
+ALTER TABLE auditedobject DROP COLUMN old_curie;
+ALTER TABLE auditedobject DROP COLUMN tablename;
+
+DROP SEQUENCE association_seq;
+DROP SEQUENCE bulkload_seq;
+DROP SEQUENCE bulkloadfile_seq;
+DROP SEQUENCE bulkloadfileexception_seq;
+DROP SEQUENCE bulkloadfilehistory_seq;
+DROP SEQUENCE bulkloadgroup_seq;
+DROP SEQUENCE conditionrelation_seq;
+DROP SEQUENCE crossreference_seq;
+DROP SEQUENCE curationreport_seq;
+DROP SEQUENCE curationreportgroup_seq;
+DROP SEQUENCE curationreporthistory_seq;
+DROP SEQUENCE dataprovider_seq;
+DROP SEQUENCE experimentalcondition_seq;
+DROP SEQUENCE genetogeneorthology_seq;
+DROP SEQUENCE note_seq;
+DROP SEQUENCE organization_seq;
+DROP SEQUENCE person_seq;
+DROP SEQUENCE personsetting_seq;
+DROP SEQUENCE reagent_seq;
+DROP SEQUENCE resourcedescriptor_seq;
+DROP SEQUENCE resourcedescriptorpage_seq;
+DROP SEQUENCE slotannotation_seq;
+DROP SEQUENCE species_seq;
+DROP SEQUENCE synonym_seq;
+DROP SEQUENCE vocabulary_seq;
+DROP SEQUENCE vocabularyterm_seq;
+DROP SEQUENCE vocabularytermset_seq;

@@ -9,6 +9,8 @@ import org.hibernate.envers.Audited;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

@@ -28,12 +28,6 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ConstructCrudInterface extends SubmittedObjectCrudInterface<Construct>, BaseDTOCrudControllerInterface<Construct, ConstructDTO> {
 
-	@Override
-	@GET
-	@JsonView(View.ConstructView.class)
-	@Path("/{id}")
-	public ObjectResponse<Construct> get(@PathParam("id") Long id);
-	
 	@GET
 	@Path("/{identifierString}")
 	@JsonView(View.ConstructView.class)

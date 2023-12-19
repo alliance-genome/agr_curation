@@ -25,6 +25,7 @@ import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -52,6 +53,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 		ObjectResponse<E> daResponse = validateAnnotationDTO(annotation, dto, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 		annotation = daResponse.getEntity();
 
+		Log.info("GOT HERE 10a");
 		if (StringUtils.isBlank(dto.getDoTermCurie())) {
 			daResponse.addErrorMessage("do_term_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -61,6 +63,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			annotation.setObject(disease);
 		}
 
+		Log.info("GOT HERE 10b");
 		if (CollectionUtils.isEmpty(dto.getEvidenceCodeCuries())) {
 			daResponse.addErrorMessage("evidence_code_curies", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -78,12 +81,14 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			annotation.setEvidenceCodes(ecoTerms);
 		}
 
+		Log.info("GOT HERE 10c");
 		if (dto.getNegated() != null) {
 			annotation.setNegated(dto.getNegated());
 		} else {
 			annotation.setNegated(false);
 		}
 
+		Log.info("GOT HERE 10d");
 		if (CollectionUtils.isNotEmpty(dto.getWithGeneIdentifiers())) {
 			List<Gene> withGenes = new ArrayList<>();
 			for (String withIdentifier : dto.getWithGeneIdentifiers()) {
@@ -102,7 +107,8 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 		} else {
 			annotation.setWith(null);
 		}
-		
+
+		Log.info("GOT HERE 10e");
 		DataProvider secondaryDataProvider = null;
 		if (dto.getSecondaryDataProviderDto() != null) {
 			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getSecondaryDataProviderDto(), annotation.getSecondaryDataProvider());
@@ -114,6 +120,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 		}
 		annotation.setSecondaryDataProvider(secondaryDataProvider);
 
+		Log.info("GOT HERE 10f");
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifierNames())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
 			for (String qualifier : dto.getDiseaseQualifierNames()) {
@@ -129,25 +136,30 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			annotation.setDiseaseQualifiers(null);
 		}
 
+		Log.info("GOT HERE 10g");
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseGeneticModifierIdentifiers()) || StringUtils.isNotBlank(dto.getDiseaseGeneticModifierRelationName())) {
 			if (CollectionUtils.isEmpty(dto.getDiseaseGeneticModifierIdentifiers())) {
 				daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_identifiers");
 			} else if (StringUtils.isBlank(dto.getDiseaseGeneticModifierRelationName())) {
 				daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_relation_name");
 			} else {
+				Log.info("GOT HERE 10ga");
 				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY,
 					dto.getDiseaseGeneticModifierRelationName()).getEntity();
 				if (diseaseGeneticModifierRelation == null)
 					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
 				List<BiologicalEntity> diseaseGeneticModifiers = new ArrayList<>();
 				for (String modifierIdentifier : dto.getDiseaseGeneticModifierIdentifiers()) {
+					Log.info("GOT HERE 10gb");
 					BiologicalEntity diseaseGeneticModifier = biologicalEntityService.findByIdentifierString(modifierIdentifier);
 					if (diseaseGeneticModifier == null) {
 						daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + modifierIdentifier + ")");
 					} else {
+						Log.info("GOT HERE 10gc");
 						diseaseGeneticModifiers.add(diseaseGeneticModifier);
 					}
 				}
+				Log.info("GOT HERE 10gd");
 				annotation.setDiseaseGeneticModifiers(diseaseGeneticModifiers);
 				annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 			}
@@ -156,6 +168,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			annotation.setDiseaseGeneticModifierRelation(null);
 		}
 
+		Log.info("GOT HERE 10h");
 		VocabularyTerm annotationType = null;
 		if (StringUtils.isNotBlank(dto.getAnnotationTypeName())) {
 			annotationType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, dto.getAnnotationTypeName()).getEntity();
@@ -164,6 +177,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 		}
 		annotation.setAnnotationType(annotationType);
 
+		Log.info("GOT HERE 10i");
 		VocabularyTerm geneticSex = null;
 		if (StringUtils.isNotBlank(dto.getGeneticSexName())) {
 			geneticSex = vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, dto.getGeneticSexName()).getEntity();

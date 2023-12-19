@@ -13,6 +13,11 @@ public abstract class SubmittedObjectCrudController<S extends SubmittedObjectCru
 
 	protected SubmittedObjectCrudService<E, T, D> service;
 	
+	protected void setService(S service) {
+		super.setService(service);
+		this.service = service;
+	}
+	
 	@Override
 	public ObjectResponse<E> get(String identifierString) {
 		return service.get(identifierString);

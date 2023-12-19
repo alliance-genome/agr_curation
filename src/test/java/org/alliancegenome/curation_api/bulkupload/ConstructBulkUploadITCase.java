@@ -57,7 +57,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 	
 	private final String constructBulkPostEndpoint = "/api/construct/bulk/WB/constructs";
 	private final String constructBulkPostEndpointRGD = "/api/construct/bulk/RGD/constructs";
-	private final String constructGetEndpoint = "/api/construct/findBy/";
+	private final String constructGetEndpoint = "/api/construct/";
 	private final String constructTestFilePath = "src/test/resources/bulk/05_construct/";
 	
 	private void loadRequiredEntities() throws Exception {

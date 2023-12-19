@@ -674,7 +674,7 @@ public class BaseITCase {
 	public Construct getConstruct(String identifier) {
 		ObjectResponse<Construct> res = RestAssured.given().
 				when().
-				get("/api/construct/findBy/" + identifier).
+				get("/api/construct/" + identifier).
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefConstruct());

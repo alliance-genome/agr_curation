@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
@@ -55,7 +56,7 @@ public class BaseDTOValidator {
 			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedByCurie());
 		entity.setUpdatedBy(updatedBy);
 
-		Boolean internal = false;
+		Boolean internal = dto instanceof NoteDTO ? true : false;
 		if (dto.getInternal() != null)
 			internal = dto.getInternal();
 		entity.setInternal(internal);

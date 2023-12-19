@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneService;
 
 import jakarta.annotation.PostConstruct;
@@ -29,11 +28,6 @@ public class GeneCrudController extends SubmittedObjectCrudController<GeneServic
 	@PostConstruct
 	protected void init() {
 		setService(geneService);
-	}
-
-	@Override
-	public ObjectResponse<Gene> get(String id) {
-		return geneService.get(id);
 	}
 
 	@Override
