@@ -6,7 +6,29 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
+import org.alliancegenome.curation_api.model.entities.Association;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.PersonSetting;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.Species;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.alliancegenome.curation_api.view.View.VocabularyTermSetView;
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,6 +48,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -42,6 +66,32 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = Association.class, name = "Association"),
+	@JsonSubTypes.Type(value = BulkLoad.class, name = "BulkLoad"),
+	@JsonSubTypes.Type(value = BulkLoadFile.class, name = "BulkLoadFile"),
+	@JsonSubTypes.Type(value = BulkLoadFileException.class, name = "BulkLoadFileException"),
+	@JsonSubTypes.Type(value = BulkLoadFileHistory.class, name = "BulkLoadFileHistory"),
+	@JsonSubTypes.Type(value = BulkLoadGroup.class, name = "BulkLoadGroup"),
+	@JsonSubTypes.Type(value = CrossReference.class, name = "CrossReference"),
+	@JsonSubTypes.Type(value = CurieObject.class, name = "CurieObject"),
+	@JsonSubTypes.Type(value = DataProvider.class, name = "DataProvider"),
+	@JsonSubTypes.Type(value = GeneToGeneOrthology.class, name = "GeneToGeneOrthology"),
+	@JsonSubTypes.Type(value = Note.class, name = "Note"),
+	@JsonSubTypes.Type(value = Organization.class, name = "Organization"),
+	@JsonSubTypes.Type(value = Person.class, name = "Person"),
+	@JsonSubTypes.Type(value = PersonSetting.class, name = "PersonSetting"),
+	@JsonSubTypes.Type(value = ResourceDescriptor.class, name = "ResourceDescriptor"),
+	@JsonSubTypes.Type(value = ResourceDescriptorPage.class, name = "ResourceDescriptorPage"),
+	@JsonSubTypes.Type(value = SlotAnnotation.class, name = "SlotAnnotation"),
+	@JsonSubTypes.Type(value = Species.class, name = "Species"),
+	@JsonSubTypes.Type(value = Synonym.class, name = "Synonym"),
+	@JsonSubTypes.Type(value = UniqueIdAuditedObject.class, name = "UniqueIdAuditedObject"),
+	@JsonSubTypes.Type(value = Vocabulary.class, name = "Vocabulary"),
+	@JsonSubTypes.Type(value = VocabularyTerm.class, name = "VocabularyTerm"),
+	@JsonSubTypes.Type(value = VocabularyTermSet.class, name = "VocabularyTermSet"), 
+})
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Audited

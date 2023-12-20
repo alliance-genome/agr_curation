@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.Association;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
@@ -21,6 +22,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -35,6 +38,33 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = AnatomicalTerm.class, name = "AnatomicalTerm"),
+	@JsonSubTypes.Type(value = ATPTerm.class, name = "ATPTerm"),
+	@JsonSubTypes.Type(value = BSPOTerm.class, name = "BSPOTerm"),
+	@JsonSubTypes.Type(value = ChemicalTerm.class, name = "ChemicalTerm"),
+	@JsonSubTypes.Type(value = CMOTerm.class, name = "CMOTerm"),
+	@JsonSubTypes.Type(value = DOTerm.class, name = "DOTerm"),
+	@JsonSubTypes.Type(value = ECOTerm.class, name = "ECOTerm"),
+	@JsonSubTypes.Type(value = ExperimentalConditionOntologyTerm.class, name = "ExperimentalConditionOntologyTerm"),
+	@JsonSubTypes.Type(value = GOTerm.class, name = "GOTerm"),
+	@JsonSubTypes.Type(value = MITerm.class, name = "MITerm"),
+	@JsonSubTypes.Type(value = MMOTerm.class, name = "MMOTerm"),
+	@JsonSubTypes.Type(value = MODTerm.class, name = "MODTerm"),
+	@JsonSubTypes.Type(value = MPATHTerm.class, name = "MPATHTerm"),
+	@JsonSubTypes.Type(value = NCBITaxonTerm.class, name = "NCBITaxonTerm"),
+	@JsonSubTypes.Type(value = OBITerm.class, name = "OBITerm"),
+	@JsonSubTypes.Type(value = PATOTerm.class, name = "PATOTerm"),
+	@JsonSubTypes.Type(value = PhenotypeTerm.class, name = "PhenotypeTerm"),
+	@JsonSubTypes.Type(value = PWTerm.class, name = "PWTerm"),
+	@JsonSubTypes.Type(value = ROTerm.class, name = "ROTerm"),
+	@JsonSubTypes.Type(value = RSTerm.class, name = "RSTerm"),
+	@JsonSubTypes.Type(value = SOTerm.class, name = "SOTerm"),
+	@JsonSubTypes.Type(value = StageTerm.class, name = "StageTerm"),
+	@JsonSubTypes.Type(value = VTTerm.class, name = "VTTerm"),
+	@JsonSubTypes.Type(value = XBEDTerm.class, name = "XBEDTerm")
+})
 @Audited
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)

@@ -6,11 +6,19 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = SingleReferenceAssociation.class, name = "SingleReferenceAssociation"),
+	@JsonSubTypes.Type(value = EvidenceAssociation.class, name = "EvidenceAssociation")
+})
 @Audited
 @Entity
 @Data

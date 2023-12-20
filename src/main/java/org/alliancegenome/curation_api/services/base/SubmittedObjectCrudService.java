@@ -42,8 +42,9 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 			} else {
 				if (response == null || response.getSingleResult() == null) {
 					response = findByField("modEntityId", id);
-					if (response == null || response.getSingleResult() == null)
+					if (response == null || response.getSingleResult() == null) {
 						response = findByField("modInternalId", id);
+					}
 				}
 			}
 			

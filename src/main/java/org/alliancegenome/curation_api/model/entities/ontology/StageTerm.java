@@ -4,6 +4,9 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.hibernate.envers.Audited;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
@@ -11,6 +14,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = WBLSTerm.class, name = "WBLSTerm"),
+	@JsonSubTypes.Type(value = FBDVTerm.class, name = "FBDVTerm"),
+	@JsonSubTypes.Type(value = MMUSDVTerm.class, name = "MMUSDVTerm"),
+	@JsonSubTypes.Type(value = XBSTerm.class, name = "XBSTerm"),
+	@JsonSubTypes.Type(value = ZFSTerm.class, name = "ZFSTerm")
+})
 @Audited
 @Entity
 @Data

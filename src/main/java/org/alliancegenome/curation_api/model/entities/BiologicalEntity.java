@@ -27,7 +27,7 @@ import lombok.ToString;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"), @JsonSubTypes.Type(value = Allele.class, name = "Allele"),
-	@JsonSubTypes.Type(value = Gene.class, name = "Gene") })
+	@JsonSubTypes.Type(value = Gene.class, name = "Gene"), @JsonSubTypes.Type(value = Variant.class, name = "Variant") })
 @Audited
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
