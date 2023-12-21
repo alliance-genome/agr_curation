@@ -26,6 +26,15 @@ export const AlleleGeneAssociationsFormTable = ({
 }) => {
   const [rows, setRows] = useState(5);
   const [first, setFirst] = useState(0);
+  const [filters, setFilters] = useState({
+    "relation.name": { value: null, matchMode: "in" },
+    "objectGene.curie": { value: null, matchMode: "contains" },
+    "relatedNote.freeText": { value: null, matchMode: "contains" },
+    "evidenceCode.curie": { value: null, matchMode: "contains" },
+    "evidenceCurieSearchFilter": { value: null, matchMode: "contains" },
+    "updatedBy.uniqueId": { value: null, matchMode: "startsWith" },
+    "dateUpdated": { value: null, matchMode: "startsWith" }
+});
 
   const [relatedNotesData, setRelatedNotesData] = useState({
     relatedNotes: [],
@@ -39,10 +48,14 @@ export const AlleleGeneAssociationsFormTable = ({
     setFirst(options.first);
   }
 
+  const onFilter = (options) => {
+    setFilters(options.filters);
+  }
+
   return (
     <>
       <DataTable value={alleleGeneAssociations} dataKey="dataKey" showGridlines editMode='row'
-        removableSort filterDisplay='row' onPage={onPage}
+        removableSort filterDisplay='row' onPage={onPage} onFilter={onFilter} filters={filters} size="small"
         editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}
         paginator paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} first={first} rowsPerPageOptions={[5, 10, 20, 50]}
@@ -68,7 +81,6 @@ export const AlleleGeneAssociationsFormTable = ({
           sortable
           filterField="relation.name"
           sortField="relation.name"
-          filterMatchMode="in"
           showFilterMenu={false}
           filterElement={(props) => {
             return <RelationshipFilterTemplate options={props} alleleGeneAssociations={alleleGeneAssociations} />
@@ -90,7 +102,6 @@ export const AlleleGeneAssociationsFormTable = ({
           filterField="objectGene.curie"
           sortField="objectGene.curie"
           showFilterMenu={false}
-          filterMatchMode='contains'
         />
         <Column
           editor={(props) => {
@@ -106,7 +117,6 @@ export const AlleleGeneAssociationsFormTable = ({
           field="relatedNote" header="Note" headerClassName='surface-0'
           filter
           filterField="relatedNote.freeText"
-          filterMatchMode='contains'
           showFilterMenu={false}
           sortable
           sortField="relatedNote.freeText"
@@ -124,7 +134,6 @@ export const AlleleGeneAssociationsFormTable = ({
           filterField="evidenceCode.curie"
           sortField="evidenceCode.curie"
           showFilterMenu={false}
-          filterMatchMode='contains'
           field="evidenceCode" header="Evidence Code" headerClassName='surface-0'
         />
         <Column
@@ -135,7 +144,7 @@ export const AlleleGeneAssociationsFormTable = ({
               onChange={evidenceOnChangeHandler}
             />;
           }}
-          filter filterField='evidenceCurieSearchFilter' filterMatchMode='contains' showFilterMenu={false}
+          filter filterField='evidenceCurieSearchFilter' showFilterMenu={false}
           field="evidence.curie" sortable sortField="evidenceCurieSearchFilter" header="Evidence" headerClassName='surface-0' />
         <Column field="updatedBy.uniqueId" header="Updated By" />
         <Column field="dateUpdated" header="Date Updated" />
