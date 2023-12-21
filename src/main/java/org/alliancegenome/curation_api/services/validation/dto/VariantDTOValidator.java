@@ -52,7 +52,8 @@ public class VariantDTOValidator extends BaseDTOValidator {
 			SearchResponse<Variant> response = variantDAO.findByField("modEntityId", dto.getModEntityId());
 			if (response != null && response.getSingleResult() != null)
 				variant = response.getSingleResult();
-		} else {
+		}
+		if (variant == null) {
 			if (StringUtils.isBlank(dto.getModInternalId())) {
 				variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
 			} else {

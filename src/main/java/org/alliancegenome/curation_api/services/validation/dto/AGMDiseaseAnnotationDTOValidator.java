@@ -62,26 +62,29 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			if (agm == null) {
 				adaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ")");
 			} else {
-				String annotationId;
-				String identifyingField;
 				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAgmIdentifier(), refCurie);
-				
+				SearchResponse<AGMDiseaseAnnotation> annotationList;
+				Boolean annotationFound = false;
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
-					annotationId = dto.getModEntityId();
-					annotation.setModEntityId(annotationId);
-					identifyingField = "modEntityId";
-				} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
-					annotationId = dto.getModInternalId();
-					annotation.setModInternalId(annotationId);
-					identifyingField = "modInternalId";
-				} else {
-					annotationId = uniqueId;
-					identifyingField = "uniqueId";
+					annotationList = agmDiseaseAnnotationDAO.findByField("modEntityId", dto.getModEntityId());
+					if (annotationList != null && annotationList.getSingleResult() != null) {
+						annotation = annotationList.getSingleResult();
+						annotationFound = true;
+					}
 				}
-
-				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
-				if (annotationList != null && annotationList.getResults().size() > 0) {
-					annotation = annotationList.getResults().get(0);
+				annotation.setModEntityId(dto.getModEntityId());
+				if (!annotationFound && StringUtils.isNotBlank(dto.getModInternalId())) {
+					annotationList = agmDiseaseAnnotationDAO.findByField("modInternalId", dto.getModInternalId());
+					if (annotationList != null && annotationList.getSingleResult() != null) {
+						annotation = annotationList.getSingleResult();
+						annotationFound = true;
+					}
+				}
+				annotation.setModInternalId(dto.getModInternalId());
+				if (!annotationFound){
+					annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
+					if (annotationList != null && annotationList.getSingleResult() != null)
+						annotation = annotationList.getSingleResult();
 				}
 				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(agm);

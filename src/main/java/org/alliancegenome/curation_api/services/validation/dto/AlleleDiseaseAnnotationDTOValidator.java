@@ -56,26 +56,29 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			if (allele == null) {
 				adaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
 			} else {
-				String annotationId;
-				String identifyingField;
 				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAlleleIdentifier(), refCurie);
-				
+				SearchResponse<AlleleDiseaseAnnotation> annotationList;
+				Boolean annotationFound = false;
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
-					annotationId = dto.getModEntityId();
-					annotation.setModEntityId(annotationId);
-					identifyingField = "modEntityId";
-				} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
-					annotationId = dto.getModInternalId();
-					annotation.setModInternalId(annotationId);
-					identifyingField = "modInternalId";
-				} else {
-					annotationId = uniqueId;
-					identifyingField = "uniqueId";
+					annotationList = alleleDiseaseAnnotationDAO.findByField("modEntityId", dto.getModEntityId());
+					if (annotationList != null && annotationList.getSingleResult() != null) {
+						annotation = annotationList.getSingleResult();
+						annotationFound = true;
+					}
 				}
-
-				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
-				if (annotationList != null && annotationList.getResults().size() > 0) {
-					annotation = annotationList.getResults().get(0);
+				annotation.setModEntityId(dto.getModEntityId());
+				if (!annotationFound && StringUtils.isNotBlank(dto.getModInternalId())) {
+					annotationList = alleleDiseaseAnnotationDAO.findByField("modInternalId", dto.getModInternalId());
+					if (annotationList != null && annotationList.getSingleResult() != null) {
+						annotation = annotationList.getSingleResult();
+						annotationFound = true;
+					}
+				}
+				annotation.setModInternalId(dto.getModInternalId());
+				if (!annotationFound){
+					annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
+					if (annotationList != null && annotationList.getSingleResult() != null)
+						annotation = annotationList.getSingleResult();
 				}
 				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(allele);
