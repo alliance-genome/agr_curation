@@ -51,11 +51,14 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	public DOTerm validateObject(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "object";
-		if (ObjectUtils.isEmpty(uiEntity.getObject()) || uiEntity.getObject().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getObject())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		DOTerm diseaseTerm = doTermDAO.find(uiEntity.getObject().getId());
+		
+		DOTerm diseaseTerm = null;
+		if (uiEntity.getObject().getId() != null)
+			diseaseTerm = doTermDAO.find(uiEntity.getObject().getId());
 		if (diseaseTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -99,7 +102,9 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		if (CollectionUtils.isNotEmpty(dbEntity.getEvidenceCodes()))
 			previousIds = dbEntity.getEvidenceCodes().stream().map(ECOTerm::getId).collect(Collectors.toList());
 		for (ECOTerm ec : uiEntity.getEvidenceCodes()) {
-			ECOTerm evidenceCode = ecoTermDAO.find(ec.getId());
+			ECOTerm evidenceCode = null;
+			if (ec.getId() != null)
+				evidenceCode = ecoTermDAO.find(ec.getId());
 			if (evidenceCode == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -126,7 +131,9 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		if (CollectionUtils.isNotEmpty(dbEntity.getWith()))
 			previousIds = dbEntity.getWith().stream().map(Gene::getId).collect(Collectors.toList());
 		for (Gene wg : uiEntity.getWith()) {
-			Gene withGene = geneDAO.find(wg.getId());
+			Gene withGene = null;
+			if (wg.getId() != null)
+				withGene = geneDAO.find(wg.getId());
 			if (withGene == null || withGene.getModEntityId() == null || !withGene.getModEntityId().startsWith("HGNC:")) {
 				addMessageResponse("with", ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -187,8 +194,9 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		if (CollectionUtils.isNotEmpty(dbEntity.getDiseaseGeneticModifiers()))
 			previousIds = dbEntity.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getId).collect(Collectors.toList());
 		for (BiologicalEntity modifier : uiEntity.getDiseaseGeneticModifiers()) {
-			BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(modifier.getId());
-		
+			BiologicalEntity diseaseGeneticModifier = null;
+			if (modifier.getId() != null)
+				diseaseGeneticModifier = biologicalEntityDAO.find(modifier.getId());
 			if (diseaseGeneticModifier == null) {
 				addMessageResponse("diseaseGeneticModifiers", ValidationConstants.INVALID_MESSAGE);
 				return null;

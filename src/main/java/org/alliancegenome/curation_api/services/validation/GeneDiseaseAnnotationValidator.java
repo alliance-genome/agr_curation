@@ -84,12 +84,14 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || uiEntity.getSubject().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Gene subjectEntity = geneDAO.find(uiEntity.getSubject().getId());
+		Gene subjectEntity = null;
+		if (uiEntity.getSubject().getId() != null)
+			subjectEntity = geneDAO.find(uiEntity.getSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -127,10 +129,12 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		if (uiEntity.getSgdStrainBackground() == null || uiEntity.getSgdStrainBackground().getId() == null)
+		if (ObjectUtils.isEmpty(uiEntity.getSgdStrainBackground()))
 			return null;
 
-		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getId());
+		AffectedGenomicModel sgdStrainBackground = null;
+		if (uiEntity.getSgdStrainBackground().getId() != null)
+			sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getId());
 		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
 			addMessageResponse("sgdStrainBackground", ValidationConstants.INVALID_MESSAGE);
 			return null;

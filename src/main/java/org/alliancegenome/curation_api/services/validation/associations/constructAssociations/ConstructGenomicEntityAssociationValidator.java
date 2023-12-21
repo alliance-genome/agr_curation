@@ -109,7 +109,9 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 			return null;
 		}
 
-		Construct subjectEntity = constructDAO.find(uiEntity.getSubject().getId());
+		Construct subjectEntity = null;
+		if (uiEntity.getSubject().getId() != null)
+			subjectEntity = constructDAO.find(uiEntity.getSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -130,7 +132,9 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 			return null;
 		}
 
-		GenomicEntity objectEntity = genomicEntityDAO.find(uiEntity.getObject().getId());
+		GenomicEntity objectEntity = null;
+		if (uiEntity.getObject().getId() != null)
+			objectEntity = genomicEntityDAO.find(uiEntity.getObject().getId());
 		if (objectEntity == null) {
 			addMessageResponse("object", ValidationConstants.INVALID_MESSAGE);
 			return null;

@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -14,19 +13,15 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -113,11 +108,13 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 	
 	public SOTerm validateVariantType(Variant uiEntity, Variant dbEntity) {
 		String field = "variantType";
-		if (ObjectUtils.isEmpty(uiEntity.getVariantType()) || uiEntity.getVariantType().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getVariantType())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		SOTerm variantType = soTermDAO.find(uiEntity.getVariantType().getId());
+		SOTerm variantType = null;
+		if (uiEntity.getVariantType().getId() != null)
+			variantType = soTermDAO.find(uiEntity.getVariantType().getId());
 		if (variantType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -149,10 +146,12 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 	
 	public SOTerm validateSourceGeneralConsequence(Variant uiEntity, Variant dbEntity) {
 		String field = "sourceGeneralConsequence";
-		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence()) || uiEntity.getSourceGeneralConsequence().getId() == null)
+		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence()))
 			return null;
 		
-		SOTerm sourceGeneralConsequence = soTermDAO.find(uiEntity.getSourceGeneralConsequence().getId());
+		SOTerm sourceGeneralConsequence = null;
+		if (uiEntity.getSourceGeneralConsequence().getId() != null)
+			sourceGeneralConsequence = soTermDAO.find(uiEntity.getSourceGeneralConsequence().getId());
 		if (sourceGeneralConsequence == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

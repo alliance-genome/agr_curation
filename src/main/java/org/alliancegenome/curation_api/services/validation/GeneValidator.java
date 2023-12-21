@@ -2,17 +2,13 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
@@ -26,6 +22,7 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneS
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationValidator;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -138,10 +135,12 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 	}
 
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {
-		if (uiEntity.getGeneType() == null)
+		if (ObjectUtils.isEmpty(uiEntity.getGeneType()))
 			return null;
 
-		SOTerm soTerm = soTermDAO.find(uiEntity.getGeneType().getId());
+		SOTerm soTerm = null;
+		if (uiEntity.getGeneType().getId() != null)
+			soTerm = soTermDAO.find(uiEntity.getGeneType().getId());
 		if (soTerm == null) {
 			addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
 			return null;

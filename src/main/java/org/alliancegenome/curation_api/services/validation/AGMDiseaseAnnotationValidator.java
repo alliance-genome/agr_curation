@@ -19,7 +19,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
@@ -103,12 +102,14 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private AffectedGenomicModel validateSubject(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || uiEntity.getSubject().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		AffectedGenomicModel subjectEntity = affectedGenomicModelDAO.find(uiEntity.getSubject().getId());
+		AffectedGenomicModel subjectEntity = null;
+		if (uiEntity.getSubject().getId() != null)
+			subjectEntity = affectedGenomicModelDAO.find(uiEntity.getSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -127,7 +128,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		if (uiEntity.getInferredGene() == null)
 			return null;
 
-		Gene inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
+		Gene inferredGene = null;
+		if (uiEntity.getInferredGene().getId() != null)
+			inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
 		if (inferredGene == null) {
 			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -150,7 +153,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes()))
 			previousIds = dbEntity.getAssertedGenes().stream().map(Gene::getId).collect(Collectors.toList());
 		for (Gene gene : uiEntity.getAssertedGenes()) {
-			Gene assertedGene = geneDAO.find(gene.getId());
+			Gene assertedGene = null;
+			if (gene.getId() != null)
+				assertedGene = geneDAO.find(gene.getId());
 			if (assertedGene == null) {
 				addMessageResponse("assertedGenes", ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -169,7 +174,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		if (uiEntity.getInferredAllele() == null)
 			return null;
 
-		Allele inferredAllele = alleleDAO.find(uiEntity.getInferredAllele().getId());
+		Allele inferredAllele = null;
+		if (uiEntity.getInferredAllele().getId() != null)
+			inferredAllele = alleleDAO.find(uiEntity.getInferredAllele().getId());
 		if (inferredAllele == null) {
 			addMessageResponse("inferredAllele", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -187,7 +194,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		if (uiEntity.getAssertedAllele() == null)
 			return null;
 
-		Allele assertedAllele = alleleDAO.find(uiEntity.getAssertedAllele().getId());
+		Allele assertedAllele = null;
+		if (uiEntity.getAssertedAllele().getId() != null)
+			assertedAllele = alleleDAO.find(uiEntity.getAssertedAllele().getId());
 		if (assertedAllele == null) {
 			addMessageResponse("assertedAllele", ValidationConstants.INVALID_MESSAGE);
 			return null;

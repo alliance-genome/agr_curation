@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -110,10 +111,12 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 
 	public PhenotypeTerm validatePhenotypeTerm(AlleleFunctionalImpactSlotAnnotation uiEntity, AlleleFunctionalImpactSlotAnnotation dbEntity) {
 		String field = "phenotypeTerm";
-		if (uiEntity.getPhenotypeTerm() == null)
+		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm()))
 			return null;
 		
-		PhenotypeTerm phenotypeTerm = phenotypeTermDAO.find(uiEntity.getPhenotypeTerm().getId());
+		PhenotypeTerm phenotypeTerm = null;
+		if (uiEntity.getPhenotypeTerm().getId() != null)
+			phenotypeTerm = phenotypeTermDAO.find(uiEntity.getPhenotypeTerm().getId());
 		if (phenotypeTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

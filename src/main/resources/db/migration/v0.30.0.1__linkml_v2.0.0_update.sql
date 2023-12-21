@@ -985,6 +985,7 @@ UPDATE association t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AN
 UPDATE atpterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE biologicalentity t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
 UPDATE biologicalentity t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE biologicalentity t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
 UPDATE bspoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE bulkfmsload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
 UPDATE bulkload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';

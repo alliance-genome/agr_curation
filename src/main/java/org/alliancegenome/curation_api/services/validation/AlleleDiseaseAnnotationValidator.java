@@ -92,12 +92,14 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	}
 
 	private Allele validateSubject(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || uiEntity.getSubject().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getId());
+		Allele subjectEntity = null;
+		if (uiEntity.getSubject().getId() != null)
+			subjectEntity = alleleDAO.find(uiEntity.getSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -115,7 +117,9 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		if (uiEntity.getInferredGene() == null)
 			return null;
 
-		Gene inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
+		Gene inferredGene = null;
+		if (uiEntity.getInferredGene().getId() != null)
+			inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
 		if (inferredGene == null) {
 			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -138,7 +142,9 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes()))
 			previousIds = dbEntity.getAssertedGenes().stream().map(Gene::getId).collect(Collectors.toList());
 		for (Gene gene : uiEntity.getAssertedGenes()) {
-			Gene assertedGene = geneDAO.find(gene.getId());
+			Gene assertedGene = null;
+			if (gene.getId() != null)
+				assertedGene = geneDAO.find(gene.getId());
 			if (assertedGene == null) {
 				addMessageResponse("assertedGenes", ValidationConstants.INVALID_MESSAGE);
 				return null;

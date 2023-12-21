@@ -79,12 +79,14 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	
 	private Allele validateSubject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
 		String field = "subject";
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || uiEntity.getSubject().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getId());
+		Allele subjectEntity = null;
+		if (uiEntity.getSubject().getId() != null)
+			subjectEntity = alleleDAO.find(uiEntity.getSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -100,12 +102,14 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	}
 
 	private Gene validateObject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getObject()) || uiEntity.getObject().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getObject())) {
 			addMessageResponse("object", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Gene objectEntity = geneDAO.find(uiEntity.getObject().getId());
+		Gene objectEntity = null;
+		if (uiEntity.getObject().getId() != null)
+			objectEntity = geneDAO.find(uiEntity.getObject().getId());
 		if (objectEntity == null) {
 			addMessageResponse("object", ValidationConstants.INVALID_MESSAGE);
 			return null;

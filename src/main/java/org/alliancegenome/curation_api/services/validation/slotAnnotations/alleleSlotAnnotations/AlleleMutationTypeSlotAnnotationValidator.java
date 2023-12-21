@@ -85,7 +85,9 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 		if (CollectionUtils.isNotEmpty(dbEntity.getMutationTypes()))
 			previousIds = dbEntity.getMutationTypes().stream().map(SOTerm::getId).collect(Collectors.toList());
 		for (SOTerm mt : uiEntity.getMutationTypes()) {
-			SOTerm mutationType = soTermDAO.find(mt.getId());
+			SOTerm mutationType = null;
+			if (mt.getId() != null)
+				mutationType = soTermDAO.find(mt.getId());
 			if (mutationType == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;

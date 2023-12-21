@@ -127,11 +127,13 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ZECOTerm validateConditionClass(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionClass";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionClass()) || uiEntity.getConditionClass().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionClass())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		ZECOTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getId());
+		ZECOTerm zecoTerm = null;
+		if (uiEntity.getConditionClass().getId() != null)
+			zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getId());
 		if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -144,10 +146,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ExperimentalConditionOntologyTerm validateConditionId(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionId";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionId()) || uiEntity.getConditionId().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionId()))
 			return null;
-		}
-		ExperimentalConditionOntologyTerm ecOntologyTerm = ecOntologyTermDAO.find(uiEntity.getConditionId().getId());
+		ExperimentalConditionOntologyTerm ecOntologyTerm = null;
+		if (uiEntity.getConditionId().getId() != null)
+			ecOntologyTerm = ecOntologyTermDAO.find(uiEntity.getConditionId().getId());
 		if (ecOntologyTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -160,10 +163,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public GOTerm validateConditionGeneOntology(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionGeneOntology";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionGeneOntology()) || uiEntity.getConditionGeneOntology().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionGeneOntology()))
 			return null;
-		}
-		GOTerm goTerm = goTermDAO.find(uiEntity.getConditionGeneOntology().getId());
+		GOTerm goTerm = null;
+		if (uiEntity.getConditionGeneOntology().getId() != null)
+			goTerm = goTermDAO.find(uiEntity.getConditionGeneOntology().getId());
 		if (goTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -176,10 +180,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public AnatomicalTerm validateConditionAnatomy(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionAnatomy";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionAnatomy()) || uiEntity.getConditionAnatomy().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionAnatomy()))
 			return null;
-		}
-		AnatomicalTerm anatomicalTerm = anatomicalTermDAO.find(uiEntity.getConditionAnatomy().getId());
+		AnatomicalTerm anatomicalTerm = null;
+		if (uiEntity.getConditionAnatomy().getId() != null)
+			anatomicalTerm = anatomicalTermDAO.find(uiEntity.getConditionAnatomy().getId());
 		if (anatomicalTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -192,10 +197,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ChemicalTerm validateConditionChemical(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionChemical";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionChemical()) || uiEntity.getConditionChemical().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionChemical()))
 			return null;
-		}
-		ChemicalTerm chemicalTerm = chemicalTermDAO.find(uiEntity.getConditionChemical().getId());
+		ChemicalTerm chemicalTerm = null;
+		if (uiEntity.getConditionChemical().getId() != null)
+			chemicalTerm = chemicalTermDAO.find(uiEntity.getConditionChemical().getId());
 		if (chemicalTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -208,10 +214,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public NCBITaxonTerm validateConditionTaxon(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionTaxon";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionTaxon()) || uiEntity.getConditionTaxon().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getConditionTaxon()))
 			return null;
-		}
-		NCBITaxonTerm taxonTerm = ncbiTaxonTermDAO.find(uiEntity.getConditionTaxon().getId());
+		NCBITaxonTerm taxonTerm = null;
+		if (uiEntity.getConditionTaxon().getId() != null)
+			taxonTerm = ncbiTaxonTermDAO.find(uiEntity.getConditionTaxon().getId());
 		if (taxonTerm == null) {
 			taxonTerm = ncbiTaxonTermService.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
 		}
