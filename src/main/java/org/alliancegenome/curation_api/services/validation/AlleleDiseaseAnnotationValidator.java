@@ -19,6 +19,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -82,6 +83,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 
 		if (response.hasErrors()) {
+			Log.info("ERROR: " + response.getErrorMessages());
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}

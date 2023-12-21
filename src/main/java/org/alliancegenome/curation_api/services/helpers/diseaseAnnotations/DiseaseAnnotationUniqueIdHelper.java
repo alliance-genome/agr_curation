@@ -64,7 +64,8 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 			uniqueId.addList(annotationDTO.getConditionRelationDtos().stream().map(conditionDTO -> {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
 				gen.add(conditionDTO.getConditionRelationTypeName());
-				gen.add(conditionDTO.getConditionDtos().stream().map(DiseaseAnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+				if (CollectionUtils.isNotEmpty(conditionDTO.getConditionDtos()))
+					gen.add(conditionDTO.getConditionDtos().stream().map(DiseaseAnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
 				return gen.getUniqueId();
 			}).collect(Collectors.toList()));
 		}

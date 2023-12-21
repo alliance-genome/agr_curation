@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.services.validation.base.AuditedObjectVal
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -116,6 +117,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 		if (response.hasErrors()) {
 			if (throwError) {
+				Log.info("ERROR: " + response.getErrorMessages());
 				response.setErrorMessage(errorMessage);
 				throw new ApiErrorException(response);
 			} else {

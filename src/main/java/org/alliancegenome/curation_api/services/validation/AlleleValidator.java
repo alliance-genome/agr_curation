@@ -152,13 +152,13 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(uiEntity, dbEntity);
 		AlleleDatabaseStatusSlotAnnotation databaseStatus = validateAlleleDatabaseStatus(uiEntity, dbEntity);
-		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
 		List<AlleleSynonymSlotAnnotation> synonyms = validateAlleleSynonyms(uiEntity, dbEntity);
 		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = validateAlleleSecondaryIds(uiEntity, dbEntity);
-		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
 		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
-
+		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
+		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
+		
 		List<AlleleGeneAssociation> geneAssociations = null;
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
 			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
@@ -189,14 +189,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			databaseStatus.setSingleAllele(dbEntity);
 		dbEntity.setAlleleDatabaseStatus(databaseStatus);
 		
-		if (dbEntity.getAlleleNomenclatureEvents() != null)
-			dbEntity.getAlleleNomenclatureEvents().clear();
-		if (nomenclatureEvents != null) {
-			if (dbEntity.getAlleleNomenclatureEvents() == null)
-				dbEntity.setAlleleNomenclatureEvents(new ArrayList<>());
-			dbEntity.getAlleleNomenclatureEvents().addAll(nomenclatureEvents);
-		}
-		
 		if (dbEntity.getAlleleSynonyms() != null)
 			dbEntity.getAlleleSynonyms().clear();
 		if (synonyms != null) {
@@ -213,14 +205,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			dbEntity.getAlleleSecondaryIds().addAll(secondaryIds);
 		}
 		
-		if (dbEntity.getAlleleMutationTypes() != null)
-			dbEntity.getAlleleMutationTypes().clear();
-		if (mutationTypes != null) {
-			if (dbEntity.getAlleleMutationTypes() == null)
-				dbEntity.setAlleleMutationTypes(new ArrayList<>());
-			dbEntity.getAlleleMutationTypes().addAll(mutationTypes);
-		}
-		
 		if (dbEntity.getAlleleInheritanceModes() != null)
 			dbEntity.getAlleleInheritanceModes().clear();
 		if (inheritanceModes != null) {
@@ -235,6 +219,22 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			if (dbEntity.getAlleleFunctionalImpacts() == null)
 				dbEntity.setAlleleFunctionalImpacts(new ArrayList<>());
 			dbEntity.getAlleleFunctionalImpacts().addAll(functionalImpacts);
+		}
+		
+		if (dbEntity.getAlleleMutationTypes() != null)
+			dbEntity.getAlleleMutationTypes().clear();
+		if (mutationTypes != null) {
+			if (dbEntity.getAlleleMutationTypes() == null)
+				dbEntity.setAlleleMutationTypes(new ArrayList<>());
+			dbEntity.getAlleleMutationTypes().addAll(mutationTypes);
+		}
+		
+		if (dbEntity.getAlleleNomenclatureEvents() != null)
+			dbEntity.getAlleleNomenclatureEvents().clear();
+		if (nomenclatureEvents != null) {
+			if (dbEntity.getAlleleNomenclatureEvents() == null)
+				dbEntity.setAlleleNomenclatureEvents(new ArrayList<>());
+			dbEntity.getAlleleNomenclatureEvents().addAll(nomenclatureEvents);
 		}
 		
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView

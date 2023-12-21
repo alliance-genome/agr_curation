@@ -108,7 +108,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 			List<ConditionRelation> relations = new ArrayList<>();
 			for (ConditionRelationDTO conditionRelationDTO : dto.getConditionRelationDtos()) {
 				if (StringUtils.isNotBlank(conditionRelationDTO.getHandle())) {
-					if (!conditionRelationDTO.getReferenceCurie().equals(dto.getReferenceCurie())) {
+					if (!StringUtils.equals(conditionRelationDTO.getReferenceCurie(), dto.getReferenceCurie())) {
 						annotResponse.addErrorMessage("condition_relation_dtos - reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + conditionRelationDTO.getReferenceCurie() + ")");
 					}
 				}

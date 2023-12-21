@@ -137,7 +137,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 
 		RestAssured.given().
 			when().
-			get(alleleGetEndpoint + allele.getCurie()).
+			get(alleleGetEndpoint + allele.getModEntityId()).
 			then().
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
@@ -147,7 +147,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(geneGetEndpoint + gene.getCurie()).
+			get(geneGetEndpoint + gene.getModEntityId()).
 			then().
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
