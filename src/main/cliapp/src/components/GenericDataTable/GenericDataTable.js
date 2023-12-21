@@ -133,7 +133,7 @@ export const GenericDataTable = (props) => {
 			return filteredColumns.map((col) => {
 				if(col){
 					return <Column
-						style={{'minWidth':`${tableState.columnWidths[col.field]}vw`, 'maxWidth': `${tableState.columnWidths[col.field]}vw`, padding: '5px 10px 5px' }}
+						style={{'minWidth':`${tableState.columnWidths[col.field]}vw`, 'maxWidth': `${tableState.columnWidths[col.field]}vw`, padding: '4px 10px 4px' }}
 						headerClassName='surface-0'
 						columnKey={col.field}
 						key={col.field}

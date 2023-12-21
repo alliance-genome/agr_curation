@@ -175,7 +175,11 @@ export const DiseaseAnnotationsTable = () => {
 					</EllipsisTableCell>
 				);
 			};
-			return <ListTableCell template={listTemplate} listData={sortedWithGenes}/>
+			return(
+				<div className= "-my-4 p-1">
+					<ListTableCell template={listTemplate} listData={sortedWithGenes}/>
+				</div>
+			);
 		}
 	};
 
@@ -192,7 +196,7 @@ export const DiseaseAnnotationsTable = () => {
 
 			return (
 				<>
-					<div className={`a${rowData.id}${rowData.assertedGenes[0].curie.replace(':', '')}`}>
+					<div className={`-my-4 p-1 a${rowData.id}${rowData.assertedGenes[0].curie.replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={sortedAssertedGenes}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${rowData.assertedGenes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
@@ -215,7 +219,7 @@ export const DiseaseAnnotationsTable = () => {
 			};
 			return (
 				<>
-					<div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ margin: '-30px 0px -30px 0px', padding: '1rem ' }}>
+					<div className={`-my-4 p-1 a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
@@ -348,7 +352,11 @@ export const DiseaseAnnotationsTable = () => {
 		if (rowData && rowData.diseaseQualifiers) {
 			const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
 			const listTemplate = (item) => item.name;
-			return <ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers}/>
+			return(
+				<div className= "-my-4 p-1">
+					<ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers}/>
+				</div>
+			)
 		}
 	};
 
@@ -363,7 +371,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-					<span style={{ textDecoration: 'underline' }}>
+					<span className="-my-4 p-1 underline">
 						{`Notes(${rowData.relatedNotes.length})`}
 					</span>
 				</Button>
@@ -412,7 +420,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span style={{ textDecoration: 'underline' }}>
+					<span className= "-my-4 p-1 underline">
 						{`Conditions (${rowData.conditionRelations.length})`}
 					</span>
 				</Button>
@@ -468,7 +476,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span style={{ textDecoration: 'underline' }}>
+					<span class= "-my-4 p-1 underline">
 						{handle && handle}
 					</span>
 				</Button>
@@ -1154,7 +1162,7 @@ export const DiseaseAnnotationsTable = () => {
 			};
 			return (
 				<>
-					<div className={`a${rowData.id}${rowData.diseaseGeneticModifiers[0].curie.replace(':', '')}`}>
+					<div className={`-my-4 p-1 a${rowData.id}${rowData.diseaseGeneticModifiers[0].curie.replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${rowData.diseaseGeneticModifiers[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
