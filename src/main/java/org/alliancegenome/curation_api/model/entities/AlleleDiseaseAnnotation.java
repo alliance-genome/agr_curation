@@ -50,14 +50,14 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_alleledasubject"))
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@Fetch(FetchMode.JOIN)
 	private Allele subject;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@Fetch(FetchMode.JOIN)
 	private Gene inferredGene;
 
@@ -65,7 +65,7 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = { @Index(columnList = "allelediseaseannotation_id"), @Index(columnList = "assertedgenes_curie")})
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> assertedGenes;
 
 	@Transient

@@ -49,7 +49,7 @@ public class BiologicalEntity extends CurieAuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
 	

@@ -16,7 +16,6 @@ import javax.persistence.Table;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -82,21 +81,21 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_id_index", columnList = "conditionrelations_id")})
 	private List<ConditionRelation> conditionRelations;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_id_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	protected DataProvider dataProvider;
 
 }

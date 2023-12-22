@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.bulkupload;
 
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
