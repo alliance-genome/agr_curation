@@ -31,8 +31,10 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	private String errorMessage;
 	
 	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociation(AlleleGeneAssociation uiEntity) {
+		System.out.println(uiEntity);
 		AlleleGeneAssociation geneAssociation = validateAlleleGeneAssociation(uiEntity, false, false);
 		response.setEntity(geneAssociation);
+		System.out.println(response);
 		return response;
 	}
 

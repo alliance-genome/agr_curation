@@ -32,7 +32,7 @@ const initialAlleleState = {
 			field: 'alleleSynonyms',
 			endpoint: 'allelesynonymslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table",
 		},
@@ -40,7 +40,7 @@ const initialAlleleState = {
 			field: 'alleleFullName',
 			endpoint: 'allelefullnameslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "object",
 		},
@@ -48,7 +48,7 @@ const initialAlleleState = {
 			field: 'alleleSecondaryIds',
 			endpoint: 'allelesecondaryidslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table"
 		},
@@ -56,7 +56,7 @@ const initialAlleleState = {
 			field: 'alleleSymbol',
 			endpoint: 'allelesymbolslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "object",
 		},
@@ -64,7 +64,7 @@ const initialAlleleState = {
 			field: 'alleleNomenclatureEvents',
 			endpoint: 'allelenomenclatureeventslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table",
 		},
@@ -72,7 +72,7 @@ const initialAlleleState = {
 			field: 'alleleMutationTypes',
 			endpoint: 'allelemutationtypeslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table",
 		},
@@ -80,7 +80,7 @@ const initialAlleleState = {
 			field: 'alleleInheritanceModes',
 			endpoint: 'alleleinheritancemodeslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table",
 		},
@@ -88,7 +88,7 @@ const initialAlleleState = {
 			field: 'alleleFunctionalImpacts',
 			endpoint: 'allelefunctionalimpactslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table",
 		},
@@ -96,7 +96,7 @@ const initialAlleleState = {
 			field: 'alleleGermlineTransmissionStatus',
 			endpoint: 'allelegermlinetransmissionstatusslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "object",
 		},
@@ -104,7 +104,7 @@ const initialAlleleState = {
 			field: 'alleleDatabaseStatus',
 			endpoint: 'alleledatabasestatusslotannotation',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "object",
 		},
@@ -112,14 +112,14 @@ const initialAlleleState = {
 			field: 'relatedNotes',
 			endpoint: 'note',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table",
 		},
 		references: {
 			field: 'references',
 			show: false,
-			errorMessages: [],
+			errorMessages: {},
 			editingRows: {},
 			type: "table",
 		},
@@ -248,7 +248,8 @@ const alleleReducer = (draft, action) => {
 			states = Object.values(draft.entityStates);
 
 			states.forEach((state) => {
-				state.errorMessages = [];
+				state.errorMessages = {};
+
 			})
 
 			break;

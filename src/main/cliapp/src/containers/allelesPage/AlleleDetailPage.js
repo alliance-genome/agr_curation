@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Divider } from 'primereact/divider';
@@ -63,6 +63,10 @@ export default function AlleleDetailPage() {
 		return alleleService.saveAlleleDetail(allele);
 	});
 
+	useEffect(() => {
+		console.log("allele", alleleState.allele);
+	}, [alleleState.allele])
+
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		alleleDispatch({
@@ -80,14 +84,10 @@ export default function AlleleDetailPage() {
 
 		if(areUiErrors) return;
 
-		//todo: move or change logic
-		// const _allele = global.structuredClone(alleleState.allele);
-		// for(let i = 0; i < _allele.references.length; i++){
-		// 	delete _allele.references[i].dataKey;
-		// }
-		// console.log(JSON.parse(JSON.stringify(_allele.references)));
+		const _allele = stripOutDataKey(alleleState.allele);
 
-		alleleMutate(alleleState.allele, {
+		alleleMutate(_allele, {
+		// alleleMutate(alleleState.allele, {
 			onSuccess: () => {
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
@@ -416,3 +416,22 @@ export default function AlleleDetailPage() {
 };
 
 
+const stripOutDataKey = (allele) => {
+  const _allele = global.structuredClone(allele);
+  const entityKeys = Object.keys(_allele);
+
+  for(let i = 0; i < entityKeys.length; i++){
+    const entity = _allele[entityKeys[i]];
+
+    if(entity && typeof entity === "object"){
+      if(Array.isArray(entity)){
+        for(let ii = 0; ii < entity.length; ii++){
+          delete entity[ii].dataKey;
+        }
+      } else {
+        delete entity.dataKey;
+      }
+    }
+  }
+  return _allele;
+}
