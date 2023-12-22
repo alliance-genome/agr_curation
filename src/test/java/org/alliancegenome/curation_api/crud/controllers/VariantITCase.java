@@ -644,7 +644,7 @@ public class VariantITCase extends BaseITCase {
 		
 		Note note1 = createNote(noteType, "Test text", false, null);
 		Note note2 = createNote(noteType, "Test text", false, null);
-		variant.setRelatedNotes(List.of(note1, note2));	
+		variant.setRelatedNotes(List.of(note1, note2));
 		
 		RestAssured.given().
 			contentType("application/json").

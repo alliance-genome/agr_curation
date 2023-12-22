@@ -43,7 +43,7 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "genomicentity_curie", name = "genomicentity_crossreference_genomicentity_curie_index"),
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_id_index")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	private List<CrossReference> crossReferences;
 	
 	@IndexedEmbedded(includePaths = {"subject.curie", "subject.constructSymbol.displayText", "subject.constructSymbol.formatText",
