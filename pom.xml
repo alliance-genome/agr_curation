@@ -23,7 +23,7 @@
 		<okta.version>3.0.1</okta.version>
 		<okta.authn.version>2.0.0</okta.authn.version>
 		<okta-jwt.version>0.5.1</okta-jwt.version>
-		<quarkus.platform.version>2.16.11.Final</quarkus.platform.version>
+		<quarkus.platform.version>3.5.0</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
 	</properties>
 
@@ -136,10 +136,6 @@
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-elasticsearch-rest-high-level-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy</artifactId>
 		</dependency>
 		<dependency>
@@ -186,6 +182,11 @@
 
 		<dependency>
 			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-elasticsearch-rest-high-level-client</artifactId>
+			<version>3.2.7.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-openapi</artifactId>
 		</dependency>
 		<dependency>
@@ -209,11 +210,6 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-junit5-mockito</artifactId>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.quarkiverse.hibernatetypes</groupId>
-			<artifactId>quarkus-hibernate-types</artifactId>
-			<version>0.2.0</version>
 		</dependency>
 
 		<dependency>
@@ -287,7 +283,7 @@
 		<dependency>
 			<groupId>com.github.mmazi</groupId>
 			<artifactId>rescu</artifactId>
-			<version>2.1.0</version>
+			<version>3.0</version>
 		</dependency>
 
 		<dependency>
@@ -352,18 +348,30 @@
 			<artifactId>postgresql</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.10.2</version>
 		</dependency>
-		
+
 		<dependency>
-    		<groupId>org.jsoup</groupId>
-    		<artifactId>jsoup</artifactId>
-    		<version>1.13.1</version>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.13.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.slack.api</groupId>
+			<artifactId>slack-api-client</artifactId>
+			<version>1.36.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -1,5 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
+import { Message } from 'primereact/message';
+import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
@@ -32,7 +34,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
 export const AllelesTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
@@ -150,9 +152,23 @@ export const AllelesTable = () => {
 		}
 	};
 
+	const DetailMessage = ({curie, text, display}) => {
+		if (display) {
+			return (
+				<Message severity="info" text={<Link target="_blank" to={`allele/${curie}`}>{text}</Link>}/>
+			);
+		};
+		return null;
+	}
+
 	const referencesTemplate = (rowData) => {
 		if (rowData && rowData.references && rowData.references.length > 0) {
-			const refStrings = getRefStrings(rowData.references);
+			let refStrings = getRefStrings(rowData.references);
+			let displayDetailMessage = false;
+			if (refStrings.length > 5) {
+				refStrings = refStrings.slice(0,5);
+				displayDetailMessage = true;
+			}
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
@@ -164,10 +180,8 @@ export const AllelesTable = () => {
 				<>
 					<div className={`${rowData.curie.replace(':','')}${rowData.references[0].curie.replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={refStrings}/>
+						<DetailMessage curie={`${rowData.curie}`} display={displayDetailMessage} text="View all references on Allele Detail Page"/>
 					</div>
-					<Tooltip target={`.${rowData.curie.replace(':','')}${rowData.references[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={refStrings}/>
-					</Tooltip>
 				</>
 			);
 
@@ -1077,7 +1091,7 @@ export const AllelesTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
-			sortable: { isEnabled },
+			sortable:  true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
@@ -1085,7 +1099,7 @@ export const AllelesTable = () => {
 			header: "Name",
 			body: fullNameTemplate,
 			editor: (props) => fullNameEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
 		},
 		{
@@ -1093,7 +1107,7 @@ export const AllelesTable = () => {
 			header: "Symbol",
 			body: symbolTemplate,
 			editor: (props) => symbolEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
 		},
 		{
@@ -1101,7 +1115,7 @@ export const AllelesTable = () => {
 			header: "Synonyms",
 			body: synonymsTemplate,
 			editor: (props) => synonymsEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSynonymsFilterConfig,
 		},
 		{
@@ -1109,14 +1123,14 @@ export const AllelesTable = () => {
 			header: "Secondary IDs",
 			body: secondaryIdsTemplate,
 			editor: (props) => secondaryIdsEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
 		},
 		{
 			field: "alleleNomenclatureEvents.nomenclatureEvent.name",
 			header: "Nomenclature Events",
 			body: nomenclatureEventsTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
 			editor: (props) => nomenclatureEventsEditor(props),
 		},
@@ -1124,7 +1138,7 @@ export const AllelesTable = () => {
 			field: "taxon.name",
 			header: "Taxon",
 			body: taxonTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
@@ -1133,7 +1147,7 @@ export const AllelesTable = () => {
 			header: "Mutation Types",
 			body: mutationTypesTemplate,
 			editor: (props) => mutationTypesEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,
 		},
 		{
@@ -1141,7 +1155,7 @@ export const AllelesTable = () => {
 			header: "Functional Impacts",
 			body: functionalImpactsTemplate,
 			editor: (props) => functionalImpactsEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleFunctionalImpactsFilterConfig,
 		},
 		{
@@ -1149,7 +1163,7 @@ export const AllelesTable = () => {
 			header: "Germline Transmission Status",
 			body: germlineTransmissionStatusTemplate,
 			editor: (props) => germlineTransmissionStatusEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
 		},
 		{
@@ -1157,14 +1171,14 @@ export const AllelesTable = () => {
 			header: "Database Status",
 			body: databaseStatusTemplate,
 			editor: (props) => databaseStatusEditor(props),
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
 		},
 		{
 			field: "references.primaryCrossReferenceCurie",
 			header: "References",
 			body: referencesTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />
 		},
@@ -1172,14 +1186,14 @@ export const AllelesTable = () => {
 			field: "alleleInheritanceModes.inheritanceMode.name",
 			header: "Inheritance Modes",
 			body: inheritanceModesTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
 			editor: (props) => inheritanceModesEditor(props),
 		},
 		{
 			field: "inCollection.name",
 			header: "In Collection",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
 			editor: (props) => <InCollectionTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
@@ -1188,7 +1202,7 @@ export const AllelesTable = () => {
 			header: "Is Extinct",
 			body: isExtinctTemplate,
 			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
-			sortable: isEnabled,
+			sortable: true,
 			editor: (props) => (
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"isExtinct"} />
 			)
@@ -1204,33 +1218,33 @@ export const AllelesTable = () => {
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
@@ -1240,7 +1254,7 @@ export const AllelesTable = () => {
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: isEnabled,
+			sortable: true,
 			editor: (props) => (
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} />
 			)
@@ -1251,7 +1265,7 @@ export const AllelesTable = () => {
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: isEnabled,
+			sortable: true,
 			editor: (props) => (
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"} />
 			)
@@ -1285,8 +1299,8 @@ export const AllelesTable = () => {
 					isEditable={true}
 					hasDetails={true}
 					mutation={mutation}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}

@@ -19,21 +19,21 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-	const { 
-		tableName, 
-		isEnabled, 
-		aggregationFields, 
-		endpoint, 
-		columns, 
-		headerButtons, 
-		deletionEnabled, 
+	const {
+		tableName,
+		isInEditMode,
+		aggregationFields,
+		endpoint,
+		columns,
+		headerButtons,
+		deletionEnabled,
 		handleDuplication,
 		duplicationEnabled,
 		hasDetails=false,
-		dataKey = 'id', 
+		dataKey = 'id',
 		deprecateOption = false,
 		modReset = false,
-		highlightObsolete = true 
+		highlightObsolete = true
 	} = props;
 
 	const {
@@ -75,7 +75,7 @@ export const GenericDataTable = (props) => {
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 	const [allowDelete, setAllowDelete] = useState(false);
 
-	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+	const createMultiselectComponent = (tableState,defaultColumnNames,isInEditMode) => {
 		return (<MultiSelect
 				aria-label='columnToggle'
 				value={tableState.selectedColumnNames}
@@ -90,8 +90,9 @@ export const GenericDataTable = (props) => {
 					setSelectedColumnNames(orderedSelectedColumnNames)
 				}
 			}
-				style={{ width: '20em', textAlign: 'center' }}
-				disabled={!isEnabled}
+				className='w-20rem text-center'
+				disabled={isInEditMode}
+				maxSelectedLabels={4}
 		/>);
 	};
 
@@ -100,12 +101,12 @@ export const GenericDataTable = (props) => {
 				title = {tableName + " Table"}
 				tableState = {tableState}
 				defaultColumnNames = {defaultColumnNames}
-				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
-				buttons = {headerButtons ? headerButtons(!isEnabled) : undefined}
+				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isInEditMode)}
+				buttons = {headerButtons ? headerButtons(isInEditMode) : undefined}
 				tableStateConfirm = {tableStateConfirm}
 				setToModDefault = {setToModDefault}
 				resetTableState = {resetTableState}
-				isEnabled = {isEnabled}
+				isInEditMode = {isInEditMode}
 				modReset={modReset}
 		/>
 	);
@@ -114,7 +115,7 @@ export const GenericDataTable = (props) => {
 		return (
 			<FilterComponent
 				filterConfig={config}
-				isEnabled={isEnabled}
+				isInEditMode={isInEditMode}
 				onFilter={onFilter}
 				aggregationFields={aggregationFields}
 				tableState={tableState}
@@ -132,18 +133,19 @@ export const GenericDataTable = (props) => {
 			return filteredColumns.map((col) => {
 				if(col){
 					return <Column
-						style={{'minWidth':`${tableState.columnWidths[col.field]}vw`, 'maxWidth': `${tableState.columnWidths[col.field]}vw`}}
+						style={{'minWidth':`${tableState.columnWidths[col.field]}vw`, 'maxWidth': `${tableState.columnWidths[col.field]}vw`, padding: '4px 10px 4px' }}
 						headerClassName='surface-0'
 						columnKey={col.field}
 						key={col.field}
 						field={col.field}
 						header={col.header}
 						body={col.body}
-						sortable={isEnabled}
+						sortable={col.sortable && !isInEditMode}
 						filter
 						editor={col.editor}
 						showFilterMenu={false}
 						filterElement={() => filterComponentTemplate(col.filterConfig)}
+						headerStyle={{ padding: '1rem' }}
 					/>;
 				} else {
 					return null;
@@ -151,7 +153,7 @@ export const GenericDataTable = (props) => {
 			})
 		});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tableState, isEnabled]);
+	}, [tableState, isInEditMode]);
 
 	const rowEditorFilterNameHeader = (options) => {
 		return <div className="p-column-header-content"><span className="p-column-title">Filters</span></div>
@@ -186,7 +188,7 @@ export const GenericDataTable = (props) => {
 
 	const deleteAction = (props, disabled) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text" disabled={disabled}
+			<Button icon="pi pi-trash" className="p-button-text p-0 text-base" disabled={disabled}
 					onClick={() => showDeleteOrDeprecateDialog(props)}/>
 		);
 	}
@@ -259,52 +261,52 @@ export const GenericDataTable = (props) => {
 					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel}
 					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange}
 					sortMode="multiple" removableSort={true} onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-					onColReorder={colReorderHandler} reorderableColumns= {true} 
+					onColReorder={colReorderHandler} reorderableColumns= {true}
 					resizableColumns= {true} columnResizeMode="expand" showGridlines= {true} onColumnResizeEnd={handleColumnResizeEnd}
-					paginator={isEnabled} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
+					paginator={!isInEditMode} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} 
+					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 					rowClassName = {(props) => getRowClass(props)}>
 					{props.isEditable &&
-						<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
-							headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'
+						<Column field='rowEditor' rowEditor className={"p-text-center p-0 min-w-3rem max-w-3rem text-base"} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
+								bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0 w-3rem sticky'
 						/>
 					}
 					{deletionEnabled &&
-						<Column field="delete" 
-						editor={(props) => deleteAction(props, true)} 
-						body={(props) => deleteAction(props, !isEnabled)} filterElement={rowEditorFilterNameHeader}
-						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
-						frozen headerClassName='surface-0'/>
+						<Column field="delete"
+						editor={(props) => deleteAction(props, true)}
+						body={(props) => deleteAction(props, isInEditMode)} filterElement={rowEditorFilterNameHeader}
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{duplicationEnabled &&
-						<Column field="duplicate" 
-						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>} 
-						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={!isEnabled}/>} 
-						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
-						frozen headerClassName='surface-0'/>
+						<Column field="duplicate"
+						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>}
+						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode}/>}
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{hasDetails &&
-						<Column field="details" 
-						editor={(props) => <EntityDetailsAction curie={props.rowData?.curie} disabled={true}/>} 
-						body={(props) => <EntityDetailsAction curie={props?.curie} disabled={!isEnabled}/>} 
-						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
-						frozen headerClassName='surface-0'/>
+						<Column field="details"
+						editor={(props) => <EntityDetailsAction curie={props.rowData?.curie} disabled={true}/>}
+						body={(props) => <EntityDetailsAction curie={props?.curie} disabled={isInEditMode}/>}
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{columnList}
 				</DataTable>
 
-			 	<Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+			 	<Dialog visible={deleteDialog} className="w-30rem" header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
 					<div className="confirmation-content">
-						<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+						<i className="pi pi-exclamation-triangle mr-3 text-4xl" />
 						{<span>Warning: You are about to delete this data object from the database. This cannot be undone. Please confirm deletion or cancel.</span>}
 					</div>
 				</Dialog>
 
-				<Dialog visible={deprecateDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deprecateDialogFooter} onHide={hideDeprecateDialog}>
+				<Dialog visible={deprecateDialog} className="w-30rem" header="Confirm Deletion" modal footer={deprecateDialogFooter} onHide={hideDeprecateDialog}>
 					<div className="confirmation-content">
-						<p><i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />Warning: You are about to delete this data object from the database.  This cannot be undone.  Please confirm the following information or deprecate instead:</p><br/>
+						<p><i className="pi pi-exclamation-triangle mr-3 text-4xl" />Warning: You are about to delete this data object from the database.  This cannot be undone.  Please confirm the following information or deprecate instead:</p><br/>
 					</div>
 					<div>
 						<Checkbox onChange={e => setAllowDelete(!allowDelete)} checked={allowDelete}></Checkbox>
@@ -312,25 +314,25 @@ export const GenericDataTable = (props) => {
 					</div>
 				</Dialog>
 
-				<Dialog visible={errorDialog} style={{ width: '450px' }} header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
+				<Dialog visible={errorDialog} className="w-30rem" header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
 					<div className="error-message-dialog">
-						<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+						<i className="pi pi-ban mr-3 text-4xl" />
 						{<span>ERROR: The data object you are trying to delete is in use by other data objects. Remove data connections to all other data objects and try to delete again.</span>}
 					</div>
 					<hr/>
 					<div className="error-message-detail">
-						{<span style={{fontSize: '0.85rem'}}>{deletionErrorMessage}</span>}
+						{<span className="text-sm">{deletionErrorMessage}</span>}
 					</div>
 				</Dialog>
 
-				<Dialog visible={exceptionDialog} style={{ width: '550px' }} header="Exception" modal footer={exceptionDialogFooter} onHide={hideExceptionDialog}>
+				<Dialog visible={exceptionDialog} className="w-34rem" header="Exception" modal footer={exceptionDialogFooter} onHide={hideExceptionDialog}>
 					<div className="error-message-dialog">
-						<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+						<i className="pi pi-ban mr-3 text-4xl" />
 						{<span>Exception Occurred!!</span>}
 					</div>
 					<hr/>
 					<div className="error-message-detail">
-						{<span style={{fontSize: '0.85rem'}}>{exceptionMessage}</span>}
+						{<span className="text-sm">{exceptionMessage}</span>}
 					</div>
 				</Dialog>
 			</div>

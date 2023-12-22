@@ -6,6 +6,7 @@ import { processOptionalField } from "../../../utils/utils";
 
 export const FunctionalImpactsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
+  const functionalImpacts = global.structuredClone(state.allele?.alleleFunctionalImpacts);
 
   const createNewFunctionalImpactsHandler = (e) => {
     e.preventDefault();
@@ -63,7 +64,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     });
   };
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name); 
     dispatch({
       type: 'EDIT_ROW',
       entityType: 'alleleFunctionalImpacts',
@@ -95,7 +96,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     <FormTableWrapper
       table={
         <FunctionalImpactsFormTable
-          functionalImpacts={state.allele?.alleleFunctionalImpacts}
+          functionalImpacts={functionalImpacts}
           editingRows={state.entityStates.alleleFunctionalImpacts.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
@@ -110,7 +111,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
       }
       tableName="Functional Impacts"
       showTable={state.entityStates.alleleFunctionalImpacts.show}
-      button={<Button label="Add Functional Impact" onClick={createNewFunctionalImpactsHandler} className="w-6" />}
+      button={<Button label="Add Functional Impact" onClick={createNewFunctionalImpactsHandler} className="w-4 p-button-text" />}
     />
   );
 

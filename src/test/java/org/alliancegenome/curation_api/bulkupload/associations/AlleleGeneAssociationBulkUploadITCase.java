@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -77,7 +76,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
+			body("entity.objectGene.curie", is(geneCurie)).
 			body("entity.subject.curie", is(alleleCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
@@ -86,14 +85,14 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.relatedNote.internal", is(false)).
 			body("entity.relatedNote.obsolete", is(true)).
 			body("entity.relatedNote.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.relatedNote.createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.relatedNote.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.relatedNote.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNote.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("entity.relatedNote.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.relatedNote.freeText", is("Test note")).
 			body("entity.relatedNote.noteType.name", is(noteType)).
 			body("entity.relatedNote.references[0].curie", is(reference));
@@ -105,7 +104,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].object.curie", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].objectGene.curie", is(geneCurie)).
 			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
 		
 		RestAssured.given().
@@ -115,8 +114,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].object.curie", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].object", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].objectGene.curie", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].objectGene", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
@@ -132,7 +131,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
+			body("entity.objectGene.curie", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.evidenceCode.curie", is(evidenceCodeCurie2)).
@@ -140,14 +139,14 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.relatedNote.internal", is(true)).
 			body("entity.relatedNote.obsolete", is(false)).
 			body("entity.relatedNote.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.relatedNote.createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.relatedNote.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.relatedNote.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNote.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("entity.relatedNote.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.relatedNote.freeText", is("Test note 2")).
 			body("entity.relatedNote.noteType.name", is(noteType2)).
 			body("entity.relatedNote.references[0].curie", is(reference2));

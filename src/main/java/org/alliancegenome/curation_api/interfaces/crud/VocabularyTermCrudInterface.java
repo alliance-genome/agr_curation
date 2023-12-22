@@ -2,17 +2,6 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.HashMap;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -24,6 +13,17 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+
 @Path("/vocabularyterm")
 @Tag(name = "CRUD - VocabularyTerm")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,7 +34,7 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@POST
 	@Path("/search")
 	@JsonView(View.VocabularyTermView.class)
-	@Tag(name = "Search Database Browsing Endpoints")
+	@Tag(name = "Elastic Search Browsing Endpoints")
 	public SearchResponse<VocabularyTerm> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit,
 		@RequestBody HashMap<String, Object> params);
 

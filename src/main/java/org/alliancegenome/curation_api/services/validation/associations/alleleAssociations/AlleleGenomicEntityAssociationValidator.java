@@ -1,26 +1,21 @@
 package org.alliancegenome.curation_api.services.validation.associations.alleleAssociations;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
-public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociationValidator {
+import jakarta.inject.Inject;
+
+public class AlleleGenomicEntityAssociationValidator<E extends AlleleGenomicEntityAssociation> extends EvidenceAssociationValidator<E> {
 
 	@Inject
 	NoteValidator noteValidator;
@@ -31,7 +26,7 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 	@Inject
 	AlleleDAO alleleDAO;
 	
-	public ECOTerm validateEvidenceCode(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
+	public ECOTerm validateEvidenceCode(E uiEntity, E dbEntity) {
 		String field = "evidenceCode";
 		if (uiEntity.getEvidenceCode() == null)
 			return null;
@@ -53,35 +48,23 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 		return evidenceCode;
 	}
 		
-	public Note validateRelatedNote(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
+	public Note validateRelatedNote(E uiEntity, E dbEntity) {
 		String field = "relatedNote";
 
-		Note note = null;
-		if (uiEntity.getRelatedNote() != null) {
-			ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiEntity.getRelatedNote(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
-			if (noteResponse.getEntity() == null) {
-				addMessageResponse(field, noteResponse.errorMessagesString());
-				return null;
-			}
-			note = noteResponse.getEntity();
-			if (note.getId() == null)
-				note = noteDAO.persist(note);
-		}
-
-		Long previousNoteId = null;
-		if (dbEntity.getRelatedNote() != null)
-			previousNoteId = dbEntity.getRelatedNote().getId();
-		
-		dbEntity.setRelatedNote(null);
-		if (previousNoteId != null && (note == null || !Objects.equals(note.getId(), previousNoteId)))
-			noteDAO.remove(previousNoteId);
+		if (uiEntity.getRelatedNote() == null)
+			return null;
 			
-		return note;
+		ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiEntity.getRelatedNote(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
+		if (noteResponse.getEntity() == null) {
+			addMessageResponse(field, noteResponse.errorMessagesString());
+			return null;
+		}
+		return noteResponse.getEntity();
 	}
 
-	public AlleleGenomicEntityAssociation validateAlleleGenomicEntityAssociationFields(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
+	public E validateAlleleGenomicEntityAssociationFields(E uiEntity, E dbEntity) {
 		
-		dbEntity = (AlleleGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
+		dbEntity = validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		ECOTerm evidenceCode = validateEvidenceCode(uiEntity, dbEntity);
 		dbEntity.setEvidenceCode(evidenceCode);

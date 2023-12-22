@@ -1,11 +1,10 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import javax.persistence.Entity;
-
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.hibernate.envers.Audited;
 
+import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

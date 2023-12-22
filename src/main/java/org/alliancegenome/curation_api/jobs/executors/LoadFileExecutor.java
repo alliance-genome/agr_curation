@@ -9,20 +9,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
@@ -35,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
 
 public class LoadFileExecutor {
 
@@ -50,6 +49,8 @@ public class LoadFileExecutor {
 	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject
 	APIVersionInfoService apiVersionInfoService;
+	@Inject
+	SlackNotifier slackNotifier;
 
 	protected void trackHistory(BulkLoadFileHistory history, BulkLoadFile bulkLoadFile) {
 		history.setBulkLoadFile(bulkLoadFile);
@@ -100,26 +101,28 @@ public class LoadFileExecutor {
 		if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
 			bulkLoadFile.setErrorMessage("Missing Schema Version");
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			slackNotifier.slackalert(bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			return false;
 		}
 		if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass)) {
 			bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			slackNotifier.slackalert(bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			return false;
 		}
 		return true;
 	}
 	
-	protected IngestDTO readIngestFile(BulkLoadFile bulkLoadFile) {
+	protected IngestDTO readIngestFile(BulkLoadFile bulkLoadFile, Class<?> dtoClass) {
 		try {
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			if (StringUtils.isNotBlank(ingestDto.getAllianceMemberReleaseVersion()))
 				bulkLoadFile.setAllianceMemberReleaseVersion(ingestDto.getAllianceMemberReleaseVersion());
 			
-			if(!checkSchemaVersion(bulkLoadFile, ConstructGenomicEntityAssociationDTO.class)) return null;
+			if(!checkSchemaVersion(bulkLoadFile, dtoClass)) return null;
 
 			return ingestDto;
 		} catch (Exception e) {
@@ -257,6 +260,7 @@ public class LoadFileExecutor {
 		}
 		bulkLoadFile.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+		slackNotifier.slackalert(bulkLoadFile);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
 }

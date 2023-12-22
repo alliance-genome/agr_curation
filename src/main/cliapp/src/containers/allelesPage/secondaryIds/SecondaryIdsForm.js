@@ -5,6 +5,7 @@ import { useRef } from "react";
 
 export const SecondaryIdsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
+  const secondaryIds = global.structuredClone(state.allele?.alleleSecondaryIds);
 
   const createNewSecondaryIdHandler = (e) => {
     e.preventDefault();
@@ -28,7 +29,7 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
   };
 
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleSecondaryIds', 
@@ -70,7 +71,7 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
     <FormTableWrapper
       table={
         <SecondaryIdsFormTable
-          secondaryIds={state.allele?.alleleSecondaryIds}
+          secondaryIds={secondaryIds}
           editingRows={state.entityStates.alleleSecondaryIds.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
@@ -83,7 +84,7 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
       }
       tableName="Secondary IDs"
       showTable={state.entityStates.alleleSecondaryIds.show}
-      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-6"/>}
+      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-4 p-button-text"/>}
     />
   );
 

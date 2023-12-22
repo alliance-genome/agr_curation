@@ -218,23 +218,24 @@ export const SiteLayout = (props) => {
 								{
 										label: 'Data Tables', icon: 'pi pi-fw pi-sitemap',
 										items: [
-												{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
-												{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
 												{ label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
-												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'},
+												{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
+												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
 												{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
-												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Experiments', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
+												{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
+												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
-																								{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
+												{ label: 'Species', icon: 'pi pi-fw pi-home', to: '/species'},
+												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'}
 										]
 								},
 								{
 										label: 'Ontologies', icon: 'pi pi-fw pi-sitemap',
 										items: [
 											{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
-											{ 
+											{
 												label: 'Anatomical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
@@ -248,7 +249,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Biological Spatial Ontology (BSPO)', icon: 'pi pi-fw pi-home', to: '/ontology/bspo' },
-											{ 
+											{
 												label: 'Chemical Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'Chemical Entities of Biological Interest (ChEBI)', icon: 'pi pi-fw pi-home', to: '/ontology/chebi' },
@@ -258,7 +259,7 @@ export const SiteLayout = (props) => {
 											{ label: 'Clinical Measurement Ontology (CMO)', icon: 'pi pi-fw pi-home', to: '/ontology/cmo' },
 											{ label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
 											{ label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
-											{ 
+											{
 												label: 'Experimental Condition Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'Experimental Condition Ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
@@ -272,7 +273,7 @@ export const SiteLayout = (props) => {
 											{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' },
 											{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
 											{ label: 'Phenotype and Trait Ontology (PATO)', icon: 'pi pi-fw pi-home', to: '/ontology/pato' },
-											{ 
+											{
 												label: 'Phenotype Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'Ascomycete Phenotype Ontology (APO)', icon: 'pi pi-fw pi-home', to: '/ontology/apo' },
@@ -288,7 +289,7 @@ export const SiteLayout = (props) => {
 											{ label: 'Rat Strain Ontology (RS)', icon: 'pi pi-fw pi-home', to: '/ontology/rs' },
 											{ label: 'Relation Ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
 											{ label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
-											{ 
+											{
 												label: 'Stage Ontologies', icon: 'pi pi-fw pi-sitemap',
 												items: [
 													{ label: 'C. elegans Development Ontology (WBls)', icon: 'pi pi-fw pi-home', to: '/ontology/wbls' },
@@ -299,7 +300,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Vertebrate Trait Ontology (VT)', icon: 'pi pi-fw pi-home', to: '/ontology/vt' },
-											{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' }											
+											{ label: 'Xenbase Experimental Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' }
 										]
 								},
 								{
@@ -330,6 +331,7 @@ export const SiteLayout = (props) => {
 									label: 'Developer links', icon: 'pi pi-fw pi-sitemap',
 									items: [
 											{ label: 'Site Metrics', icon: 'pi pi-fw pi-home', to: '/metricspage' },
+											{ label: 'Entity Counts', icon: 'pi pi-fw pi-home', to: '/entitycounts'},
 											{ label: 'API UI (Swagger)', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: "_blank" },
 											{ label: 'Search index UI (cerebro)', icon: 'pi pi-fw pi-home', url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${siteContext?.apiVersion?.esHost}`, target: "_blank" },
 											{ label: 'Logs Server UI', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${siteContext?.apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
@@ -339,6 +341,7 @@ export const SiteLayout = (props) => {
 						]
 				}
 		];
+
 
 		const addClass = (element, className) => {
 				if (element.classList)

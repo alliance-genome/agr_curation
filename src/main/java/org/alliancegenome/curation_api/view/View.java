@@ -19,7 +19,7 @@ public class View {
 	public static class ConditionRelationUpdateView extends ConditionRelationView {
 	}
 
-	public static class VocabularyTermView extends FieldsAndLists {
+	public static class VocabularyTermView extends FieldsOnly {
 	}
 
 	public static class VocabularyView extends FieldsOnly {

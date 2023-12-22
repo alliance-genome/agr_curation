@@ -10,20 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.Metamodel;
-import javax.transaction.Transactional;
-
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
@@ -38,6 +24,9 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.sqm.internal.QuerySqmImpl;
+import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
+import org.hibernate.query.sqm.tree.select.SqmSelectStatement;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.common.ValueConvert;
@@ -51,9 +40,24 @@ import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsSt
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
+import org.jboss.logging.Logger;
+import org.jboss.logging.Logger.Level;
 import org.reflections.Reflections;
 
 import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.transaction.Transactional;
 
 public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
@@ -163,6 +167,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			}
 		}
 		return pkString;
+	}
+	
+	public SearchResponse<E> findAll() {
+		return findAll(null);
 	}
 
 	public SearchResponse<E> findAll(Pagination pagination) {
@@ -374,7 +382,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-		Log.debug("Search: " + pagination + " Params: " + params);
+		Logger.Level level = Level.DEBUG;
+		if(params.containsKey("debug")) {
+			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
+		}
+		
+		Log.log(level, "Search: " + pagination + " Params: " + params);
 
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
 			return p.bool(b -> {
@@ -431,6 +444,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						});
 						outerBoost--;
 					}
+					if(outerBoost == 0) {
+						b.must(p.matchAll());
+					}
+				} else {
+					b.must(p.matchAll());
 				}
 				if (params.containsKey("nonNullFieldsTable")) {
 					List<String> fields = (List<String>) params.get("nonNullFieldsTable");
@@ -472,16 +490,15 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		SearchQuery<E> query = step.toQuery();
 
-		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 		SearchResponse<E> results = new SearchResponse<E>();
-
-		if (params.containsKey("debug")) {
-			results.setDebug((String) params.get("debug"));
+		if (level == Level.INFO) {
+			results.setDebug("true");
 			results.setEsQuery(query.queryString());
-			Log.info(query);
-		} else {
-			Log.debug(query);
 		}
+		Log.log(level, query);
+		
+		
+		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
 		if (aggKeys.size() > 0) {
 			Map<String, Map<String, Long>> aggregations = aggKeys.stream().collect(Collectors.toMap(AggregationKey::name, result::aggregation));
@@ -499,7 +516,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Log.debug("SqlDAO: findByField: " + field + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
 		params.put(field, value);
-		SearchResponse<E> results = findByParams(null, params);
+		SearchResponse<E> results = findByParams(params);
 		Log.debug("Result List: " + results);
 		if (results.getResults().size() > 0) {
 			return results;
@@ -517,11 +534,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
-		if (orderByField != null) {
-			Log.debug("Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
-		} else {
-			Log.debug("Search By Params: " + params + " for class: " + myClass);
+		Logger.Level level = Level.DEBUG;
+		if(params.containsKey("debug")) {
+			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
+		
+		Log.log(level, "Pagination: " + pagination + " Params: " + params + " Order by: " + orderByField + " Class: " + myClass);
 
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> query = builder.createQuery(myClass);
@@ -536,14 +554,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		for (String key : params.keySet()) {
 			Path<Object> column = null;
 			Path<Object> countColumn = null;
-			Log.debug("Key: " + key);
+			Log.log(level, "Key: " + key);
 			if (key.contains(".")) {
 				String[] objects = key.split("\\.");
 				for (String s : objects) {
-					Log.debug("Looking up: " + s);
+					Log.log(level, "Looking up: " + s);
 					if (column != null) {
-						Log.debug("Looking up via column: " + s);
-
+						Log.log(level, "Looking up via column: " + s);
 						Path<Object> pathColumn = column.get(s);
 						if (pathColumn.getJavaType().equals(List.class)) {
 							column = ((Join) column).join(s);
@@ -557,7 +574,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 							countColumn = pathCountColumn;
 						}
 					} else {
-						Log.debug("Looking up via root: " + s);
+						Log.log(level, "Looking up via root: " + s);
 						column = root.get(s);
 						if (column.getJavaType().equals(List.class)) {
 							column = root.join(s);
@@ -568,56 +585,60 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						}
 					}
 
-					Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-					Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: "
-						+ countColumn.getParentPath().getAlias());
+					Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+					Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 				}
 			} else {
+				Log.log(level, "Looking up via root: " + key);
 				column = root.get(key);
-				if (column.getJavaType().equals(List.class)) {
-					column = root.join(key);
-				}
 				countColumn = countRoot.get(key);
-				if (countColumn.getJavaType().equals(List.class)) {
-					countColumn = countRoot.join(key);
+				// Don't need to join to these tables if value is null, the isEmpty will catch the condition later
+				Object value = params.get(key);
+				if(value != null) {
+					if (column instanceof SqmPluralValuedSimplePath) {
+						column = root.join(key);
+					}
+					if (countColumn instanceof SqmPluralValuedSimplePath) {
+						countColumn = countRoot.join(key);
+					}
 				}
 			}
 
-			Log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			Log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: "
-				+ countColumn.getParentPath().getAlias());
+			Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+			Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
-			if (value != null) {
-				Log.debug("Object Type: " + value.getClass());
-				if (value instanceof Integer) {
-					Log.debug("Integer Type: " + value);
-					Integer desiredValue = (Integer) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else if (value instanceof Enum) {
-					Log.debug("Enum Type: " + value);
-					restrictions.add(builder.equal(column, value));
-					countRestrictions.add(builder.equal(countColumn, value));
-				} else if (value instanceof Long) {
-					Log.debug("Long Type: " + value);
-					Long desiredValue = (Long) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else if (value instanceof Boolean) {
-					Log.debug("Boolean Type: " + value);
-					Boolean desiredValue = (Boolean) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				} else {
-					Log.debug("String Type: " + value);
-					String desiredValue = (String) value;
-					restrictions.add(builder.equal(column, desiredValue));
-					countRestrictions.add(builder.equal(countColumn, desiredValue));
-				}
-			} else {
+			
+			if(value == null) {
 				restrictions.add(builder.isEmpty(root.get(key)));
 				countRestrictions.add(builder.isEmpty(countRoot.get(key)));
+			} else if (value instanceof Integer) {
+				Log.log(level, "Integer Type: " + value);
+				Integer desiredValue = (Integer) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof Enum) {
+				Log.log(level, "Enum Type: " + value);
+				restrictions.add(builder.equal(column, value));
+				countRestrictions.add(builder.equal(countColumn, value));
+			} else if (value instanceof Long) {
+				Log.log(level, "Long Type: " + value);
+				Long desiredValue = (Long) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof Boolean) {
+				Log.log(level, "Boolean Type: " + value);
+				Boolean desiredValue = (Boolean) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else if (value instanceof String) {
+				Log.log(level, "String Type: " + value);
+				String desiredValue = (String) value;
+				restrictions.add(builder.equal(column, desiredValue));
+				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			} else {
+				// Not sure what to do here as we have a non supported value
+				Log.info("Unsupprted Value: " + value);
 			}
 		}
 
@@ -633,7 +654,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		countQuery.select(builder.count(countRoot));
 		countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
-		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
 		TypedQuery<E> allQuery = entityManager.createQuery(query);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
@@ -643,10 +663,24 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			allQuery.setFirstResult(first);
 			allQuery.setMaxResults(pagination.getLimit());
 		}
-
+		
+		Log.log(level, query);
+		Log.log(level, allQuery);
+		Log.log(level, countQuery);
+		
+		List<E> dbResults = allQuery.getResultList();
 		SearchResponse<E> results = new SearchResponse<E>();
-		results.setResults(allQuery.getResultList());
+		results.setResults(dbResults);
+		
+		if (level == Level.INFO) {
+			results.setDebug("true");
+			results.setEsQuery(((QuerySqmImpl)allQuery).getQueryString());
+			results.setDbQuery(((SqmSelectStatement)query).toHqlString());
+		}
+	
+		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 		results.setTotalResults(totalResults);
+		
 		return results;
 
 	}

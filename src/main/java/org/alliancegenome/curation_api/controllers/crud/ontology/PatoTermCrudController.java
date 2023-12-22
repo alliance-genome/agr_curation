@@ -7,9 +7,9 @@ import org.alliancegenome.curation_api.model.entities.ontology.PATOTerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.PatoTermService;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class PatoTermCrudController extends BaseOntologyTermController<PatoTermService, PATOTerm, PatoTermDAO> implements PatoTermCrudInterface {

@@ -27,7 +27,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
   };
 
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({
       type: 'EDIT_OBJECT',
       entityType: 'alleleGermlineTransmissionStatus',
@@ -37,7 +37,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
   };
 
   const germlineTransmissionStatusOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value);
     dispatch({
       type: 'EDIT_OBJECT',
       entityType: 'alleleGermlineTransmissionStatus',
@@ -81,7 +81,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
       }
       tableName="Germline Transmission Status"
       showTable={state.entityStates.alleleGermlineTransmissionStatus.show}
-      button={<Button label="Add Germline Transmission Status" onClick={createNewGermlineTransmissionStatus} disabled={state.allele?.alleleGermlineTransmissionStatus} className="w-6" />}
+      button={<Button label="Add Germline Transmission Status" onClick={createNewGermlineTransmissionStatus} disabled={state.allele?.alleleGermlineTransmissionStatus} className="w-4  p-button-text" />}
     />
   );
 

@@ -29,7 +29,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const databaseStatusOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleDatabaseStatus', 
@@ -39,7 +39,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
   };
 
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_OBJECT', 
       entityType: 'alleleDatabaseStatus', 
@@ -83,7 +83,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
       }
       tableName="Database Status"
       showTable={state.entityStates.alleleDatabaseStatus.show}
-      button={<Button label="Add Database Status" onClick={createNewDatabaseStatusHandler} disabled={state.allele?.alleleDatabaseStatus} className="w-6"/>}
+      button={<Button label="Add Database Status" onClick={createNewDatabaseStatusHandler} disabled={state.allele?.alleleDatabaseStatus} className="w-4  p-button-text"/>}
     />
   );
 

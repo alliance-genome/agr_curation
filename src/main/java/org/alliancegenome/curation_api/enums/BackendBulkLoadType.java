@@ -1,6 +1,26 @@
 package org.alliancegenome.curation_api.enums;
 
 public enum BackendBulkLoadType {
-	GENE_DTO, ALLELE_DTO, AGM_DTO, DISEASE_ANNOTATION_DTO, DISEASE_ANNOTATION, GENE, ALLELE, AGM, CONSTRUCT, AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, ONTOLOGY, MOLECULE,
-	FULL_INGEST, RESOURCE_DESCRIPTOR, ORTHOLOGY, ALLELE_ASSOCIATION, CONSTRUCT_ASSOCIATION, VARIANT;
+	DISEASE_ANNOTATION("json"),
+	GENE("json"),
+	ALLELE("json"),
+	AGM("json"),
+	CONSTRUCT("json"),
+	AGM_DISEASE_ANNOTATION("json"),
+	ALLELE_DISEASE_ANNOTATION("json"),
+	GENE_DISEASE_ANNOTATION("json"),
+	ONTOLOGY("owl"),
+	MOLECULE("json"),
+	FULL_INGEST("json"),
+	RESOURCE_DESCRIPTOR("yaml"),
+	ORTHOLOGY("json"),
+	ALLELE_ASSOCIATION("json"),
+	CONSTRUCT_ASSOCIATION("json"),
+	VARIANT("json");
+	
+	public String fileExtension;
+	
+	private BackendBulkLoadType(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
 }
