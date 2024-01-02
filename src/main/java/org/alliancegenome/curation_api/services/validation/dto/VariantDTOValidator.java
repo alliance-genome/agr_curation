@@ -55,7 +55,8 @@ public class VariantDTOValidator extends BaseDTOValidator {
 		}
 		if (variant == null) {
 			if (StringUtils.isBlank(dto.getModInternalId())) {
-				variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
+				if (StringUtils.isBlank(dto.getModEntityId()))
+					variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
 			} else {
 				SearchResponse<Variant> response = variantDAO.findByField("modInternalId", dto.getModInternalId());
 				if (response != null && response.getSingleResult() != null)

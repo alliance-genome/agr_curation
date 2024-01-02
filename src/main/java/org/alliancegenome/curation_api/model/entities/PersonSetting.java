@@ -10,10 +10,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.envers.Audited;
 import org.hibernate.type.SqlTypes;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -30,7 +28,6 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = "person")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Table(indexes = {
 	@Index(name = "personsetting_person_index", columnList = "person_id"),
 	@Index(name = "personsetting_settingskey_index", columnList = "settingskey")

@@ -32,7 +32,7 @@ import lombok.ToString;
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class })
 @Table(indexes = {
