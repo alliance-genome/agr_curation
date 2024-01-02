@@ -27,7 +27,7 @@ const evidenceSearch = (event, setFiltered, setInputValue) => {
   autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 };
 
-export const EvidenceCodeEditor = ({ props, errorMessages, onChangeHandler }) => {
+export const EvidenceCodeEditor = ({ props, errorMessages, onChangeHandler, dataKey }) => {
   return (
     <>
       <AutocompleteEditor
@@ -40,7 +40,7 @@ export const EvidenceCodeEditor = ({ props, errorMessages, onChangeHandler }) =>
         onValueChangeHandler={onChangeHandler}
       />
       <ErrorMessageComponent
-        errorMessages={errorMessages[props?.rowData?.dataKey]}
+        errorMessages={errorMessages[dataKey]}
         errorField="evidenceCode"
       />
     </>
