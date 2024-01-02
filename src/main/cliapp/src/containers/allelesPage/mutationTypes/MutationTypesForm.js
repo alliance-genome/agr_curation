@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { MutationTypesFormTable } from "./MutationTypesFormTable";
 import { useRef } from "react";
+import { addDataKey } from "../utils";
 
 export const MutationTypesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -9,11 +10,11 @@ export const MutationTypesForm = ({ state, dispatch }) => {
 
   const createNewMutationTypeHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleMutationTypes?.length;
     const newMutationType = {
-      dataKey: dataKey,
       internal: false,
     }
+
+    addDataKey(newMutationType);
 
     dispatch({
       type: "ADD_ROW", 

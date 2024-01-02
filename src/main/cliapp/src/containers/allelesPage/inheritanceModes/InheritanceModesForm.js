@@ -3,6 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { InheritanceModesFormTable } from "../inheritanceModes/InheritanceModesFormTable";
 import { useRef } from "react";
 import { processOptionalField } from "../../../utils/utils";
+import { addDataKey } from "../utils";
 
 export const InheritanceModesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -10,15 +11,15 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
 
   const createNewInheritanceModeHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleInheritanceModes?.length;
     const newInheritanceMode = {
-      dataKey: dataKey,
       internal: false,
       obsolete: false,
       inheritanceMode: null,
       phenotypeTerm: null,
       phenotypeStatement: ""
     }
+
+    addDataKey(newInheritanceMode);
 
     dispatch({
       type: "ADD_ROW", 

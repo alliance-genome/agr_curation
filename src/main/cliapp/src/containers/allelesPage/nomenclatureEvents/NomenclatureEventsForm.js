@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { NomenclatureEventsFormTable } from "../nomenclatureEvents/NomenclatureEventsFormTable";
 import { useRef } from "react";
+import { addDataKey } from "../utils";
 
 export const NomenclatureEventsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -9,13 +10,13 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
 
   const createNewNomenclatureEventHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleNomenclatureEvents?.length;
     const newNomenclatureEvent = {
-      dataKey: dataKey,
       internal: false,
       obsolete: false,
       nomenclatureEvent: null
     }
+
+    addDataKey(newNomenclatureEvent);
 
     dispatch({
       type: "ADD_ROW", 

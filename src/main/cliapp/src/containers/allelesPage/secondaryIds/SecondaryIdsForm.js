@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { SecondaryIdsFormTable } from "../secondaryIds/SecondaryIdsFormTable";
 import { useRef } from "react";
+import { addDataKey } from "../utils";
 
 export const SecondaryIdsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -9,13 +10,14 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
 
   const createNewSecondaryIdHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleSecondaryIds?.length;
+
     const newSecondaryId = {
-      dataKey: dataKey,
       internal: false,
       obsolete: false,
       secondaryId: ""
     }
+
+    addDataKey(newSecondaryId);
 
     dispatch({
       type: "ADD_ROW", 

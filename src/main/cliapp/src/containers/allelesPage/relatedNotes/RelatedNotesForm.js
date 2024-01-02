@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { RelatedNotesFormTable } from "../relatedNotes/RelatedNotesFormTable";
 import { useRef } from "react";
+import { addDataKey } from "../utils";
 
 export const RelatedNotesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -9,15 +10,15 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 
   const createNewRelatedNoteHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.relatedNotes?.length;
     const newRelatedNote = {
-      dataKey: dataKey,
       internal: false,
       obsolete: false,
       noteType: null,
       freeText: "",
       references: null
     }
+
+    addDataKey(newRelatedNote);
 
     dispatch({
       type: "ADD_ROW", 

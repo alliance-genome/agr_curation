@@ -1,7 +1,7 @@
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { ReferencesFormTable } from "./ReferencesFormTable";
 import { useRef } from "react";
-import { NewReferenceField } from "./NewReferenceField.";
+import { NewReferenceField } from "./NewReferenceField";
 
 export const ReferencesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);

@@ -2,6 +2,7 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { SynonymsFormTable } from "./SynonymsFormTable";
 import { useRef } from "react";
+import { addDataKey } from "../utils";
 
 export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
@@ -9,9 +10,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
 
   const createNewSynonymHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleSynonyms?.length;
     const newSynonym = {
-      dataKey: dataKey,
       synonymUrl: "",
       internal: false,
       obsolete: false,
@@ -19,6 +18,8 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
       formatText: "",
       displayText: ""
     }
+
+    addDataKey(newSynonym);
 
     dispatch({
       type: "ADD_ROW", 

@@ -3,6 +3,7 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { useRef } from "react";
 import { FunctionalImpactsFormTable } from "./FunctionalImpactsFormTable";
 import { processOptionalField } from "../../../utils/utils";
+import { addDataKey } from "../utils";
 
 export const FunctionalImpactsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
@@ -10,12 +11,12 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
 
   const createNewFunctionalImpactsHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleFunctionalImpacts?.length;
     const newFunctionalImpact = {
-      dataKey: dataKey,
       phenotypeStatement: "",
       internal: false,
     };
+
+    addDataKey(newFunctionalImpact);
 
     dispatch({
       type: "ADD_ROW",
