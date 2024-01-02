@@ -41,6 +41,7 @@ export const GermlineTransmissionStatusFormTable = ({
             props={props}
             onChangeHandler={germlineTransmissionStatusOnChangeHandler}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             rowIndex={props.rowIndex}
             vocabType="allele_germline_transmission_status"
             field="germlineTransmissionStatus"
@@ -53,6 +54,7 @@ export const GermlineTransmissionStatusFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}

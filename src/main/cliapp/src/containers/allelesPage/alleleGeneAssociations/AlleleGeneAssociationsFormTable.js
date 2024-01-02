@@ -68,6 +68,7 @@ export const AlleleGeneAssociationsFormTable = ({
               props={props}
               onChangeHandler={alleleGeneRelationOnChangeHandler}
               errorMessages={errorMessages}
+              dataKey={props?.rowData?.dataKey}
               rowIndex={props.rowIndex}
               vocabType="allele_gene_relation"
               field="relation"
@@ -92,6 +93,7 @@ export const AlleleGeneAssociationsFormTable = ({
               props={props}
               errorMessages={errorMessages}
               onChange={geneOnChangeHandler}
+              dataKey={props?.rowData?.dataKey}
             />;
           }}
           field="objectGene"
@@ -127,6 +129,7 @@ export const AlleleGeneAssociationsFormTable = ({
               props={props}
               onChangeHandler={evidenceCodeOnChangeHandler}
               errorMessages={errorMessages}
+              dataKey={props.rowData?.dataKey}
             />;
           }}
           filter

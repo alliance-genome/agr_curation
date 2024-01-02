@@ -48,6 +48,7 @@ export const NomenclatureEventsFormTable = ({
             onChangeHandler={nomenclatureEventOnChangeHandler}
             errorMessages={errorMessages}
             rowIndex={props.rowIndex}
+            dataKey={props?.rowData?.dataKey}
             vocabType="allele_nomenclature_event"
             field="nomenclatureEvent"
             showClear={false}
@@ -69,6 +70,7 @@ export const NomenclatureEventsFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}
@@ -79,6 +81,7 @@ export const NomenclatureEventsFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             obsoleteOnChangeHandler={obsoleteOnChangeHandler}
           />;
         }}

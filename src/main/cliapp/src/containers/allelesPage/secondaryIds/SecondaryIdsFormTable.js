@@ -40,6 +40,7 @@ export const SecondaryIdsFormTable = ({
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="secondaryId"
         />}} 
@@ -50,6 +51,7 @@ export const SecondaryIdsFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}

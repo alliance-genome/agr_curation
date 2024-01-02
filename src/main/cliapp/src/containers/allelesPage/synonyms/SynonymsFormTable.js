@@ -50,6 +50,7 @@ export const SynonymsFormTable = ({
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="displayText"
         />}} 
@@ -60,6 +61,7 @@ export const SynonymsFormTable = ({
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="formatText"
         />}} 
@@ -70,6 +72,7 @@ export const SynonymsFormTable = ({
             props={props}
             onChangeHandler={synonymScopeOnChangeHandler}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             rowIndex={props.rowIndex} 
             vocabType="synonym_scope"
             field="synonymScope"
@@ -83,6 +86,7 @@ export const SynonymsFormTable = ({
             props={props}
             onChangeHandler={nameTypeOnChangeHandler}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             rowIndex={props.rowIndex} 
             vocabType="name_type"
             field="nameType"
@@ -96,6 +100,7 @@ export const SynonymsFormTable = ({
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="synonymUrl"
         />}} 
@@ -106,6 +111,7 @@ export const SynonymsFormTable = ({
             props={props}
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
         />}} 
         field="internal" header="Internal" headerClassName='surface-0' />

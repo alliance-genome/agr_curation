@@ -49,6 +49,7 @@ export const FullNameFormTable = ({
           return <TableInputTextEditor
             value={props.value}
             rowIndex={props.rowIndex}
+            dataKey={props.rowData?.dataKey}
             errorMessages={errorMessages}
             textOnChangeHandler={textOnChangeHandler}
             field="displayText"
@@ -60,6 +61,7 @@ export const FullNameFormTable = ({
           return <TableInputTextEditor
             value={props.value}
             rowIndex={props.rowIndex}
+            dataKey={props.rowData?.dataKey}
             errorMessages={errorMessages}
             textOnChangeHandler={textOnChangeHandler}
             field="formatText"
@@ -72,7 +74,7 @@ export const FullNameFormTable = ({
             props={props}
             onChangeHandler={synonymScopeOnChangeHandler}
             errorMessages={errorMessages}
-            rowIndex={props.rowIndex}
+            dataKey={props?.rowData?.dataKey}
             vocabType="synonym_scope"
             field="synonymScope"
             showClear={true}
@@ -85,6 +87,7 @@ export const FullNameFormTable = ({
             props={props}
             onChangeHandler={nameTypeOnChangeHandler}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             rowIndex={props.rowIndex}
             vocabType="full_name_type"
             field="nameType"
@@ -97,6 +100,7 @@ export const FullNameFormTable = ({
           return <TableInputTextEditor
             value={props.value}
             rowIndex={props.rowIndex}
+            dataKey={props.rowData?.dataKey}
             errorMessages={errorMessages}
             textOnChangeHandler={textOnChangeHandler}
             field="synonymUrl"
@@ -108,6 +112,7 @@ export const FullNameFormTable = ({
           return <InternalEditor
             props={props}
             rowIndex={props.rowIndex}
+            dataKey={props.rowData?.dataKey}
             errorMessages={errorMessages}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
@@ -119,6 +124,7 @@ export const FullNameFormTable = ({
             props={props}
             errorMessages={errorMessages}
             onChange={evidenceOnChangeHandler}
+            dataKey={props.rowData?.dataKey}
           />;
         }}
         field="evidence.curie" header="Evidence" headerClassName='surface-0' />

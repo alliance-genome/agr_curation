@@ -39,6 +39,7 @@ export const MutationTypesFormTable = ({
           return <MutationTypesEditor
             props={props}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             onChange={mutationTypesOnChangeHandler}
           />;
         }}
@@ -49,6 +50,7 @@ export const MutationTypesFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}

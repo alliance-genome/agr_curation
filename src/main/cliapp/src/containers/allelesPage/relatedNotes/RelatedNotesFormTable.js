@@ -56,6 +56,7 @@ export const RelatedNotesFormTable = ({
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="freeText"
             rows={5}
@@ -68,6 +69,7 @@ export const RelatedNotesFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}
@@ -77,6 +79,7 @@ export const RelatedNotesFormTable = ({
           return <ReferencesEditor
             props={props}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             onChange={referencesOnChangeHandler}
           />;
         }}
