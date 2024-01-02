@@ -63,10 +63,6 @@ export default function AlleleDetailPage() {
 		return alleleService.saveAlleleDetail(allele);
 	});
 
-	useEffect(() => {
-		console.log("allele", alleleState.allele);
-	}, [alleleState.allele])
-
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		alleleDispatch({
@@ -84,10 +80,11 @@ export default function AlleleDetailPage() {
 
 		if(areUiErrors) return;
 
-		const _allele = stripOutDataKey(alleleState.allele);
+		//TODO: decide if this is needed
+		// const _allele = stripOutDataKey(alleleState.allele);
 
-		alleleMutate(_allele, {
-		// alleleMutate(alleleState.allele, {
+		// alleleMutate(_allele, {
+		alleleMutate(alleleState.allele, {
 			onSuccess: () => {
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
@@ -105,7 +102,11 @@ export default function AlleleDetailPage() {
 					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false }
 				]);
 
-				processErrors(data, alleleDispatch, alleleState.allele);
+				try{
+					processErrors(data, alleleDispatch, alleleState.allele);
+				} catch(e){
+					console.error(e);
+				}
 			}
 		});
 	};
