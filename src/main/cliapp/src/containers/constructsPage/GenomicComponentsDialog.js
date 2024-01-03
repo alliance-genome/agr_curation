@@ -9,6 +9,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { Button } from 'primereact/button';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
+import { getIdentifier } from '../../utils/utils';
 
 export const GenomicComponentsDialog = ({
 	originalComponentsData,
@@ -92,11 +93,11 @@ export const GenomicComponentsDialog = ({
 		let componentDisplayValue = "";
 		if (rowData.object.geneSymbol || rowData.object.alleleSymbol) {
 			let symbolValue = rowData.object.geneSymbol ? rowData.object.geneSymbol.displayText : rowData.object.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + rowData.object.curie + ')';
+			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.object) + ')';
 		} else if (rowData.object.name) {
-			componentDisplayValue = rowData.object.name + ' (' + rowData.object.curie + ')';
+			componentDisplayValue = rowData.object.name + ' (' + getIdentifier(rowData.object) + ')';
 		} else {
-			componentDisplayValue = rowData.object.curie;
+			componentDisplayValue = getIdentifier(rowData.object);
 		}
 		return (
 			<>
@@ -131,7 +132,7 @@ export const GenomicComponentsDialog = ({
 					<DataTable value={localComponents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 							ref={tableRef} >
 						<Column field="relation.name" header="Relation" headerClassName='surface-0'/>
-						<Column field="object.curie" header="Component" headerClassName='surface-0' body={componentTemplate}/>
+						<Column field="object.modEntityId" header="Component" headerClassName='surface-0' body={componentTemplate}/>
 						<Column field="relatedNotes.freeText" header="Related Notes" headerClassName='surface-0' body={relatedNotesTemplate}/>
 						<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName='surface-0'/>
