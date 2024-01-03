@@ -97,7 +97,8 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
-				Log.info("EXCEPTION 2: " + e.getLocalizedMessage());
+				Log.info("EXCEPTION 2: ");
+				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage(), e.getStackTrace()));
 			}

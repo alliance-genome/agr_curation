@@ -20,8 +20,8 @@ export const AffectedGenomicModelTable = () => {
 	const nameTemplate = (rowData) => {
 		return (
 			<>
-				<div className={`overflow-hidden text-overflow-ellipsis ${rowData.curie.replace(':', '')}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
-				<Tooltip target={`.${rowData.curie.replace(':', '')}`}>
+				<div className={`overflow-hidden text-overflow-ellipsis ${rowData.modEntityId.replace(':', '')}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
+				<Tooltip target={`.${rowData.modEntityId.replace(':', '')}`}>
 					<div dangerouslySetInnerHTML={{ __html: rowData.name }} />
 				</Tooltip>
 			</>
@@ -32,10 +32,10 @@ export const AffectedGenomicModelTable = () => {
 		if (rowData.taxon) {
 				return (
 						<>
-								<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
+								<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
 										{rowData.taxon.name} ({rowData.taxon.curie})
 								</EllipsisTableCell>
-								<Tooltip target={`.${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+								<Tooltip target={`.${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 						</>
 				);
 		}
@@ -47,6 +47,18 @@ export const AffectedGenomicModelTable = () => {
 			header: "Curie",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig
+		},
+		{
+			field: "modEntityId",
+			header: "MOD Entity ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+		},
+		{
+			field: "modInternalId",
+			header: "MOD Internal ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "name",
@@ -138,7 +150,6 @@ export const AffectedGenomicModelTable = () => {
 				<GenericDataTable
 					endpoint="agm"
 					tableName="Affected Genomic Models"
-					dataKey="curie"
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}

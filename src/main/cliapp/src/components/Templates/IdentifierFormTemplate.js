@@ -1,7 +1,8 @@
 import { FormFieldWrapper } from "../FormFieldWrapper";
 
-export const CurieFormTemplate = ({
-  curie,
+export const IdentifierFormTemplate = ({
+  identifier,
+  label,
   widgetColumnSize,
   labelColumnSize,
   fieldDetailsColumnSize,
@@ -12,9 +13,9 @@ export const CurieFormTemplate = ({
         labelColumnSize={labelColumnSize}
         fieldDetailsColumnSize={fieldDetailsColumnSize}
         widgetColumnSize={widgetColumnSize}
-        fieldName="Curie"
-        formField={curie}
-        additionalDataField={curie}
+        fieldName={label}
+        formField={identifier}
+        additionalDataField={identifier}
       />
     </>
   );

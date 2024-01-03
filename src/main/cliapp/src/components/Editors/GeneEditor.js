@@ -3,6 +3,7 @@ import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { LiteratureAutocompleteTemplate } from '../Autocomplete/LiteratureAutocompleteTemplate';
 import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
+import { getIdentifier } from "../../utils/utils";
 
 const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
@@ -24,16 +25,16 @@ export const GeneEditor = ({ props, errorMessages, onChange }) => {
 		<>
 			<AutocompleteEditor
 				search={geneSearch}
-				initialValue={props?.rowData?.objectGene?.curie}
+				initialValue={getIdentifier(props?.rowData?.object)}
 				rowProps={props}
-				fieldName='objectGene'
+				fieldName='object'
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 					<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent
 				errorMessages={errorMessages[props?.rowIndex]}
-				errorField={"objectGene"}
+				errorField={"object"}
 			/>
 		</>
 	);

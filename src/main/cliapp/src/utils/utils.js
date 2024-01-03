@@ -108,6 +108,19 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
+export function getIdentifier(data) {
+	if (data.modEntityId) {
+		return data.modEntityId;
+	}
+	if (data.modInternalId) {
+		return data.modInternalId;
+	}
+	if (data.curie) {
+		return data.curie;
+	}
+	return "";
+}
+
 export function getRefStrings(referenceItems) {
 	if (!referenceItems)
 		return;

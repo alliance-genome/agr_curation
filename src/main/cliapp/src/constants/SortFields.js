@@ -1,6 +1,7 @@
 export const SORT_FIELDS = Object.freeze([
   "uniqueId",
   "modEntityId",
+  "modInternalId",
   "subject.symbol",
   "relation.name",
   "negated",

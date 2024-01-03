@@ -82,13 +82,13 @@ export const AlleleGeneAssociationsFormTable = ({
               onChange={geneOnChangeHandler}
             />;
           }}
-          field="objectGene"
+          field="object"
           header="Gene"
           headerClassName='surface-0'
           filter
           sortable
-          filterField="objectGene.curie"
-          sortField="objectGene.curie"
+          filterField="object.modEntityId"
+          sortField="object.modEntityId"
           showFilterMenu={false}
           filterMatchMode='contains'
         />

@@ -65,7 +65,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       type: 'EDIT_ROW',
       entityType: 'alleleGeneAssociations',
       index: props.rowIndex,
-      field: "objectGene",
+      field: "object",
       value: event.target.value
     });
   };

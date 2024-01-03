@@ -13,7 +13,7 @@ import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor'
 import { useAlleleReducer } from './useAlleleReducer';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
-import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
+import { IdentifierFormTemplate } from '../../components/Templates/IdentifierFormTemplate';
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
@@ -36,7 +36,7 @@ import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneA
 import { validateAlleleDetailTable } from '../../utils/utils';
 
 export default function AlleleDetailPage() {
-	const { curie } = useParams();
+	const { identifier } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const alleleService = new AlleleService();
 	const alleleGeneAssociationService = new AlleleGeneAssociationService();
@@ -47,8 +47,8 @@ export default function AlleleDetailPage() {
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
 
-	const { isLoading: getRequestIsLoading } = useQuery([curie],
-		() => alleleService.getAllele(curie),
+	const { isLoading: getRequestIsLoading } = useQuery([identifier],
+		() => alleleService.getAllele(identifier),
 		{
 			onSuccess: (result) => {
 				alleleDispatch({ type: 'SET', value: result?.data?.entity });
@@ -79,13 +79,13 @@ export default function AlleleDetailPage() {
 		const table = alleleState.allele.alleleGeneAssociations;
 		let uiErrors = false;
 		table.forEach((association, index) => {
-			const gene = association.objectGene;
+			const gene = association.object;
 			if (!gene || typeof gene === 'string') {
 				const updatedErrorMessages = global.structuredClone(alleleState.entityStates.alleleGeneAssociations.errorMessages);
 
 				const errorMessage = {
 					...updatedErrorMessages[index],
-					objectGene: {message: "Must select gene from dropdown", severity: "error"},
+					object: {message: "Must select gene from dropdown", severity: "error"},
 				};
 				updatedErrorMessages[index] = errorMessage; 
 				alleleDispatch({
@@ -196,11 +196,11 @@ export default function AlleleDetailPage() {
 
 	const headerText = () => {
 		let prefix = "Allele: ";
-		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.curie) {
-			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.curie})`;
+		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.modEntityId) {
+			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.modEntityId})`;
 		}
-		if (alleleState.allele?.curie) {
-			return `${prefix} ${alleleState.allele.curie}`;
+		if (alleleState.allele?.modEntityId) {
+			return `${prefix} ${alleleState.allele.modEntityId}`;
 		}
 		return "Allele Detail Page";
 	};
@@ -222,8 +222,29 @@ export default function AlleleDetailPage() {
 					</Splitter>
 				</StickyHeader>
 				<form className='mt-8'>
-					<CurieFormTemplate
-						curie={alleleState.allele?.curie}
+					<IdentifierFormTemplate
+						identifier={alleleState.allele?.curie}
+						label="Curie"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<IdentifierFormTemplate
+						identifier={alleleState.allele?.modEntityId}
+						label="MOD Entity ID"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<IdentifierFormTemplate
+						identifier={alleleState.allele?.modInternalId}
+						label="MOD Internal ID"
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}

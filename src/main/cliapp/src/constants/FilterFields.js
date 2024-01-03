@@ -62,11 +62,11 @@ export const FIELD_SETS = Object.freeze({
   },
   assertedAlleleFieldSet: {
     filterName: "assertedAlleleFilter",
-    fields: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleSymbol.formatText", "assertedAllele.curie"],
+    fields: ["assertedAllele.alleleSymbol.displayText", "assertedAllele.alleleSymbol.formatText", "assertedAllele.curie", "assertedAllele.modEntityId", "assertedAllele.modInternalId"],
   },
   assertedGenesFieldSet: {
     filterName: "assertedGenesFilter",
-    fields: ["assertedGenes.geneSymbol.displayText", "assertedGenes.geneSymbol.formatText", "assertedGenes.curie"],
+    fields: ["assertedGenes.geneSymbol.displayText", "assertedGenes.geneSymbol.formatText", "assertedGenes.curie", "assertedGenes.modEntityId", "assertedGenes.modInternalId"],
   },
   citationFieldSet: {
     filterName: "citationFilter",
@@ -146,7 +146,7 @@ export const FIELD_SETS = Object.freeze({
   },
   constructGenomicComponentsFieldSet: {
     filterName: "constructGenomicComponentsFilter",
-    fields: ["constructGenomicEntityAssociations.object.symbol", "constructGenomicEntityAssociations.object.name", "constructGenomicEntityAssociations.object.curie", "constructGenomicEntityAssociations.relation.name"],
+    fields: ["constructGenomicEntityAssociations.object.symbol", "constructGenomicEntityAssociations.object.name", "constructGenomicEntityAssociations.object.curie", "constructGenomicEntityAssociations.object.modEntityId", "constructGenomicEntityAssociations.object.modInternalId", "constructGenomicEntityAssociations.relation.name"],
   },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
@@ -238,7 +238,7 @@ export const FIELD_SETS = Object.freeze({
   },
   geneticModifiersFieldSet: {
     filterName: "geneticModifiersFilter",
-    fields: ["diseaseGeneticModifiers.symbol", "diseaseGeneticModifiers.name", "diseaseGeneticModifiers.curie"],
+    fields: ["diseaseGeneticModifiers.symbol", "diseaseGeneticModifiers.name", "diseaseGeneticModifiers.curie", "diseaseGeneticModifiers.modEntityId", "diseaseGeneticModifiers.modInternalId"],
   },
   geneticModifierRelationFieldSet: {
     filterName: "geneticModifierRelationFilter",
@@ -274,11 +274,11 @@ export const FIELD_SETS = Object.freeze({
   },
   inferredAlleleFieldSet: {
     filterName: "inferredAlleleFilter",
-    fields: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleSymbol.formatText", "inferredAllele.curie"],
+    fields: ["inferredAllele.alleleSymbol.displayText", "inferredAllele.alleleSymbol.formatText", "inferredAllele.curie", "inferredAllele.modEntityId", "inferredAllele.modInternalId"],
   },
   inferredGeneFieldSet: {
     filterName: "inferredGeneFilter",
-    fields: ["inferredGene.geneSymbol.displayText", "inferredGene.geneSymbol.formatText", "inferredGene.curie"]
+    fields: ["inferredGene.geneSymbol.displayText", "inferredGene.geneSymbol.formatText", "inferredGene.curie", "inferredGene.modEntityId", "inferredGene.modInternalId"]
   },
   internalFieldSet: {
     filterName: "internalFilter",
@@ -322,7 +322,7 @@ export const FIELD_SETS = Object.freeze({
   },
   objectGeneFieldSet: {
     filterName: "objectGeneFilter",
-    fields: ["objectGene.geneSymbol.displayText", "objectGene.geneSymbol.formatText", "objectGene.curie"],
+    fields: ["object.geneSymbol.displayText", "object.geneSymbol.formatText", "object.curie", "object.modEntityId", "object.modInternalId"],
   },
   obsoleteFieldSet: {
     filterName: "obsoleteFilter",
@@ -370,7 +370,7 @@ export const FIELD_SETS = Object.freeze({
   },
   sgdStrainBackgroundFieldSet: {
     filterName: "sgdStrainBackgroundFilter",
-    fields: ["sgdStrainBackground.name", "sgdStrainBackground.curie"],
+    fields: ["sgdStrainBackground.name", "sgdStrainBackground.curie", "sgdStrainBackground.modEntityId", "sgdStrainBackground.modInternalId"],
   },
   singleReferenceFieldSet: {
     filterName: "singleReferenceFilter",
@@ -414,11 +414,7 @@ export const FIELD_SETS = Object.freeze({
   },
   subjectFieldSet: {
     filterName: "subjectFilter",
-    fields: ["subject.symbol", "subject.name", "subject.curie"],
-  },
-  subjectGeneTaxonFieldSet: {
-    filterName: "subjectGeneTaxonFilter",
-    fields: ["subjectGene.taxon.name", "subjectGene.taxon.curie"],
+    fields: ["subject.symbol", "subject.name", "subject.curie", "subject.modEntityId", "subject.modInternalId"],
   },
   subtypeFieldSet: {
     filterName: "subtypeFilter",
@@ -478,7 +474,7 @@ export const FIELD_SETS = Object.freeze({
   },
   withFieldSet: {
     filterName: "withFilter",
-    fields: ["with.geneSymbol.displayText", "with.geneSymbol.formatText", "with.curie"],
+    fields: ["with.geneSymbol.displayText", "with.geneSymbol.formatText", "with.curie", "with.modEntityId", "with.modInternalId"],
   }
 });
 
