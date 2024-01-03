@@ -2072,35 +2072,6 @@ ALTER TABLE auditedobject DROP COLUMN old_id;
 ALTER TABLE auditedobject DROP COLUMN old_curie;
 ALTER TABLE auditedobject DROP COLUMN tablename;
 
-ALTER TABLE association_aud DROP COLUMN revtype;
-ALTER TABLE biologicalentity_aud DROP COLUMN revtype;
-ALTER TABLE bulkload_aud DROP COLUMN revtype;
-ALTER TABLE bulkloadfile_aud DROP COLUMN revtype;
-ALTER TABLE bulkloadfileexception_aud DROP COLUMN revtype;
-ALTER TABLE bulkloadfilehistory_aud DROP COLUMN revtype;
-ALTER TABLE bulkloadgroup_aud DROP COLUMN revtype;
-ALTER TABLE conditionrelation_aud DROP COLUMN revtype;
-ALTER TABLE crossreference_aud DROP COLUMN revtype;
-ALTER TABLE dataprovider_aud DROP COLUMN revtype;
-ALTER TABLE experimentalcondition_aud DROP COLUMN revtype;
-ALTER TABLE genetogeneorthology_aud DROP COLUMN revtype;
-ALTER TABLE informationcontententity_aud DROP COLUMN revtype;
-ALTER TABLE note_aud DROP COLUMN revtype;
-ALTER TABLE ontologyterm_aud DROP COLUMN revtype;
-ALTER TABLE organization_aud DROP COLUMN revtype;
-ALTER TABLE person_aud DROP COLUMN revtype;
-ALTER TABLE personsetting_aud DROP COLUMN revtype;
-ALTER TABLE reagent_aud DROP COLUMN revtype;
-ALTER TABLE resourcedescriptor_aud DROP COLUMN revtype;
-ALTER TABLE resourcedescriptorpage_aud DROP COLUMN revtype;
-ALTER TABLE slotannotation_aud DROP COLUMN revtype;
-ALTER TABLE species_aud DROP COLUMN revtype;
-ALTER TABLE synonym_aud DROP COLUMN revtype;
-ALTER TABLE vocabulary_aud DROP COLUMN revtype;
-ALTER TABLE vocabularyterm_aud DROP COLUMN revtype;
-ALTER TABLE vocabularytermset_aud DROP COLUMN revtype;
-
-/* Stop here to test
 INSERT INTO submittedobject_aud (id, rev) SELECT id, rev FROM biologicalentity_aud;
 INSERT INTO submittedobject_aud (id, rev) SELECT id, rev FROM reagent_aud;
 
@@ -2136,6 +2107,34 @@ INSERT INTO auditedobject_aud (id, rev, revtype) SELECT id, rev, revtype FROM sy
 INSERT INTO auditedobject_aud (id, rev, revtype) SELECT id, rev, revtype FROM vocabulary_aud;
 INSERT INTO auditedobject_aud (id, rev, revtype) SELECT id, rev, revtype FROM vocabularyterm_aud;
 INSERT INTO auditedobject_aud (id, rev, revtype) SELECT id, rev, revtype FROM vocabularytermset_aud;
+
+ALTER TABLE association_aud DROP COLUMN revtype;
+ALTER TABLE biologicalentity_aud DROP COLUMN revtype;
+ALTER TABLE bulkload_aud DROP COLUMN revtype;
+ALTER TABLE bulkloadfile_aud DROP COLUMN revtype;
+ALTER TABLE bulkloadfileexception_aud DROP COLUMN revtype;
+ALTER TABLE bulkloadfilehistory_aud DROP COLUMN revtype;
+ALTER TABLE bulkloadgroup_aud DROP COLUMN revtype;
+ALTER TABLE conditionrelation_aud DROP COLUMN revtype;
+ALTER TABLE crossreference_aud DROP COLUMN revtype;
+ALTER TABLE dataprovider_aud DROP COLUMN revtype;
+ALTER TABLE experimentalcondition_aud DROP COLUMN revtype;
+ALTER TABLE genetogeneorthology_aud DROP COLUMN revtype;
+ALTER TABLE informationcontententity_aud DROP COLUMN revtype;
+ALTER TABLE note_aud DROP COLUMN revtype;
+ALTER TABLE ontologyterm_aud DROP COLUMN revtype;
+ALTER TABLE organization_aud DROP COLUMN revtype;
+ALTER TABLE person_aud DROP COLUMN revtype;
+ALTER TABLE personsetting_aud DROP COLUMN revtype;
+ALTER TABLE reagent_aud DROP COLUMN revtype;
+ALTER TABLE resourcedescriptor_aud DROP COLUMN revtype;
+ALTER TABLE resourcedescriptorpage_aud DROP COLUMN revtype;
+ALTER TABLE slotannotation_aud DROP COLUMN revtype;
+ALTER TABLE species_aud DROP COLUMN revtype;
+ALTER TABLE synonym_aud DROP COLUMN revtype;
+ALTER TABLE vocabulary_aud DROP COLUMN revtype;
+ALTER TABLE vocabularyterm_aud DROP COLUMN revtype;
+ALTER TABLE vocabularytermset_aud DROP COLUMN revtype;
 
 SET session_replication_role = 'origin';
 
@@ -2573,4 +2572,3 @@ ALTER TABLE zfaterm ADD CONSTRAINT zfaterm_id_fk FOREIGN KEY (id) REFERENCES ana
 ALTER TABLE zfaterm_aud ADD CONSTRAINT zfaterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES anatomicalterm_aud (id, rev);
 ALTER TABLE zfsterm ADD CONSTRAINT zfsterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
 ALTER TABLE zfsterm_aud ADD CONSTRAINT zfsterm_aud_id_rev_fk FOREIGN KEY (id, rev) REFERENCES stageterm_aud (id, rev);
-*/
