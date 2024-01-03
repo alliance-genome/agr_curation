@@ -7,7 +7,8 @@ import { addDataKey } from "../utils";
 
 export const FunctionalImpactsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
-  const functionalImpacts = global.structuredClone(state.allele?.alleleFunctionalImpacts);
+  const entityType = "alleleFunctionalImpacts";
+  const functionalImpacts = global.structuredClone(state.allele?.[entityType]);
 
   const createNewFunctionalImpactsHandler = (e) => {
     e.preventDefault();
@@ -21,7 +22,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     dispatch({
       type: "ADD_ROW",
       row: newFunctionalImpact,
-      entityType: "alleleFunctionalImpacts",
+      entityType: entityType,
     });
   };
 
@@ -34,7 +35,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({
       type: 'EDIT_ROW',
-      entityType: 'alleleFunctionalImpacts',
+      entityType: entityType,
       index: props.rowIndex,
       field: "functionalImpacts",
       value: event.target.value
@@ -48,7 +49,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     setFieldValue(value);
     dispatch({
       type: 'EDIT_ROW',
-      entityType: 'alleleFunctionalImpacts',
+      entityType: entityType,
       index: props.rowIndex,
       field: "phenotypeTerm",
       value: value,
@@ -58,7 +59,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
   const phenotypeStatementOnChangeHandler = (rowIndex, event) => {
     dispatch({
       type: 'EDIT_ROW',
-      entityType: 'alleleFunctionalImpacts',
+      entityType: entityType,
       index: rowIndex,
       field: "phenotypeStatement",
       value: event.target.value
@@ -68,7 +69,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     props.editorCallback(event.target.value?.name); 
     dispatch({
       type: 'EDIT_ROW',
-      entityType: 'alleleFunctionalImpacts',
+      entityType: entityType,
       index: props.rowIndex,
       field: "internal",
       value: event.target?.value?.name
@@ -80,17 +81,19 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({
       type: 'EDIT_ROW',
-      entityType: 'alleleFunctionalImpacts',
+      entityType: entityType,
       index: props.rowIndex,
       field: "evidence",
       value: event.target.value
     });
   };
 
-  const deletionHandler = (event, index) => {
-    event.preventDefault();
-    dispatch({ type: "DELETE_ROW", entityType: "alleleFunctionalImpacts", index: index });
-    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFunctionalImpacts", errorMessages: [] });
+  const deletionHandler = (e, dataKey) => {
+    e.preventDefault();
+    const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
+    delete updatedErrorMessages[dataKey];
+    dispatch({ type: "DELETE_ROW", entityType: entityType, dataKey });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
   return (
@@ -98,11 +101,11 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
       table={
         <FunctionalImpactsFormTable
           functionalImpacts={functionalImpacts}
-          editingRows={state.entityStates.alleleFunctionalImpacts.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleFunctionalImpacts.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           functionalImpactsOnChangeHandler={functionalImpactsOnChangeHandler}
           phenotypeTermOnChangeHandler={phenotypeTermOnChangeHandler}
           phenotypeStatementOnChangeHandler={phenotypeStatementOnChangeHandler}
@@ -111,7 +114,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
         />
       }
       tableName="Functional Impacts"
-      showTable={state.entityStates.alleleFunctionalImpacts.show}
+      showTable={state.entityStates[entityType].show}
       button={<Button label="Add Functional Impact" onClick={createNewFunctionalImpactsHandler} className="w-4 p-button-text" />}
     />
   );
