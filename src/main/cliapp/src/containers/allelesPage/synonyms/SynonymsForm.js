@@ -6,7 +6,8 @@ import { addDataKey } from "../utils";
 
 export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
-  const synonyms = global.structuredClone(state.allele?.alleleSynonyms);
+  const entityType = "alleleSynonyms";
+  const synonyms = global.structuredClone(state.allele?.[entityType]);
 
   const createNewSynonymHandler = (e) => {
     e.preventDefault();
@@ -24,7 +25,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     dispatch({
       type: "ADD_ROW", 
       row: newSynonym, 
-      entityType: "alleleSynonyms", 
+      entityType: entityType, 
     })
   };
 
@@ -36,7 +37,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "nameType", 
       value: event.target.value
@@ -47,7 +48,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "internal", 
       value: event.target?.value?.name
@@ -58,7 +59,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "synonymScope", 
       value: event.target.value
@@ -68,7 +69,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
   const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
+      entityType: entityType, 
       index: rowIndex, 
       field: field, 
       value: event.target.value
@@ -80,17 +81,20 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSynonyms', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "evidence", 
       value: event.target.value
     });
   }
 
-  const deletionHandler  = (e, index) => {
+
+  const deletionHandler = (e, dataKey) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", entityType: "alleleSynonyms", index: index});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleSynonyms", errorMessages: []});
+    const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
+    delete updatedErrorMessages[dataKey];
+    dispatch({ type: "DELETE_ROW", entityType: entityType, dataKey });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
   return (
@@ -99,11 +103,11 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
       table={
         <SynonymsFormTable
           synonyms={synonyms}
-          editingRows={state.entityStates.alleleSynonyms.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleSynonyms.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           textOnChangeHandler={textOnChangeHandler}
           synonymScopeOnChangeHandler={synonymScopeOnChangeHandler}
           nameTypeOnChangeHandler={nameTypeOnChangeHandler}
@@ -112,7 +116,7 @@ export const SynonymsForm = ({ labelColumnSize, state, dispatch }) => {
         />
       }
       tableName="Synonyms"
-      showTable={state.entityStates.alleleSynonyms.show}
+      showTable={state.entityStates[entityType].show}
       button={<Button label="Add Synonym" onClick={createNewSynonymHandler} className="w-4 p-button-text"/>}
     />
   );
