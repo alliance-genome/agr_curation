@@ -83,7 +83,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   const deletionHandler  = (e) => {
     e.preventDefault();
     dispatch({type: "DELETE_OBJECT", entityType: "alleleFullName"});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFullName", errorMessages: []});
+    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFullName", errorMessages: {}});
   };
 
   return (
