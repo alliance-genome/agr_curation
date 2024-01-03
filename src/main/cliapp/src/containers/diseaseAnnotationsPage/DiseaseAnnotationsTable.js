@@ -99,7 +99,7 @@ export const DiseaseAnnotationsTable = () => {
 			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
 			newAnnotationDispatch({type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: true});
 		}
-		
+
 		if(rowData.type === "AlleleDiseaseAnnotation") {
 			newAnnotationDispatch({type: "SET_IS_ASSERTED_GENE_ENABLED", value: true});
 		}
@@ -107,7 +107,7 @@ export const DiseaseAnnotationsTable = () => {
 		if(rowData.relatedNotes && rowData.relatedNotes.length > 0){
 			newAnnotationDispatch({type: "SET_RELATED_NOTES_EDITING_ROWS", relatedNotes: rowData.relatedNotes})
 		}
-		
+
 		if(rowData.conditionRelations && rowData.conditionRelations.length > 0){
 			newAnnotationDispatch({type: "SET_CONDITION_RELATIONS_EDITING_ROWS", conditionRelations: rowData.conditionRelations})
 		}
@@ -175,7 +175,11 @@ export const DiseaseAnnotationsTable = () => {
 					</EllipsisTableCell>
 				);
 			};
-			return <ListTableCell template={listTemplate} listData={sortedWithGenes}/>
+			return(
+				<div className= "-my-4 p-1">
+					<ListTableCell template={listTemplate} listData={sortedWithGenes}/>
+				</div>
+			);
 		}
 	};
 
@@ -192,7 +196,7 @@ export const DiseaseAnnotationsTable = () => {
 			const identifier = getIdentifier(rowData.assertedGenes[0]);
 			return (
 				<>
-					<div className={`a${rowData.id}${identifier.replace(':', '')}`}>
+					<div className={`-my-4 p-1 a${rowData.id}${identifier.replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={sortedAssertedGenes}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
@@ -215,7 +219,7 @@ export const DiseaseAnnotationsTable = () => {
 			};
 			return (
 				<>
-					<div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
+					<div className={`-my-4 p-1 a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
@@ -351,7 +355,11 @@ export const DiseaseAnnotationsTable = () => {
 		if (rowData && rowData.diseaseQualifiers) {
 			const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
 			const listTemplate = (item) => item.name;
-			return <ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers}/>
+			return(
+				<div className= "-my-4 p-1">
+					<ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers}/>
+				</div>
+			)
 		}
 	};
 
@@ -366,7 +374,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-					<span style={{ textDecoration: 'underline' }}>
+					<span className="-my-4 p-1 underline">
 						{`Notes(${rowData.relatedNotes.length})`}
 					</span>
 				</Button>
@@ -415,7 +423,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span style={{ textDecoration: 'underline' }}>
+					<span className= "-my-4 p-1 underline">
 						{`Conditions (${rowData.conditionRelations.length})`}
 					</span>
 				</Button>
@@ -471,7 +479,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span style={{ textDecoration: 'underline' }}>
+					<span class= "-my-4 p-1 underline">
 						{handle && handle}
 					</span>
 				</Button>
@@ -1160,7 +1168,7 @@ export const DiseaseAnnotationsTable = () => {
 			};
 			return (
 				<>
-					<div className={`a${rowData.id}${getIdentifier(rowData.diseaseGeneticModifiers[0]).replace(':', '')}`}>
+					<div className={`-my-4 p-1 a${rowData.id}${getIdentifier(rowData.diseaseGeneticModifiers[0]).replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
 					</div>
 					<Tooltip target={`.a${rowData.id}${getIdentifier(rowData.diseaseGeneticModifiers[0]).replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
@@ -1323,7 +1331,7 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 		editor: (props) => referenceEditorTemplate(props),
-		
+
 	},
 	{
 		field: "evidenceCodes.abbreviation",
