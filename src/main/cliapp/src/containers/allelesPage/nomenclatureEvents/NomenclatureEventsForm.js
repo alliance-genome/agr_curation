@@ -6,7 +6,8 @@ import { addDataKey } from "../utils";
 
 export const NomenclatureEventsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
-  const nomenclatureEvents = global.structuredClone(state.allele?.alleleNomenclatureEvents);
+  const entityType = "alleleNomenclatureEvents";
+  const nomenclatureEvents = global.structuredClone(state.allele?.[entityType]);
 
   const createNewNomenclatureEventHandler = (e) => {
     e.preventDefault();
@@ -21,7 +22,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
     dispatch({
       type: "ADD_ROW", 
       row: newNomenclatureEvent, 
-      entityType: "alleleNomenclatureEvents", 
+      entityType: entityType, 
     })
   };
 
@@ -33,7 +34,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
     props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleNomenclatureEvents', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "nomenclatureEvent", 
       value: event.target.value
@@ -44,7 +45,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
     props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleNomenclatureEvents', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "internal", 
       value: event.target?.value?.name
@@ -55,7 +56,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
     props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleNomenclatureEvents', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "obsolete", 
       value: event.target?.value?.name
@@ -67,17 +68,19 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleNomenclatureEvents', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "evidence", 
       value: event.target.value
     });
   }
 
-  const deletionHandler  = (e, index) => {
+  const deletionHandler = (e, dataKey) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", entityType: "alleleNomenclatureEvents", index: index});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleNomenclatureEvents", errorMessages: []});
+    const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
+    delete updatedErrorMessages[dataKey];
+    dispatch({ type: "DELETE_ROW", entityType: entityType, dataKey });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
   return (
@@ -85,11 +88,11 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
       table={
         <NomenclatureEventsFormTable
           nomenclatureEvents={nomenclatureEvents}
-          editingRows={state.entityStates.alleleNomenclatureEvents.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleNomenclatureEvents.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           nomenclatureEventOnChangeHandler={nomenclatureEventOnChangeHandler}
           obsoleteOnChangeHandler={obsoleteOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
@@ -97,7 +100,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
         />
       }
       tableName="Nomenclature Events"
-      showTable={state.entityStates.alleleNomenclatureEvents.show}
+      showTable={state.entityStates[entityType].show}
       button={<Button label="Add Nomenclature Event" onClick={createNewNomenclatureEventHandler} className="w-4 p-button-text"/>}
     />
   );
