@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
@@ -49,7 +50,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
 			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne
+	@OneToOne(fetch = FetchType.EAGER)
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
 	private Gene objectGene;

@@ -12,6 +12,7 @@ import { InternalEditor } from './Editors/InternalEditor';
 import { ValidationService } from '../service/ValidationService';
 import { VocabularyTermSetEditor } from './Editors/VocabularyTermSetEditor';
 import { validate } from '../utils/utils';
+import { addDataKey } from '../containers/allelesPage/utils';
 
 export const RelatedNotesDialogEditOnly = ({
   relatedNotesData,
@@ -64,12 +65,15 @@ export const RelatedNotesDialogEditOnly = ({
     setEditingRows(rowsObject);
   };
 
-  const deletionHandler = (e, index) => {
+  const deletionHandler = (e, dataKey) => {
     e.preventDefault();
     let _localRelatedNotes = global.structuredClone(localRelatedNotes);
-    _localRelatedNotes.splice(index, 1);
     let _errorMessages = global.structuredClone(errorMessages);
-    _errorMessages.splice(index, 1);
+    const index = _localRelatedNotes.findIndex(relatedNote => relatedNote.dataKey === dataKey);
+    if (index !== -1) {
+      _localRelatedNotes.splice(index, 1);
+      _errorMessages.splice(index, 1);
+    }
     setLocalRelatedNotes(_localRelatedNotes);
     setErrorMessages(_errorMessages);
   };
@@ -171,16 +175,19 @@ export const RelatedNotesDialogEditOnly = ({
   };
 
   const createNewNoteHandler = () => {
-    let cnt = localRelatedNotes ? localRelatedNotes.length : 0;
     const _localRelatedNotes = global.structuredClone(localRelatedNotes);
-    _localRelatedNotes.push({
-      dataKey: cnt,
+    const newNote = {
       noteType: {
         name: defaultValues['noteType'] || " "
       },
       internal: false
-    });
-    let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+    };
+
+    addDataKey(newNote);
+
+    _localRelatedNotes.push(newNote);
+
+    let _editingRows = { ...editingRows, ...{ [`${newNote.dataKey}`]: true } };
     setLocalRelatedNotes(_localRelatedNotes);
     setEditingRows(_editingRows);
   };
@@ -226,9 +233,9 @@ export const RelatedNotesDialogEditOnly = ({
     <div>
       <Dialog visible={dialogIsVisible} className='w-8' modal onHide={hideDialog} closable onShow={showDialogHandler} footer={footerTemplate}>
         <h3>Related Notes</h3>
-        <DataTable value={localRelatedNotes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+        <DataTable value={localRelatedNotes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} size='small'
           editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
-          <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
+          <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
             className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
           <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' />
           <Column

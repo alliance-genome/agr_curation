@@ -118,8 +118,5 @@ export const processTableErrors = (tableErrors, dispatch, entityType, table) => 
       };
     });
   });
-  console.log("entity type", entityType);
-  console.log("table", table);
-  console.log("errors", errors);
   dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors });
 };
