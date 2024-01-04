@@ -37,6 +37,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -58,7 +59,8 @@ public class AuditedObject extends BaseEntity {
 	@Id
 	@DocumentId
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auditedobject_seq_generator")
+	@SequenceGenerator(name = "auditedobject_seq_generator", sequenceName = "auditedobject_seq", allocationSize = 1)
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class, VocabularyTermSetView.class })
 	@EqualsAndHashCode.Include
 	protected Long id;
