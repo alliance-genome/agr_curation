@@ -10,10 +10,10 @@ public class View {
 
 	public static class ConditionRelationView extends FieldsOnly {
 	}
-	
+
 	public static class ConditionRelationCreateView extends ConditionRelationView {
 	}
-	
+
 	public static class ConditionRelationUpdateView extends ConditionRelationView {
 	}
 
@@ -28,10 +28,10 @@ public class View {
 
 	public static class VocabularyTermSetView extends FieldsOnly {
 	}
-	
+
 	public static class ResourceDescriptorView extends FieldsOnly {
 	}
-	
+
 	public static class ResourceDescriptorPageView extends FieldsOnly {
 	}
 
@@ -40,7 +40,7 @@ public class View {
 
 	public static class ReportHistory extends FieldsOnly {
 	}
-	
+
 	public static class ConstructView extends FieldsOnly {
 	}
 
@@ -55,7 +55,7 @@ public class View {
 
 	public static class AlleleView extends FieldsOnly {
 	}
-	
+
 	public static class AlleleDetailView extends AlleleView {
 	}
 
@@ -67,7 +67,7 @@ public class View {
 
 	public static class GeneView extends FieldsOnly {
 	}
-	
+
 	public static class GeneDetailView extends GeneView {
 	}
 
@@ -90,6 +90,9 @@ public class View {
 	}
 
 	public static class PrivateOnlyView {
+	}
+
+	public static class BulkLoadFileHistoryView extends FieldsOnly{
 	}
 
 }
