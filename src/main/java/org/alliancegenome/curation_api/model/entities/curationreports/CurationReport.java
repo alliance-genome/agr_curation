@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -24,7 +23,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data

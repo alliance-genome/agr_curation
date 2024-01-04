@@ -4,7 +4,6 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -19,7 +18,6 @@ import lombok.ToString;
 	@JsonSubTypes.Type(value = SingleReferenceAssociation.class, name = "SingleReferenceAssociation"),
 	@JsonSubTypes.Type(value = EvidenceAssociation.class, name = "EvidenceAssociation")
 })
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)

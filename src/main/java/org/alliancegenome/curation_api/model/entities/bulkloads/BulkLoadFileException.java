@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.envers.Audited;
 import org.hibernate.type.SqlTypes;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -21,7 +20,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @AllArgsConstructor

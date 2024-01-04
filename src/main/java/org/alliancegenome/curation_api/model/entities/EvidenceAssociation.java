@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.model.entities.associations.alleleAssocia
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -31,7 +30,6 @@ import lombok.EqualsAndHashCode;
 	@JsonSubTypes.Type(value = AlleleGenomicEntityAssociation.class, name = "AlleleGenomicEntityAssociation"),
 	@JsonSubTypes.Type(value = ConstructGenomicEntityAssociation.class, name = "ConstructGenomicEntityAssociation")
 })
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
