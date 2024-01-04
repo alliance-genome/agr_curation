@@ -20,7 +20,6 @@ import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -93,11 +92,9 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 					idsAdded.add(annotation.getId());
 				}
 			} catch (ObjectUpdateException e) {
-				Log.info("EXCEPTION 1: " + e.getData());
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
-				Log.info("EXCEPTION 2: ");
 				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage(), e.getStackTrace()));

@@ -28,5 +28,5 @@ public interface ReferenceCrudInterface extends CurieObjectCrudInterface<Referen
 	@GET
 	@Path("/sync/{id}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<Reference> synchroniseReference(@PathParam("curie") Long id);
+	public ObjectResponse<Reference> synchroniseReference(@PathParam("id") Long id);
 }

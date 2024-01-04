@@ -36,7 +36,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -60,7 +59,7 @@ public class Allele extends GenomicEntity {
 
 	@IndexedEmbedded(includePaths = {"primaryCrossReferenceCurie", "crossReferences.referencedCurie", "crossReferences.displayName", "curie", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany
 	@Fetch(FetchMode.JOIN)
 	@JoinTable(indexes = {
 		@Index(name = "allele_reference_allele_index", columnList = "allele_id"),

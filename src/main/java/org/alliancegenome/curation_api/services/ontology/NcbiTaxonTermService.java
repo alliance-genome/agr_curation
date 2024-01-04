@@ -106,9 +106,8 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 		} else {
 			taxon.setObsolete(true);
 		}
-		ncbiTaxonTermDAO.persist(taxon);
 
-		return taxon;
+		return ncbiTaxonTermDAO.persist(taxon);
 	}
 
 }
