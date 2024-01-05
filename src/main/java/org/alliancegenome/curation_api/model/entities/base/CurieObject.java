@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.entities.base;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -32,6 +33,7 @@ import lombok.ToString;
 		@UniqueConstraint(name = "curieobject_curie_uk", columnNames = "curie")
 	}
 )
+@Schema(name = "CurieObject", description = "POJO that represents the CurieObject")
 public class CurieObject extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

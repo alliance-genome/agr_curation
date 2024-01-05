@@ -5,6 +5,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -44,6 +45,7 @@ import lombok.ToString;
 		@UniqueConstraint(name = "submittedobject_modinternalid_uk", columnNames = "modinternalid"),
 	}
 )
+@Schema(name = "SubmittedObject", description = "POJO that represents the SubmittedObject")
 public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

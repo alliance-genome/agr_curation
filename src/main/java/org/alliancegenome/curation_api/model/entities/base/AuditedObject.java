@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.view.View;
 import org.alliancegenome.curation_api.view.View.VocabularyTermSetView;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -52,6 +53,7 @@ import lombok.ToString;
 		@Index(name = "auditedobject_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "auditedobject_updatedby_index", columnList = "updatedBy_id")
 })
+@Schema(name = "AuditedObject", description = "POJO that represents the AuditedObject")
 public class AuditedObject extends BaseEntity {
 
 	@Id
