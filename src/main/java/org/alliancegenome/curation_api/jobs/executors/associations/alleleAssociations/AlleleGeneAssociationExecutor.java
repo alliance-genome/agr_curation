@@ -19,7 +19,6 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -88,11 +87,9 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 					idsAdded.add(association.getId());
 				}
 			} catch (ObjectUpdateException e) {
-				Log.info("EXCEPTION 1: " + e.getData());
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
-				Log.info("EXCEPTION 2: " + e.getLocalizedMessage());
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(associationDTO, e.getMessage(), e.getStackTrace()));
 			}
