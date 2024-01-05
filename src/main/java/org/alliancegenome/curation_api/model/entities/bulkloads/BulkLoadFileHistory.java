@@ -46,21 +46,22 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
 	private Long completedRecords = 0l;
-	
+
 	@JsonView({ View.FieldsOnly.class })
 	private Long totalDeleteRecords = 0l;
-	
+
 	@JsonView({ View.FieldsOnly.class })
 	private Long deletedRecords = 0l;
-	
+
 	@JsonView({ View.FieldsOnly.class })
 	private Long deleteFailedRecords = 0l;
-	
+
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BulkLoadFile bulkLoadFile;
 
 	@OneToMany(mappedBy = "bulkLoadFileHistory")
+	@JsonView(View.BulkLoadFileHistoryView.class)
 	private List<BulkLoadFileException> exceptions = new ArrayList<>();
 
 	public BulkLoadFileHistory(long totalRecords) {
@@ -72,12 +73,12 @@ public class BulkLoadFileHistory extends AuditedObject {
 	public void incrementCompleted() {
 		completedRecords++;
 	}
-	
+
 	@Transient
 	public void incrementFailed() {
 		failedRecords++;
 	}
-	
+
 	@Transient
 	public void incrementDeleted() {
 		deletedRecords++;
