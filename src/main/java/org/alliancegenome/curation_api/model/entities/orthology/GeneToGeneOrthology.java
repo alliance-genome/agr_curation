@@ -14,8 +14,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -25,7 +23,6 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
 @ToString(callSuper = true)
 @Schema(name = "GeneToGeneOrthology", description = "POJO that represents orthology between two genes")
 @AGRCurationSchemaVersion(min = "1.7.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
