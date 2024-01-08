@@ -10,9 +10,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDocumentService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 public abstract class BaseDocumentController<S extends BaseDocumentService<E, D>, E extends BaseDocument, D extends BaseDocumentDAO<E>> implements BaseIdDocumentInterface<E> {
 
 	private BaseDocumentService<E, D> service;

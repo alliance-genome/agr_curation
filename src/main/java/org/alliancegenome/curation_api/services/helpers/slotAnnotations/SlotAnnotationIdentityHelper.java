@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -36,12 +33,15 @@ import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
 @RequestScoped
 public class SlotAnnotationIdentityHelper {
 	
 	@Inject ReferenceService refService;
 	
-	public static String alleleMutationTypesIdentity(AlleleMutationTypeSlotAnnotation annotation) {
+	public static String alleleMutationTypeIdentity(AlleleMutationTypeSlotAnnotation annotation) {
 		String identity = "";
 		if (CollectionUtils.isNotEmpty(annotation.getMutationTypes())) {
 			List<String> mutationTypeCuries = annotation.getMutationTypes().stream().map(SOTerm::getCurie).collect(Collectors.toList());
@@ -51,7 +51,7 @@ public class SlotAnnotationIdentityHelper {
 		return identity + "|" + slotAnnotationIdentity(annotation);
 	}
 	
-	public String alleleMutationTypesDtoIdentity(AlleleMutationTypeSlotAnnotationDTO dto) {
+	public String alleleMutationTypeDtoIdentity(AlleleMutationTypeSlotAnnotationDTO dto) {
 		String identity = "";
 		List<String> mutationTypeCuries = dto.getMutationTypeCuries();
 		if (CollectionUtils.isNotEmpty(mutationTypeCuries)) {
@@ -74,19 +74,19 @@ public class SlotAnnotationIdentityHelper {
 		return StringUtils.join(List.of(gts, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
-	public static String alleleNomenclatureEventsIdentity(AlleleNomenclatureEventSlotAnnotation annotation) {
+	public static String alleleNomenclatureEventIdentity(AlleleNomenclatureEventSlotAnnotation annotation) {
 		String ne = annotation.getNomenclatureEvent() == null ? "" : annotation.getNomenclatureEvent().getName();
 		
 		return StringUtils.join(List.of(ne, slotAnnotationIdentity(annotation)), "|");
 	}
 	
-	public String alleleNomenclatureEventsDtoIdentity(AlleleNomenclatureEventSlotAnnotationDTO dto) {
+	public String alleleNomenclatureEventDtoIdentity(AlleleNomenclatureEventSlotAnnotationDTO dto) {
 		String ne = StringUtils.isBlank(dto.getNomenclatureEventName()) ? "" : dto.getNomenclatureEventName();
 	
 		return StringUtils.join(List.of(ne, slotAnnotationDtoIdentity(dto)), "|");
 	}
 	
-	public static String alleleFunctionalImpactsIdentity(AlleleFunctionalImpactSlotAnnotation annotation) {
+	public static String alleleFunctionalImpactIdentity(AlleleFunctionalImpactSlotAnnotation annotation) {
 		String functionalImpactNameString = "";
 		if (CollectionUtils.isNotEmpty(annotation.getFunctionalImpacts())) {
 			List<String> functionalImpactNames = annotation.getFunctionalImpacts().stream().map(VocabularyTerm::getName).collect(Collectors.toList());
@@ -99,7 +99,7 @@ public class SlotAnnotationIdentityHelper {
 		return StringUtils.join(List.of(functionalImpactNameString, phenotypeTerm, phenotypeStatement, slotAnnotationIdentity(annotation)), "|");
 	}
 	
-	public String alleleFunctionalImpactsDtoIdentity(AlleleFunctionalImpactSlotAnnotationDTO dto) {
+	public String alleleFunctionalImpactDtoIdentity(AlleleFunctionalImpactSlotAnnotationDTO dto) {
 		String functionalImpactNameString = "";
 		List<String> functionalImpactNames = dto.getFunctionalImpactNames();
 		if (CollectionUtils.isNotEmpty(functionalImpactNames)) {

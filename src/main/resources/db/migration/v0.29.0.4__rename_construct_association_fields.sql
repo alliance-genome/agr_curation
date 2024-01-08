@@ -1,0 +1,8 @@
+ALTER TABLE constructgenomicentityassociation RENAME subject_id TO subjectconstruct_id;
+ALTER TABLE constructgenomicentityassociation_aud RENAME subject_id TO subjectconstruct_id;
+
+ALTER TABLE constructgenomicentityassociation RENAME object_curie TO objectgenomicentity_curie;
+ALTER TABLE constructgenomicentityassociation_aud RENAME object_curie TO objectgenomicentity_curie;
+
+ALTER TABLE allelegeneassociation RENAME object_curie TO objectgene_curie;
+ALTER TABLE allelegeneassociation_aud RENAME object_curie TO objectgene_curie;

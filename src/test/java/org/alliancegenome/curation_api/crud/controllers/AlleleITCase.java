@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -245,7 +244,7 @@ public class AlleleITCase extends BaseITCase {
 			body("entity.inCollection.name", is(mmpInCollection.getName())).
 			body("entity.isExtinct", is(false)).
 			body("entity.references[0].curie", is(reference.getCurie())).
-			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.relatedNotes", hasSize(1)).
@@ -395,7 +394,7 @@ public class AlleleITCase extends BaseITCase {
 			body("entity.curie", is(ALLELE)).
 			body("entity.inCollection.name", is(wgsInCollection.getName())).
 			body("entity.references[0].curie", is(reference2.getCurie())).
-			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.taxon.curie", is(taxon2.getCurie())).
@@ -1436,7 +1435,7 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.relatedNotes", is(ValidationConstants.DUPLICATE_MESSAGE + " (Test text|comment|false|false)"));
+			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|comment|false|false)"));
 	}
 
 	@Test

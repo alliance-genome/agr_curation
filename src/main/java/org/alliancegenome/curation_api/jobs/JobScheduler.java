@@ -3,14 +3,14 @@ package org.alliancegenome.curation_api.jobs;
 import java.io.File;
 import java.time.ZonedDateTime;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadGroupDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadFileJobEvent;
+import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadJobEvent;
+import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
+import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
@@ -27,13 +27,27 @@ import com.cronutils.parser.CronParser;
 
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
-import io.vertx.mutiny.core.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class JobScheduler {
 
+	//@Inject
+	//EventBus bus;
+	
 	@Inject
-	EventBus bus;
+	Event<PendingBulkLoadJobEvent> pendingJobEvents;
+	
+	@Inject
+	Event<StartedBulkLoadJobEvent> startedJobEvents;
+	
+	@Inject
+	Event<StartedBulkLoadFileJobEvent> startedFileJobEvents;
+	
 	@Inject
 	BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject
@@ -52,13 +66,17 @@ public class JobScheduler {
 	@PostConstruct
 	public void init() {
 		// Set any running jobs to failed as the server has restarted
-		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
+		//Log.info("Init: ");
+		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
 		for (BulkLoadGroup g : groups.getResults()) {
 			if (g.getLoads().size() > 0) {
 				for (BulkLoad b : g.getLoads()) {
 					for (BulkLoadFile bf : b.getLoadFiles()) {
 						if (bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
-							new File(bf.getLocalFilePath()).delete();
+							if(bf.getLocalFilePath() != null) {
+								File file = new File(bf.getLocalFilePath());
+								if(file.exists()) file.delete();
+							}
 							bf.setLocalFilePath(null);
 							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 							bf.setBulkloadStatus(JobStatus.FAILED);
@@ -80,16 +98,15 @@ public class JobScheduler {
 	}
 
 	@Scheduled(every = "1s")
-	public void scheduleGroupJobs() {
+	public void scheduleCronGroupJobs() {
 		if (loadSchedulingEnabled) {
 			ZonedDateTime start = ZonedDateTime.now();
 			// log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
-			SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
+			SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
 			for (BulkLoadGroup g : groups.getResults()) {
 				if (g.getLoads().size() > 0) {
 					for (BulkLoad b : g.getLoads()) {
-						if (b instanceof BulkScheduledLoad) {
-							BulkScheduledLoad bsl = (BulkScheduledLoad) b;
+						if (b instanceof BulkScheduledLoad bsl) {
 							if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null) {
 
 								CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
@@ -107,6 +124,7 @@ public class JobScheduler {
 											bsl.setSchedulingErrorMessage(null);
 											bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
 											bulkLoadDAO.merge(bsl);
+											pendingJobEvents.fire(new PendingBulkLoadJobEvent(bsl.getId()));
 										}
 									}
 								} catch (Exception e) {
@@ -125,18 +143,27 @@ public class JobScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
-	public void runGroupJobs() {
-		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
-		for (BulkLoadGroup group : groups.getResults()) {
-			for (BulkLoad load : group.getLoads()) {
-				if (load.getBulkloadStatus() == null)
-					load.setBulkloadStatus(JobStatus.FINISHED);
-				if (load.getBulkloadStatus().isPending()) {
-					load.setBulkloadStatus(load.getBulkloadStatus().getNextStatus());
-					bulkLoadDAO.merge(load);
-					bus.send(load.getClass().getSimpleName(), load);
-				}
+	public void pendingJobs(@Observes PendingBulkLoadJobEvent event) {
+		//Log.info("pendingJobs: " + event.getId());
+		BulkLoad load = bulkLoadDAO.find(event.getId());
+		if(load != null) {
+			if (load.getBulkloadStatus().isPending()) {
+				load.setBulkloadStatus(load.getBulkloadStatus().getNextStatus());
+				bulkLoadDAO.merge(load);
+				//Log.info("Firing Start Event: " + load.getId());
+				startedJobEvents.fire(new StartedBulkLoadJobEvent(load.getId()));
+			}
+		}
+	}
+	public void pendingFileJobs(@Observes PendingBulkLoadFileJobEvent event) {
+		//Log.info("pendingFileJobs: " + event.getId());
+		BulkLoadFile fileLoad = bulkLoadFileDAO.find(event.getId());
+		if(fileLoad != null) {
+			if (fileLoad.getBulkloadStatus().isPending()) {
+				fileLoad.setBulkloadStatus(fileLoad.getBulkloadStatus().getNextStatus());
+				bulkLoadFileDAO.merge(fileLoad);
+				//Log.info("Firing Start Event: " + fileLoad.getId());
+				startedFileJobEvents.fire(new StartedBulkLoadFileJobEvent(fileLoad.getId()));
 			}
 		}
 	}
@@ -156,18 +183,4 @@ public class JobScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
-	public void runFileJobs() {
-		SearchResponse<BulkLoadFile> res = bulkLoadFileDAO.findAll(null);
-		for (BulkLoadFile file : res.getResults()) {
-			if (file.getBulkloadStatus() == null)
-				file.setBulkloadStatus(JobStatus.FINISHED);
-			if (file.getBulkloadStatus().isPending()) {
-				file.setBulkloadStatus(file.getBulkloadStatus().getNextStatus());
-				file.setErrorMessage(null);
-				bulkLoadFileDAO.merge(file);
-				bus.send("bulkloadfile", file);
-			}
-		}
-	}
 }

@@ -5,6 +5,7 @@ import { useRef } from "react";
 
 export const RelatedNotesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
+  const relatedNotes = global.structuredClone(state.allele?.relatedNotes);
 
   const createNewRelatedNoteHandler = (e) => {
     e.preventDefault();
@@ -30,7 +31,7 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
   };
 
   const noteTypeOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'relatedNotes', 
@@ -41,7 +42,7 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
   };
   
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'relatedNotes', 
@@ -83,7 +84,7 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
     <FormTableWrapper
       table={
         <RelatedNotesFormTable
-          relatedNotes={state.allele?.relatedNotes}
+          relatedNotes={relatedNotes}
           editingRows={state.entityStates.relatedNotes.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}

@@ -3,7 +3,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
-export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFilters, onFilter, endpoint }) {
+export function FilterComponentMultiSelect({ isInEditMode, filterConfig, currentFilters, onFilter, endpoint }) {
 	const [selectedOptions, setSelectedOptions] = useState([]);
 	const [selectableOptions, setSelectableOptions] = useState([]);
 
@@ -71,7 +71,7 @@ export function FilterComponentMultiSelect({ isEnabled, filterConfig, currentFil
 
 	return (
 		<MultiSelect
-			disabled={!isEnabled}
+			disabled={isInEditMode}
 			value={selectedOptions}
 			options={selectableOptions}
 			placeholder="Select"

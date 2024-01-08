@@ -3,8 +3,9 @@ package org.alliancegenome.curation_api.resources;
 import java.time.Duration;
 
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.*;
-import org.testcontainers.utility.*;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.utility.Base58;
+import org.testcontainers.utility.DockerImageName;
 
 public class OpenSearchContainer extends GenericContainer<OpenSearchContainer> {
 
@@ -15,7 +16,7 @@ public class OpenSearchContainer extends GenericContainer<OpenSearchContainer> {
 	public OpenSearchContainer(final DockerImageName dockerImageName) {
 		super(dockerImageName);
 
-		logger().info("Starting an elasticsearch container using [{}]", dockerImageName);
+		logger().info("Starting an opensearch container using [{}]", dockerImageName);
 
 		withNetworkAliases("opensearch-" + Base58.randomString(6));
 		withEnv("discovery.type", "single-node");

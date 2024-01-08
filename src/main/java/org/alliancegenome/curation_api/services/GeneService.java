@@ -6,17 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
@@ -35,6 +26,10 @@ import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -51,14 +46,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
 	PersonService personService;
-	@Inject
-	GeneSymbolSlotAnnotationDAO geneSymbolDAO;
-	@Inject
-	GeneFullNameSlotAnnotationDAO geneFullNameDAO;
-	@Inject
-	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
-	@Inject
-	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
 	@Inject
 	GeneToGeneOrthologyService orthologyService;
 	@Inject
@@ -136,7 +123,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 				gene.setObsolete(true);
 				geneDAO.persist(gene);
 			} else {
-				deleteGeneSlotAnnotations(gene);
 				geneDAO.remove(curie);
 			}
 		} else {
@@ -148,27 +134,11 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 		List<String> curies = geneDAO.findFilteredIds(params);
 		curies.removeIf(Objects::isNull);
 
 		return curies;
-	}
-
-	private void deleteGeneSlotAnnotations(Gene gene) {
-		if (gene.getGeneSymbol() != null)
-			geneSymbolDAO.remove(gene.getGeneSymbol().getId());
-
-		if (gene.getGeneFullName() != null)
-			geneFullNameDAO.remove(gene.getGeneFullName().getId());
-
-		if (gene.getGeneSystematicName() != null)
-			geneSystematicNameDAO.remove(gene.getGeneSystematicName().getId());
-
-		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms()))
-			gene.getGeneSynonyms().forEach(gs -> {
-				geneSynonymDAO.remove(gs.getId());
-			});
 	}
 
 }

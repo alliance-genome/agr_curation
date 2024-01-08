@@ -326,7 +326,7 @@ export function getUniqueItemsByProperty(items, propName) {
 	);
 }
 
-export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors) {
+export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors) {
 	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
@@ -342,7 +342,7 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 				return _uiErrorMessages;
 			});
 
-			setIsEnabled(false);
+			setIsInEditMode(false);
 			areUiErrors.current = true;
 
 		} else {
@@ -457,31 +457,48 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 	return anyErrors;
 }
 
-//temporary function until useNewAnnotationReducer is refactored to add table states
-export const validateAlleleDetailTable = async (endpoint, entityType, table, dispatch) => {
-	if(!table) return false;
-	const validationService = new ValidationService();
-	const results = await validate(table, endpoint, validationService);
-	const errors = [];
-	let anyErrors = false;
-	results.forEach((result, index) => {
-		const {isError, data} = result;
-		if (isError) {
-			errors[index] = {};
-			if (!data) return;
-			Object.keys(data).forEach((field) => {
-				errors[index][field] = {
-					severity: "error",
-					message: data[field]
-				};
-			});
-			anyErrors = true;
+export const processErrors = (data, dispatch) => {
+	const errorMap = data?.supplementalData?.errorMap;
+	const errorMessages = data?.errorMessages;
+
+	processErrorMap(errorMap, dispatch);
+
+	dispatch(
+		{
+			type: "UPDATE_ERROR_MESSAGES", 
+			errorMessages: errorMessages || {}
 		}
-	});
-	dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors});
-	return anyErrors;
+	);
+
 }
 
+export const processErrorMap = (errorMap, dispatch) => {
+	let tableErrors;
+	Object.keys(errorMap).forEach((entityType) => {
+		tableErrors = errorMap[entityType];
+		if(typeof tableErrors === 'object'){
+			processTableErrors(tableErrors, dispatch, entityType);
+		}
+	});
+}
+
+export const processTableErrors = (tableErrors, dispatch, entityType) => {
+	let errors = [];
+	Object.keys(tableErrors).forEach((index) => {
+		let rowErrors = tableErrors[index];
+		errors[index] = {};
+		Object.keys(rowErrors).forEach((field) => {
+			errors[index][field] = {
+				severity: "error",
+				message: rowErrors[field]
+			};
+		});
+	});
+	dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors});
+}
+
+//handles optional autocomplete fields so that a string isn't sent to the backend 
+//when a value is removed or not selected from the dropdown
 export const processOptionalField = (eventValue) => {
 	if(!eventValue || eventValue === "") return null;
 	if (!eventValue.curie) return {curie: eventValue};

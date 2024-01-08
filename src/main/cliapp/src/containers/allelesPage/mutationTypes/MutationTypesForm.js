@@ -5,6 +5,7 @@ import { useRef } from "react";
 
 export const MutationTypesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
+  const mutationTypes = global.structuredClone(state.allele?.alleleMutationTypes);
 
   const createNewMutationTypeHandler = (e) => {
     e.preventDefault();
@@ -38,7 +39,7 @@ export const MutationTypesForm = ({ state, dispatch }) => {
   }
 
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleMutationTypes', 
@@ -70,7 +71,7 @@ export const MutationTypesForm = ({ state, dispatch }) => {
     <FormTableWrapper
       table={
         <MutationTypesFormTable
-          mutationTypes={state.allele?.alleleMutationTypes}
+          mutationTypes={mutationTypes}
           editingRows={state.entityStates.alleleMutationTypes.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
