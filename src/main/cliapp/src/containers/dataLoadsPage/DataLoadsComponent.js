@@ -206,7 +206,7 @@ export const DataLoadsComponent = () => {
 			<nobr>
 				<Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
 				{ rowData.failedRecords > 0 &&
-					<a href={`/api/bulkloadfilehistory/${rowData.id}/download`} target="_blank" className="p-button p-button-warning">
+					<a href={`/api/bulkloadfilehistory/${rowData.id}/download`} target="_blank" rel="noopener noreferrer" className="p-button p-button-warning">
 						<i className="pi pi-exclamation-triangle"></i>
 						<i className="pi pi-download"></i>
 					</a>
