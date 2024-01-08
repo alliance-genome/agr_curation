@@ -3,9 +3,6 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -23,6 +20,8 @@ import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class AgmExecutor extends LoadFileExecutor {
@@ -41,7 +40,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFile);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AffectedGenomicModelDTO.class);
 		if (ingestDto == null) return;
 		
 		List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();

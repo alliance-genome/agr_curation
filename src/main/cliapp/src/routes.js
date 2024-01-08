@@ -18,12 +18,14 @@ import { VariantsPage} from './containers/variantsPage';
 import { ConstructsPage } from './containers/constructsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
+import { SpeciesPage} from './containers/speciesPage';
 import { ReferencePage } from './containers/referencePage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 import { VocabulariesPage } from './containers/vocabularyPage';
 import { VocabularyTermSetPage } from './containers/vocabularyTermSetPage';
 
 import { FMSComponent } from './components/FMSComponent';
+import { EntityCountsComponent } from './components/EntityCountsComponent';
 import { FMSDataTypesComponent } from './components/FMSDataTypesComponent';
 import { MetricsComponent } from './components/MetricsComponent';
 import { HealthComponent } from './components/HealthComponent';
@@ -51,6 +53,7 @@ export default (
 		<SecureRoute path="/variants" render={() => <ErrorBoundary><VariantsPage/></ErrorBoundary>} />
 		<SecureRoute path="/constructs" render={() => <ErrorBoundary><ConstructsPage/></ErrorBoundary>} />
 		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />
+		<SecureRoute path="/species" render={() => <ErrorBoundary><SpeciesPage/></ErrorBoundary>} />
 		<SecureRoute path="/references" render={() => <ErrorBoundary><ReferencePage /></ErrorBoundary>} />
 		<SecureRoute path="/vocabterms" render={() => <ErrorBoundary><ControlledVocabularyPage /></ErrorBoundary>} />
 		<SecureRoute path="/vocabularies" render={() => <ErrorBoundary><VocabulariesPage /></ErrorBoundary>} />
@@ -107,6 +110,7 @@ export default (
 		<SecureRoute path="/fmsdatafiles" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/fmsdatatypes/:dataType" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />
 		<SecureRoute exact path="/fmsdatatypes" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />
+		<SecureRoute path="/entitycounts" render={() => <ErrorBoundary><EntityCountsComponent /></ErrorBoundary>} />
 		<SecureRoute path="/metricspage" render={() => <ErrorBoundary><MetricsComponent /></ErrorBoundary>} />
 		<SecureRoute path="/healthpage" render={() => <ErrorBoundary><HealthComponent /></ErrorBoundary>} />
 		<SecureRoute path="/agms" render={() => <ErrorBoundary><AffectedGenomicModelPage /></ErrorBoundary>} />

@@ -4,11 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -17,6 +12,10 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.VocabularyTermValidator;
 
 import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm, VocabularyTermDAO> {
@@ -107,7 +106,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 	private VocabularyTerm getTermInVocabularyFromDB(String vocabularyLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		params.put("vocabulary.vocabularyLabel", vocabularyLabel);
+		if(vocabularyLabel != null) params.put("vocabulary.vocabularyLabel", vocabularyLabel);
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();
 	}
@@ -115,8 +114,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 	private VocabularyTerm getTermInVocabularyTermSetFromDB(String vocabularyTermSetLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		params.put("vocabularyTermSets.vocabularyLabel", vocabularyTermSetLabel);
-
+		if(vocabularyTermSetLabel != null) params.put("vocabularyTermSets.vocabularyLabel", vocabularyTermSetLabel);
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();
 	}

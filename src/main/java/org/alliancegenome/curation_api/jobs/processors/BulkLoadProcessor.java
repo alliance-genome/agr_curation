@@ -1,10 +1,8 @@
-package org.alliancegenome.curation_api.jobs;
+package org.alliancegenome.curation_api.jobs.processors;
 
 import java.io.File;
 import java.time.OffsetDateTime;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.BulkFMSLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
@@ -13,6 +11,9 @@ import org.alliancegenome.curation_api.dao.loads.BulkManualLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkURLLoadDAO;
 import org.alliancegenome.curation_api.enums.BulkLoadCleanUp;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadFileJobEvent;
+import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
+import org.alliancegenome.curation_api.jobs.executors.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.fms.DataFile;
@@ -21,9 +22,10 @@ import org.alliancegenome.curation_api.services.fms.DataFileService;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import io.quarkus.vertx.ConsumeEvent;
-import io.vertx.core.eventbus.Message;
-import io.vertx.mutiny.core.eventbus.EventBus;
+import io.quarkus.logging.Log;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -42,8 +44,6 @@ public class BulkLoadProcessor {
 	String s3SecretKey = null;
 
 	@Inject
-	EventBus bus;
-	@Inject
 	DataFileService fmsDataFileService;
 
 	@Inject
@@ -56,14 +56,17 @@ public class BulkLoadProcessor {
 	BulkFMSLoadDAO bulkFMSLoadDAO;
 	@Inject
 	BulkURLLoadDAO bulkURLLoadDAO;
+	
 	@Inject
 	BulkLoadJobExecutor bulkLoadJobExecutor;
 
+	@Inject
+	Event<PendingBulkLoadFileJobEvent> pendingFileJobEvents;
+	
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 
-	@ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler or Forced start
-	public void bulkLoadFile(Message<BulkLoadFile> file) {
-		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
+	public void bulkLoadFile(@Observes StartedBulkLoadFileJobEvent event) {
+		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(event.getId());
 		if (!bulkLoadFile.getBulkloadStatus().isStarted()) {
 			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
 			// endLoad(bulkLoadFile, "Finished ended due to status: " +
@@ -194,6 +197,8 @@ public class BulkLoadProcessor {
 		if(cleanUp) bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		bulkLoadDAO.merge(load);
+		Log.info("Firing Pending Bulk File Event: " + bulkLoadFile.getId());
+		pendingFileJobEvents.fire(new PendingBulkLoadFileJobEvent(bulkLoadFile.getId()));
 	}
 
 	protected void startLoad(BulkLoad load) {

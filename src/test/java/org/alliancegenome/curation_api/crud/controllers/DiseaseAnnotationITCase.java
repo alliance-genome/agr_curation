@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -264,7 +263,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.evidenceCodes[0].curie", is(ecoTerm.getCurie())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.geneticSex.name", is(geneticSex.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation.getName())).
 			body("entity.diseaseGeneticModifiers[0].curie", is(agm2.getCurie())).
@@ -335,7 +334,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.evidenceCodes[0].curie", is(ecoTerm.getCurie())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.geneticSex.name", is(geneticSex.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation.getName())).
 			body("entity.diseaseGeneticModifiers[0].curie", is(agm2.getCurie())).
@@ -410,7 +409,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.evidenceCodes[0].curie", is(ecoTerm.getCurie())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.geneticSex.name", is(geneticSex.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation.getName())).
 			body("entity.diseaseGeneticModifiers[0].curie", is(agm2.getCurie())).
@@ -498,7 +497,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2.getCurie())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.geneticSex.name", is(geneticSex2.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2.getName())).
 			body("entity.diseaseGeneticModifiers[0].curie", is(agm.getCurie())).
@@ -582,7 +581,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2.getCurie())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.geneticSex.name", is(geneticSex2.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2.getName())).
 			body("entity.diseaseGeneticModifiers[0].curie", is(agm.getCurie())).
@@ -671,7 +670,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.evidenceCodes[0].curie", is(ecoTerm2.getCurie())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.geneticSex.name", is(geneticSex2.getName())).
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2.getName())).
 			body("entity.diseaseGeneticModifiers[0].curie", is(agm.getCurie())).
@@ -2428,7 +2427,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.relatedNotes", is(ValidationConstants.DUPLICATE_MESSAGE + " (Test text|disease_note|false|false)"));
+			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|disease_note|false|false)"));
 	}
 	
 }

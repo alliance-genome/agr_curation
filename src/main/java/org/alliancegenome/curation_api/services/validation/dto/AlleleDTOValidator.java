@@ -2,30 +2,13 @@ package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleGermlineTransmissionStatusSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleNomenclatureEventSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -43,7 +26,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotationDTO;
@@ -69,37 +51,19 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.a
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
 @RequestScoped
 public class AlleleDTOValidator extends BaseDTOValidator {
 
 	@Inject
 	AlleleDAO alleleDAO;
 	@Inject
-	AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
-	@Inject
-	AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
-	@Inject
-	AlleleGermlineTransmissionStatusSlotAnnotationDAO alleleGermlineTransmissionStatusDAO;
-	@Inject
-	AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
-	@Inject
-	AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
-	@Inject
-	AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
-	@Inject
-	AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
-	@Inject
-	AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
-	@Inject
-	AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
-	@Inject
-	AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
-	@Inject
 	VocabularyTermService vocabularyTermService;
 	@Inject
 	ReferenceDAO referenceDAO;
-	@Inject
-	NoteDAO noteDAO;
 	@Inject
 	ReferenceService referenceService;
 	@Inject
@@ -127,11 +91,11 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	@Inject
 	NoteDTOValidator noteDtoValidator;
 
+	private ObjectResponse<Allele> alleleResponse = new ObjectResponse<>();
+	
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
-
-		ObjectResponse<Allele> alleleResponse = new ObjectResponse<Allele>();
-
+		
 		Allele allele = null;
 		if (StringUtils.isBlank(dto.getCurie())) {
 			alleleResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
@@ -175,62 +139,128 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			allele.setReferences(null);
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
-			allele.getRelatedNotes().forEach(note -> {
-				alleleDAO.deleteAttachedNote(note.getId());
-			});
-		}
-		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
-			List<Note> notes = new ArrayList<>();
-			Set<String> noteIdentities = new HashSet<>();
-			for (NoteDTO noteDTO : dto.getNoteDtos()) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(noteDTO, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("note_dtos", noteResponse.errorMessagesString());
-					break;
-				}
-				String noteIdentity = NoteIdentityHelper.noteDtoIdentity(noteDTO);
-				if (!noteIdentities.contains(noteIdentity)) {
-					noteIdentities.add(noteIdentity);
-					notes.add(noteDAO.persist(noteResponse.getEntity()));
-				}
-			}
-			allele.setRelatedNotes(notes);
-		} else {
-			allele.setRelatedNotes(null);
+		List<Note> relatedNotes = validateRelatedNotes(allele, dto);
+		if (relatedNotes != null) {
+			if (allele.getRelatedNotes() == null)
+				allele.setRelatedNotes(new ArrayList<>());
+			allele.getRelatedNotes().addAll(relatedNotes);
 		}
 
+		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(allele, dto);
+		if (allele.getAlleleMutationTypes() != null)
+			allele.getAlleleMutationTypes().clear();
+		if (mutationTypes != null) {
+			if (allele.getAlleleMutationTypes() == null)
+				allele.setAlleleMutationTypes(new ArrayList<>());
+			allele.getAlleleMutationTypes().addAll(mutationTypes);
+		}
+		
+		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(allele, dto);
+		if (allele.getAlleleInheritanceModes() != null)
+			allele.getAlleleInheritanceModes().clear();
+		if (inheritanceModes != null) {
+			if (allele.getAlleleInheritanceModes() == null)
+				allele.setAlleleInheritanceModes(new ArrayList<>());
+			allele.getAlleleInheritanceModes().addAll(inheritanceModes);
+		}
+		
+		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(allele, dto);
+		allele.setAlleleGermlineTransmissionStatus(germlineTransmissionStatus);
+		
+		AlleleDatabaseStatusSlotAnnotation databaseStatus = validateAlleleDatabaseStatus(allele, dto);
+		allele.setAlleleDatabaseStatus(databaseStatus);
+		
+		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(allele, dto);
+		if (allele.getAlleleNomenclatureEvents() != null)
+			allele.getAlleleNomenclatureEvents().clear();
+		if (nomenclatureEvents != null) {
+			if (allele.getAlleleNomenclatureEvents() == null)
+				allele.setAlleleNomenclatureEvents(new ArrayList<>());
+			allele.getAlleleNomenclatureEvents().addAll(nomenclatureEvents);
+		}
+		
+		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(allele, dto);
+		allele.setAlleleSymbol(symbol);
+		
+		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(allele, dto);
+		allele.setAlleleFullName(fullName);
+		
+		List<AlleleSynonymSlotAnnotation> synonyms = validateAlleleSynonyms(allele, dto);
+		if (allele.getAlleleSynonyms() != null)
+			allele.getAlleleSynonyms().clear();
+		if (synonyms != null) {
+			if (allele.getAlleleSynonyms() == null)
+				allele.setAlleleSynonyms(new ArrayList<>());
+			allele.getAlleleSynonyms().addAll(synonyms);
+		}
+		
+		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = validateAlleleSecondaryIds(allele, dto);
+		if (allele.getAlleleSecondaryIds() != null)
+			allele.getAlleleSecondaryIds().clear();
+		if (secondaryIds != null) {
+			if (allele.getAlleleSecondaryIds() == null)
+				allele.setAlleleSecondaryIds(new ArrayList<>());
+			allele.getAlleleSecondaryIds().addAll(secondaryIds);
+		}
+		
+		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(allele, dto);
+		if (allele.getAlleleFunctionalImpacts() != null)
+			allele.getAlleleFunctionalImpacts().clear();
+		if (functionalImpacts != null) {
+			if (allele.getAlleleFunctionalImpacts() == null)
+				allele.setAlleleFunctionalImpacts(new ArrayList<>());
+			allele.getAlleleFunctionalImpacts().addAll(functionalImpacts);
+		}
+
+		alleleResponse.convertErrorMessagesToMap();
+		
+		if (alleleResponse.hasErrors())
+			throw new ObjectValidationException(dto, alleleResponse.errorMessagesString());
+		
+		return alleleDAO.persist(allele);
+	}
+	
+	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele allele, AlleleDTO dto) {
+		String field = "allele_mutation_type_dtos";
+		
 		Map<String, AlleleMutationTypeSlotAnnotation> existingMutationTypes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
 			for (AlleleMutationTypeSlotAnnotation existingMutationType : allele.getAlleleMutationTypes()) {
-				existingMutationTypes.put(SlotAnnotationIdentityHelper.alleleMutationTypesIdentity(existingMutationType), existingMutationType);
+				existingMutationTypes.put(SlotAnnotationIdentityHelper.alleleMutationTypeIdentity(existingMutationType), existingMutationType);
 			}
 		}
-		
-		List<AlleleMutationTypeSlotAnnotation> mutationTypes = new ArrayList<>();
-		List<Long> mutationTypeIdsToKeep = new ArrayList<>();
+
+		List<AlleleMutationTypeSlotAnnotation> validatedMutationTypes = new ArrayList<AlleleMutationTypeSlotAnnotation>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getAlleleMutationTypeDtos())) {
-			for (AlleleMutationTypeSlotAnnotationDTO mutationTypeDTO : dto.getAlleleMutationTypeDtos()) {
-				ObjectResponse<AlleleMutationTypeSlotAnnotation> mutationTypeResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(existingMutationTypes.get(identityHelper.alleleMutationTypesDtoIdentity(mutationTypeDTO)), mutationTypeDTO);
-				if (mutationTypeResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("allele_mutation_type_dtos", mutationTypeResponse.errorMessagesString());
+			for (int ix = 0; ix < dto.getAlleleMutationTypeDtos().size(); ix++) {
+				AlleleMutationTypeSlotAnnotationDTO mtDto = dto.getAlleleMutationTypeDtos().get(ix);
+				AlleleMutationTypeSlotAnnotation mt = existingMutationTypes.remove(identityHelper.alleleMutationTypeDtoIdentity(mtDto));
+				ObjectResponse<AlleleMutationTypeSlotAnnotation> mtResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(mt, mtDto);
+				if (mtResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, mtResponse.getErrorMessages());
 				} else {
-					AlleleMutationTypeSlotAnnotation mutationType = mutationTypeResponse.getEntity();
-					mutationTypes.add(mutationType);
-					if (mutationType.getId() != null)
-						mutationTypeIdsToKeep.add(mutationType.getId());
+					mt = mtResponse.getEntity();
+					mt.setSingleAllele(allele);
+					validatedMutationTypes.add(mt);
 				}
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
-			for (AlleleMutationTypeSlotAnnotation amt : allele.getAlleleMutationTypes()) {
-				if (!mutationTypeIdsToKeep.contains(amt.getId())) {
-					amt.setSingleAllele(null);
-					alleleMutationTypeDAO.remove(amt.getId());
-				}
-			}
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
 		}
+		
+		if (CollectionUtils.isEmpty(validatedMutationTypes))
+			return null;
+
+		return validatedMutationTypes;
+	}
+	
+	private List<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModes(Allele allele, AlleleDTO dto) {
+		String field = "allele_inheritance_mode_dtos";
 		
 		Map<String, AlleleInheritanceModeSlotAnnotation> existingInheritanceModes = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes())) {
@@ -238,303 +268,304 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				existingInheritanceModes.put(SlotAnnotationIdentityHelper.alleleInheritanceModeIdentity(existingInheritanceMode), existingInheritanceMode);
 			}
 		}
-		
-		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = new ArrayList<>();
-		List<Long> inheritanceModeIdsToKeep = new ArrayList<>();
+
+		List<AlleleInheritanceModeSlotAnnotation> validatedInheritanceModes = new ArrayList<AlleleInheritanceModeSlotAnnotation>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getAlleleInheritanceModeDtos())) {
-			for (AlleleInheritanceModeSlotAnnotationDTO inheritanceModeDTO : dto.getAlleleInheritanceModeDtos()) {
-				ObjectResponse<AlleleInheritanceModeSlotAnnotation> inheritanceModeResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(existingInheritanceModes.get(identityHelper.alleleInheritanceModeDtoIdentity(inheritanceModeDTO)), inheritanceModeDTO);
-				if (inheritanceModeResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("allele_inheritance_mode_dtos", inheritanceModeResponse.errorMessagesString());
+			for (int ix = 0; ix < dto.getAlleleInheritanceModeDtos().size(); ix++) {
+				AlleleInheritanceModeSlotAnnotationDTO imDto = dto.getAlleleInheritanceModeDtos().get(ix);
+				AlleleInheritanceModeSlotAnnotation im = existingInheritanceModes.remove(identityHelper.alleleInheritanceModeDtoIdentity(imDto));
+				ObjectResponse<AlleleInheritanceModeSlotAnnotation> imResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(im, imDto);
+				if (imResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, imResponse.getErrorMessages());
 				} else {
-					AlleleInheritanceModeSlotAnnotation inheritanceMode = inheritanceModeResponse.getEntity();
-					inheritanceModes.add(inheritanceMode);
-					if (inheritanceMode.getId() != null)
-						inheritanceModeIdsToKeep.add(inheritanceMode.getId());
+					im = imResponse.getEntity();
+					im.setSingleAllele(allele);
+					validatedInheritanceModes.add(im);
 				}
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes())) {
-			for (AlleleInheritanceModeSlotAnnotation aim : allele.getAlleleInheritanceModes()) {
-				if (!inheritanceModeIdsToKeep.contains(aim.getId())) {
-					aim.setSingleAllele(null);
-					alleleInheritanceModeDAO.remove(aim.getId());
-				}
-			}
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
 		}
 		
-		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = allele.getAlleleGermlineTransmissionStatus();
-		if (germlineTransmissionStatus != null && dto.getAlleleGermlineTransmissionStatusDto() == null) {
-			germlineTransmissionStatus.setSingleAllele(null);
-			alleleGermlineTransmissionStatusDAO.remove(germlineTransmissionStatus.getId());
+		if (CollectionUtils.isEmpty(validatedInheritanceModes))
+			return null;
+
+		return validatedInheritanceModes;
+	}
+	
+	private AlleleGermlineTransmissionStatusSlotAnnotation validateAlleleGermlineTransmissionStatus(Allele allele, AlleleDTO dto) {
+		if (dto.getAlleleGermlineTransmissionStatusDto() == null)
+			return null;
+		
+		String field = "allele_germline_transmission_status_dto";
+		
+		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> agtsResponse = alleleGermlineTransmissionStatusDtoValidator.validateAlleleGermlineTransmissionStatusSlotAnnotationDTO(allele.getAlleleGermlineTransmissionStatus(), dto.getAlleleGermlineTransmissionStatusDto());
+		if (agtsResponse.hasErrors()) {
+			alleleResponse.addErrorMessage(field, agtsResponse.errorMessagesString());
+			alleleResponse.addErrorMessages(field, agtsResponse.getErrorMessages());
+			return null;
 		}
 		
-		if (dto.getAlleleGermlineTransmissionStatusDto() != null) {
-			ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> gtsResponse = alleleGermlineTransmissionStatusDtoValidator.validateAlleleGermlineTransmissionStatusSlotAnnotationDTO(germlineTransmissionStatus, dto.getAlleleGermlineTransmissionStatusDto());
-			if (gtsResponse.hasErrors()) {
-				alleleResponse.addErrorMessage("allele_germline_transmission_status_dto", gtsResponse.errorMessagesString());
-			} else {
-				germlineTransmissionStatus = gtsResponse.getEntity();
-			}
-		} else {
-			germlineTransmissionStatus = null;
+		AlleleGermlineTransmissionStatusSlotAnnotation agts = agtsResponse.getEntity();
+		agts.setSingleAllele(allele);
+		
+		return agts;
+	}
+	
+	private AlleleDatabaseStatusSlotAnnotation validateAlleleDatabaseStatus(Allele allele, AlleleDTO dto) {
+		if (dto.getAlleleDatabaseStatusDto() == null)
+			return null;
+		
+		String field = "allele_database_status_dto";
+		
+		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> adsResponse = alleleDatabaseStatusDtoValidator.validateAlleleDatabaseStatusSlotAnnotationDTO(allele.getAlleleDatabaseStatus(), dto.getAlleleDatabaseStatusDto());
+		if (adsResponse.hasErrors()) {
+			alleleResponse.addErrorMessage(field, adsResponse.errorMessagesString());
+			alleleResponse.addErrorMessages(field, adsResponse.getErrorMessages());
+			return null;
 		}
 		
-		AlleleDatabaseStatusSlotAnnotation databaseStatus = allele.getAlleleDatabaseStatus();
-		if (databaseStatus != null && dto.getAlleleDatabaseStatusDto() == null) {
-			databaseStatus.setSingleAllele(null);
-			alleleDatabaseStatusDAO.remove(databaseStatus.getId());
-		}
+		AlleleDatabaseStatusSlotAnnotation ads = adsResponse.getEntity();
+		ads.setSingleAllele(allele);
 		
-		if (dto.getAlleleDatabaseStatusDto() != null) {
-			ObjectResponse<AlleleDatabaseStatusSlotAnnotation> dsResponse = alleleDatabaseStatusDtoValidator.validateAlleleDatabaseStatusSlotAnnotationDTO(databaseStatus, dto.getAlleleDatabaseStatusDto());
-			if (dsResponse.hasErrors()) {
-				alleleResponse.addErrorMessage("allele_database_status_dto", dsResponse.errorMessagesString());
-			} else {
-				databaseStatus = dsResponse.getEntity();
-			}
-		} else {
-			databaseStatus = null;
-		}
+		return ads;
+	}
+
+	private List<AlleleNomenclatureEventSlotAnnotation> validateAlleleNomenclatureEvents(Allele allele, AlleleDTO dto) {
+		String field = "allele_nomenclature_event_dtos";
 		
 		Map<String, AlleleNomenclatureEventSlotAnnotation> existingNomenclatureEvents = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleNomenclatureEvents())) {
 			for (AlleleNomenclatureEventSlotAnnotation existingNomenclatureEvent : allele.getAlleleNomenclatureEvents()) {
-				existingNomenclatureEvents.put(SlotAnnotationIdentityHelper.alleleNomenclatureEventsIdentity(existingNomenclatureEvent), existingNomenclatureEvent);
+				existingNomenclatureEvents.put(SlotAnnotationIdentityHelper.alleleNomenclatureEventIdentity(existingNomenclatureEvent), existingNomenclatureEvent);
 			}
 		}
-		
-		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = new ArrayList<>();
-		List<Long> nomenclatureEventIdsToKeep = new ArrayList<>();
+
+		List<AlleleNomenclatureEventSlotAnnotation> validatedNomenclatureEvents = new ArrayList<AlleleNomenclatureEventSlotAnnotation>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getAlleleNomenclatureEventDtos())) {
-			for (AlleleNomenclatureEventSlotAnnotationDTO nomenclatureEventDTO : dto.getAlleleNomenclatureEventDtos()) {
-				ObjectResponse<AlleleNomenclatureEventSlotAnnotation> nomenclatureEventResponse = alleleNomenclatureEventDtoValidator.validateAlleleNomenclatureEventSlotAnnotationDTO(existingNomenclatureEvents.get(identityHelper.alleleNomenclatureEventsDtoIdentity(nomenclatureEventDTO)), nomenclatureEventDTO);
-				if (nomenclatureEventResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("allele_nomenclature_event_dtos", nomenclatureEventResponse.errorMessagesString());
+			for (int ix = 0; ix < dto.getAlleleInheritanceModeDtos().size(); ix++) {
+				AlleleNomenclatureEventSlotAnnotationDTO neDto = dto.getAlleleNomenclatureEventDtos().get(ix);
+				AlleleNomenclatureEventSlotAnnotation ne = existingNomenclatureEvents.remove(identityHelper.alleleNomenclatureEventDtoIdentity(neDto));
+				ObjectResponse<AlleleNomenclatureEventSlotAnnotation> neResponse = alleleNomenclatureEventDtoValidator.validateAlleleNomenclatureEventSlotAnnotationDTO(ne, neDto);
+				if (neResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, neResponse.getErrorMessages());
 				} else {
-					AlleleNomenclatureEventSlotAnnotation nomenclatureEvent = nomenclatureEventResponse.getEntity();
-					nomenclatureEvents.add(nomenclatureEvent);
-					if (nomenclatureEvent.getId() != null)
-						nomenclatureEventIdsToKeep.add(nomenclatureEvent.getId());
+					ne = neResponse.getEntity();
+					ne.setSingleAllele(allele);
+					validatedNomenclatureEvents.add(ne);
 				}
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleNomenclatureEvents())) {
-			for (AlleleNomenclatureEventSlotAnnotation ane : allele.getAlleleNomenclatureEvents()) {
-				if (!nomenclatureEventIdsToKeep.contains(ane.getId())) {
-					ane.setSingleAllele(null);
-					alleleNomenclatureEventDAO.remove(ane.getId());
-				}
-			}
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
 		}
+		
+		if (CollectionUtils.isEmpty(validatedNomenclatureEvents))
+			return null;
 
-		AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
+		return validatedNomenclatureEvents;
+	}
+
+	private AlleleSymbolSlotAnnotation validateAlleleSymbol(Allele allele, AlleleDTO dto) {
+		String field = "allele_symbol_dto";
+
 		if (dto.getAlleleSymbolDto() == null) {
-			alleleResponse.addErrorMessage("allele_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolDtoValidator.validateAlleleSymbolSlotAnnotationDTO(symbol, dto.getAlleleSymbolDto());
-			if (symbolResponse.hasErrors()) {
-				alleleResponse.addErrorMessage("allele_symbol_dto", symbolResponse.errorMessagesString());
-			} else {
-				symbol = symbolResponse.getEntity();
-			}
+			alleleResponse.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
 		}
 
-		AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
-		if (allele.getAlleleFullName() != null && dto.getAlleleFullNameDto() == null) {
-			fullName.setSingleAllele(null);
-			alleleFullNameDAO.remove(fullName.getId());
+		ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolDtoValidator.validateAlleleSymbolSlotAnnotationDTO(allele.getAlleleSymbol(), dto.getAlleleSymbolDto());
+		if (symbolResponse.hasErrors()) {
+			alleleResponse.addErrorMessage(field, symbolResponse.errorMessagesString());
+			alleleResponse.addErrorMessages(field, symbolResponse.getErrorMessages());
+			return null;
 		}
 
-		if (dto.getAlleleFullNameDto() != null) {
-			ObjectResponse<AlleleFullNameSlotAnnotation> fullNameResponse = alleleFullNameDtoValidator.validateAlleleFullNameSlotAnnotationDTO(fullName, dto.getAlleleFullNameDto());
-			if (fullNameResponse.hasErrors()) {
-				alleleResponse.addErrorMessage("allele_full_name_dto", fullNameResponse.errorMessagesString());
-			} else {
-				fullName = fullNameResponse.getEntity();
-			}
-		} else {
-			fullName = null;
+		AlleleSymbolSlotAnnotation symbol = symbolResponse.getEntity();
+		symbol.setSingleAllele(allele);
+		
+		return symbol;
+	}
+
+	private AlleleFullNameSlotAnnotation validateAlleleFullName(Allele allele, AlleleDTO dto) {
+		if (dto.getAlleleFullNameDto() == null)
+			return null;
+
+		String field = "allele_full_name_dto";
+
+		ObjectResponse<AlleleFullNameSlotAnnotation> nameResponse = alleleFullNameDtoValidator.validateAlleleFullNameSlotAnnotationDTO(allele.getAlleleFullName(), dto.getAlleleFullNameDto());
+		if (nameResponse.hasErrors()) {
+			alleleResponse.addErrorMessage(field, nameResponse.errorMessagesString());
+			alleleResponse.addErrorMessages(field, nameResponse.getErrorMessages());
+			return null;
 		}
 
+		AlleleFullNameSlotAnnotation fullName = nameResponse.getEntity();
+		fullName.setSingleAllele(allele);
+		
+		return fullName;
+	}
+
+	private List<AlleleSynonymSlotAnnotation> validateAlleleSynonyms(Allele allele, AlleleDTO dto) {
+		String field = "allele_synonym_dtos";
+		
 		Map<String, AlleleSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
 			for (AlleleSynonymSlotAnnotation existingSynonym : allele.getAlleleSynonyms()) {
 				existingSynonyms.put(SlotAnnotationIdentityHelper.nameSlotAnnotationIdentity(existingSynonym), existingSynonym);
 			}
 		}
-		
-		List<AlleleSynonymSlotAnnotation> synonyms = new ArrayList<>();
-		List<Long> synonymIdsToKeep = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getAlleleSynonymDtos())) {
-			for (NameSlotAnnotationDTO synonymDTO : dto.getAlleleSynonymDtos()) {
-				ObjectResponse<AlleleSynonymSlotAnnotation> synonymResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(existingSynonyms.get(identityHelper.nameSlotAnnotationDtoIdentity(synonymDTO)), synonymDTO);
-				if (synonymResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("allele_synonym_dtos", synonymResponse.errorMessagesString());
-				} else {
-					AlleleSynonymSlotAnnotation synonym = synonymResponse.getEntity();
-					synonyms.add(synonym);
-					if (synonym.getId() != null)
-						synonymIdsToKeep.add(synonym.getId());
-				}
-			}
-		}
-		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
-			for (AlleleSynonymSlotAnnotation syn : allele.getAlleleSynonyms()) {
-				if (!synonymIdsToKeep.contains(syn.getId())) {
-					syn.setSingleAllele(null);
-					alleleSynonymDAO.remove(syn.getId());
-				}
-			}
-		}
 
+		List<AlleleSynonymSlotAnnotation> validatedSynonyms = new ArrayList<AlleleSynonymSlotAnnotation>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getAlleleSynonymDtos())) {
+			for (int ix = 0; ix < dto.getAlleleSynonymDtos().size(); ix++) {
+				NameSlotAnnotationDTO synDto = dto.getAlleleSynonymDtos().get(ix);
+				AlleleSynonymSlotAnnotation syn = existingSynonyms.remove(identityHelper.nameSlotAnnotationDtoIdentity(synDto));
+				ObjectResponse<AlleleSynonymSlotAnnotation> synResponse = alleleSynonymDtoValidator.validateAlleleSynonymSlotAnnotationDTO(syn, synDto);
+				if (synResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, synResponse.getErrorMessages());
+				} else {
+					syn = synResponse.getEntity();
+					syn.setSingleAllele(allele);
+					validatedSynonyms.add(syn);
+				}
+			}
+		}
+		
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedSynonyms))
+			return null;
+
+		return validatedSynonyms;
+	}
+
+	private List<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIds(Allele allele, AlleleDTO dto) {
+		String field = "allele_secondary_id_dtos";
+		
 		Map<String, AlleleSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleSecondaryIds())) {
 			for (AlleleSecondaryIdSlotAnnotation existingSecondaryId : allele.getAlleleSecondaryIds()) {
 				existingSecondaryIds.put(SlotAnnotationIdentityHelper.secondaryIdIdentity(existingSecondaryId), existingSecondaryId);
 			}
 		}
-		
-		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = new ArrayList<>();
-		List<Long> secondaryIdIdsToKeep = new ArrayList<>();
+
+		List<AlleleSecondaryIdSlotAnnotation> validatedSecondaryIds = new ArrayList<AlleleSecondaryIdSlotAnnotation>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getAlleleSecondaryIdDtos())) {
-			for (SecondaryIdSlotAnnotationDTO secondaryIdDTO : dto.getAlleleSecondaryIdDtos()) {
-				ObjectResponse<AlleleSecondaryIdSlotAnnotation> secondaryIdResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(existingSecondaryIds.get(identityHelper.secondaryIdDtoIdentity(secondaryIdDTO)), secondaryIdDTO);
-				if (secondaryIdResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("allele_secondary_id_dtos", secondaryIdResponse.errorMessagesString());
+			for (int ix = 0; ix < dto.getAlleleSecondaryIdDtos().size(); ix++) {
+				SecondaryIdSlotAnnotationDTO sidDto = dto.getAlleleSecondaryIdDtos().get(ix);
+				AlleleSecondaryIdSlotAnnotation sid = existingSecondaryIds.remove(identityHelper.secondaryIdDtoIdentity(sidDto));
+				ObjectResponse<AlleleSecondaryIdSlotAnnotation> sidResponse = alleleSecondaryIdDtoValidator.validateAlleleSecondaryIdSlotAnnotationDTO(sid, sidDto);
+				if (sidResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, sidResponse.getErrorMessages());
 				} else {
-					AlleleSecondaryIdSlotAnnotation secondaryId = secondaryIdResponse.getEntity();
-					secondaryIds.add(secondaryId);
-					if (secondaryId.getId() != null)
-						secondaryIdIdsToKeep.add(secondaryId.getId());
+					sid = sidResponse.getEntity();
+					sid.setSingleAllele(allele);
+					validatedSecondaryIds.add(sid);
 				}
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSecondaryIds())) {
-			for (AlleleSecondaryIdSlotAnnotation sid : allele.getAlleleSecondaryIds()) {
-				if (!secondaryIdIdsToKeep.contains(sid.getId())) {
-					sid.setSingleAllele(null);
-					alleleSecondaryIdDAO.remove(sid.getId());
-				}
-			}
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
 		}
+		
+		if (CollectionUtils.isEmpty(validatedSecondaryIds))
+			return null;
+
+		return validatedSecondaryIds;
+	}
+
+	private List<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpacts(Allele allele, AlleleDTO dto) {
+		String field = "allele_functional_impact_dtos";
 		
 		Map<String, AlleleFunctionalImpactSlotAnnotation> existingFunctionalImpacts = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleFunctionalImpacts())) {
 			for (AlleleFunctionalImpactSlotAnnotation existingFunctionalImpact : allele.getAlleleFunctionalImpacts()) {
-				existingFunctionalImpacts.put(SlotAnnotationIdentityHelper.alleleFunctionalImpactsIdentity(existingFunctionalImpact), existingFunctionalImpact);
+				existingFunctionalImpacts.put(SlotAnnotationIdentityHelper.alleleFunctionalImpactIdentity(existingFunctionalImpact), existingFunctionalImpact);
 			}
 		}
-		
-		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = new ArrayList<>();
-		List<Long> functionalImpactIdsToKeep = new ArrayList<>();
+
+		List<AlleleFunctionalImpactSlotAnnotation> validatedFunctionalImpacts = new ArrayList<AlleleFunctionalImpactSlotAnnotation>();
+		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getAlleleFunctionalImpactDtos())) {
-			for (AlleleFunctionalImpactSlotAnnotationDTO functionalImpactDTO : dto.getAlleleFunctionalImpactDtos()) {
-				ObjectResponse<AlleleFunctionalImpactSlotAnnotation> functionalImpactResponse = alleleFunctionalImpactDtoValidator.validateAlleleFunctionalImpactSlotAnnotationDTO(existingFunctionalImpacts.get(identityHelper.alleleFunctionalImpactsDtoIdentity(functionalImpactDTO)), functionalImpactDTO);
-				if (functionalImpactResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("allele_functional_impact_dtos", functionalImpactResponse.errorMessagesString());
+			for (int ix = 0; ix < dto.getAlleleFunctionalImpactDtos().size(); ix++) {
+				AlleleFunctionalImpactSlotAnnotationDTO fiDto = dto.getAlleleFunctionalImpactDtos().get(ix);
+				AlleleFunctionalImpactSlotAnnotation fi = existingFunctionalImpacts.remove(identityHelper.alleleFunctionalImpactDtoIdentity(fiDto));
+				ObjectResponse<AlleleFunctionalImpactSlotAnnotation> fiResponse = alleleFunctionalImpactDtoValidator.validateAlleleFunctionalImpactSlotAnnotationDTO(fi, fiDto);
+				if (fiResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, fiResponse.getErrorMessages());
 				} else {
-					AlleleFunctionalImpactSlotAnnotation functionalImpact = functionalImpactResponse.getEntity();
-					functionalImpacts.add(functionalImpact);
-					if (functionalImpact.getId() != null)
-						functionalImpactIdsToKeep.add(functionalImpact.getId());
+					fi = fiResponse.getEntity();
+					fi.setSingleAllele(allele);
+					validatedFunctionalImpacts.add(fi);
 				}
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleFunctionalImpacts())) {
-			for (AlleleFunctionalImpactSlotAnnotation afi : allele.getAlleleFunctionalImpacts()) {
-				if (!functionalImpactIdsToKeep.contains(afi.getId())) {
-					afi.setSingleAllele(null);
-					alleleFunctionalImpactDAO.remove(afi.getId());
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
+		}
+		
+		if (CollectionUtils.isEmpty(validatedFunctionalImpacts))
+			return null;
+
+		return validatedFunctionalImpacts;
+	}
+	
+	private List<Note> validateRelatedNotes(Allele allele, AlleleDTO dto) {
+		String field = "relatedNotes";
+	
+		if (allele.getRelatedNotes() != null)
+			allele.getRelatedNotes().clear();
+		
+		List<Note> validatedNotes = new ArrayList<Note>();
+		List<String> noteIdentities = new ArrayList<String>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
+			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
+				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+				if (noteResponse.hasErrors()) {
+					allValid = false;
+					alleleResponse.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				} else {
+					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
+					if (!noteIdentities.contains(noteIdentity)) {
+						noteIdentities.add(noteIdentity);
+						validatedNotes.add(noteResponse.getEntity());
+					}
 				}
 			}
 		}
-
-		if (alleleResponse.hasErrors())
-			throw new ObjectValidationException(dto, alleleResponse.errorMessagesString());
 		
-		allele = alleleDAO.persist(allele);
-
-		// Attach allele and persist SlotAnnotation objects
-
-		if (CollectionUtils.isNotEmpty(mutationTypes)) {
-			for (AlleleMutationTypeSlotAnnotation mt : mutationTypes) {
-				mt.setSingleAllele(allele);
-				alleleMutationTypeDAO.persist(mt);
-			}
+		if (!allValid) {
+			alleleResponse.convertMapToErrorMessages(field);
+			return null;
 		}
-		allele.setAlleleMutationTypes(mutationTypes);
 		
-		if (CollectionUtils.isNotEmpty(inheritanceModes)) {
-			for (AlleleInheritanceModeSlotAnnotation im : inheritanceModes) {
-				im.setSingleAllele(allele);
-				alleleInheritanceModeDAO.persist(im);
-			}
-		}
-		allele.setAlleleInheritanceModes(inheritanceModes);
+		if (CollectionUtils.isEmpty(validatedNotes))
+			return null;
 		
-		if (germlineTransmissionStatus != null) {
-			germlineTransmissionStatus.setSingleAllele(allele);
-			alleleGermlineTransmissionStatusDAO.persist(germlineTransmissionStatus);
-		}
-		allele.setAlleleGermlineTransmissionStatus(germlineTransmissionStatus);
-		
-		if (databaseStatus != null) {
-			databaseStatus.setSingleAllele(allele);
-			alleleDatabaseStatusDAO.persist(databaseStatus);
-		}
-		allele.setAlleleDatabaseStatus(databaseStatus);
-
-		if (symbol != null) {
-			symbol.setSingleAllele(allele);
-			alleleSymbolDAO.persist(symbol);
-		}
-		allele.setAlleleSymbol(symbol);
-
-		if (fullName != null) {
-			fullName.setSingleAllele(allele);
-			alleleFullNameDAO.persist(fullName);
-		}
-		allele.setAlleleFullName(fullName);
-
-		if (CollectionUtils.isNotEmpty(synonyms)) {
-			for (AlleleSynonymSlotAnnotation syn : synonyms) {
-				syn.setSingleAllele(allele);
-				alleleSynonymDAO.persist(syn);
-			}
-		}
-		allele.setAlleleSynonyms(synonyms);
-
-		if (CollectionUtils.isNotEmpty(secondaryIds)) {
-			for (AlleleSecondaryIdSlotAnnotation sid : secondaryIds) {
-				sid.setSingleAllele(allele);
-				alleleSecondaryIdDAO.persist(sid);
-			}
-		}
-		allele.setAlleleSecondaryIds(secondaryIds);
-		
-		if (CollectionUtils.isNotEmpty(functionalImpacts)) {
-			for (AlleleFunctionalImpactSlotAnnotation fi : functionalImpacts) {
-				fi.setSingleAllele(allele);
-				alleleFunctionalImpactDAO.persist(fi);
-			}
-		}
-		allele.setAlleleFunctionalImpacts(functionalImpacts);
-		
-		if (CollectionUtils.isNotEmpty(nomenclatureEvents)) {
-			for (AlleleNomenclatureEventSlotAnnotation ne : nomenclatureEvents) {
-				ne.setSingleAllele(allele);
-				alleleNomenclatureEventDAO.persist(ne);
-			}
-		}
-		allele.setAlleleNomenclatureEvents(nomenclatureEvents);
-
-		return allele;
+		return validatedNotes;
 	}
 
 }
