@@ -29,6 +29,6 @@ public class ECOTerm extends OntologyTerm {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private String abbreviation;
 }
