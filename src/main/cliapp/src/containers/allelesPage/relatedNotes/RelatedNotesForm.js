@@ -98,7 +98,7 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
       }
       tableName="Related Notes"
       showTable={state.entityStates.relatedNotes.show}
-      button={<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-6"/>}
+      button={<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-4 p-button-text"/>}
     />
   );
 

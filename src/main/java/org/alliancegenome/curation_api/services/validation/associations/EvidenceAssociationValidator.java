@@ -12,12 +12,12 @@ import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.inject.Inject;
 
-public class EvidenceAssociationValidator extends AuditedObjectValidator<EvidenceAssociation> {
+public class EvidenceAssociationValidator<E extends EvidenceAssociation> extends AuditedObjectValidator<E> {
 	
 	@Inject
 	InformationContentEntityService informationContentEntityService;
 	
-	public List<InformationContentEntity> validateEvidence(EvidenceAssociation uiEntity, EvidenceAssociation dbEntity) {
+	public List<InformationContentEntity> validateEvidence(E uiEntity, E dbEntity) {
 		String field = "evidence";
 		if (CollectionUtils.isEmpty(uiEntity.getEvidence()))
 			return null;
@@ -39,7 +39,7 @@ public class EvidenceAssociationValidator extends AuditedObjectValidator<Evidenc
 		return validatedEntities;
 	}
 
-	public EvidenceAssociation validateEvidenceAssociationFields(EvidenceAssociation uiEntity, EvidenceAssociation dbEntity) {
+	public E validateEvidenceAssociationFields(E uiEntity, E dbEntity) {
 		Boolean newEntity = false;
 		if (dbEntity.getId() == null)
 			newEntity = true;

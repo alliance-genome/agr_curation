@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
@@ -16,6 +17,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructS
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.constructs.ConstructUniqueIdHelper;
+import org.alliancegenome.curation_api.services.validation.associations.constructAssociations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotationValidator;
@@ -40,6 +42,8 @@ public class ConstructValidator extends ReagentValidator {
 	ConstructFullNameSlotAnnotationValidator constructFullNameValidator;
 	@Inject
 	ConstructSynonymSlotAnnotationValidator constructSynonymValidator;
+	@Inject
+	ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
 	
 	private String errorMessage;
 
@@ -97,6 +101,8 @@ public class ConstructValidator extends ReagentValidator {
 		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(uiEntity, dbEntity);
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(uiEntity, dbEntity);
 		
+		List<ConstructGenomicEntityAssociation> geAssociations = validateConstructGenomicEntityAssociations(uiEntity, dbEntity);
+		
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
 
@@ -131,6 +137,14 @@ public class ConstructValidator extends ReagentValidator {
 			if (dbEntity.getConstructComponents() == null)
 				dbEntity.setConstructComponents(new ArrayList<>());
 			dbEntity.getConstructComponents().addAll(components);
+		}
+		
+		if (dbEntity.getConstructGenomicEntityAssociations() != null)
+			dbEntity.getConstructGenomicEntityAssociations().clear();
+		if (geAssociations != null) {
+			if (dbEntity.getConstructGenomicEntityAssociations() == null)
+				dbEntity.setConstructGenomicEntityAssociations(new ArrayList<>());
+			dbEntity.getConstructGenomicEntityAssociations().addAll(geAssociations);
 		}
 
 		return dbEntity;
@@ -263,6 +277,37 @@ public class ConstructValidator extends ReagentValidator {
 			return null;
 
 		return validatedComponents;
+	}
+	
+	private List<ConstructGenomicEntityAssociation> validateConstructGenomicEntityAssociations(Construct uiEntity, Construct dbEntity) {
+		String field = "constructGenomicEntityAssociations";
+
+		List<ConstructGenomicEntityAssociation> validatedAssociations = new ArrayList<ConstructGenomicEntityAssociation>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(uiEntity.getConstructGenomicEntityAssociations())) {
+			for (int ix = 0; ix < uiEntity.getConstructGenomicEntityAssociations().size(); ix++) {
+				ConstructGenomicEntityAssociation gea = uiEntity.getConstructGenomicEntityAssociations().get(ix);
+				ObjectResponse<ConstructGenomicEntityAssociation> geaResponse = constructGenomicEntityAssociationValidator.validateConstructGenomicEntityAssociation(gea);
+				if (geaResponse.getEntity() == null) {
+					allValid = false;
+					response.addErrorMessages(field, ix, geaResponse.getErrorMessages());
+				} else {
+					gea = geaResponse.getEntity();
+					gea.setSubjectConstruct(dbEntity);
+					validatedAssociations.add(gea);
+				}
+			}
+		}
+		
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedAssociations))
+			return null;
+
+		return validatedAssociations;
 	}
 	
 }

@@ -56,13 +56,13 @@ export const NewReferenceField = ({ state, dispatch }) => {
   return (
     <Splitter gutterSize="0" className="border-none surface-ground">
       <SplitterPanel size={20}>
-        <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-9" />
-      </SplitterPanel>
-      <SplitterPanel size={20}>
         <SingleReferenceFormEditor
           reference={reference}
           onReferenceValueChange={referencesOnChangeHandler}
           errorMessages={state.entityStates.references.errorMessages} />
+      </SplitterPanel>
+      <SplitterPanel size={20}>
+        <Button label="Add Reference" onClick={createNewReferenceHandler} className="w-6 p-button-text" />
       </SplitterPanel>
       <SplitterPanel size={60}>
         <SingleReferenceAdditionalFieldData fieldData={reference} />
