@@ -2,6 +2,10 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.28.0-rc2 
+* Updates quarkus to version 3
+* Fixes and 
+
 ## v0.27.2 & v0.27.3
  * Fixes and maintenance
    * Fixes for permissions and dependent workflow triggering on automated release creation (SCRUM-3444)
