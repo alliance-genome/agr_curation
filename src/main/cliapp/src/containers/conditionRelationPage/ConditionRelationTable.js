@@ -122,9 +122,9 @@ export const ConditionRelationTable = () => {
 				);
 			};
 			return (
-				<>
-					<ListTableCell template={listTemplate} listData={rowData.conditions} showBullets={true}/>
-				</>
+				<div style={{ margin: '-10px 10px -10px 10px' }}>
+					<ListTableCell template={listTemplate} listData={rowData.conditions} showBullets={true} />
+				</div>
 			);
 		}
 	};

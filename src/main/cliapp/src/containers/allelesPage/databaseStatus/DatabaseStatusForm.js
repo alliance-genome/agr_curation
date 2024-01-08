@@ -83,7 +83,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
       }
       tableName="Database Status"
       showTable={state.entityStates.alleleDatabaseStatus.show}
-      button={<Button label="Add Database Status" onClick={createNewDatabaseStatusHandler} disabled={state.allele?.alleleDatabaseStatus} className="w-6"/>}
+      button={<Button label="Add Database Status" onClick={createNewDatabaseStatusHandler} disabled={state.allele?.alleleDatabaseStatus} className="w-4  p-button-text"/>}
     />
   );
 

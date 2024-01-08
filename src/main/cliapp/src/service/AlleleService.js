@@ -6,6 +6,10 @@ export class AlleleService extends BaseAuthService {
 		return this.api.put(`/allele`, updatedAllele);
 	}
 
+	saveAlleleDetail(updatedAllele) {
+		return this.api.put(`/allele/updateDetail`, updatedAllele);
+	}
+
 	createAllele(newAllele) { 
 		return this.api.post(`/allele`, newAllele);
 	}

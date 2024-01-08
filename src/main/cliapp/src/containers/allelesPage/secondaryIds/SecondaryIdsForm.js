@@ -84,7 +84,7 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
       }
       tableName="Secondary IDs"
       showTable={state.entityStates.alleleSecondaryIds.show}
-      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-6"/>}
+      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-4 p-button-text"/>}
     />
   );
 

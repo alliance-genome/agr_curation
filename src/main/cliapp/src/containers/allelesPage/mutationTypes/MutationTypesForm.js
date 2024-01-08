@@ -84,7 +84,7 @@ export const MutationTypesForm = ({ state, dispatch }) => {
       }
       tableName="Mutation Types"
       showTable={state.entityStates.alleleMutationTypes.show}
-      button={<Button label="Add Mutation Type" onClick={createNewMutationTypeHandler} className="w-6"/>}
+      button={<Button label="Add Mutation Type" onClick={createNewMutationTypeHandler} className="w-4  p-button-text"/>}
     />
   );
 
