@@ -33,6 +33,9 @@ public class SearchResponse<E> extends APIResponse {
 
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private String esQuery;
+	
+	@JsonView({ View.FieldsOnly.class })
+	private String dbQuery;
 
 	public SearchResponse() {
 	}

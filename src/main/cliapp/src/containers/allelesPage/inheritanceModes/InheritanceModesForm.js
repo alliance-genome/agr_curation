@@ -6,6 +6,7 @@ import { processOptionalField } from "../../../utils/utils";
 
 export const InheritanceModesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
+  const inheritanceModes = global.structuredClone(state.allele?.alleleInheritanceModes);
 
   const createNewInheritanceModeHandler = (e) => {
     e.preventDefault();
@@ -31,7 +32,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
   };
 
   const inheritanceModeOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleInheritanceModes', 
@@ -56,7 +57,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
   }
 
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleInheritanceModes', 
@@ -98,7 +99,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
     <FormTableWrapper
       table={
         <InheritanceModesFormTable
-          inheritanceModes={state.allele?.alleleInheritanceModes}
+          inheritanceModes={inheritanceModes}
           editingRows={state.entityStates.alleleInheritanceModes.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}

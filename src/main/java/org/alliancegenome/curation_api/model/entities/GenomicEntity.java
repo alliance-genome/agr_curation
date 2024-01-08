@@ -2,15 +2,6 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
@@ -22,6 +13,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -46,11 +45,11 @@ public class GenomicEntity extends BiologicalEntity {
 	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	private List<CrossReference> crossReferences;
 	
-	@IndexedEmbedded(includePaths = {"subject.curie", "subject.constructSymbol.displayText", "subject.constructSymbol.formatText",
-			"subject.constructFullName.displayText", "subject.constructFullName.formatText", "subject.modEntityId",
-			"subject.curie_keyword", "subject.constructSymbol.displayText_keyword", "subject.constructSymbol.formatText_keyword",
-			"subject.constructFullName.displayText_keyword", "subject.constructFullName.formatText_keyword", "subject.modEntityId_keyword",})
-	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL)
+	@IndexedEmbedded(includePaths = {"constructSubject.curie", "constructSubject.constructSymbol.displayText", "constructSubject.constructSymbol.formatText",
+			"constructSubject.constructFullName.displayText", "constructSubject.constructFullName.formatText", "constructSubject.modEntityId",
+			"constructSubject.curie_keyword", "constructSubject.constructSymbol.displayText_keyword", "constructSubject.constructSymbol.formatText_keyword",
+			"constructSubject.constructFullName.displayText_keyword", "constructSubject.constructFullName.formatText_keyword", "constructSubject.modEntityId_keyword",})
+	@OneToMany(mappedBy = "objectGenomicEntity", cascade = CascadeType.ALL)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 

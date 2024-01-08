@@ -657,7 +657,7 @@ export const data = {
 							"name": "expresses (RO:0002292)",
 							"definition": "Indicates that the construct expresses the indicated GenomicEntity"
 						},
-						"object": {
+						"objectGenomicEntity": {
 							"type": "Gene",
 							"createdBy": {
 								"internal": false,

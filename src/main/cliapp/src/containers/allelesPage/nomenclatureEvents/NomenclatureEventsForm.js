@@ -5,6 +5,7 @@ import { useRef } from "react";
 
 export const NomenclatureEventsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
+  const nomenclatureEvents = global.structuredClone(state.allele?.alleleNomenclatureEvents);
 
   const createNewNomenclatureEventHandler = (e) => {
     e.preventDefault();
@@ -28,7 +29,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
   };
 
   const nomenclatureEventOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleNomenclatureEvents', 
@@ -39,7 +40,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
   };
   
   const internalOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleNomenclatureEvents', 
@@ -50,7 +51,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
   };
 
   const obsoleteOnChangeHandler = (props, event) => {
-    //todo -- add props.editorCallback() after PrimeReact upgrade 
+    props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
       entityType: 'alleleNomenclatureEvents', 
@@ -82,7 +83,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
     <FormTableWrapper
       table={
         <NomenclatureEventsFormTable
-          nomenclatureEvents={state.allele?.alleleNomenclatureEvents}
+          nomenclatureEvents={nomenclatureEvents}
           editingRows={state.entityStates.alleleNomenclatureEvents.editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}

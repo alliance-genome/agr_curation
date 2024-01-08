@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { Toast } from 'primereact/toast';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Divider } from 'primereact/divider';
+import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
@@ -9,14 +11,13 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
 import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
-import { PageFooter } from './PageFooter';
 import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
 import { CurieFormTemplate } from '../../components/Templates/CurieFormTemplate';
 import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
-import { validateAlleleDetailTable } from '../../utils/utils';
+import { processErrors } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
@@ -28,6 +29,7 @@ import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
+import { StickyHeader } from '../../components/StickyHeader';
 
 export default function AlleleDetailPage(){
 	const { curie } = useParams();
@@ -65,42 +67,15 @@ const { isLoading } =	useQuery([curie],
 			type: "SUBMIT" 
 		})
 
-		let anyErrors = false;
-
-		let states = Object.values(alleleState.entityStates);
-
-		states
-		.filter(state => state.type !== 'display')
-		.forEach( async (state) => {
-			let table;
-
-			if(state.type === 'object'){
-				table = [alleleState.allele[state.field]];
-			} else {
-				table = alleleState.allele[state.field];
-			}
-
-			let isError = await validateAlleleDetailTable(
-				state.endpoint,
-				state.field,
-				table,
-				alleleDispatch,
-			);
-
-			if(isError) anyErrors = true;
-		})
-		
 		mutation.mutate(alleleState.allele, {
 			onSuccess: () => {
-				if(anyErrors) return;
-
 				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
-
-				global.location.reload();
 			},
 			onError: (error) => {
 				let message;
-				if(error?.response?.data?.errorMessage){
+				const data = error?.response?.data;
+
+				if(data.errorMessage){
 					message = error.response.data.errorMessage;
 				} else {
 					//toast will still display even if 500 error and no errorMessages
@@ -110,12 +85,7 @@ const { isLoading } =	useQuery([curie],
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
 				]);
 
-				alleleDispatch(
-					{
-						type: "UPDATE_ERROR_MESSAGES", 
-						errorMessages: error.response?.data?.errorMessages || {}
-					}
-				);
+				processErrors(data, alleleDispatch);
 			}
 		})
 	}
@@ -180,13 +150,13 @@ const { isLoading } =	useQuery([curie],
 		</div>
 	)
 
-	const headerText = (allele) => {
+	const headerText = () => {
 		let prefix = "Allele: "
-		if (allele.alleleSymbol?.displayText && allele?.curie) {
-			return `${prefix} ${allele.alleleSymbol.displayText} (${allele.curie})`;
+		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.curie) {
+			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.curie})`;
 		}
-		if (allele?.curie) {
-			return `${prefix} ${allele.curie}`;
+		if (alleleState.allele?.curie) {
+			return `${prefix} ${alleleState.allele.curie}`;
 		}
 		return "Allele Detail Page";
 	}
@@ -195,10 +165,18 @@ const { isLoading } =	useQuery([curie],
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<h1 dangerouslySetInnerHTML={{ __html: headerText(alleleState.allele) }}/>
 			<ErrorBoundary>
-				<form>
-
+				<StickyHeader>
+					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
+						<SplitterPanel size={70} className="flex justify-content-start ml-5 py-3 ">
+							<h1 dangerouslySetInnerHTML={{ __html: headerText()}}/>
+						</SplitterPanel>
+						<SplitterPanel size={30} className="flex justify-content-start py-3">
+							<Button label="Save" icon="pi pi-check" className="p-button-text" size='large' onClick={handleSubmit} />
+						</SplitterPanel>
+					</Splitter>
+				</StickyHeader>
+				<form className='mt-8'>
 					<CurieFormTemplate
 						curie={alleleState.allele?.curie}
 						widgetColumnSize={widgetColumnSize}
@@ -401,14 +379,12 @@ const { isLoading } =	useQuery([curie],
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
-
 					<Divider />
-
 			</form>
-			<PageFooter handleSubmit={handleSubmit}/>
 		</ErrorBoundary>
 		</>
 	)
 	
 };
+
 

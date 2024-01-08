@@ -2,22 +2,12 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -31,6 +21,13 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -40,11 +37,17 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "VocabularyTermSet", description = "POJO that represents the Vocabulary Term Set")
-@Table(indexes = { @Index(name = "vocabularytermset_name_index", columnList = "name"),
+@Table(
+	indexes = {
+		@Index(name = "vocabularytermset_name_index", columnList = "name"),
 		@Index(name = "vocabularytermset_vocabularylabel_index", columnList = "vocabularylabel"),
 		@Index(name = "vocabularytermset_createdby_id_index", columnList = "createdby_id"),
 		@Index(name = "vocabularytermset_updatedby_id_index", columnList = "updatedby_id"),
-		@Index(name = "vocabularytermset_vocabularytermsetvocabulary_id_index", columnList = "vocabularytermsetvocabulary_id")})
+		@Index(name = "vocabularytermset_vocabularytermsetvocabulary_id_index", columnList = "vocabularytermsetvocabulary_id")
+	}, uniqueConstraints = {
+		@UniqueConstraint(name = "vocabularytermset_vocabularyLabel_uk", columnNames = "vocabularyLabel"),
+	}
+)
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class VocabularyTermSet extends GeneratedAuditedObject {
 
@@ -55,7 +58,6 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "vocabularyLabel_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
 	@JsonView({ View.FieldsOnly.class })
 	private String vocabularyLabel;
 
@@ -63,7 +65,6 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.VocabularyTermSetView.class })
-	@Fetch(FetchMode.JOIN)
 	private Vocabulary vocabularyTermSetVocabulary;
 
 	@IndexedEmbedded(includeDepth = 1)

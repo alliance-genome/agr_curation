@@ -2,56 +2,69 @@ import React from 'react';
 import { FilterComponentInputText } from './FilterComponentInputText';
 import { FilterComponentBinaryDropDown } from './FilterComponentBinaryDropDown';
 import { FilterComponentMultiSelect } from './FilterComponentMultiSelect';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
 
 export const FilterComponent = ({
 	filterConfig,
-	isEnabled,
+	isInEditMode,
 	onFilter,
 	aggregationFields,
 	tableState,
 	endpoint,
 }) => {
-	if(filterConfig && filterConfig.filterComponentType) {
-		switch(filterConfig.filterComponentType) {
+	if (filterConfig && filterConfig.filterComponentType) {
+		switch (filterConfig.filterComponentType) {
 			case "input":
 				return (
-					<>
-					<FilterComponentInputText
-						filterConfig={filterConfig}
-						isEnabled={isEnabled}
-						currentFilters={tableState.filters}
-						onFilter={onFilter}
-					/>&nbsp;&nbsp;
-					<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
-					</>
+					<Splitter className='border-none' gutterSize={0}>
+						<SplitterPanel size={95} className="text-left">
+							<FilterComponentInputText
+								filterConfig={filterConfig}
+								isInEditMode={isInEditMode}
+								currentFilters={tableState.filters}
+								onFilter={onFilter}
+							/>
+						</SplitterPanel>
+						<SplitterPanel size={5} className="text-right">
+							<i className="pi pi-filter text-base mt-3 ml-3" ></i>
+						</SplitterPanel>
+					</Splitter>
 				);
 
 			case "dropdown":
 				return (
-					<>
-					<FilterComponentBinaryDropDown
-						filterConfig={filterConfig}
-						isEnabled={isEnabled}
-						currentFilters={tableState.filters}
-						onFilter={onFilter}
-					/>&nbsp;&nbsp;
-					<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
-					</>
+					<Splitter className='border-none' gutterSize={0}>
+						<SplitterPanel size={95} className="text-left">
+							<FilterComponentBinaryDropDown
+								filterConfig={filterConfig}
+								isInEditMode={isInEditMode}
+								currentFilters={tableState.filters}
+								onFilter={onFilter}
+							/>
+						</SplitterPanel>
+						<SplitterPanel size={5} className="text-right">
+							<i className="pi pi-filter text-base mt-3 ml-3" ></i>
+						</SplitterPanel>
+					</Splitter >
 				);
 
 			case "multiselect":
 				return (
-					<>
-					<FilterComponentMultiSelect
-						filterConfig={filterConfig}
-						isEnabled={isEnabled}
-						currentFilters={tableState.filters}
-						onFilter={onFilter}
-						aggregationFields={aggregationFields}
-						endpoint={endpoint}
-					/>&nbsp;&nbsp;
-					<i className="pi pi-filter" style={{ 'fontSize': '1em' }}></i>
-					</>
+					<Splitter className='border-none' gutterSize={0}>
+						<SplitterPanel size={95} className="text-left">
+							<FilterComponentMultiSelect
+								filterConfig={filterConfig}
+								isInEditMode={isInEditMode}
+								currentFilters={tableState.filters}
+								onFilter={onFilter}
+								aggregationFields={aggregationFields}
+								endpoint={endpoint}
+							/>
+						</SplitterPanel>
+						<SplitterPanel size={5} className="text-right">
+							<i className="pi pi-filter text-base mt-3 ml-3" ></i>
+						</SplitterPanel>
+					</Splitter >
 				);
 			default:
 				return null;
@@ -59,4 +72,4 @@ export const FilterComponent = ({
 	} else {
 		return null;
 	}
-}
+};

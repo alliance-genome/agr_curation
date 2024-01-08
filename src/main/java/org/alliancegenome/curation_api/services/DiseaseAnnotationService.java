@@ -5,19 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -25,6 +17,10 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -34,13 +30,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	@Inject
 	DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject
-	NoteService noteService;
-	@Inject
 	PersonService personService;
-	@Inject
-	DataProviderDAO dataProviderDAO;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
 	@Inject
 	DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
 	@Inject
@@ -110,11 +100,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				return annotation;
 			}
 		} else {
-			List<Note> notesToDelete = annotation.getRelatedNotes();
 			diseaseAnnotationDAO.remove(id);
-
-			if (CollectionUtils.isNotEmpty(notesToDelete))
-				notesToDelete.forEach(note -> noteService.delete(note.getId()));
 		}
 
 		return null;

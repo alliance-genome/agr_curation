@@ -1,10 +1,6 @@
-package org.alliancegenome.curation_api.jobs;
+package org.alliancegenome.curation_api.jobs.reports;
 
 import java.time.ZonedDateTime;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportGroupDAO;
@@ -24,6 +20,9 @@ import com.cronutils.parser.CronParser;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 import io.vertx.mutiny.core.eventbus.EventBus;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ReportScheduler {
@@ -44,7 +43,7 @@ public class ReportScheduler {
 	@PostConstruct
 	public void init() {
 		// Set any running jobs to failed as the server has restarted
-		SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll(null);
+		SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll();
 		for (CurationReportGroup g : reportGroups.getResults()) {
 			if (g.getCurationReports().size() > 0) {
 				for (CurationReport cr : g.getCurationReports()) {
@@ -70,7 +69,7 @@ public class ReportScheduler {
 		if (schedulingEnabled) {
 			ZonedDateTime start = ZonedDateTime.now();
 			// Log.info("scheduleGroupJobs: Scheduling Enabled: " + schedulingEnabled);
-			SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll(null);
+			SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll();
 			for (CurationReportGroup g : reportGroups.getResults()) {
 				if (g.getCurationReports().size() > 0) {
 					for (CurationReport cr : g.getCurationReports()) {
@@ -109,7 +108,7 @@ public class ReportScheduler {
 
 	@Scheduled(every = "1s")
 	public void runGroupJobs() {
-		SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll(null);
+		SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll();
 		for (CurationReportGroup group : reportGroups.getResults()) {
 			for (CurationReport cr : group.getCurationReports()) {
 				if (cr.getCurationReportStatus() == null)

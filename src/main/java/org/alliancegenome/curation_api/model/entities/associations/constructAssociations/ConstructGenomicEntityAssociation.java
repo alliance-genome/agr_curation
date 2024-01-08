@@ -2,14 +2,6 @@ package org.alliancegenome.curation_api.model.entities.associations.constructAss
 
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -29,6 +21,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -41,8 +41,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
 @Table(indexes = {
-	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "subject_id"),
-	@Index(name = "constructgenomicentityassociation_object_index", columnList = "object_curie"),
+	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "subjectConstruct_id"),
+	@Index(name = "constructgenomicentityassociation_object_index", columnList = "objectGenomicEntity_curie"),
 	@Index(name = "constructgenomicentityassociation_relation_index", columnList = "relation_id")
 })
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
@@ -55,7 +55,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	@Fetch(FetchMode.JOIN)
-	private Construct subject;
+	private Construct subjectConstruct;
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -68,11 +68,11 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
-	private GenomicEntity object;
+	private GenomicEntity objectGenomicEntity;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
 			@Index(name = "cgeassociation_note_cgeassociation_id_index", columnList = "constructgenomicentityassociation_id"),

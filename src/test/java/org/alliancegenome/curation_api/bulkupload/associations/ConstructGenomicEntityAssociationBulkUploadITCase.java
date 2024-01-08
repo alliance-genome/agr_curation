@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -69,22 +68,22 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
-			body("entity.subject.modEntityId", is(constructModEntityId)).
+			body("entity.objectGenomicEntity.curie", is(geneCurie)).
+			body("entity.subjectConstruct.modEntityId", is(constructModEntityId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].obsolete", is(true)).
 			body("entity.relatedNotes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.relatedNotes[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].freeText", is("Test note")).
 			body("entity.relatedNotes[0].noteType.name", is(noteType)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference));
@@ -97,8 +96,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			body("entity.modEntityId", is(constructModEntityId)).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].object.curie", is(geneCurie)).
-			body("entity.constructGenomicEntityAssociations[0].subject", not(hasKey("constructGenomicEntityAssociations")));
+			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(geneCurie)).
+			body("entity.constructGenomicEntityAssociations[0].subjectConstruct", not(hasKey("constructGenomicEntityAssociations")));
 		
 		RestAssured.given().
 			when().
@@ -107,8 +106,8 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].object.curie", is(geneCurie)).
-			body("entity.constructGenomicEntityAssociations[0].object", not(hasKey("constructGenomicEntityAssociations")));
+			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(geneCurie)).
+			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity", not(hasKey("constructGenomicEntityAssociations")));
 	}
 	
 	@Test
@@ -122,21 +121,21 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.curie", is(geneCurie)).
+			body("entity.objectGenomicEntity.curie", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].internal", is(true)).
 			body("entity.relatedNotes[0].obsolete", is(false)).
 			body("entity.relatedNotes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.relatedNotes[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.relatedNotes[0].freeText", is("Test note 2")).
 			body("entity.relatedNotes[0].noteType.name", is(noteType2)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference2));

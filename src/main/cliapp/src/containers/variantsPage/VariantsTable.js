@@ -22,7 +22,7 @@ import { ControlledVocabularyDropdown } from '../../components/ControlledVocabul
 
 export const VariantsTable = () => {
 
-	const [isEnabled, setIsEnabled] = useState(true);
+	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
@@ -187,14 +187,14 @@ export const VariantsTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
-			sortable: { isEnabled },
+			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
 			field: "taxon.name",
 			header: "Taxon",
 			body: taxonTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
@@ -202,14 +202,14 @@ export const VariantsTable = () => {
 			field: "variantType.name",
 			header: "Variant Type",
 			body: variantTypeTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
 			editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "variantStatus.name",
 			header: "Variant Status",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantStatusFilterConfig,
 			editor: (props) => variantStatusEditor(props)
 		},
@@ -225,40 +225,40 @@ export const VariantsTable = () => {
 			field: "sourceGeneralConsequence.name",
 			header: "Source General Consequence",
 			body: sourceGeneralConsequenceTemplate,
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
 			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
 		},
 		{
 			field: "dataProvider.sourceOrganization.abbreviation",
 			header: "Data Provider",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{
 			field: "updatedBy.uniqueId",
 			header: "Updated By",
-			sortable: isEnabled,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: "dateUpdated",
 			header: "Date Updated",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
 		},
 		{
 			field: "createdBy.uniqueId",
 			header: "Created By",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig
 		},
 		{
 			field: "dateCreated",
 			header: "Date Created",
-			sortable: isEnabled,
+			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
 		},
@@ -268,7 +268,7 @@ export const VariantsTable = () => {
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: isEnabled,
+			sortable: true,
 			editor: (props) => (
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} showClear={false}/>
 			)
@@ -279,7 +279,7 @@ export const VariantsTable = () => {
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: isEnabled,
+			sortable: true,
 			editor: (props) => (
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"}  showClear={false}/>
 			)
@@ -313,8 +313,8 @@ export const VariantsTable = () => {
 					isEditable={true}
 					hasDetails={false}
 					mutation={mutation}
-					isEnabled={isEnabled}
-					setIsEnabled={setIsEnabled}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
 					widthsObject={widthsObject}

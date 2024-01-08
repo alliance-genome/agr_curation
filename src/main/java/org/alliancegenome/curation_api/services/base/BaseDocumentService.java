@@ -9,9 +9,6 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 public abstract class BaseDocumentService<E extends BaseDocument, D extends BaseDocumentDAO<E>> {
 
 	protected BaseESDAO<E> dao;
