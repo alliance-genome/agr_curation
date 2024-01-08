@@ -14,13 +14,10 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFunctionalImpactSlotAnnotation;
@@ -47,7 +44,6 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -210,6 +206,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		if (inheritanceModes != null) {
 			if (dbEntity.getAlleleInheritanceModes() == null)
 				dbEntity.setAlleleInheritanceModes(new ArrayList<>());
+			for (AlleleInheritanceModeSlotAnnotation im : inheritanceModes)
+				im.setSingleAllele(dbEntity);
 			dbEntity.getAlleleInheritanceModes().addAll(inheritanceModes);
 		}
 		
@@ -218,6 +216,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		if (functionalImpacts != null) {
 			if (dbEntity.getAlleleFunctionalImpacts() == null)
 				dbEntity.setAlleleFunctionalImpacts(new ArrayList<>());
+			for (AlleleFunctionalImpactSlotAnnotation fi : functionalImpacts)
+					fi.setSingleAllele(dbEntity);
 			dbEntity.getAlleleFunctionalImpacts().addAll(functionalImpacts);
 		}
 		
@@ -226,6 +226,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		if (mutationTypes != null) {
 			if (dbEntity.getAlleleMutationTypes() == null)
 				dbEntity.setAlleleMutationTypes(new ArrayList<>());
+			for (AlleleMutationTypeSlotAnnotation mt : mutationTypes)
+				mt.setSingleAllele(dbEntity);
 			dbEntity.getAlleleMutationTypes().addAll(mutationTypes);
 		}
 		
@@ -234,6 +236,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		if (nomenclatureEvents != null) {
 			if (dbEntity.getAlleleNomenclatureEvents() == null)
 				dbEntity.setAlleleNomenclatureEvents(new ArrayList<>());
+			for (AlleleNomenclatureEventSlotAnnotation nm : nomenclatureEvents)
+				nm.setSingleAllele(dbEntity);
 			dbEntity.getAlleleNomenclatureEvents().addAll(nomenclatureEvents);
 		}
 		
@@ -368,9 +372,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					allValid = false;
 					response.addErrorMessages(field, ix, mtResponse.getErrorMessages());
 				} else {
-					mt = mtResponse.getEntity();
-					mt.setSingleAllele(dbEntity);
-					validatedMutationTypes.add(mt);
+					validatedMutationTypes.add(mtResponse.getEntity());
 				}
 			}
 		}
@@ -399,9 +401,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					response.addErrorMessages(field, ix, imResponse.getErrorMessages());
 					allValid = false;
 				} else {
-					im = imResponse.getEntity();
-					im.setSingleAllele(dbEntity);
-					validatedInheritanceModes.add(im);
+					validatedInheritanceModes.add(imResponse.getEntity());
 				}
 			}
 		}
@@ -461,9 +461,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					response.addErrorMessages(field, ix, neResponse.getErrorMessages());
 					addMessageResponse(field, neResponse.errorMessagesString());
 				} else {
-					ne = neResponse.getEntity();
-					ne.setSingleAllele(dbEntity);
-					validatedNomenclatureEvents.add(ne);
+					validatedNomenclatureEvents.add(neResponse.getEntity());
 				}
 			}
 		}
@@ -583,9 +581,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					response.addErrorMessages(field, ix, fiResponse.getErrorMessages());
 					allValid = false;
 				} else {
-					fi = fiResponse.getEntity();
-					fi.setSingleAllele(dbEntity);
-					validatedFunctionalImpacts.add(fi);
+					validatedFunctionalImpacts.add(fiResponse.getEntity());
 				}
 			}
 		}
