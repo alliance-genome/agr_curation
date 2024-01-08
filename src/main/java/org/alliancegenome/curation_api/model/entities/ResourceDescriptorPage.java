@@ -43,25 +43,25 @@ public class ResourceDescriptorPage extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.ResourceDescriptorPageView.class })
+	@JsonView({ View.ResourceDescriptorPageView.class, View.ForPublic.class })
 	private ResourceDescriptor resourceDescriptor;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "urlTemplate_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String urlTemplate;
 
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "pageDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String pageDescription;
 }

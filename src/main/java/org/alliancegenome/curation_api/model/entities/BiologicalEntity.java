@@ -48,7 +48,7 @@ public class BiologicalEntity extends CurieAuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private NCBITaxonTerm taxon;
 	
 	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",

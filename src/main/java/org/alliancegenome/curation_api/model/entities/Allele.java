@@ -94,7 +94,7 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
