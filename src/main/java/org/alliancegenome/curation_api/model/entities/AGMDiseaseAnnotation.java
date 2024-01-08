@@ -45,7 +45,6 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_agmdasubject"))
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
@@ -54,21 +53,18 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene inferredGene;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Allele inferredAllele;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.SELECT)
 	@JoinTable(indexes = @Index(columnList = "agmdiseaseannotation_id"))
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> assertedGenes;
@@ -76,7 +72,6 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Allele assertedAllele;
 

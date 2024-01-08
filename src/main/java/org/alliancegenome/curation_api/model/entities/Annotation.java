@@ -101,7 +101,6 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	protected DataProvider dataProvider;
 

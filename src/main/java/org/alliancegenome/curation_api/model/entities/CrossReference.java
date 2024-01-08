@@ -54,7 +54,6 @@ public class CrossReference extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private ResourceDescriptorPage resourceDescriptorPage;
 
