@@ -10,6 +10,9 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -23,7 +26,8 @@ import jakarta.persistence.OrderBy;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @Type(value = BulkFMSLoad.class, name = "BulkFMSLoad"), @Type(value = BulkURLLoad.class, name = "BulkURLLoad"), @Type(value = BulkManualLoad.class, name = "BulkManualLoad") })
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
