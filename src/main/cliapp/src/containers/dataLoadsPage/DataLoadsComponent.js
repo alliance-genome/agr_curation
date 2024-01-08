@@ -202,8 +202,18 @@ export const DataLoadsComponent = () => {
 	};
 
 	const historyActionBodyTemplate = (rowData) => {
-		return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
-	};
+		return (
+			<nobr>
+				<Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
+				{ rowData.failedRecords > 0 &&
+					<a href={`/api/bulkloadfilehistory/${rowData.id}/download`} target="_blank" className="p-button p-button-warning">
+						<i className="pi pi-exclamation-triangle"></i>
+						<i className="pi pi-download"></i>
+					</a>
+				}
+			</nobr>
+		)
+	}
 
 	const showUploadConfirmDialog = (rowData) => {
 		setUploadLoadType(rowData.backendBulkLoadType);
@@ -410,7 +420,7 @@ export const DataLoadsComponent = () => {
 				if (file.dateLastLoaded) {
 					lastLoadedDates.set(file.dateLastLoaded, file);
 				} else {
-					filesWithoutDates.push(file);	
+					filesWithoutDates.push(file);
 				}
 			} else {
 				lastLoadedDates.set(new Date().toISOString(), file);
@@ -421,7 +431,7 @@ export const DataLoadsComponent = () => {
 			const start2 = new Date(b);
 			return start2 - start1;
 		}).forEach(date => sortedFiles.push(lastLoadedDates.get(date)));
-		
+
 		if (filesWithoutDates.length > 0) {
 			filesWithoutDates.forEach(fwd => {sortedFiles.push(fwd)});
 		}
@@ -460,7 +470,7 @@ export const DataLoadsComponent = () => {
 		if (group.loads) {
 			sortedLoads = group.loads.sort((a, b) => (a.name > b.name) ? 1: -1);
 		}
-		
+
 		return (
 			<div className="card">
 				<DataTable key="loadTable" value={sortedLoads} responsiveLayout="scroll"
