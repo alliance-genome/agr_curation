@@ -64,7 +64,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DOTerm object;
 
@@ -90,7 +89,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.SELECT)
 	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "with_curie") })
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> with;
@@ -117,7 +115,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DataProvider secondaryDataProvider;
 
@@ -125,7 +122,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 
-  @Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = { @Index(columnList = "diseaseannotation_id"), @Index(columnList = "diseasegeneticmodifiers_curie")})
 	private List<BiologicalEntity> diseaseGeneticModifiers;
