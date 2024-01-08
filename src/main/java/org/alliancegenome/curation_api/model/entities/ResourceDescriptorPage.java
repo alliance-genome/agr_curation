@@ -1,11 +1,18 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -19,10 +26,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -43,25 +46,26 @@ public class ResourceDescriptorPage extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.ResourceDescriptorPageView.class })
+	@JsonView({ View.ResourceDescriptorPageView.class, View.ForPublic.class })
+	@Fetch(FetchMode.JOIN)
 	private ResourceDescriptor resourceDescriptor;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "urlTemplate_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String urlTemplate;
 
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "pageDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String pageDescription;
 }

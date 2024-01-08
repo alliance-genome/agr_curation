@@ -1,5 +1,12 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BiologicalEntityTypeBridge;
@@ -20,12 +27,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -48,15 +49,16 @@ public class BiologicalEntity extends CurieAuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
-	
+
 	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
 			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
 	private DataProvider dataProvider;
 
 }

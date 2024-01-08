@@ -1,5 +1,10 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
@@ -20,10 +25,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -41,27 +42,27 @@ public class CrossReference extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "referencedCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String referencedCurie;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	private String displayName;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@Fetch(FetchMode.JOIN)
 	private ResourceDescriptorPage resourceDescriptorPage;
 
 	public String getPrefix() {
 		if (referencedCurie.indexOf(":") == -1)
 			return referencedCurie;
-		
+
 		return referencedCurie.substring(0, referencedCurie.indexOf(":"));
 	}
 

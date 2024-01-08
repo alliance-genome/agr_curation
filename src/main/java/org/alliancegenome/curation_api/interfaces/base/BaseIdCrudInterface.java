@@ -61,6 +61,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 	public SearchResponse<E> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
+	@Path("/findForPublic")
+	@Tag(name = "Public Web API Database Searching Endpoints")
+	@JsonView(View.ForPublic.class)
+	public SearchResponse<E> findForPublic(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	
+	@POST
 	@Path("/search")
 	@Tag(name = "Search Database Browsing Endpoints")
 	@JsonView({ View.FieldsAndLists.class })
