@@ -42,7 +42,7 @@ public class Organization extends Agent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class, View.ForPublic.class })
 	@Column(unique = true)
 	private String abbreviation;
 
@@ -59,6 +59,6 @@ public class Organization extends Agent {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private ResourceDescriptorPage homepageResourceDescriptorPage;
 }

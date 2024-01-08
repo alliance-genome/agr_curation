@@ -34,7 +34,7 @@ import lombok.ToString;
 public class AffectedGenomicModel extends GenomicEntity {
 
 	@Column(columnDefinition = "TEXT")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private String name;
 
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -43,6 +43,6 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private VocabularyTerm subtype;
 }

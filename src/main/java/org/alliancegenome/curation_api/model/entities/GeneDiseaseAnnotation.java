@@ -40,7 +40,7 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JoinColumn(foreignKey = @ForeignKey(name = "fk_genedasubject"))
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene subject;
 
 	@IndexedEmbedded(includeDepth = 1)
