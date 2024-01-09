@@ -7,6 +7,7 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
+import { AlleleGeneAssociationService } from '../../service/AlleleGeneAssociationService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
@@ -17,7 +18,6 @@ import { DataProviderFormTemplate } from '../../components/Templates/DataProvide
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
-import { processErrors } from './utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
@@ -32,12 +32,13 @@ import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsF
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { validateRequiredAutosuggestField } from './utils';
+import { validateRequiredAutosuggestField, processErrors, validateAlleleDetailTable } from './utils';
 
 export default function AlleleDetailPage() {
 	const { curie } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const alleleService = new AlleleService();
+	const alleleGeneAssociationService = new AlleleGeneAssociationService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 
@@ -59,8 +60,12 @@ export default function AlleleDetailPage() {
 		}
 	);
 
-	const { isLoading: putRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
-		return alleleService.saveAlleleDetail(allele);
+	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
+		return alleleService.saveAllele(allele);
+	});
+
+	const { isLoading: agaPutRequestIsLoading, mutate: agaMutate } = useMutation(alleleGeneAssociations => {
+				return alleleGeneAssociationService.saveAlleleGeneAssociations(alleleGeneAssociations);
 	});
 
 	const handleSubmit = async (event) => {
@@ -80,12 +85,25 @@ export default function AlleleDetailPage() {
 
 		if(areUiErrors) return;
 
-		//TODO: decide if this is needed
-		// const _allele = stripOutDataKey(alleleState.allele);
+		//TODO: remove this once alleleDetail endpoint is ready
+		let isError = await validateAlleleDetailTable(
+			"allelegeneassociation",
+			"alleleGeneAssociations",
+			alleleState.allele.alleleGeneAssociations,
+			alleleDispatch,
+		);
 
-		// alleleMutate(_allele, {
+		//TODO: remove this once alleleDetail endpoint is ready
+		if(!isError){
+			agaMutate(alleleState.allele.alleleGeneAssociations);
+			alleleState.entityStates.alleleGeneAssociations.rowsToDelete.forEach((id) => {
+				alleleGeneAssociationService.deleteAlleleGeneAssociation(id);
+			})
+		}
+
 		alleleMutate(alleleState.allele, {
 			onSuccess: () => {
+				if(isError) return;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
 			onError: (error) => {
@@ -186,7 +204,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={putRequestIsLoading} />
+			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading || agaPutRequestIsLoading)} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -415,24 +433,3 @@ export default function AlleleDetailPage() {
 	);
 
 };
-
-
-const stripOutDataKey = (allele) => {
-  const _allele = global.structuredClone(allele);
-  const entityKeys = Object.keys(_allele);
-
-  for(let i = 0; i < entityKeys.length; i++){
-    const entity = _allele[entityKeys[i]];
-
-    if(entity && typeof entity === "object"){
-      if(Array.isArray(entity)){
-        for(let ii = 0; ii < entity.length; ii++){
-          delete entity[ii].dataKey;
-        }
-      } else {
-        delete entity.dataKey;
-      }
-    }
-  }
-  return _allele;
-}

@@ -25,11 +25,11 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       row: newAlleleGeneAssociation,
       entityType: entityType,
     });
-    
-    dispatch({ 
-      type: "UPDATE_TABLE_ERROR_MESSAGES", 
-      entityType: entityType, 
-      errorMessages: updatedErrorMessages 
+
+    dispatch({
+      type: "UPDATE_TABLE_ERROR_MESSAGES",
+      entityType: entityType,
+      errorMessages: updatedErrorMessages
     });
   };
 
@@ -90,7 +90,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       ...alleleGeneAssociations[props.rowIndex],
       evidence: newEvidence,
       evidenceCurieSearchFilter: generateCurieSearchField(newEvidence),
-    }
+    };
 
 
     //updates value in table input box
@@ -107,9 +107,10 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
 
   const deletionHandler = (e, dataKey) => {
     e.preventDefault();
+    const aga = alleleGeneAssociations.find((aga) =>  aga.dataKey === dataKey );
     const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
     delete updatedErrorMessages[dataKey];
-    dispatch({ type: "DELETE_ROW", entityType: entityType, dataKey });
+    dispatch({ type: "DELETE_AGA_ROW", entityType: entityType, dataKey, id: aga.id });
     dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
