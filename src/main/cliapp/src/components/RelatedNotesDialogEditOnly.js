@@ -16,7 +16,7 @@ import { addDataKey } from '../containers/allelesPage/utils';
 
 export const RelatedNotesDialogEditOnly = ({
   relatedNotesData,
-  errorMessagesMainRow,
+  tableErrorMessages,
   dispatch,
   setRelatedNotesData,
   singleValue = false,
@@ -27,7 +27,7 @@ export const RelatedNotesDialogEditOnly = ({
   const {
     originalRelatedNotes,
     dialogIsVisible,
-    rowIndex,
+    dataKey,
   } = relatedNotesData;
   const [errorMessages, setErrorMessages] = useState([]);
   const validationService = new ValidationService();
@@ -157,14 +157,16 @@ export const RelatedNotesDialogEditOnly = ({
     if (anyErrors) return;
     onChange(localRelatedNotes, relatedNotesData.rowProps);
 
-    const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
-    let messageObject = {
-      severity: "warn",
-      message: "Pending Edits!"
+    const tableErrorMessagesCopy = global.structuredClone(tableErrorMessages);
+    const errorMessage = {
+      ...tableErrorMessagesCopy[dataKey],
+      [errorField]: {
+        severity: "warn",
+        message: "Pending Edits!"
+      },
     };
-    errorMessagesCopy[rowIndex] = {};
-    errorMessagesCopy[rowIndex][errorField] = messageObject;
-    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: errorMessagesCopy });
+    tableErrorMessagesCopy[dataKey] = errorMessage;
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: tableErrorMessagesCopy });
     setRelatedNotesData((relatedNotesData) => {
       return {
         ...relatedNotesData,

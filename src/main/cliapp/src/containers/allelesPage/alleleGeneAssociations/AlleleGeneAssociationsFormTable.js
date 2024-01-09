@@ -111,7 +111,7 @@ export const AlleleGeneAssociationsFormTable = ({
               rowProps={props}
               relatedNote={props.rowData.relatedNote}
               errorMessages={errorMessages}
-              rowIndex={props.rowIndex}
+              dataKey={props?.rowData?.dataKey}
               rows={props.rows}
               setRelatedNotesData={setRelatedNotesData}
             />;
@@ -155,7 +155,7 @@ export const AlleleGeneAssociationsFormTable = ({
       <RelatedNotesDialogEditOnly
         relatedNotesData={relatedNotesData}
         setRelatedNotesData={setRelatedNotesData}
-        errorMessagesMainRow={errorMessages}
+        tableErrorMessages={errorMessages}
         dispatch={dispatch}
         singleValue={true}
         onChange={relatedNoteOnChangeHandler}

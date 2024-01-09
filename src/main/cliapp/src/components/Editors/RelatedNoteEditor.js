@@ -3,17 +3,14 @@ import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../EditMessageTooltip';
 
-export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRelatedNotesData }) => {
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
+export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRelatedNotesData, dataKey }) => {
 
   const handleRelatedNotesOpenInEdit = (event, rows, rowIndex) => {
     event.preventDefault();
-    const index = rowIndex % rows;
     let _relatedNotesData = {};
     _relatedNotesData["originalRelatedNotes"] = relatedNote ? [relatedNote] : undefined;
     _relatedNotesData["dialogIsVisible"] = true;
-    _relatedNotesData["rowIndex"] = index;
+    _relatedNotesData["dataKey"] = dataKey;
     _relatedNotesData["errorMessages"] = errorMessages;
     _relatedNotesData["rowProps"] = rowProps;
     setRelatedNotesData(() => ({
@@ -27,14 +24,18 @@ export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRel
         <div>
           <Button className="p-button-text"
             onClick={(event) => { handleRelatedNotesOpenInEdit(event, rowProps.props.rows, rowProps.rowIndex); }} >
-						<span style={{ textDecoration: 'underline' }}>
-							{relatedNote.freeText}
+            <span style={{ textDecoration: 'underline' }}>
+              {relatedNote.freeText}
               <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
             </span>&nbsp;&nbsp;&nbsp;&nbsp;
             <EditMessageTooltip object="allele" />
           </Button>
         </div>
-        <ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={"relatedNote"} style={{ 'fontSize': '1em' }} />
+        <ErrorMessageComponent
+          errorMessages={errorMessages[dataKey]}
+          errorField={"relatedNote"}
+          style={{ 'fontSize': '1em' }}
+        />
       </>
     );
   } else {
@@ -47,10 +48,14 @@ export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRel
               Add Note
               <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
             </span>&nbsp;&nbsp;&nbsp;&nbsp;
-            <EditMessageTooltip object="allele"/>
+            <EditMessageTooltip object="allele" />
           </Button>
         </div>
-        <ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={"relatedNote"} style={{ 'fontSize': '1em' }} />
+        <ErrorMessageComponent
+          errorMessages={errorMessages[dataKey]}
+          errorField={"relatedNote"}
+          style={{ 'fontSize': '1em' }}
+        />
       </>
     );
   }
