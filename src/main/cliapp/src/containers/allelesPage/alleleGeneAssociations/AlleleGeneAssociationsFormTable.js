@@ -160,7 +160,9 @@ export const AlleleGeneAssociationsFormTable = ({
         singleValue={true}
         onChange={relatedNoteOnChangeHandler}
         defaultValues={{noteType: "comment"}}
-        errorField='relatedNote'
+        errorField="relatedNote"
+        entityType="alleleGeneAssociations"
+        noteTypeVocabType="allele_genomic_entity_association_note_type"
       />
     </>
   );

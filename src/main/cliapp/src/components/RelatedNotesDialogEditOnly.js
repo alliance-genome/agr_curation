@@ -22,7 +22,9 @@ export const RelatedNotesDialogEditOnly = ({
   singleValue = false,
   onChange,
   defaultValues,
-  errorField = "relatedNotes"
+  errorField = "relatedNotes",
+  entityType,
+  noteTypeVocabType,
 }) => {
   const {
     originalRelatedNotes,
@@ -96,7 +98,7 @@ export const RelatedNotesDialogEditOnly = ({
           onChangeHandler={onNoteTypeEditorValueChange}
           errorMessages={errorMessages}
           rowIndex={props.rowIndex}
-          vocabType="allele_genomic_entity_association_note_type"
+          vocabType={noteTypeVocabType}
           field="noteType"
           showClear={false}
           placeholder={defaultValues.noteType}
@@ -166,7 +168,7 @@ export const RelatedNotesDialogEditOnly = ({
       },
     };
     tableErrorMessagesCopy[dataKey] = errorMessage;
-    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: tableErrorMessagesCopy });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: tableErrorMessagesCopy });
     setRelatedNotesData((relatedNotesData) => {
       return {
         ...relatedNotesData,

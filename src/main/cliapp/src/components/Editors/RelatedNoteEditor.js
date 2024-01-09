@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../EditMessageTooltip';
