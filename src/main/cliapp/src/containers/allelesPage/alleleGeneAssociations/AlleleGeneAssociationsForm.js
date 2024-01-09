@@ -40,20 +40,20 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
   const alleleGeneRelationOnChangeHandler = (props, event) => {
     props.editorCallback(event.target.value);
     dispatch({
-      type: 'EDIT_ROW',
+      type: 'EDIT_FILTERABLE_ROW',
       entityType: entityType,
-      index: props.rowIndex,
+      dataKey: props.rowData?.dataKey,
       field: "relation",
       value: event.target.value
     });
   };
 
-  const relatedNoteOnChangeHandler = (rowIndex, value, rowProps) => {
-    rowProps.editorCallback(value[0]);
+  const relatedNoteOnChangeHandler = (value, props) => {
+    props.editorCallback(value[0]);
     dispatch({
-      type: 'EDIT_ROW',
+      type: 'EDIT_FILTERABLE_ROW',
       entityType: entityType,
-      index: rowIndex,
+      dataKey: props.rowData?.dataKey,
       field: "relatedNote",
       value: value[0]
     });
@@ -63,9 +63,9 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     //updates value in table input box
     setFieldValue(event.target.value);
     dispatch({
-      type: 'EDIT_ROW',
+      type: 'EDIT_FILTERABLE_ROW',
       entityType: entityType,
-      index: props.rowIndex,
+      dataKey: props.rowData?.dataKey,
       field: "objectGene",
       value: event.target.value
     });
@@ -75,9 +75,9 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     const value = processOptionalField(event.target.value);
     setFieldValue(value);
     dispatch({
-      type: 'EDIT_ROW',
+      type: 'EDIT_FILTERABLE_ROW',
       entityType: entityType,
-      index: props.rowIndex,
+      dataKey: props.rowData?.dataKey,
       field: "evidenceCode",
       value: value
     });
@@ -86,12 +86,13 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
 
   const evidenceOnChangeHandler = (event, setFieldValue, props) => {
     const newEvidence = event.target.value;
+    const dataKey = props.rowData?.dataKey;
+    const aga = alleleGeneAssociations.find((aga) =>  aga.dataKey === dataKey );
     const newAssociation = {
-      ...alleleGeneAssociations[props.rowIndex],
+      ...aga,
       evidence: newEvidence,
       evidenceCurieSearchFilter: generateCurieSearchField(newEvidence),
     };
-
 
     //updates value in table input box
     setFieldValue(newEvidence);
@@ -99,9 +100,9 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     dispatch({
       type: 'REPLACE_ROW',
       entityType: entityType,
-      index: props.rowIndex,
+      dataKey: dataKey,
       field: "evidence",
-      value: newAssociation,
+      newRow: newAssociation,
     });
   };
 

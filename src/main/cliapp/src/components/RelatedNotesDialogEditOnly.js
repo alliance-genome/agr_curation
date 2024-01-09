@@ -155,7 +155,7 @@ export const RelatedNotesDialogEditOnly = ({
     setErrorMessages([]);
     const anyErrors = await validateTable();
     if (anyErrors) return;
-    onChange(rowIndex, localRelatedNotes, relatedNotesData.rowProps);
+    onChange(localRelatedNotes, relatedNotesData.rowProps);
 
     const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
     let messageObject = {

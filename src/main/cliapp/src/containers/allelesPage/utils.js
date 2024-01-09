@@ -94,7 +94,7 @@ export const processErrors = (data, dispatch, allele) => {
 };
 
 export const processErrorMap = (errorMap, dispatch, allele) => {
-  if(!errorMap) return;
+  if (!errorMap) return;
 
   let tableErrors;
   let table;
@@ -130,7 +130,6 @@ const validateAlleleGeneAssociations = async (entities, endpoint, validationServ
 		const result = await validationService.validate(endpoint, entity);
 		if(result.isError) validationResults[entity.dataKey] = createErrorMessage(result.data);
 	}
-	console.log("validationResults", validationResults);
 	return validationResults;
 };
 //TODO: remove this once alleleDetail endpoint is ready

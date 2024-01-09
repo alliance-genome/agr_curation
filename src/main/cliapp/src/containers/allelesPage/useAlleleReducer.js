@@ -203,8 +203,17 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT_ROW': 
 			draft.allele[action.entityType][action.index][action.field] = action.value;
 			break;
+		case 'EDIT_FILTERABLE_ROW': 
+			const row = draft.allele[action.entityType].find((row) => row.dataKey === action.dataKey);
+			if(row) {
+				row[action.field] = action.value;
+			};
+			break;
 		case 'REPLACE_ROW': 
-			draft.allele[action.entityType][action.index] = action.value;
+			const index = draft.allele[action.entityType].findIndex((row) => row.dataKey === action.dataKey);
+			if(index !== -1){
+				draft.allele[action.entityType][index] = action.newRow;
+			}
 			break;
 		case 'EDIT_OBJECT': 
 			draft.allele[action.entityType][action.field] = action.value;
