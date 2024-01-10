@@ -503,7 +503,8 @@ CREATE TABLE auditedobject (
 	dbdatecreated timestamp without time zone,
 	dbdateupdated timestamp without time zone,
 	internal boolean NOT NULL DEFAULT false,
-	obsolete boolean NOT NULL DEFAULT false
+	obsolete boolean NOT NULL DEFAULT false,
+	auditedobjecttype varchar(64)
 	);
 	
 CREATE TABLE curieobject (
@@ -1086,6 +1087,100 @@ INSERT INTO submittedobject (id, modentityid, modinternalid, dataprovider_id) SE
 INSERT INTO curieobject (id) SELECT id FROM submittedobject;
 INSERT INTO curieobject (id, curie) SELECT id, curie FROM ontologyterm;
 INSERT INTO curieobject (id, curie) SELECT id, curie FROM informationcontententity;
+
+
+-- Update Entity Types in the auditedobject table ... this needs to be done for all "leaf" nodes of the class tree
+update AuditedObject a SET auditedObjectType = 'AGMDiseaseAnnotation' from AGMDiseaseAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'APOTerm' from APOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ATPTerm' from ATPTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AffectedGenomicModel' from AffectedGenomicModel t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Allele' from Allele t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleDatabaseStatusSlotAnnotation' from AlleleDatabaseStatusSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleDiseaseAnnotation' from AlleleDiseaseAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleFullNameSlotAnnotation' from AlleleFullNameSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleFunctionalImpactSlotAnnotation' from AlleleFunctionalImpactSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleGeneAssociation' from AlleleGeneAssociation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleGermlineTransmissionStatusSlotAnnotation' from AlleleGermlineTransmissionStatusSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleInheritanceModeSlotAnnotation' from AlleleInheritanceModeSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleMutationTypeSlotAnnotation' from AlleleMutationTypeSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleNomenclatureEventSlotAnnotation' from AlleleNomenclatureEventSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleSecondaryIdSlotAnnotation' from AlleleSecondaryIdSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleSymbolSlotAnnotation' from AlleleSymbolSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AlleleSynonymSlotAnnotation' from AlleleSynonymSlotAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'AllianceMember' from AllianceMember t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BSPOTerm' from BSPOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BulkFMSLoad' from BulkFMSLoad t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BulkLoadFile' from BulkLoadFile t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BulkLoadFileException' from BulkLoadFileException t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BulkLoadFileHistory' from BulkLoadFileHistory t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BulkLoadGroup' from BulkLoadGroup t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BulkManualLoad' from BulkManualLoad t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'BulkURLLoad' from BulkURLLoad t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'CHEBITerm' from CHEBITerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'CLTerm' from CLTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'CMOTerm' from CMOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ConditionRelation' from ConditionRelation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Construct' from Construct t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ConstructGenomicEntityAssociation' from ConstructGenomicEntityAssociation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'CrossReference' from CrossReference t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'CurationReport' from CurationReport t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'CurationReportGroup' from CurationReportGroup t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'CurationReportHistory' from CurationReportHistory t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'DAOTerm' from DAOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'DOTerm' from DOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'DPOTerm' from DPOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'DataProvider' from DataProvider t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ECOTerm' from ECOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'EMAPATerm' from EMAPATerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ExperimentalCondition' from ExperimentalCondition t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'FBDVTerm' from FBDVTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'GOTerm' from GOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Gene' from Gene t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'GeneDiseaseAnnotation' from GeneDiseaseAnnotation t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'GeneToGeneOrthologyCurated' from GeneToGeneOrthologyCurated t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'GeneToGeneOrthologyGenerated' from GeneToGeneOrthologyGenerated t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'HPTerm' from HPTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'MATerm' from MATerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'MITerm' from MITerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'MMOTerm' from MMOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'MMUSDVTerm' from MMUSDVTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'MODTerm' from MODTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'MPATHTerm' from MPATHTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'MPTerm' from MPTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Molecule' from Molecule t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'NCBITaxonTerm' from NCBITaxonTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Note' from Note t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'OBITerm' from OBITerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'PATOTerm' from PATOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'PWTerm' from PWTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Person' from Person t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'PersonSetting' from PersonSetting t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ROTerm' from ROTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'RSTerm' from RSTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Reference' from Reference t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ResourceDescriptor' from ResourceDescriptor t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ResourceDescriptorPage' from ResourceDescriptorPage t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'SOTerm' from SOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Species' from Species t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Synonym' from Synonym t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'UBERONTerm' from UBERONTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'VTTerm' from VTTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Variant' from Variant t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'Vocabulary' from Vocabulary t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'VocabularyTerm' from VocabularyTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'VocabularyTermSet' from VocabularyTermSet t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'WBBTTerm' from WBBTTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'WBLSTerm' from WBLSTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'WBPhenotypeTerm' from WBPhenotypeTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'XBATerm' from XBATerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'XBEDTerm' from XBEDTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'XBSTerm' from XBSTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'XCOTerm' from XCOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'XPOTerm' from XPOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'XSMOTerm' from XSMOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ZECOTerm' from ZECOTerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ZFATerm' from ZFATerm t where a.id = t.id;
+update AuditedObject a SET auditedObjectType = 'ZFSTerm' from ZFSTerm t where a.id = t.id;
 
 ALTER TABLE affectedgenomicmodel DROP COLUMN curie;
 ALTER TABLE agmdiseaseannotation DROP COLUMN inferredallele_curie;

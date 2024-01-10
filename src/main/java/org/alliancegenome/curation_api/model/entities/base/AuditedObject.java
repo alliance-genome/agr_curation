@@ -29,6 +29,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -51,8 +52,10 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(indexes = {
 		@Index(name = "auditedobject_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "auditedobject_updatedby_index", columnList = "updatedBy_id")
+		@Index(name = "auditedobject_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "auditedobject_auditedObjectType_index", columnList = "auditedObjectType"),
 })
+@DiscriminatorColumn(name = "auditedObjectType")
 @Schema(name = "AuditedObject", description = "POJO that represents the AuditedObject")
 public class AuditedObject extends BaseEntity {
 
