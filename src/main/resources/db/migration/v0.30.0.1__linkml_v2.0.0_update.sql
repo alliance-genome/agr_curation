@@ -1023,6 +1023,7 @@ UPDATE person t SET alliancemember_id = a.id FROM auditedobject a WHERE t.allian
 UPDATE person_emails t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
 UPDATE person_oldemails t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
 UPDATE personsetting t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'personsetting';
+UPDATE personsetting t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
 UPDATE phenotypeterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE pwterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE reagent t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'reagent';
@@ -1045,6 +1046,7 @@ UPDATE slotannotation_informationcontententity t SET slotannotation_id = a.id FR
 UPDATE slotannotation_informationcontententity t SET evidence_id = a.id FROM auditedobject a WHERE t.evidence_curie = a.old_curie AND a.tablename = 'informationcontententity';
 UPDATE soterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE species t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'species';
+UPDATE species t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
 UPDATE species t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
 UPDATE species_commonnames t SET species_id = a.id FROM auditedobject a WHERE t.species_id = a.old_id AND a.tablename = 'species';
 UPDATE stageterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
