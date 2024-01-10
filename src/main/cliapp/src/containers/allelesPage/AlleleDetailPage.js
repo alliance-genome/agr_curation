@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Divider } from 'primereact/divider';
@@ -37,6 +37,8 @@ import { validateRequiredAutosuggestField, processErrors, validateAlleleDetailTa
 export default function AlleleDetailPage() {
 	const { curie } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
+	//TODO: remove this once alleleDetail endpoint is ready
+	const [isAGALoading, setIsAGALoading] = useState(false);
 	const alleleService = new AlleleService();
 	const alleleGeneAssociationService = new AlleleGeneAssociationService();
 	const toastSuccess = useRef(null);
@@ -86,6 +88,9 @@ export default function AlleleDetailPage() {
 		if(areUiErrors) return;
 
 		//TODO: remove this once alleleDetail endpoint is ready
+		setIsAGALoading(true);
+
+		//TODO: remove this once alleleDetail endpoint is ready
 		let isError = await validateAlleleDetailTable(
 			"allelegeneassociation",
 			"alleleGeneAssociations",
@@ -103,10 +108,12 @@ export default function AlleleDetailPage() {
 
 		alleleMutate(alleleState.allele, {
 			onSuccess: () => {
+				setIsAGALoading(false);
 				if(isError) return;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
 			onError: (error) => {
+				setIsAGALoading(false);
 				let message;
 				const data = error?.response?.data;
 
@@ -204,7 +211,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading || agaPutRequestIsLoading)} />
+			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading || agaPutRequestIsLoading || isAGALoading)} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
