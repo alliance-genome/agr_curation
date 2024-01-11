@@ -40,11 +40,9 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 			if (id.startsWith("AGRKB:")) {
 				response = findByField("curie", id);
 			} else {
+				response = findByField("modEntityId", id);
 				if (response == null || response.getSingleResult() == null) {
-					response = findByField("modEntityId", id);
-					if (response == null || response.getSingleResult() == null) {
-						response = findByField("modInternalId", id);
-					}
+					response = findByField("modInternalId", id);
 				}
 			}
 			

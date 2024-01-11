@@ -152,6 +152,9 @@ public abstract class DiseaseAnnotation extends Annotation {
 
 	@Transient
 	public abstract String getSubjectSpeciesName();
+	
+	@Transient
+	public abstract String getSubjectIdentifier();
 
 	@Transient
 	@JsonIgnore

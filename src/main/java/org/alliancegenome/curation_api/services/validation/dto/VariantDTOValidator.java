@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -97,7 +98,7 @@ public class VariantDTOValidator extends BaseDTOValidator {
 		SOTerm sourceGeneralConsequence = null;
 		if (!StringUtils.isBlank(dto.getSourceGeneralConsequenceCurie())) {
 			sourceGeneralConsequence = soTermService.findByCurieOrSecondaryId(dto.getSourceGeneralConsequenceCurie());
-			if (variantType == null)
+			if (sourceGeneralConsequence == null)
 				variantResponse.addErrorMessage("source_general_consequence_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSourceGeneralConsequenceCurie() + ")");
 		}
 		variant.setSourceGeneralConsequence(sourceGeneralConsequence);

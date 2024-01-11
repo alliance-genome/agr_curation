@@ -85,6 +85,15 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 			return null;
 		return subject.getTaxon().getCurie();
 	}
+	
+	@Transient
+	@Override
+	@JsonIgnore
+	public String getSubjectIdentifier() {
+		if (subject == null)
+			return null;
+		return subject.getIdentifier();
+	}
 
 	@Transient
 	@Override

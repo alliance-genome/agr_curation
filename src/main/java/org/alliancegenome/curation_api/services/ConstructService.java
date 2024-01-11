@@ -56,23 +56,13 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 
 	@Override
 	public ObjectResponse<Construct> get(String identifier) {
-		SearchResponse<Construct> ret = findByField("curie", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<Construct>(ret.getResults().get(0));
-		
-		ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<Construct>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<Construct>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<Construct>(ret.getResults().get(0));
-				
-		return new ObjectResponse<Construct>();
+		Construct construct = findByIdentifierString(identifier);
+		if (construct == null) {
+			SearchResponse<Construct> response = findByField("uniqueId", identifier);
+			if (response != null)
+				construct = response.getSingleResult();
+		}
+		return new ObjectResponse<Construct>(construct);
 	}
 
 	@Override

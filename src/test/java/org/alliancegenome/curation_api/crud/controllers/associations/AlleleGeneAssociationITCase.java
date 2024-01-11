@@ -505,7 +505,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?allleleId=" + allele2.getId() + "&relationName=" + relation2.getName() + "&geneId=" + gene2.getId()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele2.getId() + "&relationName=" + relation2.getName() + "&geneId=" + gene2.getId()).
 			then().
 			statusCode(200).
 			body("entity", hasKey("relatedNote")).
@@ -531,7 +531,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?allleleId=" + allele2.getId() + "&relationName=" + relation2.getName() + "&geneId=" + gene2.getId()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele2.getId() + "&relationName=" + relation2.getName() + "&geneId=" + gene2.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("evidence"))).
