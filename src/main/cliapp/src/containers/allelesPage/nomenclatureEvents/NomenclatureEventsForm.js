@@ -97,7 +97,7 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
       }
       tableName="Nomenclature Events"
       showTable={state.entityStates.alleleNomenclatureEvents.show}
-      button={<Button label="Add Nomenclature Event" onClick={createNewNomenclatureEventHandler} className="w-6"/>}
+      button={<Button label="Add Nomenclature Event" onClick={createNewNomenclatureEventHandler} className="w-4 p-button-text"/>}
     />
   );
 

@@ -1,5 +1,5 @@
 import { useImmerReducer } from "use-immer";
-import { generateCrossRefSearchFields } from "./utils";
+import { generateCrossRefSearchFields, generateCurieSearchFields } from "./utils";
 import { getUniqueItemsByProperty } from "../../utils/utils";
 
 const initialAlleleState = {
@@ -15,6 +15,7 @@ const initialAlleleState = {
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
 		alleleNomenclatureEvents: [],
+		alleleGeneAssociations: [],
 		alleleDatabaseStatus: null,
 		alleleGermlineTransmissionStatus: null,
 		references: [],
@@ -122,6 +123,14 @@ const initialAlleleState = {
 			editingRows: {},
 			type: "display",
 		},
+		alleleGeneAssociations: {
+			field: 'alleleGeneAssociations',
+			show: false,
+			errorMessages: [],
+			editingRows: {},
+			rowsToDelete: [],
+			type: "table",
+		},
 	},
 	errorMessages: {},
 	submitted: false,
@@ -171,6 +180,7 @@ const alleleReducer = (draft, action) => {
 		case 'SET':
 			const allele = action.value;
 			generateCrossRefSearchFields(allele.references);
+			generateCurieSearchFields(allele.alleleGeneAssociations, 'evidence');
 
 			let states = Object.values(draft.entityStates);
 
@@ -193,6 +203,9 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT_ROW': 
 			draft.allele[action.entityType][action.index][action.field] = action.value;
 			break;
+		case 'REPLACE_ROW': 
+			draft.allele[action.entityType][action.index] = action.value;
+			break;
 		case 'EDIT_OBJECT': 
 			draft.allele[action.entityType][action.field] = action.value;
 			break;
@@ -213,6 +226,9 @@ const alleleReducer = (draft, action) => {
 			draft.allele[action.entityType].splice(action.index, 1);
 			if(draft.allele[action.entityType].length === 0){
 				draft.entityStates[action.entityType].show = false;
+			}
+			if(action.id){
+				draft.entityStates[action.entityType].rowsToDelete.push(action.id)
 			}
 			break;
 		case 'DELETE_OBJECT': 

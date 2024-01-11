@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -48,6 +49,8 @@ public class LoadFileExecutor {
 	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject
 	APIVersionInfoService apiVersionInfoService;
+	@Inject
+	SlackNotifier slackNotifier;
 
 	protected void trackHistory(BulkLoadFileHistory history, BulkLoadFile bulkLoadFile) {
 		history.setBulkLoadFile(bulkLoadFile);
@@ -98,12 +101,14 @@ public class LoadFileExecutor {
 		if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
 			bulkLoadFile.setErrorMessage("Missing Schema Version");
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			slackNotifier.slackalert(bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			return false;
 		}
 		if (!validSchemaVersion(bulkLoadFile.getLinkMLSchemaVersion(), dtoClass)) {
 			bulkLoadFile.setErrorMessage("Invalid Schema Version: " + bulkLoadFile.getLinkMLSchemaVersion());
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+			slackNotifier.slackalert(bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			return false;
 		}
@@ -255,6 +260,7 @@ public class LoadFileExecutor {
 		}
 		bulkLoadFile.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+		slackNotifier.slackalert(bulkLoadFile);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
 }

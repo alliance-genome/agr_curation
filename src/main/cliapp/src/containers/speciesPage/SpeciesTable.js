@@ -90,7 +90,7 @@ export const SpeciesTable = () => {
 	const widthsObject = {};
 
 	columns.forEach((col) => {
-		widthsObject[col.field] = 20;
+		widthsObject[col.field] = 10;
 	});
 
 	const initialTableState = getDefaultTableState("Species", defaultColumnNames, undefined, widthsObject);

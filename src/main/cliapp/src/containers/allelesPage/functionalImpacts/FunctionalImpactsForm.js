@@ -111,7 +111,7 @@ export const FunctionalImpactsForm = ({ state, dispatch }) => {
       }
       tableName="Functional Impacts"
       showTable={state.entityStates.alleleFunctionalImpacts.show}
-      button={<Button label="Add Functional Impact" onClick={createNewFunctionalImpactsHandler} className="w-6" />}
+      button={<Button label="Add Functional Impact" onClick={createNewFunctionalImpactsHandler} className="w-4 p-button-text" />}
     />
   );
 

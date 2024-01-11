@@ -18,6 +18,7 @@ import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from 'react-query';
 import { SiteContext } from '../layout/SiteContext';
+import { LoadingOverlay } from "../../components/LoadingOverlay";
 
 export const DataLoadsComponent = () => {
 
@@ -35,8 +36,9 @@ export const DataLoadsComponent = () => {
 	};
 
 	const { apiVersion } = useContext(SiteContext);
-
+	const [isLoading,setIsLoading] = useState(false);
 	const [groups, setGroups] = useState({});
+	const [errorLoads, setErrorLoads] = useState([]);
 	const [runningLoads, setRunningLoads] = useState({});
 	const [history, setHistory] = useState({id: 0});
 	const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
@@ -45,6 +47,7 @@ export const DataLoadsComponent = () => {
 	const [expandedGroupRows, setExpandedGroupRows] = useState(null);
 	const [expandedLoadRows, setExpandedLoadRows] = useState(null);
 	const [expandedFileRows, setExpandedFileRows] = useState(null);
+	const [expandedErrorLoadRows, setExpandedErrorLoadRows] = useState(null);
 	const [disableFormFields, setDisableFormFields] = useState(false);
 	const errorMessage = useRef(null);
 	const searchService = new SearchService();
@@ -88,14 +91,22 @@ export const DataLoadsComponent = () => {
 		() => searchService.find('bulkloadgroup', 100, 0, {}), {
 		onSuccess: (data) => {
 			if(data.results) {
+				let _errorLoads = [];
 				for (let group of data.results) {
 					if (group.loads) {
 						for (let load of group.loads) {
 							load.group = group.id;
+							if (load.loadFiles) {
+								let sortedFiles = sortFilesByDate(load.loadFiles);
+								if (sortedFiles[0].bulkloadStatus === "FAILED") {
+									_errorLoads.push(load);
+								}
+							}
 						}
 					}
 				}
 				setGroups(data.results.sort((a,b) => a.name > b.name ? 1 : -1));
+				setErrorLoads(_errorLoads.sort((a, b) => (a.name > b.name) ? 1: -1));
 			}
 
 			var loc = window.location, new_uri;
@@ -192,8 +203,32 @@ export const DataLoadsComponent = () => {
 	};
 
 	const historyActionBodyTemplate = (rowData) => {
-		return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
-	};
+		return (
+			<nobr>
+				<Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
+
+				{/*{ rowData.failedRecords > 0 &&
+				Have to resort to this code if file is too large (SCRUM-2639)
+					<a href={`/api/bulkloadfilehistory/${rowData.id}/download`} className="p-button p-button-warning">
+						<i className="pi pi-exclamation-triangle"></i>
+						<i className="pi pi-download"></i>
+					</a>
+				}*/}
+
+				{
+					rowData.failedRecords > 0 &&
+						<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
+							<i className="pi pi-exclamation-triangle"></i>
+							<i className="pi pi-download ml-1"></i>
+						</Button>
+				}
+			</nobr>
+		)
+	}
+
+	const downloadFileExceptions = (id) => {
+		dataLoadService.downloadExceptions(id, setIsLoading);
+	}
 
 	const showUploadConfirmDialog = (rowData) => {
 		setUploadLoadType(rowData.backendBulkLoadType);
@@ -400,7 +435,7 @@ export const DataLoadsComponent = () => {
 				if (file.dateLastLoaded) {
 					lastLoadedDates.set(file.dateLastLoaded, file);
 				} else {
-					filesWithoutDates.push(file);	
+					filesWithoutDates.push(file);
 				}
 			} else {
 				lastLoadedDates.set(new Date().toISOString(), file);
@@ -411,7 +446,7 @@ export const DataLoadsComponent = () => {
 			const start2 = new Date(b);
 			return start2 - start1;
 		}).forEach(date => sortedFiles.push(lastLoadedDates.get(date)));
-		
+
 		if (filesWithoutDates.length > 0) {
 			filesWithoutDates.forEach(fwd => {sortedFiles.push(fwd)});
 		}
@@ -450,7 +485,7 @@ export const DataLoadsComponent = () => {
 		if (group.loads) {
 			sortedLoads = group.loads.sort((a, b) => (a.name > b.name) ? 1: -1);
 		}
-		
+
 		return (
 			<div className="card">
 				<DataTable key="loadTable" value={sortedLoads} responsiveLayout="scroll"
@@ -599,12 +634,31 @@ export const DataLoadsComponent = () => {
 	return (
 		<>
 			<Toast ref={toast}></Toast>
+			<LoadingOverlay isLoading={isLoading} />
 			<div className="card">
 				<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
 				<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
 				<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
-				<h3>Data Loads Table</h3>
 				<Messages ref={errorMessage} />
+				{
+					errorLoads.length > 0 &&
+					<div>
+					<br/>
+						<h3>Failed Loads Table</h3>
+						<DataTable key="errorTable" value={errorLoads} responsiveLayout="scroll"
+							expandedRows={expandedErrorLoadRows} onRowToggle={(e) => setExpandedErrorLoadRows(e.data)}
+							rowExpansionTemplate={fileTable} dataKey="id">
+							<Column expander style={{ width: '3em' }} />
+							<Column body={nameBodyTemplate} header="Load Name" />
+							<Column field="type" header="Bulk Load Type" />
+							<Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
+							{dynamicColumns(errorLoads)}
+							<Column field="status" body={bulkloadStatusTemplate} header="Status" />
+							<Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+						</DataTable>
+					</div>
+				}
+				<h3>Data Loads Table</h3>
 				<DataTable key="groupTable"
 					value={groups} className="p-datatable-sm"
 					expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
