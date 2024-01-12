@@ -6,7 +6,7 @@ export const VocabularyTermSetEditor = ({
   props,
   onChangeHandler,
   errorMessages,
-  rowIndex,
+  dataKey,
   vocabType,
   field,
   showClear,
@@ -27,7 +27,7 @@ export const VocabularyTermSetEditor = ({
         dataKey='id'
         placeholderText={placeholder || ""}
       />
-      <DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={field} />
+      <DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={field} />
     </>
   );
 };

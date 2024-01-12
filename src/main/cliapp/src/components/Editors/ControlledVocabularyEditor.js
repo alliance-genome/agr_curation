@@ -6,7 +6,7 @@ export const ControlledVocabularyEditor = ({
   props,
   onChangeHandler,
   errorMessages,
-  rowIndex,
+  dataKey,
   vocabType,
   field,
   showClear,
@@ -25,7 +25,7 @@ export const ControlledVocabularyEditor = ({
         optionLabel={optionLabel}
         dataKey='id'
       />
-      <DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={field} />
+      <DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={field} />
     </>
   );
 };

@@ -3,16 +3,16 @@ import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { InheritanceModesFormTable } from "../inheritanceModes/InheritanceModesFormTable";
 import { useRef } from "react";
 import { processOptionalField } from "../../../utils/utils";
+import { addDataKey } from "../utils";
 
 export const InheritanceModesForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
-  const inheritanceModes = global.structuredClone(state.allele?.alleleInheritanceModes);
+  const entityType = "alleleInheritanceModes";
+  const inheritanceModes = global.structuredClone(state.allele?.[entityType]);
 
   const createNewInheritanceModeHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleInheritanceModes?.length;
     const newInheritanceMode = {
-      dataKey: dataKey,
       internal: false,
       obsolete: false,
       inheritanceMode: null,
@@ -20,10 +20,12 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
       phenotypeStatement: ""
     }
 
+    addDataKey(newInheritanceMode);
+
     dispatch({
       type: "ADD_ROW", 
       row: newInheritanceMode, 
-      entityType: "alleleInheritanceModes", 
+      entityType: entityType, 
     })
   };
 
@@ -35,7 +37,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
     props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleInheritanceModes', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "inheritanceMode", 
       value: event.target.value
@@ -49,7 +51,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
     setFieldValue(value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleInheritanceModes', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "phenotypeTerm", 
       value: value
@@ -60,7 +62,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
     props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleInheritanceModes', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "internal", 
       value: event.target?.value?.name
@@ -72,7 +74,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleInheritanceModes', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "evidence", 
       value: event.target.value
@@ -82,17 +84,19 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
   const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleInheritanceModes', 
+      entityType: entityType, 
       index: rowIndex, 
       field: field, 
       value: event.target.value
     });
   }
 
-  const deletionHandler  = (e, index) => {
+  const deletionHandler = (e, dataKey) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", entityType: "alleleInheritanceModes", index: index});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleInheritanceModes", errorMessages: []});
+    const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
+    delete updatedErrorMessages[dataKey];
+    dispatch({ type: "DELETE_ROW", entityType: entityType, dataKey });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
   return (
@@ -100,11 +104,11 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
       table={
         <InheritanceModesFormTable
           inheritanceModes={inheritanceModes}
-          editingRows={state.entityStates.alleleInheritanceModes.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleInheritanceModes.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           inheritanceModeOnChangeHandler={inheritanceModeOnChangeHandler}
           phenotypeTermOnChangeHandler={phenotypeTermOnChangeHandler}
           textOnChangeHandler={textOnChangeHandler}
@@ -113,7 +117,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
         />
       }
       tableName="Inheritance Modes"
-      showTable={state.entityStates.alleleInheritanceModes.show}
+      showTable={state.entityStates[entityType].show}
       button={<Button label="Add Inheritance Mode" onClick={createNewInheritanceModeHandler} className="w-4  p-button-text"/>}
     />
   );
