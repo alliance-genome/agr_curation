@@ -25,7 +25,6 @@ import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.lang3.ObjectUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -118,7 +117,6 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
-			Log.info("ERROR: " + response.getErrorMessages());
 			throw new ApiErrorException(response);
 		}
 
