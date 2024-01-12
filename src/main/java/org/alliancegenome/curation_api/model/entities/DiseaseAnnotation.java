@@ -95,6 +95,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 		@Index(name = "diseaseannotation_gene_diseaseannotation_index", columnList = "diseaseannotation_id"),
 		@Index(name = "diseaseannotation_gene_with_index", columnList = "with_id")
 	})
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> with;
 
 	@IndexedEmbedded(includeDepth = 1)
