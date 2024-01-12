@@ -127,7 +127,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	}
 
 	private GenomicEntity validateObject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getObject()) || uiEntity.getObject().getId() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getObject())) {
 			addMessageResponse("object", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}

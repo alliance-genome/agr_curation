@@ -9,11 +9,11 @@ import org.alliancegenome.curation_api.view.View;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Setter
-@Getter
+@Data
+@EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class })
 public class AlleleGenomicEntityAssociationDTO extends EvidenceAssociationDTO {
 

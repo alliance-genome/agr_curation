@@ -129,7 +129,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 
 		RestAssured.given().
 			when().
-			get(constructGetEndpoint + construct.getId()).
+			get(constructGetEndpoint + construct.getModEntityId()).
 			then().
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).

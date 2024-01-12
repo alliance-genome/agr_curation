@@ -78,7 +78,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "?geneId=" + gene.getId()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
@@ -133,7 +133,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "?geneId=" + gene.getId()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
@@ -213,7 +213,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "?geneId=" + gene.getId()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("createdBy"))).
@@ -231,7 +231,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "?geneId=" + gene.getId()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relatedNote", not(hasKey("createdBy"))).
@@ -247,7 +247,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "?geneId=" + gene.getId()).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("createdBy"))).

@@ -475,4 +475,20 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 			body("entity.constructComponents", hasSize(1)).
 			body("entity.constructComponents[0].relatedNotes", hasSize(1));
 	}
+	
+	@Test
+	@Order(13)
+	public void reloadInitialConstruct() throws Exception {
+		// Required for later association tests - original gets overwritten
+		// by missing fields tests due to uniqueId matching
+		checkSuccessfulBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "AF_01_all_fields.json");
+		
+		RestAssured.given().
+			when().
+			get(constructGetEndpoint + "WB:Construct0001").
+			then().
+			statusCode(200).
+			body("entity.modEntityId", is("WB:Construct0001"));
+	}
+		
 }

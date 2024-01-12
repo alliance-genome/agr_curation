@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.associations.constructAssociations.ConstructGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -18,6 +17,7 @@ import org.alliancegenome.curation_api.model.entities.associations.constructAsso
 import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
@@ -33,7 +33,7 @@ import jakarta.inject.Inject;
 public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
 	@Inject
-	ConstructDAO constructDAO;
+	ConstructService constructService;
 	@Inject
 	GenomicEntityService genomicEntityService;
 	@Inject
@@ -49,14 +49,11 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
-			SearchResponse<Construct> res = constructDAO.findByField("modEntityId", dto.getConstructIdentifier());
-			if (res == null || res.getSingleResult() == null) {
-				res = constructDAO.findByField("modInternalId", dto.getConstructIdentifier());
-			}
-			if (res == null || res.getSingleResult() == null) {
+			ObjectResponse<Construct> constructResponse = constructService.get(dto.getConstructIdentifier());
+			if (constructResponse == null || constructResponse.getEntity() == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
-				construct = res.getSingleResult();
+				construct = constructResponse.getEntity();
 				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization))
 					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
 			}

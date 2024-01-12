@@ -8,8 +8,10 @@ import org.alliancegenome.curation_api.view.View;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class })
 public class SynonymDTO extends AuditedObjectDTO {
 

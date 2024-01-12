@@ -10,7 +10,6 @@ import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Construct;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructFullNameSlotAnnotation;
@@ -55,32 +54,29 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 	@Transactional
 	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
-		Construct construct = new Construct();
+		Construct construct = null;
 		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
 		SearchResponse<Construct> constructList;
-		Boolean annotationFound = false;
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			constructList = constructDAO.findByField("modEntityId", dto.getModEntityId());
-			if (constructList != null && constructList.getSingleResult() != null) {
+			if (constructList != null && constructList.getSingleResult() != null)
 				construct = constructList.getSingleResult();
-				annotationFound = true;
-			}
 		}
-		construct.setModEntityId(dto.getModEntityId());
-		if (!annotationFound && StringUtils.isNotBlank(dto.getModInternalId())) {
+		if (construct == null && StringUtils.isNotBlank(dto.getModInternalId())) {
 			constructList = constructDAO.findByField("modInternalId", dto.getModInternalId());
-			if (constructList != null && constructList.getSingleResult() != null) {
+			if (constructList != null && constructList.getSingleResult() != null)
 				construct = constructList.getSingleResult();
-				annotationFound = true;
-			}
 		}
-		construct.setModInternalId(dto.getModInternalId());
-		if (!annotationFound){
+		if (construct == null) {
 			constructList = constructDAO.findByField("uniqueId", uniqueId);
 			if (constructList != null && constructList.getSingleResult() != null)
 				construct = constructList.getSingleResult();
 		}
+		if (construct == null)
+			construct = new Construct();
 		construct.setUniqueId(uniqueId);
+		construct.setModEntityId(dto.getModEntityId());
+		construct.setModInternalId(dto.getModInternalId());
 		
 		ObjectResponse<Construct> reagentResponse = validateReagentDTO(construct, dto);
 		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());

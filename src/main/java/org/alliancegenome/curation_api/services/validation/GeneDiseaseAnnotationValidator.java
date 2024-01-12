@@ -14,7 +14,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.ObjectUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -76,7 +75,6 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
-			Log.info("ERROR: " + response.getErrorMessages());
 			throw new ApiErrorException(response);
 		}
 

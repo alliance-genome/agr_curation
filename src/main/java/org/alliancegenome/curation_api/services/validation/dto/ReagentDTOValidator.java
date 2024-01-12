@@ -6,8 +6,6 @@ import org.alliancegenome.curation_api.model.entities.Reagent;
 import org.alliancegenome.curation_api.model.ingest.dto.ReagentDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
