@@ -49,6 +49,11 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@Path("/")
 	@JsonView(View.AlleleView.class)
 	public ObjectResponse<Allele> update(Allele entity);
+	
+	@PUT
+	@Path("/updateDetail")
+	@JsonView(View.AlleleDetailView.class)
+	public ObjectResponse<Allele> updateDetail(Allele entity);
 
 	@Override
 	@POST
@@ -66,7 +71,7 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@Override
 	@POST
 	@Path("/search")
-	@Tag(name = "Search Database Browsing Endpoints")
+	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.AlleleView.class })
 	public SearchResponse<Allele> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 

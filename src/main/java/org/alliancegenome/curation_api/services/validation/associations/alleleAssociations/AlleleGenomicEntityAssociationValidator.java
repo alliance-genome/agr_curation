@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.associations.alleleAssociations;
 
-import java.util.Objects;
-
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -17,7 +15,7 @@ import org.alliancegenome.curation_api.services.validation.associations.Evidence
 
 import jakarta.inject.Inject;
 
-public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociationValidator {
+public class AlleleGenomicEntityAssociationValidator<E extends AlleleGenomicEntityAssociation> extends EvidenceAssociationValidator<E> {
 
 	@Inject
 	NoteValidator noteValidator;
@@ -28,7 +26,7 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 	@Inject
 	AlleleDAO alleleDAO;
 	
-	public ECOTerm validateEvidenceCode(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
+	public ECOTerm validateEvidenceCode(E uiEntity, E dbEntity) {
 		String field = "evidenceCode";
 		if (uiEntity.getEvidenceCode() == null)
 			return null;
@@ -50,7 +48,7 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 		return evidenceCode;
 	}
 		
-	public Note validateRelatedNote(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
+	public Note validateRelatedNote(E uiEntity, E dbEntity) {
 		String field = "relatedNote";
 
 		if (uiEntity.getRelatedNote() == null)
@@ -64,9 +62,9 @@ public class AlleleGenomicEntityAssociationValidator extends EvidenceAssociation
 		return noteResponse.getEntity();
 	}
 
-	public AlleleGenomicEntityAssociation validateAlleleGenomicEntityAssociationFields(AlleleGenomicEntityAssociation uiEntity, AlleleGenomicEntityAssociation dbEntity) {
+	public E validateAlleleGenomicEntityAssociationFields(E uiEntity, E dbEntity) {
 		
-		dbEntity = (AlleleGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
+		dbEntity = validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		ECOTerm evidenceCode = validateEvidenceCode(uiEntity, dbEntity);
 		dbEntity.setEvidenceCode(evidenceCode);

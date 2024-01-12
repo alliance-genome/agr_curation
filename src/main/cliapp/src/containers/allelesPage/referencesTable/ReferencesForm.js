@@ -27,6 +27,7 @@ export const ReferencesForm = ({ state, dispatch }) => {
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
+          className="w-1"
         />
       }
       tableName="References"

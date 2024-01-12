@@ -81,7 +81,7 @@ public class Construct extends Reagent {
 	
 	@IndexedEmbedded(includePaths = {"objectGenomicEntity.curie", "objectGenomicEntity.name", "objectGenomicEntity.symbol", "relation.name",
 			"objectGenomicEntity.curie_keyword", "objectGenomicEntity.name_keyword", "objectGenomicEntity.symbol_keyword", "relation.name_keyword"})
-	@OneToMany(mappedBy = "subjectConstruct", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "subjectConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 }

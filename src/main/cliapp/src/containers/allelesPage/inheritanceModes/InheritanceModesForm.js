@@ -114,7 +114,7 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
       }
       tableName="Inheritance Modes"
       showTable={state.entityStates.alleleInheritanceModes.show}
-      button={<Button label="Add Inheritance Mode" onClick={createNewInheritanceModeHandler} className="w-6"/>}
+      button={<Button label="Add Inheritance Mode" onClick={createNewInheritanceModeHandler} className="w-4  p-button-text"/>}
     />
   );
 
