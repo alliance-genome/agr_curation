@@ -20,7 +20,7 @@ const geneSearch = (event, setFiltered, setInputValue) => {
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 };
 
-export const GeneEditor = ({ props, errorMessages, onChange }) => {
+export const GeneEditor = ({ props, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
 			<AutocompleteEditor
@@ -33,7 +33,7 @@ export const GeneEditor = ({ props, errorMessages, onChange }) => {
 					onValueChangeHandler={onChange}
 				/>
 			<DialogErrorMessageComponent
-				errorMessages={errorMessages[props?.rowIndex]}
+				errorMessages={errorMessages[dataKey]}
 				errorField={"object"}
 			/>
 		</>

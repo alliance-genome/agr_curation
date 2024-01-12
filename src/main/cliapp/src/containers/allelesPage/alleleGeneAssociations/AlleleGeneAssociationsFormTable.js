@@ -60,7 +60,7 @@ export const AlleleGeneAssociationsFormTable = ({
         paginator paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} first={first} rowsPerPageOptions={[5, 10, 20, 50]}
       >
-        <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
+        <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props.rowData?.dataKey} />}
           className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
         <Column
           editor={(props) => {
@@ -68,6 +68,7 @@ export const AlleleGeneAssociationsFormTable = ({
               props={props}
               onChangeHandler={alleleGeneRelationOnChangeHandler}
               errorMessages={errorMessages}
+              dataKey={props?.rowData?.dataKey}
               rowIndex={props.rowIndex}
               vocabType="allele_gene_relation"
               field="relation"
@@ -92,6 +93,7 @@ export const AlleleGeneAssociationsFormTable = ({
               props={props}
               errorMessages={errorMessages}
               onChange={geneOnChangeHandler}
+              dataKey={props?.rowData?.dataKey}
             />;
           }}
           field="object"
@@ -109,7 +111,7 @@ export const AlleleGeneAssociationsFormTable = ({
               rowProps={props}
               relatedNote={props.rowData.relatedNote}
               errorMessages={errorMessages}
-              rowIndex={props.rowIndex}
+              dataKey={props?.rowData?.dataKey}
               rows={props.rows}
               setRelatedNotesData={setRelatedNotesData}
             />;
@@ -127,6 +129,7 @@ export const AlleleGeneAssociationsFormTable = ({
               props={props}
               onChangeHandler={evidenceCodeOnChangeHandler}
               errorMessages={errorMessages}
+              dataKey={props.rowData?.dataKey}
             />;
           }}
           filter
@@ -152,12 +155,14 @@ export const AlleleGeneAssociationsFormTable = ({
       <RelatedNotesDialogEditOnly
         relatedNotesData={relatedNotesData}
         setRelatedNotesData={setRelatedNotesData}
-        errorMessagesMainRow={errorMessages}
+        tableErrorMessages={errorMessages}
         dispatch={dispatch}
         singleValue={true}
         onChange={relatedNoteOnChangeHandler}
         defaultValues={{noteType: "comment"}}
-        errorField='relatedNote'
+        errorField="relatedNote"
+        entityType="alleleGeneAssociations"
+        noteTypeVocabType="allele_genomic_entity_association_note_type"
       />
     </>
   );

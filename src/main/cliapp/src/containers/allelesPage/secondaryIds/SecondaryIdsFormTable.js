@@ -30,9 +30,9 @@ export const SecondaryIdsFormTable = ({
 
 
   return (
-    <DataTable value={secondaryIds} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+    <DataTable value={secondaryIds} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} size='small'
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
-      <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
+      <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column 
         editor={(props) => {
@@ -40,6 +40,7 @@ export const SecondaryIdsFormTable = ({
             value={props.value} 
             rowIndex={props.rowIndex} 
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="secondaryId"
         />}} 
@@ -50,6 +51,7 @@ export const SecondaryIdsFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}

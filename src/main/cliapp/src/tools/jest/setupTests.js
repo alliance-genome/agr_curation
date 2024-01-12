@@ -28,6 +28,12 @@ const localStorageMock = (function () {
 })();
 
 Object.defineProperty(global, "localStorage", { value: localStorageMock });
+Object.defineProperty(global.window, 'crypto', {
+  value: {
+    randomUUID: jest.fn().mockReturnValue('mock-uuid-1234'),
+  },
+});
+
 
 export const setLocalStorage = (id, data) => {
 	window.localStorage.setItem(id, JSON.stringify(data));
