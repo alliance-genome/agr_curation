@@ -36,7 +36,7 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "genomicentity_id", name = "genomicentity_crossreference_genomicentity_index"),
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	private List<CrossReference> crossReferences;
 	
 

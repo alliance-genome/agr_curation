@@ -115,7 +115,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(construct, dto);
 		if (construct.getConstructComponents() != null)
 			construct.getConstructComponents().clear();
-		if (synonyms != null) {
+		if (components != null) {
 			if (construct.getConstructComponents() == null)
 				construct.setConstructComponents(new ArrayList<>());
 			construct.getConstructComponents().addAll(components);

@@ -45,14 +45,14 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Allele subject;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene inferredGene;
 
 	@IndexedEmbedded(includeDepth = 2)
@@ -63,7 +63,7 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 		@Index(name = "allelediseaseannotationgene_diseaseannotation_index", columnList = "allelediseaseannotation_id"),
 		@Index(name = "allelediseaseannotationgene_assertedgenes_index", columnList = "assertedgenes_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> assertedGenes;
 
 	@Transient

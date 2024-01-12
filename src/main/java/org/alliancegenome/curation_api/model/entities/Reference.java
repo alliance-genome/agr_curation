@@ -47,10 +47,11 @@ public class Reference extends InformationContentEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@JoinTable(indexes = {
 		@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
-		@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")})
+		@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")
+	})
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 

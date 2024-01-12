@@ -62,25 +62,25 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DOTerm object;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean negated = false;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = {
 		@Index(name = "diseaseannotation_ecoterm_diseaseannotation_index", columnList = "diseaseannotation_id"),
 		@Index(name = "diseaseannotation_ecoterm_evidencecodes_index", columnList = "evidencecodes_id")
@@ -95,19 +95,18 @@ public abstract class DiseaseAnnotation extends Annotation {
 		@Index(name = "diseaseannotation_gene_diseaseannotation_index", columnList = "diseaseannotation_id"),
 		@Index(name = "diseaseannotation_gene_with_index", columnList = "with_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> with;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private VocabularyTerm annotationType;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = {
 		@Index(name = "diseaseannotation_vocabularyterm_diseaseannotation_index", columnList = "diseaseannotation_id"),
 		@Index(name = "diseaseannotation_vocabularyterm_diseasequalifiers_index", columnList = "diseasequalifiers_id")
@@ -117,21 +116,21 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private VocabularyTerm geneticSex;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DataProvider secondaryDataProvider;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = {
 		@Index(name = "diseaseannotation_biologicalentity_diseaseannotation_index", columnList = "diseaseannotation_id"),
 		@Index(name = "diseaseannotation_biologicalentity_dgms_index", columnList = "diseasegeneticmodifiers_id")
@@ -141,7 +140,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private VocabularyTerm diseaseGeneticModifierRelation;
 
 	@Transient
@@ -158,9 +157,9 @@ public abstract class DiseaseAnnotation extends Annotation {
 
 	@Transient
 	@JsonIgnore
-	public String getDataProviderString(){
+	public String getDataProviderString() {
 		StringBuilder builder = new StringBuilder(dataProvider.getSourceOrganization().getAbbreviation());
-		if(secondaryDataProvider != null){
+		if (secondaryDataProvider != null) {
 			builder.append(" via ");
 			builder.append(secondaryDataProvider.getSourceOrganization().getAbbreviation());
 		}

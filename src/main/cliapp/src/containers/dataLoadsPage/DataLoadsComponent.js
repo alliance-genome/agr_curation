@@ -18,6 +18,7 @@ import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from 'react-query';
 import { SiteContext } from '../layout/SiteContext';
+import { LoadingOverlay } from "../../components/LoadingOverlay";
 
 export const DataLoadsComponent = () => {
 
@@ -35,7 +36,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const { apiVersion } = useContext(SiteContext);
-
+	const [isLoading,setIsLoading] = useState(false);
 	const [groups, setGroups] = useState({});
 	const [errorLoads, setErrorLoads] = useState([]);
 	const [runningLoads, setRunningLoads] = useState({});
@@ -202,8 +203,32 @@ export const DataLoadsComponent = () => {
 	};
 
 	const historyActionBodyTemplate = (rowData) => {
-		return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
-	};
+		return (
+			<nobr>
+				<Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
+
+				{/*{ rowData.failedRecords > 0 &&
+				Have to resort to this code if file is too large (SCRUM-2639)
+					<a href={`/api/bulkloadfilehistory/${rowData.id}/download`} className="p-button p-button-warning">
+						<i className="pi pi-exclamation-triangle"></i>
+						<i className="pi pi-download"></i>
+					</a>
+				}*/}
+
+				{
+					rowData.failedRecords > 0 &&
+						<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
+							<i className="pi pi-exclamation-triangle"></i>
+							<i className="pi pi-download ml-1"></i>
+						</Button>
+				}
+			</nobr>
+		)
+	}
+
+	const downloadFileExceptions = (id) => {
+		dataLoadService.downloadExceptions(id, setIsLoading);
+	}
 
 	const showUploadConfirmDialog = (rowData) => {
 		setUploadLoadType(rowData.backendBulkLoadType);
@@ -410,7 +435,7 @@ export const DataLoadsComponent = () => {
 				if (file.dateLastLoaded) {
 					lastLoadedDates.set(file.dateLastLoaded, file);
 				} else {
-					filesWithoutDates.push(file);	
+					filesWithoutDates.push(file);
 				}
 			} else {
 				lastLoadedDates.set(new Date().toISOString(), file);
@@ -421,7 +446,7 @@ export const DataLoadsComponent = () => {
 			const start2 = new Date(b);
 			return start2 - start1;
 		}).forEach(date => sortedFiles.push(lastLoadedDates.get(date)));
-		
+
 		if (filesWithoutDates.length > 0) {
 			filesWithoutDates.forEach(fwd => {sortedFiles.push(fwd)});
 		}
@@ -460,7 +485,7 @@ export const DataLoadsComponent = () => {
 		if (group.loads) {
 			sortedLoads = group.loads.sort((a, b) => (a.name > b.name) ? 1: -1);
 		}
-		
+
 		return (
 			<div className="card">
 				<DataTable key="loadTable" value={sortedLoads} responsiveLayout="scroll"
@@ -609,6 +634,7 @@ export const DataLoadsComponent = () => {
 	return (
 		<>
 			<Toast ref={toast}></Toast>
+			<LoadingOverlay isLoading={isLoading} />
 			<div className="card">
 				<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
 				<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />

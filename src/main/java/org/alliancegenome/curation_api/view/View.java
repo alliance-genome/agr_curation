@@ -2,12 +2,14 @@ package org.alliancegenome.curation_api.view;
 
 public class View {
 
+	// Curation Views
+	
 	public static class FieldsOnly {
 	}
 
 	public static class FieldsAndLists extends FieldsOnly {
 	}
-
+	
 	public static class ConditionRelationView extends FieldsOnly {
 	}
 
@@ -43,7 +45,7 @@ public class View {
 
 	public static class ConstructView extends FieldsOnly {
 	}
-
+	
 	public static class DiseaseAnnotation extends FieldsOnly {
 	}
 
@@ -91,8 +93,13 @@ public class View {
 
 	public static class PrivateOnlyView {
 	}
-
-	public static class BulkLoadFileHistoryView extends FieldsOnly{
+  
+	// Public only views
+	
+	public static class ForPublic {
 	}
-
+	public static class DiseaseAnnotationForPublic extends ForPublic {
+	}
+	public static class BulkLoadFileHistoryView extends FieldsOnly {
+	}
 }

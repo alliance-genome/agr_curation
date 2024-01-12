@@ -43,7 +43,7 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 			jsonArray.add(object);
 		}
 		Response.ResponseBuilder response = Response.ok(jsonArray.toString());
-		response.header("Content-Disposition", "attachment;filename=" + bulkLoadFileHistory.getBulkLoadFile().getBulkLoad().getName().replace( " ", "_") + "_exception.json");
+		response.header("Content-Disposition", "attachment; filename=\"" + bulkLoadFileHistory.getBulkLoadFile().getBulkLoad().getName().replace( " ", "_") + "_exceptions.json\"");
 		response.type(MediaType.APPLICATION_OCTET_STREAM);
 		return response.build();
 	}

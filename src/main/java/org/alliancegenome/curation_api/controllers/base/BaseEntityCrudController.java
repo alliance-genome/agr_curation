@@ -52,6 +52,10 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 		Pagination pagination = new Pagination(page, limit);
 		return service.findByParams(pagination, params);
 	}
+	
+	public SearchResponse<E> findForPublic(Integer page, Integer limit, HashMap<String, Object> params) {
+		return find(page, limit, params);
+	}
 
 	public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null)
