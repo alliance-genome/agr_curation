@@ -15,7 +15,8 @@ import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 import { WithTemplate } from '../../components/Templates/WithTemplate';
-import { AssertedGenesBodyTemplate } from '../../components/Templates/AssertedGenesBodyTemplate' 
+import { AssertedGenesBodyTemplate } from '../../components/Templates/AssertedGenesBodyTemplate';
+import { EvidenceTemplate } from '../../components/Templates/EvidenceTemplate'; 
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -167,29 +168,8 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	const evidenceTemplate = (rowData) => {
-		if (rowData?.evidenceCodes && rowData.evidenceCodes.length > 0) {
-			const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item.abbreviation + ' - ' + item.name + ' (' + item.curie + ')'}
-					</EllipsisTableCell>
-				);
-			};
-			return (
-				<>
-					<div className={`-my-4 p-1 a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
-					</div>
-					<Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
 
+//MOVE
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
 			let refString = getRefString(rowData.singleReference);
@@ -212,6 +192,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	//MOVE
 	const inferredGeneBodyTemplate = (rowData) => {
 		if (rowData && rowData.inferredGene) {
 			const identifier = getIdentifier(rowData.inferredGene);
@@ -233,6 +214,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+//MOVE
 	const inferredAlleleBodyTemplate = (rowData) => {
 		if (rowData && rowData.inferredAllele) {
 			const identifier = getIdentifier(rowData.inferredAllele);
@@ -272,6 +254,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	//MOVE
 	const assertedAlleleBodyTemplate = (rowData) => {
 		if (rowData && rowData.assertedAllele) {
 			const identifier = getIdentifier(rowData.assertedAllele);
@@ -311,6 +294,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	//MOVE
 	const diseaseQualifiersBodyTemplate = (rowData) => {
 		if (rowData && rowData.diseaseQualifiers) {
 			const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
@@ -323,6 +307,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	//MOVE
 	const negatedTemplate = (rowData) => {
 		if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
 			return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
@@ -1178,6 +1163,7 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	//MOVE
 	const uniqueIdBodyTemplate = (rowData) => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
@@ -1204,6 +1190,7 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	//MOVE
 	const modEntityIdBodyTemplate = (rowData) => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
@@ -1216,6 +1203,7 @@ export const DiseaseAnnotationsTable = () => {
 		)
 	};
 
+	//MOVE
 	const modInternalIdBodyTemplate = (rowData) => {
 		return (
 			//the 'a' at the start is a hack since css selectors can't start with a number
@@ -1302,7 +1290,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "evidenceCodes.abbreviation",
 		header: "Evidence Code",
-		body: evidenceTemplate,
+		body: (rowData) => <EvidenceTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 		editor: (props) => evidenceEditorTemplate(props)
@@ -1543,3 +1531,4 @@ export const DiseaseAnnotationsTable = () => {
 		</>
 	);
 };
+
