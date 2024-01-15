@@ -80,8 +80,9 @@ export default function AlleleDetailPage() {
 		if(areUiErrors) return;
 
 		alleleMutate(alleleState.allele, {
-			onSuccess: () => {
+			onSuccess: (result) => {
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
+				alleleDispatch({ type: 'SET', value: result?.data?.entity });
 			},
 			onError: (error) => {
 				let message;
