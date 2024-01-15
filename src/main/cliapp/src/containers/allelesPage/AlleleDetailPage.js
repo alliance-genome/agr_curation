@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Divider } from 'primereact/divider';
@@ -7,7 +7,6 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from 'react-query';
 import { AlleleService } from '../../service/AlleleService';
-import { AlleleGeneAssociationService } from '../../service/AlleleGeneAssociationService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
 import { useAlleleReducer } from './useAlleleReducer';
@@ -32,15 +31,12 @@ import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsF
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { validateRequiredAutosuggestField, processErrors, validateAlleleDetailTable } from './utils';
+import { validateRequiredAutosuggestField, processErrors } from './utils';
 
 export default function AlleleDetailPage() {
 	const { curie } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	//TODO: remove this once alleleDetail endpoint is ready
-	const [isAGALoading, setIsAGALoading] = useState(false);
 	const alleleService = new AlleleService();
-	const alleleGeneAssociationService = new AlleleGeneAssociationService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 
@@ -63,11 +59,7 @@ export default function AlleleDetailPage() {
 	);
 
 	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
-		return alleleService.saveAllele(allele);
-	});
-
-	const { isLoading: agaPutRequestIsLoading, mutate: agaMutate } = useMutation(alleleGeneAssociations => {
-				return alleleGeneAssociationService.saveAlleleGeneAssociations(alleleGeneAssociations);
+		return alleleService.saveAlleleDetail(allele);
 	});
 
 	const handleSubmit = async (event) => {
@@ -87,33 +79,11 @@ export default function AlleleDetailPage() {
 
 		if(areUiErrors) return;
 
-		//TODO: remove this once alleleDetail endpoint is ready
-		setIsAGALoading(true);
-
-		//TODO: remove this once alleleDetail endpoint is ready
-		let isError = await validateAlleleDetailTable(
-			"allelegeneassociation",
-			"alleleGeneAssociations",
-			alleleState.allele.alleleGeneAssociations,
-			alleleDispatch,
-		);
-
-		//TODO: remove this once alleleDetail endpoint is ready
-		if(!isError){
-			agaMutate(alleleState.allele.alleleGeneAssociations);
-			alleleState.entityStates.alleleGeneAssociations.rowsToDelete.forEach((id) => {
-				alleleGeneAssociationService.deleteAlleleGeneAssociation(id);
-			})
-		}
-
 		alleleMutate(alleleState.allele, {
 			onSuccess: () => {
-				setIsAGALoading(false);
-				if(isError) return;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
 			onError: (error) => {
-				setIsAGALoading(false);
 				let message;
 				const data = error?.response?.data;
 
@@ -211,7 +181,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading || agaPutRequestIsLoading || isAGALoading)} />
+			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading)} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
