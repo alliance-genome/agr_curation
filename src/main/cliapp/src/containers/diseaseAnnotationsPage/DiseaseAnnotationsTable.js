@@ -15,6 +15,7 @@ import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 import { WithTemplate } from '../../components/Templates/WithTemplate';
+import { AssertedGenesBodyTemplate } from '../../components/Templates/AssertedGenesBodyTemplate' 
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -164,30 +165,6 @@ export const DiseaseAnnotationsTable = () => {
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
-	};
-
-	const assertedGenesBodyTemplate = (rowData) => {
-		if (rowData && rowData.assertedGenes && rowData.assertedGenes.length > 0) {
-			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.geneSymbol?.displayText > b.geneSymbol?.displayText) ? 1 : (getIdentifier(a) === getIdentifier(b)) ? 1 : -1);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item.geneSymbol?.displayText + ' (' + getIdentifier(item) + ')'}
-					</EllipsisTableCell>
-				);
-			};
-			const identifier = getIdentifier(rowData.assertedGenes[0]);
-			return (
-				<>
-					<div className={`-my-4 p-1 a${rowData.id}${identifier.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedAssertedGenes}/>
-					</div>
-					<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedAssertedGenes}/>
-					</Tooltip>
-				</>
-			);
-		}
 	};
 
 	const evidenceTemplate = (rowData) => {
@@ -1417,7 +1394,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "assertedGenes.geneSymbol.displayText",
 		header: "Asserted Genes",
-		body: assertedGenesBodyTemplate,
+		body: (rowData) => <AssertedGenesBodyTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 		editor: (props) => assertedGenesEditorTemplate(props),
