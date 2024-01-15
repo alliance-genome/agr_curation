@@ -17,6 +17,7 @@ import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 import { WithTemplate } from '../../components/Templates/WithTemplate';
 import { AssertedGenesBodyTemplate } from '../../components/Templates/AssertedGenesBodyTemplate';
 import { EvidenceTemplate } from '../../components/Templates/EvidenceTemplate'; 
+import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleReferenceBodyTemplate'; 
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -166,30 +167,6 @@ export const DiseaseAnnotationsTable = () => {
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
-	};
-
-
-//MOVE
-	const singleReferenceBodyTemplate = (rowData) => {
-		if (rowData && rowData.singleReference) {
-			let refString = getRefString(rowData.singleReference);
-			return (
-				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
-						dangerouslySetInnerHTML={{
-							__html: refString
-						}}
-					/>
-					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
-						<div dangerouslySetInnerHTML={{
-							__html: refString
-						}}
-						/>
-					</Tooltip>
-				</>
-			);
-
-		}
 	};
 
 	//MOVE
@@ -1281,7 +1258,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "singleReference.primaryCrossReferenceCurie",
 		header: "Reference",
-		body: singleReferenceBodyTemplate,
+		body: (rowData) => <SingleReferenceBodyTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 		editor: (props) => referenceEditorTemplate(props),
