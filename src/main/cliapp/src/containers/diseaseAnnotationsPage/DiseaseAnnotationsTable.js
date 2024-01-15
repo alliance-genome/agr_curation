@@ -14,6 +14,7 @@ import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
+import { WithTemplate } from '../../components/Templates/WithTemplate';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -163,24 +164,6 @@ export const DiseaseAnnotationsTable = () => {
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
-	};
-
-	const withTemplate = (rowData) => {
-		if (rowData && rowData.with) {
-			const sortedWithGenes = rowData.with.sort((a, b) => (a.geneSymbol.displayText > b.geneSymbol.displayText) ? 1 : (getIdentifier(a) === getIdentifier(b)) ? 1 : -1);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item.geneSymbol.displayText + ' (' + getIdentifier(item) + ')'}
-					</EllipsisTableCell>
-				);
-			};
-			return(
-				<div className= "-my-4 p-1">
-					<ListTableCell template={listTemplate} listData={sortedWithGenes}/>
-				</div>
-			);
-		}
 	};
 
 	const assertedGenesBodyTemplate = (rowData) => {
@@ -1350,7 +1333,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "with.geneSymbol.displayText",
 		header: "With",
-		body: withTemplate,
+		body: (rowData) => <WithTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.withFilterConfig,
 		editor: (props) => withEditorTemplate(props)
