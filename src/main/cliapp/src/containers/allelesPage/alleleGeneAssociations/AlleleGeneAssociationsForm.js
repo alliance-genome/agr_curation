@@ -111,7 +111,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     const aga = alleleGeneAssociations.find((aga) =>  aga.dataKey === dataKey );
     const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
     delete updatedErrorMessages[dataKey];
-    dispatch({ type: "DELETE_AGA_ROW", entityType: entityType, dataKey, id: aga.id });
+    dispatch({ type: "DELETE_ROW", entityType: entityType, dataKey, id: aga.id });
     dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
