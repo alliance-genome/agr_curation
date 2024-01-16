@@ -189,10 +189,10 @@ export const ConstructsTable = () => {
 			};
 			return (
 				<>
-					<div className={`sid_${rowData.id}${rowData.secondaryIdentifiers[0]}`}>
+					<div className={`sid_${rowData.id}${rowData.secondaryIdentifiers[0].replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={sortedSecondaryIdentifiers}/>
 					</div>
-					<Tooltip target={`.sid_${rowData.id}${rowData.secondaryIdentifiers[0]}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+					<Tooltip target={`.sid_${rowData.id}${rowData.secondaryIdentifiers[0].replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
 						<ListTableCell template={listTemplate} listData={sortedSecondaryIdentifiers}/>
 					</Tooltip>
 				</>
