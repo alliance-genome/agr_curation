@@ -19,6 +19,7 @@ import { AssertedGenesBodyTemplate } from '../../components/Templates/AssertedGe
 import { EvidenceTemplate } from '../../components/Templates/EvidenceTemplate'; 
 import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleReferenceBodyTemplate'; 
 import { InferredGeneBodyTemplate } from '../../components/Templates/InferredGeneBodyTemplate'; 
+import { InferredAlleleBodyTemplate } from '../../components/Templates/InferredAlleleBodyTemplate'; 
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -170,44 +171,6 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	const inferredAlleleBodyTemplate = (rowData) => {
-		if (rowData && rowData.inferredAllele) {
-			const identifier = getIdentifier(rowData.inferredAllele);
-			if (rowData.inferredAllele.alleleSymbol?.displayText) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleSymbol?.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.ia${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleSymbol?.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleFullName?.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.ia${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleFullName?.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			}
-		}
-	};
 
 	//MOVE
 	const assertedAlleleBodyTemplate = (rowData) => {
@@ -1345,7 +1308,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "inferredAllele.alleleSymbol.displayText",
 		header: "Inferred Allele",
-		body: inferredAlleleBodyTemplate,
+		body: (rowData) => <InferredAlleleBodyTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 	},
