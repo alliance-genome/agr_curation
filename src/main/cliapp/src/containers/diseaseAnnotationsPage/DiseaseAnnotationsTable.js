@@ -18,6 +18,7 @@ import { WithTemplate } from '../../components/Templates/WithTemplate';
 import { AssertedGenesBodyTemplate } from '../../components/Templates/AssertedGenesBodyTemplate';
 import { EvidenceTemplate } from '../../components/Templates/EvidenceTemplate'; 
 import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleReferenceBodyTemplate'; 
+import { InferredGeneBodyTemplate } from '../../components/Templates/InferredGeneBodyTemplate'; 
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -169,29 +170,6 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	//MOVE
-	const inferredGeneBodyTemplate = (rowData) => {
-		if (rowData && rowData.inferredGene) {
-			const identifier = getIdentifier(rowData.inferredGene);
-			return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ig${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.inferredGene.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.ig${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredGene.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-		}
-	};
-
-//MOVE
 	const inferredAlleleBodyTemplate = (rowData) => {
 		if (rowData && rowData.inferredAllele) {
 			const identifier = getIdentifier(rowData.inferredAllele);
@@ -1352,7 +1330,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "inferredGene.geneSymbol.displayText",
 		header: "Inferred Gene",
-		body: inferredGeneBodyTemplate,
+		body: (rowData) => <InferredGeneBodyTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 	},
