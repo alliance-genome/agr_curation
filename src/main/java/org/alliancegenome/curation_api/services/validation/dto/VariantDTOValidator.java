@@ -84,7 +84,7 @@ public class VariantDTOValidator extends BaseDTOValidator {
 		SOTerm sourceGeneralConsequence = null;
 		if (!StringUtils.isBlank(dto.getSourceGeneralConsequenceCurie())) {
 			sourceGeneralConsequence = soTermService.findByCurieOrSecondaryId(dto.getSourceGeneralConsequenceCurie());
-			if (variantType == null)
+			if (sourceGeneralConsequence == null)
 				variantResponse.addErrorMessage("source_general_consequence_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSourceGeneralConsequenceCurie() + ")");
 		}
 		variant.setSourceGeneralConsequence(sourceGeneralConsequence);
