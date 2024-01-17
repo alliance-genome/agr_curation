@@ -22,6 +22,8 @@ import { InferredGeneBodyTemplate } from '../../components/Templates/InferredGen
 import { InferredAlleleBodyTemplate } from '../../components/Templates/InferredAlleleBodyTemplate'; 
 import { AssertedAlleleBodyTemplate } from '../../components/Templates/AssertedAlleleBodyTemplate'; 
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
+import { NegatedTemplate } from '../../components/Templates/NegatedTemplate'; 
+
 
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
@@ -172,13 +174,6 @@ export const DiseaseAnnotationsTable = () => {
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
-	};
-
-	//MOVE
-	const negatedTemplate = (rowData) => {
-		if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
-		}
 	};
 
 	const relatedNotesTemplate = (rowData) => {
@@ -1132,7 +1127,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "negated",
 		header: "Negated",
-		body: negatedTemplate,
+		body: (rowData) => <NegatedTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		editor: (props) => negatedEditor(props)
