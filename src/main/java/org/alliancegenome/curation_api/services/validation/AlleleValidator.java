@@ -624,6 +624,12 @@ public class AlleleValidator extends GenomicEntityValidator {
 	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
 		String field = "alleleGeneAssociations";
 
+		System.out.println("uiEntity");
+		System.out.println(uiEntity);
+
+		System.out.println("dbEntity");
+		System.out.println(uiEntity);
+
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleGeneAssociations())) {
@@ -649,6 +655,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (CollectionUtils.isEmpty(validatedGeneAssociations))
 			return null;
 
+		System.out.println("validatedGeneAssociations");
+		System.out.println(validatedGeneAssociations);
 		return validatedGeneAssociations;
 	}
 }
