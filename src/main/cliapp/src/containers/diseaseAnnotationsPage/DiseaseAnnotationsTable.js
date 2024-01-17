@@ -23,6 +23,8 @@ import { InferredAlleleBodyTemplate } from '../../components/Templates/InferredA
 import { AssertedAlleleBodyTemplate } from '../../components/Templates/AssertedAlleleBodyTemplate'; 
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
 import { NegatedTemplate } from '../../components/Templates/NegatedTemplate'; 
+import { UniqueIdBodyTemplate } from '../../components/Templates/UniqueIdBodyTemplate'; 
+
 
 
 
@@ -1025,18 +1027,6 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	//MOVE
-	const uniqueIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`c${rowData.id}`}>
-					{rowData.uniqueId}
-				</EllipsisTableCell>
-				<Tooltip target={`.c${rowData.id}`} content={rowData.uniqueId} />
-			</>
-		)
-	};
 
 	const uniqueIdEditorTemplate = (props) => {
 		return (
@@ -1090,7 +1080,7 @@ export const DiseaseAnnotationsTable = () => {
 	const columns = [{
 		field: "uniqueId",
 		header: "Unique ID",
-		body: uniqueIdBodyTemplate,
+		body: (rowData) => <UniqueIdBodyTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		editor: (props) => uniqueIdEditorTemplate(props)
