@@ -21,6 +21,8 @@ import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleRe
 import { InferredGeneBodyTemplate } from '../../components/Templates/InferredGeneBodyTemplate'; 
 import { InferredAlleleBodyTemplate } from '../../components/Templates/InferredAlleleBodyTemplate'; 
 import { AssertedAlleleBodyTemplate } from '../../components/Templates/AssertedAlleleBodyTemplate'; 
+import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
+
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -170,21 +172,6 @@ export const DiseaseAnnotationsTable = () => {
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
-	};
-
-
-
-	//MOVE
-	const diseaseQualifiersBodyTemplate = (rowData) => {
-		if (rowData && rowData.diseaseQualifiers) {
-			const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
-			const listTemplate = (item) => item.name;
-			return(
-				<div className= "-my-4 p-1">
-					<ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers}/>
-				</div>
-			)
-		}
 	};
 
 	//MOVE
@@ -1217,7 +1204,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseQualifiers.name",
 		header: "Disease Qualifiers",
-		body: diseaseQualifiersBodyTemplate,
+		body: (rowData) => <DiseaseQualifiersBodyTemplate rowData={rowData}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
 		editor: (props) => diseaseQualifiersEditor(props)
