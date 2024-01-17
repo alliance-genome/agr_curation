@@ -23,7 +23,7 @@ import { InferredAlleleBodyTemplate } from '../../components/Templates/InferredA
 import { AssertedAlleleBodyTemplate } from '../../components/Templates/AssertedAlleleBodyTemplate'; 
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
 import { NegatedTemplate } from '../../components/Templates/NegatedTemplate'; 
-import { UniqueIdBodyTemplate } from '../../components/Templates/UniqueIdBodyTemplate'; 
+import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
 
 
 
@@ -39,6 +39,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, getIdentifier } from '../../utils/utils';
 import { useNewAnnotationReducer } from "./useNewAnnotationReducer";
 import { NewAnnotationForm } from "./NewAnnotationForm";
+//MOVE?
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -322,6 +323,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	//MOVE
 	const diseaseBodyTemplate = (rowData) => {
 		if (rowData.diseaseAnnotationObject) {
 			return (
@@ -855,6 +857,7 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	//MOVE
 	const subjectBodyTemplate = (rowData) => {
 		if (rowData.diseaseAnnotationSubject) {
 			const identifier = getIdentifier(rowData.diseaseAnnotationSubject);
@@ -944,6 +947,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	//MOVE
 	const sgdStrainBackgroundBodyTemplate = (rowData) => {
 		if (rowData.sgdStrainBackground) {
 			const identifier = getIdentifier(rowData.sgdStrainBackground);
@@ -959,6 +963,7 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	//MOVE
 	const geneticModifiersBodyTemplate = (rowData) => {
 		if (rowData?.diseaseGeneticModifiers && rowData.diseaseGeneticModifiers.length > 0) {
 			const diseaseGeneticModifierStrings = [];
@@ -1042,32 +1047,6 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	//MOVE
-	const modEntityIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>
-					{rowData.modEntityId}
-				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.modEntityId} />
-			</>
-		)
-	};
-
-	//MOVE
-	const modInternalIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`b${rowData.id}`}>
-					{rowData.modInternalId}
-				</EllipsisTableCell>
-				<Tooltip target={`.b${rowData.id}`} content={rowData.modInternalId} />
-			</>
-		)
-	};
-
 	const sgdStrainBackgroundEditorSelector = (props) => {
 		if (props.rowData.type === "GeneDiseaseAnnotation") {
 			return sgdStrainBackgroundEditorTemplate(props);
@@ -1080,7 +1059,7 @@ export const DiseaseAnnotationsTable = () => {
 	const columns = [{
 		field: "uniqueId",
 		header: "Unique ID",
-		body: (rowData) => <UniqueIdBodyTemplate rowData={rowData}/>,
+		body: (rowData) => <IdBodyTemplate id={rowData.uniqueId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		editor: (props) => uniqueIdEditorTemplate(props)
@@ -1088,14 +1067,14 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "modEntityId",
 		header: "MOD Annotation ID",
-		body: modEntityIdBodyTemplate,
+		body: (rowData) => <IdBodyTemplate id={rowData.modEntityId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 	},
 	{
 		field: "modInternalId",
 		header: "MOD Internal ID",
-		body: modInternalIdBodyTemplate,
+		body: (rowData) => <IdBodyTemplate id={rowData.modInternalId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 	},
