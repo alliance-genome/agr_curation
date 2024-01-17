@@ -353,7 +353,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		List<AlleleNomenclatureEventSlotAnnotation> validatedNomenclatureEvents = new ArrayList<AlleleNomenclatureEventSlotAnnotation>();
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getAlleleNomenclatureEventDtos())) {
-			for (int ix = 0; ix < dto.getAlleleInheritanceModeDtos().size(); ix++) {
+			for (int ix = 0; ix < dto.getAlleleNomenclatureEventDtos().size(); ix++) {
 				AlleleNomenclatureEventSlotAnnotationDTO neDto = dto.getAlleleNomenclatureEventDtos().get(ix);
 				AlleleNomenclatureEventSlotAnnotation ne = existingNomenclatureEvents.remove(identityHelper.alleleNomenclatureEventDtoIdentity(neDto));
 				ObjectResponse<AlleleNomenclatureEventSlotAnnotation> neResponse = alleleNomenclatureEventDtoValidator.validateAlleleNomenclatureEventSlotAnnotationDTO(ne, neDto);

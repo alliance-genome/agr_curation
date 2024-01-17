@@ -33,14 +33,13 @@ public class GeneToGeneOrthologyService extends BaseEntityCrudService<GeneToGene
 		if (orthoPair == null)
 			return null;
 		
-		if (!orthoPair.getObsolete()) {
-			orthoPair.setObsolete(true);
-			orthoPair.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-			orthoPair.setDateUpdated(OffsetDateTime.now());
-			return geneToGeneOrthologyDAO.persist(orthoPair);
-		}
-		
-		return null;
+		if (orthoPair.getObsolete())
+			return orthoPair;
+			
+		orthoPair.setObsolete(true);
+		orthoPair.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+		orthoPair.setDateUpdated(OffsetDateTime.now());
+		return geneToGeneOrthologyDAO.persist(orthoPair);
 	}
 
 }
