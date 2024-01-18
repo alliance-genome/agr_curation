@@ -626,10 +626,10 @@ public class AlleleValidator extends GenomicEntityValidator {
 	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
 		String field = "alleleGeneAssociations";
 
-		Log.info("dbEntity");
-		Log.info(dbEntity.getAlleleGeneAssociations());
-		Log.info("uiEntity");
-		Log.info(uiEntity.getAlleleGeneAssociations());
+		Log.info("dbEntity AGAs size");
+		Log.info(dbEntity.getAlleleGeneAssociations().size());
+		Log.info("uiEntity AGAs size");
+		Log.info(uiEntity.getAlleleGeneAssociations().size());
 
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
