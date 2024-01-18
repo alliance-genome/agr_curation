@@ -42,6 +42,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			return term;
 		
 		SearchResponse<E> response = dao.findByField("secondaryIdentifiers", id);
+		if (response == null)
+			return null;
 		if (response.getTotalResults() == 1)
 			return response.getSingleResult();
 		

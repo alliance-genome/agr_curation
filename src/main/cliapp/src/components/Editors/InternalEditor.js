@@ -2,7 +2,7 @@ import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponen
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 import { TrueFalseDropdown } from "../TrueFalseDropDownSelector";
 
-export const InternalEditor = ({ props, internalOnChangeHandler, errorMessages, rowIndex }) => {
+export const InternalEditor = ({ props, internalOnChangeHandler, errorMessages, dataKey }) => {
   const booleanTerms = useControlledVocabularyService("generic_boolean_terms");
 
   return (
@@ -14,7 +14,7 @@ export const InternalEditor = ({ props, internalOnChangeHandler, errorMessages, 
         editorChange={internalOnChangeHandler}
         showClear={false}
       />
-      <DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={"internal"} />
+      <DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={"internal"} />
     </>
   );
 };

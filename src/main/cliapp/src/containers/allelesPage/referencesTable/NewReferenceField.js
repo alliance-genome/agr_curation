@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "primereact/button";
-import { generateCrossRefSearchField } from "../utils";
+import { addDataKey, generateCrossRefSearchField } from "../utils";
 import { SingleReferenceFormEditor } from "../../../components/Editors/references/SingleReferenceFormEditor";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { SingleReferenceAdditionalFieldData } from "../../../components/FieldData/SingleReferenceAdditionalFieldData";
@@ -26,15 +26,15 @@ export const NewReferenceField = ({ state, dispatch }) => {
       return;
     }
 
-    const dataKey = state.allele.references?.length;
     const searchString = generateCrossRefSearchField(reference);
 
     const newReference = {
       ...reference,
       shortCitation: reference.short_citation,
-      dataKey: dataKey,
       crossReferencesFilter: searchString
     };
+
+    addDataKey(newReference);
 
     dispatch({
       type: "ADD_ROW",

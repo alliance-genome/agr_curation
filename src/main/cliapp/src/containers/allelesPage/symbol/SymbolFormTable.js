@@ -37,7 +37,7 @@ export const SymbolFormTable = ({
     </ColumnGroup>;
 
   return (
-    <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+    <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} size='small'
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
       <Column
         editor={(props) => {
@@ -45,6 +45,7 @@ export const SymbolFormTable = ({
             value={props.value}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="displayText"
           />;
@@ -56,6 +57,7 @@ export const SymbolFormTable = ({
             value={props.value}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="formatText"
           />;
@@ -69,6 +71,7 @@ export const SymbolFormTable = ({
             errorMessages={errorMessages}
             rowIndex={props.rowIndex}
             vocabType="synonym_scope"
+            dataKey={props?.rowData?.dataKey}
             field="synonymScope"
             showClear={true}
           />;
@@ -93,6 +96,7 @@ export const SymbolFormTable = ({
             value={props.value}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={textOnChangeHandler}
             field="synonymUrl"
           />;
@@ -104,6 +108,7 @@ export const SymbolFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}

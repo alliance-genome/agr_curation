@@ -2,33 +2,34 @@ import { useRef } from "react";
 import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { AlleleGeneAssociationsFormTable } from "./AlleleGeneAssociationsFormTable";
-import { generateCurieSearchField } from "../utils";
+import { addDataKey, generateCurieSearchField } from "../utils";
 import { processOptionalField } from "../../../utils/utils";
 
 export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
-  const alleleGeneAssociations = global.structuredClone(state.allele?.alleleGeneAssociations);
+  const entityType = "alleleGeneAssociations";
+  const alleleGeneAssociations = global.structuredClone(state.allele?.[entityType]);
 
   const createNewGeneAssociationHandler = (e) => {
     e.preventDefault();
-    const updatedErrorMessages = global.structuredClone(state.entityStates.alleleGeneAssociations.errorMessages);
-    updatedErrorMessages.unshift({});
-    const dataKey = Math.floor(Math.random() * 10000);
+    const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
     const newAlleleGeneAssociation = {
-      dataKey: dataKey,
       subject: state.allele,
     };
+
+    addDataKey(newAlleleGeneAssociation);
+    updatedErrorMessages[newAlleleGeneAssociation.dataKey] = {};
 
     dispatch({
       type: "ADD_ROW",
       row: newAlleleGeneAssociation,
-      entityType: "alleleGeneAssociations",
+      entityType: entityType,
     });
-    
-    dispatch({ 
-      type: "UPDATE_TABLE_ERROR_MESSAGES", 
-      entityType: "alleleGeneAssociations", 
-      errorMessages: updatedErrorMessages 
+
+    dispatch({
+      type: "UPDATE_TABLE_ERROR_MESSAGES",
+      entityType: entityType,
+      errorMessages: updatedErrorMessages
     });
   };
 
@@ -39,20 +40,20 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
   const alleleGeneRelationOnChangeHandler = (props, event) => {
     props.editorCallback(event.target.value);
     dispatch({
-      type: 'EDIT_ROW',
-      entityType: 'alleleGeneAssociations',
-      index: props.rowIndex,
+      type: 'EDIT_FILTERABLE_ROW',
+      entityType: entityType,
+      dataKey: props.rowData?.dataKey,
       field: "relation",
       value: event.target.value
     });
   };
 
-  const relatedNoteOnChangeHandler = (rowIndex, value, rowProps) => {
-    rowProps.editorCallback(value[0]);
+  const relatedNoteOnChangeHandler = (value, props) => {
+    props.editorCallback(value[0]);
     dispatch({
-      type: 'EDIT_ROW',
-      entityType: 'alleleGeneAssociations',
-      index: rowIndex,
+      type: 'EDIT_FILTERABLE_ROW',
+      entityType: entityType,
+      dataKey: props.rowData?.dataKey,
       field: "relatedNote",
       value: value[0]
     });
@@ -62,9 +63,9 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     //updates value in table input box
     setFieldValue(event.target.value);
     dispatch({
-      type: 'EDIT_ROW',
-      entityType: 'alleleGeneAssociations',
-      index: props.rowIndex,
+      type: 'EDIT_FILTERABLE_ROW',
+      entityType: entityType,
+      dataKey: props.rowData?.dataKey,
       field: "objectGene",
       value: event.target.value
     });
@@ -74,9 +75,9 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     const value = processOptionalField(event.target.value);
     setFieldValue(value);
     dispatch({
-      type: 'EDIT_ROW',
-      entityType: 'alleleGeneAssociations',
-      index: props.rowIndex,
+      type: 'EDIT_FILTERABLE_ROW',
+      entityType: entityType,
+      dataKey: props.rowData?.dataKey,
       field: "evidenceCode",
       value: value
     });
@@ -85,32 +86,33 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
 
   const evidenceOnChangeHandler = (event, setFieldValue, props) => {
     const newEvidence = event.target.value;
+    const dataKey = props.rowData?.dataKey;
+    const aga = alleleGeneAssociations.find((aga) =>  aga.dataKey === dataKey );
     const newAssociation = {
-      ...alleleGeneAssociations[props.rowIndex],
+      ...aga,
       evidence: newEvidence,
       evidenceCurieSearchFilter: generateCurieSearchField(newEvidence),
-    }
-
+    };
 
     //updates value in table input box
     setFieldValue(newEvidence);
 
     dispatch({
       type: 'REPLACE_ROW',
-      entityType: 'alleleGeneAssociations',
-      index: props.rowIndex,
+      entityType: entityType,
+      dataKey: dataKey,
       field: "evidence",
-      value: newAssociation,
+      newRow: newAssociation,
     });
   };
 
-  const deletionHandler = (e, index) => {
+  const deletionHandler = (e, dataKey) => {
     e.preventDefault();
-    const updatedErrorMessages = global.structuredClone(state.entityStates.alleleGeneAssociations.errorMessages);
-    const agaId = alleleGeneAssociations[index].id;
-    updatedErrorMessages.splice(index,1);
-    dispatch({ type: "DELETE_ROW", entityType: "alleleGeneAssociations", index: index, id: agaId });
-    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGeneAssociations", errorMessages: updatedErrorMessages });
+    const aga = alleleGeneAssociations.find((aga) =>  aga.dataKey === dataKey );
+    const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
+    delete updatedErrorMessages[dataKey];
+    dispatch({ type: "DELETE_AGA_ROW", entityType: entityType, dataKey, id: aga.id });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
   return (
@@ -119,11 +121,11 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       table={
         <AlleleGeneAssociationsFormTable
           alleleGeneAssociations={alleleGeneAssociations}
-          editingRows={state.entityStates.alleleGeneAssociations.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleGeneAssociations.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
           alleleGeneRelationOnChangeHandler={alleleGeneRelationOnChangeHandler}
           geneOnChangeHandler={geneOnChangeHandler}
@@ -133,7 +135,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
         />
       }
       tableName="Allele Gene Associations"
-      showTable={state.entityStates.alleleGeneAssociations.show}
+      showTable={state.entityStates[entityType].show}
       button={<Button label="Add Gene Association" onClick={createNewGeneAssociationHandler} className="w-6 p-button-text" />}
     />
   );

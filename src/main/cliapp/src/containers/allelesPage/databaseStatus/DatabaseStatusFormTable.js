@@ -30,7 +30,7 @@ export const DatabaseStatusFormTable = ({
     </ColumnGroup>;
 
   return (
-    <DataTable value={databaseStatuses} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+    <DataTable value={databaseStatuses} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} size='small'
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
@@ -40,6 +40,7 @@ export const DatabaseStatusFormTable = ({
             props={props}
             onChangeHandler={databaseStatusOnChangeHandler}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             rowIndex={props.rowIndex}
             vocabType="allele_db_status"
             field="databaseStatus"
@@ -53,6 +54,7 @@ export const DatabaseStatusFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}
