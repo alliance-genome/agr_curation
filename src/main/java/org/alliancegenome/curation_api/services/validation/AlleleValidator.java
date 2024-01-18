@@ -180,8 +180,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
 
 		List<AlleleGeneAssociation> geneAssociations = null;
-		Log.info("updateAllAssociations");
-		Log.info(updateAllAssociations);
+		Log.debug("updateAllAssociations");
+		Log.debug(updateAllAssociations);
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
 			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
 		}
@@ -269,10 +269,10 @@ public class AlleleValidator extends GenomicEntityValidator {
 			}
 		}
 
-		Log.info("dbEntity AGAs size");
-		Log.info(dbEntity.getAlleleGeneAssociations().size());
-		Log.info("uiEntity AGAs size");
-		Log.info(uiEntity.getAlleleGeneAssociations().size());
+		Log.debug("dbEntity AGAs size");
+		Log.debug(dbEntity.getAlleleGeneAssociations().size());
+		Log.debug("uiEntity AGAs size");
+		Log.debug(uiEntity.getAlleleGeneAssociations().size());
 
 		return dbEntity;
 	}
@@ -658,8 +658,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (CollectionUtils.isEmpty(validatedGeneAssociations))
 			return null;
 
-		Log.info("validatedGeneAssociations");
-		Log.info(validatedGeneAssociations);
+		Log.debug("validatedGeneAssociations");
+		Log.debug(validatedGeneAssociations);
 		return validatedGeneAssociations;
 	}
 }
