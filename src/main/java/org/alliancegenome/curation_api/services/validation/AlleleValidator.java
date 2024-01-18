@@ -627,9 +627,9 @@ public class AlleleValidator extends GenomicEntityValidator {
 		String field = "alleleGeneAssociations";
 
 		Log.info("dbEntity");
-		Log.info(dbEntity);
+		Log.info(dbEntity.getAlleleGeneAssociations());
 		Log.info("uiEntity");
-		Log.info(uiEntity);
+		Log.info(uiEntity.getAlleleGeneAssociations());
 
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
