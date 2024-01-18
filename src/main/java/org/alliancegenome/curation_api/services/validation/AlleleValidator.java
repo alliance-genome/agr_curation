@@ -180,6 +180,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
 
 		List<AlleleGeneAssociation> geneAssociations = null;
+		Log.info("updateAllAssociations");
+		Log.info(updateAllAssociations);
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
 			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
 		}
