@@ -29,7 +29,8 @@ import lombok.EqualsAndHashCode;
 
 public class SingleReferenceAssociation extends Association {
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie",
+			"curie_keyword", "primaryCrossReferenceCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })

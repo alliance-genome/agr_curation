@@ -78,7 +78,8 @@ public class Gene extends GenomicEntity {
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 	
 	@IndexedEmbedded(includePaths = {"subject.curie", "subject.alleleSymbol.displayText", "subject.alleleSymbol.formatText", "subject.alleleFullName.displayText", "subject.alleleFullName.formatText",
-			"subject.curie_keyword", "subject.alleleSymbol.displayText_keyword", "subject.alleleSymbol.formatText_keyword", "subject.alleleFullName.displayText_keyword", "subject.alleleFullName.formatText_keyword"})
+			"subject.curie_keyword", "subject.alleleSymbol.displayText_keyword", "subject.alleleSymbol.formatText_keyword", "subject.alleleFullName.displayText_keyword", "subject.alleleFullName.formatText_keyword",
+			"subject.modEntityId", "subject.modInternalId", "subject.modEntityId_keyword", "subject.modInternalId_keyword"})
 	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;

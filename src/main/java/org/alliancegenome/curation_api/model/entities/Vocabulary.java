@@ -62,7 +62,7 @@ public class Vocabulary extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	private String vocabularyDescription;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "vocabulary")
 	@JsonView({ View.VocabularyView.class })

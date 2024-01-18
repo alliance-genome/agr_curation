@@ -80,21 +80,28 @@ public class Annotation extends SingleReferenceAssociation {
 	@EqualsAndHashCode.Include
 	private String modInternalId;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"handle", "conditionRelationType.name", "singleReference.curie",
+			"singleReference.crossReferences.referencedCurie", "conditions.conditionSummary", "conditions.uniqueId",
+			"handle_keyword", "conditionRelationType.name_keyword", "singleReference.curie_keyword",
+			"singleReference.crossReferences.referencedCurie_keyword", "conditions.conditionSummary_keyword", "conditions.uniqueId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_index", columnList = "conditionrelations_id")})
 	private List<ConditionRelation> conditionRelations;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
+			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
+			"references.primaryCrossReferenceCurie_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
+			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
