@@ -46,16 +46,16 @@ import lombok.ToString;
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "constructSymbol.displayText", "constructSymbol.formatText",
-			"constructFullName.displayText", "constructFullName.formatText", "modEntityId",
+			"constructFullName.displayText", "constructFullName.formatText", "modEntityId", "modInternalId",
 			"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
-			"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword",})
+			"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	@Fetch(FetchMode.JOIN)
 	private Construct subject;
 	
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
@@ -68,7 +68,10 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
 	private GenomicEntity object;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
+			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
+			"references.primaryCrossReferenceCurie_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })

@@ -37,7 +37,8 @@ import lombok.ToString;
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "alleleSymbol.displayText", "alleleSymbol.formatText", "alleleFullName.displayText", "alleleFullName.formatText",
-			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword", "alleleFullName.formatText_keyword"})
+			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword", "alleleFullName.formatText_keyword",
+			"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("alleleGeneAssociations")
@@ -45,7 +46,8 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	private Allele subject;
 	
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
-			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword"})
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
+			"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })

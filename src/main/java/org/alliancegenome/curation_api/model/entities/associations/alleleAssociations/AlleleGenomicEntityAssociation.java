@@ -35,19 +35,23 @@ import lombok.ToString;
 })
 public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private VocabularyTerm relation;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
+			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private ECOTerm evidenceCode;
 	
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
+			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
+			"references.primaryCrossReferenceCurie_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsOnly.class })
