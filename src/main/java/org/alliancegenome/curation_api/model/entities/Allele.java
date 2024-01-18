@@ -141,7 +141,7 @@ public class Allele extends GenomicEntity {
 	
 	@IndexedEmbedded(includePaths = {"objectGene.curie", "objectGene.geneSymbol.displayText", "objectGene.geneSymbol.formatText", "objectGene.geneFullName.displayText", "objectGene.geneFullName.formatText",
 			"objectGene.curie_keyword", "objectGene.geneSymbol.displayText_keyword", "objectGene.geneSymbol.formatText_keyword", "objectGene.geneFullName.displayText_keyword", "objectGene.geneFullName.formatText_keyword"})
-	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
 	
