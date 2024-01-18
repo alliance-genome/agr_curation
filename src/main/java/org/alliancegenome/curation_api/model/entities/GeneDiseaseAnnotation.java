@@ -45,7 +45,7 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene subject;
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
