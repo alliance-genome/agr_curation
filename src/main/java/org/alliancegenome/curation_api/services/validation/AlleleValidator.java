@@ -191,7 +191,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 			throw new ApiErrorException(response);
 		}
 
-		dbEntity = alleleDAO.persist(dbEntity);
+		// dbEntity = alleleDAO.persist(dbEntity);
 		
 		if (symbol != null)
 			symbol.setSingleAllele(dbEntity);
@@ -263,6 +263,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 			if (geneAssociations != null) {
 				if (dbEntity.getAlleleGeneAssociations() == null)
 					dbEntity.setAlleleGeneAssociations(new ArrayList<>());
+				Log.info("aga size");
+				Log.info(geneAssociations.size());
 				dbEntity.getAlleleGeneAssociations().addAll(geneAssociations);
 			}
 		}
