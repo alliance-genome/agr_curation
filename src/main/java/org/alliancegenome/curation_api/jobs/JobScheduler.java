@@ -102,7 +102,7 @@ public class JobScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
+	// @Scheduled(every = "1s")
 	public void scheduleCronGroupJobs() {
 		if (loadSchedulingEnabled) {
 			ZonedDateTime start = ZonedDateTime.now();

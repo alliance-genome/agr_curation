@@ -64,7 +64,7 @@ public class ReportScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
+	// @Scheduled(every = "1s")
 	public void scheduleGroupJobs() {
 		if (schedulingEnabled) {
 			ZonedDateTime start = ZonedDateTime.now();
@@ -106,7 +106,7 @@ public class ReportScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
+	// @Scheduled(every = "1s")
 	public void runGroupJobs() {
 		SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll();
 		for (CurationReportGroup group : reportGroups.getResults()) {
