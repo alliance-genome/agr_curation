@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -47,7 +48,6 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -191,8 +191,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			throw new ApiErrorException(response);
 		}
 
-		// dbEntity = alleleDAO.persist(dbEntity);
-		
 		if (symbol != null)
 			symbol.setSingleAllele(dbEntity);
 		dbEntity.setAlleleSymbol(symbol);
@@ -263,8 +261,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			if (geneAssociations != null) {
 				if (dbEntity.getAlleleGeneAssociations() == null)
 					dbEntity.setAlleleGeneAssociations(new ArrayList<>());
-				Log.info("aga size");
-				Log.info(geneAssociations.size());
 				dbEntity.getAlleleGeneAssociations().addAll(geneAssociations);
 			}
 		}
@@ -623,14 +619,37 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return validatedFunctionalImpacts;
 	}
 
+	private boolean containsAssociation(List<AlleleGeneAssociation> associations, Long id) {
+		for (AlleleGeneAssociation association : associations) {
+			if(association.getId() == null) continue;
+			if(association.getId().equals(id)) return true; 
+		}
+		return false;
+	}
+
 	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
 		String field = "alleleGeneAssociations";
 
+		List<AlleleGeneAssociation> uiAssociations = uiEntity.getAlleleGeneAssociations();
+		List<AlleleGeneAssociation> dbAssociations = dbEntity.getAlleleGeneAssociations();
+
+		Set<AlleleGeneAssociation> associationsToDelete = new HashSet<>();
+
+		if (CollectionUtils.isNotEmpty(dbAssociations)) {
+			for (AlleleGeneAssociation dbAssociation : dbAssociations) {
+				Long dbAssociationId = dbAssociation.getId();
+				if (!containsAssociation(uiAssociations, dbAssociationId)) {
+						associationsToDelete.add(dbAssociation);
+				}
+			}
+		}
+
+
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleGeneAssociations())) {
-			for (int ix = 0; ix < uiEntity.getAlleleGeneAssociations().size(); ix++) {
-				AlleleGeneAssociation ga = uiEntity.getAlleleGeneAssociations().get(ix);
+		if (CollectionUtils.isNotEmpty(uiAssociations)) {
+			for (int ix = 0; ix < uiAssociations.size(); ix++) {
+				AlleleGeneAssociation ga = uiAssociations.get(ix);
 				ObjectResponse<AlleleGeneAssociation> gaResponse = alleleGeneAssociationValidator.validateAlleleGeneAssociation(ga);
 				if (gaResponse.getEntity() == null) {
 					allValid = false;
@@ -639,6 +658,16 @@ public class AlleleValidator extends GenomicEntityValidator {
 					ga = gaResponse.getEntity();
 					ga.setSubject(dbEntity);
 					validatedGeneAssociations.add(ga);
+				}
+			}
+		}
+		if (CollectionUtils.isNotEmpty(dbAssociations)) {
+			for (int ix = 0; ix < dbAssociations.size(); ix++) {
+				AlleleGeneAssociation ga = dbAssociations.get(ix);
+				if(associationsToDelete.contains(ga)){
+					Gene gene = ga.getObjectGene();
+					List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
+					geneAssociations.remove(ga);
 				}
 			}
 		}
