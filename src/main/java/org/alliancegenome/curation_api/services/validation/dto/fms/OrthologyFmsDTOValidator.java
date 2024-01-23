@@ -190,6 +190,9 @@ public class OrthologyFmsDTOValidator extends BaseDTOValidator {
 		orthoPair.setModerateFilter(dto.getModerateFilter());
 		
 		orthoPair.setStrictFilter(dto.getStrictFilter());
+		
+		orthoPair.setObsolete(false);
+		orthoPair.setInternal(false);
 
 		if (orthologyResponse.hasErrors())
 			throw new ObjectValidationException(dto, orthologyResponse.errorMessagesString());
