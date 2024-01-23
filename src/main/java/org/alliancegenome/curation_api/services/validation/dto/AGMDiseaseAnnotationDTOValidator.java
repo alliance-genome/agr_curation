@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationRetrievalHelper;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,9 +81,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				}
 
 				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
-				if (annotationList != null && annotationList.getResults().size() > 0) {
-					annotation = annotationList.getResults().get(0);
-				}
+				annotation = DiseaseAnnotationRetrievalHelper.getCurrentDiseaseAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(agm);
 				
