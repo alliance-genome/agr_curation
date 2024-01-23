@@ -51,11 +51,13 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
 
-	private ObjectResponse<Gene> geneResponse = new ObjectResponse<Gene>();
+	private ObjectResponse<Gene> geneResponse;
 
 	@Transactional
 	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
+		geneResponse = new ObjectResponse<Gene>();
+		
 		Gene gene = null;
 		if (StringUtils.isBlank(dto.getCurie())) {
 			geneResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);

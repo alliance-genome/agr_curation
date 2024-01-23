@@ -49,9 +49,11 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 	@Inject
 	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
-	private ObjectResponse<ConstructGenomicEntityAssociation> assocResponse = new ObjectResponse<ConstructGenomicEntityAssociation>();
+	private ObjectResponse<ConstructGenomicEntityAssociation> assocResponse;
 	
 	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
+		
+		assocResponse = new ObjectResponse<ConstructGenomicEntityAssociation>();
 		
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
