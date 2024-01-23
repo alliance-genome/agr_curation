@@ -40,11 +40,13 @@ public class VariantDTOValidator extends BaseDTOValidator {
 	@Inject
 	SoTermService soTermService;
 
-	private ObjectResponse<Variant> variantResponse = new ObjectResponse<Variant>();
+	private ObjectResponse<Variant> variantResponse;
 	
 	@Transactional
 	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
+		variantResponse = new ObjectResponse<Variant>();
+		
 		Variant variant = null;
 		if (StringUtils.isBlank(dto.getCurie())) {
 			variantResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
