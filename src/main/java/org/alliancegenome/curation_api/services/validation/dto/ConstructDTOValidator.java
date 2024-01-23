@@ -49,11 +49,13 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
 
-	private ObjectResponse<Construct> constructResponse = new ObjectResponse<Construct>();
+	private ObjectResponse<Construct> constructResponse;
 	
 	@Transactional
 	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
+		constructResponse = new ObjectResponse<Construct>();
+				
 		Construct construct = new Construct();
 		String constructId;
 		String identifyingField;
@@ -115,7 +117,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(construct, dto);
 		if (construct.getConstructComponents() != null)
 			construct.getConstructComponents().clear();
-		if (synonyms != null) {
+		if (components != null) {
 			if (construct.getConstructComponents() == null)
 				construct.setConstructComponents(new ArrayList<>());
 			construct.getConstructComponents().addAll(components);

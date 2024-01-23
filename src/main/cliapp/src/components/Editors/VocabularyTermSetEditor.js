@@ -6,11 +6,12 @@ export const VocabularyTermSetEditor = ({
   props,
   onChangeHandler,
   errorMessages,
-  rowIndex,
+  dataKey,
   vocabType,
   field,
   showClear,
-  optionLabel="name"
+  optionLabel="name",
+  placeholder
 }) => {
   const vocabTerms = useVocabularyTermSetService(vocabType);
 
@@ -24,8 +25,9 @@ export const VocabularyTermSetEditor = ({
         showClear={showClear}
         optionLabel={optionLabel}
         dataKey='id'
+        placeholderText={placeholder || ""}
       />
-      <DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={field} />
+      <DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={field} />
     </>
   );
 };

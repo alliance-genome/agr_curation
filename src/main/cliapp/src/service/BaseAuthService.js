@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export class BaseAuthService {
-
 	api;
 
 	constructor() {

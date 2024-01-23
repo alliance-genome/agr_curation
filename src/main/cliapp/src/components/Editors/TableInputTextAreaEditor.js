@@ -2,7 +2,7 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
 import { useState } from "react";
 
-export const TableInputTextAreaEditor = ({ value, errorMessages, textOnChangeHandler, rowIndex, field, rows, columns }) => {
+export const TableInputTextAreaEditor = ({ value, errorMessages, textOnChangeHandler, rowIndex, dataKey, field, rows, columns }) => {
 	const [localValue, setLocalValue] = useState(value);
 
 	const onChange = (e) => {
@@ -20,7 +20,7 @@ export const TableInputTextAreaEditor = ({ value, errorMessages, textOnChangeHan
 				rows={rows}
 				cols={columns}
 			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={field} />
+			<DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={field} />
 		</>
 	);
 };

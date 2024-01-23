@@ -51,13 +51,13 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		
 		ret = findByField("modInternalId", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+			return new ObjectResponse<>(ret.getResults().get(0));
 		
 		ret = findByField("uniqueId", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
+			return new ObjectResponse<>(ret.getResults().get(0));
 				
-		return new ObjectResponse<AGMDiseaseAnnotation>();
+		return new ObjectResponse<>();
 	}
 
 	@Override

@@ -179,7 +179,7 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-vertx</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-elasticsearch-rest-high-level-client</artifactId>
@@ -365,6 +365,13 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.13.1</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.slack.api</groupId>
+			<artifactId>slack-api-client</artifactId>
+			<version>1.36.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
