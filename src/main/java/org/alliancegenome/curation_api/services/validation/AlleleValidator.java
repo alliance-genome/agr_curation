@@ -191,6 +191,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 			throw new ApiErrorException(response);
 		}
 
+		dbEntity = alleleDAO.persist(dbEntity);
+
 		if (symbol != null)
 			symbol.setSingleAllele(dbEntity);
 		dbEntity.setAlleleSymbol(symbol);
@@ -619,31 +621,10 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return validatedFunctionalImpacts;
 	}
 
-	private boolean containsAssociation(List<AlleleGeneAssociation> associations, Long id) {
-		for (AlleleGeneAssociation association : associations) {
-			if(association.getId() == null) continue;
-			if(association.getId().equals(id)) return true; 
-		}
-		return false;
-	}
-
 	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
 		String field = "alleleGeneAssociations";
 
 		List<AlleleGeneAssociation> uiAssociations = uiEntity.getAlleleGeneAssociations();
-		List<AlleleGeneAssociation> dbAssociations = dbEntity.getAlleleGeneAssociations();
-
-		Set<AlleleGeneAssociation> associationsToDelete = new HashSet<>();
-
-		if (CollectionUtils.isNotEmpty(dbAssociations)) {
-			for (AlleleGeneAssociation dbAssociation : dbAssociations) {
-				Long dbAssociationId = dbAssociation.getId();
-				if (!containsAssociation(uiAssociations, dbAssociationId)) {
-						associationsToDelete.add(dbAssociation);
-				}
-			}
-		}
-
 
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
@@ -661,13 +642,18 @@ public class AlleleValidator extends GenomicEntityValidator {
 				}
 			}
 		}
+		List<AlleleGeneAssociation> dbAssociations = dbEntity.getAlleleGeneAssociations();
 		if (CollectionUtils.isNotEmpty(dbAssociations)) {
-			for (int ix = 0; ix < dbAssociations.size(); ix++) {
-				AlleleGeneAssociation ga = dbAssociations.get(ix);
-				if(associationsToDelete.contains(ga)){
-					Gene gene = ga.getObjectGene();
-					List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
-					geneAssociations.remove(ga);
+			Set<Long> idsToDelete = new HashSet<>(dbAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList()));
+			if (CollectionUtils.isNotEmpty(uiAssociations)) {
+				Set<Long> uiIDs = new HashSet<>(uiAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
+				idsToDelete.removeAll(uiIDs);
+				for(AlleleGeneAssociation ga: dbAssociations){
+					if(idsToDelete.contains(ga.getId())){
+						Gene gene = ga.getObjectGene();
+						List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
+						geneAssociations.remove(ga);
+					}
 				}
 			}
 		}
