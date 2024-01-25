@@ -645,14 +645,16 @@ public class AlleleValidator extends GenomicEntityValidator {
 		List<AlleleGeneAssociation> dbAssociations = dbEntity.getAlleleGeneAssociations();
 		if (CollectionUtils.isNotEmpty(dbAssociations)) {
 			Set<Long> idsToDelete = new HashSet<>(dbAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList()));
-			if (CollectionUtils.isNotEmpty(uiAssociations)) {
+			if (uiAssociations != null) {
 				Set<Long> uiIDs = new HashSet<>(uiAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
 				idsToDelete.removeAll(uiIDs);
 				for(AlleleGeneAssociation ga: dbAssociations){
 					if(idsToDelete.contains(ga.getId())){
 						Gene gene = ga.getObjectGene();
 						List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
-						geneAssociations.remove(ga);
+						geneAssociations.removeIf(geneAGA -> {
+							return idsToDelete.contains(geneAGA.getId());
+						});
 					}
 				}
 			}
