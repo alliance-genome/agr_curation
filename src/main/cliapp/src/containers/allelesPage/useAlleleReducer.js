@@ -129,7 +129,6 @@ const initialAlleleState = {
 			errorMessages: {},
 			editingRows: {},
 			type: "table",
-			rowsToDelete: [],//TODO: remove once alleleDetail endpoint is ready
 		},
 	},
 	errorMessages: {},
@@ -238,18 +237,6 @@ const alleleReducer = (draft, action) => {
 			}
 			break;
 
-		//TODO: remove this once alleleDetail endpoint is ready
-		case 'DELETE_AGA_ROW':
-			draft.allele[action.entityType] = draft.allele[action.entityType].filter(row => row.dataKey !== action.dataKey);
-
-			if (draft.allele[action.entityType].length === 0) {
-				draft.entityStates[action.entityType].show = false;
-			}
-
-			if (action.id && !draft.entityStates[action.entityType].rowsToDelete.includes(action.id)) {
-				draft.entityStates[action.entityType].rowsToDelete.push(action.id);
-			}
-			break;
 		case 'DELETE_OBJECT': 
 			draft.allele[action.entityType] = null;
 			draft.entityStates[action.entityType].show = false;
@@ -270,10 +257,6 @@ const alleleReducer = (draft, action) => {
 				state.errorMessages = {};
 
 			})
-
-			//TODO: remove this once alleleDetail endpoint is ready
-			draft.entityStates.alleleGeneAssociations.rowsToDelete = []; 
-
 			break;
 		default:
       throw Error('Unknown action: ' + action.type);
