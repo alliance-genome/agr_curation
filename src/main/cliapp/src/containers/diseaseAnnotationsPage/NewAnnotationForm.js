@@ -73,8 +73,8 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-	const optionalFields = (["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
-							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers"]);
+	const optionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers"];
 	const [selectedFields, setSelectedFields] = useState(optionalFields);
 
 	const mutation = useMutation(newAnnotation => {
