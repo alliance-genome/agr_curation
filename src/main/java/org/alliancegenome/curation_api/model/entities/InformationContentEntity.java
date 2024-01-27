@@ -24,6 +24,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString(callSuper = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes({ @JsonSubTypes.Type(value = Reference.class, name = "Reference") })
 @Table(indexes = {
 		@Index(name = "informationcontent_createdby_index", columnList = "createdBy_id"),

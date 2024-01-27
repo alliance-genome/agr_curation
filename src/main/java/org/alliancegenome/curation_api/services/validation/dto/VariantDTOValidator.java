@@ -41,11 +41,13 @@ public class VariantDTOValidator extends BaseDTOValidator {
 	@Inject
 	SoTermService soTermService;
 
-	private ObjectResponse<Variant> variantResponse = new ObjectResponse<Variant>();
+	private ObjectResponse<Variant> variantResponse;
 	
 	@Transactional
 	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
+		variantResponse = new ObjectResponse<Variant>();
+		
 		Variant variant = null;
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			SearchResponse<Variant> response = variantDAO.findByField("modEntityId", dto.getModEntityId());

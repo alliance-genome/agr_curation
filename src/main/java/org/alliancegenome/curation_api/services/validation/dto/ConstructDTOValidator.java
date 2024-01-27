@@ -49,38 +49,36 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
 
-	private ObjectResponse<Construct> constructResponse = new ObjectResponse<Construct>();
+	private ObjectResponse<Construct> constructResponse;
 	
 	@Transactional
 	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
-		Construct construct = null;
+		constructResponse = new ObjectResponse<Construct>();
+				
+		Construct construct = new Construct();
+		String constructId;
+		String identifyingField;
 		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
-		SearchResponse<Construct> constructList;
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			constructList = constructDAO.findByField("modEntityId", dto.getModEntityId());
-			if (constructList != null && constructList.getSingleResult() != null)
-				construct = constructList.getSingleResult();
-		}
-		if (construct == null && StringUtils.isNotBlank(dto.getModInternalId())) {
-			constructList = constructDAO.findByField("modInternalId", dto.getModInternalId());
-			if (constructList != null && constructList.getSingleResult() != null)
-				construct = constructList.getSingleResult();
-		}
-		if (construct == null) {
-			constructList = constructDAO.findByField("uniqueId", uniqueId);
-			if (constructList != null && constructList.getSingleResult() != null)
-				construct = constructList.getSingleResult();
-		}
-		if (construct == null)
-			construct = new Construct();
-		construct.setUniqueId(uniqueId);
-		construct.setModEntityId(dto.getModEntityId());
-		construct.setModInternalId(dto.getModInternalId());
 		
-		ObjectResponse<Construct> reagentResponse = validateReagentDTO(construct, dto);
-		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());
-		construct = reagentResponse.getEntity();
+		if (StringUtils.isNotBlank(dto.getModEntityId())) {
+			constructId = dto.getModEntityId();
+			construct.setModEntityId(constructId);
+			identifyingField = "modEntityId";
+		} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
+			constructId = dto.getModInternalId();
+			construct.setModInternalId(constructId);
+			identifyingField = "modInternalId";
+		} else {
+			constructId = uniqueId;
+			identifyingField = "uniqueId";
+		}
+
+		SearchResponse<Construct> constructList = constructDAO.findByField(identifyingField, constructId);
+		if (constructList != null && constructList.getResults().size() > 0) {
+			construct = constructList.getResults().get(0);
+		}
+		construct.setUniqueId(uniqueId);
 
 		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
 			List<Reference> references = new ArrayList<>();

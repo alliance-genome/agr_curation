@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -168,7 +169,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		dbEntity = alleleDAO.persist(dbEntity);
-		
+
 		if (symbol != null)
 			symbol.setSingleAllele(dbEntity);
 		dbEntity.setAlleleSymbol(symbol);
@@ -600,11 +601,13 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
 		String field = "alleleGeneAssociations";
 
+		List<AlleleGeneAssociation> uiAssociations = uiEntity.getAlleleGeneAssociations();
+
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleGeneAssociations())) {
-			for (int ix = 0; ix < uiEntity.getAlleleGeneAssociations().size(); ix++) {
-				AlleleGeneAssociation ga = uiEntity.getAlleleGeneAssociations().get(ix);
+		if (CollectionUtils.isNotEmpty(uiAssociations)) {
+			for (int ix = 0; ix < uiAssociations.size(); ix++) {
+				AlleleGeneAssociation ga = uiAssociations.get(ix);
 				ObjectResponse<AlleleGeneAssociation> gaResponse = alleleGeneAssociationValidator.validateAlleleGeneAssociation(ga);
 				if (gaResponse.getEntity() == null) {
 					allValid = false;
@@ -613,6 +616,23 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					ga = gaResponse.getEntity();
 					ga.setSubject(dbEntity);
 					validatedGeneAssociations.add(ga);
+				}
+			}
+		}
+		List<AlleleGeneAssociation> dbAssociations = dbEntity.getAlleleGeneAssociations();
+		if (CollectionUtils.isNotEmpty(dbAssociations)) {
+			Set<Long> idsToDelete = new HashSet<>(dbAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList()));
+			if (uiAssociations != null) {
+				Set<Long> uiIDs = new HashSet<>(uiAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
+				idsToDelete.removeAll(uiIDs);
+				for(AlleleGeneAssociation ga: dbAssociations){
+					if(idsToDelete.contains(ga.getId())){
+						Gene gene = ga.getObject();
+						List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
+						geneAssociations.removeIf(geneAGA -> {
+							return idsToDelete.contains(geneAGA.getId());
+						});
+					}
 				}
 			}
 		}

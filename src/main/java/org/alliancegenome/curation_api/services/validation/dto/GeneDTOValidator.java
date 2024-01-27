@@ -52,11 +52,13 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
 
-	private ObjectResponse<Gene> geneResponse = new ObjectResponse<Gene>();
+	private ObjectResponse<Gene> geneResponse;
 
 	@Transactional
 	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
+		geneResponse = new ObjectResponse<Gene>();
+		
 		Gene gene = null;
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			SearchResponse<Gene> response = geneDAO.findByField("modEntityId", dto.getModEntityId());

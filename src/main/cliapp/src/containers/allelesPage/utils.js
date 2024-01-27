@@ -1,5 +1,3 @@
-import { ValidationService } from "../../service/ValidationService";
-
 export const generateCrossRefSearchFields = (references) => {
   if (references) {
     references.forEach((reference) => {
@@ -122,33 +120,4 @@ export const processTableErrors = (tableErrors, dispatch, entityType, table) => 
   });
   dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors });
 };
-
-//TODO: remove this once alleleDetail endpoint is ready
-const validateAlleleGeneAssociations = async (entities, endpoint, validationService) => {
-	const validationResults = {};
-	for (const entity of entities) {
-		const result = await validationService.validate(endpoint, entity);
-		if(result.isError) validationResults[entity.dataKey] = createErrorMessage(result.data);
-	}
-	return validationResults;
-};
-//TODO: remove this once alleleDetail endpoint is ready
-export const validateAlleleDetailTable = async (endpoint, entityType, table, dispatch) => {
-	if(!table) return false;
-	const validationService = new ValidationService();
-	const errors = await validateAlleleGeneAssociations(table, endpoint, validationService);
-	let anyErrors = Object.keys(errors).length !== 0;
-	dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: errors});
-	return anyErrors;
-}
-function createErrorMessage(data) {
-  const errors = {};
-  Object.keys(data).forEach((field) => {
-    errors[field] = {
-      severity: "error",
-      message: data[field]
-    };
-  });
-  return errors;
-}
 

@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationRetrievalHelper;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -55,30 +56,25 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			if (gene == null) {
 				gdaResponse.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ")");
 			} else {
+				String annotationId;
+				String identifyingField;
 				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getGeneIdentifier(), refCurie);
-				SearchResponse<GeneDiseaseAnnotation> annotationList;
-				Boolean annotationFound = false;
+				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
-					annotationList = geneDiseaseAnnotationDAO.findByField("modEntityId", dto.getModEntityId());
-					if (annotationList != null && annotationList.getSingleResult() != null) {
-						annotation = annotationList.getSingleResult();
-						annotationFound = true;
-					}
+					annotationId = dto.getModEntityId();
+					annotation.setModEntityId(annotationId);
+					identifyingField = "modEntityId";
+				} else if (StringUtils.isNotBlank(dto.getModInternalId())) {
+					annotationId = dto.getModInternalId();
+					annotation.setModInternalId(annotationId);
+					identifyingField = "modInternalId";
+				} else {
+					annotationId = uniqueId;
+					identifyingField = "uniqueId";
 				}
-				annotation.setModEntityId(dto.getModEntityId());
-				if (!annotationFound && StringUtils.isNotBlank(dto.getModInternalId())) {
-					annotationList = geneDiseaseAnnotationDAO.findByField("modInternalId", dto.getModInternalId());
-					if (annotationList != null && annotationList.getSingleResult() != null) {
-						annotation = annotationList.getSingleResult();
-						annotationFound = true;
-					}
-				}
-				annotation.setModInternalId(dto.getModInternalId());
-				if (!annotationFound){
-					annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
-					if (annotationList != null && annotationList.getSingleResult() != null)
-						annotation = annotationList.getSingleResult();
-				}
+
+				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
+				annotation = DiseaseAnnotationRetrievalHelper.getCurrentDiseaseAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
 				annotation.setSubject(gene);
 				

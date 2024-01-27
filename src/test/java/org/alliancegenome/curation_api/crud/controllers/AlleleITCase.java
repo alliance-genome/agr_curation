@@ -1455,6 +1455,8 @@ public class AlleleITCase extends BaseITCase {
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
 		geneAssociation.setObject(gene);
 		geneAssociation.setRelation(geneAssociationRelation);
+		Reference reference = createReference("AGRKB:AssocTest1", false);
+		geneAssociation.setEvidence(List.of(reference));
 		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 		
 		RestAssured.given().

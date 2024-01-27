@@ -92,10 +92,12 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	@Inject
 	NoteDTOValidator noteDtoValidator;
 
-	private ObjectResponse<Allele> alleleResponse = new ObjectResponse<>();
+	private ObjectResponse<Allele> alleleResponse;
 	
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+		
+		alleleResponse = new ObjectResponse<>();
 		
 		Allele allele = null;
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
