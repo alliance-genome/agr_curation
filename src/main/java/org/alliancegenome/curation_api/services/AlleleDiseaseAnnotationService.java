@@ -1,11 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
-<<<<<<< HEAD
-import java.util.Map;
-import java.util.Objects;
-=======
->>>>>>> alpha
 
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;

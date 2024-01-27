@@ -12,7 +12,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,7 +23,6 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString(callSuper = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes({ @JsonSubTypes.Type(value = Reference.class, name = "Reference") })
 @Table(indexes = {
 		@Index(name = "informationcontent_createdby_index", columnList = "createdBy_id"),

@@ -79,6 +79,10 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			construct = constructList.getResults().get(0);
 		}
 		construct.setUniqueId(uniqueId);
+		
+		ObjectResponse<Construct> reagentResponse = validateReagentDTO(construct, dto);
+		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());
+		construct = reagentResponse.getEntity();
 
 		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
 			List<Reference> references = new ArrayList<>();
