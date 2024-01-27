@@ -40,6 +40,8 @@ import lombok.ToString;
 	indexes = {
 		@Index(name = "vocabularytermset_name_index", columnList = "name"),
 		@Index(name = "vocabularytermset_vocabularylabel_index", columnList = "vocabularylabel"),
+		@Index(name = "vocabularytermset_createdby_id_index", columnList = "createdby_id"),
+		@Index(name = "vocabularytermset_updatedby_id_index", columnList = "updatedby_id"),
 		@Index(name = "vocabularytermset_vocabularytermsetvocabulary_id_index", columnList = "vocabularytermsetvocabulary_id")
 	}, uniqueConstraints = {
 		@UniqueConstraint(name = "vocabularytermset_vocabularyLabel_uk", columnNames = "vocabularyLabel"),

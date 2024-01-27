@@ -52,7 +52,6 @@ import lombok.ToString;
 		@UniqueConstraint(name = "annotation_modinternalid_uk", columnNames = "modInternalId"),
 	}
 )
-
 public class Annotation extends SingleReferenceAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

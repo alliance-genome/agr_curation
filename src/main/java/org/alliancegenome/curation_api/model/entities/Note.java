@@ -37,7 +37,11 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Schema(name = "Note", description = "POJO that represents the Note")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "Note_noteType_index", columnList = "noteType_id")})
+@Table(indexes = {
+		@Index(name = "Note_noteType_index", columnList = "noteType_id"),
+		@Index(name = "Note_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "Note_updatedby_index", columnList = "updatedBy_id")
+})
 public class Note extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))

@@ -26,6 +26,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,6 +37,10 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"resourcePages"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = {
+		@Index(name = "resourcedescriptor_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "resourcedescriptor_updatedby_index", columnList = "updatedBy_id")
+})
 @Schema(name = "ResourceDescriptor", description = "Annotation class representing a resource descriptor")
 public class ResourceDescriptor extends AuditedObject {
 

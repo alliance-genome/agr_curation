@@ -27,8 +27,10 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
-	@Index(name = "personsetting_person_index", columnList = "person_id"),
-	@Index(name = "personsetting_settingskey_index", columnList = "settingskey")
+		@Index(name = "personsetting_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "personsetting_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "personsetting_person_index", columnList = "person_id"),
+		@Index(name = "personsetting_settingskey_index", columnList = "settingskey")
 })
 public class PersonSetting extends AuditedObject {
 

@@ -21,12 +21,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(value = Construct.class, name = "Construct") })
 @Entity
@@ -36,7 +39,7 @@ import lombok.ToString;
 @Schema(name = "reagent", description = "POJO that represents a reagent")
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class })
 @Table(indexes = {
-	@Index(name = "reagent_uniqueId_index", columnList = "uniqueId")
+		@Index(name = "reagent_uniqueId_index", columnList = "uniqueId")
 })
 
 public class Reagent extends SubmittedObject {

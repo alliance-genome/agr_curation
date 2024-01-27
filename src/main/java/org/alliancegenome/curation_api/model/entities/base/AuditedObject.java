@@ -29,41 +29,28 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Entity
 @ToString(exclude = { "createdBy", "updatedBy" })
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(indexes = {
-		@Index(name = "auditedobject_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "auditedobject_updatedby_index", columnList = "updatedBy_id"),
-		@Index(name = "auditedobject_auditedObjectType_index", columnList = "auditedObjectType"),
-})
-@DiscriminatorColumn(name = "auditedObjectType")
+@MappedSuperclass
 @Schema(name = "AuditedObject", description = "POJO that represents the AuditedObject")
 public class AuditedObject extends BaseEntity {
 
 	@Id
 	@DocumentId
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "auditedobject_seq_generator")
-	@SequenceGenerator(name = "auditedobject_seq_generator", sequenceName = "auditedobject_seq", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class, VocabularyTermSetView.class })
 	@EqualsAndHashCode.Include
 	protected Long id;

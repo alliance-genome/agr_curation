@@ -18,6 +18,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -26,15 +28,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Agent.class })
-@Table(indexes = { 
-	@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
-	@Index(name = "person_allianceMember_index", columnList = "allianceMember_id"),
+@Table(indexes = {
+		@Index(name = "person_createdby_index", columnList = "createdBy_id"), 
+		@Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
+		@Index(name = "person_allianceMember_index", columnList = "allianceMember_id"),
 })
 public class Person extends Agent {
 

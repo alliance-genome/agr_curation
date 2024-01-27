@@ -13,26 +13,16 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Entity
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(
-	indexes = {
-		@Index(name = "curieobject_curie_index", columnList = "curie")
-	},
-	uniqueConstraints = {
-		@UniqueConstraint(name = "curieobject_curie_uk", columnNames = "curie")
-	}
-)
+@MappedSuperclass
 @Schema(name = "CurieObject", description = "POJO that represents the CurieObject")
 public class CurieObject extends AuditedObject {
 

@@ -38,7 +38,9 @@ import lombok.ToString;
 @ToString(exclude = { "vocabulary", "vocabularyTermSets" }, callSuper = true)
 @Table(indexes = { 
 	@Index(name = "vocabularyterm_name_index", columnList = "name"),
-	@Index(name = "vocabularyterm_vocabulary_id_index", columnList = "vocabulary_id")
+	@Index(name = "vocabularyterm_vocabulary_id_index", columnList = "vocabulary_id"),
+	@Index(name = "vocabularyterm_createdby_index", columnList = "createdBy_id"), 
+	@Index(name = "vocabularyterm_updatedby_index", columnList = "updatedBy_id")
 })
 @Schema(name = "VocabularyTerm", description = "POJO that represents the Vocabulary Term")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })

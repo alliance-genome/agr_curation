@@ -491,11 +491,14 @@ ALTER TABLE zfsterm DROP CONSTRAINT zfsterm_pkey;
 
 -- Create tables
 
-CREATE TABLE auditedobject (
+CREATE TABLE submittedobject (
 	id bigint PRIMARY KEY,
 	old_id bigint,
-	old_curie varchar(255),
+	curie varchar(255),
 	tablename varchar(255),
+	modentityid varchar(255),
+	modinternalid varchar(255),
+	dataprovider_id bigint,
 	createdby_id bigint,
 	updatedby_id bigint,
 	datecreated timestamp without time zone,
@@ -504,50 +507,12 @@ CREATE TABLE auditedobject (
 	dbdateupdated timestamp without time zone,
 	internal boolean NOT NULL DEFAULT false,
 	obsolete boolean NOT NULL DEFAULT false,
-	auditedobjecttype varchar(64)
-	);
-	
-CREATE TABLE curieobject (
-	id bigint PRIMARY KEY,
-	curie varchar(255)
-	);
-	
-CREATE TABLE submittedobject (
-	id bigint PRIMARY KEY,
-	modentityid varchar(255),
-	modinternalid varchar(255),
-	dataprovider_id bigint
+	submittedobjecttype varchar(64)
 	);
 	                                         
-CREATE SEQUENCE auditedobject_seq START WITH 200250000 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-
-DROP SEQUENCE association_seq;
-DROP SEQUENCE bulkload_seq;
-DROP SEQUENCE bulkloadfile_seq;
-DROP SEQUENCE bulkloadfileexception_seq;
-DROP SEQUENCE bulkloadfilehistory_seq;
-DROP SEQUENCE bulkloadgroup_seq;
-DROP SEQUENCE conditionrelation_seq;
-DROP SEQUENCE crossreference_seq;
-DROP SEQUENCE curationreport_seq;
-DROP SEQUENCE curationreportgroup_seq;
-DROP SEQUENCE curationreporthistory_seq;
-DROP SEQUENCE dataprovider_seq;
-DROP SEQUENCE experimentalcondition_seq;
-DROP SEQUENCE genetogeneorthology_seq;
-DROP SEQUENCE note_seq;
-DROP SEQUENCE organization_seq;
-DROP SEQUENCE person_seq;
-DROP SEQUENCE personsetting_seq;
-DROP SEQUENCE reagent_seq;
-DROP SEQUENCE resourcedescriptor_seq;
-DROP SEQUENCE resourcedescriptorpage_seq;
-DROP SEQUENCE slotannotation_seq;
-DROP SEQUENCE species_seq;
-DROP SEQUENCE synonym_seq;
-DROP SEQUENCE vocabulary_seq;
-DROP SEQUENCE vocabularyterm_seq;
-DROP SEQUENCE vocabularytermset_seq;
+CREATE SEQUENCE submittedobject_seq START WITH 200250000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE ontologyterm_seq START WITH 200250000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE informationcontententity_seq START WITH 20025000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
 -- Add id equivalents of curie columns 
 
@@ -684,503 +649,167 @@ ALTER TABLE zfsterm ADD COLUMN id bigint;
 
 -- Move data around
 
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'association', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM association;
-	
-INSERT INTO auditedobject (tablename, id, old_curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'biologicalentity', nextval('auditedobject_seq'), curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+INSERT INTO submittedobject (id, modentityid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT nextval('submittedobject_seq'), curie, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
 	FROM biologicalentity;
 	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'bulkload', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM bulkload;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'bulkloadfile', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM bulkloadfile;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'bulkloadfileexception', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM bulkloadfileexception;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'bulkloadfilehistory', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM bulkloadfilehistory;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'bulkloadgroup', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM bulkloadgroup;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'conditionrelation', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM conditionrelation;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'crossreference', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM crossreference;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'dataprovider', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM dataprovider;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'experimentalcondition', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM experimentalcondition;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'genetogeneorthology', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM genetogeneorthology;
-	
-INSERT INTO auditedobject (tablename, id, old_curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'informationcontententity', nextval('auditedobject_seq'), curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM informationcontententity;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'note', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM note;
-	
-INSERT INTO auditedobject (tablename, id, old_curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'ontologyterm', nextval('auditedobject_seq'), curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM ontologyterm;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'organization', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM organization;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'person', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM person;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'personsetting', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM personsetting;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'reagent', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM reagent;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'resourcedescriptor', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM resourcedescriptor;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'resourcedescriptorpage', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM resourcedescriptorpage;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'slotannotation', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM slotannotation;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'species', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM species;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'synonym', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM synonym;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'vocabulary', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM vocabulary;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'vocabularyterm', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM vocabularyterm;
-	
-INSERT INTO auditedobject (tablename, id, old_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT 'vocabularytermset', nextval('auditedobject_seq'), id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM vocabularytermset;
-	
-CREATE INDEX old_id_index ON auditedobject USING btree (old_id, tablename);
-CREATE INDEX old_curie_index ON auditedobject USING btree (old_curie, tablename);
+INSERT INTO submittedobject (id, old_id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT nextval('submittedobject_seq'), id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM reagent;	
 
-UPDATE auditedobject t SET createdby_id = a.id FROM auditedobject a WHERE t.createdby_id = a.old_id AND a.tablename = 'person'; 
-UPDATE auditedobject t SET updatedby_id = a.id FROM auditedobject a WHERE t.updatedby_id = a.old_id AND a.tablename = 'person'; 
+UPDATE ontologyterm SET id = nextval('ontologyterm_seq');
+ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_pkey PRIMARY KEY (id);
 
-UPDATE affectedgenomicmodel t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE affectedgenomicmodel t SET subtype_id = a.id FROM auditedobject a WHERE t.subtype_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE agmdiseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE agmdiseaseannotation t SET inferredallele_id = a.id FROM auditedobject a WHERE t.inferredallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE agmdiseaseannotation t SET assertedallele_id = a.id FROM auditedobject a WHERE t.assertedallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE agmdiseaseannotation t SET inferredgene_id = a.id FROM auditedobject a WHERE t.inferredgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE agmdiseaseannotation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE agmdiseaseannotation_gene t SET agmdiseaseannotation_id = a.id FROM auditedobject a WHERE t.agmdiseaseannotation_id = a.old_id AND a.tablename = 'association';
-UPDATE agmdiseaseannotation_gene t SET assertedgenes_id = a.id FROM auditedobject a WHERE t.assertedgenes_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allele t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allele t SET incollection_id = a.id FROM auditedobject a WHERE t.incollection_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE allele_note t SET allele_id = a.id FROM auditedobject a WHERE t.allele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allele_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
-UPDATE allele_reference t SET allele_id = a.id FROM auditedobject a WHERE t.allele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allele_reference t SET references_id = a.id FROM auditedobject a WHERE t.references_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE alleledatabasestatusslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE alleledatabasestatusslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE alleledatabasestatusslotannotation t SET databasestatus_id = a.id FROM auditedobject a WHERE t.databasestatus_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE allelediseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE allelediseaseannotation t SET inferredgene_id = a.id FROM auditedobject a WHERE t.inferredgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelediseaseannotation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelediseaseannotation_gene t SET allelediseaseannotation_id = a.id FROM auditedobject a WHERE t.allelediseaseannotation_id = a.old_id AND a.tablename = 'association';
-UPDATE allelediseaseannotation_gene t SET assertedgenes_id = a.id FROM auditedobject a WHERE t.assertedgenes_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelefullnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelefullnameslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelefunctionalimpactslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelefunctionalimpactslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelefunctionalimpactslotannotation t SET phenotypeterm_id = a.id FROM auditedobject a WHERE t.phenotypeterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE allelefunctionalimpactslotannotation_vocabularyterm t SET allelefunctionalimpactslotannotation_id = a.id FROM auditedobject a WHERE t.allelefunctionalimpactslotannotation_id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelefunctionalimpactslotannotation_vocabularyterm t SET functionalimpacts_id = a.id FROM auditedobject a WHERE t.functionalimpacts_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE allelegeneassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE allelegeneassociation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelegeneassociation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelegenomicentityassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE allelegenomicentityassociation t SET evidencecode_id = a.id FROM auditedobject a WHERE t.evidencecode_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE allelegenomicentityassociation t SET relatednote_id = a.id FROM auditedobject a WHERE t.relatednote_id = a.old_id AND a.tablename = 'note';
-UPDATE allelegenomicentityassociation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE allelegermlinetransmissionstatusslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelegermlinetransmissionstatusslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelegermlinetransmissionstatusslotannotation t SET germlinetransmissionstatus_id = a.id FROM auditedobject a WHERE t.germlinetransmissionstatus_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE alleleinheritancemodeslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE alleleinheritancemodeslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE alleleinheritancemodeslotannotation t SET inheritancemode_id = a.id FROM auditedobject a WHERE t.inheritancemode_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE alleleinheritancemodeslotannotation t SET phenotypeterm_id = a.id FROM auditedobject a WHERE t.phenotypeterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE allelemutationtypeslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelemutationtypeslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelemutationtypeslotannotation_soterm t SET allelemutationtypeslotannotation_id = a.id FROM auditedobject a WHERE t.allelemutationtypeslotannotation_id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelemutationtypeslotannotation_soterm t SET mutationtypes_id = a.id FROM auditedobject a WHERE t.mutationtypes_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE allelenomenclatureeventslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelenomenclatureeventslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelenomenclatureeventslotannotation t SET nomenclatureevent_id = a.id FROM auditedobject a WHERE t.nomenclatureevent_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE allelesecondaryidslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelesecondaryidslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelesymbolslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelesymbolslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE allelesynonymslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE allelesynonymslotannotation t SET singleallele_id = a.id FROM auditedobject a WHERE t.singleallele_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE alliancemember t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'organization';
-UPDATE anatomicalterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE annotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE annotation t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
-UPDATE annotation_conditionrelation t SET annotation_id = a.id FROM auditedobject a WHERE t.annotation_id = a.old_id AND a.tablename = 'association';
-UPDATE annotation_conditionrelation t SET conditionrelations_id = a.id FROM auditedobject a WHERE t.conditionrelations_id = a.old_id AND a.tablename = 'conditionrelation';
-UPDATE annotation_note t SET annotation_id = a.id FROM auditedobject a WHERE t.annotation_id = a.old_id AND a.tablename = 'association';
-UPDATE annotation_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
-UPDATE apoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE association t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE atpterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE biologicalentity t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE biologicalentity t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE biologicalentity t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
-UPDATE bspoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE bulkfmsload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
-UPDATE bulkload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
-UPDATE bulkload t SET group_id = a.id FROM auditedobject a WHERE t.group_id = a.old_id AND a.tablename = 'bulkloadgroup';
-UPDATE bulkloadfile t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadfile';
-UPDATE bulkloadfile t SET bulkload_id = a.id FROM auditedobject a WHERE t.bulkload_id = a.old_id AND a.tablename = 'bulkload';
-UPDATE bulkloadfileexception t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadfileexception';
-UPDATE bulkloadfileexception t SET bulkloadfilehistory_id = a.id FROM auditedobject a WHERE t.bulkloadfilehistory_id = a.old_id AND a.tablename = 'bulkloadfilehistory';
-UPDATE bulkloadfilehistory t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadfilehistory';
-UPDATE bulkloadfilehistory t SET bulkloadfile_id = a.id FROM auditedobject a WHERE t.bulkloadfile_id = a.old_id AND a.tablename = 'bulkloadfile';
-UPDATE bulkloadgroup t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkloadgroup';
-UPDATE bulkmanualload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
-UPDATE bulkscheduledload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
-UPDATE bulkurlload t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'bulkload';
-UPDATE chebiterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE chemicalterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE clterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE cmoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE conditionrelation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'conditionrelation';
-UPDATE conditionrelation t SET conditionrelationtype_id = a.id FROM auditedobject a WHERE t.conditionrelationtype_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE conditionrelation t SET singlereference_id = a.id FROM auditedobject a WHERE t.singlereference_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE conditionrelation_experimentalcondition t SET conditionrelation_id = a.id FROM auditedobject a WHERE t.conditionrelation_id = a.old_id AND a.tablename = 'conditionrelation';
-UPDATE conditionrelation_experimentalcondition t SET conditions_id = a.id FROM auditedobject a WHERE t.conditions_id = a.old_id AND a.tablename = 'experimentalcondition';
-UPDATE construct t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'reagent';
-UPDATE construct_reference t SET construct_id = a.id FROM auditedobject a WHERE t.construct_id = a.old_id AND a.tablename = 'reagent';
-UPDATE construct_reference t SET references_id = a.id FROM auditedobject a WHERE t.references_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE constructcomponentslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE constructcomponentslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
-UPDATE constructcomponentslotannotation t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE constructcomponentslotannotation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE constructcomponentslotannotation_note t SET constructcomponentslotannotation_id = a.id FROM auditedobject a WHERE t.constructcomponentslotannotation_id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE constructcomponentslotannotation_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
-UPDATE constructfullnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE constructfullnameslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
-UPDATE constructgenomicentityassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE constructgenomicentityassociation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_id = a.old_id AND a.tablename = 'reagent';
-UPDATE constructgenomicentityassociation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE constructgenomicentityassociation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE constructgenomicentityassociation_note t SET constructgenomicentityassociation_id = a.id FROM auditedobject a WHERE t.constructgenomicentityassociation_id = a.old_id AND a.tablename = 'association';
-UPDATE constructgenomicentityassociation_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
-UPDATE constructsymbolslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE constructsymbolslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
-UPDATE constructsynonymslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE constructsynonymslotannotation t SET singleconstruct_id = a.id FROM auditedobject a WHERE t.singleconstruct_id = a.old_id AND a.tablename = 'reagent';
-UPDATE crossreference t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'crossreference';
-UPDATE crossreference t SET resourcedescriptorpage_id = a.id FROM auditedobject a WHERE t.resourcedescriptorpage_id = a.old_id AND a.tablename = 'resourcedescriptorpage';
-UPDATE daoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE dataprovider t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'dataprovider';
-UPDATE dataprovider t SET sourceorganization_id = a.id FROM auditedobject a WHERE t.sourceorganization_id = a.old_id AND a.tablename = 'organization';
-UPDATE dataprovider t SET crossreference_id = a.id FROM auditedobject a WHERE t.crossreference_id = a.old_id AND a.tablename = 'crossreference';
-UPDATE diseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE diseaseannotation t SET object_id = a.id FROM auditedobject a WHERE t.object_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE diseaseannotation t SET relation_id = a.id FROM auditedobject a WHERE t.relation_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE diseaseannotation t SET diseasegeneticmodifierrelation_id = a.id FROM auditedobject a WHERE t.diseasegeneticmodifierrelation_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE diseaseannotation t SET annotationtype_id = a.id FROM auditedobject a WHERE t.annotationtype_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE diseaseannotation t SET geneticsex_id = a.id FROM auditedobject a WHERE t.geneticsex_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE diseaseannotation t SET secondarydataprovider_id = a.id FROM auditedobject a WHERE t.secondarydataprovider_id = a.old_id AND a.tablename = 'dataprovider';
-UPDATE diseaseannotation_biologicalentity t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
-UPDATE diseaseannotation_biologicalentity t SET diseasegeneticmodifiers_id = a.id FROM auditedobject a WHERE t.diseasegeneticmodifiers_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE diseaseannotation_ecoterm t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
-UPDATE diseaseannotation_ecoterm t SET evidencecodes_id = a.id FROM auditedobject a WHERE t.evidencecodes_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE diseaseannotation_gene t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
-UPDATE diseaseannotation_gene t SET with_id = a.id FROM auditedobject a WHERE t.with_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE diseaseannotation_vocabularyterm t SET diseaseannotation_id = a.id FROM auditedobject a WHERE t.diseaseannotation_id = a.old_id AND a.tablename = 'association';
-UPDATE diseaseannotation_vocabularyterm t SET diseasequalifiers_id = a.id FROM auditedobject a WHERE t.diseasequalifiers_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE doterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE dpoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ecoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE emapaterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE evidenceassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE evidenceassociation_informationcontententity t SET evidenceassociation_id = a.id FROM auditedobject a WHERE t.evidenceassociation_id = a.old_id AND a.tablename = 'association';
-UPDATE evidenceassociation_informationcontententity t SET evidence_id = a.id FROM auditedobject a WHERE t.evidence_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE experimentalcondition t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'experimentalcondition';
-UPDATE experimentalcondition t SET conditionanatomy_id = a.id FROM auditedobject a WHERE t.conditionanatomy_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE experimentalcondition t SET conditionchemical_id = a.id FROM auditedobject a WHERE t.conditionchemical_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE experimentalcondition t SET conditionclass_id = a.id FROM auditedobject a WHERE t.conditionclass_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE experimentalcondition t SET conditiongeneontology_id = a.id FROM auditedobject a WHERE t.conditiongeneontology_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE experimentalcondition t SET conditionid_id = a.id FROM auditedobject a WHERE t.conditionid_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE experimentalcondition t SET conditiontaxon_id = a.id FROM auditedobject a WHERE t.conditiontaxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE experimentalconditionontologyterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE fbdvterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE gene t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE gene t SET genetype_id = a.id FROM auditedobject a WHERE t.genetype_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE genediseaseannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE genediseaseannotation t SET sgdstrainbackground_id = a.id FROM auditedobject a WHERE t.sgdstrainbackground_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genediseaseannotation t SET subject_id = a.id FROM auditedobject a WHERE t.subject_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genefullnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE genefullnameslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genesecondaryidslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE genesecondaryidslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genesymbolslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE genesymbolslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genesynonymslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE genesynonymslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genesystematicnameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE genesystematicnameslotannotation t SET singlegene_id = a.id FROM auditedobject a WHERE t.singlegene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genetogeneorthology t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'genetogeneorthology';
-UPDATE genetogeneorthology t SET subjectgene_id = a.id FROM auditedobject a WHERE t.subjectgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genetogeneorthology t SET objectgene_id = a.id FROM auditedobject a WHERE t.objectgene_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genetogeneorthologycurated t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'genetogeneorthology';
-UPDATE genetogeneorthologycurated t SET singlereference_id = a.id FROM auditedobject a WHERE t.singlereference_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE genetogeneorthologycurated t SET evidencecode_id = a.id FROM auditedobject a WHERE t.evidencecode_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE genetogeneorthologygenerated t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'genetogeneorthology';
-UPDATE genetogeneorthologygenerated t SET isbestscore_id = a.id FROM auditedobject a WHERE t.isbestscore_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE genetogeneorthologygenerated t SET isbestscorereverse_id = a.id FROM auditedobject a WHERE t.isbestscorereverse_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE genetogeneorthologygenerated t SET confidence_id = a.id FROM auditedobject a WHERE t.confidence_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE genetogeneorthologygenerated_predictionmethodsmatched t SET genetogeneorthologygenerated_id = a.id FROM auditedobject a WHERE t.genetogeneorthologygenerated_id = a.old_id AND a.tablename = 'genetogeneorthology';
-UPDATE genetogeneorthologygenerated_predictionmethodsmatched t SET predictionmethodsmatched_id = a.id FROM auditedobject a WHERE t.predictionmethodsmatched_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE genetogeneorthologygenerated_predictionmethodsnotcalled t SET genetogeneorthologygenerated_id = a.id FROM auditedobject a WHERE t.genetogeneorthologygenerated_id = a.old_id AND a.tablename = 'genetogeneorthology';
-UPDATE genetogeneorthologygenerated_predictionmethodsnotcalled t SET predictionmethodsnotcalled_id = a.id FROM auditedobject a WHERE t.predictionmethodsnotcalled_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE genetogeneorthologygenerated_predictionmethodsnotmatched t SET genetogeneorthologygenerated_id = a.id FROM auditedobject a WHERE t.genetogeneorthologygenerated_id = a.old_id AND a.tablename = 'genetogeneorthology';
-UPDATE genetogeneorthologygenerated_predictionmethodsnotmatched t SET predictionmethodsnotmatched_id = a.id FROM auditedobject a WHERE t.predictionmethodsnotmatched_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE genomicentity t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genomicentity_crossreference t SET genomicentity_id = a.id FROM auditedobject a WHERE t.genomicentity_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE genomicentity_crossreference t SET crossreferences_id = a.id FROM auditedobject a WHERE t.crossreferences_id = a.old_id AND a.tablename = 'crossreference';
-UPDATE goterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE hpterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE informationcontententity t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE materm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE miterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE mmoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE mmusdvterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE modterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE molecule t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE mpathterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE mpterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE nameslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE nameslotannotation t SET nametype_id = a.id FROM auditedobject a WHERE t.nametype_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE nameslotannotation t SET synonymscope_id = a.id FROM auditedobject a WHERE t.synonymscope_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE ncbitaxonterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE note t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'note';
-UPDATE note t SET notetype_id = a.id FROM auditedobject a WHERE t.notetype_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE note_reference t SET note_id = a.id FROM auditedobject a WHERE t.note_id = a.old_id AND a.tablename = 'note';
-UPDATE note_reference t SET references_id = a.id FROM auditedobject a WHERE t.references_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE obiterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_crossreference t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_crossreference t SET crossreferences_id = a.id FROM auditedobject a WHERE t.crossreferences_id = a.old_id AND a.tablename = 'crossreference';
-UPDATE ontologyterm_definitionurls t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_isa_ancestor_descendant t SET isadescendants_id = a.id FROM auditedobject a WHERE t.isadescendants_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_isa_ancestor_descendant t SET isaancestors_id = a.id FROM auditedobject a WHERE t.isaancestors_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_isa_parent_children t SET isachildren_id = a.id FROM auditedobject a WHERE t.isachildren_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_isa_parent_children t SET isaparents_id = a.id FROM auditedobject a WHERE t.isaparents_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_secondaryidentifiers t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_subsets t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_synonym t SET ontologyterm_id = a.id FROM auditedobject a WHERE t.ontologyterm_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE ontologyterm_synonym t SET synonyms_id = a.id FROM auditedobject a WHERE t.synonyms_id = a.old_id AND a.tablename = 'synonym';
-UPDATE organization t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'organization';
-UPDATE organization t SET homepageresourcedescriptorpage_id = a.id FROM auditedobject a WHERE t.homepageresourcedescriptorpage_id = a.old_id AND a.tablename = 'resourcedescriptorpage';
-UPDATE patoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE person t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'person';
-UPDATE person t SET alliancemember_id = a.id FROM auditedobject a WHERE t.alliancemember_id = a.old_id AND a.tablename = 'organization';
-UPDATE person_emails t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
-UPDATE person_oldemails t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
-UPDATE personsetting t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'personsetting';
-UPDATE personsetting t SET person_id = a.id FROM auditedobject a WHERE t.person_id = a.old_id AND a.tablename = 'person';
-UPDATE phenotypeterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE pwterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE reagent t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'reagent';
-UPDATE reagent t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
-UPDATE reagent_secondaryidentifiers t SET reagent_id = a.id FROM auditedobject a WHERE t.reagent_id = a.old_id AND a.tablename = 'reagent';
-UPDATE reference t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE reference_crossreference t SET reference_id = a.id FROM auditedobject a WHERE t.reference_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE reference_crossreference t SET crossreferences_id = a.id FROM auditedobject a WHERE t.crossreferences_id = a.old_id AND a.tablename = 'crossreference';
-UPDATE resourcedescriptor t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'resourcedescriptor';
-UPDATE resourcedescriptor_synonyms t SET resourcedescriptor_id = a.id FROM auditedobject a WHERE t.resourcedescriptor_id = a.old_id AND a.tablename = 'resourcedescriptor';
-UPDATE resourcedescriptorpage t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'resourcedescriptorpage';
-UPDATE resourcedescriptorpage t SET resourcedescriptor_id = a.id FROM auditedobject a WHERE t.resourcedescriptor_id = a.old_id AND a.tablename = 'resourcedescriptor';
-UPDATE roterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE rsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE secondaryidslotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE singlereferenceassociation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'association';
-UPDATE singlereferenceassociation t SET singlereference_id = a.id FROM auditedobject a WHERE t.singlereference_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE slotannotation t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE slotannotation_informationcontententity t SET slotannotation_id = a.id FROM auditedobject a WHERE t.slotannotation_id = a.old_id AND a.tablename = 'slotannotation';
-UPDATE slotannotation_informationcontententity t SET evidence_id = a.id FROM auditedobject a WHERE t.evidence_curie = a.old_curie AND a.tablename = 'informationcontententity';
-UPDATE soterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE species t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'species';
-UPDATE species t SET dataprovider_id = a.id FROM auditedobject a WHERE t.dataprovider_id = a.old_id AND a.tablename = 'dataprovider';
-UPDATE species t SET taxon_id = a.id FROM auditedobject a WHERE t.taxon_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE species_commonnames t SET species_id = a.id FROM auditedobject a WHERE t.species_id = a.old_id AND a.tablename = 'species';
-UPDATE stageterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE synonym t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'synonym';
-UPDATE uberonterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE variant t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE variant t SET varianttype_id = a.id FROM auditedobject a WHERE t.varianttype_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE variant t SET sourcegeneralconsequence_id = a.id FROM auditedobject a WHERE t.sourcegeneralconsequence_curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE variant t SET variantstatus_id = a.id FROM auditedobject a WHERE t.variantstatus_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE variant_note t SET variant_id = a.id FROM auditedobject a WHERE t.variant_curie = a.old_curie AND a.tablename = 'biologicalentity';
-UPDATE variant_note t SET relatednotes_id = a.id FROM auditedobject a WHERE t.relatednotes_id = a.old_id AND a.tablename = 'note';
-UPDATE vocabulary t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'vocabulary';
-UPDATE vocabularyterm t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE vocabularyterm t SET vocabulary_id = a.id FROM auditedobject a WHERE t.vocabulary_id = a.old_id AND a.tablename = 'vocabulary';
-UPDATE vocabularyterm_synonyms t SET vocabularyterm_id = a.id FROM auditedobject a WHERE t.vocabularyterm_id = a.old_id AND a.tablename = 'vocabularyterm';
-UPDATE vocabularytermset t SET id = a.id FROM auditedobject a WHERE t.id = a.old_id AND a.tablename = 'vocabularytermset';
-UPDATE vocabularytermset t SET vocabularytermsetvocabulary_id = a.id FROM auditedobject a WHERE t.vocabularytermsetvocabulary_id = a.old_id AND a.tablename = 'vocabulary';
-UPDATE vocabularytermset_vocabularyterm t SET vocabularytermsets_id = a.id FROM auditedobject a WHERE t.vocabularytermsets_id = a.old_id AND a.tablename = 'vocabularytermset';
-UPDATE vocabularytermset_vocabularyterm t SET memberterms_id = a.id FROM auditedobject a WHERE t.memberterms_id = a.old_id AND a.tablename = 'vocabularyterm';;
-UPDATE vtterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE wbbtterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE wblsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE wbphenotypeterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE xbaterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE xbedterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE xbsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE xcoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE xpoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE xsmoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE zecoterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE zfaterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
-UPDATE zfsterm t SET id = a.id FROM auditedobject a WHERE t.curie = a.old_curie AND a.tablename = 'ontologyterm';
+UPDATE informationcontententity SET id = nextval('informationcontententity_seq');
+ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_pkey PRIMARY KEY (id);
+	
+CREATE INDEX old_id_index ON submittedobject USING btree (old_id, tablename);
+CREATE INDEX submittedobject_modentityid_index ON submittedobject USING btree (modentityid);
 
-INSERT INTO submittedobject (id, modentityid, dataprovider_id) SELECT id, curie, dataprovider_id FROM biologicalentity;
-INSERT INTO submittedobject (id, modentityid, modinternalid, dataprovider_id) SELECT id, modentityid, modinternalid, dataprovider_id FROM reagent;
+UPDATE affectedgenomicmodel t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE agmdiseaseannotation t SET inferredallele_id = s.id FROM submittedobject s WHERE t.inferredallele_curie = s.modentityid;
+UPDATE agmdiseaseannotation t SET assertedallele_id = s.id FROM submittedobject s WHERE t.assertedallele_curie = s.modentityid;
+UPDATE agmdiseaseannotation t SET inferredgene_id = s.id FROM submittedobject s WHERE t.inferredgene_curie = s.modentityid;
+UPDATE agmdiseaseannotation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
+UPDATE agmdiseaseannotation_gene t SET assertedgenes_id = s.id FROM submittedobject s WHERE t.assertedgenes_curie = s.modentityid;
+UPDATE allele t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE allele_note t SET allele_id = s.id FROM submittedobject s WHERE t.allele_curie = s.modentityid;
+UPDATE allele_reference t SET allele_id = s.id FROM submittedobject s WHERE t.allele_curie = s.modentityid;
+UPDATE allele_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
+UPDATE alleledatabasestatusslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelediseaseannotation t SET inferredgene_id = s.id FROM submittedobject s WHERE t.inferredgene_curie = s.modentityid;
+UPDATE allelediseaseannotation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
+UPDATE allelediseaseannotation_gene t SET assertedgenes_id = s.id FROM submittedobject s WHERE t.assertedgenes_curie = s.modentityid;
+UPDATE allelefullnameslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelefunctionalimpactslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelefunctionalimpactslotannotation t SET phenotypeterm_id = o.id FROM ontologyterm o WHERE t.phenotypeterm_curie = o.curie;
+UPDATE allelegeneassociation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
+UPDATE allelegeneassociation t SET object_id = s.id FROM submittedobject s WHERE t.object_curie = s.modentityid;
+UPDATE allelegenomicentityassociation t SET evidencecode_id = o.id FROM ontologyterm o WHERE t.evidencecode_curie = o.curie;
+UPDATE allelegermlinetransmissionstatusslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE alleleinheritancemodeslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE alleleinheritancemodeslotannotation t SET phenotypeterm_id = o.id FROM ontologyterm o WHERE t.phenotypeterm_curie = o.curie;
+UPDATE allelemutationtypeslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelemutationtypeslotannotation_soterm t SET mutationtypes_id = o.id FROM ontologyterm o WHERE t.mutationtypes_curie = o.curie;
+UPDATE allelenomenclatureeventslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelesecondaryidslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelesymbolslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelesynonymslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE anatomicalterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE apoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE atpterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE biologicalentity t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE biologicalentity t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
+UPDATE bspoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE chebiterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE chemicalterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE clterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE cmoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE conditionrelation t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
+UPDATE construct t SET id = s.id FROM submittedobject s WHERE t.id = s.old_id;
+UPDATE construct_reference t SET construct_id = s.id FROM submittedobject s WHERE t.construct_id = s.old_id;
+UPDATE construct_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
+UPDATE constructcomponentslotannotation t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
+UPDATE constructfullnameslotannotation t SET singleconstruct_id = s.id FROM submittedobject s WHERE t.singleconstruct_id = s.old_id;
+UPDATE constructgenomicentityassociation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_id = s.old_id;
+UPDATE constructgenomicentityassociation t SET object_id = s.id FROM submittedobject s WHERE t.object_curie = s.modentityid;
+UPDATE constructsymbolslotannotation t SET singleconstruct_id = s.id FROM submittedobject s WHERE t.singleconstruct_id = s.old_id;
+UPDATE constructsynonymslotannotation t SET singleconstruct_id = s.id FROM submittedobject s WHERE t.singleconstruct_id = s.old_id;
+UPDATE daoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE diseaseannotation t SET object_id = o.id FROM ontologyterm o WHERE t.object_curie = o.curie;
+UPDATE diseaseannotation_biologicalentity t SET diseasegeneticmodifiers_id = o.id FROM ontologyterm o WHERE t.diseasegeneticmodifiers_curie = o.curie;
+UPDATE diseaseannotation_ecoterm t SET evidencecodes_id = s.id FROM submittedobject s WHERE t.evidencecodes_curie = s.modentityid;
+UPDATE diseaseannotation_gene t SET with_id = s.id FROM submittedobject s WHERE t.with_curie = s.modentityid;
+UPDATE doterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE dpoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE ecoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE emapaterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE evidenceassociation_informationcontententity t SET evidence_id = i.id FROM informationcontententity i WHERE t.evidence_curie = i.curie;
+UPDATE experimentalcondition t SET conditionanatomy_id = o.id FROM ontologyterm o WHERE t.conditionanatomy_curie = o.curie;
+UPDATE experimentalcondition t SET conditionchemical_id = o.id FROM ontologyterm o WHERE t.conditionchemical_curie = o.curie;
+UPDATE experimentalcondition t SET conditionclass_id = o.id FROM ontologyterm o WHERE t.conditionclass_curie = o.curie;
+UPDATE experimentalcondition t SET conditiongeneontology_id = o.id FROM ontologyterm o WHERE t.conditiongeneontology_curie = o.curie;
+UPDATE experimentalcondition t SET conditionid_id = o.id FROM ontologyterm o WHERE t.conditionid_curie = o.curie;
+UPDATE experimentalcondition t SET conditiontaxon_id = o.id FROM ontologyterm o WHERE t.conditiontaxon_curie = o.curie;
+UPDATE experimentalconditionontologyterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE fbdvterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE gene t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE gene t SET genetype_id = o.id FROM ontologyterm o WHERE t.genetype_curie = o.curie;
+UPDATE genediseaseannotation t SET sgdstrainbackground_id = s.id FROM submittedobject s WHERE t.sgdstrainbackground_curie = s.modentityid;
+UPDATE genediseaseannotation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
+UPDATE genefullnameslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
+UPDATE genesecondaryidslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
+UPDATE genesymbolslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
+UPDATE genesynonymslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
+UPDATE genesystematicnameslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
+UPDATE genetogeneorthology t SET subjectgene_id = s.id FROM submittedobject s WHERE t.subjectgene_curie = s.modentityid;
+UPDATE genetogeneorthology t SET objectgene_id = s.id FROM submittedobject s WHERE t.objectgene_curie = s.modentityid;
+UPDATE genetogeneorthologycurated t SET evidencecode_id = o.id FROM ontologyterm o WHERE t.evidencecode_curie = o.curie;
+UPDATE genetogeneorthologycurated t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
+UPDATE genomicentity t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE genomicentity_crossreference t SET genomicentity_id = s.id FROM submittedobject s WHERE t.genomicentity_curie = s.modentityid;
+UPDATE goterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE hpterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE materm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE miterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE mmoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE mmusdvterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE modterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE molecule t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE mpathterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE mpterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE ncbitaxonterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE note_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
+UPDATE obiterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE ontologyterm_crossreference t SET ontologyterm_id = o.id FROM ontologyterm o WHERE t.ontologyterm_curie = o.curie;
+UPDATE ontologyterm_definitionurls t SET ontologyterm_id = o.id FROM ontologyterm o WHERE t.ontologyterm_curie = o.curie;
+UPDATE ontologyterm_isa_ancestor_descendant t SET isadescendants_id = o.id FROM ontologyterm o WHERE t.isadescendants_curie = o.curie;
+UPDATE ontologyterm_isa_ancestor_descendant t SET isaancestors_id = o.id FROM ontologyterm o WHERE t.isaancestors_curie = o.curie;
+UPDATE ontologyterm_isa_parent_children t SET isachildren_id = o.id FROM ontologyterm o WHERE t.isachildren_curie = o.curie;
+UPDATE ontologyterm_isa_parent_children t SET isaparents_id = o.id FROM ontologyterm o WHERE t.isaparents_curie = o.curie;
+UPDATE ontologyterm_secondaryidentifiers t SET ontologyterm_id = o.id FROM ontologyterm o WHERE t.ontologyterm_curie = o.curie;
+UPDATE ontologyterm_subsets t SET ontologyterm_id = o.id FROM ontologyterm o WHERE t.ontologyterm_curie = o.curie;
+UPDATE ontologyterm_synonym t SET ontologyterm_id = o.id FROM ontologyterm o WHERE t.ontologyterm_curie = o.curie;
+UPDATE patoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE phenotypeterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE pwterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE reagent t SET id = s.id FROM submittedobject s WHERE t.id = s.old_id;
+UPDATE reagent_secondaryidentifiers t SET reagent_id = s.id FROM submittedobject s WHERE t.reagent_id = s.old_id;
+UPDATE reference t SET id = i.id FROM informationcontententity i WHERE t.curie = i.curie;
+UPDATE reference_crossreference t SET reference_id = i.id FROM informationcontententity i WHERE t.reference_curie = i.curie;
+UPDATE roterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE rsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE soterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE singlereferenceassociation t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
+UPDATE slotannotation_informationcontententity t SET evidence_id = i.id FROM informationcontententity i WHERE t.evidence_curie = i.curie;
+UPDATE species t SET id = s.id FROM submittedobject s WHERE t.id = s.old_id;
+UPDATE species t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
+UPDATE stageterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE uberonterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE variant t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE variant t SET varianttype_id = o.id FROM ontologyterm o WHERE t.varianttype_curie = o.curie;
+UPDATE variant t SET sourcegeneralconsequence_id = o.id FROM ontologyterm o WHERE t.sourcegeneralconsequence_curie = o.curie;
+UPDATE variant_note t SET variant_id = s.id FROM submittedobject s WHERE t.variant_curie = s.modentityid;
+UPDATE vtterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE wbbtterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE wblsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE wbphenotypeterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE xbaterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE xbedterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE xbsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE xcoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE xpoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE xsmoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE zecoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE zfaterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
+UPDATE zfsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 
-INSERT INTO curieobject (id) SELECT id FROM submittedobject;
-INSERT INTO curieobject (id, curie) SELECT id, curie FROM ontologyterm;
-INSERT INTO curieobject (id, curie) SELECT id, curie FROM informationcontententity;
-
-
--- Update Entity Types in the auditedobject table ... this needs to be done for all "leaf" nodes of the class tree
-update AuditedObject a SET auditedObjectType = 'AGMDiseaseAnnotation' from AGMDiseaseAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'APOTerm' from APOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ATPTerm' from ATPTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AffectedGenomicModel' from AffectedGenomicModel t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Allele' from Allele t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleDatabaseStatusSlotAnnotation' from AlleleDatabaseStatusSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleDiseaseAnnotation' from AlleleDiseaseAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleFullNameSlotAnnotation' from AlleleFullNameSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleFunctionalImpactSlotAnnotation' from AlleleFunctionalImpactSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleGeneAssociation' from AlleleGeneAssociation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleGermlineTransmissionStatusSlotAnnotation' from AlleleGermlineTransmissionStatusSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleInheritanceModeSlotAnnotation' from AlleleInheritanceModeSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleMutationTypeSlotAnnotation' from AlleleMutationTypeSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleNomenclatureEventSlotAnnotation' from AlleleNomenclatureEventSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleSecondaryIdSlotAnnotation' from AlleleSecondaryIdSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleSymbolSlotAnnotation' from AlleleSymbolSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AlleleSynonymSlotAnnotation' from AlleleSynonymSlotAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'AllianceMember' from AllianceMember t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BSPOTerm' from BSPOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BulkFMSLoad' from BulkFMSLoad t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BulkLoadFile' from BulkLoadFile t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BulkLoadFileException' from BulkLoadFileException t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BulkLoadFileHistory' from BulkLoadFileHistory t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BulkLoadGroup' from BulkLoadGroup t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BulkManualLoad' from BulkManualLoad t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'BulkURLLoad' from BulkURLLoad t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'CHEBITerm' from CHEBITerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'CLTerm' from CLTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'CMOTerm' from CMOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ConditionRelation' from ConditionRelation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Construct' from Construct t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ConstructGenomicEntityAssociation' from ConstructGenomicEntityAssociation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'CrossReference' from CrossReference t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'CurationReport' from CurationReport t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'CurationReportGroup' from CurationReportGroup t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'CurationReportHistory' from CurationReportHistory t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'DAOTerm' from DAOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'DOTerm' from DOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'DPOTerm' from DPOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'DataProvider' from DataProvider t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ECOTerm' from ECOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'EMAPATerm' from EMAPATerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ExperimentalCondition' from ExperimentalCondition t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'FBDVTerm' from FBDVTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'GOTerm' from GOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Gene' from Gene t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'GeneDiseaseAnnotation' from GeneDiseaseAnnotation t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'GeneToGeneOrthologyCurated' from GeneToGeneOrthologyCurated t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'GeneToGeneOrthologyGenerated' from GeneToGeneOrthologyGenerated t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'HPTerm' from HPTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'MATerm' from MATerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'MITerm' from MITerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'MMOTerm' from MMOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'MMUSDVTerm' from MMUSDVTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'MODTerm' from MODTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'MPATHTerm' from MPATHTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'MPTerm' from MPTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Molecule' from Molecule t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'NCBITaxonTerm' from NCBITaxonTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Note' from Note t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'OBITerm' from OBITerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'PATOTerm' from PATOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'PWTerm' from PWTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Person' from Person t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'PersonSetting' from PersonSetting t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ROTerm' from ROTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'RSTerm' from RSTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Reference' from Reference t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ResourceDescriptor' from ResourceDescriptor t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ResourceDescriptorPage' from ResourceDescriptorPage t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'SOTerm' from SOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Species' from Species t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Synonym' from Synonym t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'UBERONTerm' from UBERONTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'VTTerm' from VTTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Variant' from Variant t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'Vocabulary' from Vocabulary t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'VocabularyTerm' from VocabularyTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'VocabularyTermSet' from VocabularyTermSet t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'WBBTTerm' from WBBTTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'WBLSTerm' from WBLSTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'WBPhenotypeTerm' from WBPhenotypeTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'XBATerm' from XBATerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'XBEDTerm' from XBEDTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'XBSTerm' from XBSTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'XCOTerm' from XCOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'XPOTerm' from XPOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'XSMOTerm' from XSMOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ZECOTerm' from ZECOTerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ZFATerm' from ZFATerm t where a.id = t.id;
-update AuditedObject a SET auditedObjectType = 'ZFSTerm' from ZFSTerm t where a.id = t.id;
+-- Update Entity Types in the auditedobject table ... this needs to be done for all "leaf" nodes of the SubmittedObject class tree
+UPDATE submittedobject s SET submittedobjecttype = 'AffectedGenomicModel' FROM affectedgenomicmodel t WHERE s.id = t.id;
+UPDATE submittedobject s SET submittedobjecttype = 'Allele' FROM allele t WHERE s.id = t.id;
+UPDATE submittedobject s SET submittedobjecttype = 'Construct' FROM construct t WHERE s.id = t.id;
+UPDATE submittedobject s SET submittedobjecttype = 'Gene' FROM gene t WHERE s.id = t.id;
+UPDATE submittedobject s SET submittedobjecttype = 'Variant' FROM variant t WHERE s.id = t.id;
 
 ALTER TABLE affectedgenomicmodel DROP COLUMN curie;
 ALTER TABLE agmdiseaseannotation DROP COLUMN inferredallele_curie;
@@ -1212,14 +841,6 @@ ALTER TABLE allelesecondaryidslotannotation DROP COLUMN singleallele_curie;
 ALTER TABLE allelesymbolslotannotation DROP COLUMN singleallele_curie;
 ALTER TABLE allelesynonymslotannotation DROP COLUMN singleallele_curie;
 ALTER TABLE anatomicalterm DROP COLUMN curie;
-ALTER TABLE association DROP COLUMN createdby_id;
-ALTER TABLE association DROP COLUMN updatedby_id;
-ALTER TABLE association DROP COLUMN datecreated;
-ALTER TABLE association DROP COLUMN dateupdated;
-ALTER TABLE association DROP COLUMN dbdatecreated;
-ALTER TABLE association DROP COLUMN dbdateupdated;
-ALTER TABLE association DROP COLUMN internal;
-ALTER TABLE association DROP COLUMN obsolete;
 ALTER TABLE apoterm DROP COLUMN curie;
 ALTER TABLE atpterm DROP COLUMN curie;
 ALTER TABLE biologicalentity DROP COLUMN curie;
@@ -1233,80 +854,16 @@ ALTER TABLE biologicalentity DROP COLUMN dbdatecreated;
 ALTER TABLE biologicalentity DROP COLUMN dbdateupdated;
 ALTER TABLE biologicalentity DROP COLUMN internal;
 ALTER TABLE biologicalentity DROP COLUMN obsolete;
-ALTER TABLE bulkload DROP COLUMN createdby_id;
-ALTER TABLE bulkload DROP COLUMN updatedby_id;
-ALTER TABLE bulkload DROP COLUMN datecreated;
-ALTER TABLE bulkload DROP COLUMN dateupdated;
-ALTER TABLE bulkload DROP COLUMN dbdatecreated;
-ALTER TABLE bulkload DROP COLUMN dbdateupdated;
-ALTER TABLE bulkload DROP COLUMN internal;
-ALTER TABLE bulkload DROP COLUMN obsolete;
-ALTER TABLE bulkloadfile DROP COLUMN createdby_id;
-ALTER TABLE bulkloadfile DROP COLUMN updatedby_id;
-ALTER TABLE bulkloadfile DROP COLUMN datecreated;
-ALTER TABLE bulkloadfile DROP COLUMN dateupdated;
-ALTER TABLE bulkloadfile DROP COLUMN dbdatecreated;
-ALTER TABLE bulkloadfile DROP COLUMN dbdateupdated;
-ALTER TABLE bulkloadfile DROP COLUMN internal;
-ALTER TABLE bulkloadfile DROP COLUMN obsolete;
-ALTER TABLE bulkloadfileexception DROP COLUMN createdby_id;
-ALTER TABLE bulkloadfileexception DROP COLUMN updatedby_id;
-ALTER TABLE bulkloadfileexception DROP COLUMN datecreated;
-ALTER TABLE bulkloadfileexception DROP COLUMN dateupdated;
-ALTER TABLE bulkloadfileexception DROP COLUMN dbdatecreated;
-ALTER TABLE bulkloadfileexception DROP COLUMN dbdateupdated;
-ALTER TABLE bulkloadfileexception DROP COLUMN internal;
-ALTER TABLE bulkloadfileexception DROP COLUMN obsolete;
-ALTER TABLE bulkloadfilehistory DROP COLUMN createdby_id;
-ALTER TABLE bulkloadfilehistory DROP COLUMN updatedby_id;
-ALTER TABLE bulkloadfilehistory DROP COLUMN datecreated;
-ALTER TABLE bulkloadfilehistory DROP COLUMN dateupdated;
-ALTER TABLE bulkloadfilehistory DROP COLUMN dbdatecreated;
-ALTER TABLE bulkloadfilehistory DROP COLUMN dbdateupdated;
-ALTER TABLE bulkloadfilehistory DROP COLUMN internal;
-ALTER TABLE bulkloadfilehistory DROP COLUMN obsolete;
-ALTER TABLE bulkloadgroup DROP COLUMN createdby_id;
-ALTER TABLE bulkloadgroup DROP COLUMN updatedby_id;
-ALTER TABLE bulkloadgroup DROP COLUMN datecreated;
-ALTER TABLE bulkloadgroup DROP COLUMN dateupdated;
-ALTER TABLE bulkloadgroup DROP COLUMN dbdatecreated;
-ALTER TABLE bulkloadgroup DROP COLUMN dbdateupdated;
-ALTER TABLE bulkloadgroup DROP COLUMN internal;
-ALTER TABLE bulkloadgroup DROP COLUMN obsolete;
 ALTER TABLE bspoterm DROP COLUMN curie;
 ALTER TABLE chebiterm DROP COLUMN curie;
 ALTER TABLE chemicalterm DROP COLUMN curie;
 ALTER TABLE clterm DROP COLUMN curie;
 ALTER TABLE cmoterm DROP COLUMN curie;
 ALTER TABLE conditionrelation DROP COLUMN singlereference_curie;
-ALTER TABLE conditionrelation DROP COLUMN createdby_id;
-ALTER TABLE conditionrelation DROP COLUMN updatedby_id;
-ALTER TABLE conditionrelation DROP COLUMN datecreated;
-ALTER TABLE conditionrelation DROP COLUMN dateupdated;
-ALTER TABLE conditionrelation DROP COLUMN dbdatecreated;
-ALTER TABLE conditionrelation DROP COLUMN dbdateupdated;
-ALTER TABLE conditionrelation DROP COLUMN internal;
-ALTER TABLE conditionrelation DROP COLUMN obsolete;
 ALTER TABLE construct_reference DROP COLUMN references_curie;
 ALTER TABLE constructcomponentslotannotation DROP COLUMN taxon_curie;
 ALTER TABLE constructgenomicentityassociation DROP COLUMN object_curie;
-ALTER TABLE crossreference DROP COLUMN createdby_id;
-ALTER TABLE crossreference DROP COLUMN updatedby_id;
-ALTER TABLE crossreference DROP COLUMN datecreated;
-ALTER TABLE crossreference DROP COLUMN dateupdated;
-ALTER TABLE crossreference DROP COLUMN dbdatecreated;
-ALTER TABLE crossreference DROP COLUMN dbdateupdated;
-ALTER TABLE crossreference DROP COLUMN internal;
-ALTER TABLE crossreference DROP COLUMN obsolete;
 ALTER TABLE daoterm DROP COLUMN curie;
-ALTER TABLE dataprovider DROP COLUMN createdby_id;
-ALTER TABLE dataprovider DROP COLUMN updatedby_id;
-ALTER TABLE dataprovider DROP COLUMN datecreated;
-ALTER TABLE dataprovider DROP COLUMN dateupdated;
-ALTER TABLE dataprovider DROP COLUMN dbdatecreated;
-ALTER TABLE dataprovider DROP COLUMN dbdateupdated;
-ALTER TABLE dataprovider DROP COLUMN internal;
-ALTER TABLE dataprovider DROP COLUMN obsolete;
 ALTER TABLE diseaseannotation DROP COLUMN object_curie;
 ALTER TABLE diseaseannotation_biologicalentity DROP COLUMN diseasegeneticmodifiers_curie;
 ALTER TABLE diseaseannotation_ecoterm DROP COLUMN evidencecodes_curie;
@@ -1322,14 +879,6 @@ ALTER TABLE experimentalcondition DROP COLUMN conditionclass_curie;
 ALTER TABLE experimentalcondition DROP COLUMN conditiongeneontology_curie;
 ALTER TABLE experimentalcondition DROP COLUMN conditionid_curie;
 ALTER TABLE experimentalcondition DROP COLUMN conditiontaxon_curie;
-ALTER TABLE experimentalcondition DROP COLUMN createdby_id;
-ALTER TABLE experimentalcondition DROP COLUMN updatedby_id;
-ALTER TABLE experimentalcondition DROP COLUMN datecreated;
-ALTER TABLE experimentalcondition DROP COLUMN dateupdated;
-ALTER TABLE experimentalcondition DROP COLUMN dbdatecreated;
-ALTER TABLE experimentalcondition DROP COLUMN dbdateupdated;
-ALTER TABLE experimentalcondition DROP COLUMN internal;
-ALTER TABLE experimentalcondition DROP COLUMN obsolete;
 ALTER TABLE experimentalconditionontologyterm DROP COLUMN curie;
 ALTER TABLE fbdvterm DROP COLUMN curie;
 ALTER TABLE gene DROP COLUMN curie;
@@ -1347,25 +896,8 @@ ALTER TABLE genetogeneorthologycurated DROP COLUMN singlereference_curie;
 ALTER TABLE genetogeneorthologycurated DROP COLUMN evidencecode_curie;
 ALTER TABLE genomicentity DROP COLUMN curie;
 ALTER TABLE genomicentity_crossreference DROP COLUMN genomicentity_curie;
-ALTER TABLE genetogeneorthology DROP COLUMN createdby_id;
-ALTER TABLE genetogeneorthology DROP COLUMN updatedby_id;
-ALTER TABLE genetogeneorthology DROP COLUMN datecreated;
-ALTER TABLE genetogeneorthology DROP COLUMN dateupdated;
-ALTER TABLE genetogeneorthology DROP COLUMN dbdatecreated;
-ALTER TABLE genetogeneorthology DROP COLUMN dbdateupdated;
-ALTER TABLE genetogeneorthology DROP COLUMN internal;
-ALTER TABLE genetogeneorthology DROP COLUMN obsolete;
 ALTER TABLE goterm DROP COLUMN curie;
 ALTER TABLE hpterm DROP COLUMN curie;
-ALTER TABLE informationcontententity DROP COLUMN curie;
-ALTER TABLE informationcontententity DROP COLUMN createdby_id;
-ALTER TABLE informationcontententity DROP COLUMN updatedby_id;
-ALTER TABLE informationcontententity DROP COLUMN datecreated;
-ALTER TABLE informationcontententity DROP COLUMN dateupdated;
-ALTER TABLE informationcontententity DROP COLUMN dbdatecreated;
-ALTER TABLE informationcontententity DROP COLUMN dbdateupdated;
-ALTER TABLE informationcontententity DROP COLUMN internal;
-ALTER TABLE informationcontententity DROP COLUMN obsolete;
 ALTER TABLE materm DROP COLUMN curie;
 ALTER TABLE miterm DROP COLUMN curie;
 ALTER TABLE mmoterm DROP COLUMN curie;
@@ -1375,25 +907,8 @@ ALTER TABLE molecule DROP COLUMN curie;
 ALTER TABLE mpathterm DROP COLUMN curie;
 ALTER TABLE mpterm DROP COLUMN curie;
 ALTER TABLE ncbitaxonterm DROP COLUMN curie;
-ALTER TABLE note DROP COLUMN createdby_id;
-ALTER TABLE note DROP COLUMN updatedby_id;
-ALTER TABLE note DROP COLUMN datecreated;
-ALTER TABLE note DROP COLUMN dateupdated;
-ALTER TABLE note DROP COLUMN dbdatecreated;
-ALTER TABLE note DROP COLUMN dbdateupdated;
-ALTER TABLE note DROP COLUMN internal;
-ALTER TABLE note DROP COLUMN obsolete;
 ALTER TABLE note_reference DROP COLUMN references_curie;
 ALTER TABLE obiterm DROP COLUMN curie;
-ALTER TABLE ontologyterm DROP COLUMN curie;
-ALTER TABLE ontologyterm DROP COLUMN createdby_id;
-ALTER TABLE ontologyterm DROP COLUMN updatedby_id;
-ALTER TABLE ontologyterm DROP COLUMN datecreated;
-ALTER TABLE ontologyterm DROP COLUMN dateupdated;
-ALTER TABLE ontologyterm DROP COLUMN dbdatecreated;
-ALTER TABLE ontologyterm DROP COLUMN dbdateupdated;
-ALTER TABLE ontologyterm DROP COLUMN internal;
-ALTER TABLE ontologyterm DROP COLUMN obsolete;
 ALTER TABLE ontologyterm_crossreference DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_definitionurls DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_isa_ancestor_descendant DROP COLUMN isadescendants_curie;
@@ -1403,33 +918,10 @@ ALTER TABLE ontologyterm_isa_parent_children DROP COLUMN isaparents_curie;
 ALTER TABLE ontologyterm_secondaryidentifiers DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_subsets DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_synonym DROP COLUMN ontologyterm_curie;
-ALTER TABLE organization DROP COLUMN createdby_id;
-ALTER TABLE organization DROP COLUMN updatedby_id;
-ALTER TABLE organization DROP COLUMN datecreated;
-ALTER TABLE organization DROP COLUMN dateupdated;
-ALTER TABLE organization DROP COLUMN dbdatecreated;
-ALTER TABLE organization DROP COLUMN dbdateupdated;
-ALTER TABLE organization DROP COLUMN internal;
-ALTER TABLE organization DROP COLUMN obsolete;
 ALTER TABLE patoterm DROP COLUMN curie;
 ALTER TABLE phenotypeterm DROP COLUMN curie;
-ALTER TABLE person DROP COLUMN createdby_id;
-ALTER TABLE person DROP COLUMN updatedby_id;
-ALTER TABLE person DROP COLUMN datecreated;
-ALTER TABLE person DROP COLUMN dateupdated;
-ALTER TABLE person DROP COLUMN dbdatecreated;
-ALTER TABLE person DROP COLUMN dbdateupdated;
-ALTER TABLE person DROP COLUMN internal;
-ALTER TABLE person DROP COLUMN obsolete;
-ALTER TABLE personsetting DROP COLUMN createdby_id;
-ALTER TABLE personsetting DROP COLUMN updatedby_id;
-ALTER TABLE personsetting DROP COLUMN datecreated;
-ALTER TABLE personsetting DROP COLUMN dateupdated;
-ALTER TABLE personsetting DROP COLUMN dbdatecreated;
-ALTER TABLE personsetting DROP COLUMN dbdateupdated;
-ALTER TABLE personsetting DROP COLUMN internal;
-ALTER TABLE personsetting DROP COLUMN obsolete;
 ALTER TABLE pwterm DROP COLUMN curie;
+ALTER TABLE reference DROP COLUMN curie;
 ALTER TABLE reagent DROP COLUMN curie;
 ALTER TABLE reagent DROP COLUMN modentityid;
 ALTER TABLE reagent DROP COLUMN modinternalid;
@@ -1442,84 +934,19 @@ ALTER TABLE reagent DROP COLUMN dbdatecreated;
 ALTER TABLE reagent DROP COLUMN dbdateupdated;
 ALTER TABLE reagent DROP COLUMN internal;
 ALTER TABLE reagent DROP COLUMN obsolete;
-ALTER TABLE reference DROP COLUMN curie;
 ALTER TABLE reference_crossreference DROP COLUMN reference_curie;
-ALTER TABLE resourcedescriptor DROP COLUMN createdby_id;
-ALTER TABLE resourcedescriptor DROP COLUMN updatedby_id;
-ALTER TABLE resourcedescriptor DROP COLUMN datecreated;
-ALTER TABLE resourcedescriptor DROP COLUMN dateupdated;
-ALTER TABLE resourcedescriptor DROP COLUMN dbdatecreated;
-ALTER TABLE resourcedescriptor DROP COLUMN dbdateupdated;
-ALTER TABLE resourcedescriptor DROP COLUMN internal;
-ALTER TABLE resourcedescriptor DROP COLUMN obsolete;
-ALTER TABLE resourcedescriptorpage DROP COLUMN createdby_id;
-ALTER TABLE resourcedescriptorpage DROP COLUMN updatedby_id;
-ALTER TABLE resourcedescriptorpage DROP COLUMN datecreated;
-ALTER TABLE resourcedescriptorpage DROP COLUMN dateupdated;
-ALTER TABLE resourcedescriptorpage DROP COLUMN dbdatecreated;
-ALTER TABLE resourcedescriptorpage DROP COLUMN dbdateupdated;
-ALTER TABLE resourcedescriptorpage DROP COLUMN internal;
-ALTER TABLE resourcedescriptorpage DROP COLUMN obsolete;
 ALTER TABLE roterm DROP COLUMN curie;
 ALTER TABLE rsterm DROP COLUMN curie;
 ALTER TABLE singlereferenceassociation DROP COLUMN singlereference_curie;
-ALTER TABLE slotannotation DROP COLUMN createdby_id;
-ALTER TABLE slotannotation DROP COLUMN updatedby_id;
-ALTER TABLE slotannotation DROP COLUMN datecreated;
-ALTER TABLE slotannotation DROP COLUMN dateupdated;
-ALTER TABLE slotannotation DROP COLUMN dbdatecreated;
-ALTER TABLE slotannotation DROP COLUMN dbdateupdated;
-ALTER TABLE slotannotation DROP COLUMN internal;
-ALTER TABLE slotannotation DROP COLUMN obsolete;
 ALTER TABLE slotannotation_informationcontententity DROP COLUMN evidence_curie;
 ALTER TABLE soterm DROP COLUMN curie;
 ALTER TABLE species DROP COLUMN taxon_curie;
-ALTER TABLE species DROP COLUMN createdby_id;
-ALTER TABLE species DROP COLUMN updatedby_id;
-ALTER TABLE species DROP COLUMN datecreated;
-ALTER TABLE species DROP COLUMN dateupdated;
-ALTER TABLE species DROP COLUMN dbdatecreated;
-ALTER TABLE species DROP COLUMN dbdateupdated;
-ALTER TABLE species DROP COLUMN internal;
-ALTER TABLE species DROP COLUMN obsolete;
 ALTER TABLE stageterm DROP COLUMN curie;
-ALTER TABLE synonym DROP COLUMN createdby_id;
-ALTER TABLE synonym DROP COLUMN updatedby_id;
-ALTER TABLE synonym DROP COLUMN datecreated;
-ALTER TABLE synonym DROP COLUMN dateupdated;
-ALTER TABLE synonym DROP COLUMN dbdatecreated;
-ALTER TABLE synonym DROP COLUMN dbdateupdated;
-ALTER TABLE synonym DROP COLUMN internal;
-ALTER TABLE synonym DROP COLUMN obsolete;
 ALTER TABLE uberonterm DROP COLUMN curie;
 ALTER TABLE variant DROP COLUMN curie;
 ALTER TABLE variant DROP COLUMN varianttype_curie;
 ALTER TABLE variant DROP COLUMN sourcegeneralconsequence_curie;
 ALTER TABLE variant_note DROP COLUMN variant_curie;
-ALTER TABLE vocabulary DROP COLUMN createdby_id;
-ALTER TABLE vocabulary DROP COLUMN updatedby_id;
-ALTER TABLE vocabulary DROP COLUMN datecreated;
-ALTER TABLE vocabulary DROP COLUMN dateupdated;
-ALTER TABLE vocabulary DROP COLUMN dbdatecreated;
-ALTER TABLE vocabulary DROP COLUMN dbdateupdated;
-ALTER TABLE vocabulary DROP COLUMN internal;
-ALTER TABLE vocabulary DROP COLUMN obsolete;
-ALTER TABLE vocabularyterm DROP COLUMN createdby_id;
-ALTER TABLE vocabularyterm DROP COLUMN updatedby_id;
-ALTER TABLE vocabularyterm DROP COLUMN datecreated;
-ALTER TABLE vocabularyterm DROP COLUMN dateupdated;
-ALTER TABLE vocabularyterm DROP COLUMN dbdatecreated;
-ALTER TABLE vocabularyterm DROP COLUMN dbdateupdated;
-ALTER TABLE vocabularyterm DROP COLUMN internal;
-ALTER TABLE vocabularyterm DROP COLUMN obsolete;
-ALTER TABLE vocabularytermset DROP COLUMN createdby_id;
-ALTER TABLE vocabularytermset DROP COLUMN updatedby_id;
-ALTER TABLE vocabularytermset DROP COLUMN datecreated;
-ALTER TABLE vocabularytermset DROP COLUMN dateupdated;
-ALTER TABLE vocabularytermset DROP COLUMN dbdatecreated;
-ALTER TABLE vocabularytermset DROP COLUMN dbdateupdated;
-ALTER TABLE vocabularytermset DROP COLUMN internal;
-ALTER TABLE vocabularytermset DROP COLUMN obsolete;
 ALTER TABLE vtterm DROP COLUMN curie;
 ALTER TABLE wbbtterm DROP COLUMN curie;
 ALTER TABLE wblsterm DROP COLUMN curie;
@@ -1534,29 +961,29 @@ ALTER TABLE zecoterm DROP COLUMN curie;
 ALTER TABLE zfaterm DROP COLUMN curie;
 ALTER TABLE zfsterm DROP COLUMN curie;
 
-ALTER TABLE auditedobject DROP COLUMN old_id;
-ALTER TABLE auditedobject DROP COLUMN old_curie;
-ALTER TABLE auditedobject DROP COLUMN tablename;
+ALTER TABLE submittedobject DROP COLUMN old_id;
 
 SET session_replication_role = 'origin';
 
 -- Add constraints and indexes
-ALTER TABLE auditedobject ADD CONSTRAINT auditedobject_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
-ALTER TABLE auditedobject ADD CONSTRAINT auditedobject_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
-CREATE INDEX auditedobject_createdby_index ON auditedobject USING btree (createdby_id);
-CREATE INDEX auditedobject_updatedby_index ON auditedobject USING btree (updatedby_id);
 
-ALTER TABLE curieobject ADD CONSTRAINT curieobject_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-CREATE INDEX curieobject_curie_index ON curieobject USING btree (curie);
-ALTER TABLE curieobject ADD CONSTRAINT curieobject_curie_uk UNIQUE (curie);
-
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
+CREATE INDEX submittedobject_createdby_index ON submittedobject USING btree (createdby_id);
+CREATE INDEX submittedobject_updatedby_index ON submittedobject USING btree (updatedby_id);
 ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider (id);
-CREATE INDEX submittedobject_modentityid_index ON submittedobject USING btree (modentityid);
+CREATE INDEX submittedobject_curie_index ON submittedobject USING btree (curie);
 CREATE INDEX submittedobject_modinternalid_index ON submittedobject USING btree (modinternalid);
 CREATE INDEX submittedobject_dataprovider_index ON submittedobject USING btree (dataprovider_id);
 ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modentityid_uk UNIQUE (modentityid);
 ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modinternalid_uk UNIQUE (modinternalid);
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_curie_uk UNIQUE (curie);
+
+CREATE INDEX experimentalcondition_createdby_index ON experimentalcondition USING btree (createdby_id);
+CREATE INDEX experimentalcondition_updatedby_index ON experimentalcondition USING btree (updatedby_id);
+
+CREATE INDEX conditionrelation_createdby_index ON conditionrelation USING btree (createdby_id);
+CREATE INDEX conditionrelation_updatedby_index ON conditionrelation USING btree (updatedby_id);
 
 ALTER TABLE affectedgenomicmodel ADD CONSTRAINT affectedgenomicmodel_pkey PRIMARY KEY (id);
 ALTER TABLE allele ADD CONSTRAINT allele_pkey PRIMARY KEY (id);
@@ -1580,7 +1007,6 @@ ALTER TABLE gene ADD CONSTRAINT gene_pkey PRIMARY KEY (id);
 ALTER TABLE genomicentity ADD CONSTRAINT genomicentity_pkey PRIMARY KEY (id);
 ALTER TABLE goterm ADD CONSTRAINT goterm_pkey PRIMARY KEY (id);
 ALTER TABLE hpterm ADD CONSTRAINT hpterm_pkey PRIMARY KEY (id);
-ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_pkey PRIMARY KEY (id);
 ALTER TABLE materm ADD CONSTRAINT materm_pkey PRIMARY KEY (id);
 ALTER TABLE miterm ADD CONSTRAINT miterm_pkey PRIMARY KEY (id);
 ALTER TABLE mmoterm ADD CONSTRAINT mmoterm_pkey PRIMARY KEY (id);
@@ -1591,7 +1017,6 @@ ALTER TABLE mpathterm ADD CONSTRAINT mpathterm_pkey PRIMARY KEY (id);
 ALTER TABLE mpterm ADD CONSTRAINT mpterm_pkey PRIMARY KEY (id);
 ALTER TABLE ncbitaxonterm ADD CONSTRAINT ncbitaxonterm_pkey PRIMARY KEY (id);
 ALTER TABLE obiterm ADD CONSTRAINT obiterm_pkey PRIMARY KEY (id);
-ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_pkey PRIMARY KEY (id);
 ALTER TABLE ontologyterm_isa_parent_children ADD CONSTRAINT ontologyterm_isa_parent_children_pkey PRIMARY KEY (isachildren_id, isaparents_id);
 ALTER TABLE ontologyterm_isa_ancestor_descendant ADD CONSTRAINT ontologyterm_isa_ancestor_descendant_pkey PRIMARY KEY (isadescendants_id, isaancestors_id);
 ALTER TABLE patoterm ADD CONSTRAINT patoterm_pkey PRIMARY KEY (id);
@@ -1675,16 +1100,10 @@ ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_id_fk FOREIGN KEY (
 ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_taxon_id_fk FOREIGN KEY (taxon_id) REFERENCES ncbitaxonterm (id);
 CREATE INDEX biologicalentity_taxon_index ON biologicalentity USING btree (taxon_id);
 ALTER TABLE bspoterm ADD CONSTRAINT bspoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE bulkload ADD CONSTRAINT bulkload_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE bulkloadfile ADD CONSTRAINT bulkloadfile_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE bulkloadfileexception ADD CONSTRAINT bulkloadfileexception_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE bulkloadfilehistory ADD CONSTRAINT bulkloadfilehistory_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE bulkloadgroup ADD CONSTRAINT bulkloadgroup_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE chebiterm ADD CONSTRAINT chebiterm_id_fk FOREIGN KEY (id) REFERENCES chemicalterm (id);
 ALTER TABLE chemicalterm ADD CONSTRAINT chemicalterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE clterm ADD CONSTRAINT clterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
 ALTER TABLE cmoterm ADD CONSTRAINT cmoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE conditionrelation ADD CONSTRAINT conditionrelation_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE conditionrelation ADD CONSTRAINT conditionrelation_singlereference_id_fk FOREIGN KEY (singlereference_id) REFERENCES reference (id);
 ALTER TABLE construct_reference ADD CONSTRAINT construct_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX construct_reference_references_index ON construct_reference USING btree (references_id);
@@ -1692,12 +1111,7 @@ ALTER TABLE constructcomponentslotannotation ADD CONSTRAINT constructcomponentsl
 CREATE INDEX constructcomponentslotannotation_taxon_index ON constructcomponentslotannotation USING btree (taxon_id);
 ALTER TABLE constructgenomicentityassociation ADD CONSTRAINT constructgenomicentityassociation_object_id_fk FOREIGN KEY (object_id) REFERENCES genomicentity (id);
 CREATE INDEX constructgenomicentityassociation_object_index ON constructgenomicentityassociation USING btree (object_id);
-ALTER TABLE crossreference ADD CONSTRAINT crossreference_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE curationreport ADD CONSTRAINT curationreport_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE curationreportgroup ADD CONSTRAINT curationreportgroup_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE curationreporthistory ADD CONSTRAINT curationreporthistory_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE daoterm ADD CONSTRAINT daoterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
-ALTER TABLE dataprovider ADD CONSTRAINT dataprovider_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE diseaseannotation ADD CONSTRAINT diseaseannotation_object_id_fk FOREIGN KEY (object_id) REFERENCES doterm (id);
 CREATE INDEX diseaseannotation_object_index ON diseaseannotation USING btree (object_id);
 ALTER TABLE diseaseannotation_biologicalentity ADD CONSTRAINT diseaseannotation_biologicalentity_dgm_id_fk FOREIGN KEY (diseasegeneticmodifiers_id) REFERENCES biologicalentity (id);
@@ -1735,7 +1149,6 @@ ALTER TABLE genesynonymslotannotation ADD CONSTRAINT genesynonymslotannotation_s
 CREATE INDEX genesynonym_singlegene_index ON genesynonymslotannotation USING btree (singlegene_id);
 ALTER TABLE genesystematicnameslotannotation ADD CONSTRAINT genesystematicnameslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
 CREATE INDEX genesystematicname_singlegene_index ON genesystematicnameslotannotation USING btree (singlegene_id);
-ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_objectgene_id_fk FOREIGN KEY (objectgene_id) REFERENCES gene (id);
 ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_subjectgene_id_fk FOREIGN KEY (subjectgene_id) REFERENCES gene (id);
 CREATE INDEX genetogeneorthology_object_index ON genetogeneorthology USING btree (objectgene_id);
@@ -1750,7 +1163,6 @@ CREATE INDEX genomicentity_crossreference_ge_xref_index ON genomicentity_crossre
 CREATE INDEX genomicentity_crossreference_genomicentity_index ON genomicentity_crossreference USING btree (genomicentity_id);
 ALTER TABLE goterm ADD CONSTRAINT goterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE hpterm ADD CONSTRAINT hpterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
-ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
 ALTER TABLE materm ADD CONSTRAINT materm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
 ALTER TABLE miterm ADD CONSTRAINT miterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE mmoterm ADD CONSTRAINT mmoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
@@ -1760,11 +1172,9 @@ ALTER TABLE molecule ADD CONSTRAINT molecule_id_fk FOREIGN KEY (id) REFERENCES c
 ALTER TABLE mpathterm ADD CONSTRAINT mpathterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE mpterm ADD CONSTRAINT mpterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
 ALTER TABLE ncbitaxonterm ADD CONSTRAINT ncbitaxonterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE note ADD CONSTRAINT note_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE note_reference ADD CONSTRAINT note_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX note_reference_references_index ON note_reference USING btree (references_id);
 ALTER TABLE obiterm ADD CONSTRAINT obiterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
 ALTER TABLE ontologyterm_crossreference ADD CONSTRAINT ontologyterm_crossreference_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_crossreference_ontologyterm_index ON ontologyterm_crossreference USING btree (ontologyterm_id);
 ALTER TABLE ontologyterm_definitionurls ADD CONSTRAINT ontologyterm_definitionurls_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
@@ -1783,26 +1193,20 @@ ALTER TABLE ontologyterm_subsets ADD CONSTRAINT ontologyterm_subsets_ontologyter
 CREATE INDEX ontologyterm_subsets_ontologyterm_index ON ontologyterm_subsets USING btree (ontologyterm_id);
 ALTER TABLE ontologyterm_synonym ADD CONSTRAINT ontologyterm_synonym_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_synonym_ontologyterm_index ON ontologyterm_synonym USING btree (ontologyterm_id);
-ALTER TABLE organization ADD CONSTRAINT organization_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE patoterm ADD CONSTRAINT patoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE person ADD CONSTRAINT person_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE phenotypeterm ADD CONSTRAINT phenotypeterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE pwterm ADD CONSTRAINT pwterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE reagent ADD CONSTRAINT reagent_id_fk FOREIGN KEY (id) REFERENCES submittedobject (id);
 ALTER TABLE reference ADD CONSTRAINT reference_id_fk FOREIGN KEY (id) REFERENCES informationcontententity (id);
 ALTER TABLE reference_crossreference ADD CONSTRAINT reference_crossreference_reference_id_fk FOREIGN KEY (reference_id) REFERENCES reference (id);
 CREATE INDEX reference_crossreference_reference_index ON reference_crossreference USING btree (reference_id);
-ALTER TABLE resourcedescriptor ADD CONSTRAINT resourcedescriptor_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE resourcedescriptorpage ADD CONSTRAINT resourcedescriptorpage_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE roterm ADD CONSTRAINT roterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE rsterm ADD CONSTRAINT rsterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE singlereferenceassociation ADD CONSTRAINT singlereferenceassociation_singlereference_id_fk FOREIGN KEY (singlereference_id) REFERENCES reference (id);
 CREATE INDEX singlereferenceassociation_singlereference_index ON singlereferenceassociation USING btree (singlereference_id);
-ALTER TABLE slotannotation ADD CONSTRAINT slotannotation_id_fk FOREIGN KEY (id) REFERENCES auditedobject(id);
 ALTER TABLE slotannotation_informationcontententity ADD CONSTRAINT slotannotation_informationcontententity_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
 CREATE INDEX slotannotation_informationcontententity_evidence_index ON slotannotation_informationcontententity USING btree (evidence_id);
 ALTER TABLE soterm ADD CONSTRAINT soterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE species ADD CONSTRAINT species_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE species ADD CONSTRAINT species_taxon_id_fk FOREIGN KEY (taxon_id) REFERENCES ncbitaxonterm (id);
 ALTER TABLE stageterm ADD CONSTRAINT stageterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE uberonterm ADD CONSTRAINT uberonterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
@@ -1813,9 +1217,6 @@ CREATE INDEX variant_sourcegeneralconsequence_index ON variant USING btree (sour
 CREATE INDEX variant_varianttype_index ON variant USING btree (varianttype_id);
 ALTER TABLE variant_note ADD CONSTRAINT variant_note_variant_id_fk FOREIGN KEY (variant_id) REFERENCES variant (id);
 CREATE INDEX variant_note_variant_index ON variant_note USING btree (variant_id);
-ALTER TABLE vocabulary ADD CONSTRAINT vocabulary_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE vocabularyterm ADD CONSTRAINT vocabularyterm_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
-ALTER TABLE vocabularytermset ADD CONSTRAINT vocabularytermset_id_fk FOREIGN KEY (id) REFERENCES auditedobject (id);
 ALTER TABLE vtterm ADD CONSTRAINT vtterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE wbbtterm ADD CONSTRAINT wbbtterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
 ALTER TABLE wblsterm ADD CONSTRAINT wblsterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
