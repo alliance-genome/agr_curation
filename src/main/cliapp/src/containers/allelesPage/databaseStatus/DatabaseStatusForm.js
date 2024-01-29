@@ -5,8 +5,9 @@ import { useRef } from "react";
 
 export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
+  const entityType = "alleleDatabaseStatus";
 
-  const databaseStatusArray = [state.allele?.alleleDatabaseStatus];
+  const databaseStatusArray = [state.allele?.[entityType]];
 
   const createNewDatabaseStatusHandler = (e) => {
     e.preventDefault();
@@ -20,7 +21,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
     dispatch({
       type: "ADD_OBJECT", 
       value: newDatabaseStatus, 
-      entityType: "alleleDatabaseStatus", 
+      entityType: entityType, 
     })
   };
 
@@ -32,7 +33,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
     props.editorCallback(event.target.value);
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      entityType: 'alleleDatabaseStatus', 
+      entityType: entityType, 
       field: "databaseStatus", 
       value: event.target.value
     });
@@ -42,7 +43,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
     props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      entityType: 'alleleDatabaseStatus', 
+      entityType: entityType, 
       field: "internal", 
       value: event.target?.value?.name
     });
@@ -53,7 +54,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_OBJECT', 
-      entityType: 'alleleDatabaseStatus', 
+      entityType: entityType, 
       field: "evidence", 
       value: event.target.value
     });
@@ -61,8 +62,8 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
 
   const deletionHandler  = (e) => {
     e.preventDefault();
-    dispatch({type: "DELETE_OBJECT", entityType: "alleleDatabaseStatus"});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleDatabaseStatus", errorMessages: []});
+    dispatch({type: "DELETE_OBJECT", entityType: entityType});
+    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: {}});
   };
 
   return (
@@ -71,19 +72,19 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
       table={
         <DatabaseStatusFormTable
           databaseStatuses={databaseStatusArray}
-          editingRows={state.entityStates.alleleDatabaseStatus.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleDatabaseStatus.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           databaseStatusOnChangeHandler={databaseStatusOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
         />
       }
       tableName="Database Status"
-      showTable={state.entityStates.alleleDatabaseStatus.show}
-      button={<Button label="Add Database Status" onClick={createNewDatabaseStatusHandler} disabled={state.allele?.alleleDatabaseStatus} className="w-6"/>}
+      showTable={state.entityStates[entityType].show}
+      button={<Button label="Add Database Status" onClick={createNewDatabaseStatusHandler} disabled={state.allele?.[entityType]} className="w-4  p-button-text"/>}
     />
   );
 

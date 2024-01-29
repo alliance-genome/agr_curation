@@ -1,4 +1,5 @@
 import { BaseAuthService } from './BaseAuthService';
+import { saveAs } from 'file-saver';
 
 export class DataLoadService extends BaseAuthService {
 		createGroup(newGroup) {
@@ -62,6 +63,16 @@ export class DataLoadService extends BaseAuthService {
 				"bulkLoadFileHistory.id" : historyId
 			}
 			return this.api.post(`/bulkloadfileexception/find?limit=${rows}&page=${page}`, searchObject);
+		}
+
+		downloadExceptions(id, setIsLoading) {
+			setIsLoading(true);
+			this.api.get(`/bulkloadfilehistory/${id}/download`,{responseType:"blob"})
+				.then(response => {
+					const match = response.headers['content-disposition'].match(/filename="([^"]+)"/);
+					saveAs(response.data, match[1]);
+					setIsLoading(false);
+				});
 		}
 
 		deleteLoadFile(id) {

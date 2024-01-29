@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
@@ -21,6 +22,7 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
@@ -124,6 +126,9 @@ public class AlleleITCase extends BaseITCase {
 	private DataProvider dataProvider2;
 	private DataProvider obsoleteDataProvider;
 	private Organization nonPersistedOrganization;
+	private Gene gene;
+	private Gene gene2;
+	private VocabularyTerm geneAssociationRelation;
 	
 	
 	private void loadRequiredEntities() {
@@ -197,6 +202,12 @@ public class AlleleITCase extends BaseITCase {
 		obsoleteDataProvider = createDataProvider("ODP", true);
 		nonPersistedOrganization = new Organization();
 		nonPersistedOrganization.setAbbreviation("INV");
+		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
+		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", false, symbolNameType);
+		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", false, symbolNameType);
+		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
+		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
+		
 	}
 	
 	@Test
@@ -1437,9 +1448,82 @@ public class AlleleITCase extends BaseITCase {
 			body("errorMessages", is(aMapWithSize(1))).
 			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|comment|false|false)"));
 	}
-
+	
 	@Test
 	@Order(22)
+	public void updateAlleleDetailWithNewAssociations() {
+		Allele allele = getAllele(ALLELE);
+		
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setObjectGene(gene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		Reference reference = createReference("AGRKB:AssocTest1", false);
+		geneAssociation.setEvidence(List.of(reference));
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele/updateDetail").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity", hasKey("alleleGeneAssociations")).
+			body("entity.alleleGeneAssociations[0].objectGene.curie", is(gene.getCurie()));
+	}
+	
+	@Test
+	@Order(23)
+	public void updateAlleleDetailRemoveAssociations() {
+		Allele allele = getAllele(ALLELE);
+		
+		allele.setAlleleGeneAssociations(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele/updateDetail").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("alleleGeneAssociations")));
+	}
+	
+	@Test
+	@Order(24)
+	public void updateAlleleDetailWithInvalidAssociations() {
+		Allele allele = getAllele(ALLELE);
+		
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setObjectGene(gene);
+		geneAssociation.setRelation(dominantInheritanceMode);
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele/updateDetail").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
+	}
+
+	@Test
+	@Order(25)
 	public void deleteAllele() {
 
 		RestAssured.given().

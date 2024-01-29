@@ -59,6 +59,6 @@ export const CLASSES = Object.freeze({
   BSPOTerm: { name: "BSPO", link: "/#/ontology/bspo", type: 'ontology', },
 
   CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
-  BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
+  BulkLoad: { name: "Bulk Loads / Failed Loads", link: "/#/dataloads", type: 'system', },
 });
 

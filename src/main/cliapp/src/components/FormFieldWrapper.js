@@ -10,7 +10,7 @@ export const FormFieldWrapper = ({
   return (
     <div className="grid">
       <div className={labelColumnSize}>
-        <label htmlFor={fieldName?.toLowerCase()}>{fieldName}</label>
+        <h2 htmlFor={fieldName?.toLowerCase()}>{fieldName}</h2>
       </div>
       <div className={widgetColumnSize}>
         {formField}

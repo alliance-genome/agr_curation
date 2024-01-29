@@ -2,7 +2,7 @@ import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponen
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 import { TrueFalseDropdown } from "../TrueFalseDropDownSelector";
 
-export const ObsoleteEditor = ({ props, obsoleteOnChangeHandler, errorMessages, rowIndex }) => {
+export const ObsoleteEditor = ({ props, obsoleteOnChangeHandler, errorMessages, dataKey }) => {
   const booleanTerms = useControlledVocabularyService("generic_boolean_terms");
 
   return (
@@ -14,7 +14,7 @@ export const ObsoleteEditor = ({ props, obsoleteOnChangeHandler, errorMessages, 
         editorChange={obsoleteOnChangeHandler}
         showClear={false}
       />
-      <DialogErrorMessageComponent errorMessages={errorMessages[rowIndex]} errorField={"obsolete"} />
+      <DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={"obsolete"} />
     </>
   );
 };

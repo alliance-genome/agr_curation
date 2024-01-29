@@ -46,7 +46,7 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private AffectedGenomicModel sgdStrainBackground;
 
 	@Transient

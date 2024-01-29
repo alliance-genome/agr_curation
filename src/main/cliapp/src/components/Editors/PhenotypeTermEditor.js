@@ -13,7 +13,7 @@ const phenotypeTermSearch = (event, setFiltered, setInputValue) => {
 	setInputValue(event.query);
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 };
-export const PhenotypeTermEditor = ({ props, errorMessages, onChange }) => {
+export const PhenotypeTermEditor = ({ props, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
 			<AutocompleteEditor
@@ -24,7 +24,7 @@ export const PhenotypeTermEditor = ({ props, errorMessages, onChange }) => {
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent
-				errorMessages={errorMessages[props.rowIndex]}
+				errorMessages={errorMessages[dataKey]}
 				errorField={"phenotypeTerm"}
 			/>
 		</>

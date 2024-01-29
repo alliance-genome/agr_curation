@@ -49,7 +49,7 @@ public class GenomicEntity extends BiologicalEntity {
 			"constructSubject.constructFullName.displayText", "constructSubject.constructFullName.formatText", "constructSubject.modEntityId",
 			"constructSubject.curie_keyword", "constructSubject.constructSymbol.displayText_keyword", "constructSubject.constructSymbol.formatText_keyword",
 			"constructSubject.constructFullName.displayText_keyword", "constructSubject.constructFullName.formatText_keyword", "constructSubject.modEntityId_keyword",})
-	@OneToMany(mappedBy = "objectGenomicEntity", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "objectGenomicEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 

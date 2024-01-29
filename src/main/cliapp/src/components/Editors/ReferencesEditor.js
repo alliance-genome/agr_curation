@@ -15,7 +15,7 @@ const referenceSearch = (event, setFiltered, setInputValue) => {
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 }
 
-export const ReferencesEditor = ({ props, errorMessages, onChange }) => {
+export const ReferencesEditor = ({ props, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
 			<AutocompleteMultiEditor
@@ -29,7 +29,7 @@ export const ReferencesEditor = ({ props, errorMessages, onChange }) => {
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent
-				errorMessages={errorMessages[props?.rowIndex]}
+				errorMessages={errorMessages[dataKey]}
 				errorField={"references"}
 			/>
 		</>

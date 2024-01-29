@@ -83,7 +83,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
   const deletionHandler  = (e) => {
     e.preventDefault();
     dispatch({type: "DELETE_OBJECT", entityType: "alleleFullName"});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFullName", errorMessages: []});
+    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleFullName", errorMessages: {}});
   };
 
   return (
@@ -106,7 +106,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
       }
       tableName="Full Name"
       showTable={state.entityStates.alleleFullName.show}
-      button={<Button label="Add Full Name" onClick={createNewFullNameHandler} disabled={state.allele?.alleleFullName} className="w-6"/>}
+      button={<Button label="Add Full Name" onClick={createNewFullNameHandler} disabled={state.allele?.alleleFullName} className="w-4 p-button-text"/>}
     />
   );
 

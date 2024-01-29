@@ -14,7 +14,7 @@ const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 	setInputValue(event.query);
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 };
-export const MutationTypesEditor = ({ props, errorMessages, onChange }) => {
+export const MutationTypesEditor = ({ props, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
 			<AutocompleteMultiEditor
@@ -28,7 +28,7 @@ export const MutationTypesEditor = ({ props, errorMessages, onChange }) => {
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent
-				errorMessages={errorMessages[props?.rowIndex]}
+				errorMessages={errorMessages[dataKey]}
 				errorField={"mutationTypes"}
 			/>
 		</>

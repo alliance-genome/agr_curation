@@ -14,7 +14,7 @@ const evidenceSearch = (event, setFiltered, setInputValue) => {
 	setInputValue(event.query);
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 }
-export const EvidenceEditor = ({ props, errorMessages, onChange }) => {
+export const EvidenceEditor = ({ props, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
 			<AutocompleteMultiEditor
@@ -28,7 +28,7 @@ export const EvidenceEditor = ({ props, errorMessages, onChange }) => {
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent
-				errorMessages={errorMessages[props?.rowIndex]}
+				errorMessages={errorMessages[dataKey]}
 				errorField={"evidence"}
 			/>
 		</>

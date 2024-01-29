@@ -40,11 +40,13 @@ public class VariantDTOValidator extends BaseDTOValidator {
 	@Inject
 	SoTermService soTermService;
 
-	private ObjectResponse<Variant> variantResponse = new ObjectResponse<Variant>();
+	private ObjectResponse<Variant> variantResponse;
 	
 	@Transactional
 	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
+		variantResponse = new ObjectResponse<Variant>();
+		
 		Variant variant = null;
 		if (StringUtils.isBlank(dto.getCurie())) {
 			variantResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
@@ -84,7 +86,7 @@ public class VariantDTOValidator extends BaseDTOValidator {
 		SOTerm sourceGeneralConsequence = null;
 		if (!StringUtils.isBlank(dto.getSourceGeneralConsequenceCurie())) {
 			sourceGeneralConsequence = soTermService.findByCurieOrSecondaryId(dto.getSourceGeneralConsequenceCurie());
-			if (variantType == null)
+			if (sourceGeneralConsequence == null)
 				variantResponse.addErrorMessage("source_general_consequence_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSourceGeneralConsequenceCurie() + ")");
 		}
 		variant.setSourceGeneralConsequence(sourceGeneralConsequence);

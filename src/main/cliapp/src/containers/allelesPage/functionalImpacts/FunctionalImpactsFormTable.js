@@ -36,9 +36,9 @@ export const FunctionalImpactsFormTable = ({
 
 
   return (
-    <DataTable value={functionalImpacts} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+    <DataTable value={functionalImpacts} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} size='small'
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
-      <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
+      <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
       <Column
         editor={(props) => {
@@ -46,6 +46,7 @@ export const FunctionalImpactsFormTable = ({
             props={props}
             errorMessages={errorMessages}
             onChange={functionalImpactsOnChangeHandler}
+            dataKey={props?.rowData?.dataKey}
           />;
         }}
         field="functionalImpacts" header="Functional Impacts" headerClassName='surface-0' />
@@ -54,6 +55,7 @@ export const FunctionalImpactsFormTable = ({
           return <PhenotypeTermEditor
             props={props}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             onChange={phenotypeTermOnChangeHandler}
           />;
         }}
@@ -64,6 +66,7 @@ export const FunctionalImpactsFormTable = ({
             value={props.value}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             textOnChangeHandler={phenotypeStatementOnChangeHandler}
             field="phenotypeStatement"
           />;
@@ -75,6 +78,7 @@ export const FunctionalImpactsFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}
