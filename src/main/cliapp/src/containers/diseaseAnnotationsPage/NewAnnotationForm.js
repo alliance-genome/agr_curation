@@ -408,7 +408,7 @@ export const NewAnnotationForm = ({
 	<>
 		<Splitter style={{border:'none', height:'5%'}} gutterSize="0">
 			<SplitterPanel size={25} style={{textAlign: 'left'}}>
-				<h4>Add Annotation</h4>
+				<h4>Add Disease Annotation</h4>
 			</SplitterPanel>
 			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<MultiSelect
