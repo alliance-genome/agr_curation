@@ -74,7 +74,7 @@ export const NewAnnotationForm = ({
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
 	const optionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
-							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers"];
+							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
 	const [selectedFields, setSelectedFields] = useState(optionalFields);
 
 	const mutation = useMutation(newAnnotation => {
@@ -445,7 +445,7 @@ export const NewAnnotationForm = ({
 		<div>
 			<Toast ref={toast_error} position="top-left"/>
 			<Toast ref={toast_success} position="top-right"/>
-			<Dialog visible={newAnnotationDialog} header={dialogHeader} modal className="p-fluid w-9" footer={dialogFooter} onHide={hideDialog} maximizable>
+			<Dialog visible={newAnnotationDialog} header={dialogHeader} position={"top"} modal className="p-fluid w-9" footer={dialogFooter} onHide={hideDialog} maximizable>
 				<ErrorBoundary>
 				<form>
 					<div className="grid">
@@ -893,25 +893,29 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					<div className="grid">
-						<div className={labelColumnSize}>
-							<label htmlFor="internal"><font color={'red'}>*</font>Internal</label>
-						</div>
-						<div className={widgetColumnSize}>
-							<Dropdown
-								name="internal"
-								value={newAnnotation.internal}
-								options={booleanTerms}
-								optionLabel='text'
-								optionValue='name'
-								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.internal})}
-							/>
-						</div>
-						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
-						</div>
-					</div>
+					{selectedFields.includes("Internal") && (
+						<>
+							<div className="grid">
+								<div className={labelColumnSize}>
+									<label htmlFor="internal"><font color={'red'}>*</font>Internal</label>
+								</div>
+								<div className={widgetColumnSize}>
+									<Dropdown
+										name="internal"
+										value={newAnnotation.internal}
+										options={booleanTerms}
+										optionLabel='text'
+										optionValue='name'
+										onChange={onDropdownFieldChange}
+										className={classNames({'p-invalid': submitted && errorMessages.internal})}
+									/>
+								</div>
+								<div className={fieldDetailsColumnSize}>
+									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
+								</div>
+							</div>
+						</>
+					)}
 				</form>
 				</ErrorBoundary>
 			</Dialog>
