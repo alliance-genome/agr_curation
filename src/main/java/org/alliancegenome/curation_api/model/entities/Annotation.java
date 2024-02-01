@@ -79,9 +79,9 @@ public class Annotation extends SingleReferenceAssociation {
 	@EqualsAndHashCode.Include
 	private String modInternalId;
 
-	@IndexedEmbedded(includePaths = {"handle", "conditionRelationType.name", "singleReference.curie",
+	@IndexedEmbedded(includePaths = {"handle", "uniqueId", "conditionRelationType.name", "singleReference.curie",
 			"singleReference.crossReferences.referencedCurie", "conditions.conditionSummary", "conditions.uniqueId",
-			"handle_keyword", "conditionRelationType.name_keyword", "singleReference.curie_keyword",
+			"handle_keyword", "uniqueId_keyword", "conditionRelationType.name_keyword", "singleReference.curie_keyword",
 			"singleReference.crossReferences.referencedCurie_keyword", "conditions.conditionSummary_keyword", "conditions.uniqueId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany

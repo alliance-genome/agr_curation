@@ -109,6 +109,9 @@ export function getEntityType(entity) {
 }
 
 export function getIdentifier(data) {
+	if (!data) {
+		return null;
+	}
 	if (data.modEntityId) {
 		return data.modEntityId;
 	}
@@ -325,8 +328,7 @@ export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFiel
 	}
 	let nonDuplicateRows = [];
 	if (event.target.value.length > 0) {
-		const identifier = event.target.value[0].curie ? "curie" : "id";
-		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, identifier);
+		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, "id");
 	}
 	updatedRows[index][fieldName] = nonDuplicateRows;
 	setFieldValue(updatedRows[index][fieldName]);
@@ -372,7 +374,7 @@ export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, 
 	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
-		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie")){
+		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie") && !Object.keys(newAnnotationForm['subject']).includes("modEntityId") && !Object.keys(newAnnotationForm['subject']).includes("modInternalId")){
 			const _uiErrorMessages = {};
 			_uiErrorMessages[field] = "Must select from autosuggest";
 			setUiErrorMessages({..._uiErrorMessages});

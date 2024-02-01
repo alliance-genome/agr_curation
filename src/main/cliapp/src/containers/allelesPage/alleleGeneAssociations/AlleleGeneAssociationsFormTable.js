@@ -28,7 +28,7 @@ export const AlleleGeneAssociationsFormTable = ({
   const [first, setFirst] = useState(0);
   const [filters, setFilters] = useState({
     "relation.name": { value: null, matchMode: "in" },
-    "objectGene.curie": { value: null, matchMode: "contains" },
+    "object.modEntityId": { value: null, matchMode: "contains" },
     "relatedNote.freeText": { value: null, matchMode: "contains" },
     "evidenceCode.curie": { value: null, matchMode: "contains" },
     "evidenceCurieSearchFilter": { value: null, matchMode: "contains" },
@@ -96,7 +96,7 @@ export const AlleleGeneAssociationsFormTable = ({
               dataKey={props?.rowData?.dataKey}
             />;
           }}
-          field="object"
+          field="object.modEntityId"
           header="Gene"
           headerClassName='surface-0'
           filter

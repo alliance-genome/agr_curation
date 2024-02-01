@@ -491,11 +491,10 @@ ALTER TABLE zfsterm DROP CONSTRAINT zfsterm_pkey;
 
 -- Create tables
 
-CREATE TABLE submittedobject (
+CREATE TABLE curieobject (
 	id bigint PRIMARY KEY,
 	old_id bigint,
 	curie varchar(255),
-	tablename varchar(255),
 	modentityid varchar(255),
 	modinternalid varchar(255),
 	dataprovider_id bigint,
@@ -507,11 +506,17 @@ CREATE TABLE submittedobject (
 	dbdateupdated timestamp without time zone,
 	internal boolean NOT NULL DEFAULT false,
 	obsolete boolean NOT NULL DEFAULT false,
-	submittedobjecttype varchar(64)
+	curieobjecttype varchar(64)
+	);
+
+CREATE TABLE submittedobject (
+	id bigint PRIMARY KEY,
+	modentityid varchar(255),
+	modinternalid varchar(255),
+	dataprovider_id bigint
 	);
 	                                         
-CREATE SEQUENCE submittedobject_seq START WITH 200250000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE SEQUENCE ontologyterm_seq START WITH 200250000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE curieobject_seq START WITH 200250000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE SEQUENCE informationcontententity_seq START WITH 20025000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
 -- Add id equivalents of curie columns 
@@ -649,56 +654,68 @@ ALTER TABLE zfsterm ADD COLUMN id bigint;
 
 -- Move data around
 
-INSERT INTO submittedobject (id, modentityid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT nextval('submittedobject_seq'), curie, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+INSERT INTO curieobject (id, modentityid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT nextval('curieobject_seq'), curie, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
 	FROM biologicalentity;
 	
-INSERT INTO submittedobject (id, old_id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT nextval('submittedobject_seq'), id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+INSERT INTO curieobject (id, old_id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT nextval('curieobject_seq'), id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
 	FROM reagent;	
+	
+INSERT INTO submittedobject(id, modentityid, modinternalid, dataprovider_id)
+	SELECT id, modentityid, modinternalid, dataprovider_id
+	FROM curieobject;
 
-UPDATE ontologyterm SET id = nextval('ontologyterm_seq');
+UPDATE ontologyterm SET id = nextval('curieobject_seq');
 ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_pkey PRIMARY KEY (id);
 
-UPDATE informationcontententity SET id = nextval('informationcontententity_seq');
-ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_pkey PRIMARY KEY (id);
-	
-CREATE INDEX old_id_index ON submittedobject USING btree (old_id, tablename);
-CREATE INDEX submittedobject_modentityid_index ON submittedobject USING btree (modentityid);
+INSERT INTO curieobject (id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM ontologyterm;
 
-UPDATE affectedgenomicmodel t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
-UPDATE agmdiseaseannotation t SET inferredallele_id = s.id FROM submittedobject s WHERE t.inferredallele_curie = s.modentityid;
-UPDATE agmdiseaseannotation t SET assertedallele_id = s.id FROM submittedobject s WHERE t.assertedallele_curie = s.modentityid;
-UPDATE agmdiseaseannotation t SET inferredgene_id = s.id FROM submittedobject s WHERE t.inferredgene_curie = s.modentityid;
-UPDATE agmdiseaseannotation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
-UPDATE agmdiseaseannotation_gene t SET assertedgenes_id = s.id FROM submittedobject s WHERE t.assertedgenes_curie = s.modentityid;
-UPDATE allele t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
-UPDATE allele_note t SET allele_id = s.id FROM submittedobject s WHERE t.allele_curie = s.modentityid;
-UPDATE allele_reference t SET allele_id = s.id FROM submittedobject s WHERE t.allele_curie = s.modentityid;
+UPDATE informationcontententity SET id = nextval('curieobject_seq');
+ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_pkey PRIMARY KEY (id);
+
+INSERT INTO curieobject (id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
+	SELECT id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
+	FROM informationcontententity;
+	
+CREATE INDEX old_id_index ON curieobject USING btree (old_id);
+CREATE INDEX curieobject_modentityid_index ON curieobject USING btree (modentityid);
+
+UPDATE affectedgenomicmodel t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
+UPDATE agmdiseaseannotation t SET inferredallele_id = c.id FROM curieobject c WHERE t.inferredallele_curie = c.modentityid;
+UPDATE agmdiseaseannotation t SET assertedallele_id = c.id FROM curieobject c WHERE t.assertedallele_curie = c.modentityid;
+UPDATE agmdiseaseannotation t SET inferredgene_id = c.id FROM curieobject c WHERE t.inferredgene_curie = c.modentityid;
+UPDATE agmdiseaseannotation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
+UPDATE agmdiseaseannotation_gene t SET assertedgenes_id = c.id FROM curieobject c WHERE t.assertedgenes_curie = c.modentityid;
+UPDATE allele t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
+UPDATE allele_note t SET allele_id = c.id FROM curieobject c WHERE t.allele_curie = c.modentityid;
+UPDATE allele_reference t SET allele_id = c.id FROM curieobject c WHERE t.allele_curie = c.modentityid;
 UPDATE allele_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
-UPDATE alleledatabasestatusslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
-UPDATE allelediseaseannotation t SET inferredgene_id = s.id FROM submittedobject s WHERE t.inferredgene_curie = s.modentityid;
-UPDATE allelediseaseannotation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
-UPDATE allelediseaseannotation_gene t SET assertedgenes_id = s.id FROM submittedobject s WHERE t.assertedgenes_curie = s.modentityid;
-UPDATE allelefullnameslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
-UPDATE allelefunctionalimpactslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE alleledatabasestatusslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelediseaseannotation t SET inferredgene_id = c.id FROM curieobject c WHERE t.inferredgene_curie = c.modentityid;
+UPDATE allelediseaseannotation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
+UPDATE allelediseaseannotation_gene t SET assertedgenes_id = c.id FROM curieobject c WHERE t.assertedgenes_curie = c.modentityid;
+UPDATE allelefullnameslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelefunctionalimpactslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
 UPDATE allelefunctionalimpactslotannotation t SET phenotypeterm_id = o.id FROM ontologyterm o WHERE t.phenotypeterm_curie = o.curie;
-UPDATE allelegeneassociation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
-UPDATE allelegeneassociation t SET object_id = s.id FROM submittedobject s WHERE t.object_curie = s.modentityid;
+UPDATE allelegeneassociation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
+UPDATE allelegeneassociation t SET object_id = c.id FROM curieobject c WHERE t.object_curie = c.modentityid;
 UPDATE allelegenomicentityassociation t SET evidencecode_id = o.id FROM ontologyterm o WHERE t.evidencecode_curie = o.curie;
-UPDATE allelegermlinetransmissionstatusslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
-UPDATE alleleinheritancemodeslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelegermlinetransmissionstatusslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE alleleinheritancemodeslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
 UPDATE alleleinheritancemodeslotannotation t SET phenotypeterm_id = o.id FROM ontologyterm o WHERE t.phenotypeterm_curie = o.curie;
-UPDATE allelemutationtypeslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelemutationtypeslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
 UPDATE allelemutationtypeslotannotation_soterm t SET mutationtypes_id = o.id FROM ontologyterm o WHERE t.mutationtypes_curie = o.curie;
-UPDATE allelenomenclatureeventslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
-UPDATE allelesecondaryidslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
-UPDATE allelesymbolslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
-UPDATE allelesynonymslotannotation t SET singleallele_id = s.id FROM submittedobject s WHERE t.singleallele_curie = s.modentityid;
+UPDATE allelenomenclatureeventslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelesecondaryidslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelesymbolslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelesynonymslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
 UPDATE anatomicalterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE apoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE atpterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE biologicalentity t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE biologicalentity t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
 UPDATE biologicalentity t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
 UPDATE bspoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE chebiterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -706,20 +723,20 @@ UPDATE chemicalterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE clterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE cmoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE conditionrelation t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
-UPDATE construct t SET id = s.id FROM submittedobject s WHERE t.id = s.old_id;
-UPDATE construct_reference t SET construct_id = s.id FROM submittedobject s WHERE t.construct_id = s.old_id;
+UPDATE construct t SET id = c.id FROM curieobject c WHERE t.id = c.old_id;
+UPDATE construct_reference t SET construct_id = c.id FROM curieobject c WHERE t.construct_id = c.old_id;
 UPDATE construct_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
 UPDATE constructcomponentslotannotation t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
-UPDATE constructfullnameslotannotation t SET singleconstruct_id = s.id FROM submittedobject s WHERE t.singleconstruct_id = s.old_id;
-UPDATE constructgenomicentityassociation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_id = s.old_id;
-UPDATE constructgenomicentityassociation t SET object_id = s.id FROM submittedobject s WHERE t.object_curie = s.modentityid;
-UPDATE constructsymbolslotannotation t SET singleconstruct_id = s.id FROM submittedobject s WHERE t.singleconstruct_id = s.old_id;
-UPDATE constructsynonymslotannotation t SET singleconstruct_id = s.id FROM submittedobject s WHERE t.singleconstruct_id = s.old_id;
+UPDATE constructfullnameslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
+UPDATE constructgenomicentityassociation t SET subject_id = c.id FROM curieobject c WHERE t.subject_id = c.old_id;
+UPDATE constructgenomicentityassociation t SET object_id = c.id FROM curieobject c WHERE t.object_curie = c.modentityid;
+UPDATE constructsymbolslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
+UPDATE constructsynonymslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
 UPDATE daoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE diseaseannotation t SET object_id = o.id FROM ontologyterm o WHERE t.object_curie = o.curie;
-UPDATE diseaseannotation_biologicalentity t SET diseasegeneticmodifiers_id = o.id FROM ontologyterm o WHERE t.diseasegeneticmodifiers_curie = o.curie;
-UPDATE diseaseannotation_ecoterm t SET evidencecodes_id = s.id FROM submittedobject s WHERE t.evidencecodes_curie = s.modentityid;
-UPDATE diseaseannotation_gene t SET with_id = s.id FROM submittedobject s WHERE t.with_curie = s.modentityid;
+UPDATE diseaseannotation_biologicalentity t SET diseasegeneticmodifiers_id = c.id FROM curieobject c WHERE t.diseasegeneticmodifiers_curie = c.modentityid;
+UPDATE diseaseannotation_ecoterm t SET evidencecodes_id = o.id FROM ontologyterm o WHERE t.evidencecodes_curie = o.curie;
+UPDATE diseaseannotation_gene t SET with_id = c.id FROM curieobject c WHERE t.with_curie = c.modentityid;
 UPDATE doterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE dpoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE ecoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -733,21 +750,21 @@ UPDATE experimentalcondition t SET conditionid_id = o.id FROM ontologyterm o WHE
 UPDATE experimentalcondition t SET conditiontaxon_id = o.id FROM ontologyterm o WHERE t.conditiontaxon_curie = o.curie;
 UPDATE experimentalconditionontologyterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE fbdvterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE gene t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE gene t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
 UPDATE gene t SET genetype_id = o.id FROM ontologyterm o WHERE t.genetype_curie = o.curie;
-UPDATE genediseaseannotation t SET sgdstrainbackground_id = s.id FROM submittedobject s WHERE t.sgdstrainbackground_curie = s.modentityid;
-UPDATE genediseaseannotation t SET subject_id = s.id FROM submittedobject s WHERE t.subject_curie = s.modentityid;
-UPDATE genefullnameslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
-UPDATE genesecondaryidslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
-UPDATE genesymbolslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
-UPDATE genesynonymslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
-UPDATE genesystematicnameslotannotation t SET singlegene_id = s.id FROM submittedobject s WHERE t.singlegene_curie = s.modentityid;
-UPDATE genetogeneorthology t SET subjectgene_id = s.id FROM submittedobject s WHERE t.subjectgene_curie = s.modentityid;
-UPDATE genetogeneorthology t SET objectgene_id = s.id FROM submittedobject s WHERE t.objectgene_curie = s.modentityid;
+UPDATE genediseaseannotation t SET sgdstrainbackground_id = c.id FROM curieobject c WHERE t.sgdstrainbackground_curie = c.modentityid;
+UPDATE genediseaseannotation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
+UPDATE genefullnameslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
+UPDATE genesecondaryidslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
+UPDATE genesymbolslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
+UPDATE genesynonymslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
+UPDATE genesystematicnameslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
+UPDATE genetogeneorthology t SET subjectgene_id = c.id FROM curieobject c WHERE t.subjectgene_curie = c.modentityid;
+UPDATE genetogeneorthology t SET objectgene_id = c.id FROM curieobject c WHERE t.objectgene_curie = c.modentityid;
 UPDATE genetogeneorthologycurated t SET evidencecode_id = o.id FROM ontologyterm o WHERE t.evidencecode_curie = o.curie;
 UPDATE genetogeneorthologycurated t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
-UPDATE genomicentity t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
-UPDATE genomicentity_crossreference t SET genomicentity_id = s.id FROM submittedobject s WHERE t.genomicentity_curie = s.modentityid;
+UPDATE genomicentity t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
+UPDATE genomicentity_crossreference t SET genomicentity_id = c.id FROM curieobject c WHERE t.genomicentity_curie = c.modentityid;
 UPDATE goterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE hpterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE materm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -773,8 +790,8 @@ UPDATE ontologyterm_synonym t SET ontologyterm_id = o.id FROM ontologyterm o WHE
 UPDATE patoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE phenotypeterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE pwterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE reagent t SET id = s.id FROM submittedobject s WHERE t.id = s.old_id;
-UPDATE reagent_secondaryidentifiers t SET reagent_id = s.id FROM submittedobject s WHERE t.reagent_id = s.old_id;
+UPDATE reagent t SET id = c.id FROM curieobject c WHERE t.id = c.old_id;
+UPDATE reagent_secondaryidentifiers t SET reagent_id = c.id FROM curieobject c WHERE t.reagent_id = c.old_id;
 UPDATE reference t SET id = i.id FROM informationcontententity i WHERE t.curie = i.curie;
 UPDATE reference_crossreference t SET reference_id = i.id FROM informationcontententity i WHERE t.reference_curie = i.curie;
 UPDATE roterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -782,14 +799,14 @@ UPDATE rsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE soterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE singlereferenceassociation t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
 UPDATE slotannotation_informationcontententity t SET evidence_id = i.id FROM informationcontententity i WHERE t.evidence_curie = i.curie;
-UPDATE species t SET id = s.id FROM submittedobject s WHERE t.id = s.old_id;
+UPDATE species t SET id = c.id FROM curieobject c WHERE t.id = c.old_id;
 UPDATE species t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
 UPDATE stageterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE uberonterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE variant t SET id = s.id FROM submittedobject s WHERE t.curie = s.modentityid;
+UPDATE variant t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
 UPDATE variant t SET varianttype_id = o.id FROM ontologyterm o WHERE t.varianttype_curie = o.curie;
 UPDATE variant t SET sourcegeneralconsequence_id = o.id FROM ontologyterm o WHERE t.sourcegeneralconsequence_curie = o.curie;
-UPDATE variant_note t SET variant_id = s.id FROM submittedobject s WHERE t.variant_curie = s.modentityid;
+UPDATE variant_note t SET variant_id = c.id FROM curieobject c WHERE t.variant_curie = c.modentityid;
 UPDATE vtterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE wbbtterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE wblsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -804,12 +821,58 @@ UPDATE zecoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE zfaterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE zfsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 
--- Update Entity Types in the auditedobject table ... this needs to be done for all "leaf" nodes of the SubmittedObject class tree
-UPDATE submittedobject s SET submittedobjecttype = 'AffectedGenomicModel' FROM affectedgenomicmodel t WHERE s.id = t.id;
-UPDATE submittedobject s SET submittedobjecttype = 'Allele' FROM allele t WHERE s.id = t.id;
-UPDATE submittedobject s SET submittedobjecttype = 'Construct' FROM construct t WHERE s.id = t.id;
-UPDATE submittedobject s SET submittedobjecttype = 'Gene' FROM gene t WHERE s.id = t.id;
-UPDATE submittedobject s SET submittedobjecttype = 'Variant' FROM variant t WHERE s.id = t.id;
+-- Update Entity Types in the auditedobject table ... this needs to be done for all "leaf" nodes of the CurieObject class tree
+UPDATE curieobject c SET curieobjecttype = 'APOTerm' FROM APOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'ATPTerm' FROM ATPTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'AffectedGenomicModel' FROM AffectedGenomicModel t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Allele' FROM Allele t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'BSPOTerm' FROM BSPOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'CHEBITerm' FROM CHEBITerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'CLTerm' FROM CLTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'CMOTerm' FROM CMOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Construct' FROM Construct t WHERE c.id = t.id;;
+UPDATE curieobject c SET curieobjecttype = 'DAOTerm' FROM DAOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'DOTerm' FROM DOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'DPOTerm' FROM DPOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'ECOTerm' FROM ECOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'EMAPATerm' FROM EMAPATerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'FBDVTerm' FROM FBDVTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'GOTerm' FROM GOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Gene' FROM Gene t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'HPTerm' FROM HPTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'MATerm' FROM MATerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'MITerm' FROM MITerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'MMOTerm' FROM MMOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'MMUSDVTerm' FROM MMUSDVTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'MODTerm' FROM MODTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'MPATHTerm' FROM MPATHTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'MPTerm' FROM MPTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Molecule' FROM Molecule t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'NCBITaxonTerm' FROM NCBITaxonTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'OBITerm' FROM OBITerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'PATOTerm' FROM PATOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'PWTerm' FROM PWTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'ROTerm' FROM ROTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'RSTerm' FROM RSTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Reference' FROM Reference t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'SOTerm' FROM SOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Species' FROM Species t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Synonym' FROM Synonym t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'UBERONTerm' FROM UBERONTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'VTTerm' FROM VTTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'Variant' FROM Variant t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'WBBTTerm' FROM WBBTTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'WBLSTerm' FROM WBLSTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'WBPhenotypeTerm' FROM WBPhenotypeTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'XBATerm' FROM XBATerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'XBEDTerm' FROM XBEDTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'XBSTerm' FROM XBSTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'XCOTerm' FROM XCOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'XPOTerm' FROM XPOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'XSMOTerm' FROM XSMOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'ZECOTerm' FROM ZECOTerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'ZFATerm' FROM ZFATerm t WHERE c.id = t.id;
+UPDATE curieobject c SET curieobjecttype = 'ZFSTerm' FROM ZFSTerm t WHERE c.id = t.id;
 
 ALTER TABLE affectedgenomicmodel DROP COLUMN curie;
 ALTER TABLE agmdiseaseannotation DROP COLUMN inferredallele_curie;
@@ -898,6 +961,15 @@ ALTER TABLE genomicentity DROP COLUMN curie;
 ALTER TABLE genomicentity_crossreference DROP COLUMN genomicentity_curie;
 ALTER TABLE goterm DROP COLUMN curie;
 ALTER TABLE hpterm DROP COLUMN curie;
+ALTER TABLE informationcontententity DROP COLUMN curie;
+ALTER TABLE informationcontententity DROP COLUMN createdby_id;
+ALTER TABLE informationcontententity DROP COLUMN updatedby_id;
+ALTER TABLE informationcontententity DROP COLUMN datecreated;
+ALTER TABLE informationcontententity DROP COLUMN dateupdated;
+ALTER TABLE informationcontententity DROP COLUMN dbdatecreated;
+ALTER TABLE informationcontententity DROP COLUMN dbdateupdated;
+ALTER TABLE informationcontententity DROP COLUMN internal;
+ALTER TABLE informationcontententity DROP COLUMN obsolete;
 ALTER TABLE materm DROP COLUMN curie;
 ALTER TABLE miterm DROP COLUMN curie;
 ALTER TABLE mmoterm DROP COLUMN curie;
@@ -909,6 +981,15 @@ ALTER TABLE mpterm DROP COLUMN curie;
 ALTER TABLE ncbitaxonterm DROP COLUMN curie;
 ALTER TABLE note_reference DROP COLUMN references_curie;
 ALTER TABLE obiterm DROP COLUMN curie;
+ALTER TABLE ontologyterm DROP COLUMN curie;
+ALTER TABLE ontologyterm DROP COLUMN createdby_id;
+ALTER TABLE ontologyterm DROP COLUMN updatedby_id;
+ALTER TABLE ontologyterm DROP COLUMN datecreated;
+ALTER TABLE ontologyterm DROP COLUMN dateupdated;
+ALTER TABLE ontologyterm DROP COLUMN dbdatecreated;
+ALTER TABLE ontologyterm DROP COLUMN dbdateupdated;
+ALTER TABLE ontologyterm DROP COLUMN internal;
+ALTER TABLE ontologyterm DROP COLUMN obsolete;
 ALTER TABLE ontologyterm_crossreference DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_definitionurls DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_isa_ancestor_descendant DROP COLUMN isadescendants_curie;
@@ -961,23 +1042,30 @@ ALTER TABLE zecoterm DROP COLUMN curie;
 ALTER TABLE zfaterm DROP COLUMN curie;
 ALTER TABLE zfsterm DROP COLUMN curie;
 
-ALTER TABLE submittedobject DROP COLUMN old_id;
+ALTER TABLE curieobject DROP COLUMN old_id;
+ALTER TABLE curieobject DROP COLUMN modentityid;
+ALTER TABLE curieobject DROP COLUMN modinternalid;
+ALTER TABLE curieobject DROP COLUMN dataprovider_id;
 
 SET session_replication_role = 'origin';
 
 -- Add constraints and indexes
 
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
-CREATE INDEX submittedobject_createdby_index ON submittedobject USING btree (createdby_id);
-CREATE INDEX submittedobject_updatedby_index ON submittedobject USING btree (updatedby_id);
+ALTER TABLE curieobject ADD CONSTRAINT curieobject_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
+ALTER TABLE curieobject ADD CONSTRAINT curieobject_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
+CREATE INDEX curieobject_createdby_index ON curieobject USING btree (createdby_id);
+CREATE INDEX curieobject_updatedby_index ON curieobject USING btree (updatedby_id);
+CREATE INDEX curieobject_curie_index ON curieobject USING btree (curie);
+CREATE INDEX curieobject_curieobjecttype_index ON curieobject USING btree (curieobjecttype);
+ALTER TABLE curieobject ADD CONSTRAINT curieobject_curie_uk UNIQUE (curie);
+
+ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
 ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider (id);
-CREATE INDEX submittedobject_curie_index ON submittedobject USING btree (curie);
+CREATE INDEX submittedobject_modentityid_index ON submittedobject USING btree (modentityid);
 CREATE INDEX submittedobject_modinternalid_index ON submittedobject USING btree (modinternalid);
 CREATE INDEX submittedobject_dataprovider_index ON submittedobject USING btree (dataprovider_id);
 ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modentityid_uk UNIQUE (modentityid);
 ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modinternalid_uk UNIQUE (modinternalid);
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_curie_uk UNIQUE (curie);
 
 CREATE INDEX experimentalcondition_createdby_index ON experimentalcondition USING btree (createdby_id);
 CREATE INDEX experimentalcondition_updatedby_index ON experimentalcondition USING btree (updatedby_id);
@@ -1163,6 +1251,7 @@ CREATE INDEX genomicentity_crossreference_ge_xref_index ON genomicentity_crossre
 CREATE INDEX genomicentity_crossreference_genomicentity_index ON genomicentity_crossreference USING btree (genomicentity_id);
 ALTER TABLE goterm ADD CONSTRAINT goterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE hpterm ADD CONSTRAINT hpterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
+ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
 ALTER TABLE materm ADD CONSTRAINT materm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
 ALTER TABLE miterm ADD CONSTRAINT miterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE mmoterm ADD CONSTRAINT mmoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
@@ -1175,6 +1264,7 @@ ALTER TABLE ncbitaxonterm ADD CONSTRAINT ncbitaxonterm_id_fk FOREIGN KEY (id) RE
 ALTER TABLE note_reference ADD CONSTRAINT note_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX note_reference_references_index ON note_reference USING btree (references_id);
 ALTER TABLE obiterm ADD CONSTRAINT obiterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
+ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
 ALTER TABLE ontologyterm_crossreference ADD CONSTRAINT ontologyterm_crossreference_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_crossreference_ontologyterm_index ON ontologyterm_crossreference USING btree (ontologyterm_id);
 ALTER TABLE ontologyterm_definitionurls ADD CONSTRAINT ontologyterm_definitionurls_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);

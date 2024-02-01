@@ -20,11 +20,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -33,26 +30,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "submittedObjectType")
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { CurieObject.class })
 @Table(indexes = {
-		@Index(name = "submittedobject_curie_index", columnList = "curie"),
 		@Index(name = "submittedobject_modentityid_index", columnList = "modentityid"),
 		@Index(name = "submittedobject_modinternalid_index", columnList = "modinternalid"),
 		@Index(name = "submittedobject_dataprovider_index", columnList = "dataprovider_id"),
-		@Index(name = "submittedobject_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "submittedobject_updatedby_index", columnList = "updatedBy_id"),
-		@Index(name = "submittedobject_submittedObjectType_index", columnList = "submittedObjectType")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "submittedobject_modentityid_uk", columnNames = "modentityid"),
-		@UniqueConstraint(name = "submittedobject_modinternalid_uk", columnNames = "modinternalid"),
-		@UniqueConstraint(name = "submittedobject_curie_uk", columnNames = "curie")
+		@UniqueConstraint(name = "submittedobject_modinternalid_uk", columnNames = "modinternalid")
 	}
 )
 @Schema(name = "SubmittedObject", description = "POJO that represents the SubmittedObject")
@@ -60,7 +50,7 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private String modEntityId;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

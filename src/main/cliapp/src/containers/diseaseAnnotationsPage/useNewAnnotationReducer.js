@@ -3,7 +3,7 @@ import 'core-js/features/structured-clone';
 
 const DEFAULT_ANNOTATION = {
 	subject: {
-		curie: "",
+		modEntityId: "",
 	},
 	assertedGenes : [],
 	assertedAllele : null,

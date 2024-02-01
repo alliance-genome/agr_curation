@@ -700,7 +700,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onSubjectValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "subject", setFieldValue);
+		defaultAutocompleteOnChange(props, event, "subject", setFieldValue, "modEntityId");
 	};
 
 	const subjectSearch = (event, setFiltered, setQuery, props) => {
@@ -716,10 +716,11 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-					initialValue={getIdentifier(props.rowData)}
+					initialValue={getIdentifier(props.rowData.subject)}
 					search={subjectSearch}
 					rowProps={props}
 					searchService={searchService}
+					subField='modEntityId'
 					fieldName='subject'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
@@ -756,7 +757,7 @@ export const DiseaseAnnotationsTable = () => {
 		return subjectFields;
 	};
 	const onSgdStrainBackgroundValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "sgdStrainBackground", setFieldValue);
+		defaultAutocompleteOnChange(props, event, "sgdStrainBackground", setFieldValue, "modEntityId");
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
@@ -784,6 +785,7 @@ export const DiseaseAnnotationsTable = () => {
 					search={sgdStrainBackgroundSearch}
 					searchService={searchService}
 					fieldName='sgdStrainBackground'
+					subField='modEntityId'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 					onValueChangeHandler={onSgdStrainBackgroundValueChange}
@@ -821,6 +823,7 @@ export const DiseaseAnnotationsTable = () => {
 					initialValue={props.rowData.diseaseGeneticModifiers}
 					rowProps={props}
 					fieldName='diseaseGeneticModifiers'
+					subField='modEntityId'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 					onValueChangeHandler={onGeneticModifiersValueChange}
@@ -838,7 +841,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onAssertedAlleleValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "assertedAllele", setFieldValue);
+		defaultAutocompleteOnChange(props, event, "assertedAllele", setFieldValue, "modEntityId");
 	};
 
 	const assertedAlleleSearch = (event, setFiltered, setQuery) => {
@@ -859,6 +862,7 @@ export const DiseaseAnnotationsTable = () => {
 						initialValue={getIdentifier(props.rowData.assertedAllele)}
 						rowProps={props}
 						fieldName='assertedAllele'
+						subField='modEntityId'
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 						onValueChangeHandler={onAssertedAlleleValueChange}
@@ -941,6 +945,7 @@ export const DiseaseAnnotationsTable = () => {
 						initialValue={props.rowData.assertedGenes}
 						rowProps={props}
 						fieldName='assertedGenes'
+						subField='modEntityId'
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 						onValueChangeHandler={onAssertedGeneValueChange}
@@ -982,6 +987,7 @@ export const DiseaseAnnotationsTable = () => {
 					initialValue={props.rowData.with}
 					rowProps={props}
 					fieldName='with'
+					subField='modEntityId'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 					onValueChangeHandler={onWithValueChange}

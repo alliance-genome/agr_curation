@@ -457,6 +457,7 @@ export const NewAnnotationForm = ({
 								initialValue={newAnnotation.subject}
 								search={subjectSearch}
 								fieldName='subject'
+								subField="modEntityId"
 								name="subject"
 								searchService={searchService}
 								onValueChangeHandler={onSubjectChange}
@@ -483,6 +484,7 @@ export const NewAnnotationForm = ({
 										customRef={assertedGenesRef}
 										search={assertedGenesSearch}
 										name="assertedGenes"
+										subField="modEntityId"
 										label="Asserted Genes"
 										fieldName='assertedGenes'
 										disabled = {!isAssertedGeneEnabled}
@@ -514,6 +516,7 @@ export const NewAnnotationForm = ({
 										name="assertedAllele"
 										label="Asserted Allele"
 										fieldName='assertedAllele'
+										subField="modEntityId"
 										disabled = {!isAssertedAlleleEnabled}
 										initialValue={newAnnotation.assertedAllele}
 										onValueChangeHandler={onSingleReferenceChange}
@@ -655,6 +658,7 @@ export const NewAnnotationForm = ({
 										name="with"
 										label="With"
 										fieldName='with'
+										subField="modEntityId"
 										initialValue={newAnnotation.with}
 										onValueChangeHandler={onArrayFieldChange}
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
@@ -797,6 +801,7 @@ export const NewAnnotationForm = ({
 										fieldName='sgdStrainBackground'
 										name="sgdStrainBackground"
 										label="SGD Strain Background"
+										subField="modEntityId"
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 											<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 										onValueChangeHandler={onSingleReferenceChange}
@@ -873,6 +878,7 @@ export const NewAnnotationForm = ({
 										initialValue={newAnnotation.diseaseGeneticModifiers}
 										fieldName='diseaseGeneticModifiers'
 										name="diseaseGeneticModifiers"
+										subField="modEntityId"
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 											<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 										onValueChangeHandler={onArrayFieldChange}

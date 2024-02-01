@@ -16,11 +16,11 @@ export class AlleleService extends BaseAuthService {
 
 	async deleteAllele(allele) { 
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`allele`, allele.curie);
+		return await deletionService.delete(`allele`, allele.id);
 	}
 
-	async getAllele(curie) { 
-		return this.api.get(`/allele/${curie}`);
+	async getAllele(identifier) { 
+		return this.api.get(`/allele/${identifier}`);
 	}
 }
 

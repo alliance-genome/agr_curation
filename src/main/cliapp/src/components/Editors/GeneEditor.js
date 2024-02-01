@@ -8,7 +8,7 @@ import { getIdentifier } from "../../utils/utils";
 const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = [
-		"curie", "crossReferences.referencedCurie", "geneFullName.formatText", "geneFullName.displayText",
+		"curie", "modEntityId", "crossReferences.referencedCurie", "geneFullName.formatText", "geneFullName.displayText",
 		"geneSymbol.formatText", "geneSymbol.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText",
 		"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId"
 	];
@@ -27,7 +27,8 @@ export const GeneEditor = ({ props, errorMessages, onChange, dataKey }) => {
 				search={geneSearch}
 				initialValue={getIdentifier(props?.rowData?.object)}
 				rowProps={props}
-				fieldName='object'
+				fieldName="object"
+				subField="modEntityId"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 				<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
 					onValueChangeHandler={onChange}
