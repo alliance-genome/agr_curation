@@ -516,8 +516,8 @@ CREATE TABLE submittedobject (
 	dataprovider_id bigint
 	);
 	                                         
-CREATE SEQUENCE curieobject_seq START WITH 200250000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE SEQUENCE informationcontententity_seq START WITH 20025000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE curieobject_seq START WITH 200250000 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE informationcontententity_seq START WITH 20025000 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 
 -- Add id equivalents of curie columns 
 
@@ -1320,3 +1320,6 @@ ALTER TABLE xsmoterm ADD CONSTRAINT xsmoterm_id_fk FOREIGN KEY (id) REFERENCES c
 ALTER TABLE zecoterm ADD CONSTRAINT zecoterm_id_fk FOREIGN KEY (id) REFERENCES experimentalconditionontologyterm (id);
 ALTER TABLE zfaterm ADD CONSTRAINT zfaterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
 ALTER TABLE zfsterm ADD CONSTRAINT zfsterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
+
+ALTER SEQUENCE curieobject_seq INCREMENT BY 50;
+ALTER SEQUENCE informationcontententity_seq INCREMENT BY 50;
