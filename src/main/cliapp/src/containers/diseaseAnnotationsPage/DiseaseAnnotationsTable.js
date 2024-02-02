@@ -24,6 +24,7 @@ import { AssertedAlleleBodyTemplate } from '../../components/Templates/AssertedA
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
 import { NegatedTemplate } from '../../components/Templates/NegatedTemplate'; 
 import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
+import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
 
 
 
@@ -323,17 +324,6 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	//MOVE
-	const diseaseBodyTemplate = (rowData) => {
-		if (rowData.diseaseAnnotationObject) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.diseaseAnnotationObject.curie.replace(':', '')}`}>{rowData.diseaseAnnotationObject.name} ({rowData.diseaseAnnotationObject.curie})</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.id}${rowData.diseaseAnnotationObject.curie.replace(':', '')}`} content={`${rowData.diseaseAnnotationObject.name} (${rowData.diseaseAnnotationObject.curie})`} />
-				</>
-			)
-		}
-	};
 
 	const onRelationEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
@@ -1104,7 +1094,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationObject.name",
 		header: "Disease",
-		body: diseaseBodyTemplate,
+		body: (rowData) => <DiseaseTemplate object={rowData.object}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),

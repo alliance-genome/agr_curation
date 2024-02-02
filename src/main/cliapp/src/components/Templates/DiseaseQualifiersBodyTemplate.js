@@ -9,5 +9,7 @@ export const DiseaseQualifiersBodyTemplate = ({ rowData }) => {
         <ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers} />
       </div>
     );
+  } else {
+    return null;
   }
 };
