@@ -31,7 +31,8 @@ import { EvidenceCodesAdditionalFieldData } from "../../components/FieldData/Evi
 import { WithAdditionalFieldData } from "../../components/FieldData/WithAdditionalFieldData";
 import { GeneticModifiersAdditionalFieldData } from "../../components/FieldData/GeneticModifiersAdditionalFieldData";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
-// import { ConfirmButton } from "../../components/ConfirmButton";
+import { ConfirmButton } from "../../components/ConfirmButton";
+import { getModFormFields } from "../../service/TableStateService";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -76,7 +77,6 @@ export const NewAnnotationForm = ({
 	const optionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
 	const [selectedFields, setSelectedFields] = useState(optionalFields);
-
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
 			diseaseAnnotationService = new DiseaseAnnotationService();
@@ -403,12 +403,16 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
+	const setToModDefault = () => {
+		const modFormFields = getModFormFields("DiseaseAnnotations");
+		setSelectedFields(modFormFields);
+	}
 
 	const dialogHeader = (
 	<>
 		<Splitter style={{border:'none', height:'5%'}} gutterSize="0">
 			<SplitterPanel size={25} style={{textAlign: 'left'}}>
-				<h4>Add Annotation</h4>
+				<h4>Add Disease Annotation</h4>
 			</SplitterPanel>
 			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<MultiSelect
@@ -425,12 +429,13 @@ export const NewAnnotationForm = ({
 			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<Button label="Show all fields" onClick={handleShowAllFields}/>
 			</SplitterPanel>
-			{/*<SplitterPanel size={20} style={{textAlign: 'right', padding: '5px'}}>
+			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<ConfirmButton
 					buttonText="Set MOD Defaults"
 					messageText= {`Are you sure? This will reset to MOD default settings.`}
+					acceptHandler={setToModDefault}
 				/>
-			</SplitterPanel>*/}
+			</SplitterPanel>
 		</Splitter>
 	</>
 	);
