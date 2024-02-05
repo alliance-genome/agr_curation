@@ -480,3 +480,12 @@ export const processOptionalField = (eventValue) => {
 	if (!eventValue.curie) return {curie: eventValue};
 	return eventValue;
 }
+
+export const getSubjectText = (subject) => {
+  if (subject.geneSymbol) return subject.geneSymbol.displayText;
+  if (subject.alleleSymbol) return subject.alleleSymbol.displayText;
+  if (subject.geneFullName) return subject.geneFullName.displayText;
+  if (subject.alleleFullName) return subject.alleleFullName.displayText;
+  if (subject.name) return subject.name;
+  return null;
+};

@@ -25,6 +25,7 @@ import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/Diseas
 import { NegatedTemplate } from '../../components/Templates/NegatedTemplate'; 
 import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
 import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
+import { SubjectTemplate } from '../../components/Templates/subject/SubjectTemplate'; 
 
 
 
@@ -848,112 +849,6 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	//MOVE
-	const subjectBodyTemplate = (rowData) => {
-		if (rowData.diseaseAnnotationSubject) {
-			const identifier = getIdentifier(rowData.diseaseAnnotationSubject);
-			if (rowData.diseaseAnnotationSubject.geneSymbol) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.alleleSymbol) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleSymbol.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleSymbol.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.geneFullName) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneFullName.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneFullName.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.alleleFullName) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleFullName.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleFullName.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.name) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.name + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.name + ' (' + identifier + ')'
-								}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else {
-				return <div className='overflow-hidden text-overflow-ellipsis' >{identifier}</div>;
-			}
-		}
-	};
-
-	//MOVE
-	const sgdStrainBackgroundBodyTemplate = (rowData) => {
-		if (rowData.sgdStrainBackground) {
-			const identifier = getIdentifier(rowData.sgdStrainBackground);
-			if (rowData.sgdStrainBackground.name) {
-				return <div className='overflow-hidden text-overflow-ellipsis'
-					dangerouslySetInnerHTML={{
-						__html: rowData.sgdStrainBackground.name + ' (' + identifier + ')'
-					}}
-				/>;
-			} else {
-				return <div className='overflow-hidden text-overflow-ellipsis' >{identifier}</div>;
-			}
-		}
-	};
-
-	//MOVE
 	const geneticModifiersBodyTemplate = (rowData) => {
 		if (rowData?.diseaseGeneticModifiers && rowData.diseaseGeneticModifiers.length > 0) {
 			const diseaseGeneticModifierStrings = [];
@@ -1071,7 +966,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationSubject.symbol",
 		header: "Subject",
-		body: subjectBodyTemplate,
+		body: (rowData) => <SubjectTemplate subject={rowData.subject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
 		editor: (props) => subjectEditorTemplate(props),
@@ -1166,7 +1061,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "sgdStrainBackground.name",
 		header: "SGD Strain Background",
-		body: sgdStrainBackgroundBodyTemplate,
+		body: (rowData) => <SubjectTemplate subject={rowData.sgdStrainBackground}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
 		editor: (props) => sgdStrainBackgroundEditorSelector(props)
