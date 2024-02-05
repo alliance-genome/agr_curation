@@ -2,25 +2,28 @@ import { Button } from "primereact/button";
 import { FormTableWrapper } from "../../../components/FormTableWrapper";
 import { SecondaryIdsFormTable } from "../secondaryIds/SecondaryIdsFormTable";
 import { useRef } from "react";
+import { addDataKey } from "../utils";
 
 export const SecondaryIdsForm = ({ state, dispatch }) => {
   const tableRef = useRef(null);
-  const secondaryIds = global.structuredClone(state.allele?.alleleSecondaryIds);
+  const entityType = "alleleSecondaryIds";
+  const secondaryIds = global.structuredClone(state.allele?.[entityType]);
 
   const createNewSecondaryIdHandler = (e) => {
     e.preventDefault();
-    const dataKey = state.allele.alleleSecondaryIds?.length;
+
     const newSecondaryId = {
-      dataKey: dataKey,
       internal: false,
       obsolete: false,
       secondaryId: ""
     }
 
+    addDataKey(newSecondaryId);
+
     dispatch({
       type: "ADD_ROW", 
       row: newSecondaryId, 
-      entityType: "alleleSecondaryIds", 
+      entityType: entityType, 
     })
   };
 
@@ -32,7 +35,7 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
     props.editorCallback(event.target.value?.name);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSecondaryIds', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "internal", 
       value: event.target?.value?.name
@@ -44,7 +47,7 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
     setFieldValue(event.target.value);
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSecondaryIds', 
+      entityType: entityType, 
       index: props.rowIndex, 
       field: "evidence", 
       value: event.target.value
@@ -54,17 +57,20 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
   const textOnChangeHandler = (rowIndex, event, field) => {
     dispatch({ 
       type: 'EDIT_ROW', 
-      entityType: 'alleleSecondaryIds', 
+      entityType: entityType, 
       index: rowIndex, 
       field: field, 
       value: event.target.value
     });
   }
 
-  const deletionHandler  = (e, index) => {
+
+  const deletionHandler = (e, dataKey) => {
     e.preventDefault();
-    dispatch({type: "DELETE_ROW", entityType: "alleleSecondaryIds", index: index});
-    dispatch({type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleSecondaryIds", errorMessages: []});
+    const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
+    delete updatedErrorMessages[dataKey];
+    dispatch({ type: "DELETE_ROW", entityType: entityType, dataKey });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: updatedErrorMessages });
   };
 
   return (
@@ -72,19 +78,19 @@ export const SecondaryIdsForm = ({ state, dispatch }) => {
       table={
         <SecondaryIdsFormTable
           secondaryIds={secondaryIds}
-          editingRows={state.entityStates.alleleSecondaryIds.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleSecondaryIds.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           textOnChangeHandler={textOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
         />
       }
       tableName="Secondary IDs"
-      showTable={state.entityStates.alleleSecondaryIds.show}
-      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-6"/>}
+      showTable={state.entityStates[entityType].show}
+      button={<Button label="Add Secondary ID" onClick={createNewSecondaryIdHandler} className="w-4 p-button-text"/>}
     />
   );
 

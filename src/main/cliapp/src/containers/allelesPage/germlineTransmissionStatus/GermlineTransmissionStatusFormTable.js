@@ -31,7 +31,7 @@ export const GermlineTransmissionStatusFormTable = ({
     </ColumnGroup>;
 
   return (
-    <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+    <DataTable value={name} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} size='small'
       editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
       <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
         className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
@@ -41,6 +41,7 @@ export const GermlineTransmissionStatusFormTable = ({
             props={props}
             onChangeHandler={germlineTransmissionStatusOnChangeHandler}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             rowIndex={props.rowIndex}
             vocabType="allele_germline_transmission_status"
             field="germlineTransmissionStatus"
@@ -53,6 +54,7 @@ export const GermlineTransmissionStatusFormTable = ({
             props={props}
             rowIndex={props.rowIndex}
             errorMessages={errorMessages}
+            dataKey={props?.rowData?.dataKey}
             internalOnChangeHandler={internalOnChangeHandler}
           />;
         }}

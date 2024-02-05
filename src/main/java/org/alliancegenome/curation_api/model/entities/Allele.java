@@ -80,68 +80,68 @@ public class Allele extends GenomicEntity {
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 
 	@IndexedEmbedded(includePaths = { "mutationTypes.curie", "mutationTypes.name", "evidence.curie", "mutationTypes.curie_keyword", "mutationTypes.name_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleMutationTypeSlotAnnotation> alleleMutationTypes;
 	
 	@IndexedEmbedded(includePaths = { "inheritanceMode.name", "phenotypeTerm.curie", "phenotypeTerm.name", "phenotypeStatement", "evidence.curie", "inheritanceMode.name_keyword", "phenotypeTerm.curie_keyword", "phenotypeTerm.name_keyword", "phenotypeStatement_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleInheritanceModeSlotAnnotation> alleleInheritanceModes;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleFullNameSlotAnnotation alleleFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleSynonymSlotAnnotation> alleleSynonyms;
 
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleSecondaryIdSlotAnnotation> alleleSecondaryIds;
 	
 	@IndexedEmbedded(includePaths = { "germlineTransmissionStatus.name", "evidence.curie", "germlineTransmissionStatus.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleGermlineTransmissionStatusSlotAnnotation alleleGermlineTransmissionStatus;
 
 	@IndexedEmbedded(includePaths = { "functionalImpacts.name", "phenotypeTerm.curie", "phenotypeTerm.name", "phenotypeStatement","evidence.curie", "functionalImpacts.name_keyword", "phenotypeTerm.curie_keyword", "phenotypeTerm.name_keyword", "phenotypeStatement_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleFunctionalImpactSlotAnnotation> alleleFunctionalImpacts;
 
 	@IndexedEmbedded(includePaths = { "databaseStatus.name", "evidence.curie", "databaseStatus.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleDatabaseStatusSlotAnnotation alleleDatabaseStatus;
 	
 	@IndexedEmbedded(includePaths = { "nomenclatureEvent.name", "evidence.curie", "nomenclatureEvent.name_keyword", "evidence.curie_keyword"})
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
 	
 	@IndexedEmbedded(includePaths = {"objectGene.curie", "objectGene.geneSymbol.displayText", "objectGene.geneSymbol.formatText", "objectGene.geneFullName.displayText", "objectGene.geneFullName.formatText",
 			"objectGene.curie_keyword", "objectGene.geneSymbol.displayText_keyword", "objectGene.geneSymbol.formatText_keyword", "objectGene.geneFullName.displayText_keyword", "objectGene.geneFullName.formatText_keyword"})
-	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
 	

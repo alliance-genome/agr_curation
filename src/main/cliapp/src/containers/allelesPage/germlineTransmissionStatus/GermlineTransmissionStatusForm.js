@@ -5,8 +5,8 @@ import { GermlineTransmissionStatusFormTable } from "./GermlineTransmissionStatu
 
 export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispatch }) => {
   const tableRef = useRef(null);
-
-  const germlineTransmissionStatusArray = [state.allele?.alleleGermlineTransmissionStatus];
+  const entityType = "alleleGermlineTransmissionStatus";
+  const germlineTransmissionStatusArray = [state.allele?.[entityType]];
 
   const createNewGermlineTransmissionStatus = (e) => {
     e.preventDefault();
@@ -18,7 +18,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
     dispatch({
       type: "ADD_OBJECT",
       value: newGermlineTransmissionStatus,
-      entityType: "alleleGermlineTransmissionStatus",
+      entityType: entityType,
     });
   };
 
@@ -30,7 +30,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
     props.editorCallback(event.target.value?.name);
     dispatch({
       type: 'EDIT_OBJECT',
-      entityType: 'alleleGermlineTransmissionStatus',
+      entityType: entityType,
       field: "internal",
       value: event.target?.value?.name
     });
@@ -40,7 +40,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
     props.editorCallback(event.target.value);
     dispatch({
       type: 'EDIT_OBJECT',
-      entityType: 'alleleGermlineTransmissionStatus',
+      entityType: entityType,
       field: "germlineTransmissionStatus",
       value: event.target.value
     });
@@ -51,7 +51,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
     setFieldValue(event.target.value);
     dispatch({
       type: 'EDIT_OBJECT',
-      entityType: 'alleleGermlineTransmissionStatus',
+      entityType: entityType,
       field: "evidence",
       value: event.target.value
     });
@@ -59,8 +59,8 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
 
   const deletionHandler = (e) => {
     e.preventDefault();
-    dispatch({ type: "DELETE_OBJECT", entityType: "alleleGermlineTransmissionStatus" });
-    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: "alleleGermlineTransmissionStatus", errorMessages: [] });
+    dispatch({ type: "DELETE_OBJECT", entityType: entityType });
+    dispatch({ type: "UPDATE_TABLE_ERROR_MESSAGES", entityType: entityType, errorMessages: {} });
   };
 
   return (
@@ -69,19 +69,19 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
       table={
         <GermlineTransmissionStatusFormTable
           name={germlineTransmissionStatusArray}
-          editingRows={state.entityStates.alleleGermlineTransmissionStatus.editingRows}
+          editingRows={state.entityStates[entityType].editingRows}
           onRowEditChange={onRowEditChange}
           tableRef={tableRef}
           deletionHandler={deletionHandler}
-          errorMessages={state.entityStates.alleleGermlineTransmissionStatus.errorMessages}
+          errorMessages={state.entityStates[entityType].errorMessages}
           germlineTransmissionStatusOnChangeHandler={germlineTransmissionStatusOnChangeHandler}
           internalOnChangeHandler={internalOnChangeHandler}
           evidenceOnChangeHandler={evidenceOnChangeHandler}
         />
       }
       tableName="Germline Transmission Status"
-      showTable={state.entityStates.alleleGermlineTransmissionStatus.show}
-      button={<Button label="Add Germline Transmission Status" onClick={createNewGermlineTransmissionStatus} disabled={state.allele?.alleleGermlineTransmissionStatus} className="w-6" />}
+      showTable={state.entityStates[entityType].show}
+      button={<Button label="Add Germline Transmission Status" onClick={createNewGermlineTransmissionStatus} disabled={state.allele?.[entityType]} className="w-4  p-button-text" />}
     />
   );
 

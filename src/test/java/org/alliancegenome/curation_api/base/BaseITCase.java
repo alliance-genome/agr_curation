@@ -442,6 +442,21 @@ public class BaseITCase {
 		reference.setCurie(curie);
 		reference.setObsolete(obsolete);
 		
+		String xrefCurie = "PMID:TestXref";
+		CrossReference xref = new CrossReference();
+		xref.setReferencedCurie(xrefCurie);
+		xref.setDisplayName(xrefCurie);
+		ObjectResponse<CrossReference> xrefResponse = RestAssured.given().
+			contentType("application/json").
+			body(xref).
+			when().
+			post("/api/cross-reference").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefCrossReference());
+	
+		reference.setCrossReferences(List.of(xrefResponse.getEntity()));
+		
 		ObjectResponse<Reference> response = RestAssured.given().
 			contentType("application/json").
 			body(reference).

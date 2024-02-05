@@ -20,7 +20,7 @@ const functionalImpactSearch = (event, setFiltered, setQuery) => {
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 };
-export const FunctionalImpactsEditor = ({ props, errorMessages, onChange }) => {
+export const FunctionalImpactsEditor = ({ props, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
 			<AutocompleteMultiEditor
@@ -34,7 +34,7 @@ export const FunctionalImpactsEditor = ({ props, errorMessages, onChange }) => {
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent
-				errorMessages={errorMessages[props?.rowIndex]}
+				errorMessages={errorMessages[dataKey]}
 				errorField={"functionalImpacts"}
 			/>
 		</>

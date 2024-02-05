@@ -17,7 +17,6 @@ import { DataProviderFormTemplate } from '../../components/Templates/DataProvide
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
-import { processErrors } from '../../utils/utils';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
@@ -30,8 +29,11 @@ import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/Ge
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { StickyHeader } from '../../components/StickyHeader';
+import { LoadingOverlay } from '../../components/LoadingOverlay';
+import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
+import { validateRequiredAutosuggestField, processErrors } from './utils';
 
-export default function AlleleDetailPage(){
+export default function AlleleDetailPage() {
 	const { curie } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const alleleService = new AlleleService();
@@ -42,11 +44,11 @@ export default function AlleleDetailPage(){
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
 
-const { isLoading } =	useQuery([curie],
-		() => alleleService.getAllele(curie), 
+	const { isLoading: getRequestIsLoading } = useQuery([curie],
+		() => alleleService.getAllele(curie),
 		{
 			onSuccess: (result) => {
-				alleleDispatch({type: 'SET', value: result?.data?.entity});
+				alleleDispatch({ type: 'SET', value: result?.data?.entity });
 			},
 			onError: (error) => {
 				console.warn(error);
@@ -56,43 +58,58 @@ const { isLoading } =	useQuery([curie],
 		}
 	);
 
-	const mutation = useMutation(allele => {
-		return alleleService.saveAllele(allele);
+	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
+		return alleleService.saveAlleleDetail(allele);
 	});
-
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		alleleDispatch({
-			type: "SUBMIT" 
-		})
+			type: "SUBMIT"
+		});
 
-		mutation.mutate(alleleState.allele, {
-			onSuccess: () => {
-				toastSuccess.current.show({severity: 'success', summary: 'Successful', detail: 'Allele Saved'});
+		const areUiErrors = validateRequiredAutosuggestField(
+			alleleState.allele.alleleGeneAssociations,
+			alleleState.entityStates.alleleGeneAssociations.errorMessages,
+			alleleDispatch,
+			"alleleGeneAssociations",
+			"objectGene",
+		);
+
+
+		if(areUiErrors) return;
+
+		alleleMutate(alleleState.allele, {
+			onSuccess: (result) => {
+				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
+				alleleDispatch({ type: 'SET', value: result?.data?.entity });
 			},
 			onError: (error) => {
 				let message;
 				const data = error?.response?.data;
 
-				if(data.errorMessage){
+				if (data.errorMessage) {
 					message = error.response.data.errorMessage;
 				} else {
 					//toast will still display even if 500 error and no errorMessages
-					message = `${error.response.status} ${error.response.statusText}`
+					message = `${error.response.status} ${error.response.statusText}`;
 				}
 				toastError.current.show([
-					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
+					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false }
 				]);
 
-				processErrors(data, alleleDispatch);
+				try{
+					processErrors(data, alleleDispatch, alleleState.allele);
+				} catch(e){
+					console.error(e);
+				}
 			}
-		})
-	}
+		});
+	};
 
 	const onTaxonValueChange = (event) => {
 		let value = {};
-		if(typeof event.value === "object"){
+		if (typeof event.value === "object") {
 			value = event.value;
 		} else {
 			value.curie = event.value;
@@ -101,14 +118,14 @@ const { isLoading } =	useQuery([curie],
 			type: 'EDIT',
 			field: 'taxon',
 			value,
-		})
-	}
+		});
+	};
 
 	const onInCollectionValueChange = (event) => {
 		let value = {};
-		if(typeof event.value === "object"){
+		if (typeof event.value === "object") {
 			value = event.value;
-		} else if(event.value === "") {
+		} else if (event.value === "") {
 			value = undefined;
 		} else {
 			value.name = event.value;
@@ -117,41 +134,41 @@ const { isLoading } =	useQuery([curie],
 			type: 'EDIT',
 			field: 'inCollection',
 			value,
-		})
-	}
+		});
+	};
 
 	const onIsExtinctValueChange = (event) => {
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'isExtinct',
 			value: event.value,
-		})
-	}
+		});
+	};
 
 	const onInternalValueChange = (event) => {
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'internal',
 			value: event.value,
-		})
-	}
+		});
+	};
 
 	const onObsoleteValueChange = (event) => {
 		alleleDispatch({
 			type: 'EDIT',
 			field: 'obsolete',
 			value: event.value,
-		})
-	}
-	
-	if(isLoading) return (
+		});
+	};
+
+	if (getRequestIsLoading) return (
 		<div className='flex align-items-center justify-content-center h-screen'>
-			<ProgressSpinner/>
+			<ProgressSpinner />
 		</div>
-	)
+	);
 
 	const headerText = () => {
-		let prefix = "Allele: "
+		let prefix = "Allele: ";
 		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.curie) {
 			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.curie})`;
 		}
@@ -159,17 +176,18 @@ const { isLoading } =	useQuery([curie],
 			return `${prefix} ${alleleState.allele.curie}`;
 		}
 		return "Allele Detail Page";
-	}
+	};
 
-	return(
+	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
+			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading)} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
 						<SplitterPanel size={70} className="flex justify-content-start ml-5 py-3 ">
-							<h1 dangerouslySetInnerHTML={{ __html: headerText()}}/>
+							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex justify-content-start py-3">
 							<Button label="Save" icon="pi pi-check" className="p-button-text" size='large' onClick={handleSubmit} />
@@ -196,7 +214,7 @@ const { isLoading } =	useQuery([curie],
 					<SymbolForm
 						state={alleleState}
 						dispatch={alleleDispatch}
-						labelColumnSize={labelColumnSize}						
+						labelColumnSize={labelColumnSize}
 					/>
 
 					<Divider />
@@ -208,7 +226,7 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
-					<SecondaryIdsForm 
+					<SecondaryIdsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
@@ -222,9 +240,9 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
-					<TaxonFormEditor 
-						taxon={alleleState.allele?.taxon} 
-						onTaxonValueChange={onTaxonValueChange} 
+					<TaxonFormEditor
+						taxon={alleleState.allele?.taxon}
+						onTaxonValueChange={onTaxonValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -233,7 +251,7 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
-					<MutationTypesForm 
+					<MutationTypesForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
@@ -261,14 +279,14 @@ const { isLoading } =	useQuery([curie],
 
 					<Divider />
 
-					<InheritanceModesForm 
+					<InheritanceModesForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
 
 					<Divider />
 
-					<ReferencesForm 
+					<ReferencesForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
@@ -276,8 +294,8 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<InCollectionFormEditor
-						inCollection={alleleState.allele?.inCollection} 
-						onInCollectionValueChange={onInCollectionValueChange} 
+						inCollection={alleleState.allele?.inCollection}
+						onInCollectionValueChange={onInCollectionValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -287,10 +305,10 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<BooleanFormEditor
-						value={alleleState.allele?.isExtinct} 
+						value={alleleState.allele?.isExtinct}
 						name={"isExtinct"}
 						label={"Is Extinct"}
-						onValueChange={onIsExtinctValueChange} 
+						onValueChange={onIsExtinctValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -301,6 +319,13 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<RelatedNotesForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+					/>
+
+					<Divider />
+
+					<AlleleGeneAssociationsForm
 						state={alleleState}
 						dispatch={alleleDispatch}
 					/>
@@ -357,10 +382,10 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<BooleanFormEditor
-						value={alleleState.allele?.internal} 
+						value={alleleState.allele?.internal}
 						name={"internal"}
 						label={"Internal"}
-						onValueChange={onInternalValueChange} 
+						onValueChange={onInternalValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -370,21 +395,19 @@ const { isLoading } =	useQuery([curie],
 					<Divider />
 
 					<BooleanFormEditor
-						value={alleleState.allele?.obsolete} 
+						value={alleleState.allele?.obsolete}
 						name={"obsolete"}
 						label={"Obsolete"}
-						onValueChange={onObsoleteValueChange} 
+						onValueChange={onObsoleteValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						errorMessages={alleleState.errorMessages}
 					/>
 					<Divider />
-			</form>
-		</ErrorBoundary>
+				</form>
+			</ErrorBoundary>
 		</>
-	)
-	
+	);
+
 };
-
-

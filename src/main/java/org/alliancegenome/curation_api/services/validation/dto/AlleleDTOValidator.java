@@ -91,10 +91,12 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	@Inject
 	NoteDTOValidator noteDtoValidator;
 
-	private ObjectResponse<Allele> alleleResponse = new ObjectResponse<>();
+	private ObjectResponse<Allele> alleleResponse;
 	
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+		
+		alleleResponse = new ObjectResponse<>();
 		
 		Allele allele = null;
 		if (StringUtils.isBlank(dto.getCurie())) {
@@ -349,7 +351,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		List<AlleleNomenclatureEventSlotAnnotation> validatedNomenclatureEvents = new ArrayList<AlleleNomenclatureEventSlotAnnotation>();
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(dto.getAlleleNomenclatureEventDtos())) {
-			for (int ix = 0; ix < dto.getAlleleInheritanceModeDtos().size(); ix++) {
+			for (int ix = 0; ix < dto.getAlleleNomenclatureEventDtos().size(); ix++) {
 				AlleleNomenclatureEventSlotAnnotationDTO neDto = dto.getAlleleNomenclatureEventDtos().get(ix);
 				AlleleNomenclatureEventSlotAnnotation ne = existingNomenclatureEvents.remove(identityHelper.alleleNomenclatureEventDtoIdentity(neDto));
 				ObjectResponse<AlleleNomenclatureEventSlotAnnotation> neResponse = alleleNomenclatureEventDtoValidator.validateAlleleNomenclatureEventSlotAnnotationDTO(ne, neDto);

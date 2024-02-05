@@ -66,7 +66,7 @@ public interface VariantCrudInterface extends BaseCurieCrudInterface<Variant>, B
 	@Override
 	@POST
 	@Path("/search")
-	@Tag(name = "Search Database Browsing Endpoints")
+	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.VariantView.class })
 	public SearchResponse<Variant> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 

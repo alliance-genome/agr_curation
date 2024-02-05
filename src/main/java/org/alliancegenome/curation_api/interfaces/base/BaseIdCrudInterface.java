@@ -68,7 +68,7 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 	
 	@POST
 	@Path("/search")
-	@Tag(name = "Search Database Browsing Endpoints")
+	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.FieldsAndLists.class })
 	public SearchResponse<E> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
