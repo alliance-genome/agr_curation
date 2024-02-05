@@ -2,6 +2,25 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.29.0
+* New features
+   * Allele detail page: Visually emphasize field names/sections and visually demphasize 'Add' buttons (SCRUM-3343)	
+   * Report Failed Loads table in Data Loads page UI (SCRUM-3440)	
+   * Notify developers via Slack of failed curation system loads (SCRUM-3470)	
+   * Provide "Saving in progress" indicator and inactivate interaction with page on allele detail pages (SCRUM-3536)	
+   * Move "Add" buttons in Allele detail page to right of field names (in-line)(SCRUM-3551)	
+   * Reduce empty space in disease annotations table to create a more compact representation (SCRUM-3564)	
+   * Enable downloading of all exception messages for a given data load (SCRUM-2639)	
+
+* Fixes and maintenance
+   * Upgrade python version used in agr_db_backups (SCRUM-3094)	
+   * FB constructs failing to load (SCRUM-3613)	
+   * Fix failing Construct Association loads (SCRUM-3620)	
+   * SGD Allele load failing with uninterpretable exception messages (SCRUM-3630)	
+   * Attempting to display FB constructs with secondary IDs in Constructs table (on alpha) throws error (SCRUM-3631)	
+   * RGD Allele load entries failing incorrectly (SCRUM-3633)
+   * Create Json View to Limit data from Disease Annotations (SCRUM-3588)	
+
 ## v0.28.0-rc2 
 * Updates quarkus to version 3
 * Fixes and maintenance 
