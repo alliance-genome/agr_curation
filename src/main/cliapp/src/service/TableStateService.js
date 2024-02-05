@@ -12,6 +12,11 @@ const modTableSettings = {
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By",
 				"Date Created", "Internal", "Obsolete",
 			],
+			selectedFormFields: [
+				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+			"Related Notes", "Experimental Conditions", "Disease Qualifiers",
+			"Asserted Genes", "Asserted Allele"
+			],
 			filters:{
 				dataProviderFilter: {
 					"dataProvider.sourceOrganization.abbreviation": { queryString: "RGD", tokenOperator: "AND" },
@@ -34,6 +39,9 @@ const modTableSettings = {
 				"Reference", "Evidence Code", "With", "SGD Strain Background",
 				"Annotation Type", "Data Provider", "Updated By", "Date Updated",
 				"Created By", "Date Created", "Internal", "Obsolete"
+			],
+			selectedFormFields: [
+				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With", "SGD Strain Background", "Annotation Type"
 			],
 			filters: {
 				dataProviderFilter: {
@@ -69,6 +77,10 @@ const modTableSettings = {
 					"Genetic Modifiers","Data Provider", "Updated By", "Date Updated", "Created By",
 					"Date Created", "Internal", "Obsolete",
 			],
+			selectedFormFields: [
+					"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+					"Related Notes", "Experimental Conditions", "Genetic sex", "Genetic Modifier Relation", "genetic Modifiers", "Asserted Genes"
+			],
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
@@ -83,6 +95,10 @@ const modTableSettings = {
 					"Disease Relation", "Disease", "Evidence Code", "Inferred Gene",
 					"Genetic Modifier Relation", "Genetic Modifiers", "Related Notes", "Data Provider",
 					"Updated By", "Date Updated", "Created By", "Date Created"
+			],
+			selectedFormFields: [
+				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Related Notes", "Genetic Modifier Relation", "genetic Modifiers"
 			],
 			filters: {
 				obsoleteFilter: {
@@ -110,6 +126,10 @@ const modTableSettings = {
 					"Data Provider", "Updated By", "Date Updated", "Created By",
 					"Date Created", "Obsolete"
 			],
+			selectedFormFields: [
+				"Subject", "Disease Relation", "Disease", "Reference", "Evidence Code",
+				"Experiments"
+			],
 			filters: {
 					dataProviderFilter: {
 							"dataProvider.sourceOrganization.abbreviation": { queryString: "ZFIN", tokenOperator: "AND" },
@@ -133,6 +153,10 @@ const modTableSettings = {
 					"Related Notes", "Inferred Gene", "Inferred Allele", "Data Provider",
 					"Updated By", "Date Updated", "Created By", "Date Created",
 			],
+			selectedFormFields: [
+				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Related Notes"
+			],		
 			filters: {
 					dataProviderFilter: {
 							"dataProvider.sourceOrganization.abbreviation": { queryString: "MGI", tokenOperator: "AND" },
@@ -159,6 +183,10 @@ const modTableSettings = {
 				"Genetic Modifier Relation" , "Genetic Modifiers" , "Inferred Gene", "Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By", "Date Created", "Internal", "Obsolete"
 			],
+			selectedFormFields: [
+				"Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+				"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"
+			],
 			filters: {},
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
@@ -173,6 +201,13 @@ export function getModTableState(table, widthsObject, defaultColumnNames) {
 	modTableState.columnWidths = widthsObject;
 	modTableState.orderedColumnNames = defaultColumnNames;
 	return modTableState;
+};
+
+export function getModFormFields(table) {
+	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
+	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
+	const modFormFields = modTableSettings[mod][table]['selectedFormFields'];
+	return modFormFields;
 };
 
 export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns, widthsObject){
