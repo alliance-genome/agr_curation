@@ -141,6 +141,13 @@ const modTableSettings = {
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
+	XBStaff:	{
+		DiseaseAnnotations: {
+			selectedFormFields: [
+				"Experimental Conditions"
+			]
+		}
+	},
 	MGIStaff:	{
 		DiseaseAnnotations: {
 			page: 0,
