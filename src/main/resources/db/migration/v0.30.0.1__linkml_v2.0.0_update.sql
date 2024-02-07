@@ -726,6 +726,7 @@ UPDATE conditionrelation t SET singlereference_id = i.id FROM informationcontent
 UPDATE construct t SET id = c.id FROM curieobject c WHERE t.id = c.old_id;
 UPDATE construct_reference t SET construct_id = c.id FROM curieobject c WHERE t.construct_id = c.old_id;
 UPDATE construct_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
+UPDATE constructcomponentslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = o.old_id;
 UPDATE constructcomponentslotannotation t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
 UPDATE constructfullnameslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
 UPDATE constructgenomicentityassociation t SET subject_id = c.id FROM curieobject c WHERE t.subject_id = c.old_id;
