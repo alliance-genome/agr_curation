@@ -433,7 +433,7 @@ export const NewAnnotationForm = ({
 			</SplitterPanel>
 			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<ConfirmButton
-					buttonText="Set MOD Defaults"
+					buttonText="Set to MOD Defaults"
 					messageText= {`Are you sure? This will reset to MOD default settings.`}
 					acceptHandler={setToModDefault}
 				/>

@@ -79,7 +79,7 @@ const modTableSettings = {
 			],
 			selectedFormFields: [
 					"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
-					"Related Notes", "Experimental Conditions", "Genetic sex", "Genetic Modifier Relation", "genetic Modifiers", "Asserted Genes"
+					"Related Notes", "Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation", "Genetic Modifiers", "Asserted Genes"
 			],
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
@@ -98,7 +98,7 @@ const modTableSettings = {
 			],
 			selectedFormFields: [
 				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
-				"Related Notes", "Genetic Modifier Relation", "genetic Modifiers"
+				"Related Notes", "Genetic Modifier Relation", "Genetic Modifiers"
 			],
 			filters: {
 				obsoleteFilter: {
@@ -139,6 +139,13 @@ const modTableSettings = {
 			},
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
+		}
+	},
+	XBStaff:	{
+		DiseaseAnnotations: {
+			selectedFormFields: [
+				"Experimental Conditions"
+			]
 		}
 	},
 	MGIStaff:	{

@@ -69,8 +69,12 @@ public interface CurieObjectCrudInterface<E extends CurieObject> {
 	@GET
 	@Path("/reindex")
 	@Tag(name = "Reindex Endpoints")
-	public void reindex(@DefaultValue("1000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects, @DefaultValue("10000") @QueryParam("idFetchSize") Integer idFetchSize,
-		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo, @DefaultValue("4") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
-		@DefaultValue("14400") @QueryParam("transactionTimeout") Integer transactionTimeout, @DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel);
+	public void reindex(
+		@DefaultValue("1000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
+		@DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
+		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
+		@DefaultValue("4") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
+		@DefaultValue("14400") @QueryParam("transactionTimeout") Integer transactionTimeout,
+		@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel);
 
 }
