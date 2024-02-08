@@ -94,10 +94,10 @@ export const ConstructsTable = () => {
 				<>
 					<Button className="p-button-text" onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
 						<EllipsisTableCell otherClasses={`fn_${rowData.id}`}>
-							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.formatText}}></div>
+							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.displayText}}></div>
 						</EllipsisTableCell>
 						<Tooltip target={`.fn_${rowData.id}`}>
-							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.formatText}}/>
+							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.displayText}}/>
 						</Tooltip>
 					</Button>	
 				</>
@@ -157,10 +157,10 @@ export const ConstructsTable = () => {
 					<Button className="p-button-text" 
 						onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
 							<EllipsisTableCell otherClasses={`sym_${rowData.id}`}>
-								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.constructSymbol.formatText }} />
+								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.constructSymbol.displayText }} />
 							</EllipsisTableCell>
 							<Tooltip target={`.sym_${rowData.id}`}>
-								<div dangerouslySetInnerHTML={{__html: rowData.constructSymbol.formatText}}/>
+								<div dangerouslySetInnerHTML={{__html: rowData.constructSymbol.displayText}}/>
 							</Tooltip>
 					</Button>
 				</>
