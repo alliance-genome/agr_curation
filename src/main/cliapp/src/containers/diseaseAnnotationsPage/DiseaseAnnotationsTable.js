@@ -41,11 +41,10 @@ import { Tooltip } from 'primereact/tooltip';
 import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, getIdentifier } from '../../utils/utils';
 import { useNewAnnotationReducer } from "./useNewAnnotationReducer";
 import { NewAnnotationForm } from "./NewAnnotationForm";
-//MOVE?
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -1157,7 +1156,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "internal",
 		header: "Internal",
-		body: internalTemplate,
+		body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.internalFilterConfig,
 		editor: (props) => internalEditor(props)
@@ -1165,7 +1164,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "obsolete",
 		header: "Obsolete",
-		body: obsoleteTemplate,
+		body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		editor: (props) => obsoleteEditor(props)
