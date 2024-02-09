@@ -8,7 +8,6 @@ import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/Evid
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
@@ -44,6 +43,7 @@ import { NewAnnotationForm } from "./NewAnnotationForm";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { GeneticModifiersTemplate } from '../../components/Templates/subject/GeneticModifiersTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const DiseaseAnnotationsTable = () => {
@@ -847,42 +847,6 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	//MOVE
-	const geneticModifiersBodyTemplate = (rowData) => {
-		if (rowData?.diseaseGeneticModifiers && rowData.diseaseGeneticModifiers.length > 0) {
-			const diseaseGeneticModifierStrings = [];
-			rowData.diseaseGeneticModifiers.forEach((dgm) => {
-				const identifier = getIdentifier(dgm);
-				if (dgm.geneSymbol || dgm.alleleSymbol) {
-					let symbolValue = dgm.geneSymbol ? dgm.geneSymbol.displayText : dgm.alleleSymbol.displayText;
-					diseaseGeneticModifierStrings.push(symbolValue + ' (' + identifier + ')');
-				} else if (dgm.name) {
-					diseaseGeneticModifierStrings.push(dgm.name + ' (' + identifier + ')');
-				} else {
-					diseaseGeneticModifierStrings.push(identifier);
-				}
-			});
-			const sortedDiseaseGeneticModifierStrings = diseaseGeneticModifierStrings.sort();
-			const listTemplate = (dgmString) => {
-				return (
-					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{__html: dgmString}}/>
-					</EllipsisTableCell>
-				)
-			};
-			return (
-				<>
-					<div className={`-my-4 p-1 a${rowData.id}${getIdentifier(rowData.diseaseGeneticModifiers[0]).replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
-					</div>
-					<Tooltip target={`.a${rowData.id}${getIdentifier(rowData.diseaseGeneticModifiers[0]).replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
 	const onReferenceValueChange = (event, setFieldValue, props) => {
 		defaultAutocompleteOnChange(props, event, "singleReference", setFieldValue);
 	};
@@ -1082,7 +1046,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseGeneticModifiers.symbol",
 		header: "Genetic Modifiers",
-		body: geneticModifiersBodyTemplate,
+		body: (rowData) => <GeneticModifiersTemplate diseaseGeneticModifiers={rowData.diseaseGeneticModifiers}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.geneticModifiersFilterConfig,
 		editor: (props) => geneticModifiersEditorTemplate(props),
