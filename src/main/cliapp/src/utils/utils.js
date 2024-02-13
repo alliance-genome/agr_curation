@@ -481,11 +481,11 @@ export const processOptionalField = (eventValue) => {
 	return eventValue;
 }
 
-export const getSubjectText = (subject) => {
-  if (subject.geneSymbol) return subject.geneSymbol.displayText;
-  if (subject.alleleSymbol) return subject.alleleSymbol.displayText;
-  if (subject.geneFullName) return subject.geneFullName.displayText;
-  if (subject.alleleFullName) return subject.alleleFullName.displayText;
-  if (subject.name) return subject.name;
+export const getGenomicEntityText = (genomicEntity) => {
+  if (genomicEntity.geneSymbol) return genomicEntity.geneSymbol.displayText;
+  if (genomicEntity.alleleSymbol) return genomicEntity.alleleSymbol.displayText;
+  if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
+  if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
+  if (genomicEntity.name) return genomicEntity.name;
   return null;
 };

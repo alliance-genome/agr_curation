@@ -13,18 +13,13 @@ import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
-import { WithTemplate } from '../../components/Templates/WithTemplate';
-import { AssertedGenesBodyTemplate } from '../../components/Templates/AssertedGenesBodyTemplate';
 import { EvidenceTemplate } from '../../components/Templates/EvidenceTemplate'; 
 import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleReferenceBodyTemplate'; 
-import { InferredGeneBodyTemplate } from '../../components/Templates/InferredGeneBodyTemplate'; 
-import { InferredAlleleBodyTemplate } from '../../components/Templates/InferredAlleleBodyTemplate'; 
-import { AssertedAlleleBodyTemplate } from '../../components/Templates/AssertedAlleleBodyTemplate'; 
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
 import { NegatedTemplate } from '../../components/Templates/NegatedTemplate'; 
 import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
 import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
-import { SubjectTemplate } from '../../components/Templates/subject/SubjectTemplate'; 
+import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
 
 
 
@@ -43,7 +38,7 @@ import { NewAnnotationForm } from "./NewAnnotationForm";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { GeneticModifiersTemplate } from '../../components/Templates/subject/GeneticModifiersTemplate';
+import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const DiseaseAnnotationsTable = () => {
@@ -929,7 +924,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationSubject.symbol",
 		header: "Subject",
-		body: (rowData) => <SubjectTemplate subject={rowData.subject}/>,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.subject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
 		editor: (props) => subjectEditorTemplate(props),
@@ -977,7 +972,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "with.geneSymbol.displayText",
 		header: "With",
-		body: (rowData) => <WithTemplate rowData={rowData}/>,
+		body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.withFilterConfig,
 		editor: (props) => withEditorTemplate(props)
@@ -1024,7 +1019,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "sgdStrainBackground.name",
 		header: "SGD Strain Background",
-		body: (rowData) => <SubjectTemplate subject={rowData.sgdStrainBackground}/>,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.sgdStrainBackground}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
 		editor: (props) => sgdStrainBackgroundEditorSelector(props)
@@ -1046,7 +1041,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseGeneticModifiers.symbol",
 		header: "Genetic Modifiers",
-		body: (rowData) => <GeneticModifiersTemplate diseaseGeneticModifiers={rowData.diseaseGeneticModifiers}/>,
+		body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifiers}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.geneticModifiersFilterConfig,
 		editor: (props) => geneticModifiersEditorTemplate(props),
@@ -1054,14 +1049,14 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "inferredGene.geneSymbol.displayText",
 		header: "Inferred Gene",
-		body: (rowData) => <InferredGeneBodyTemplate rowData={rowData}/>,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredGene}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 	},
 	{
 		field: "assertedGenes.geneSymbol.displayText",
 		header: "Asserted Genes",
-		body: (rowData) => <AssertedGenesBodyTemplate rowData={rowData}/>,
+		body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedGenes}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 		editor: (props) => assertedGenesEditorTemplate(props),
@@ -1069,14 +1064,14 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "inferredAllele.alleleSymbol.displayText",
 		header: "Inferred Allele",
-		body: (rowData) => <InferredAlleleBodyTemplate rowData={rowData}/>,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredAllele}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 	},
 	{
 		field: "assertedAllele.alleleSymbol.displayText",
 		header: "Asserted Allele",
-		body: (rowData) => <AssertedAlleleBodyTemplate rowData={rowData}/>,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.assertedAllele}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
 		editor: (props) => assertedAlleleEditorTemplate(props),
