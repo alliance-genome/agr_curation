@@ -1,6 +1,6 @@
 import { fireEvent, render } from '@testing-library/react';
-import { GenomicEntityTemplate } from '../GenomicEntityTemplate';
-import '../../../../tools/jest/setupTests';
+import { GenomicEntityTemplate } from '../genomicEntity/GenomicEntityTemplate';
+import '../../../tools/jest/setupTests';
 
 describe('GenomicEntityTemplate', () => {
 

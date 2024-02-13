@@ -1,6 +1,6 @@
 import { within, render } from '@testing-library/react';
-import { GenomicEntityListTemplate } from '../GenomicEntityListTemplate';
-import '../../../../tools/jest/setupTests';
+import { GenomicEntityListTemplate } from '../genomicEntity/GenomicEntityListTemplate';
+import '../../../tools/jest/setupTests';
 
 describe('GenomicEntityListTemplate', () => {
 
