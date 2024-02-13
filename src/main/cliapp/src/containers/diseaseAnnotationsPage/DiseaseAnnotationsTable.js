@@ -15,7 +15,7 @@ import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
 import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
-import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
+import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate'; 
 import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
 import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
@@ -1010,7 +1010,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseQualifiers.name",
 		header: "Disease Qualifiers",
-		body: (rowData) => <DiseaseQualifiersBodyTemplate rowData={rowData}/>,
+		body: (rowData) => <DiseaseQualifiersTemplate diseaseQualifiers={rowData.diseaseQualifiers}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
 		editor: (props) => diseaseQualifiersEditor(props)
