@@ -13,7 +13,7 @@ import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
-import { EvidenceTemplate } from '../../components/Templates/EvidenceTemplate'; 
+import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
 import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleReferenceBodyTemplate'; 
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
 import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
@@ -963,7 +963,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "evidenceCodes.abbreviation",
 		header: "Evidence Code",
-		body: (rowData) => <EvidenceTemplate rowData={rowData}/>,
+		body: (rowData) => <EvidenceCodesTemplate evidenceCodes={rowData.evidenceCodes}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 		editor: (props) => evidenceEditorTemplate(props)
