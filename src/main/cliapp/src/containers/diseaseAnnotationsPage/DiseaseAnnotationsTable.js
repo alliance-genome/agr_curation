@@ -16,7 +16,7 @@ import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
 import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
 import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate'; 
-import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
+import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
 
@@ -901,7 +901,7 @@ export const DiseaseAnnotationsTable = () => {
 	const columns = [{
 		field: "uniqueId",
 		header: "Unique ID",
-		body: (rowData) => <IdBodyTemplate id={rowData.uniqueId}/>,
+		body: (rowData) => <IdTemplate id={rowData.uniqueId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		editor: (props) => uniqueIdEditorTemplate(props)
@@ -909,14 +909,14 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "modEntityId",
 		header: "MOD Annotation ID",
-		body: (rowData) => <IdBodyTemplate id={rowData.modEntityId}/>,
+		body: (rowData) => <IdTemplate id={rowData.modEntityId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 	},
 	{
 		field: "modInternalId",
 		header: "MOD Internal ID",
-		body: (rowData) => <IdBodyTemplate id={rowData.modInternalId}/>,
+		body: (rowData) => <IdTemplate id={rowData.modInternalId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 	},
