@@ -16,7 +16,6 @@ import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 import { EvidenceTemplate } from '../../components/Templates/EvidenceTemplate'; 
 import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleReferenceBodyTemplate'; 
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
-import { NegatedTemplate } from '../../components/Templates/NegatedTemplate'; 
 import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
 import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
@@ -939,7 +938,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "negated",
 		header: "Negated",
-		body: (rowData) => <NegatedTemplate rowData={rowData}/>,
+		body: (rowData) => <BooleanTemplate value={rowData.negated}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		editor: (props) => negatedEditor(props)
