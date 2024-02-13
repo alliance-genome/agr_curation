@@ -14,7 +14,7 @@ import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
-import { SingleReferenceBodyTemplate } from '../../components/Templates/SingleReferenceBodyTemplate'; 
+import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
 import { DiseaseQualifiersBodyTemplate } from '../../components/Templates/DiseaseQualifiersBodyTemplate'; 
 import { IdBodyTemplate } from '../../components/Templates/IdBodyTemplate'; 
 import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
@@ -954,7 +954,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "singleReference.primaryCrossReferenceCurie",
 		header: "Reference",
-		body: (rowData) => <SingleReferenceBodyTemplate rowData={rowData}/>,
+		body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 		editor: (props) => referenceEditorTemplate(props),
