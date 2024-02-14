@@ -1,7 +1,7 @@
 import { ListTableCell } from "../ListTableCell";
 
 export const DiseaseQualifiersTemplate = ({ diseaseQualifiers }) => {
-  if (!diseaseQualifiers) return null;
+  if (!diseaseQualifiers || diseaseQualifiers.length === 0) return null;
 
   const sortedDiseaseQualifiers = diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
