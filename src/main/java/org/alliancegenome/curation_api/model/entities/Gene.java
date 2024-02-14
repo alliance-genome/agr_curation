@@ -44,7 +44,7 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private SOTerm geneType;
 
-	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "subjectBiologicalEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -77,10 +77,10 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 	
-	@IndexedEmbedded(includePaths = {"subject.curie", "subject.alleleSymbol.displayText", "subject.alleleSymbol.formatText", "subject.alleleFullName.displayText", "subject.alleleFullName.formatText",
-			"subject.curie_keyword", "subject.alleleSymbol.displayText_keyword", "subject.alleleSymbol.formatText_keyword", "subject.alleleFullName.displayText_keyword", "subject.alleleFullName.formatText_keyword",
-			"subject.modEntityId", "subject.modInternalId", "subject.modEntityId_keyword", "subject.modInternalId_keyword"})
-	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL, orphanRemoval = true)
+	@IndexedEmbedded(includePaths = {"subjectBiologicalEntity.curie", "subjectBiologicalEntity.alleleSymbol.displayText", "subjectBiologicalEntity.alleleSymbol.formatText", "subjectBiologicalEntity.alleleFullName.displayText", "subjectBiologicalEntity.alleleFullName.formatText",
+			"subjectBiologicalEntity.curie_keyword", "subjectBiologicalEntity.alleleSymbol.displayText_keyword", "subjectBiologicalEntity.alleleSymbol.formatText_keyword", "subjectBiologicalEntity.alleleFullName.displayText_keyword", "subjectBiologicalEntity.alleleFullName.formatText_keyword",
+			"subjectBiologicalEntity.modEntityId", "subjectBiologicalEntity.modInternalId", "subjectBiologicalEntity.modEntityId_keyword", "subjectBiologicalEntity.modInternalId_keyword"})
+	@OneToMany(mappedBy = "objectBiologicalEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
 }

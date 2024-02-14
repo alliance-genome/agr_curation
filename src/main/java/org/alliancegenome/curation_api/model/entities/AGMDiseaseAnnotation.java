@@ -24,6 +24,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -36,6 +37,12 @@ import lombok.EqualsAndHashCode;
 @JsonTypeName("AGMDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
+@Table(indexes = {
+	@Index(name = "AGMDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id"),
+	@Index(name = "AGMDiseaseAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
+	@Index(name = "AGMDiseaseAnnotation_assertedAllele_index", columnList = "assertedAllele_id"),
+	@Index(name = "AGMDiseaseAnnotation_SubjectBiologicalEntity_index", columnList = "subjectbiologicalentity_id")
+})
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
@@ -44,7 +51,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
-	private AffectedGenomicModel subject;
+	private AffectedGenomicModel subjectBiologicalEntity;
 
 	@IndexedEmbedded(includePaths = {
 			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
@@ -105,39 +112,39 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
-		if (subject == null)
+		if (subjectBiologicalEntity == null)
 			return null;
-		return subject.getCurie();
+		return subjectBiologicalEntity.getCurie();
 	}
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectTaxonCurie() {
-		if (subject == null)
+		if (subjectBiologicalEntity == null)
 			return null;
-		if (subject.getTaxon() == null)
+		if (subjectBiologicalEntity.getTaxon() == null)
 			return null;
-		return subject.getTaxon().getCurie();
+		return subjectBiologicalEntity.getTaxon().getCurie();
 	}
 	
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectIdentifier() {
-		if (subject == null)
+		if (subjectBiologicalEntity == null)
 			return null;
-		return subject.getIdentifier();
+		return subjectBiologicalEntity.getIdentifier();
 	}
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectSpeciesName() {
-		if (subject == null)
+		if (subjectBiologicalEntity == null)
 			return null;
-		if (subject.getTaxon() == null)
+		if (subjectBiologicalEntity.getTaxon() == null)
 			return null;
-		return subject.getTaxon().getGenusSpecies();
+		return subjectBiologicalEntity.getTaxon().getGenusSpecies();
 	}
 }

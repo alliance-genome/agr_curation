@@ -293,7 +293,7 @@ public class ConstructValidator extends ReagentValidator {
 					response.addErrorMessages(field, ix, geaResponse.getErrorMessages());
 				} else {
 					gea = geaResponse.getEntity();
-					gea.setSubject(dbEntity);
+					gea.setSubjectReagent(dbEntity);
 					validatedAssociations.add(gea);
 				}
 			}

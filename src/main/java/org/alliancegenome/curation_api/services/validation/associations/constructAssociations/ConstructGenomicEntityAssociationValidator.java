@@ -71,12 +71,12 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		dbEntity = (ConstructGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		if (validateConstruct) {
-			Construct subject = validateSubject(uiEntity, dbEntity);
-			dbEntity.setSubject(subject);
+			Construct subject = validateSubjectReagent(uiEntity, dbEntity);
+			dbEntity.setSubjectReagent(subject);
 		}
 		
 		GenomicEntity object = validateObject(uiEntity, dbEntity);
-		dbEntity.setObject(object);
+		dbEntity.setObjectBiologicalEntity(object);
 
 		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
@@ -102,22 +102,22 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		return dbEntity;
 	}
 	
-	private Construct validateSubject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		String field = "subject";
-		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
+	private Construct validateSubjectReagent(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
+		String field = "subjectReagent";
+		if (ObjectUtils.isEmpty(uiEntity.getSubjectReagent())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		Construct subjectEntity = null;
-		if (uiEntity.getSubject().getId() != null)
-			subjectEntity = constructDAO.find(uiEntity.getSubject().getId());
+		if (uiEntity.getSubjectReagent().getId() != null)
+			subjectEntity = constructDAO.find(uiEntity.getSubjectReagent().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getId().equals(dbEntity.getSubject().getId()))) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubjectReagent() == null || !subjectEntity.getId().equals(dbEntity.getSubjectReagent().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -127,21 +127,21 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 	}
 
 	private GenomicEntity validateObject(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getObject())) {
-			addMessageResponse("object", ValidationConstants.REQUIRED_MESSAGE);
+		if (ObjectUtils.isEmpty(uiEntity.getObjectBiologicalEntity())) {
+			addMessageResponse("objectBiologicalEntity", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		GenomicEntity objectEntity = null;
-		if (uiEntity.getObject().getId() != null)
-			objectEntity = genomicEntityDAO.find(uiEntity.getObject().getId());
+		if (uiEntity.getObjectBiologicalEntity().getId() != null)
+			objectEntity = genomicEntityDAO.find(uiEntity.getObjectBiologicalEntity().getId());
 		if (objectEntity == null) {
-			addMessageResponse("object", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("objectBiologicalEntity", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (objectEntity.getObsolete() && (dbEntity.getObject() == null || !objectEntity.getId().equals(dbEntity.getObject().getId()))) {
-			addMessageResponse("object", ValidationConstants.OBSOLETE_MESSAGE);
+		if (objectEntity.getObsolete() && (dbEntity.getObjectBiologicalEntity() == null || !objectEntity.getId().equals(dbEntity.getObjectBiologicalEntity().getId()))) {
+			addMessageResponse("objectBiologicalEntity", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 

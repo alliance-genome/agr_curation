@@ -56,11 +56,11 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 
 		if (validateAllele) {
 			Allele subject = validateSubject(uiEntity, dbEntity);
-			dbEntity.setSubject(subject);
+			dbEntity.setSubjectBiologicalEntity(subject);
 		}
 		
 		Gene object = validateObject(uiEntity, dbEntity);
-		dbEntity.setObject(object);
+		dbEntity.setObjectBiologicalEntity(object);
 
 		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
@@ -78,21 +78,21 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	}
 	
 	private Allele validateSubject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		String field = "subject";
-		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
+		String field = "subjectBiologicalEntity";
+		if (ObjectUtils.isEmpty(uiEntity.getSubjectBiologicalEntity())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		Allele subjectEntity = null;
-		if (uiEntity.getSubject().getId() != null)
-			subjectEntity = alleleDAO.find(uiEntity.getSubject().getId());
+		if (uiEntity.getSubjectBiologicalEntity().getId() != null)
+			subjectEntity = alleleDAO.find(uiEntity.getSubjectBiologicalEntity().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getId().equals(dbEntity.getSubject().getId()))) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubjectBiologicalEntity() == null || !subjectEntity.getId().equals(dbEntity.getSubjectBiologicalEntity().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -102,21 +102,22 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	}
 
 	private Gene validateObject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getObject())) {
-			addMessageResponse("object", ValidationConstants.REQUIRED_MESSAGE);
+		String field = "objectBiologicalEntity";
+		if (ObjectUtils.isEmpty(uiEntity.getObjectBiologicalEntity())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		Gene objectEntity = null;
-		if (uiEntity.getObject().getId() != null)
-			objectEntity = geneDAO.find(uiEntity.getObject().getId());
+		if (uiEntity.getObjectBiologicalEntity().getId() != null)
+			objectEntity = geneDAO.find(uiEntity.getObjectBiologicalEntity().getId());
 		if (objectEntity == null) {
-			addMessageResponse("object", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (objectEntity.getObsolete() && (dbEntity.getObject() == null || !objectEntity.getId().equals(dbEntity.getObject().getId()))) {
-			addMessageResponse("object", ValidationConstants.OBSOLETE_MESSAGE);
+		if (objectEntity.getObsolete() && (dbEntity.getObjectBiologicalEntity() == null || !objectEntity.getId().equals(dbEntity.getObjectBiologicalEntity().getId()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 

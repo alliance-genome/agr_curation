@@ -297,7 +297,7 @@ export const data = {
 						"internal": false,
 						"obsolete": false,
 						"id": 135641224,
-						"subject": {
+						"subjectReagent": {
 							"createdBy": {
 								"internal": false,
 								"obsolete": false,

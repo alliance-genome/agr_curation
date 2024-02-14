@@ -82,8 +82,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.modEntityId", is(geneCurie)).
-			body("entity.subject.modEntityId", is(alleleCurie)).
+			body("entity.objectBiologicalEntity.modEntityId", is(geneCurie)).
+			body("entity.subjectBiologicalEntity.modEntityId", is(alleleCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.evidenceCode.curie", is(evidenceCodeCurie)).
@@ -110,8 +110,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].object.modEntityId", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].objectBiologicalEntity.modEntityId", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].subjectBiologicalEntity", not(hasKey("alleleGeneAssociations")));
 		
 		RestAssured.given().
 			when().
@@ -120,8 +120,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].object.modEntityId", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].object", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].objectBiologicalEntity.modEntityId", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].objectBiologicalEntity", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
@@ -137,7 +137,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.object.modEntityId", is(geneCurie)).
+			body("entity.objectBiologicalEntity.modEntityId", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.evidenceCode.curie", is(evidenceCodeCurie2)).

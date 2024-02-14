@@ -11,7 +11,7 @@ const DEFAULT_ANNOTATION = {
 		name: "",
 	},
 	negated: false,
-	object: {
+	objectTerm: {
 		curie: "",
 	},
 	singleReference: {
@@ -52,7 +52,7 @@ const buildAnnotation = (rowData) => {
 		assertedAllele : global.structuredClone(rowData.assertedAllele) || DEFAULT_ANNOTATION.assertedAllele,
 		relation: global.structuredClone(rowData.relation) || DEFAULT_ANNOTATION.relation,
 		negated: rowData.negated || DEFAULT_ANNOTATION.negated,
-		object: global.structuredClone(rowData.object)  || DEFAULT_ANNOTATION.object,
+		objectTerm: global.structuredClone(rowData.objectTerm)  || DEFAULT_ANNOTATION.objectTerm,
 		singleReference: global.structuredClone(rowData.singleReference) || DEFAULT_ANNOTATION.singleReference,
 		evidenceCodes: global.structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
 		with: global.structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,

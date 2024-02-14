@@ -30,8 +30,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociation.class })
 @Schema(name = "AlleleGeneAssociation", description = "POJO representing an association between an allele and a gene")
 @Table(indexes = {
-		@Index(name = "allelegeneassociation_subject_index", columnList = "subject_id"),
-		@Index(name = "allelegeneassociation_object_index", columnList = "object_id")
+		@Index(name = "allelegeneassociation_subjectbiologicalentity_index", columnList = "subjectbiologicalentity_id"),
+		@Index(name = "allelegeneassociation_objectbiologicalentity_index", columnList = "objectbiologicalentity_id")
 		})
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
@@ -42,7 +42,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("alleleGeneAssociations")
 	@Fetch(FetchMode.JOIN)
-	private Allele subject;
+	private Allele subjectBiologicalEntity;
 	
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
 			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
@@ -51,5 +51,5 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
-	private Gene object;
+	private Gene objectBiologicalEntity;
 }

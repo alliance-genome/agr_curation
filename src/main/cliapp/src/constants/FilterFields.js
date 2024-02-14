@@ -316,13 +316,9 @@ export const FIELD_SETS = Object.freeze({
     filterName: "negatedFilter",
     fields: ["negated"],
   },
-  objectFieldSet: {
+  objectTermFieldSet: {
     filterName: "objectFilter",
     fields: ["object.curie", "object.name"],
-  },
-  objectGeneFieldSet: {
-    filterName: "objectGeneFilter",
-    fields: ["object.geneSymbol.displayText", "object.geneSymbol.formatText", "object.curie", "object.modEntityId", "object.modInternalId"],
   },
   obsoleteFieldSet: {
     filterName: "obsoleteFilter",
@@ -541,7 +537,7 @@ export const FILTER_CONFIGS = Object.freeze({
   modinternalidFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.modinternalidFieldSet] },
   nameFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.nameFieldSet] },
   namespaceFilterConfig:                    { filterComponentType: 'input', fieldSets: [FIELD_SETS.namespaceFieldSet] },
-  objectFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.objectFieldSet] },
+  objectTermFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.objectTermFieldSet] },
   ontologySynonymsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.ontologySynonymsFieldSet] },
   pageDescriptionFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },
   prefixFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.prefixFieldSet]},

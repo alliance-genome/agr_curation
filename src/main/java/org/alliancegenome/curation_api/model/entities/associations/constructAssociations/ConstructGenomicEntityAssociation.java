@@ -39,8 +39,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
 @Table(indexes = {
-	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "subject_id"),
-	@Index(name = "constructgenomicentityassociation_object_index", columnList = "object_id"),
+	@Index(name = "constructgenomicentityassociation_subjectreagent_index", columnList = "subjectreagent_id"),
+	@Index(name = "constructgenomicentityassociation_objectbiologicalentity_index", columnList = "objectbiologicalentity_id"),
 	@Index(name = "constructgenomicentityassociation_relation_index", columnList = "relation_id")
 })
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
@@ -53,7 +53,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	@Fetch(FetchMode.JOIN)
-	private Construct subject;
+	private Construct subjectReagent;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -66,7 +66,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
-	private GenomicEntity object;
+	private GenomicEntity objectBiologicalEntity;
 
 	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
 			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 

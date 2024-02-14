@@ -76,7 +76,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
 				annotation = DiseaseAnnotationRetrievalHelper.getCurrentDiseaseAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
-				annotation.setSubject(gene);
+				annotation.setSubjectBiologicalEntity(gene);
 				
 				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !gene.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
 						!dataProvider.sourceOrganization.equals(gene.getDataProvider().getSourceOrganization().getAbbreviation())) {

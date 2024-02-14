@@ -88,7 +88,6 @@ public class ConstructITCase extends BaseITCase {
 	private ConstructFullNameSlotAnnotation constructFullName;
 	private ConstructSynonymSlotAnnotation constructSynonym;
 	private Gene gene;
-	private Gene gene2;
 	private VocabularyTerm geAssociationRelation;
 	
 	private void loadRequiredEntities() {
@@ -133,7 +132,6 @@ public class ConstructITCase extends BaseITCase {
 		constructSynonym = createConstructSynonymSlotAnnotation(List.of(reference), "Test synonym", systematicNameType, exactSynonymScope, "https://test.org");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		gene = createGene("TEST:AssociatedGenomicEntity1", "NCBITaxon:6239", false, symbolNameType);
-		gene2 = createGene("TEST:AssociatedGenomicEntity2", "NCBITaxon:6239", false, symbolNameType);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
 		geAssociationRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
 	}
@@ -936,7 +934,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		
 		ConstructGenomicEntityAssociation geAssociation = new ConstructGenomicEntityAssociation();
-		geAssociation.setObject(gene);
+		geAssociation.setObjectBiologicalEntity(gene);
 		geAssociation.setRelation(geAssociationRelation);
 		construct.setConstructGenomicEntityAssociations(List.of(geAssociation));
 		
@@ -954,7 +952,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", hasKey("constructGenomicEntityAssociations")).
-			body("entity.constructGenomicEntityAssociations[0].object.modEntityId", is(gene.getModEntityId()));
+			body("entity.constructGenomicEntityAssociations[0].objectBiologicalEntity.modEntityId", is(gene.getModEntityId()));
 	}
 	
 	@Test
@@ -986,7 +984,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		
 		ConstructGenomicEntityAssociation geneAssociation = new ConstructGenomicEntityAssociation();
-		geneAssociation.setObject(gene);
+		geneAssociation.setObjectBiologicalEntity(gene);
 		geneAssociation.setRelation(systematicNameType);
 		construct.setConstructGenomicEntityAssociations(List.of(geneAssociation));
 		

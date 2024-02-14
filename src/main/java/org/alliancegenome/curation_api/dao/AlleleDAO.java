@@ -19,7 +19,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 	public List<Long> findReferencingDiseaseAnnotationIds(Long alleleId) {
 		List<Long> results = new ArrayList<>();
-		Query jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.subject.id = :alleleId");
+		Query jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.subjectBiologicalEntity.id = :alleleId");
 		jpqlQuery.setParameter("alleleId", alleleId);
 		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
 			results.add(nativeResult.longValue());

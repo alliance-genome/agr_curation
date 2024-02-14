@@ -614,7 +614,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					response.addErrorMessages(field, ix, gaResponse.getErrorMessages());
 				} else {
 					ga = gaResponse.getEntity();
-					ga.setSubject(dbEntity);
+					ga.setSubjectBiologicalEntity(dbEntity);
 					validatedGeneAssociations.add(ga);
 				}
 			}
@@ -627,7 +627,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 				idsToDelete.removeAll(uiIDs);
 				for(AlleleGeneAssociation ga: dbAssociations){
 					if(idsToDelete.contains(ga.getId())){
-						Gene gene = ga.getObject();
+						Gene gene = ga.getObjectBiologicalEntity();
 						List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
 						geneAssociations.removeIf(geneAGA -> {
 							return idsToDelete.contains(geneAGA.getId());

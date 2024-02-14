@@ -83,7 +83,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
 				annotation = DiseaseAnnotationRetrievalHelper.getCurrentDiseaseAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
-				annotation.setSubject(agm);
+				annotation.setSubjectBiologicalEntity(agm);
 				
 				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !agm.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
 						!dataProvider.sourceOrganization.equals(agm.getDataProvider().getSourceOrganization().getAbbreviation())) {

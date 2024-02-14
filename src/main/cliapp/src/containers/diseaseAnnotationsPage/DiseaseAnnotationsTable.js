@@ -75,7 +75,7 @@ export const DiseaseAnnotationsTable = () => {
 	let diseaseAnnotationService = new DiseaseAnnotationService();
 
 	const sortMapping = {
-		'object.name': ['object.curie', 'object.namespace'],
+		'objectTerm.name': ['objectTerm.curie', 'objectTerm.namespace'],
 		'subject.symbol': ['subject.name', 'subject.modEntityId'],
 		'with.geneSymbol.displayText': ['with.geneFullName.displayText', 'with.modEntityId'],
 		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
@@ -506,7 +506,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const onConditionRelationHandleEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
-		if (typeof event.value === "object") {
+		if (typeof event.value === "objectTerm") {
 			updatedAnnotations[props.rowIndex].conditionRelations[0] = event.value;
 		} else {
 			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
@@ -514,11 +514,11 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const diseaseBodyTemplate = (rowData) => {
-		if (rowData.object) {
+		if (rowData.objectTerm) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.object.curie.replace(':', '')}`}>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.id}${rowData.object.curie.replace(':', '')}`} content={`${rowData.object.name} (${rowData.object.curie})`} />
+					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.objectTerm.curie.replace(':', '')}`}>{rowData.objectTerm.name} ({rowData.objectTerm.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.objectTerm.curie.replace(':', '')}`} content={`${rowData.objectTerm.name} (${rowData.objectTerm.curie})`} />
 				</>
 			)
 		}
@@ -883,7 +883,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onDiseaseValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "object", setFieldValue);
+		defaultAutocompleteOnChange(props, event, "objectTerm", setFieldValue);
 	};
 
 	const diseaseSearch = (event, setFiltered, setQuery) => {
@@ -907,14 +907,14 @@ export const DiseaseAnnotationsTable = () => {
 			<>
 				<AutocompleteEditor
 					search={diseaseSearch}
-					initialValue={props.rowData.object?.curie}
+					initialValue={props.rowData.objectTerm?.curie}
 					rowProps={props}
-					fieldName='object'
+					fieldName='objectTerm'
 					onValueChangeHandler={onDiseaseValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"object"}
+					errorField={"objectTerm"}
 				/>
 			</>
 		);
@@ -1323,11 +1323,11 @@ export const DiseaseAnnotationsTable = () => {
 		editor: (props) => negatedEditor(props)
 	},
 	{
-		field: "object.name",
+		field: "objectTerm.name",
 		header: "Disease",
 		body: diseaseBodyTemplate,
 		sortable: true,
-		filterConfig: FILTER_CONFIGS.objectFilterConfig,
+		filterConfig: FILTER_CONFIGS.objectTermFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
 	},
 	{

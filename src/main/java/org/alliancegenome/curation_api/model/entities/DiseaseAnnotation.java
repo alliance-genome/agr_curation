@@ -48,7 +48,7 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 
 @Table(indexes = { 
-	@Index(name = "DiseaseAnnotation_object_index", columnList = "object_id"),
+	@Index(name = "DiseaseAnnotation_objectontologyterm_index", columnList = "objectontologyterm_id"),
 	@Index(name = "DiseaseAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
 	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
@@ -64,7 +64,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
-	private DOTerm object;
+	private DOTerm objectOntologyTerm;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))

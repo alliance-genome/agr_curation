@@ -5,7 +5,7 @@ export const SORT_FIELDS = Object.freeze([
   "subject.symbol",
   "relation.name",
   "negated",
-  "object.name",
+  "objectTerm.name",
   "singleReference.primaryCrossReferenceCurie",
   "evidenceCodes.abbreviation",
   "with.geneSymbol.displayText",

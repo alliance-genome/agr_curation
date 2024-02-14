@@ -17,7 +17,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	}
 
 	public List<Long> findReferencingDiseaseAnnotations(Long geneId) {
-		Query jpqlQuery = entityManager.createQuery("SELECT gda.id FROM GeneDiseaseAnnotation gda WHERE gda.subject.id = :geneId");
+		Query jpqlQuery = entityManager.createQuery("SELECT gda.id FROM GeneDiseaseAnnotation gda WHERE gda.subjectBiologicalEntity.id = :geneId");
 		jpqlQuery.setParameter("geneId", geneId);
 		List<Long> results = (List<Long>) jpqlQuery.getResultList();
 

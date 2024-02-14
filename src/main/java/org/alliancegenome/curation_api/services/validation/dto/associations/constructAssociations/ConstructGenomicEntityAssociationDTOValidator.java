@@ -75,9 +75,9 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		ConstructGenomicEntityAssociation association = null;
 		if (construct != null && StringUtils.isNotBlank(dto.getGenomicEntityRelationName()) && genomicEntity != null) {
 			HashMap<String, Object> params = new HashMap<>();
-			params.put("subject.id", construct.getId());
+			params.put("subjectReagent.id", construct.getId());
 			params.put("relation.name", dto.getGenomicEntityRelationName());
-			params.put("object.id", genomicEntity.getId());
+			params.put("objectBiologicalEntity.id", genomicEntity.getId());
 			
 			SearchResponse<ConstructGenomicEntityAssociation> searchResponse = constructGenomicEntityAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
@@ -87,8 +87,8 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		if (association == null)
 			association = new ConstructGenomicEntityAssociation();
 		
-		association.setSubject(construct);
-		association.setObject(genomicEntity);
+		association.setSubjectReagent(construct);
+		association.setObjectBiologicalEntity(genomicEntity);
 		
 		ObjectResponse<ConstructGenomicEntityAssociation> eviResponse = validateEvidenceAssociationDTO(association, dto);
 		assocResponse.addErrorMessages(eviResponse.getErrorMessages());

@@ -20,31 +20,18 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
-import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { CurieObject.class })
-@Table(indexes = {
-		@Index(name = "submittedobject_modentityid_index", columnList = "modentityid"),
-		@Index(name = "submittedobject_modinternalid_index", columnList = "modinternalid"),
-		@Index(name = "submittedobject_dataprovider_index", columnList = "dataprovider_id"),
-	},
-	uniqueConstraints = {
-		@UniqueConstraint(name = "submittedobject_modentityid_uk", columnNames = "modentityid"),
-		@UniqueConstraint(name = "submittedobject_modinternalid_uk", columnNames = "modinternalid")
-	}
-)
 @Schema(name = "SubmittedObject", description = "POJO that represents the SubmittedObject")
 public class SubmittedObject extends CurieObject {
 

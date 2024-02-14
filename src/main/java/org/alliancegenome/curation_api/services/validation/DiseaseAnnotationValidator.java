@@ -48,20 +48,20 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	@Inject
 	DataProviderValidator dataProviderValidator;
 
-	public DOTerm validateObject(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String field = "object";
-		if (ObjectUtils.isEmpty(uiEntity.getObject())) {
+	public DOTerm validateObjectOntologyTerm(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+		String field = "objectOntologyTerm";
+		if (ObjectUtils.isEmpty(uiEntity.getObjectOntologyTerm())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
 		DOTerm diseaseTerm = null;
-		if (uiEntity.getObject().getId() != null)
-			diseaseTerm = doTermDAO.find(uiEntity.getObject().getId());
+		if (uiEntity.getObjectOntologyTerm().getId() != null)
+			diseaseTerm = doTermDAO.find(uiEntity.getObjectOntologyTerm().getId());
 		if (diseaseTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (diseaseTerm.getObsolete() && (dbEntity.getObject() == null || !diseaseTerm.getId().equals(dbEntity.getObject().getId()))) {
+		} else if (diseaseTerm.getObsolete() && (dbEntity.getObjectOntologyTerm() == null || !diseaseTerm.getId().equals(dbEntity.getObjectOntologyTerm().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -299,8 +299,8 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		
-		DOTerm term = validateObject(uiEntity, dbEntity);
-		dbEntity.setObject(term);
+		DOTerm term = validateObjectOntologyTerm(uiEntity, dbEntity);
+		dbEntity.setObjectOntologyTerm(term);
 
 		List<ECOTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
 		dbEntity.setEvidenceCodes(terms);

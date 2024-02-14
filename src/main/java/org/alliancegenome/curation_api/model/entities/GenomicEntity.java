@@ -40,11 +40,11 @@ public class GenomicEntity extends BiologicalEntity {
 	private List<CrossReference> crossReferences;
 	
 
-	@IndexedEmbedded(includePaths = {"subject.curie", "subject.constructSymbol.displayText", "subject.constructSymbol.formatText",
-			"subject.constructFullName.displayText", "subject.constructFullName.formatText", "subject.modEntityId",
-			"subject.curie_keyword", "subject.constructSymbol.displayText_keyword", "subject.constructSymbol.formatText_keyword",
-			"subject.constructFullName.displayText_keyword", "subject.constructFullName.formatText_keyword", "subject.modEntityId_keyword",})
-	@OneToMany(mappedBy = "object", cascade = CascadeType.ALL, orphanRemoval = true)
+	@IndexedEmbedded(includePaths = {"subjectReagent.curie", "subjectReagent.constructSymbol.displayText", "subjectReagent.constructSymbol.formatText",
+			"subjectReagent.constructFullName.displayText", "subjectReagent.constructFullName.formatText", "subjectReagent.modEntityId",
+			"subjectReagent.curie_keyword", "subjectReagent.constructSymbol.displayText_keyword", "subjectReagent.constructSymbol.formatText_keyword",
+			"subjectReagent.constructFullName.displayText_keyword", "subjectReagent.constructFullName.formatText_keyword", "subjectReagent.modEntityId_keyword",})
+	@OneToMany(mappedBy = "objectBiologicalEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 

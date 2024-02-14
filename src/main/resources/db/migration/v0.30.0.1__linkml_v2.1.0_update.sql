@@ -1,8 +1,8 @@
--- Revert temporary changes to association table columns
+-- Update association column names for non-biological entity fields
 
-ALTER TABLE constructgenomicentityassociation RENAME subjectconstruct_id TO subject_id;
 
 ALTER TABLE constructgenomicentityassociation RENAME objectgenomicentity_curie TO object_curie;
+ALTER TABLE constructgenomicentityassociation RENAME subjectconstruct_id TO subjectreagent_id;
 
 ALTER TABLE allelegeneassociation RENAME objectgene_curie TO object_curie;
 
@@ -284,6 +284,8 @@ ALTER INDEX constructcomponentsa_note_relatednotes_id_index RENAME TO constructc
 ALTER INDEX constructfullname_singleconstruct_id_index RENAME TO constructfullname_singleconstruct_index;
 ALTER TABLE constructgenomicentityassociation DROP CONSTRAINT constructgenomicentityassociation_object_curie_fk;
 ALTER TABLE constructgenomicentityassociation RENAME CONSTRAINT fkgrhw9gxslaub14x4b0mc7v9mk TO constructgenomicentityassociation_id_fk;
+ALTER TABLE constructgenomicentityassociation RENAME CONSTRAINT constructgenomicentityassociation_subject_id_fk TO constructgenomicentityassociation_subjectreagent_id_fk;
+ALTER INDEX constructgenomicentityassociation_subject_index RENAME TO constructgenomicentityassociation_subjectreagent_index;
 DROP INDEX constructgenomicentityassociation_object_index;
 ALTER INDEX cgeassociation_note_cgeassociation_id_index RENAME TO cgeassociation_note_cgeassociation_index;
 ALTER INDEX cgeassociation_note_relatednotes_id_index RENAME TO cgeassociation_note_relatednotes_index;
@@ -354,6 +356,8 @@ DROP INDEX genomicentity_crossreference_ge_curie_xref_id_index;
 DROP INDEX genomicentity_crossreference_genomicentity_curie_index;
 ALTER TABLE goterm DROP CONSTRAINT fk4gf262ba8btx03wi3vl5vhfao;
 ALTER TABLE hpterm DROP CONSTRAINT hpterm_curie_fk;
+DROP INDEX informationcontent_createdby_index;
+DROP INDEX informationcontent_updatedby_index;
 ALTER TABLE materm DROP CONSTRAINT fktlgqvrv4vuh8gqihevh6adya4;
 ALTER TABLE miterm DROP CONSTRAINT miterm_curie_fk;
 ALTER TABLE mmoterm DROP CONSTRAINT mmoterm_curie_fk;
@@ -437,6 +441,7 @@ ALTER TABLE anatomicalterm DROP CONSTRAINT anatomicalterm_pkey;
 ALTER TABLE apoterm DROP CONSTRAINT apoterm_pkey;
 ALTER TABLE atpterm DROP CONSTRAINT atpterm_pkey;
 ALTER TABLE biologicalentity DROP CONSTRAINT biologicalentity_pkey;
+ALTER TABLE biologicalentity ALTER COLUMN curie DROP NOT NULL;
 ALTER TABLE bspoterm DROP CONSTRAINT bspoterm_pkey;
 ALTER TABLE chebiterm DROP CONSTRAINT chebiterm_pkey;
 ALTER TABLE chemicalterm DROP CONSTRAINT chemicalterm_pkey;
@@ -489,35 +494,11 @@ ALTER TABLE zecoterm DROP CONSTRAINT zecoterm_pkey;
 ALTER TABLE zfaterm DROP CONSTRAINT zfaterm_pkey;
 ALTER TABLE zfsterm DROP CONSTRAINT zfsterm_pkey;
 
--- Create tables
+-- Create sequences
 
-CREATE TABLE curieobject (
-	id bigint PRIMARY KEY,
-	old_id bigint,
-	curie varchar(255),
-	modentityid varchar(255),
-	modinternalid varchar(255),
-	dataprovider_id bigint,
-	createdby_id bigint,
-	updatedby_id bigint,
-	datecreated timestamp without time zone,
-	dateupdated timestamp without time zone,
-	dbdatecreated timestamp without time zone,
-	dbdateupdated timestamp without time zone,
-	internal boolean NOT NULL DEFAULT false,
-	obsolete boolean NOT NULL DEFAULT false,
-	curieobjecttype varchar(64)
-	);
-
-CREATE TABLE submittedobject (
-	id bigint PRIMARY KEY,
-	modentityid varchar(255),
-	modinternalid varchar(255),
-	dataprovider_id bigint
-	);
-	                                         
-CREATE SEQUENCE curieobject_seq START WITH 200250000 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
-CREATE SEQUENCE informationcontententity_seq START WITH 20025000 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE biologicalentity_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE informationcontententity_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE ontologyterm_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 
 -- Add id equivalents of curie columns 
 
@@ -525,7 +506,7 @@ ALTER TABLE affectedgenomicmodel ADD COLUMN id bigint;
 ALTER TABLE agmdiseaseannotation ADD COLUMN inferredallele_id bigint;
 ALTER TABLE agmdiseaseannotation ADD COLUMN inferredgene_id bigint;
 ALTER TABLE agmdiseaseannotation ADD COLUMN assertedallele_id bigint;
-ALTER TABLE agmdiseaseannotation ADD COLUMN subject_id bigint;
+ALTER TABLE agmdiseaseannotation ADD COLUMN subjectbiologicalentity_id bigint;
 ALTER TABLE agmdiseaseannotation_gene ADD COLUMN assertedgenes_id bigint;
 ALTER TABLE allele ADD COLUMN id bigint;
 ALTER TABLE allele_note ADD COLUMN allele_id bigint;
@@ -533,13 +514,13 @@ ALTER TABLE allele_reference ADD COLUMN allele_id bigint;
 ALTER TABLE allele_reference ADD COLUMN references_id bigint;
 ALTER TABLE alleledatabasestatusslotannotation ADD COLUMN singleallele_id bigint;
 ALTER TABLE allelediseaseannotation ADD COLUMN inferredgene_id bigint;
-ALTER TABLE allelediseaseannotation ADD COLUMN subject_id bigint;
+ALTER TABLE allelediseaseannotation ADD COLUMN subjectbiologicalentity_id bigint;
 ALTER TABLE allelediseaseannotation_gene ADD COLUMN assertedgenes_id bigint;	
 ALTER TABLE allelefullnameslotannotation ADD COLUMN singleallele_id bigint;
 ALTER TABLE allelefunctionalimpactslotannotation ADD COLUMN singleallele_id bigint;
 ALTER TABLE allelefunctionalimpactslotannotation ADD COLUMN phenotypeterm_id bigint; 
-ALTER TABLE allelegeneassociation ADD COLUMN subject_id bigint;
-ALTER TABLE allelegeneassociation ADD COLUMN object_id bigint;
+ALTER TABLE allelegeneassociation ADD COLUMN subjectbiologicalentity_id bigint;
+ALTER TABLE allelegeneassociation ADD COLUMN objectbiologicalentity_id bigint;
 ALTER TABLE allelegenomicentityassociation ADD COLUMN evidencecode_id bigint;
 ALTER TABLE allelegermlinetransmissionstatusslotannotation ADD COLUMN singleallele_id bigint;
 ALTER TABLE alleleinheritancemodeslotannotation ADD COLUMN singleallele_id bigint;
@@ -554,6 +535,8 @@ ALTER TABLE anatomicalterm ADD COLUMN id bigint;
 ALTER TABLE apoterm ADD COLUMN id bigint;
 ALTER TABLE atpterm ADD COLUMN id bigint;
 ALTER TABLE biologicalentity ADD COLUMN id bigint;
+ALTER TABLE biologicalentity ADD COLUMN modentityid varchar(255);
+ALTER TABLE biologicalentity ADD COLUMN modinternalid varchar(255);
 ALTER TABLE biologicalentity ADD COLUMN taxon_id bigint;
 ALTER TABLE bspoterm ADD COLUMN id bigint;
 ALTER TABLE chebiterm ADD COLUMN id bigint;
@@ -563,9 +546,9 @@ ALTER TABLE cmoterm ADD COLUMN id bigint;
 ALTER TABLE conditionrelation ADD COLUMN singlereference_id bigint;
 ALTER TABLE construct_reference ADD COLUMN references_id bigint;
 ALTER TABLE constructcomponentslotannotation ADD COLUMN taxon_id bigint;
-ALTER TABLE constructgenomicentityassociation ADD COLUMN object_id bigint;
+ALTER TABLE constructgenomicentityassociation ADD COLUMN objectbiologicalentity_id bigint;
 ALTER TABLE daoterm ADD COLUMN id bigint;
-ALTER TABLE diseaseannotation ADD COLUMN object_id bigint;
+ALTER TABLE diseaseannotation ADD COLUMN objectontologyterm_id bigint;
 ALTER TABLE diseaseannotation_biologicalentity ADD COLUMN diseasegeneticmodifiers_id bigint;
 ALTER TABLE diseaseannotation_ecoterm ADD COLUMN evidencecodes_id bigint;
 ALTER TABLE diseaseannotation_gene ADD COLUMN with_id bigint;
@@ -585,7 +568,7 @@ ALTER TABLE fbdvterm ADD COLUMN id bigint;
 ALTER TABLE gene ADD COLUMN id bigint;
 ALTER TABLE gene ADD COLUMN genetype_id bigint;
 ALTER TABLE genediseaseannotation ADD COLUMN sgdstrainbackground_id bigint;
-ALTER TABLE genediseaseannotation ADD COLUMN subject_id bigint;
+ALTER TABLE genediseaseannotation ADD COLUMN subjectbiologicalentity_id bigint;
 ALTER TABLE genefullnameslotannotation ADD COLUMN singlegene_id bigint;
 ALTER TABLE genesecondaryidslotannotation ADD COLUMN singlegene_id bigint;
 ALTER TABLE genesymbolslotannotation ADD COLUMN singlegene_id bigint;
@@ -654,68 +637,56 @@ ALTER TABLE zfsterm ADD COLUMN id bigint;
 
 -- Move data around
 
-INSERT INTO curieobject (id, modentityid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT nextval('curieobject_seq'), curie, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM biologicalentity;
-	
-INSERT INTO curieobject (id, old_id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT nextval('curieobject_seq'), id, modentityid, modinternalid, dataprovider_id, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM reagent;	
-	
-INSERT INTO submittedobject(id, modentityid, modinternalid, dataprovider_id)
-	SELECT id, modentityid, modinternalid, dataprovider_id
-	FROM curieobject;
+UPDATE biologicalentity SET id = nextval('biologicalentity_seq');
+UPDATE biologicalentity SET modentityid = curie;
+UPDATE biologicalentity SET curie = null;
+ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_pkey PRIMARY KEY (id);
+ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_curie_uk UNIQUE (curie);
+ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_modentityid_uk UNIQUE (modentityid);
+ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_modinternalid_uk UNIQUE (modinternalid);
+CREATE INDEX biologicalentity_modentityid_index ON biologicalentity USING btree (modentityid);
 
-UPDATE ontologyterm SET id = nextval('curieobject_seq');
-ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_pkey PRIMARY KEY (id);
-
-INSERT INTO curieobject (id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM ontologyterm;
-
-UPDATE informationcontententity SET id = nextval('curieobject_seq');
+UPDATE informationcontententity SET id = nextval('informationcontententity_seq');
+ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_curie_uk UNIQUE (curie);
 ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_pkey PRIMARY KEY (id);
 
-INSERT INTO curieobject (id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete)
-	SELECT id, curie, createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated, internal, obsolete
-	FROM informationcontententity;
-	
-CREATE INDEX old_id_index ON curieobject USING btree (old_id);
-CREATE INDEX curieobject_modentityid_index ON curieobject USING btree (modentityid);
+UPDATE ontologyterm SET id = nextval('ontologyterm_seq');
+ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_curie_uk UNIQUE (curie);
+ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_pkey PRIMARY KEY (id);
 
-UPDATE affectedgenomicmodel t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
-UPDATE agmdiseaseannotation t SET inferredallele_id = c.id FROM curieobject c WHERE t.inferredallele_curie = c.modentityid;
-UPDATE agmdiseaseannotation t SET assertedallele_id = c.id FROM curieobject c WHERE t.assertedallele_curie = c.modentityid;
-UPDATE agmdiseaseannotation t SET inferredgene_id = c.id FROM curieobject c WHERE t.inferredgene_curie = c.modentityid;
-UPDATE agmdiseaseannotation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
-UPDATE agmdiseaseannotation_gene t SET assertedgenes_id = c.id FROM curieobject c WHERE t.assertedgenes_curie = c.modentityid;
-UPDATE allele t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
-UPDATE allele_note t SET allele_id = c.id FROM curieobject c WHERE t.allele_curie = c.modentityid;
-UPDATE allele_reference t SET allele_id = c.id FROM curieobject c WHERE t.allele_curie = c.modentityid;
+UPDATE affectedgenomicmodel t SET id = b.id FROM biologicalentity b WHERE t.curie = b.modentityid;
+UPDATE agmdiseaseannotation t SET inferredallele_id = b.id FROM biologicalentity b WHERE t.inferredallele_curie = b.modentityid;
+UPDATE agmdiseaseannotation t SET assertedallele_id = b.id FROM biologicalentity b WHERE t.assertedallele_curie = b.modentityid;
+UPDATE agmdiseaseannotation t SET inferredgene_id = b.id FROM biologicalentity b WHERE t.inferredgene_curie = b.modentityid;
+UPDATE agmdiseaseannotation t SET subjectbiologicalentity_id = b.id FROM biologicalentity b WHERE t.subject_curie = b.modentityid;
+UPDATE agmdiseaseannotation_gene t SET assertedgenes_id = b.id FROM biologicalentity b WHERE t.assertedgenes_curie = b.modentityid;
+UPDATE allele t SET id = b.id FROM biologicalentity b WHERE t.curie = b.modentityid;
+UPDATE allele_note t SET allele_id = b.id FROM biologicalentity b WHERE t.allele_curie = b.modentityid;
+UPDATE allele_reference t SET allele_id = b.id FROM biologicalentity b WHERE t.allele_curie = b.modentityid;
 UPDATE allele_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
-UPDATE alleledatabasestatusslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
-UPDATE allelediseaseannotation t SET inferredgene_id = c.id FROM curieobject c WHERE t.inferredgene_curie = c.modentityid;
-UPDATE allelediseaseannotation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
-UPDATE allelediseaseannotation_gene t SET assertedgenes_id = c.id FROM curieobject c WHERE t.assertedgenes_curie = c.modentityid;
-UPDATE allelefullnameslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
-UPDATE allelefunctionalimpactslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE alleledatabasestatusslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
+UPDATE allelediseaseannotation t SET inferredgene_id = b.id FROM biologicalentity b WHERE t.inferredgene_curie = b.modentityid;
+UPDATE allelediseaseannotation t SET subjectbiologicalentity_id = b.id FROM biologicalentity b WHERE t.subject_curie = b.modentityid;
+UPDATE allelediseaseannotation_gene t SET assertedgenes_id = b.id FROM biologicalentity b WHERE t.assertedgenes_curie = b.modentityid;
+UPDATE allelefullnameslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
+UPDATE allelefunctionalimpactslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
 UPDATE allelefunctionalimpactslotannotation t SET phenotypeterm_id = o.id FROM ontologyterm o WHERE t.phenotypeterm_curie = o.curie;
-UPDATE allelegeneassociation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
-UPDATE allelegeneassociation t SET object_id = c.id FROM curieobject c WHERE t.object_curie = c.modentityid;
+UPDATE allelegeneassociation t SET subjectbiologicalentity_id = b.id FROM biologicalentity b WHERE t.subject_curie = b.modentityid;
+UPDATE allelegeneassociation t SET objectbiologicalentity_id = b.id FROM biologicalentity b WHERE t.object_curie = b.modentityid;
 UPDATE allelegenomicentityassociation t SET evidencecode_id = o.id FROM ontologyterm o WHERE t.evidencecode_curie = o.curie;
-UPDATE allelegermlinetransmissionstatusslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
-UPDATE alleleinheritancemodeslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelegermlinetransmissionstatusslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
+UPDATE alleleinheritancemodeslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
 UPDATE alleleinheritancemodeslotannotation t SET phenotypeterm_id = o.id FROM ontologyterm o WHERE t.phenotypeterm_curie = o.curie;
-UPDATE allelemutationtypeslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelemutationtypeslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
 UPDATE allelemutationtypeslotannotation_soterm t SET mutationtypes_id = o.id FROM ontologyterm o WHERE t.mutationtypes_curie = o.curie;
-UPDATE allelenomenclatureeventslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
-UPDATE allelesecondaryidslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
-UPDATE allelesymbolslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
-UPDATE allelesynonymslotannotation t SET singleallele_id = c.id FROM curieobject c WHERE t.singleallele_curie = c.modentityid;
+UPDATE allelenomenclatureeventslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
+UPDATE allelesecondaryidslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
+UPDATE allelesymbolslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
+UPDATE allelesynonymslotannotation t SET singleallele_id = b.id FROM biologicalentity b WHERE t.singleallele_curie = b.modentityid;
 UPDATE anatomicalterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE apoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE atpterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE biologicalentity t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
+UPDATE biologicalentity t SET id = b.id FROM biologicalentity b WHERE t.curie = b.modentityid;
 UPDATE biologicalentity t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
 UPDATE bspoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE chebiterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -723,21 +694,14 @@ UPDATE chemicalterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE clterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE cmoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE conditionrelation t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
-UPDATE construct t SET id = c.id FROM curieobject c WHERE t.id = c.old_id;
-UPDATE construct_reference t SET construct_id = c.id FROM curieobject c WHERE t.construct_id = c.old_id;
 UPDATE construct_reference t SET references_id = i.id FROM informationcontententity i WHERE t.references_curie = i.curie;
-UPDATE constructcomponentslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
 UPDATE constructcomponentslotannotation t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
-UPDATE constructfullnameslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
-UPDATE constructgenomicentityassociation t SET subject_id = c.id FROM curieobject c WHERE t.subject_id = c.old_id;
-UPDATE constructgenomicentityassociation t SET object_id = c.id FROM curieobject c WHERE t.object_curie = c.modentityid;
-UPDATE constructsymbolslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
-UPDATE constructsynonymslotannotation t SET singleconstruct_id = c.id FROM curieobject c WHERE t.singleconstruct_id = c.old_id;
+UPDATE constructgenomicentityassociation t SET objectbiologicalentity_id = b.id FROM biologicalentity b WHERE t.object_curie = b.modentityid;
 UPDATE daoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE diseaseannotation t SET object_id = o.id FROM ontologyterm o WHERE t.object_curie = o.curie;
-UPDATE diseaseannotation_biologicalentity t SET diseasegeneticmodifiers_id = c.id FROM curieobject c WHERE t.diseasegeneticmodifiers_curie = c.modentityid;
+UPDATE diseaseannotation t SET objectontologyterm_id = o.id FROM ontologyterm o WHERE t.object_curie = o.curie;
+UPDATE diseaseannotation_biologicalentity t SET diseasegeneticmodifiers_id = b.id FROM biologicalentity b WHERE t.diseasegeneticmodifiers_curie = b.modentityid;
 UPDATE diseaseannotation_ecoterm t SET evidencecodes_id = o.id FROM ontologyterm o WHERE t.evidencecodes_curie = o.curie;
-UPDATE diseaseannotation_gene t SET with_id = c.id FROM curieobject c WHERE t.with_curie = c.modentityid;
+UPDATE diseaseannotation_gene t SET with_id = b.id FROM biologicalentity b WHERE t.with_curie = b.modentityid;
 UPDATE doterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE dpoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE ecoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -751,21 +715,21 @@ UPDATE experimentalcondition t SET conditionid_id = o.id FROM ontologyterm o WHE
 UPDATE experimentalcondition t SET conditiontaxon_id = o.id FROM ontologyterm o WHERE t.conditiontaxon_curie = o.curie;
 UPDATE experimentalconditionontologyterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE fbdvterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE gene t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
+UPDATE gene t SET id = b.id FROM biologicalentity b WHERE t.curie = b.modentityid;
 UPDATE gene t SET genetype_id = o.id FROM ontologyterm o WHERE t.genetype_curie = o.curie;
-UPDATE genediseaseannotation t SET sgdstrainbackground_id = c.id FROM curieobject c WHERE t.sgdstrainbackground_curie = c.modentityid;
-UPDATE genediseaseannotation t SET subject_id = c.id FROM curieobject c WHERE t.subject_curie = c.modentityid;
-UPDATE genefullnameslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
-UPDATE genesecondaryidslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
-UPDATE genesymbolslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
-UPDATE genesynonymslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
-UPDATE genesystematicnameslotannotation t SET singlegene_id = c.id FROM curieobject c WHERE t.singlegene_curie = c.modentityid;
-UPDATE genetogeneorthology t SET subjectgene_id = c.id FROM curieobject c WHERE t.subjectgene_curie = c.modentityid;
-UPDATE genetogeneorthology t SET objectgene_id = c.id FROM curieobject c WHERE t.objectgene_curie = c.modentityid;
+UPDATE genediseaseannotation t SET sgdstrainbackground_id = b.id FROM biologicalentity b WHERE t.sgdstrainbackground_curie = b.modentityid;
+UPDATE genediseaseannotation t SET subjectbiologicalentity_id = b.id FROM biologicalentity b WHERE t.subject_curie = b.modentityid;
+UPDATE genefullnameslotannotation t SET singlegene_id = b.id FROM biologicalentity b WHERE t.singlegene_curie = b.modentityid;
+UPDATE genesecondaryidslotannotation t SET singlegene_id = b.id FROM biologicalentity b WHERE t.singlegene_curie = b.modentityid;
+UPDATE genesymbolslotannotation t SET singlegene_id = b.id FROM biologicalentity b WHERE t.singlegene_curie = b.modentityid;
+UPDATE genesynonymslotannotation t SET singlegene_id = b.id FROM biologicalentity b WHERE t.singlegene_curie = b.modentityid;
+UPDATE genesystematicnameslotannotation t SET singlegene_id = b.id FROM biologicalentity b WHERE t.singlegene_curie = b.modentityid;
+UPDATE genetogeneorthology t SET subjectgene_id = b.id FROM biologicalentity b WHERE t.subjectgene_curie = b.modentityid;
+UPDATE genetogeneorthology t SET objectgene_id = b.id FROM biologicalentity b WHERE t.objectgene_curie = b.modentityid;
 UPDATE genetogeneorthologycurated t SET evidencecode_id = o.id FROM ontologyterm o WHERE t.evidencecode_curie = o.curie;
 UPDATE genetogeneorthologycurated t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
-UPDATE genomicentity t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
-UPDATE genomicentity_crossreference t SET genomicentity_id = c.id FROM curieobject c WHERE t.genomicentity_curie = c.modentityid;
+UPDATE genomicentity t SET id = b.id FROM biologicalentity b WHERE t.curie = b.modentityid;
+UPDATE genomicentity_crossreference t SET genomicentity_id = b.id FROM biologicalentity b WHERE t.genomicentity_curie = b.modentityid;
 UPDATE goterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE hpterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE materm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -791,8 +755,6 @@ UPDATE ontologyterm_synonym t SET ontologyterm_id = o.id FROM ontologyterm o WHE
 UPDATE patoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE phenotypeterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE pwterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE reagent t SET id = c.id FROM curieobject c WHERE t.id = c.old_id;
-UPDATE reagent_secondaryidentifiers t SET reagent_id = c.id FROM curieobject c WHERE t.reagent_id = c.old_id;
 UPDATE reference t SET id = i.id FROM informationcontententity i WHERE t.curie = i.curie;
 UPDATE reference_crossreference t SET reference_id = i.id FROM informationcontententity i WHERE t.reference_curie = i.curie;
 UPDATE roterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -800,14 +762,13 @@ UPDATE rsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE soterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE singlereferenceassociation t SET singlereference_id = i.id FROM informationcontententity i WHERE t.singlereference_curie = i.curie;
 UPDATE slotannotation_informationcontententity t SET evidence_id = i.id FROM informationcontententity i WHERE t.evidence_curie = i.curie;
-UPDATE species t SET id = c.id FROM curieobject c WHERE t.id = c.old_id;
 UPDATE species t SET taxon_id = o.id FROM ontologyterm o WHERE t.taxon_curie = o.curie;
 UPDATE stageterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE uberonterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-UPDATE variant t SET id = c.id FROM curieobject c WHERE t.curie = c.modentityid;
+UPDATE variant t SET id = b.id FROM biologicalentity b WHERE t.curie = b.modentityid;
 UPDATE variant t SET varianttype_id = o.id FROM ontologyterm o WHERE t.varianttype_curie = o.curie;
 UPDATE variant t SET sourcegeneralconsequence_id = o.id FROM ontologyterm o WHERE t.sourcegeneralconsequence_curie = o.curie;
-UPDATE variant_note t SET variant_id = c.id FROM curieobject c WHERE t.variant_curie = c.modentityid;
+UPDATE variant_note t SET variant_id = b.id FROM biologicalentity b WHERE t.variant_curie = b.modentityid;
 UPDATE vtterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE wbbtterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE wblsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
@@ -821,59 +782,6 @@ UPDATE xsmoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE zecoterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE zfaterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
 UPDATE zfsterm t SET id = o.id FROM ontologyterm o WHERE t.curie = o.curie;
-
--- Update Entity Types in the auditedobject table ... this needs to be done for all "leaf" nodes of the CurieObject class tree
-UPDATE curieobject c SET curieobjecttype = 'APOTerm' FROM APOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'ATPTerm' FROM ATPTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'AffectedGenomicModel' FROM AffectedGenomicModel t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Allele' FROM Allele t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'BSPOTerm' FROM BSPOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'CHEBITerm' FROM CHEBITerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'CLTerm' FROM CLTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'CMOTerm' FROM CMOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Construct' FROM Construct t WHERE c.id = t.id;;
-UPDATE curieobject c SET curieobjecttype = 'DAOTerm' FROM DAOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'DOTerm' FROM DOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'DPOTerm' FROM DPOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'ECOTerm' FROM ECOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'EMAPATerm' FROM EMAPATerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'FBDVTerm' FROM FBDVTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'GOTerm' FROM GOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Gene' FROM Gene t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'HPTerm' FROM HPTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'MATerm' FROM MATerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'MITerm' FROM MITerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'MMOTerm' FROM MMOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'MMUSDVTerm' FROM MMUSDVTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'MODTerm' FROM MODTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'MPATHTerm' FROM MPATHTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'MPTerm' FROM MPTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Molecule' FROM Molecule t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'NCBITaxonTerm' FROM NCBITaxonTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'OBITerm' FROM OBITerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'PATOTerm' FROM PATOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'PWTerm' FROM PWTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'ROTerm' FROM ROTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'RSTerm' FROM RSTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Reference' FROM Reference t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'SOTerm' FROM SOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Species' FROM Species t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Synonym' FROM Synonym t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'UBERONTerm' FROM UBERONTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'VTTerm' FROM VTTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'Variant' FROM Variant t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'WBBTTerm' FROM WBBTTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'WBLSTerm' FROM WBLSTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'WBPhenotypeTerm' FROM WBPhenotypeTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'XBATerm' FROM XBATerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'XBEDTerm' FROM XBEDTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'XBSTerm' FROM XBSTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'XCOTerm' FROM XCOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'XPOTerm' FROM XPOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'XSMOTerm' FROM XSMOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'ZECOTerm' FROM ZECOTerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'ZFATerm' FROM ZFATerm t WHERE c.id = t.id;
-UPDATE curieobject c SET curieobjecttype = 'ZFSTerm' FROM ZFSTerm t WHERE c.id = t.id;
 
 ALTER TABLE affectedgenomicmodel DROP COLUMN curie;
 ALTER TABLE agmdiseaseannotation DROP COLUMN inferredallele_curie;
@@ -907,17 +815,7 @@ ALTER TABLE allelesynonymslotannotation DROP COLUMN singleallele_curie;
 ALTER TABLE anatomicalterm DROP COLUMN curie;
 ALTER TABLE apoterm DROP COLUMN curie;
 ALTER TABLE atpterm DROP COLUMN curie;
-ALTER TABLE biologicalentity DROP COLUMN curie;
 ALTER TABLE biologicalentity DROP COLUMN taxon_curie;
-ALTER TABLE biologicalentity DROP COLUMN dataprovider_id;
-ALTER TABLE biologicalentity DROP COLUMN createdby_id;
-ALTER TABLE biologicalentity DROP COLUMN updatedby_id;
-ALTER TABLE biologicalentity DROP COLUMN datecreated;
-ALTER TABLE biologicalentity DROP COLUMN dateupdated;
-ALTER TABLE biologicalentity DROP COLUMN dbdatecreated;
-ALTER TABLE biologicalentity DROP COLUMN dbdateupdated;
-ALTER TABLE biologicalentity DROP COLUMN internal;
-ALTER TABLE biologicalentity DROP COLUMN obsolete;
 ALTER TABLE bspoterm DROP COLUMN curie;
 ALTER TABLE chebiterm DROP COLUMN curie;
 ALTER TABLE chemicalterm DROP COLUMN curie;
@@ -962,15 +860,6 @@ ALTER TABLE genomicentity DROP COLUMN curie;
 ALTER TABLE genomicentity_crossreference DROP COLUMN genomicentity_curie;
 ALTER TABLE goterm DROP COLUMN curie;
 ALTER TABLE hpterm DROP COLUMN curie;
-ALTER TABLE informationcontententity DROP COLUMN curie;
-ALTER TABLE informationcontententity DROP COLUMN createdby_id;
-ALTER TABLE informationcontententity DROP COLUMN updatedby_id;
-ALTER TABLE informationcontententity DROP COLUMN datecreated;
-ALTER TABLE informationcontententity DROP COLUMN dateupdated;
-ALTER TABLE informationcontententity DROP COLUMN dbdatecreated;
-ALTER TABLE informationcontententity DROP COLUMN dbdateupdated;
-ALTER TABLE informationcontententity DROP COLUMN internal;
-ALTER TABLE informationcontententity DROP COLUMN obsolete;
 ALTER TABLE materm DROP COLUMN curie;
 ALTER TABLE miterm DROP COLUMN curie;
 ALTER TABLE mmoterm DROP COLUMN curie;
@@ -982,15 +871,6 @@ ALTER TABLE mpterm DROP COLUMN curie;
 ALTER TABLE ncbitaxonterm DROP COLUMN curie;
 ALTER TABLE note_reference DROP COLUMN references_curie;
 ALTER TABLE obiterm DROP COLUMN curie;
-ALTER TABLE ontologyterm DROP COLUMN curie;
-ALTER TABLE ontologyterm DROP COLUMN createdby_id;
-ALTER TABLE ontologyterm DROP COLUMN updatedby_id;
-ALTER TABLE ontologyterm DROP COLUMN datecreated;
-ALTER TABLE ontologyterm DROP COLUMN dateupdated;
-ALTER TABLE ontologyterm DROP COLUMN dbdatecreated;
-ALTER TABLE ontologyterm DROP COLUMN dbdateupdated;
-ALTER TABLE ontologyterm DROP COLUMN internal;
-ALTER TABLE ontologyterm DROP COLUMN obsolete;
 ALTER TABLE ontologyterm_crossreference DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_definitionurls DROP COLUMN ontologyterm_curie;
 ALTER TABLE ontologyterm_isa_ancestor_descendant DROP COLUMN isadescendants_curie;
@@ -1004,18 +884,6 @@ ALTER TABLE patoterm DROP COLUMN curie;
 ALTER TABLE phenotypeterm DROP COLUMN curie;
 ALTER TABLE pwterm DROP COLUMN curie;
 ALTER TABLE reference DROP COLUMN curie;
-ALTER TABLE reagent DROP COLUMN curie;
-ALTER TABLE reagent DROP COLUMN modentityid;
-ALTER TABLE reagent DROP COLUMN modinternalid;
-ALTER TABLE reagent DROP COLUMN dataprovider_id;
-ALTER TABLE reagent DROP COLUMN createdby_id;
-ALTER TABLE reagent DROP COLUMN updatedby_id;
-ALTER TABLE reagent DROP COLUMN datecreated;
-ALTER TABLE reagent DROP COLUMN dateupdated;
-ALTER TABLE reagent DROP COLUMN dbdatecreated;
-ALTER TABLE reagent DROP COLUMN dbdateupdated;
-ALTER TABLE reagent DROP COLUMN internal;
-ALTER TABLE reagent DROP COLUMN obsolete;
 ALTER TABLE reference_crossreference DROP COLUMN reference_curie;
 ALTER TABLE roterm DROP COLUMN curie;
 ALTER TABLE rsterm DROP COLUMN curie;
@@ -1043,30 +911,9 @@ ALTER TABLE zecoterm DROP COLUMN curie;
 ALTER TABLE zfaterm DROP COLUMN curie;
 ALTER TABLE zfsterm DROP COLUMN curie;
 
-ALTER TABLE curieobject DROP COLUMN old_id;
-ALTER TABLE curieobject DROP COLUMN modentityid;
-ALTER TABLE curieobject DROP COLUMN modinternalid;
-ALTER TABLE curieobject DROP COLUMN dataprovider_id;
-
 SET session_replication_role = 'origin';
 
 -- Add constraints and indexes
-
-ALTER TABLE curieobject ADD CONSTRAINT curieobject_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
-ALTER TABLE curieobject ADD CONSTRAINT curieobject_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
-CREATE INDEX curieobject_createdby_index ON curieobject USING btree (createdby_id);
-CREATE INDEX curieobject_updatedby_index ON curieobject USING btree (updatedby_id);
-CREATE INDEX curieobject_curie_index ON curieobject USING btree (curie);
-CREATE INDEX curieobject_curieobjecttype_index ON curieobject USING btree (curieobjecttype);
-ALTER TABLE curieobject ADD CONSTRAINT curieobject_curie_uk UNIQUE (curie);
-
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_dataprovider_id_fk FOREIGN KEY (dataprovider_id) REFERENCES dataprovider (id);
-CREATE INDEX submittedobject_modentityid_index ON submittedobject USING btree (modentityid);
-CREATE INDEX submittedobject_modinternalid_index ON submittedobject USING btree (modinternalid);
-CREATE INDEX submittedobject_dataprovider_index ON submittedobject USING btree (dataprovider_id);
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modentityid_uk UNIQUE (modentityid);
-ALTER TABLE submittedobject ADD CONSTRAINT submittedobject_modinternalid_uk UNIQUE (modinternalid);
 
 CREATE INDEX experimentalcondition_createdby_index ON experimentalcondition USING btree (createdby_id);
 CREATE INDEX experimentalcondition_updatedby_index ON experimentalcondition USING btree (updatedby_id);
@@ -1079,7 +926,6 @@ ALTER TABLE allele ADD CONSTRAINT allele_pkey PRIMARY KEY (id);
 ALTER TABLE anatomicalterm ADD CONSTRAINT anatomicalterm_pkey PRIMARY KEY (id);
 ALTER TABLE apoterm ADD CONSTRAINT apoterm_pkey PRIMARY KEY (id);
 ALTER TABLE atpterm ADD CONSTRAINT atpterm_pkey PRIMARY KEY (id);
-ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_pkey PRIMARY KEY (id);
 ALTER TABLE bspoterm ADD CONSTRAINT bspoterm_pkey PRIMARY KEY (id);
 ALTER TABLE chebiterm ADD CONSTRAINT chebiterm_pkey PRIMARY KEY (id);
 ALTER TABLE chemicalterm ADD CONSTRAINT chemicalterm_pkey PRIMARY KEY (id);
@@ -1133,11 +979,15 @@ ALTER TABLE zfaterm ADD CONSTRAINT zfaterm_pkey PRIMARY KEY (id);
 ALTER TABLE zfsterm ADD CONSTRAINT zfsterm_pkey PRIMARY KEY (id);
 
 ALTER TABLE affectedgenomicmodel ADD CONSTRAINT affectedgenomicmodel_id_fk FOREIGN KEY (id) REFERENCES genomicentity (id);
-ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES affectedgenomicmodel (id);
+ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_subjectbiologicalentity_id_fk FOREIGN KEY (subjectbiologicalentity_id) REFERENCES affectedgenomicmodel (id);
 ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_assertedallele_id_fk FOREIGN KEY (assertedallele_id) REFERENCES allele (id);
 ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_inferredallele_id_fk FOREIGN KEY (inferredallele_id) REFERENCES allele (id);
 ALTER TABLE agmdiseaseannotation ADD CONSTRAINT agmdiseaseannotation_inferredgene_id_fk FOREIGN KEY (inferredgene_id) REFERENCES gene (id);
 ALTER TABLE agmdiseaseannotation_gene ADD CONSTRAINT agmdiseaseannotation_gene_assertedgenes_id_fk FOREIGN KEY (assertedgenes_id) REFERENCES gene (id);
+CREATE INDEX agmdiseaseannotation_subjectbiologicalentity_index ON agmdiseaseannotation USING btree (subjectbiologicalentity_id);
+CREATE INDEX agmdiseaseannotation_assertedallele_index ON agmdiseaseannotation USING btree (assertedallele_id);
+CREATE INDEX agmdiseaseannotation_inferredallele_index ON agmdiseaseannotation USING btree (inferredallele_id);
+CREATE INDEX agmdiseaseannotation_inferredgene_index ON agmdiseaseannotation USING btree (inferredgene_id);
 ALTER TABLE allele ADD CONSTRAINT allele_id_fk FOREIGN KEY (id) REFERENCES genomicentity (id);
 ALTER TABLE allele_note ADD CONSTRAINT allele_note_allele_id_fk FOREIGN KEY (allele_id) REFERENCES allele (id);
 CREATE INDEX allele_note_allele_index ON allele_note USING btree (allele_id);
@@ -1148,10 +998,10 @@ CREATE INDEX allele_reference_references_index ON allele_reference USING btree (
 CREATE INDEX allele_reference_allele_references_index ON allele_reference USING btree (allele_id, references_id);
 ALTER TABLE alleledatabasestatusslotannotation ADD CONSTRAINT alleledatabasestatus_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX alleledatabasestatus_singleallele_index ON alleledatabasestatusslotannotation USING btree (singleallele_id);
-ALTER TABLE allelediseaseannotation ADD CONSTRAINT allelediseaseannoation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES allele (id);
+ALTER TABLE allelediseaseannotation ADD CONSTRAINT allelediseaseannoation_subjectbiologicalentity_id_fk FOREIGN KEY (subjectbiologicalentity_id) REFERENCES allele (id);
 ALTER TABLE allelediseaseannotation ADD CONSTRAINT allelediseaseannotation_inferredgene_id_fk FOREIGN KEY (inferredgene_id) REFERENCES gene (id);
 CREATE INDEX allelediseaseannotation_inferredgene_index ON allelediseaseannotation USING btree (inferredgene_id);
-CREATE INDEX allelediseaseannotation_subject_index ON allelediseaseannotation USING btree (subject_id);
+CREATE INDEX allelediseaseannotation_subjectbiologicalentity_index ON allelediseaseannotation USING btree (subjectbiologicalentity_id);
 ALTER TABLE allelediseaseannotation_gene ADD CONSTRAINT allelediseaseannotation_gene_assertedgenes_id_fk FOREIGN KEY (assertedgenes_id) REFERENCES gene (id);
 CREATE INDEX allelediseaseannotationgene_assertedgenes_index ON allelediseaseannotation_gene USING btree (assertedgenes_id);
 CREATE INDEX allelefullname_singleallele_index ON allelefullnameslotannotation USING btree (singleallele_id);
@@ -1159,10 +1009,10 @@ ALTER TABLE allelefunctionalimpactslotannotation ADD CONSTRAINT allelefunctional
 ALTER TABLE allelefunctionalimpactslotannotation ADD CONSTRAINT allelefunctionalimpactslotannotation_phenotypeterm_id_fk FOREIGN KEY (phenotypeterm_id) REFERENCES phenotypeterm (id);
 CREATE INDEX allelefunctionalimpact_singleallele_index ON allelefunctionalimpactslotannotation USING btree (singleallele_id);
 CREATE INDEX allelefunctionalimpact_phenotypeterm_index ON allelefunctionalimpactslotannotation USING btree (phenotypeterm_id);
-ALTER TABLE allelegeneassociation ADD CONSTRAINT allelegeneassociation_object_id_fk FOREIGN KEY (object_id) REFERENCES gene (id);
-ALTER TABLE allelegeneassociation ADD CONSTRAINT allelegeneassociation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES allele (id);
-CREATE INDEX allelegeneassociation_object_index ON allelegeneassociation USING btree (object_id);
-CREATE INDEX allelegeneassociation_subject_index ON allelegeneassociation USING btree (subject_id);
+ALTER TABLE allelegeneassociation ADD CONSTRAINT allelegeneassociation_objectbiologicalentity_id_fk FOREIGN KEY (objectbiologicalentity_id) REFERENCES gene (id);
+ALTER TABLE allelegeneassociation ADD CONSTRAINT allelegeneassociation_subjectbiologicalentity_id_fk FOREIGN KEY (subjectbiologicalentity_id) REFERENCES allele (id);
+CREATE INDEX allelegeneassociation_objectbiologicalentity_index ON allelegeneassociation USING btree (objectbiologicalentity_id);
+CREATE INDEX allelegeneassociation_subjectbiologicalentity_index ON allelegeneassociation USING btree (subjectbiologicalentity_id);
 ALTER TABLE allelegenomicentityassociation ADD CONSTRAINT allelegenomicentityassociation_evidencecode_id_fk FOREIGN KEY (evidencecode_id) REFERENCES ecoterm (id);
 ALTER TABLE allelegermlinetransmissionstatusslotannotation ADD CONSTRAINT allelegermlinetransmissionstatus_singleallele_id_fk FOREIGN KEY (singleallele_id) REFERENCES allele (id);
 CREATE INDEX allelegermlinetransmissionstatus_singleallele_index ON allelegermlinetransmissionstatusslotannotation USING btree (singleallele_id);
@@ -1185,7 +1035,6 @@ CREATE INDEX allelesynonym_singleallele_index ON allelesynonymslotannotation USI
 ALTER TABLE anatomicalterm ADD CONSTRAINT anatomicalterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE apoterm ADD CONSTRAINT apoterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
 ALTER TABLE atpterm ADD CONSTRAINT atpterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_id_fk FOREIGN KEY (id) REFERENCES submittedobject (id);
 ALTER TABLE biologicalentity ADD CONSTRAINT biologicalentity_taxon_id_fk FOREIGN KEY (taxon_id) REFERENCES ncbitaxonterm (id);
 CREATE INDEX biologicalentity_taxon_index ON biologicalentity USING btree (taxon_id);
 ALTER TABLE bspoterm ADD CONSTRAINT bspoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
@@ -1198,11 +1047,11 @@ ALTER TABLE construct_reference ADD CONSTRAINT construct_reference_references_id
 CREATE INDEX construct_reference_references_index ON construct_reference USING btree (references_id);
 ALTER TABLE constructcomponentslotannotation ADD CONSTRAINT constructcomponentslotannotation_taxon_id_fk FOREIGN KEY (taxon_id) REFERENCES ncbitaxonterm (id);
 CREATE INDEX constructcomponentslotannotation_taxon_index ON constructcomponentslotannotation USING btree (taxon_id);
-ALTER TABLE constructgenomicentityassociation ADD CONSTRAINT constructgenomicentityassociation_object_id_fk FOREIGN KEY (object_id) REFERENCES genomicentity (id);
-CREATE INDEX constructgenomicentityassociation_object_index ON constructgenomicentityassociation USING btree (object_id);
+ALTER TABLE constructgenomicentityassociation ADD CONSTRAINT constructgenomicentityassociation_objectbiologicalentity_id_fk FOREIGN KEY (objectbiologicalentity_id) REFERENCES genomicentity (id);
+CREATE INDEX constructgenomicentityassociation_objectbiologicalentity_index ON constructgenomicentityassociation USING btree (objectbiologicalentity_id);
 ALTER TABLE daoterm ADD CONSTRAINT daoterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
-ALTER TABLE diseaseannotation ADD CONSTRAINT diseaseannotation_object_id_fk FOREIGN KEY (object_id) REFERENCES doterm (id);
-CREATE INDEX diseaseannotation_object_index ON diseaseannotation USING btree (object_id);
+ALTER TABLE diseaseannotation ADD CONSTRAINT diseaseannotation_objectontologyterm_id_fk FOREIGN KEY (objectontologyterm_id) REFERENCES doterm (id);
+CREATE INDEX diseaseannotation_objectontologyterm_index ON diseaseannotation USING btree (objectontologyterm_id);
 ALTER TABLE diseaseannotation_biologicalentity ADD CONSTRAINT diseaseannotation_biologicalentity_dgm_id_fk FOREIGN KEY (diseasegeneticmodifiers_id) REFERENCES biologicalentity (id);
 CREATE INDEX diseaseannotation_biologicalentity_dgms_index ON diseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
 ALTER TABLE diseaseannotation_ecoterm ADD CONSTRAINT diseaseannotation_ecoterm_evidencecodes_id_fk FOREIGN KEY (evidencecodes_id) REFERENCES ecoterm (id);
@@ -1226,8 +1075,9 @@ ALTER TABLE fbdvterm ADD CONSTRAINT fbdvterm_id_fk FOREIGN KEY (id) REFERENCES s
 ALTER TABLE gene ADD CONSTRAINT gene_id_fk FOREIGN KEY (id) REFERENCES genomicentity (id);
 ALTER TABLE gene ADD CONSTRAINT gene_genetype_id_fk FOREIGN KEY (genetype_id) REFERENCES soterm (id);
 CREATE INDEX gene_genetype_index ON gene USING btree (genetype_id);
-ALTER TABLE genediseaseannotation ADD CONSTRAINT genediseaseannotation_subject_id_fk FOREIGN KEY (subject_id) REFERENCES gene (id);
+ALTER TABLE genediseaseannotation ADD CONSTRAINT genediseaseannotation_subjectbiologicalentity_id_fk FOREIGN KEY (subjectbiologicalentity_id) REFERENCES gene (id);
 ALTER TABLE genediseaseannotation ADD CONSTRAINT genediseaseannotation_sgdstrainbackground_id_fk FOREIGN KEY (sgdstrainbackground_id) REFERENCES affectedgenomicmodel (id);
+CREATE INDEX genediseaseannotation_subjectbiologicalentity_index ON genediseaseannotation USING btree (subjectbiologicalentity_id);
 ALTER TABLE genefullnameslotannotation ADD CONSTRAINT genefullnameslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
 CREATE INDEX genefullname_singlegene_index ON genefullnameslotannotation USING btree (singlegene_id);
 ALTER TABLE genesecondaryidslotannotation ADD CONSTRAINT genesecondaryidslotannotation_singlegene_id_fk FOREIGN KEY (singlegene_id) REFERENCES gene (id);
@@ -1240,8 +1090,8 @@ ALTER TABLE genesystematicnameslotannotation ADD CONSTRAINT genesystematicnamesl
 CREATE INDEX genesystematicname_singlegene_index ON genesystematicnameslotannotation USING btree (singlegene_id);
 ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_objectgene_id_fk FOREIGN KEY (objectgene_id) REFERENCES gene (id);
 ALTER TABLE genetogeneorthology ADD CONSTRAINT genetogeneorthology_subjectgene_id_fk FOREIGN KEY (subjectgene_id) REFERENCES gene (id);
-CREATE INDEX genetogeneorthology_object_index ON genetogeneorthology USING btree (objectgene_id);
-CREATE INDEX genetogeneorthology_subject_index ON genetogeneorthology USING btree (subjectgene_id);
+CREATE INDEX genetogeneorthology_objectgene_index ON genetogeneorthology USING btree (objectgene_id);
+CREATE INDEX genetogeneorthology_subjectgene_index ON genetogeneorthology USING btree (subjectgene_id);
 ALTER TABLE genetogeneorthologycurated ADD CONSTRAINT genetogeneorthologycurated_evidencecode_id_fk FOREIGN KEY (evidencecode_id) REFERENCES ecoterm (id);
 ALTER TABLE genetogeneorthologycurated ADD CONSTRAINT genetogeneorthologycurated_singlereference_id_fk FOREIGN KEY (singlereference_id) REFERENCES reference (id);
 CREATE INDEX genetogeneorthologycurated_evidencecode_index ON genetogeneorthologycurated USING btree (evidencecode_id);
@@ -1252,7 +1102,6 @@ CREATE INDEX genomicentity_crossreference_ge_xref_index ON genomicentity_crossre
 CREATE INDEX genomicentity_crossreference_genomicentity_index ON genomicentity_crossreference USING btree (genomicentity_id);
 ALTER TABLE goterm ADD CONSTRAINT goterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE hpterm ADD CONSTRAINT hpterm_id_fk FOREIGN KEY (id) REFERENCES phenotypeterm (id);
-ALTER TABLE informationcontententity ADD CONSTRAINT informationcontententity_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
 ALTER TABLE materm ADD CONSTRAINT materm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
 ALTER TABLE miterm ADD CONSTRAINT miterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE mmoterm ADD CONSTRAINT mmoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
@@ -1265,7 +1114,6 @@ ALTER TABLE ncbitaxonterm ADD CONSTRAINT ncbitaxonterm_id_fk FOREIGN KEY (id) RE
 ALTER TABLE note_reference ADD CONSTRAINT note_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX note_reference_references_index ON note_reference USING btree (references_id);
 ALTER TABLE obiterm ADD CONSTRAINT obiterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE ontologyterm ADD CONSTRAINT ontologyterm_id_fk FOREIGN KEY (id) REFERENCES curieobject (id);
 ALTER TABLE ontologyterm_crossreference ADD CONSTRAINT ontologyterm_crossreference_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
 CREATE INDEX ontologyterm_crossreference_ontologyterm_index ON ontologyterm_crossreference USING btree (ontologyterm_id);
 ALTER TABLE ontologyterm_definitionurls ADD CONSTRAINT ontologyterm_definitionurls_ontologyterm_id_fk FOREIGN KEY (ontologyterm_id) REFERENCES ontologyterm (id);
@@ -1287,7 +1135,6 @@ CREATE INDEX ontologyterm_synonym_ontologyterm_index ON ontologyterm_synonym USI
 ALTER TABLE patoterm ADD CONSTRAINT patoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE phenotypeterm ADD CONSTRAINT phenotypeterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
 ALTER TABLE pwterm ADD CONSTRAINT pwterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm (id);
-ALTER TABLE reagent ADD CONSTRAINT reagent_id_fk FOREIGN KEY (id) REFERENCES submittedobject (id);
 ALTER TABLE reference ADD CONSTRAINT reference_id_fk FOREIGN KEY (id) REFERENCES informationcontententity (id);
 ALTER TABLE reference_crossreference ADD CONSTRAINT reference_crossreference_reference_id_fk FOREIGN KEY (reference_id) REFERENCES reference (id);
 CREATE INDEX reference_crossreference_reference_index ON reference_crossreference USING btree (reference_id);
@@ -1322,5 +1169,6 @@ ALTER TABLE zecoterm ADD CONSTRAINT zecoterm_id_fk FOREIGN KEY (id) REFERENCES e
 ALTER TABLE zfaterm ADD CONSTRAINT zfaterm_id_fk FOREIGN KEY (id) REFERENCES anatomicalterm (id);
 ALTER TABLE zfsterm ADD CONSTRAINT zfsterm_id_fk FOREIGN KEY (id) REFERENCES stageterm (id);
 
-ALTER SEQUENCE curieobject_seq INCREMENT BY 50;
+ALTER SEQUENCE biologicalentity_seq INCREMENT BY 50;
 ALTER SEQUENCE informationcontententity_seq INCREMENT BY 50;
+ALTER SEQUENCE ontologyterm_seq INCREMENT BY 50;

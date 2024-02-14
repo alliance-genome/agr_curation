@@ -95,8 +95,8 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		AlleleGeneAssociation association = new AlleleGeneAssociation();
-		association.setSubject(allele);
-		association.setObject(gene);
+		association.setSubjectBiologicalEntity(allele);
+		association.setObjectBiologicalEntity(gene);
 		association.setRelation(relation);
 		association.setEvidenceCode(ecoTerm);
 		association.setInternal(true);
@@ -118,8 +118,8 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relation.getName())).
-			body("entity.object.modEntityId", is(gene.getModEntityId())).
-			body("entity.subject.modEntityId", is(allele.getModEntityId())).
+			body("entity.objectBiologicalEntity.modEntityId", is(gene.getModEntityId())).
+			body("entity.subjectBiologicalEntity.modEntityId", is(allele.getModEntityId())).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference.getCurie())).
 			body("entity.evidenceCode.curie", is(ecoTerm.getCurie())).
@@ -142,8 +142,8 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].object.modEntityId", is(gene.getModEntityId())).
-			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].objectBiologicalEntity.modEntityId", is(gene.getModEntityId())).
+			body("entity.alleleGeneAssociations[0].subjectBiologicalEntity", not(hasKey("alleleGeneAssociations")));
 		
 		RestAssured.given().
 			when().
@@ -152,17 +152,17 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].object.modEntityId", is(gene.getModEntityId())).
-			body("entity.alleleGeneAssociations[0].object", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].objectBiologicalEntity.modEntityId", is(gene.getModEntityId())).
+			body("entity.alleleGeneAssociations[0].objectBiologicalEntity", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
 	@Order(2)
 	public void editAlleleGeneAssociation() {
 		AlleleGeneAssociation association = getAlleleGeneAssociation(allele.getId(), relation.getName(), gene.getId());
-		association.setSubject(allele2);
+		association.setSubjectBiologicalEntity(allele2);
 		association.setRelation(relation2);
-		association.setObject(gene2);
+		association.setObjectBiologicalEntity(gene2);
 		association.setEvidenceCode(ecoTerm2);
 		association.setInternal(false);
 		association.setObsolete(false);
@@ -183,8 +183,8 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relation2.getName())).
-			body("entity.object.modEntityId", is(gene2.getModEntityId())).
-			body("entity.subject.modEntityId", is(allele2.getModEntityId())).
+			body("entity.objectBiologicalEntity.modEntityId", is(gene2.getModEntityId())).
+			body("entity.subjectBiologicalEntity.modEntityId", is(allele2.getModEntityId())).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2.getCurie())).
 			body("entity.evidenceCode.curie", is(ecoTerm2.getCurie())).
@@ -214,18 +214,18 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.subjectBiologicalEntity", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.objectBiologicalEntity", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(4)
 	public void createAlleleGeneAssociationWithMissingRequiredFieldsLevel2() {
 		AlleleGeneAssociation association = new AlleleGeneAssociation();
-		association.setSubject(allele2);
+		association.setSubjectBiologicalEntity(allele2);
 		association.setRelation(relation);
-		association.setObject(gene);
+		association.setObjectBiologicalEntity(gene);
 		
 		Note emptyNote = new Note();
 		association.setRelatedNote(emptyNote);
@@ -247,9 +247,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Order(5)
 	public void createAlleleGeneAssociationWithEmptyRequiredFieldsLevel2() {
 		AlleleGeneAssociation association = new AlleleGeneAssociation();
-		association.setSubject(allele2);
+		association.setSubjectBiologicalEntity(allele2);
 		association.setRelation(relation);
-		association.setObject(gene);
+		association.setObjectBiologicalEntity(gene);
 		
 		Note invalidNote = new Note();
 		invalidNote.setNoteType(noteType);
@@ -270,9 +270,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	@Order(6)
 	public void editAlleleGeneAssociationWithMissingRequiredFieldsLevel1() {
 		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
-		association.setSubject(null);
+		association.setSubjectBiologicalEntity(null);
 		association.setRelation(null);
-		association.setObject(null);
+		association.setObjectBiologicalEntity(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -282,9 +282,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.subjectBiologicalEntity", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.objectBiologicalEntity", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -348,9 +348,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		invalidNote.setFreeText("Invalid");
 		
 		AlleleGeneAssociation association = new AlleleGeneAssociation();
-		association.setSubject(nonPersistedAllele);
+		association.setSubjectBiologicalEntity(nonPersistedAllele);
 		association.setRelation(noteType);
-		association.setObject(nonPersistedGene);
+		association.setObjectBiologicalEntity(nonPersistedGene);
 		association.setEvidence(List.of(nonPersistedReference));
 		association.setRelatedNote(invalidNote);
 		association.setEvidenceCode(nonPersistedEcoTerm);
@@ -363,9 +363,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(6))).
-			body("errorMessages.subject", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.subjectBiologicalEntity", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.object", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.objectBiologicalEntity", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.evidenceCode", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
@@ -391,9 +391,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		invalidNote.setFreeText("Invalid");
 		
 		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
-		association.setSubject(nonPersistedAllele);
+		association.setSubjectBiologicalEntity(nonPersistedAllele);
 		association.setRelation(noteType);
-		association.setObject(nonPersistedGene);
+		association.setObjectBiologicalEntity(nonPersistedGene);
 		association.setEvidence(List.of(nonPersistedReference));
 		association.setRelatedNote(invalidNote);
 		association.setEvidenceCode(nonPersistedEcoTerm);
@@ -406,9 +406,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(6))).
-			body("errorMessages.subject", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.subjectBiologicalEntity", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.object", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.objectBiologicalEntity", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.evidenceCode", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
@@ -421,9 +421,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	public void createAlleleGeneAssociationWithObsoleteFields() {
 		AlleleGeneAssociation association = new AlleleGeneAssociation();
 		
-		association.setSubject(obsoleteAllele);
+		association.setSubjectBiologicalEntity(obsoleteAllele);
 		association.setRelation(obsoleteRelation);
-		association.setObject(obsoleteGene);
+		association.setObjectBiologicalEntity(obsoleteGene);
 		association.setEvidenceCode(obsoleteEcoTerm);
 		association.setEvidence(List.of(obsoleteReference));
 		
@@ -442,9 +442,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(6))).
-			body("errorMessages.subject", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.subjectBiologicalEntity", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.object", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.objectBiologicalEntity", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.evidenceCode", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.relatedNote", is(String.join(" | ", List.of(
@@ -457,9 +457,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 	public void editAlleleGeneAssociationWithObsoleteFields() {
 		AlleleGeneAssociation association = getAlleleGeneAssociation(allele2.getId(), relation2.getName(), gene2.getId());
 		
-		association.setSubject(obsoleteAllele);
+		association.setSubjectBiologicalEntity(obsoleteAllele);
 		association.setRelation(obsoleteRelation);
-		association.setObject(obsoleteGene);
+		association.setObjectBiologicalEntity(obsoleteGene);
 		association.setEvidenceCode(obsoleteEcoTerm);
 		association.setEvidence(List.of(obsoleteReference));
 		
@@ -477,9 +477,9 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(6))).
-			body("errorMessages.subject", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.subjectBiologicalEntity", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.relation", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.object", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.objectBiologicalEntity", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.evidenceCode", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.relatedNote", is(String.join(" | ", List.of(

@@ -96,7 +96,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.SUBJECT_BIOLOGICAL_ENTITY_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<Long> associationIds = alleleGeneAssociationDAO.findFilteredIds(params);
 		associationIds.removeIf(Objects::isNull);
 		
@@ -145,9 +145,9 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		AlleleGeneAssociation association = null;
 
 		Map<String, Object> params = new HashMap<>();
-		params.put("subject.id", alleleId);
+		params.put("subjectBiologicalEntity.id", alleleId);
 		params.put("relation.name", relationName);
-		params.put("object.id", geneId);
+		params.put("objectBiologicalEntity.id", geneId);
 
 		SearchResponse<AlleleGeneAssociation> resp = alleleGeneAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)
@@ -160,7 +160,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	}
 	
 	private void addAssociationToAllele(AlleleGeneAssociation association) {
-		Allele allele = association.getSubject();
+		Allele allele = association.getSubjectBiologicalEntity();
 		List<AlleleGeneAssociation> currentAssociations = allele.getAlleleGeneAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();
@@ -172,7 +172,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	}
 	
 	private void addAssociationToGene(AlleleGeneAssociation association) {
-		Gene gene = association.getObject();
+		Gene gene = association.getObjectBiologicalEntity();
 		List<AlleleGeneAssociation> currentAssociations = gene.getAlleleGeneAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();

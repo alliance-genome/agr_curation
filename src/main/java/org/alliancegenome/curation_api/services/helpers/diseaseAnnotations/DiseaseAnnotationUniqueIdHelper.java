@@ -82,8 +82,8 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 			uniqueId.add(annotation.getRelation().getName());
 		if (annotation.getNegated() != null)
 			uniqueId.add(annotation.getNegated().toString());
-		if (annotation.getObject() != null)
-			uniqueId.add(annotation.getObject().getCurie());
+		if (annotation.getObjectOntologyTerm() != null)
+			uniqueId.add(annotation.getObjectOntologyTerm().getCurie());
 		if (annotation.getSingleReference()!= null)
 			uniqueId.add(annotation.getSingleReference().getCurie());
 		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes()))

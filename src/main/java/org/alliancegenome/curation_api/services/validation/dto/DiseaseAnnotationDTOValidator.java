@@ -58,7 +58,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			DOTerm disease = doTermService.findByCurieOrSecondaryId(dto.getDoTermCurie());
 			if (disease == null)
 				daResponse.addErrorMessage("do_term_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDoTermCurie() + ")");
-			annotation.setObject(disease);
+			annotation.setObjectOntologyTerm(disease);
 		}
 
 		if (CollectionUtils.isEmpty(dto.getEvidenceCodeCuries())) {

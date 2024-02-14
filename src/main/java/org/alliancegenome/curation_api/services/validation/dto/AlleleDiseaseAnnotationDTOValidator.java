@@ -78,7 +78,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
 				annotation = DiseaseAnnotationRetrievalHelper.getCurrentDiseaseAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
-				annotation.setSubject(allele);
+				annotation.setSubjectBiologicalEntity(allele);
 				
 				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !allele.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
 						!dataProvider.sourceOrganization.equals(allele.getDataProvider().getSourceOrganization().getAbbreviation())) {

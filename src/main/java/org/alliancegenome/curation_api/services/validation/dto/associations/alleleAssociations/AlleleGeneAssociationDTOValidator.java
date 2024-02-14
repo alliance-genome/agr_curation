@@ -65,9 +65,9 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 		AlleleGeneAssociation association = null;
 		if (subject != null && object != null && StringUtils.isNotBlank(dto.getRelationName())) {
 			HashMap<String, Object> params = new HashMap<>();
-			params.put("subject.id", subject.getId());
+			params.put("subjectBiologicalEntity.id", subject.getId());
 			params.put("relation.name", dto.getRelationName());
-			params.put("object.id", object.getId());
+			params.put("objectBiologicalEntity.id", object.getId());
 			
 			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
@@ -77,8 +77,8 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 		if (association == null)
 			association = new AlleleGeneAssociation();
 			
-		association.setSubject(subject);
-		association.setObject(object);
+		association.setSubjectBiologicalEntity(subject);
+		association.setObjectBiologicalEntity(object);
 		
 		ObjectResponse<AlleleGenomicEntityAssociation> ageaResponse = validateAlleleGenomicEntityAssociationDTO(association, dto);
 		agaResponse.addErrorMessages(ageaResponse.getErrorMessages());

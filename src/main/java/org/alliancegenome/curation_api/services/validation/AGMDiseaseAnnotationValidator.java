@@ -72,7 +72,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
 
 		AffectedGenomicModel subject = validateSubject(uiEntity, dbEntity);
-		dbEntity.setSubject(subject);
+		dbEntity.setSubjectBiologicalEntity(subject);
 
 		Gene inferredGene = validateInferredGene(uiEntity, dbEntity);
 		dbEntity.setInferredGene(inferredGene);
@@ -100,21 +100,21 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private AffectedGenomicModel validateSubject(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject())) {
-			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
+		if (ObjectUtils.isEmpty(uiEntity.getSubjectBiologicalEntity())) {
+			addMessageResponse("subjectBiologicalEntity", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		AffectedGenomicModel subjectEntity = null;
-		if (uiEntity.getSubject().getId() != null)
-			subjectEntity = affectedGenomicModelDAO.find(uiEntity.getSubject().getId());
+		if (uiEntity.getSubjectBiologicalEntity().getId() != null)
+			subjectEntity = affectedGenomicModelDAO.find(uiEntity.getSubjectBiologicalEntity().getId());
 		if (subjectEntity == null) {
-			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("subjectBiologicalEntity", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getId().equals(dbEntity.getSubject().getId()))) {
-			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
+		if (subjectEntity.getObsolete() && (dbEntity.getSubjectBiologicalEntity() == null || !subjectEntity.getId().equals(dbEntity.getSubjectBiologicalEntity().getId()))) {
+			addMessageResponse("subjectBiologicalEntity", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 

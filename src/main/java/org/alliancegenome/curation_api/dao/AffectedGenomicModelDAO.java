@@ -20,7 +20,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 	public List<Long> findReferencingDiseaseAnnotations(Long agmId) {
 		List<Long> results = new ArrayList<>();
 		
-		Query jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.subject.id = :agmId");
+		Query jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.subjectBiologicalEntity.id = :agmId");
 		jpqlQuery.setParameter("agmId", agmId);
 		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
 			results.add(nativeResult.longValue());
