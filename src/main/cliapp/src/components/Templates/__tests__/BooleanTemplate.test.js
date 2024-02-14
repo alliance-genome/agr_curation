@@ -16,6 +16,7 @@ describe('BooleanTemplate', () => {
 
   it('should render the JSON stringified value inside the div', () => {
     const { container } = render(<BooleanTemplate value={false} />);
+    //todo: change to rtl query
     expect(container.firstChild).toHaveTextContent('false');
   });
 
