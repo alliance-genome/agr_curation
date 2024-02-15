@@ -5,11 +5,19 @@ export const DiseaseTemplate = ({ object }) => {
   if (!object) return null;
 
   const targetClass = `a${global.crypto.randomUUID()}`;
+  const textString = getTextString(object);
 
   return (
     <>
-      <EllipsisTableCell otherClasses={targetClass}>{object.name} ({object.curie})</EllipsisTableCell>
-      <Tooltip target={`.${targetClass}`} content={`${object.name} (${object.curie})`} />
+      <EllipsisTableCell otherClasses={targetClass}>{textString}</EllipsisTableCell>
+      <Tooltip target={`.${targetClass}`} content={textString} />
     </>
   );
 };
+
+const getTextString = (object) => {
+  if(!object.name) return object.curie;
+  if(!object.curie) return object.name;
+  if(!object.curie && !object.name) return "";
+  return `${object.name} (${object.curie})`; 
+}
