@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { SingleReferenceTemplate } from '../SingleReferenceTemplate';
 import '../../../tools/jest/setupTests';
 

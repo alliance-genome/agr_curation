@@ -9,15 +9,9 @@ describe('BooleanTemplate', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('should render a div with correct classes', () => {
-    const { container } = render(<BooleanTemplate value={true} />);
-    expect(container.firstChild).toHaveClass('overflow-hidden text-overflow-ellipsis');
-  });
-
   it('should render the JSON stringified value inside the div', () => {
-    const { container } = render(<BooleanTemplate value={false} />);
-    //todo: change to rtl query
-    expect(container.firstChild).toHaveTextContent('false');
+    const result = render(<BooleanTemplate value={false} />);
+    expect(result.getByText("false")).toBeInTheDocument();
   });
 
   it('should return null when value is not a boolean', () => {

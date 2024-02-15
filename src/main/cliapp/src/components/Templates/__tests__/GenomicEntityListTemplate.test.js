@@ -85,7 +85,6 @@ describe('GenomicEntityListTemplate', () => {
     expect(genomicEntity3).toBeInTheDocument();
   });
 
-  // Handles genomic entities with missing or null properties.
   it('should handle genomic entities with missing or null properties', () => {
     const genomicEntities = [
       { alleleFullName: null, curie: 'CURIE1' },

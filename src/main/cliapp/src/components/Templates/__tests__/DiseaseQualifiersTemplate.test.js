@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import { DiseaseQualifiersTemplate } from '../DiseaseQualifiersTemplate';
 import '../../../tools/jest/setupTests';
 
@@ -17,10 +17,11 @@ describe('DiseaseQualifiersTemplate', () => {
       { name: 'Qualifier B' },
     ];
 
-    const { container } = render(<DiseaseQualifiersTemplate diseaseQualifiers={diseaseQualifiers} />);
-    //todo: change to rtl query
-    const listItems = container.querySelectorAll('li');
-
+    const result = render(<DiseaseQualifiersTemplate diseaseQualifiers={diseaseQualifiers} />);
+    
+    const qualifiersList = result.getByRole('list');
+    const listItems = within(qualifiersList).getAllByRole('listitem');
+    
     expect(listItems[0]).toHaveTextContent('Qualifier A');
     expect(listItems[1]).toHaveTextContent('Qualifier B');
     expect(listItems[2]).toHaveTextContent('Qualifier C');
@@ -38,9 +39,10 @@ describe('DiseaseQualifiersTemplate', () => {
       { id: 3 },
     ];
 
-    const { container } = render(<DiseaseQualifiersTemplate diseaseQualifiers={diseaseQualifiers} />);
-    //todo: change to rtl query
-    const listItems = container.querySelectorAll('li');
+    const result = render(<DiseaseQualifiersTemplate diseaseQualifiers={diseaseQualifiers} />);
+    
+    const qualifiersList = result.getByRole('list');
+    const listItems = within(qualifiersList).getAllByRole('listitem');
 
     expect(listItems[0]).toHaveTextContent('');
     expect(listItems[1]).toHaveTextContent('');

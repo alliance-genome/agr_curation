@@ -30,7 +30,6 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
-import { Tooltip } from 'primereact/tooltip';
 import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, getIdentifier } from '../../utils/utils';
 import { useNewAnnotationReducer } from "./useNewAnnotationReducer";
 import { NewAnnotationForm } from "./NewAnnotationForm";
