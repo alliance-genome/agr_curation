@@ -3,7 +3,7 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
- import { MultiSelect } from 'primereact/multiselect';
+import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from "react-query";
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
@@ -32,7 +32,8 @@ import { WithAdditionalFieldData } from "../../components/FieldData/WithAddition
 import { GeneticModifiersAdditionalFieldData } from "../../components/FieldData/GeneticModifiersAdditionalFieldData";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 import { ConfirmButton } from "../../components/ConfirmButton";
-import { getModFormFields } from "../../service/TableStateService";
+import { getDefaultTableState, getModFormFields } from "../../service/TableStateService";
+import { useGetUserSettings } from "../../service/useGetUserSettings";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -74,9 +75,16 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-	const optionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+	const newAnnotationFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
-	const [selectedFields, setSelectedFields] = useState(optionalFields);
+	let defaultUserSettings = getDefaultTableState("DiseaseAnnotationsTableSettings");
+	defaultUserSettings = {...defaultUserSettings, newAnnotationFields: newAnnotationFields};
+	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsTableSettings', defaultUserSettings);
+	let selectedFields = [];
+	const setSelectedFields = (newValue)=>{
+		selectedFields = newValue;
+		return selectedFields;
+	};
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
 			diseaseAnnotationService = new DiseaseAnnotationService();
@@ -173,10 +181,6 @@ export const NewAnnotationForm = ({
 
 	const handleSubmitAndAdd = (event) => {
 		handleSubmit(event, false);
-	}
-
-	const handleShowAllFields = () => {
-		setSelectedFields(optionalFields);
 	}
 
 	const onSingleReferenceChange = (event) => {
@@ -403,9 +407,21 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
+	const updateFormFields = (updatedFields) => {
+		defaultUserSettings = JSON.parse(localStorage.getItem("DiseaseAnnotationsTableSettings"));
+		let updatedSettings = {...defaultUserSettings, newAnnotationFields: updatedFields};
+		setSelectedFields(updatedFields);
+		setSettingsKey(updatedSettings);
+		
+	};
+
+	const handleShowAllFields = () => {
+		updateFormFields(newAnnotationFields);
+	}
+
 	const setToModDefault = () => {
 		const modFormFields = getModFormFields("DiseaseAnnotations");
-		setSelectedFields(modFormFields);
+		updateFormFields(modFormFields);
 	}
 
 	const dialogHeader = (
@@ -417,11 +433,11 @@ export const NewAnnotationForm = ({
 			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<MultiSelect
 					aria-label='columnToggle'
-					options={optionalFields}
-					value={selectedFields}
+					options={newAnnotationFields}
+					value={setSelectedFields(settingsKey.newAnnotationFields)}
 					filter
 					resetFilterOnHide
-					onChange={(e) => setSelectedFields(e.value)}
+					onChange={(e) => updateFormFields(e.value)}
 					className='w-20rem text-center'
 					maxSelectedLabels={4}
 				/>
