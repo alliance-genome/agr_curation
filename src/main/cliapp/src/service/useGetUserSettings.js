@@ -10,7 +10,7 @@ export const useGetUserSettings = (key, defaultValue) => {
 	const [settings, setSettings] = useState(() => {
 		const stickyValue = localStorage.getItem(key);
 		const stickyObject = stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
-		if(key !== 'themeSettings') {
+		if(key !== 'themeSettings' && key !== 'DiseaseAnnotationsFormSettings') {
 		 	stickyObject.filters = removeInvalidFilters(stickyObject.filters);
 		 	stickyObject.multiSortMeta = removeInvalidSorts(stickyObject.multiSortMeta);
 			if(!stickyObject.orderedColumnNames) stickyObject.orderedColumnNames = defaultValue.selectedColumnNames;
@@ -29,7 +29,7 @@ export const useGetUserSettings = (key, defaultValue) => {
 				userSettings = data.entity.settingsMap;
 			}
 			
-			if(key !== 'themeSettings'){
+			if(key !== 'themeSettings' && key !== 'DiseaseAnnotationsFormSettings'){
 				userSettings.filters = removeInvalidFilters(userSettings.filters);
 				userSettings.multiSortMeta = removeInvalidSorts(userSettings.multiSortMeta);
 				if(!userSettings.orderedColumnNames) userSettings.orderedColumnNames = defaultValue.selectedColumnNames;

@@ -32,7 +32,7 @@ import { WithAdditionalFieldData } from "../../components/FieldData/WithAddition
 import { GeneticModifiersAdditionalFieldData } from "../../components/FieldData/GeneticModifiersAdditionalFieldData";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 import { ConfirmButton } from "../../components/ConfirmButton";
-import { getDefaultTableState, getModFormFields } from "../../service/TableStateService";
+import { getDefaultFormState, getModFormFields } from "../../service/TableStateService";
 import { useGetUserSettings } from "../../service/useGetUserSettings";
 
 export const NewAnnotationForm = ({
@@ -75,12 +75,11 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-	const newAnnotationFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
-	let defaultUserSettings = getDefaultTableState("DiseaseAnnotationsTableSettings");
-	defaultUserSettings = {...defaultUserSettings, newAnnotationFields: newAnnotationFields};
-	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsTableSettings', defaultUserSettings);
-	let selectedFields = [];
+	let defaultUserSettings = getDefaultFormState("DiseaseAnnotations", newAnnotationOptionalFields, undefined);
+	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsFormSettings', defaultUserSettings);
+	let selectedFields = settingsKey.selectedFormFields? settingsKey.selectedFormFields : [];
 	const setSelectedFields = (newValue)=>{
 		selectedFields = newValue;
 		return selectedFields;
@@ -408,15 +407,14 @@ export const NewAnnotationForm = ({
 	}
 
 	const updateFormFields = (updatedFields) => {
-		defaultUserSettings = JSON.parse(localStorage.getItem("DiseaseAnnotationsTableSettings"));
-		let updatedSettings = {...defaultUserSettings, newAnnotationFields: updatedFields};
 		setSelectedFields(updatedFields);
+		defaultUserSettings = JSON.parse(localStorage.getItem("DiseaseAnnotationsFormSettings"));
+		let updatedSettings = {...defaultUserSettings, selectedFormFields: updatedFields};
 		setSettingsKey(updatedSettings);
-		
 	};
 
 	const handleShowAllFields = () => {
-		updateFormFields(newAnnotationFields);
+		updateFormFields(newAnnotationOptionalFields);
 	}
 
 	const setToModDefault = () => {
@@ -433,8 +431,8 @@ export const NewAnnotationForm = ({
 			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<MultiSelect
 					aria-label='columnToggle'
-					options={newAnnotationFields}
-					value={setSelectedFields(settingsKey.newAnnotationFields)}
+					options={newAnnotationOptionalFields}
+					value={selectedFields}
 					filter
 					resetFilterOnHide
 					onChange={(e) => updateFormFields(e.value)}
