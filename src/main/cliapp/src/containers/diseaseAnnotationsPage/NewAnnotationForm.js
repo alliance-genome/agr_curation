@@ -78,12 +78,8 @@ export const NewAnnotationForm = ({
 	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
 	let defaultUserSettings = getDefaultFormState("DiseaseAnnotations", newAnnotationOptionalFields, undefined);
-	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsFormSettings', defaultUserSettings);
-	let selectedFields = settingsKey.selectedFormFields? settingsKey.selectedFormFields : [];
-	const setSelectedFields = (newValue)=>{
-		selectedFields = newValue;
-		return selectedFields;
-	};
+	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsFormSettings', defaultUserSettings, false);
+	const { selectedFormFields } = settingsKey;
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
 			diseaseAnnotationService = new DiseaseAnnotationService();
@@ -407,8 +403,6 @@ export const NewAnnotationForm = ({
 	}
 
 	const updateFormFields = (updatedFields) => {
-		setSelectedFields(updatedFields);
-		defaultUserSettings = JSON.parse(localStorage.getItem("DiseaseAnnotationsFormSettings"));
 		let updatedSettings = {...defaultUserSettings, selectedFormFields: updatedFields};
 		setSettingsKey(updatedSettings);
 	};
@@ -432,7 +426,7 @@ export const NewAnnotationForm = ({
 				<MultiSelect
 					aria-label='columnToggle'
 					options={newAnnotationOptionalFields}
-					value={selectedFields}
+					value={selectedFormFields}
 					filter
 					resetFilterOnHide
 					onChange={(e) => updateFormFields(e.value)}
@@ -489,7 +483,7 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFields.includes("Asserted Genes") && (
+					{selectedFormFields?.includes("Asserted Genes") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -518,7 +512,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Asserted Allele") && (
+					{selectedFormFields?.includes("Asserted Allele") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -567,7 +561,7 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFields.includes("Negated") && (
+					{selectedFormFields?.includes("Negated") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -659,7 +653,7 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFields.includes("With") && (
+					{selectedFormFields?.includes("With") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -687,7 +681,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Related Notes") && (
+					{selectedFormFields?.includes("Related Notes") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -708,7 +702,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Experimental Conditions") && (
+					{selectedFormFields?.includes("Experimental Conditions") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -729,7 +723,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Experiments") && (
+					{selectedFormFields?.includes("Experiments") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -755,7 +749,7 @@ export const NewAnnotationForm = ({
 					)}
 
 
-					{selectedFields.includes("Genetic Sex") && (
+					{selectedFormFields?.includes("Genetic Sex") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -778,7 +772,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Disease Qualifiers") && (
+					{selectedFormFields?.includes("Disease Qualifiers") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -800,7 +794,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("SGD Strain Background") && (
+					{selectedFormFields?.includes("SGD Strain Background") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -829,7 +823,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Annotation Type") && (
+					{selectedFormFields?.includes("Annotation Type") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -853,7 +847,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Genetic Modifier Relation") && (
+					{selectedFormFields?.includes("Genetic Modifier Relation") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -878,7 +872,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Genetic Modifiers") && (
+					{selectedFormFields?.includes("Genetic Modifiers") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -904,7 +898,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Internal") && (
+					{selectedFormFields?.includes("Internal") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
