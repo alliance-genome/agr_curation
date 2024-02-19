@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.dao.loads.BulkURLLoadDAO;
 import org.alliancegenome.curation_api.enums.BulkLoadCleanUp;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadFileJobEvent;
-import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.jobs.executors.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
@@ -25,7 +24,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.event.Event;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
@@ -68,33 +66,6 @@ public class BulkLoadProcessor {
 	Event<PendingBulkLoadFileJobEvent> pendingFileJobEvents;
 	
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
-
-	public void bulkLoadFile(@Observes StartedBulkLoadFileJobEvent event) {
-		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(event.getId());
-		if (!bulkLoadFile.getBulkloadStatus().isStarted()) {
-			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
-			// endLoad(bulkLoadFile, "Finished ended due to status: " +
-			// bulkLoadFile.getBulkloadStatus(), bulkLoadFile.getBulkloadStatus());
-			return;
-		} else {
-			startLoadFile(bulkLoadFile);
-		}
-
-		try {
-			if (bulkLoadFile.getLocalFilePath() == null || bulkLoadFile.getS3Path() == null) {
-				syncWithS3(bulkLoadFile);
-			}
-			bulkLoadJobExecutor.process(bulkLoadFile, bulkLoadFile.getBulkloadCleanUp() == BulkLoadCleanUp.YES);
-			JobStatus status = bulkLoadFile.getBulkloadStatus().equals(JobStatus.FAILED) ? JobStatus.FAILED : JobStatus.FINISHED;
-			endLoadFile(bulkLoadFile, bulkLoadFile.getErrorMessage(), status);
-
-		} catch (Exception e) {
-			endLoadFile(bulkLoadFile, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage(), JobStatus.FAILED);
-			log.error("Load File: " + bulkLoadFile.getBulkLoad().getName() + " is failed");
-			e.printStackTrace();
-		}
-
-	}
 
 	private String processFMS(String dataType, String dataSubType) {
 		List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
@@ -224,7 +195,9 @@ public class BulkLoadProcessor {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);
-		slackNotifier.slackalert(bulkLoad);
+		if(status != JobStatus.FINISHED) {
+			slackNotifier.slackalert(bulkLoad);
+		}
 		bulkLoadDAO.merge(bulkLoad);
 		log.info("Load: " + bulkLoad.getName() + " is finished");
 	}
@@ -243,7 +216,9 @@ public class BulkLoadProcessor {
 		bulkLoadFile.setErrorMessage(message);
 		bulkLoadFile.setBulkloadStatus(status);
 		bulkLoadFile.setDateLastLoaded(OffsetDateTime.now());
-		slackNotifier.slackalert(bulkLoadFile);
+		if(status != JobStatus.FINISHED) {
+			slackNotifier.slackalert(bulkLoadFile);
+		}
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		log.info("Load File: " + bulkLoadFile.getMd5Sum() + " is finished");
 	}
