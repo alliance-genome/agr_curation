@@ -79,7 +79,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
+	private void runLoad(BulkLoadFileHistory history, List<AffectedGenomicModelDTO> agms, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
 	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
