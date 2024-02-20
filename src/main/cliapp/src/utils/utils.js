@@ -342,7 +342,7 @@ export function getUniqueItemsByProperty(items, propName) {
 }
 
 export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
 		if(updatedRow[field] && Object.keys(updatedRow[field]).length === 1){
@@ -371,10 +371,10 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 }
 
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
-		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie") && !Object.keys(newAnnotationForm['subject']).includes("modEntityId") && !Object.keys(newAnnotationForm['subject']).includes("modInternalId")){
+		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("curie") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modEntityId") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modInternalId")){
 			const _uiErrorMessages = {};
 			_uiErrorMessages[field] = "Must select from autosuggest";
 			setUiErrorMessages({..._uiErrorMessages});

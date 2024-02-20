@@ -7,11 +7,11 @@ describe('removeInvalidFilters', () => {
   it('All Valid fields', () => {
     const localStorageFilters = {
       "objectFilter": {
-        "object.name": {
+        "diseaseAnnotationObject.name": {
           "queryString": "j",
           "tokenOperator": "AND"
         },
-        "object.curie": {
+        "diseaseAnnotationObject.curie": {
           "queryString": "j",
           "tokenOperator": "AND"
         }
@@ -36,11 +36,11 @@ describe('removeInvalidFilters', () => {
   it('One invalid field', () => {
     const localStorageFilters = {
       "objectFilter": {
-        "object.invalidName": {
+        "diseaseAnnotationObject.invalidName": {
           "queryString": "j",
           "tokenOperator": "AND"
         },
-        "object.curie": {
+        "diseaseAnnotationObject.curie": {
           "queryString": "j",
           "tokenOperator": "AND"
         }
@@ -63,7 +63,7 @@ describe('removeInvalidFilters', () => {
 
     expect(newFilters).toEqual({
       "objectFilter": {
-        "object.curie": {
+        "diseaseAnnotationObject.curie": {
           "queryString": "j",
           "tokenOperator": "AND"
         }
@@ -86,11 +86,11 @@ describe('removeInvalidFilters', () => {
   it('All invalid fields', () => {
     const localStorageFilters = {
       "objectFilter": {
-        "object.invalidName": {
+        "diseaseAnnotationObject.invalidName": {
           "queryString": "j",
           " tokenOperator": "AND"
         },
-        "object.invalidCurie": {
+        "diseaseAnnotationObject.invalidCurie": {
           "queryString": "j",
           "tokenOperator": "AND"
         }
@@ -122,11 +122,11 @@ describe('removeInvalidSorts', () => {
         "order": 1
       },
       {
-        "field": "object.name",
+        "field": "diseaseAnnotationObject.name",
         "order": 1
       },
       {
-        "field": "subject.symbol",
+        "field": "diseaseAnnotationSubject.symbol",
         "order": 1
       }
     ];
@@ -141,11 +141,11 @@ describe('removeInvalidSorts', () => {
         "order": 1
       },
       {
-        "field": "object.name",
+        "field": "diseaseAnnotationObject.name",
         "order": 1
       },
       {
-        "field": "subject.symbol",
+        "field": "diseaseAnnotationSubject.symbol",
         "order": 1
       }
     ];
@@ -153,11 +153,11 @@ describe('removeInvalidSorts', () => {
     const newSorts = removeInvalidSorts(localMultiSortMeta);
     expect(newSorts).toEqual([
       {
-        "field": "object.name",
+        "field": "diseaseAnnotationObject.name",
         "order": 1
       },
       {
-        "field": "subject.symbol",
+        "field": "diseaseAnnotationSubject.symbol",
         "order": 1
       }
     ]);
@@ -170,11 +170,11 @@ describe('removeInvalidSorts', () => {
         "order": 1
       },
       {
-        "field": "object.invalidName",
+        "field": "diseaseAnnotationObject.invalidName",
         "order": 1
       },
       {
-        "field": "subject.invalidSymbol",
+        "field": "diseaseAnnotationSubject.invalidSymbol",
         "order": 1
       }
     ];
