@@ -15,7 +15,7 @@ jobs:
       latestrelease: ${{ steps.releaseflags.outputs.latestrelease }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Generate release tag name (as step output)
         id: tagname
         shell: bash
@@ -51,7 +51,7 @@ jobs:
       tagmessage: ''
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Generate and store release message
         shell: bash
         run: |
@@ -86,7 +86,7 @@ jobs:
       mergeback-basebranchname: "alpha"
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
