@@ -324,7 +324,7 @@ export const NewAnnotationForm = ({
 	const isExperimentEnabled = () => {
 		return (
 			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
-			typeof newAnnotation.singleReference === "diseaseAnnotationObject"
+			typeof newAnnotation.singleReference === "object"
 			&& newAnnotation.singleReference.curie !== ""
 			&& !showConditionRelations
 		)
