@@ -506,7 +506,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const onConditionRelationHandleEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
-		if (typeof event.value === "diseaseAnnotationObject") {
+		if (typeof event.value === "object") {
 			updatedAnnotations[props.rowIndex].conditionRelations[0] = event.value;
 		} else {
 			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
