@@ -1453,7 +1453,7 @@ public class AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setObjectBiologicalEntity(gene);
+		geneAssociation.setAlleleGeneAssociationObject(gene);
 		geneAssociation.setRelation(geneAssociationRelation);
 		Reference reference = createReference("AGRKB:AssocTest1", false);
 		geneAssociation.setEvidence(List.of(reference));
@@ -1473,7 +1473,7 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", hasKey("alleleGeneAssociations")).
-			body("entity.alleleGeneAssociations[0].objectBiologicalEntity.modEntityId", is(gene.getModEntityId()));
+			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.modEntityId", is(gene.getModEntityId()));
 	}
 	
 	@Test
@@ -1505,7 +1505,7 @@ public class AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setObjectBiologicalEntity(gene);
+		geneAssociation.setAlleleGeneAssociationObject(gene);
 		geneAssociation.setRelation(dominantInheritanceMode);
 		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 		

@@ -36,7 +36,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "construct", description = "POJO that represents a construct")
 @ToString(exclude = {"constructGenomicEntityAssociations", "constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
-@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@AGRCurationSchemaVersion(min = "2.1.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 public class Construct extends Reagent {
 
@@ -74,9 +74,9 @@ public class Construct extends Reagent {
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
 	
-	@IndexedEmbedded(includePaths = {"objectBiologicalEntity.curie", "objectBiologicalEntity.name", "objectBiologicalEntity.symbol", "relation.name",
-			"objectBiologicalEntity.curie_keyword", "objectBiologicalEntity.name_keyword", "objectBiologicalEntity.symbol_keyword", "relation.name_keyword"})
-	@OneToMany(mappedBy = "subjectReagent", cascade = CascadeType.ALL, orphanRemoval = true)
+	@IndexedEmbedded(includePaths = {"constructGenomicEntityAssociationObject.curie", "constructGenomicEntityAssociationObject.modEntityId", "constructGenomicEntityAssociationObject.modInternalId", "constructGenomicEntityAssociationObject.name", "constructGenomicEntityAssociationObject.symbol", "relation.name",
+			"constructGenomicEntityAssociationObject.curie_keyword", "constructGenomicEntityAssociationObject.modEntityId_keyword", "constructGenomicEntityAssociationObject.modInternalId_keyword", "constructGenomicEntityAssociationObject.name_keyword", "constructGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"})
+	@OneToMany(mappedBy = "constructAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 }

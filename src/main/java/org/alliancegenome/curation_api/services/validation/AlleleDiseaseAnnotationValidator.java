@@ -67,7 +67,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
 
 		Allele subject = validateSubject(uiEntity, dbEntity);
-		dbEntity.setSubjectBiologicalEntity(subject);
+		dbEntity.setDiseaseAnnotationSubject(subject);
 
 		Gene inferredGene = validateInferredGene(uiEntity, dbEntity);
 		dbEntity.setInferredGene(inferredGene);
@@ -89,21 +89,22 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	}
 
 	private Allele validateSubject(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubjectBiologicalEntity())) {
-			addMessageResponse("subjectBiologicalEntity", ValidationConstants.REQUIRED_MESSAGE);
+		String field = "diseaseAnnotationSubject";
+		if (ObjectUtils.isEmpty(uiEntity.getDiseaseAnnotationSubject())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		Allele subjectEntity = null;
-		if (uiEntity.getSubjectBiologicalEntity().getId() != null)
-			subjectEntity = alleleDAO.find(uiEntity.getSubjectBiologicalEntity().getId());
+		if (uiEntity.getDiseaseAnnotationSubject().getId() != null)
+			subjectEntity = alleleDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
 		if (subjectEntity == null) {
-			addMessageResponse("subjectBiologicalEntity", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubjectBiologicalEntity() == null || !subjectEntity.getId().equals(dbEntity.getSubjectBiologicalEntity().getId()))) {
-			addMessageResponse("subjectBiologicalEntity", ValidationConstants.OBSOLETE_MESSAGE);
+		if (subjectEntity.getObsolete() && (dbEntity.getDiseaseAnnotationSubject() == null || !subjectEntity.getId().equals(dbEntity.getDiseaseAnnotationSubject().getId()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return subjectEntity;

@@ -274,12 +274,12 @@ export const ConstructsTable = () => {
 			const componentSet = new Set();
 			for(var i = 0; i < rowData.constructGenomicEntityAssociations.length; i++){
 				let symbolValue = "";
-				if (rowData.constructGenomicEntityAssociations[i]?.object.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.object.alleleSymbol) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].object.geneSymbol ? rowData.constructGenomicEntityAssociations[i].object.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].object.alleleSymbol.displayText;
-				} else if (rowData.constructGenomicEntityAssociations[i]?.object.name) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].object.name;
+				if (rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.alleleSymbol) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.geneSymbol ? rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.alleleSymbol.displayText;
+				} else if (rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.name) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.name;
 				} else {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].object.curie;
+					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.curie;
 				}
 				let relationName = "";
 				if (rowData.constructGenomicEntityAssociations[i]?.relation?.name) {
@@ -380,7 +380,7 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
 		},
 		{
-			field: "constructGenomicEntityAssociations.object.symbol",
+			field: "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol",
 			header: "Component Associations",
 			body: genomicComponentsTemplate,
 			sortable: { isInEditMode },

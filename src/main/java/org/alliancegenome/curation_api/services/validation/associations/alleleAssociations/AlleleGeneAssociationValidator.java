@@ -56,11 +56,11 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 
 		if (validateAllele) {
 			Allele subject = validateSubject(uiEntity, dbEntity);
-			dbEntity.setSubjectBiologicalEntity(subject);
+			dbEntity.setAlleleAssociationSubject(subject);
 		}
 		
 		Gene object = validateObject(uiEntity, dbEntity);
-		dbEntity.setObjectBiologicalEntity(object);
+		dbEntity.setAlleleGeneAssociationObject(object);
 
 		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
@@ -78,21 +78,21 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	}
 	
 	private Allele validateSubject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		String field = "subjectBiologicalEntity";
-		if (ObjectUtils.isEmpty(uiEntity.getSubjectBiologicalEntity())) {
+		String field = "alleleAssociationSubject";
+		if (ObjectUtils.isEmpty(uiEntity.getAlleleAssociationSubject())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		Allele subjectEntity = null;
-		if (uiEntity.getSubjectBiologicalEntity().getId() != null)
-			subjectEntity = alleleDAO.find(uiEntity.getSubjectBiologicalEntity().getId());
+		if (uiEntity.getAlleleAssociationSubject().getId() != null)
+			subjectEntity = alleleDAO.find(uiEntity.getAlleleAssociationSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubjectBiologicalEntity() == null || !subjectEntity.getId().equals(dbEntity.getSubjectBiologicalEntity().getId()))) {
+		if (subjectEntity.getObsolete() && (dbEntity.getAlleleAssociationSubject() == null || !subjectEntity.getId().equals(dbEntity.getAlleleAssociationSubject().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -102,21 +102,21 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 	}
 
 	private Gene validateObject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
-		String field = "objectBiologicalEntity";
-		if (ObjectUtils.isEmpty(uiEntity.getObjectBiologicalEntity())) {
+		String field = "alleleGeneAssociationObject";
+		if (ObjectUtils.isEmpty(uiEntity.getAlleleGeneAssociationObject())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		Gene objectEntity = null;
-		if (uiEntity.getObjectBiologicalEntity().getId() != null)
-			objectEntity = geneDAO.find(uiEntity.getObjectBiologicalEntity().getId());
+		if (uiEntity.getAlleleGeneAssociationObject().getId() != null)
+			objectEntity = geneDAO.find(uiEntity.getAlleleGeneAssociationObject().getId());
 		if (objectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (objectEntity.getObsolete() && (dbEntity.getObjectBiologicalEntity() == null || !objectEntity.getId().equals(dbEntity.getObjectBiologicalEntity().getId()))) {
+		if (objectEntity.getObsolete() && (dbEntity.getAlleleGeneAssociationObject() == null || !objectEntity.getId().equals(dbEntity.getAlleleGeneAssociationObject().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

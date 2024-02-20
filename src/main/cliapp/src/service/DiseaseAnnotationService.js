@@ -16,7 +16,7 @@ export class DiseaseAnnotationService extends BaseAuthService {
 	createDiseaseAnnotation(annotation) {
 		let newAnnotation = { ...annotation };
 
-		const { type } = (annotation.subject) ? newAnnotation.subject : '';
+		const { type } = (annotation.diseaseAnnotationSubject) ? newAnnotation.diseaseAnnotationSubject : '';
 
 		newAnnotation["type"] = subectAnnotationLookup[type];
 		let endpoint;

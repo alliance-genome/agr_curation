@@ -63,7 +63,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 
 		Gene subject = validateSubject(uiEntity, dbEntity);
-		dbEntity.setSubjectBiologicalEntity(subject);
+		dbEntity.setDiseaseAnnotationSubject(subject);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
@@ -82,21 +82,21 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		String field = "subjectBiologicalEntity";
-		if (ObjectUtils.isEmpty(uiEntity.getSubjectBiologicalEntity())) {
+		String field = "diseaseAnnotationSubject";
+		if (ObjectUtils.isEmpty(uiEntity.getDiseaseAnnotationSubject())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
 		Gene subjectEntity = null;
-		if (uiEntity.getSubjectBiologicalEntity().getId() != null)
-			subjectEntity = geneDAO.find(uiEntity.getSubjectBiologicalEntity().getId());
+		if (uiEntity.getDiseaseAnnotationSubject().getId() != null)
+			subjectEntity = geneDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubjectBiologicalEntity() == null || !subjectEntity.getId().equals(dbEntity.getSubjectBiologicalEntity().getId()))) {
+		if (subjectEntity.getObsolete() && (dbEntity.getDiseaseAnnotationSubject() == null || !subjectEntity.getId().equals(dbEntity.getDiseaseAnnotationSubject().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

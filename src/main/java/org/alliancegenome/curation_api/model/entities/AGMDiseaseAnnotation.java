@@ -36,12 +36,12 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
 @JsonTypeName("AGMDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
+@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 @Table(indexes = {
 	@Index(name = "AGMDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id"),
 	@Index(name = "AGMDiseaseAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
 	@Index(name = "AGMDiseaseAnnotation_assertedAllele_index", columnList = "assertedAllele_id"),
-	@Index(name = "AGMDiseaseAnnotation_SubjectBiologicalEntity_index", columnList = "subjectbiologicalentity_id")
+	@Index(name = "AGMDiseaseAnnotation_DiseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id")
 })
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
@@ -51,7 +51,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
-	private AffectedGenomicModel subjectBiologicalEntity;
+	private AffectedGenomicModel diseaseAnnotationSubject;
 
 	@IndexedEmbedded(includePaths = {
 			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
@@ -112,39 +112,39 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
-		if (subjectBiologicalEntity == null)
+		if (diseaseAnnotationSubject == null)
 			return null;
-		return subjectBiologicalEntity.getCurie();
+		return diseaseAnnotationSubject.getCurie();
 	}
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectTaxonCurie() {
-		if (subjectBiologicalEntity == null)
+		if (diseaseAnnotationSubject == null)
 			return null;
-		if (subjectBiologicalEntity.getTaxon() == null)
+		if (diseaseAnnotationSubject.getTaxon() == null)
 			return null;
-		return subjectBiologicalEntity.getTaxon().getCurie();
+		return diseaseAnnotationSubject.getTaxon().getCurie();
 	}
 	
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectIdentifier() {
-		if (subjectBiologicalEntity == null)
+		if (diseaseAnnotationSubject == null)
 			return null;
-		return subjectBiologicalEntity.getIdentifier();
+		return diseaseAnnotationSubject.getIdentifier();
 	}
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectSpeciesName() {
-		if (subjectBiologicalEntity == null)
+		if (diseaseAnnotationSubject == null)
 			return null;
-		if (subjectBiologicalEntity.getTaxon() == null)
+		if (diseaseAnnotationSubject.getTaxon() == null)
 			return null;
-		return subjectBiologicalEntity.getTaxon().getGenusSpecies();
+		return diseaseAnnotationSubject.getTaxon().getGenusSpecies();
 	}
 }

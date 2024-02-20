@@ -934,7 +934,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		
 		ConstructGenomicEntityAssociation geAssociation = new ConstructGenomicEntityAssociation();
-		geAssociation.setObjectBiologicalEntity(gene);
+		geAssociation.setConstructGenomicEntityAssociationObject(gene);
 		geAssociation.setRelation(geAssociationRelation);
 		construct.setConstructGenomicEntityAssociations(List.of(geAssociation));
 		
@@ -952,7 +952,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", hasKey("constructGenomicEntityAssociations")).
-			body("entity.constructGenomicEntityAssociations[0].objectBiologicalEntity.modEntityId", is(gene.getModEntityId()));
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(gene.getModEntityId()));
 	}
 	
 	@Test
@@ -984,7 +984,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		
 		ConstructGenomicEntityAssociation geneAssociation = new ConstructGenomicEntityAssociation();
-		geneAssociation.setObjectBiologicalEntity(gene);
+		geneAssociation.setConstructGenomicEntityAssociationObject(gene);
 		geneAssociation.setRelation(systematicNameType);
 		construct.setConstructGenomicEntityAssociations(List.of(geneAssociation));
 		

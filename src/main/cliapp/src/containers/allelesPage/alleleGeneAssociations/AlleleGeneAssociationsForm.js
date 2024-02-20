@@ -14,7 +14,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
     e.preventDefault();
     const updatedErrorMessages = global.structuredClone(state.entityStates[entityType].errorMessages);
     const newAlleleGeneAssociation = {
-      subject: state.allele,
+      alleleAssociationSubject: state.allele,
     };
 
     addDataKey(newAlleleGeneAssociation);
@@ -66,7 +66,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, state, dispatch })
       type: 'EDIT_FILTERABLE_ROW',
       entityType: entityType,
       dataKey: props.rowData?.dataKey,
-      field: "object",
+      field: "alleleGeneAssociationObject",
       value: event.target.value
     });
   };

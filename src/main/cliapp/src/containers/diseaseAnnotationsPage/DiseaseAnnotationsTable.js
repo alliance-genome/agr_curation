@@ -75,8 +75,8 @@ export const DiseaseAnnotationsTable = () => {
 	let diseaseAnnotationService = new DiseaseAnnotationService();
 
 	const sortMapping = {
-		'objectTerm.name': ['objectTerm.curie', 'objectTerm.namespace'],
-		'subject.symbol': ['subject.name', 'subject.modEntityId'],
+		'diseaseAnnotationObject.name': ['diseaseAnnotationObject.curie', 'diseaseAnnotationObject.namespace'],
+		'diseaseAnnotationSubject.symbol': ['diseaseAnnotationSubject.name', 'diseaseAnnotationSubject.modEntityId'],
 		'with.geneSymbol.displayText': ['with.geneFullName.displayText', 'with.modEntityId'],
 		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.modEntityId']
@@ -506,7 +506,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const onConditionRelationHandleEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
-		if (typeof event.value === "objectTerm") {
+		if (typeof event.value === "diseaseAnnotationObject") {
 			updatedAnnotations[props.rowIndex].conditionRelations[0] = event.value;
 		} else {
 			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
@@ -514,11 +514,11 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const diseaseBodyTemplate = (rowData) => {
-		if (rowData.objectTerm) {
+		if (rowData.diseaseAnnotationObject) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.objectTerm.curie.replace(':', '')}`}>{rowData.objectTerm.name} ({rowData.objectTerm.curie})</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.id}${rowData.objectTerm.curie.replace(':', '')}`} content={`${rowData.objectTerm.name} (${rowData.objectTerm.curie})`} />
+					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.diseaseAnnotationObject.curie.replace(':', '')}`}>{rowData.diseaseAnnotationObject.name} ({rowData.diseaseAnnotationObject.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.diseaseAnnotationObject.curie.replace(':', '')}`} content={`${rowData.diseaseAnnotationObject.name} (${rowData.diseaseAnnotationObject.curie})`} />
 				</>
 			)
 		}
@@ -700,13 +700,13 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onSubjectValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "subject", setFieldValue, "modEntityId");
+		defaultAutocompleteOnChange(props, event, "diseaseAnnotationSubject", setFieldValue, "modEntityId");
 	};
 
 	const subjectSearch = (event, setFiltered, setQuery, props) => {
 		const autocompleteFields = getSubjectAutocompleteFields(props);
 		const endpoint = getSubjectEndpoint(props);
-		const filterName = "subjectFilter";
+		const filterName = "diseaseAnnotationSubjectFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -716,23 +716,23 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-					initialValue={getIdentifier(props.rowData.subject)}
+					initialValue={getIdentifier(props.rowData.diseaseAnnotationSubject)}
 					search={subjectSearch}
 					rowProps={props}
 					searchService={searchService}
 					subField='modEntityId'
-					fieldName='subject'
+					fieldName='diseaseAnnotationSubject'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 					onValueChangeHandler={onSubjectValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"subject"}
+					errorField={"diseaseAnnotationSubject"}
 				/>
 				<ErrorMessageComponent
 					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={"subject"}
+					errorField={"diseaseAnnotationSubject"}
 				/>
 			</>
 		);
@@ -883,7 +883,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onDiseaseValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "objectTerm", setFieldValue);
+		defaultAutocompleteOnChange(props, event, "diseaseAnnotationObject", setFieldValue);
 	};
 
 	const diseaseSearch = (event, setFiltered, setQuery) => {
@@ -907,14 +907,14 @@ export const DiseaseAnnotationsTable = () => {
 			<>
 				<AutocompleteEditor
 					search={diseaseSearch}
-					initialValue={props.rowData.objectTerm?.curie}
+					initialValue={props.rowData.diseaseAnnotationObject?.curie}
 					rowProps={props}
-					fieldName='objectTerm'
+					fieldName='diseaseAnnotationObject'
 					onValueChangeHandler={onDiseaseValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"objectTerm"}
+					errorField={"diseaseAnnotationObject"}
 				/>
 			</>
 		);
@@ -1047,83 +1047,83 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const subjectBodyTemplate = (rowData) => {
-		if (rowData.subject) {
-			const identifier = getIdentifier(rowData.subject);
-			if (rowData.subject.geneSymbol) {
+		if (rowData.diseaseAnnotationSubject) {
+			const identifier = getIdentifier(rowData.diseaseAnnotationSubject);
+			if (rowData.diseaseAnnotationSubject.geneSymbol) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.subject.geneSymbol.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.geneSymbol.displayText + ' (' + identifier + ')'
 							}}
 						/>
 						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.subject.geneSymbol.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.geneSymbol.displayText + ' (' + identifier + ')'
 							}}
 							/>
 						</Tooltip>
 					</>
 				)
-			} else if (rowData.subject.alleleSymbol) {
+			} else if (rowData.diseaseAnnotationSubject.alleleSymbol) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.subject.alleleSymbol.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.alleleSymbol.displayText + ' (' + identifier + ')'
 							}}
 						/>
 						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.subject.alleleSymbol.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.alleleSymbol.displayText + ' (' + identifier + ')'
 							}}
 							/>
 						</Tooltip>
 					</>
 				)
-			} else if (rowData.subject.geneFullName) {
+			} else if (rowData.diseaseAnnotationSubject.geneFullName) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.subject.geneFullName.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.geneFullName.displayText + ' (' + identifier + ')'
 							}}
 						/>
 						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.subject.geneFullName.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.geneFullName.displayText + ' (' + identifier + ')'
 							}}
 							/>
 						</Tooltip>
 					</>
 				)
-			} else if (rowData.subject.alleleFullName) {
+			} else if (rowData.diseaseAnnotationSubject.alleleFullName) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.subject.alleleFullName.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.alleleFullName.displayText + ' (' + identifier + ')'
 							}}
 						/>
 						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.subject.alleleFullName.displayText + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.alleleFullName.displayText + ' (' + identifier + ')'
 							}}
 							/>
 						</Tooltip>
 					</>
 				)
-			} else if (rowData.subject.name) {
+			} else if (rowData.diseaseAnnotationSubject.name) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.subject.name + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.name + ' (' + identifier + ')'
 							}}
 						/>
 						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.subject.name + ' (' + identifier + ')'
+								__html: rowData.diseaseAnnotationSubject.name + ' (' + identifier + ')'
 								}}
 							/>
 						</Tooltip>
@@ -1300,11 +1300,11 @@ export const DiseaseAnnotationsTable = () => {
 		filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 	},
 	{
-		field: "subject.symbol",
+		field: "diseaseAnnotationSubject.symbol",
 		header: "Subject",
 		body: subjectBodyTemplate,
 		sortable: true,
-		filterConfig: FILTER_CONFIGS.subjectFieldConfig,
+		filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
 		editor: (props) => subjectEditorTemplate(props),
 	},
 	{
@@ -1323,11 +1323,11 @@ export const DiseaseAnnotationsTable = () => {
 		editor: (props) => negatedEditor(props)
 	},
 	{
-		field: "objectTerm.name",
+		field: "diseaseAnnotationObject.name",
 		header: "Disease",
 		body: diseaseBodyTemplate,
 		sortable: true,
-		filterConfig: FILTER_CONFIGS.objectTermFilterConfig,
+		filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
 	},
 	{

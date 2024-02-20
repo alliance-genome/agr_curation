@@ -91,13 +91,13 @@ export const GenomicComponentsDialog = ({
 
 	const componentTemplate = (rowData) => {
 		let componentDisplayValue = "";
-		if (rowData.object.geneSymbol || rowData.object.alleleSymbol) {
-			let symbolValue = rowData.object.geneSymbol ? rowData.object.geneSymbol.displayText : rowData.object.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.object) + ')';
-		} else if (rowData.object.name) {
-			componentDisplayValue = rowData.object.name + ' (' + getIdentifier(rowData.object) + ')';
+		if (rowData.constructGenomicEntityAssociationObject.geneSymbol || rowData.constructGenomicEntityAssociationObject.alleleSymbol) {
+			let symbolValue = rowData.constructGenomicEntityAssociationObject.geneSymbol ? rowData.constructGenomicEntityAssociationObject.geneSymbol.displayText : rowData.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
+			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.constructGenomicEntityAssociationObject) + ')';
+		} else if (rowData.constructGenomicEntityAssociationObject.name) {
+			componentDisplayValue = rowData.constructGenomicEntityAssociationObject.name + ' (' + getIdentifier(rowData.constructGenomicEntityAssociationObject) + ')';
 		} else {
-			componentDisplayValue = getIdentifier(rowData.object);
+			componentDisplayValue = getIdentifier(rowData.constructGenomicEntityAssociationObject);
 		}
 		return (
 			<>
@@ -132,7 +132,7 @@ export const GenomicComponentsDialog = ({
 					<DataTable value={localComponents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 							ref={tableRef} >
 						<Column field="relation.name" header="Relation" headerClassName='surface-0'/>
-						<Column field="object.modEntityId" header="Component" headerClassName='surface-0' body={componentTemplate}/>
+						<Column field="constructGenomicEntityAssociationObject.modEntityId" header="Component" headerClassName='surface-0' body={componentTemplate}/>
 						<Column field="relatedNotes.freeText" header="Related Notes" headerClassName='surface-0' body={relatedNotesTemplate}/>
 						<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName='surface-0'/>

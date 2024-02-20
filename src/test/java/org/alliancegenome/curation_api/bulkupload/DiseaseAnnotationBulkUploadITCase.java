@@ -203,8 +203,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.uniqueId", is("DATEST:Gene0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
-			body("entity.subjectBiologicalEntity.modEntityId", is(gene)).
-			body("entity.objectOntologyTerm.curie", is(doTerm)).
+			body("entity.diseaseAnnotationSubject.modEntityId", is(gene)).
+			body("entity.diseaseAnnotationObject.curie", is(doTerm)).
 			body("entity.relation.name", is(alleleAndGeneRelation)).
 			body("entity.geneticSex.name", is(geneticSex)).
 			body("entity.conditionRelations", hasSize(1)).
@@ -283,8 +283,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.uniqueId", is("DATEST:Allele0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
-			body("entity.subjectBiologicalEntity.modEntityId", is(allele)).
-			body("entity.objectOntologyTerm.curie", is(doTerm)).
+			body("entity.diseaseAnnotationSubject.modEntityId", is(allele)).
+			body("entity.diseaseAnnotationObject.curie", is(doTerm)).
 			body("entity.relation.name", is(alleleAndGeneRelation)).
 			body("entity.geneticSex.name", is(geneticSex)).
 			body("entity.conditionRelations", hasSize(1)).
@@ -364,8 +364,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.uniqueId", is("DATEST:AGM0001|is_model_of|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:Gene0002")).
-			body("entity.subjectBiologicalEntity.modEntityId", is(agm)).
-			body("entity.objectOntologyTerm.curie", is(doTerm)).
+			body("entity.diseaseAnnotationSubject.modEntityId", is(agm)).
+			body("entity.diseaseAnnotationObject.curie", is(doTerm)).
 			body("entity.relation.name", is(agmRelation)).
 			body("entity.geneticSex.name", is(geneticSex)).
 			body("entity.conditionRelations", hasSize(1)).
@@ -447,8 +447,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.uniqueId", is("DATEST:Gene0002|is_marker_for|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
-			body("entity.subjectBiologicalEntity.modEntityId", is(gene2)).
-			body("entity.objectOntologyTerm.curie", is(doTerm2)).
+			body("entity.diseaseAnnotationSubject.modEntityId", is(gene2)).
+			body("entity.diseaseAnnotationObject.curie", is(doTerm2)).
 			body("entity.relation.name", is(geneRelation)).
 			body("entity.geneticSex.name", is(geneticSex2)).
 			body("entity.conditionRelations", hasSize(1)).
@@ -527,8 +527,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.uniqueId", is("DATEST:Allele0002|is_implicated_in|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
-			body("entity.subjectBiologicalEntity.modEntityId", is(allele2)).
-			body("entity.objectOntologyTerm.curie", is(doTerm2)).
+			body("entity.diseaseAnnotationSubject.modEntityId", is(allele2)).
+			body("entity.diseaseAnnotationObject.curie", is(doTerm2)).
 			body("entity.relation.name", is(alleleAndGeneRelation)).
 			body("entity.geneticSex.name", is(geneticSex2)).
 			body("entity.conditionRelations", hasSize(1)).
@@ -608,8 +608,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.uniqueId", is("DATEST:AGM0002|is_exacerbated_model_of|false|DATEST:Disease0002|AGRKB:000000021|DATEST:Evidence0002|HGNC:0002|induced_by|DATEST:ExpCondTerm0003|DATEST:ExpCondTerm0001|DATEST:AnatomyTerm0002|DATEST:ChemicalTerm0002|DATEST:GOTerm0002|NCBITaxon:9606|Some amount 2|Free text 2|severity|exacerbated_by|DATEST:Gene0001")).
-			body("entity.subjectBiologicalEntity.modEntityId", is(agm2)).
-			body("entity.objectOntologyTerm.curie", is(doTerm2)).
+			body("entity.diseaseAnnotationSubject.modEntityId", is(agm2)).
+			body("entity.diseaseAnnotationObject.curie", is(doTerm2)).
 			body("entity.relation.name", is(agmRelation2)).
 			body("entity.geneticSex.name", is(geneticSex2)).
 			body("entity.conditionRelations", hasSize(1)).

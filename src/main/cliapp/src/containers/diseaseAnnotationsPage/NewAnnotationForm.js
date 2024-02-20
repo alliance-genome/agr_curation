@@ -263,7 +263,7 @@ export const NewAnnotationForm = ({
 			"alleleSecondaryIds.secondaryId",
 		];
 		const endpoint = "biologicalentity";
-		const filterName = "subjectFilter";
+		const filterName = "diseaseAnnotationSubjectFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -324,7 +324,7 @@ export const NewAnnotationForm = ({
 	const isExperimentEnabled = () => {
 		return (
 			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
-			typeof newAnnotation.singleReference === "object"
+			typeof newAnnotation.singleReference === "diseaseAnnotationObject"
 			&& newAnnotation.singleReference.curie !== ""
 			&& !showConditionRelations
 		)
@@ -455,26 +455,26 @@ export const NewAnnotationForm = ({
 				<form>
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="subject"><font color={'red'}>*</font>Subject</label>
+							<label htmlFor="diseaseAnnotationSubject"><font color={'red'}>*</font>Subject</label>
 						</div>
 						<div className={widgetColumnSize}>
 							<AutocompleteFormEditor
-								initialValue={newAnnotation.subject}
+								initialValue={newAnnotation.diseaseAnnotationSubject}
 								search={subjectSearch}
-								fieldName='subject'
+								fieldName='diseaseAnnotationSubject'
 								subField="modEntityId"
-								name="subject"
+								name="diseaseAnnotationSubject"
 								searchService={searchService}
 								onValueChangeHandler={onSubjectChange}
 								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseAnnotationSubject})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
-							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"subject"}/>
-							<SubjectAdditionalFieldData fieldData={newAnnotation.subject}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseAnnotationSubject"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"diseaseAnnotationSubject"}/>
+							<SubjectAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationSubject}/>
 						</div>
 					</div>
 
@@ -584,22 +584,22 @@ export const NewAnnotationForm = ({
 
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="object"><font color={'red'}>*</font>Disease</label>
+							<label htmlFor="diseaseAnnotationObject"><font color={'red'}>*</font>Disease</label>
 						</div>
 						<div className={widgetColumnSize}>
 							<AutocompleteFormEditor
-								name="object"
+								name="diseaseAnnotationObject"
 								search={diseaseSearch}
 								label="Disease"
-								fieldName='object'
-								initialValue={newAnnotation.object}
+								fieldName='diseaseAnnotationObject'
+								initialValue={newAnnotation.diseaseAnnotationObject}
 								onValueChangeHandler={onDiseaseChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseAnnotationObject})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
-							<DiseaseAdditionalFieldData fieldData={newAnnotation.object}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseAnnotationObject"}/>
+							<DiseaseAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationObject}/>
 						</div>
 					</div>
 

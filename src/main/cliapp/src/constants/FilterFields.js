@@ -146,7 +146,7 @@ export const FIELD_SETS = Object.freeze({
   },
   constructGenomicComponentsFieldSet: {
     filterName: "constructGenomicComponentsFilter",
-    fields: ["constructGenomicEntityAssociations.object.symbol", "constructGenomicEntityAssociations.object.name", "constructGenomicEntityAssociations.object.curie", "constructGenomicEntityAssociations.object.modEntityId", "constructGenomicEntityAssociations.object.modInternalId", "constructGenomicEntityAssociations.relation.name"],
+    fields: ["constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.name", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.curie", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.modEntityId", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.modInternalId", "constructGenomicEntityAssociations.relation.name"],
   },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
@@ -192,9 +192,9 @@ export const FIELD_SETS = Object.freeze({
     filterName: "definitionFilter",
     fields: ["definition"],
   },
-  vocabularyDescriptionFieldSet: {
-    filterName: "vocabularyDescriptionFilter",
-    fields: ["vocabularyDescription"],
+  diseaseAnnotationSubjectFieldSet: {
+    filterName: "diseaseAnnotationSubjectFilter",
+    fields: ["diseaseAnnotationSubject.symbol", "diseaseAnnotationSubject.name", "diseaseAnnotationSubject.curie", "diseaseAnnotationSubject.modEntityId", "diseaseAnnotationSubject.modInternalId"],
   },
   diseaseQualifiersFieldSet: {
     filterName: "diseaseQualifiersFilter",
@@ -316,9 +316,9 @@ export const FIELD_SETS = Object.freeze({
     filterName: "negatedFilter",
     fields: ["negated"],
   },
-  objectTermFieldSet: {
+  diseaseAnnotationObjectFieldSet: {
     filterName: "objectFilter",
-    fields: ["object.curie", "object.name"],
+    fields: ["diseaseAnnotationObject.curie", "diseaseAnnotationObject.name"],
   },
   obsoleteFieldSet: {
     filterName: "obsoleteFilter",
@@ -408,10 +408,6 @@ export const FIELD_SETS = Object.freeze({
 	  filterName: "speciesAssemblyFilter",
 	  fields: ["assembly_curie"]
   },
-  subjectFieldSet: {
-    filterName: "subjectFilter",
-    fields: ["subject.symbol", "subject.name", "subject.curie", "subject.modEntityId", "subject.modInternalId"],
-  },
   subtypeFieldSet: {
     filterName: "subtypeFilter",
     fields: ["subtype.name"],
@@ -451,6 +447,10 @@ export const FIELD_SETS = Object.freeze({
   variantTypeFieldSet: {
     filterName: "variantTypeFilter",
     fields: ["variantType.name", "variantType.curie"],
+  },
+  vocabularyDescriptionFieldSet: {
+    filterName: "vocabularyDescriptionFilter",
+    fields: ["vocabularyDescription"],
   },
   vocabularyFieldSet: {
     filterName: "vocabularyFilter",
@@ -537,7 +537,8 @@ export const FILTER_CONFIGS = Object.freeze({
   modinternalidFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.modinternalidFieldSet] },
   nameFilterConfig:                         { filterComponentType: "input", fieldSets: [FIELD_SETS.nameFieldSet] },
   namespaceFilterConfig:                    { filterComponentType: 'input', fieldSets: [FIELD_SETS.namespaceFieldSet] },
-  objectTermFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.objectTermFieldSet] },
+  diseaseAnnotationSubjectFieldConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.diseaseAnnotationSubjectFieldSet] },
+  diseaseAnnotationObjectFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.diseaseAnnotationObjectFieldSet] },
   ontologySynonymsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.ontologySynonymsFieldSet] },
   pageDescriptionFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },
   prefixFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.prefixFieldSet]},
@@ -549,13 +550,12 @@ export const FILTER_CONFIGS = Object.freeze({
   singleReferenceFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.singleReferenceFieldSet] },
   smilesFilterConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.smilesFieldSet] },
   sourceGeneralConsequenceFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.sourceGeneralConsequenceFieldSet] },
-  speciesTaxonCurieFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesTaxonCurieFieldSet]},
-  speciesFullNameFilterConfig:				{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesFullNameFieldSet]},
-  speciesDisplayNameFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesDisplayNameFieldSet]},
-  speciesCommonNameFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesCommonNameFieldSet]},
-  speciesAbbreviationFilterConfig:			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAbbreviationFieldSet]},
-  speciesAssemblyFilterConfig:				{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAssemblyFieldSet]},
-  subjectFieldConfig:                       { filterComponentType: "input", fieldSets: [FIELD_SETS.subjectFieldSet] },
+  speciesTaxonCurieFilterConfig:			      { filterComponentType: "input", fieldSets: [FIELD_SETS.speciesTaxonCurieFieldSet]},
+  speciesFullNameFilterConfig:				      { filterComponentType: "input", fieldSets: [FIELD_SETS.speciesFullNameFieldSet]},
+  speciesDisplayNameFilterConfig:			      { filterComponentType: "input", fieldSets: [FIELD_SETS.speciesDisplayNameFieldSet]},
+  speciesCommonNameFilterConfig:			      { filterComponentType: "input", fieldSets: [FIELD_SETS.speciesCommonNameFieldSet]},
+  speciesAbbreviationFilterConfig:    			{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAbbreviationFieldSet]},
+  speciesAssemblyFilterConfig:			      	{ filterComponentType: "input", fieldSets: [FIELD_SETS.speciesAssemblyFieldSet]},
   subtypeFilterConfig:                      { filterComponentType: "input", fieldSets: [FIELD_SETS.subtypeFieldSet] },
   synonymsFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.synonymsFieldSet] },
   taxonFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.taxonFieldSet] },

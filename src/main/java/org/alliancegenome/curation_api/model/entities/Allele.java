@@ -79,7 +79,7 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private Boolean isExtinct;
 
-	@OneToMany(mappedBy = "subjectBiologicalEntity", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 
 	@IndexedEmbedded(includePaths = { "mutationTypes.curie", "mutationTypes.name", "evidence.curie", "mutationTypes.curie_keyword", "mutationTypes.name_keyword", "evidence.curie_keyword"})
@@ -142,10 +142,10 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
 	
-	@IndexedEmbedded(includePaths = {"objectBiologicalEntity.curie", "objectBiologicalEntity.geneSymbol.displayText", "objectBiologicalEntity.geneSymbol.formatText", "objectBiologicalEntity.geneFullName.displayText", "objectBiologicalEntity.geneFullName.formatText",
-			"objectBiologicalEntity.curie_keyword", "objectBiologicalEntity.geneSymbol.displayText_keyword", "objectBiologicalEntity.geneSymbol.formatText_keyword", "objectBiologicalEntity.geneFullName.displayText_keyword", "objectBiologicalEntity.geneFullName.formatText_keyword",
-			"objectBiologicalEntity.modEntityId", "objectBiologicalEntity.modInternalId", "objectBiologicalEntity.modEntityId_keyword", "objectBiologicalEntity.modInternalId_keyword" })
-	@OneToMany(mappedBy = "subjectBiologicalEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+	@IndexedEmbedded(includePaths = {"alleleGeneAssociationObject.curie", "alleleGeneAssociationObject.geneSymbol.displayText", "alleleGeneAssociationObject.geneSymbol.formatText", "alleleGeneAssociationObject.geneFullName.displayText", "alleleGeneAssociationObject.geneFullName.formatText",
+			"alleleGeneAssociationObject.curie_keyword", "alleleGeneAssociationObject.geneSymbol.displayText_keyword", "alleleGeneAssociationObject.geneSymbol.formatText_keyword", "alleleGeneAssociationObject.geneFullName.displayText_keyword", "alleleGeneAssociationObject.geneFullName.formatText_keyword",
+			"alleleGeneAssociationObject.modEntityId", "alleleGeneAssociationObject.modInternalId", "alleleGeneAssociationObject.modEntityId_keyword", "alleleGeneAssociationObject.modInternalId_keyword" })
+	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
 	

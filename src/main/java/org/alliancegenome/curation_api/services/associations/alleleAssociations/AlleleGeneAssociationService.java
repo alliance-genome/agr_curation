@@ -145,9 +145,9 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		AlleleGeneAssociation association = null;
 
 		Map<String, Object> params = new HashMap<>();
-		params.put("subjectBiologicalEntity.id", alleleId);
+		params.put("alleleAssociationSubject.id", alleleId);
 		params.put("relation.name", relationName);
-		params.put("objectBiologicalEntity.id", geneId);
+		params.put("alleleGeneAssociationObject.id", geneId);
 
 		SearchResponse<AlleleGeneAssociation> resp = alleleGeneAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)
@@ -160,7 +160,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	}
 	
 	private void addAssociationToAllele(AlleleGeneAssociation association) {
-		Allele allele = association.getSubjectBiologicalEntity();
+		Allele allele = association.getAlleleAssociationSubject();
 		List<AlleleGeneAssociation> currentAssociations = allele.getAlleleGeneAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();
@@ -172,7 +172,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	}
 	
 	private void addAssociationToGene(AlleleGeneAssociation association) {
-		Gene gene = association.getObjectBiologicalEntity();
+		Gene gene = association.getAlleleGeneAssociationObject();
 		List<AlleleGeneAssociation> currentAssociations = gene.getAlleleGeneAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();

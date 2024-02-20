@@ -35,7 +35,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private String name;
 
-	@OneToMany(mappedBy = "subjectBiologicalEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

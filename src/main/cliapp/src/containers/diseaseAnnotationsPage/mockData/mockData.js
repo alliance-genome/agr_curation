@@ -67,7 +67,7 @@ export const data = {
 			"dbDateUpdated": "2023-03-16T15:24:38.954678Z",
 			"id": 18394375,
 			"uniqueId": "MGI:5560505|DOID:0050545|AGRKB:101000000827851",
-			"objectTerm": {
+			"diseaseAnnotationObject": {
 				"internal": false,
 				"obsolete": false,
 				"dbDateUpdated": "2023-04-02T22:02:52.730635Z",
@@ -176,7 +176,7 @@ export const data = {
 					}
 				}
 			},
-			"subject": {
+			"diseaseAnnotationSubject": {
 				"type": "AffectedGenomicModel",
 				"internal": false,
 				"obsolete": false,

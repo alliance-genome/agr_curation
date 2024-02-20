@@ -40,11 +40,11 @@ public class GenomicEntity extends BiologicalEntity {
 	private List<CrossReference> crossReferences;
 	
 
-	@IndexedEmbedded(includePaths = {"subjectReagent.curie", "subjectReagent.constructSymbol.displayText", "subjectReagent.constructSymbol.formatText",
-			"subjectReagent.constructFullName.displayText", "subjectReagent.constructFullName.formatText", "subjectReagent.modEntityId",
-			"subjectReagent.curie_keyword", "subjectReagent.constructSymbol.displayText_keyword", "subjectReagent.constructSymbol.formatText_keyword",
-			"subjectReagent.constructFullName.displayText_keyword", "subjectReagent.constructFullName.formatText_keyword", "subjectReagent.modEntityId_keyword",})
-	@OneToMany(mappedBy = "objectBiologicalEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+	@IndexedEmbedded(includePaths = {"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",
+			"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.modEntityId",
+			"constructAssociationSubject.curie_keyword", "constructAssociationSubject.constructSymbol.displayText_keyword", "constructAssociationSubject.constructSymbol.formatText_keyword",
+			"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.modEntityId_keyword",})
+	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 

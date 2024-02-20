@@ -27,11 +27,11 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociation.class })
+@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociation.class })
 @Schema(name = "AlleleGeneAssociation", description = "POJO representing an association between an allele and a gene")
 @Table(indexes = {
-		@Index(name = "allelegeneassociation_subjectbiologicalentity_index", columnList = "subjectbiologicalentity_id"),
-		@Index(name = "allelegeneassociation_objectbiologicalentity_index", columnList = "objectbiologicalentity_id")
+		@Index(name = "allelegeneassociation_alleleassociationsubject_index", columnList = "alleleassociationsubject_id"),
+		@Index(name = "allelegeneassociation_allelegeneassociationobject_index", columnList = "allelegeneassociationobject_id")
 		})
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
@@ -42,7 +42,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("alleleGeneAssociations")
 	@Fetch(FetchMode.JOIN)
-	private Allele subjectBiologicalEntity;
+	private Allele alleleAssociationSubject;
 	
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
 			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
@@ -51,5 +51,5 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
-	private Gene objectBiologicalEntity;
+	private Gene alleleGeneAssociationObject;
 }
