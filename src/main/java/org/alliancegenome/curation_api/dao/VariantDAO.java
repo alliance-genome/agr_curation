@@ -1,28 +1,27 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Variant;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Query;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class VariantDAO extends BaseSQLDAO<Variant> {
 	
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	protected VariantDAO() {
 		super(Variant.class);
 	}
 
 	public List<Long> findReferencingDiseaseAnnotationIds(Long variantId) {
-		List<Long> results = new ArrayList<>();
-		Query jpqlQuery = entityManager.createNativeQuery("SELECT diseaseannotation_id FROM diseaseannotation_biologicalentity db WHERE diseasegeneticmodifiers_id = :variantId");
-		jpqlQuery.setParameter("variantId", variantId);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
+		Map<String, Object> dgmParams = new HashMap<>();
+		dgmParams.put("diseaseGeneticModifiers.id", variantId);
+		List<Long >results = diseaseAnnotationDAO.findFilteredIds(dgmParams);
 
 		return results;
 	}

@@ -1,38 +1,43 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Query;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
+	
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 	
 	protected AlleleDAO() {
 		super(Allele.class);
 	}
 
 	public List<Long> findReferencingDiseaseAnnotationIds(Long alleleId) {
-		List<Long> results = new ArrayList<>();
-		Query jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.subjectBiologicalEntity.id = :alleleId");
-		jpqlQuery.setParameter("alleleId", alleleId);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
-
-		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.inferredAllele.id = :alleleId OR ada.assertedAllele.id = :alleleId");
-		jpqlQuery.setParameter("alleleId", alleleId);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
 		
-		jpqlQuery = entityManager.createNativeQuery("SELECT diseaseannotation_id FROM diseaseannotation_biologicalentity db WHERE diseasegeneticmodifiers_id = :alleleId");
-		jpqlQuery.setParameter("alleleId", alleleId);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
+		Map<String, Object> params = new HashMap<>();
+		params.put("diseaseAnnotationSubject.id", alleleId);
+		List<Long> results = alleleDiseaseAnnotationDAO.findFilteredIds(params);
+		
+		Map<String, Object> aaParams = new HashMap<>();
+		aaParams.put("assertedAllele.id", alleleId);
+		results.addAll(agmDiseaseAnnotationDAO.findFilteredIds(aaParams));
+		
+		Map<String, Object> iaParams = new HashMap<>();
+		iaParams.put("inferredAllele.id", alleleId);
+		results.addAll(agmDiseaseAnnotationDAO.findFilteredIds(iaParams));
+		
+		Map<String, Object> dgmParams = new HashMap<>();
+		dgmParams.put("diseaseGeneticModifiers.id", alleleId);
+		results.addAll(diseaseAnnotationDAO.findFilteredIds(dgmParams));
 
 		return results;
 	}
