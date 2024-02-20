@@ -23,8 +23,6 @@ import org.alliancegenome.curation_api.model.entities.associations.alleleAssocia
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.AlleleService;
-import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
@@ -49,13 +47,9 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	@Inject
 	AlleleDAO alleleDAO;
 	@Inject
-	AlleleService alleleService;
-	@Inject
 	NoteDAO noteDAO;
 	@Inject
 	GeneDAO geneDAO;
-	@Inject
-	GeneService geneService;
 	@Inject
 	PersonService personService;
 	@Inject
