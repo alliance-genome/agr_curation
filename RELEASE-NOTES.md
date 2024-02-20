@@ -2,6 +2,16 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+
+## v0.30.0
+* New features
+   * Enable "New Annotation" pop-up field-visibility custom settings for disease annotations (SCRUM-2680)
+   * Add and enable "Show All Fields" button for "New Annotation" pop-up for disease annotations (SCRUM-2756)
+* Fixes and maintenance
+   * Address deletion of allele-gene associations on the Allele detail page Allele-Gene Associations table	(SCRUM-3637)
+   * ZFIN Allele load mostly failing with apparent unrecognized PMID not present in most cases	(SCRUM-3640)
+   * Duplicate disease annotations (same Unique ID) on production curation (SCRUM-3641)
+  
 ## v0.29.0
 * New features
    * Allele detail page: Visually emphasize field names/sections and visually demphasize 'Add' buttons (SCRUM-3343)	

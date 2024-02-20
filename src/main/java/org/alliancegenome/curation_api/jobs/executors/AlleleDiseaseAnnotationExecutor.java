@@ -79,7 +79,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
+	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AlleleDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);

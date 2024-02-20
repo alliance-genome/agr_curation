@@ -164,7 +164,7 @@ public class LoadFileExecutor {
 	
 
 	// The following methods are for bulk validation
-	public void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
+	protected void runCleanup(DiseaseAnnotationService service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String md5sum) {
 		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());

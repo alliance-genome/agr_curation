@@ -114,25 +114,21 @@ public class OntologyExecutor {
 		bulkLoadFile.setRecordCount(0);
 
 		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-		BaseOntologyTermService service = null;
 		OntologyBulkLoadType ontologyType = bulkLoadFile.getBulkLoad().getOntologyType();
 
 		switch (ontologyType) {
 			case ZECO -> {
 				config.setLoadOnlyIRIPrefix("ZECO");
-				service = zecoTermService;
 				processTerms(bulkLoadFile, zecoTermService, config);
 			}
 			case EMAPA -> {
 				config.getAltNameSpaces().add("anatomical_structure");
-				service = emapaTermService;
 				processTerms(bulkLoadFile, emapaTermService, config);
 			}
 			case GO -> {
 				config.getAltNameSpaces().add("biological_process");
 				config.getAltNameSpaces().add("molecular_function");
 				config.getAltNameSpaces().add("cellular_component");
-				service = goTermService;
 				processTerms(bulkLoadFile, goTermService, config);
 			}
 			case SO -> processTerms(bulkLoadFile, soTermService, config);
@@ -246,7 +242,7 @@ public class OntologyExecutor {
 
 	private void processTerms(BulkLoadFile bulkLoadFile, OntologyBulkLoadType ontologyType, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
 
-		GenericOntologyLoadHelper loader = new GenericOntologyLoadHelper(ontologyType.getClazz(), config);
+		GenericOntologyLoadHelper<? extends OntologyTerm> loader = new GenericOntologyLoadHelper<>(ontologyType.getClazz(), config);
 
 		Map<String, ? extends OntologyTerm> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 
@@ -263,13 +259,13 @@ public class OntologyExecutor {
 		}
 		ph.finishProcess();
 
-		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-			service.processUpdateRelationships(entry.getValue());
-			ph1.progressProcess();
-		}
-		ph1.finishProcess();
+//		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
+//		ph.addDisplayHandler(loadProcessDisplayService);
+//		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
+//		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+//			service.processUpdateRelationships(entry.getValue());
+//			ph1.progressProcess();
+//		}
+//		ph1.finishProcess();
 	}
 }
