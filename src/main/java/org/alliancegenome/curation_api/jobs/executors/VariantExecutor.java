@@ -44,8 +44,11 @@ public class VariantExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		
 		List<Long> variantIdsLoaded = new ArrayList<>();
-		List<Long> variantIdsBefore = variantService.getIdsByDataProvider(dataProvider.name());
-		Log.debug("runLoad: Before: total " + variantIdsBefore.size());
+		List<Long> variantIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			variantIdsBefore.addAll(variantService.getIdsByDataProvider(dataProvider.name()));
+			Log.debug("runLoad: Before: total " + variantIdsBefore.size());
+		}
 		
 		bulkLoadFile.setRecordCount(variants.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);

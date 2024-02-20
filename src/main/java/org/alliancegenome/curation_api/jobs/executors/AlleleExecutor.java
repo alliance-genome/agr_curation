@@ -44,8 +44,11 @@ public class AlleleExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		
 		List<Long> alleleIdsLoaded = new ArrayList<>();
-		List<Long> alleleIdsBefore = alleleService.getIdsByDataProvider(dataProvider.name());
-		Log.debug("runLoad: Before: total " + alleleIdsBefore.size());
+		List<Long> alleleIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			alleleIdsBefore.addAll(alleleService.getIdsByDataProvider(dataProvider.name()));
+			Log.debug("runLoad: Before: total " + alleleIdsBefore.size());
+		}
 		
 		bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);

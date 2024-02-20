@@ -51,8 +51,11 @@ public class ConstructExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		
 		List<Long> constructIdsLoaded = new ArrayList<>();
-		List<Long> constructIdsBefore = constructService.getConstructIdsByDataProvider(dataProvider);
-		Log.debug("runLoad: Before: total " + constructIdsBefore.size());
+		List<Long> constructIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			constructIdsBefore.addAll(constructService.getConstructIdsByDataProvider(dataProvider));
+			Log.debug("runLoad: Before: total " + constructIdsBefore.size());
+		}
 		
 		bulkLoadFile.setRecordCount(constructs.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);

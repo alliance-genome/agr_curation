@@ -49,9 +49,12 @@ public class AgmExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
 		List<Long> agmIdsLoaded = new ArrayList<>();
-		List<Long> agmIdsBefore = affectedGenomicModelService.getIdsByDataProvider(dataProvider.name());
-		Log.debug("runLoad: Before: total " + agmIdsBefore.size());
-
+		List<Long> agmIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			agmIdsBefore.addAll(affectedGenomicModelService.getIdsByDataProvider(dataProvider.name()));
+			Log.debug("runLoad: Before: total " + agmIdsBefore.size());
+		}
+		
 		bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		

@@ -49,9 +49,12 @@ public class GeneExecutor extends LoadFileExecutor {
 		if (genes == null) genes = new ArrayList<>();
 
 		List<Long> geneIdsLoaded = new ArrayList<>();
-		List<Long> geneIdsBefore = geneService.getIdsByDataProvider(dataProvider);
-		log.debug("runLoad: Before: total " + geneIdsBefore.size());
-
+		List<Long> geneIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			geneIdsBefore.addAll(geneService.getIdsByDataProvider(dataProvider));
+			log.debug("runLoad: Before: total " + geneIdsBefore.size());
+		}
+		
 		bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
