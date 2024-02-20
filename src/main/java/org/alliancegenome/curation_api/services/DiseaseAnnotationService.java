@@ -141,7 +141,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put(EntityFieldConstants.SUBJECT_BIOLOGICAL_ENTITY_TAXON, dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		
 		List<Long> annotationIds = dao.findFilteredIds(params);
 		annotationIds.removeIf(Objects::isNull);
@@ -149,7 +149,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		if (StringUtils.equals(dataProvider.toString(), "HUMAN")) {
 			Map<String, Object> newParams = new HashMap<>();
 			newParams.put(EntityFieldConstants.SECONDARY_DATA_PROVIDER, dataProvider.sourceOrganization);
-			newParams.put(EntityFieldConstants.SUBJECT_BIOLOGICAL_ENTITY_TAXON, dataProvider.canonicalTaxonCurie);
+			newParams.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 			List<Long> additionalIds = dao.findFilteredIds(newParams);
 			annotationIds.addAll(additionalIds);
 		}
