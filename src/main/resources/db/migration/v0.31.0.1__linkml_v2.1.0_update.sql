@@ -17,8 +17,6 @@ ALTER TABLE agmdiseaseannotation DROP COLUMN IF EXISTS predicate;
 ALTER TABLE allelediseaseannotation DROP COLUMN IF EXISTS predicate;
 ALTER TABLE genediseaseannotation DROP COLUMN IF EXISTS predicate;
 
-ALTER TABLE synonym ALTER COLUMN name SET DATA TYPE text;
-
 -- Drop audit tables
 SET session_replication_role = 'replica';
 
