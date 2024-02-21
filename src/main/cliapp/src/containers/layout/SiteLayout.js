@@ -38,7 +38,7 @@ const initialThemeState = {
 
 export const SiteLayout = (props) => {
 
-		const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState);
+		const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState, false);
 		const [staticMenuInactive, setStaticMenuInactive] = useState(false);
 		const [overlayMenuActive, setOverlayMenuActive] = useState(false);
 		const [mobileMenuActive, setMobileMenuActive] = useState(false);

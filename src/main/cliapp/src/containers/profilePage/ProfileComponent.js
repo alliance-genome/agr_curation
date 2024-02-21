@@ -24,7 +24,7 @@ const initialThemeState = {
 
 export const ProfileComponent = () => {
 
-	const { settings: themeState, mutate: setThemeState } = useGetUserSettings("themeSettings", initialThemeState);
+	const { settings: themeState, mutate: setThemeState } = useGetUserSettings("themeSettings", initialThemeState, false);
 
 	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
