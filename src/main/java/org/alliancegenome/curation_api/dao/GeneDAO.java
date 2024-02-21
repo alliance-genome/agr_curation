@@ -59,11 +59,11 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	public List<Long> findReferencingOrthologyPairs(Long geneId) {
 		Map<String, Object> subjectParams = new HashMap<>();
 		subjectParams.put("subjectGene.id", geneId);
-		List<Long> results = geneDiseaseAnnotationDAO.findFilteredIds(subjectParams);
+		List<Long> results = geneToGeneOrthologyDAO.findFilteredIds(subjectParams);
 		
 		Map<String, Object> objectParams = new HashMap<>();
 		objectParams.put("objectGene.id", geneId);
-		results.addAll(diseaseAnnotationDAO.findFilteredIds(objectParams));
+		results.addAll(geneToGeneOrthologyDAO.findFilteredIds(objectParams));
 		
 		return results;
 	}
