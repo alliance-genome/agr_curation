@@ -74,7 +74,7 @@ export default function AlleleDetailPage() {
 			alleleState.entityStates.alleleGeneAssociations.errorMessages,
 			alleleDispatch,
 			"alleleGeneAssociations",
-			"object",
+			"alleleGeneAssociationObject",
 		);
 
 

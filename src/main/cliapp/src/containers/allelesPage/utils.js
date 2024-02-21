@@ -54,7 +54,7 @@ export const validateRequiredAutosuggestField = (table, errorMessages, dispatch,
     if (!fieldValue || typeof fieldValue === "string") {
       const errorMessage = {
         ...newErrorMessages[row.dataKey],
-        [fieldName]: { message: `Must select ${fieldName} from dropdown`, severity: "error" },
+        [fieldName]: { message: `Must select ${fieldName} from autosuggest`, severity: "error" },
       };
       newErrorMessages[row.dataKey] = errorMessage;
       areUiErrors = true;
