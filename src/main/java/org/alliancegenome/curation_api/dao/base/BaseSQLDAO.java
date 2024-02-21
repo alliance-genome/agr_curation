@@ -273,7 +273,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				public void indexingCompleted() {
 					ph.finishProcess();
-					setRefreshInterval();
+					setRefreshInterval("1s");
 				}
 			});
 
@@ -281,6 +281,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
+		setRefreshInterval("-1");
 		indexer.start();
 	}
 
@@ -311,7 +312,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				@Override
 				public void indexingCompleted() {
 					ph.finishProcess();
-					setRefreshInterval();
+					setRefreshInterval("1s");
 				}
 
 			});
@@ -320,15 +321,16 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
+		setRefreshInterval("-1");
 		indexer.start();
 	}
 
-	public void setRefreshInterval() {
+	public void setRefreshInterval(String value) {
 		RestHighLevelClient client = EsClientFactory.createClient(esHosts, esProtocol);
 		Log.info("Creating Settings Search Client: " + esProtocol + "://" + esHosts);
 
 		Map<String, String> settings = new HashMap<>();
-		settings.put("refresh_interval", "1s");
+		settings.put("refresh_interval", value);
 		Log.info("Setting Refresh Interval: " + settings);
 		UpdateSettingsRequest request = new UpdateSettingsRequest();
 		request.indices("_all");
