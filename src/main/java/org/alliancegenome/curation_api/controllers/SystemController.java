@@ -42,7 +42,7 @@ public class SystemController implements SystemControllerInterface {
 
 	@Override
 	public void updateRefreshIntervalOnAllIndexes() {
-		systemSQLDAO.setRefreshInterval();
+		systemSQLDAO.setRefreshInterval("1s");
 	}
 
 	@Override
