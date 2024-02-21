@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -14,6 +13,7 @@ import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,7 +32,7 @@ public class ExperimentalConditionSummary {
 	@Inject
 	GoTermService goTermService;
 	@Inject
-	NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject
 	ChemicalTermService chemicalTermService;
 
@@ -95,7 +95,7 @@ public class ExperimentalConditionSummary {
 		}
 
 		if (StringUtils.isNotBlank(conditionDto.getConditionTaxonCurie())) {
-			NCBITaxonTerm conditionTaxon = ncbiTaxonTermDAO.find(conditionDto.getConditionTaxonCurie());
+			NCBITaxonTerm conditionTaxon = ncbiTaxonTermService.findByCurie(conditionDto.getConditionTaxonCurie());
 			conditionSummary.add(conditionTaxon.getName());
 		}
 

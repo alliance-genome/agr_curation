@@ -2,8 +2,8 @@ import { useImmerReducer } from "use-immer";
 import 'core-js/features/structured-clone';
 
 const DEFAULT_ANNOTATION = {
-	subject: {
-		curie: "",
+	diseaseAnnotationSubject: {
+		modEntityId: "",
 	},
 	assertedGenes : [],
 	assertedAllele : null,
@@ -11,7 +11,7 @@ const DEFAULT_ANNOTATION = {
 		name: "",
 	},
 	negated: false,
-	object: {
+	diseaseAnnotationObject: {
 		curie: "",
 	},
 	singleReference: {
@@ -47,12 +47,12 @@ const initialNewAnnotationState = {
 
 const buildAnnotation = (rowData) => {
 	return {
-		subject: global.structuredClone(rowData.subject) || DEFAULT_ANNOTATION.subject,
+		diseaseAnnotationSubject: global.structuredClone(rowData.diseaseAnnotationSubject) || DEFAULT_ANNOTATION.diseaseAnnotationSubject,
 		assertedGenes : global.structuredClone(rowData.assertedGenes) || DEFAULT_ANNOTATION.assertedGenes,
 		assertedAllele : global.structuredClone(rowData.assertedAllele) || DEFAULT_ANNOTATION.assertedAllele,
 		relation: global.structuredClone(rowData.relation) || DEFAULT_ANNOTATION.relation,
 		negated: rowData.negated || DEFAULT_ANNOTATION.negated,
-		object: global.structuredClone(rowData.object)  || DEFAULT_ANNOTATION.object,
+		diseaseAnnotationObject: global.structuredClone(rowData.diseaseAnnotationObject)  || DEFAULT_ANNOTATION.diseaseAnnotationObject,
 		singleReference: global.structuredClone(rowData.singleReference) || DEFAULT_ANNOTATION.singleReference,
 		evidenceCodes: global.structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
 		with: global.structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,

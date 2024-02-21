@@ -44,8 +44,11 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 
 		
 		List<Long> associationIdsLoaded = new ArrayList<>();
-		List<Long> associationIdsBefore = alleleGeneAssociationService.getAssociationsByDataProvider(dataProvider);
-		associationIdsBefore.removeIf(Objects::isNull);
+		List<Long> associationIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			associationIdsBefore.addAll(alleleGeneAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.removeIf(Objects::isNull);
+		}
 		
 		bulkLoadFile.setRecordCount(associations.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);

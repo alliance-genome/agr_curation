@@ -49,7 +49,7 @@ export default (
 		<SecureRoute path="/conditionRelations" render={() => <ErrorBoundary><ConditionRelationPage /></ErrorBoundary>} />
 		<SecureRoute path="/genes" render={() => <ErrorBoundary><GenesPage /></ErrorBoundary>} />
 		<SecureRoute path="/alleles" render={() => <ErrorBoundary><AllelesPage /></ErrorBoundary>} />
-		<SecureRoute path="/allele/:curie" render={() => <ErrorBoundary><AlleleDetailPage /></ErrorBoundary>} />
+		<SecureRoute path="/allele/:identifier" render={() => <ErrorBoundary><AlleleDetailPage /></ErrorBoundary>} />
 		<SecureRoute path="/variants" render={() => <ErrorBoundary><VariantsPage/></ErrorBoundary>} />
 		<SecureRoute path="/constructs" render={() => <ErrorBoundary><ConstructsPage/></ErrorBoundary>} />
 		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />

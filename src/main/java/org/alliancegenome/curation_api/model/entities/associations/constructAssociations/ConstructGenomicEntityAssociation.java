@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -33,31 +32,30 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
+@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
 @Table(indexes = {
-	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "subjectConstruct_id"),
-	@Index(name = "constructgenomicentityassociation_object_index", columnList = "objectGenomicEntity_curie"),
+	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "constructassociationsubject_id"),
+	@Index(name = "constructgenomicentityassociation_object_index", columnList = "constructgenomicentityassociationobject_id"),
 	@Index(name = "constructgenomicentityassociation_relation_index", columnList = "relation_id")
 })
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "constructSymbol.displayText", "constructSymbol.formatText",
-			"constructFullName.displayText", "constructFullName.formatText", "modEntityId",
+			"constructFullName.displayText", "constructFullName.formatText", "modEntityId", "modInternalId",
 			"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
-			"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword",})
+			"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	@Fetch(FetchMode.JOIN)
-	private Construct subjectConstruct;
+	private Construct constructAssociationSubject;
 	
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
@@ -68,15 +66,18 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
-	private GenomicEntity objectGenomicEntity;
+	private GenomicEntity constructGenomicEntityAssociationObject;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
+			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
+			"references.primaryCrossReferenceCurie_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
-			@Index(name = "cgeassociation_note_cgeassociation_id_index", columnList = "constructgenomicentityassociation_id"),
-			@Index(name = "cgeassociation_note_relatednotes_id_index", columnList = "relatedNotes_id")
+			@Index(name = "cgeassociation_note_cgeassociation_index", columnList = "constructgenomicentityassociation_id"),
+			@Index(name = "cgeassociation_note_relatednotes_index", columnList = "relatedNotes_id")
 		})
 	private List<Note> relatedNotes;
 }

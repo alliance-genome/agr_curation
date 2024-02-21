@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
@@ -48,16 +49,27 @@ public class VariantDTOValidator extends BaseDTOValidator {
 		variantResponse = new ObjectResponse<Variant>();
 		
 		Variant variant = null;
-		if (StringUtils.isBlank(dto.getCurie())) {
-			variantResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			variant = variantDAO.find(dto.getCurie());
+		if (StringUtils.isNotBlank(dto.getModEntityId())) {
+			SearchResponse<Variant> response = variantDAO.findByField("modEntityId", dto.getModEntityId());
+			if (response != null && response.getSingleResult() != null)
+				variant = response.getSingleResult();
+		}
+		if (variant == null) {
+			if (StringUtils.isBlank(dto.getModInternalId())) {
+				if (StringUtils.isBlank(dto.getModEntityId()))
+					variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
+			} else {
+				SearchResponse<Variant> response = variantDAO.findByField("modInternalId", dto.getModInternalId());
+				if (response != null && response.getSingleResult() != null)
+					variant = response.getSingleResult();
+			}
 		}
 
 		if (variant == null)
 			variant = new Variant();
 
-		variant.setCurie(dto.getCurie());
+		variant.setModEntityId(dto.getModEntityId());
+		variant.setModInternalId(dto.getModInternalId());
 
 		ObjectResponse<Variant> geResponse = validateGenomicEntityDTO(variant, dto, dataProvider);
 		variantResponse.addErrorMessages(geResponse.getErrorMessages());

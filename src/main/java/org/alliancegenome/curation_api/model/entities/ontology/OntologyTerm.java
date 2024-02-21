@@ -9,9 +9,8 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -33,22 +32,28 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 @ToString(exclude = { "isaParents", "isaChildren", "isaAncestors", "isaDescendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets" }, callSuper = true)
-@AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = {
-	@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id")
-})
-public class OntologyTerm extends CurieAuditedObject {
+@AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { CurieObject.class })
+@Table(
+	indexes = {
+		@Index(name = "ontologyterm_curie_index", columnList = "curie"),
+		@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id"),
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(name = "ontologyterm_curie_uk", columnNames = "curie")
+	}
+)
+public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -77,27 +82,27 @@ public class OntologyTerm extends CurieAuditedObject {
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
 	@Column(columnDefinition = "TEXT")
-	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
+	@JoinTable(indexes = @Index(name = "ontologyterm_definitionurls_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> definitionUrls;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "subsets_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
-	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
+	@JoinTable(indexes = @Index(name = "ontologyterm_subsets_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> subsets;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
-	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
+	@JoinTable(indexes = @Index(name = "ontologyterm_secondaryidentifiers_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> secondaryIdentifiers;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie", name = "ontologyterm_synonym_ontologyterm_curie_index"))
+	@JoinTable(indexes = @Index(columnList = "ontologyterm_id", name = "ontologyterm_synonym_ontologyterm_index"))
 	@JsonView({ View.FieldsAndLists.class })
 	private List<Synonym> synonyms;
 
@@ -105,13 +110,19 @@ public class OntologyTerm extends CurieAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinTable(indexes = { @Index(columnList = "ontologyterm_curie", name = "ontologyterm_crossreference_ontologyterm_curie_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_id_index") })
+	@JoinTable(indexes = {
+		@Index(columnList = "ontologyterm_id", name = "ontologyterm_crossreference_ontologyterm_index"),
+		@Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_index")
+	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
 	@ManyToMany
 	// @JsonView(View.OntologyTermView.class)
-	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = { @Index(columnList = "isaparents_curie"), @Index(columnList = "isachildren_curie") })
+	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = {
+		@Index(name = "ontologyterm_isa_parent_children_isaparents_index", columnList = "isaparents_id"),
+		@Index(name = "ontologyterm_isa_parent_children_isachildren_index", columnList = "isachildren_id")
+	})
 	private Set<OntologyTerm> isaParents;
 
 	@ManyToMany(mappedBy = "isaParents")
@@ -119,7 +130,10 @@ public class OntologyTerm extends CurieAuditedObject {
 	private Set<OntologyTerm> isaChildren;
 
 	@ManyToMany
-	@JoinTable(name = "ontologyterm_isa_ancestor_descendant", indexes = { @Index(columnList = "isaancestors_curie"), @Index(columnList = "isadescendants_curie") })
+	@JoinTable(name = "ontologyterm_isa_ancestor_descendant", indexes = {
+		@Index(name = "ontologyterm_isa_ancestor_descendant_isancestors_index", columnList = "isaancestors_id"),
+		@Index(name = "ontologyterm_isa_ancestor_descendant_isadescendants_index", columnList = "isadescendants_id")
+	})
 	private Set<OntologyTerm> isaAncestors;
 
 	@ManyToMany(mappedBy = "isaAncestors")

@@ -1,6 +1,6 @@
 [
   {
-    "curie": "VARIANTTEST:MN02",
+    "mod_entity_id": "VARIANTTEST:MN02",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:VT001",
     "variant_status_name": "status_test",

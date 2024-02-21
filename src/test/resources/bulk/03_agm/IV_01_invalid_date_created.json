@@ -1,6 +1,6 @@
 [
   {
-    "curie": "AGMTEST:Agm0011",
+    "mod_entity_id": "AGMTEST:Agm0011",
     "name": "TestAgm11",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,

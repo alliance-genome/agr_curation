@@ -3,8 +3,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -31,13 +31,13 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Genes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene>, BaseDTOCrudControllerInterface<Gene, GeneDTO> {
+public interface GeneCrudInterface extends SubmittedObjectCrudInterface<Gene>, BaseDTOCrudControllerInterface<Gene, GeneDTO> {
 
 	@Override
 	@GET
-	@Path("/{curie}")
+	@Path("/{identifierString}")
 	@JsonView(View.GeneDetailView.class)
-	public ObjectResponse<Gene> get(@PathParam("curie") String curie);
+	public ObjectResponse<Gene> get(@PathParam("identifierString") String identifierString);
 
 	@POST
 	@Path("/bulk/{dataProvider}/genes")

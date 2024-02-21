@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -68,7 +67,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
 
 		Allele subject = validateSubject(uiEntity, dbEntity);
-		dbEntity.setSubject(subject);
+		dbEntity.setDiseaseAnnotationSubject(subject);
 
 		Gene inferredGene = validateInferredGene(uiEntity, dbEntity);
 		dbEntity.setInferredGene(inferredGene);
@@ -90,19 +89,22 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	}
 
 	private Allele validateSubject(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
-			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
+		String field = "diseaseAnnotationSubject";
+		if (ObjectUtils.isEmpty(uiEntity.getDiseaseAnnotationSubject())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getCurie());
+		Allele subjectEntity = null;
+		if (uiEntity.getDiseaseAnnotationSubject().getId() != null)
+			subjectEntity = alleleDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
 		if (subjectEntity == null) {
-			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
-			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
+		if (subjectEntity.getObsolete() && (dbEntity.getDiseaseAnnotationSubject() == null || !subjectEntity.getId().equals(dbEntity.getDiseaseAnnotationSubject().getId()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return subjectEntity;
@@ -113,13 +115,15 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		if (uiEntity.getInferredGene() == null)
 			return null;
 
-		Gene inferredGene = geneDAO.find(uiEntity.getInferredGene().getCurie());
+		Gene inferredGene = null;
+		if (uiEntity.getInferredGene().getId() != null)
+			inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
 		if (inferredGene == null) {
 			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null || !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie()))) {
+		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null || !inferredGene.getId().equals(dbEntity.getInferredGene().getId()))) {
 			addMessageResponse("inferredGene", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -132,16 +136,18 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			return null;
 
 		List<Gene> assertedGenes = new ArrayList<Gene>();
-		List<String> previousCuries = new ArrayList<String>();
+		List<Long> previousIds = new ArrayList<Long>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes()))
-			previousCuries = dbEntity.getAssertedGenes().stream().map(Gene::getCurie).collect(Collectors.toList());
+			previousIds = dbEntity.getAssertedGenes().stream().map(Gene::getId).collect(Collectors.toList());
 		for (Gene gene : uiEntity.getAssertedGenes()) {
-			Gene assertedGene = geneDAO.find(gene.getCurie());
+			Gene assertedGene = null;
+			if (gene.getId() != null)
+				assertedGene = geneDAO.find(gene.getId());
 			if (assertedGene == null) {
 				addMessageResponse("assertedGenes", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
-			if (assertedGene.getObsolete() && !previousCuries.contains(assertedGene.getCurie())) {
+			if (assertedGene.getObsolete() && !previousIds.contains(assertedGene.getId())) {
 				addMessageResponse("assertedGenes", ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}

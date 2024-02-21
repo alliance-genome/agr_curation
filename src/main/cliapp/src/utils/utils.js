@@ -108,6 +108,22 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
+export function getIdentifier(data) {
+	if (!data) {
+		return null;
+	}
+	if (data.modEntityId) {
+		return data.modEntityId;
+	}
+	if (data.modInternalId) {
+		return data.modInternalId;
+	}
+	if (data.curie) {
+		return data.curie;
+	}
+	return "";
+}
+
 export function getRefStrings(referenceItems) {
 	if (!referenceItems)
 		return;
@@ -312,8 +328,7 @@ export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFiel
 	}
 	let nonDuplicateRows = [];
 	if (event.target.value.length > 0) {
-		const identifier = event.target.value[0].curie ? "curie" : "id";
-		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, identifier);
+		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, "id");
 	}
 	updatedRows[index][fieldName] = nonDuplicateRows;
 	setFieldValue(updatedRows[index][fieldName]);
@@ -327,7 +342,7 @@ export function getUniqueItemsByProperty(items, propName) {
 }
 
 export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
 		if(updatedRow[field] && Object.keys(updatedRow[field]).length === 1){
@@ -356,10 +371,10 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 }
 
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ["subject", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
-		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['subject']).includes("curie")){
+		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("curie") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modEntityId") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modInternalId")){
 			const _uiErrorMessages = {};
 			_uiErrorMessages[field] = "Must select from autosuggest";
 			setUiErrorMessages({..._uiErrorMessages});

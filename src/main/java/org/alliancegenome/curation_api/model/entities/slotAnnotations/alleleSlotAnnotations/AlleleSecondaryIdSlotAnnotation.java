@@ -6,7 +6,6 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -18,14 +17,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleSecondaryIdSlotAnnotation", description = "POJO representing an allele secondary ID slot annotation")
-@Table(indexes = { @Index(name = "allelesecondaryid_singleallele_curie_index", columnList = "singleallele_curie"), })
+@Table(indexes = { @Index(name = "allelesecondaryid_singleallele_index", columnList = "singleallele_id"), })
 public class AlleleSecondaryIdSlotAnnotation extends SecondaryIdSlotAnnotation {
 
 	@ManyToOne

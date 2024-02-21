@@ -51,17 +51,8 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 		ObjectResponse<E> annotResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = annotResponse.getEntity();
 
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			annotation.setModEntityId(dto.getModEntityId());
-		} else {
-			annotation.setModEntityId(null);
-		}
-		
-		if (StringUtils.isNotBlank(dto.getModInternalId())) {
-			annotation.setModInternalId(dto.getModInternalId());
-		} else {
-			annotation.setModInternalId(null);
-		}
+		annotation.setModEntityId(handleStringField(dto.getModEntityId()));
+		annotation.setModInternalId(handleStringField(dto.getModInternalId()));
 		
 		if (dto.getDataProviderDto() == null) {
 			annotResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
@@ -117,7 +108,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 			List<ConditionRelation> relations = new ArrayList<>();
 			for (ConditionRelationDTO conditionRelationDTO : dto.getConditionRelationDtos()) {
 				if (StringUtils.isNotBlank(conditionRelationDTO.getHandle())) {
-					if (!conditionRelationDTO.getReferenceCurie().equals(dto.getReferenceCurie())) {
+					if (!StringUtils.equals(conditionRelationDTO.getReferenceCurie(), dto.getReferenceCurie())) {
 						annotResponse.addErrorMessage("condition_relation_dtos - reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + conditionRelationDTO.getReferenceCurie() + ")");
 					}
 				}

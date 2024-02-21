@@ -5,10 +5,8 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -30,12 +28,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
+@ToString(callSuper = true)
 @Schema(name = "Vocabulary", description = "POJO that represents the Vocabulary")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(
@@ -50,7 +47,7 @@ import lombok.ToString;
 		@UniqueConstraint(name = "vocabulary_vocabularyLabel_uk", columnNames = "vocabularyLabel"),
 	}
 )
-public class Vocabulary extends GeneratedAuditedObject {
+public class Vocabulary extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -67,7 +64,7 @@ public class Vocabulary extends GeneratedAuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	private String vocabularyDescription;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "vocabulary")
 	@JsonView({ View.VocabularyView.class })

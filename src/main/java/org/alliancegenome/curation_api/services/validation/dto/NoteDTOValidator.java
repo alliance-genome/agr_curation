@@ -65,6 +65,9 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		} else {
 			note.setReferences(null);
 		}
+		
+		if (note.getInternal() == null)
+			note.setInternal(true);
 
 		noteResponse.setEntity(note);
 

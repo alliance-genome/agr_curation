@@ -3,7 +3,7 @@
     "mod_entity_id": "DATEST:IV19",
     "internal": false,
     "obsolete": false,
-    "allele_curie": "DATEST:Allele0001",
+    "allele_identifier": "DATEST:Allele0001",
     "do_term_curie": "DATEST:Disease0001",
     "data_provider_dto": {
       "internal": false,
@@ -61,11 +61,11 @@
         ]
       }
     ],
-    "disease_genetic_modifier_curies": [
+    "disease_genetic_modifier_identifiers": [
       "DATEST:Gene0002"
     ],
     "disease_genetic_modifier_relation_name": "ameliorated_by",
-    "with_gene_curies": [
+    "with_gene_identifiers": [
       "HGNC:0001"
     ],
     "reference_curie": "PMID:25920554",
@@ -87,7 +87,7 @@
     "disease_qualifier_names": [
       "susceptibility"
     ],
-    "inferred_gene_curie": "INVALID:Gene0001",
+    "inferred_gene_identifier": "INVALID:Gene0001",
     "asserted_gene": "DATEST:Gene0001"
   }
 ]

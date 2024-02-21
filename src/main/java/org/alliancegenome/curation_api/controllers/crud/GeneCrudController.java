@@ -2,14 +2,13 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
+import org.alliancegenome.curation_api.controllers.base.SubmittedObjectCrudController;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.interfaces.crud.GeneCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneService;
 
 import jakarta.annotation.PostConstruct;
@@ -17,7 +16,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class GeneCrudController extends BaseDTOCrudController<GeneService, Gene, GeneDTO, GeneDAO> implements GeneCrudInterface {
+public class GeneCrudController extends SubmittedObjectCrudController<GeneService, Gene, GeneDTO, GeneDAO> implements GeneCrudInterface {
 
 	@Inject
 	GeneService geneService;
@@ -29,11 +28,6 @@ public class GeneCrudController extends BaseDTOCrudController<GeneService, Gene,
 	@PostConstruct
 	protected void init() {
 		setService(geneService);
-	}
-
-	@Override
-	public ObjectResponse<Gene> get(String id) {
-		return geneService.get(id);
 	}
 
 	@Override

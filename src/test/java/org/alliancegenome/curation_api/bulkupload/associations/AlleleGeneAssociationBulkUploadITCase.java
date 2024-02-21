@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.not;
 import java.time.OffsetDateTime;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,8 @@ import io.restassured.config.RestAssuredConfig;
 @Order(101)
 public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
+	private Allele allele;
+	private Gene gene;
 	private String alleleCurie = "ALLELETEST:Allele0001";
 	private String relationName = "is_allele_of";
 	private String geneCurie = "GENETEST:Gene0001";
@@ -61,6 +65,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		Vocabulary noteTypeVocab = getVocabulary("note_type");
 		createVocabularyTerm(noteTypeVocab, noteType2, false);
 		addVocabularyTermToSet("allele_genomic_entity_association_note_type", noteType2, noteTypeVocab, false);
+		allele = getAllele(alleleCurie);
+		gene = getGene(geneCurie);
 	}
 	
 	@Test
@@ -72,12 +78,12 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.objectGene.curie", is(geneCurie)).
-			body("entity.subject.curie", is(alleleCurie)).
+			body("entity.alleleGeneAssociationObject.modEntityId", is(geneCurie)).
+			body("entity.alleleAssociationSubject.modEntityId", is(alleleCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.evidenceCode.curie", is(evidenceCodeCurie)).
@@ -104,8 +110,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].objectGene.curie", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].subject", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.modEntityId", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].alleleAssociationSubject", not(hasKey("alleleGeneAssociations")));
 		
 		RestAssured.given().
 			when().
@@ -114,8 +120,8 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.alleleGeneAssociations", hasSize(1)).
 			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].objectGene.curie", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].objectGene", not(hasKey("alleleGeneAssociations")));
+			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.modEntityId", is(geneCurie)).
+			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
@@ -127,11 +133,11 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.objectGene.curie", is(geneCurie)).
+			body("entity.alleleGeneAssociationObject.modEntityId", is(geneCurie)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.evidenceCode.curie", is(evidenceCodeCurie2)).
@@ -207,7 +213,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("createdBy"))).
@@ -225,7 +231,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relatedNote", not(hasKey("createdBy"))).
@@ -241,7 +247,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGeneAssociationGetEndpoint + "?alleleCurie=" + alleleCurie + "&relationName=" + relationName + "&geneCurie=" + geneCurie).
+			get(alleleGeneAssociationGetEndpoint + "?alleleId=" + allele.getId() + "&relationName=" + relationName + "&geneId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("createdBy"))).

@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
+import org.alliancegenome.curation_api.controllers.base.CurieObjectCrudController;
 import org.alliancegenome.curation_api.dao.InformationContentEntityDAO;
 import org.alliancegenome.curation_api.interfaces.crud.InformationContentEntityCrudInterface;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
@@ -11,7 +11,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class InformationContentEntityCrudController extends BaseEntityCrudController<InformationContentEntityService, InformationContentEntity, InformationContentEntityDAO>
+public class InformationContentEntityCrudController extends CurieObjectCrudController<InformationContentEntityService, InformationContentEntity, InformationContentEntityDAO>
 	implements InformationContentEntityCrudInterface {
 
 	@Inject

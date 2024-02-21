@@ -33,11 +33,13 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<AGMDiseaseAnnotation> get(@PathParam("identifier") String identifier);
 
+	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
 	public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation entity);
 
+	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)

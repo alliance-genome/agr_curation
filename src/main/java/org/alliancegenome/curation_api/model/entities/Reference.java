@@ -14,7 +14,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -38,8 +37,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-
-@Audited
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = ReferenceTypeBridge.class))
 @Data
@@ -54,7 +51,10 @@ public class Reference extends InformationContentEntity {
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
-	@JoinTable(indexes = {@Index(columnList = "Reference_curie"), @Index(columnList = "crossReferences_id")})
+	@JoinTable(indexes = {
+		@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
+		@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")
+	})
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 

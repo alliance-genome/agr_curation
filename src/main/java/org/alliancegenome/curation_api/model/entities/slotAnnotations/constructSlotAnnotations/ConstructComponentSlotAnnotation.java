@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -28,29 +27,24 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "ConstructComponentSlotAnnotation", description = "POJO representing a construct component slot annotation")
 @Table(indexes = {
 	@Index(name = "constructcomponentslotannotation_singleconstruct_index", columnList = "singleConstruct_id"),
 	@Index(name = "constructcomponentslotannotation_componentsymbol_index", columnList = "componentSymbol"),
-	@Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_curie"),
+	@Index(name = "constructcomponentslotannotation_taxon_index", columnList = "taxon_id"),
 	@Index(name = "constructcomponentslotannotation_relation_index", columnList = "relation_id")
 })
 public class ConstructComponentSlotAnnotation extends SlotAnnotation {
@@ -89,6 +83,6 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
-	@JoinTable(indexes = { @Index(name = "constructcomponentsa_note_ccsa_id_index", columnList = "constructcomponentslotannotation_id"), @Index(name = "constructcomponentsa_note_relatednotes_id_index",columnList = "relatednotes_id")})
+	@JoinTable(indexes = { @Index(name = "constructcomponentsa_note_ccsa_index", columnList = "constructcomponentslotannotation_id"), @Index(name = "constructcomponentsa_note_relatednotes_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 }

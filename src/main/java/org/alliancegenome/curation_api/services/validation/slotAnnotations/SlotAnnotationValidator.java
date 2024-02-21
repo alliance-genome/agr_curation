@@ -12,12 +12,10 @@ import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.InformationContentEntityService;
-import org.alliancegenome.curation_api.services.helpers.constructs.ConstructUniqueIdHelper;
-import org.alliancegenome.curation_api.services.validation.AuditedObjectValidator;
+import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.inject.Inject;
 
@@ -66,8 +64,14 @@ public class SlotAnnotationValidator<E extends SlotAnnotation> extends AuditedOb
 
 	public Allele validateSingleAllele(Allele uiAllele, Allele dbAllele) {
 		String field = "singleAllele";
-
-		Allele allele = alleleDAO.find(uiAllele.getCurie());
+		if (ObjectUtils.isEmpty(uiAllele)) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+		
+		Allele allele = null;
+		if (uiAllele.getId() != null)
+			allele = alleleDAO.find(uiAllele.getId());
 		if (allele == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -82,26 +86,14 @@ public class SlotAnnotationValidator<E extends SlotAnnotation> extends AuditedOb
 	
 	public Construct validateSingleConstruct(Construct uiConstruct, Construct dbConstruct) {
 		String field = "singleConstruct";
-
-		String constructId;
-		String identifyingField;
-		if (StringUtils.isNotBlank(uiConstruct.getModEntityId())) {
-			constructId = uiConstruct.getModEntityId();
-			identifyingField = "modEntityId";
-		} else if (StringUtils.isNotBlank(uiConstruct.getModInternalId())) {
-			constructId = uiConstruct.getModInternalId();
-			identifyingField = "modInternalId";
-		} else {
-			constructId = ConstructUniqueIdHelper.getConstructUniqueId(uiConstruct);
-			identifyingField = "uniqueId";
-		}
-
-		Construct construct = null;
-		SearchResponse<Construct> constructList = constructDAO.findByField(identifyingField, constructId);
-		if (constructList != null && constructList.getResults().size() > 0) {
-			construct = constructList.getResults().get(0);
+		if (ObjectUtils.isEmpty(uiConstruct)) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
 		}
 		
+		Construct construct = null;
+		if (uiConstruct.getId() != null)
+			construct = constructDAO.find(uiConstruct.getId());
 		if (construct == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -116,8 +108,14 @@ public class SlotAnnotationValidator<E extends SlotAnnotation> extends AuditedOb
 
 	public Gene validateSingleGene(Gene uiGene, Gene dbGene) {
 		String field = "singleGene";
-
-		Gene gene = geneDAO.find(uiGene.getCurie());
+		if (ObjectUtils.isEmpty(uiGene)) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+		
+		Gene gene = null;
+		if (uiGene.getId() != null)
+			gene = geneDAO.find(uiGene.getId());
 		if (gene == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

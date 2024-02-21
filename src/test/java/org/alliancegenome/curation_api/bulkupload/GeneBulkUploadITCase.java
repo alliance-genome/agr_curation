@@ -74,7 +74,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:Gene0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("GENETEST:Gene0001")).
+			body("entity.modEntityId", is("GENETEST:Gene0001")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
@@ -156,7 +156,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:Gene0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("GENETEST:Gene0001")).
+			body("entity.modEntityId", is("GENETEST:Gene0001")).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -231,7 +231,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void geneBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_01_no_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_01_no_mod_ids.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_02_no_taxon.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_03_no_gene_symbol.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_04_no_gene_symbol_display_text.json");
@@ -258,7 +258,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void geneBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_01_empty_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_01_empty_mod_ids.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_02_empty_taxon.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_03_empty_gene_symbol_display_text.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_04_empty_gene_full_name_display_text.json");
@@ -315,7 +315,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:Gene0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("GENETEST:Gene0001")).
+			body("entity.modEntityId", is("GENETEST:Gene0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -336,7 +336,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			when().
 			get(geneGetEndpoint + "GENETEST:Gene0001").then().
 			statusCode(200).
-			body("entity.curie", is("GENETEST:Gene0001")).
+			body("entity.modEntityId", is("GENETEST:Gene0001")).
 			body("entity.geneSymbol", not(hasKey("synonymScope"))).
 			body("entity.geneSymbol", not(hasKey("synonymUrl"))).
 			body("entity.geneSymbol", not(hasKey("evidence"))).
@@ -383,7 +383,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:Gene0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("GENETEST:Gene0001")).
+			body("entity.modEntityId", is("GENETEST:Gene0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).

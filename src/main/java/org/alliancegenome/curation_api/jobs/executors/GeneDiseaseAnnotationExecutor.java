@@ -49,9 +49,11 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(geneDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
-		annotationIdsBefore.removeIf(Objects::isNull);
-
+		if (cleanUp) {
+			annotationIdsBefore.addAll(geneDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
+			annotationIdsBefore.removeIf(Objects::isNull);
+		}
+		
 		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());		
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		
@@ -95,6 +97,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage(), e.getStackTrace()));
 			}

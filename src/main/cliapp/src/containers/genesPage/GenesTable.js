@@ -47,10 +47,10 @@ export const GenesTable = () => {
 			return (
 				<>
 					<Button className="p-button-text" onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
-						<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+						<EllipsisTableCell otherClasses={`a${rowData.modEntityId.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.formatText}}></div>
 						</EllipsisTableCell>
-						<Tooltip target={`.a${rowData.curie.replace(':', '')}`}>
+						<Tooltip target={`.a${rowData.modEntityId.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{__html: rowData.geneFullName.formatText}}/>
 						</Tooltip>
 					</Button>	
@@ -110,10 +110,10 @@ export const GenesTable = () => {
 				<>
 					<Button className="p-button-text" 
 						onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
-							<EllipsisTableCell otherClasses={`b${rowData.curie.replace(':', '')}`}>
+							<EllipsisTableCell otherClasses={`b${rowData.modEntityId.replace(':', '')}`}>
 								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.geneSymbol.formatText }} />
 							</EllipsisTableCell>
-							<Tooltip target={`.b${rowData.curie.replace(':', '')}`}>
+							<Tooltip target={`.b${rowData.modEntityId.replace(':', '')}`}>
 								<div dangerouslySetInnerHTML={{__html: rowData.geneSymbol.formatText}}/>
 							</Tooltip>
 					</Button>
@@ -166,10 +166,10 @@ export const GenesTable = () => {
 			return (
 				<>
 					<Button className="p-button-text" onClick={(event) => { handleSystematicNameOpen(event, rowData, false) }} >
-						<EllipsisTableCell otherClasses={`c${rowData.curie.replace(':', '')}`}>
+						<EllipsisTableCell otherClasses={`c${rowData.modEntityId.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{__html: rowData.geneSystematicName.formatText}}></div>
 						</EllipsisTableCell>
-						<Tooltip target={`.c${rowData.curie.replace(':', '')}`}>
+						<Tooltip target={`.c${rowData.modEntityId.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{__html: rowData.geneSystematicName.formatText}}/>
 						</Tooltip>
 					</Button>	
@@ -191,10 +191,10 @@ export const GenesTable = () => {
 			if (rowData.taxon) {
 					return (
 							<>
-									<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
+									<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
 											{rowData.taxon.name} ({rowData.taxon.curie})
 									</EllipsisTableCell>
-									<Tooltip target={`.${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+									<Tooltip target={`.${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 							</>
 					);
 			}
@@ -207,6 +207,18 @@ export const GenesTable = () => {
 			sortable: true,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig
+		},
+		{
+			field: "modEntityId",
+			header: "MOD Entity ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+		},
+		{
+			field: "modInternalId",
+			header: "MOD Internal ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "geneFullName.displayText",
@@ -325,7 +337,6 @@ export const GenesTable = () => {
 				<GenericDataTable
 					endpoint="gene"
 					tableName="Genes"
-					dataKey="curie"
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}

@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -25,8 +24,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -35,15 +32,14 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
+@ToString(callSuper = true)
 @Schema(name = "annotation", description = "POJO that represents an annotation")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-
 @Table(
 	indexes = {
 		@Index(name = "annotation_curie_index", columnList = "curie"),
@@ -56,7 +52,6 @@ import lombok.EqualsAndHashCode;
 		@UniqueConstraint(name = "annotation_modinternalid_uk", columnNames = "modInternalId"),
 	}
 )
-
 public class Annotation extends SingleReferenceAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -84,21 +79,28 @@ public class Annotation extends SingleReferenceAssociation {
 	@EqualsAndHashCode.Include
 	private String modInternalId;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"handle", "uniqueId", "conditionRelationType.name", "singleReference.curie",
+			"singleReference.crossReferences.referencedCurie", "conditions.conditionSummary", "conditions.uniqueId",
+			"handle_keyword", "uniqueId_keyword", "conditionRelationType.name_keyword", "singleReference.curie_keyword",
+			"singleReference.crossReferences.referencedCurie_keyword", "conditions.conditionSummary_keyword", "conditions.uniqueId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_id_index", columnList = "conditionrelations_id")})
+	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_index", columnList = "conditionrelations_id")})
 	private List<ConditionRelation> conditionRelations;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
+			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
+			"references.primaryCrossReferenceCurie_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_id_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_id_index",columnList = "relatednotes_id")})
+	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_index",columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
+			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)

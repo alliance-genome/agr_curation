@@ -18,10 +18,10 @@ public class DiseaseAnnotationUniqueIdUpdateHelper {
 	public void updateDiseaseAnnotationUniqueIds() {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		
-		SearchResponse<String> response = diseaseAnnotationDAO.findAllIds();
+		SearchResponse<Long> response = diseaseAnnotationDAO.findAllIds();
 		pdh.startProcess("DiseaseAnnotation uniqueId update", response.getTotalResults());
-		for (String daId : response.getResults()) {
-			updateDiseaseAnnotationUniqueId(Long.parseLong(daId));
+		for (Long daId : response.getResults()) {
+			updateDiseaseAnnotationUniqueId(daId);
 			pdh.progressProcess();
 		}
 		pdh.finishProcess();

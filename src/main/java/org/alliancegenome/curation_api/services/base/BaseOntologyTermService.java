@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends CurieObjectCrudService<E, BaseEntityDAO<E>> {
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
@@ -37,11 +37,12 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public E findByCurieOrSecondaryId(String id) {
 		
-		E term = dao.find(id);
+		E term = findByCurie(id);
 		if (term != null)
 			return term;
 		
 		SearchResponse<E> response = dao.findByField("secondaryIdentifiers", id);
+
 		if (response == null)
 			return null;
 		if (response.getTotalResults() == 1)
@@ -53,7 +54,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	@Transactional
 	public E processUpdate(E inTerm) {
 
-		E term = dao.find(inTerm.getCurie());
+		E term = findByCurie(inTerm.getCurie());
 
 		boolean newTerm = false;
 		if (term == null) {
@@ -84,7 +85,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	@Transactional
 	public E processUpdateRelationships(E inTerm) {
 		// TODO: 01 - figure out issues with ontologies
-		E term = dao.find(inTerm.getCurie());
+		E term = findByCurie(inTerm.getCurie());
 		
 		HashSet<String> incomingParents = new HashSet<>();
 		HashSet<String> parentAdds = new HashSet<>();
@@ -227,7 +228,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public ObjectListResponse<E> getChildren(String curie) {
-		E term = dao.find(curie);
+		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
 		} else {
@@ -236,7 +237,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public ObjectListResponse<E> getDescendants(String curie) {
-		E term = dao.find(curie);
+		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
 		} else {
@@ -245,7 +246,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public ObjectListResponse<E> getParents(String curie) {
-		E term = dao.find(curie);
+		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaParents());
 		} else {
@@ -254,7 +255,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public ObjectListResponse<E> getAncestors(String curie) {
-		E term = dao.find(curie);
+		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaAncestors());
 		} else {

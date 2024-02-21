@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
+import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -103,14 +104,16 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 
 	public PhenotypeTerm validatePhenotypeTerm(AlleleInheritanceModeSlotAnnotation uiEntity, AlleleInheritanceModeSlotAnnotation dbEntity) {
 		String field = "phenotypeTerm";
-		if (uiEntity.getPhenotypeTerm() == null)
+		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm()))
 			return null;
 		
-		PhenotypeTerm phenotypeTerm = phenotypeTermDAO.find(uiEntity.getPhenotypeTerm().getCurie());
+		PhenotypeTerm phenotypeTerm = null;
+		if (uiEntity.getPhenotypeTerm().getId() != null)
+			phenotypeTerm = phenotypeTermDAO.find(uiEntity.getPhenotypeTerm().getId());
 		if (phenotypeTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getCurie().equals(dbEntity.getPhenotypeTerm().getCurie()))) {
+		} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getId().equals(dbEntity.getPhenotypeTerm().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

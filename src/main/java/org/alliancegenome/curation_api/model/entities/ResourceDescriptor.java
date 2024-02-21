@@ -5,10 +5,8 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -33,16 +31,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"resourcePages"})
+@ToString(exclude = {"resourcePages"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = {
+		@Index(name = "resourcedescriptor_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "resourcedescriptor_updatedby_index", columnList = "updatedBy_id")
+})
 @Schema(name = "ResourceDescriptor", description = "Annotation class representing a resource descriptor")
-@Table(indexes = { @Index(name = "resourcedescriptor_createdby_index", columnList = "createdBy_id"), @Index(name = "resourcedescriptor_updatedby_index", columnList = "updatedBy_id"), })
-public class ResourceDescriptor extends GeneratedAuditedObject {
+public class ResourceDescriptor extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "prefix_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

@@ -49,8 +49,10 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
-		annotationIdsBefore.removeIf(Objects::isNull);
+		if (cleanUp) {
+			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
+			annotationIdsBefore.removeIf(Objects::isNull);
+		}
 		
 		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);

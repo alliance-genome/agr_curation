@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
+import org.alliancegenome.curation_api.controllers.base.SubmittedObjectCrudController;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ConstructCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.ConstructExecutor;
@@ -16,7 +16,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ConstructCrudController extends BaseDTOCrudController<ConstructService, Construct, ConstructDTO, ConstructDAO>
+public class ConstructCrudController extends SubmittedObjectCrudController<ConstructService, Construct, ConstructDTO, ConstructDAO>
 	implements ConstructCrudInterface {
 
 	@Inject

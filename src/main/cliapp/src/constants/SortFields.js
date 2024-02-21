@@ -1,10 +1,11 @@
 export const SORT_FIELDS = Object.freeze([
   "uniqueId",
   "modEntityId",
-  "subject.symbol",
+  "modInternalId",
+  "diseaseAnnotationSubject.symbol",
   "relation.name",
   "negated",
-  "object.name",
+  "diseaseAnnotationObject.name",
   "singleReference.primaryCrossReferenceCurie",
   "evidenceCodes.abbreviation",
   "with.geneSymbol.displayText",
@@ -97,7 +98,7 @@ export const SORT_FIELDS = Object.freeze([
   "secondaryIdentifiers",
   "taxonText",
   "constructComponents.componentSymbol",
-  "constructGenomicEntityAssociations.objectGenomicEntity.symbol",
+  "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol",
   "variantStatus.name",
   "variantType.name",
   "sourceGeneralConsequence.name"

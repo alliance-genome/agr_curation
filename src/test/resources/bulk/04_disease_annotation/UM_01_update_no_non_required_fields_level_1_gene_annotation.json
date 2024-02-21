@@ -1,7 +1,7 @@
 [
   {
     "mod_entity_id": "DATEST:Annot0001",
-    "gene_curie": "DATEST:Gene0001",
+    "gene_identifier": "DATEST:Gene0001",
     "do_term_curie": "DATEST:Disease0001",
     "data_provider_dto": {
       "internal": false,

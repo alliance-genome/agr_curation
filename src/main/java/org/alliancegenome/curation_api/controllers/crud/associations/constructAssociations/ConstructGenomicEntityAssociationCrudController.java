@@ -52,7 +52,7 @@ public class ConstructGenomicEntityAssociationCrudController extends
 	}
 
 	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(Long constructId, String relationName,
-			String genomicEntityCurie) {
-		return constructGenomicEntityAssociationService.getAssociation(constructId, relationName, genomicEntityCurie);
+			Long genomicEntityId) {
+		return constructGenomicEntityAssociationService.getAssociation(constructId, relationName, genomicEntityId);
 	}
 }

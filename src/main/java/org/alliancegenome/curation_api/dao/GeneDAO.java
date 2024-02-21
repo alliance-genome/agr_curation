@@ -1,65 +1,70 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyDAO;
 import org.alliancegenome.curation_api.model.entities.Gene;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.Query;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class GeneDAO extends BaseSQLDAO<Gene> {
+	
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
 
 	protected GeneDAO() {
 		super(Gene.class);
 	}
 
-	public Gene getByIdOrCurie(String id) {
-		return find(id);
-	}
-
-	public List<Long> findReferencingDiseaseAnnotations(String geneCurie) {
-		Query jpqlQuery = entityManager.createQuery("SELECT gda.id FROM GeneDiseaseAnnotation gda WHERE gda.subject.curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		List<Long> results = (List<Long>) jpqlQuery.getResultList();
-
-		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.inferredGene.curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<Long>) jpqlQuery.getResultList());
-
-		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.inferredGene.curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<Long>) jpqlQuery.getResultList());
-
-		jpqlQuery = entityManager.createNativeQuery("SELECT diseaseannotation_id FROM diseaseannotation_gene gda WHERE with_curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
-
-		jpqlQuery = entityManager.createNativeQuery("SELECT agmdiseaseannotation_id FROM agmdiseaseannotation_gene gda WHERE assertedgenes_curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
-
-		jpqlQuery = entityManager.createNativeQuery("SELECT allelediseaseannotation_id FROM allelediseaseannotation_gene gda WHERE assertedgenes_curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
+	public List<Long> findReferencingDiseaseAnnotations(Long geneId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("diseaseAnnotationSubject.id", geneId);
+		List<Long> results = geneDiseaseAnnotationDAO.findFilteredIds(params);
 		
-		jpqlQuery = entityManager.createNativeQuery("SELECT diseaseannotation_id FROM diseaseannotation_biologicalentity db WHERE diseasegeneticmodifiers_curie = :geneCurie");
-		jpqlQuery.setParameter("geneCurie", geneCurie);
-		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
-			results.add(nativeResult.longValue());
+		Map<String, Object> dgmParams = new HashMap<>();
+		dgmParams.put("diseaseGeneticModifiers.id", geneId);
+		results.addAll(diseaseAnnotationDAO.findFilteredIds(dgmParams));
+		
+		Map<String, Object> agmAgParams = new HashMap<>();
+		agmAgParams.put("assertedGenes.id", geneId);
+		results.addAll(agmDiseaseAnnotationDAO.findFilteredIds(agmAgParams));
+		
+		Map<String, Object> agmIgParams = new HashMap<>();
+		agmIgParams.put("inferredGene.id", geneId);
+		results.addAll(agmDiseaseAnnotationDAO.findFilteredIds(agmIgParams));
+		
+		Map<String, Object> alleleAgParams = new HashMap<>();
+		alleleAgParams.put("assertedGenes.id", geneId);
+		results.addAll(alleleDiseaseAnnotationDAO.findFilteredIds(alleleAgParams));
+		
+		Map<String, Object> alleleIgParams = new HashMap<>();
+		alleleIgParams.put("inferredGene.id", geneId);
+		results.addAll(alleleDiseaseAnnotationDAO.findFilteredIds(alleleIgParams));
+		
+		Map<String, Object> withParams = new HashMap<>();
+		withParams.put("with.id", geneId);
+		results.addAll(diseaseAnnotationDAO.findFilteredIds(withParams));
 		
 		return results;
 	}
 
-	public List<Long> findReferencingOrthologyPairs(String curie) {
-		Query jpqlQuery = entityManager.createQuery("SELECT o.id FROM GeneToGeneOrthology o WHERE o.subjectGene.curie = :curie OR o.objectGene.curie = :curie");
-		jpqlQuery.setParameter("curie", curie);
-		return (List<Long>) jpqlQuery.getResultList();
+	public List<Long> findReferencingOrthologyPairs(Long geneId) {
+		Map<String, Object> subjectParams = new HashMap<>();
+		subjectParams.put("subjectGene.id", geneId);
+		List<Long> results = geneToGeneOrthologyDAO.findFilteredIds(subjectParams);
+		
+		Map<String, Object> objectParams = new HashMap<>();
+		objectParams.put("objectGene.id", geneId);
+		results.addAll(geneToGeneOrthologyDAO.findFilteredIds(objectParams));
+		
+		return results;
 	}
-
 }
