@@ -18,7 +18,6 @@ ALTER TABLE allelediseaseannotation DROP COLUMN IF EXISTS predicate;
 ALTER TABLE genediseaseannotation DROP COLUMN IF EXISTS predicate;
 
 -- Drop audit tables
-SET session_replication_role = 'replica';
 
 DROP TABLE affectedgenomicmodel_aud;
 DROP TABLE agmdiseaseannotation_aud;
@@ -907,8 +906,6 @@ ALTER TABLE xsmoterm DROP COLUMN curie;
 ALTER TABLE zecoterm DROP COLUMN curie;
 ALTER TABLE zfaterm DROP COLUMN curie;
 ALTER TABLE zfsterm DROP COLUMN curie;
-
-SET session_replication_role = 'origin';
 
 -- Add constraints and indexes
 
