@@ -7,10 +7,10 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PublicationFmsDTO extends BaseDTO {
-
-	private String publicationId;
+public class PhenotypeTermIdentifierFmsDTO extends BaseDTO {
 	
-	private CrossReferenceFmsDTO crossReference;
+	private String termId;
+	
+	private Integer termOrder;
 
 }

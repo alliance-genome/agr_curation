@@ -12,6 +12,7 @@ import lombok.EqualsAndHashCode;
 public class EvidenceFmsDTO extends BaseDTO {
 
 	private PublicationFmsDTO publication;
+	
 	private List<String> evidenceCodes;
 
 }

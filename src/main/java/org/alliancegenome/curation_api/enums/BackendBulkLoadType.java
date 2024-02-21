@@ -10,6 +10,7 @@ public enum BackendBulkLoadType {
 	ALLELE_DISEASE_ANNOTATION("json"),
 	GENE_DISEASE_ANNOTATION("json"),
 	ONTOLOGY("owl"),
+	PHENOTYPE_ANNOTATION("json"),
 	MOLECULE("json"),
 	FULL_INGEST("json"),
 	RESOURCE_DESCRIPTOR("yaml"),
