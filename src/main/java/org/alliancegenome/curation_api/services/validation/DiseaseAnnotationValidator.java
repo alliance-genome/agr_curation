@@ -26,7 +26,6 @@ import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
 
@@ -49,17 +48,20 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	@Inject
 	DataProviderValidator dataProviderValidator;
 
-	public DOTerm validateObject(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String field = "object";
-		if (ObjectUtils.isEmpty(uiEntity.getObject()) || StringUtils.isEmpty(uiEntity.getObject().getCurie())) {
+	public DOTerm validateObjectOntologyTerm(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+		String field = "diseaseAnnotationObject";
+		if (ObjectUtils.isEmpty(uiEntity.getDiseaseAnnotationObject())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		DOTerm diseaseTerm = doTermDAO.find(uiEntity.getObject().getCurie());
+		
+		DOTerm diseaseTerm = null;
+		if (uiEntity.getDiseaseAnnotationObject().getId() != null)
+			diseaseTerm = doTermDAO.find(uiEntity.getDiseaseAnnotationObject().getId());
 		if (diseaseTerm == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		} else if (diseaseTerm.getObsolete() && (dbEntity.getObject() == null || !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie()))) {
+		} else if (diseaseTerm.getObsolete() && (dbEntity.getDiseaseAnnotationObject() == null || !diseaseTerm.getId().equals(dbEntity.getDiseaseAnnotationObject().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -95,13 +97,18 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			return null;
 		}
 		List<ECOTerm> validEvidenceCodes = new ArrayList<>();
+		List<Long> previousIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getEvidenceCodes()))
+			previousIds = dbEntity.getEvidenceCodes().stream().map(ECOTerm::getId).collect(Collectors.toList());
 		for (ECOTerm ec : uiEntity.getEvidenceCodes()) {
-			ECOTerm evidenceCode = ecoTermDAO.find(ec.getCurie());
+			ECOTerm evidenceCode = null;
+			if (ec.getId() != null)
+				evidenceCode = ecoTermDAO.find(ec.getId());
 			if (evidenceCode == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
-			if (evidenceCode.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidenceCodes()) || !dbEntity.getEvidenceCodes().contains(evidenceCode))) {
+			if (evidenceCode.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getEvidenceCodes()) || !previousIds.contains(evidenceCode.getId()))) {
 				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}
@@ -119,15 +126,17 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			return null;
 
 		List<Gene> validWithGenes = new ArrayList<Gene>();
-		List<String> previousCuries = new ArrayList<String>();
+		List<Long> previousIds = new ArrayList<Long>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getWith()))
-			previousCuries = dbEntity.getWith().stream().map(Gene::getCurie).collect(Collectors.toList());
+			previousIds = dbEntity.getWith().stream().map(Gene::getId).collect(Collectors.toList());
 		for (Gene wg : uiEntity.getWith()) {
-			Gene withGene = geneDAO.find(wg.getCurie());
-			if (withGene == null || !withGene.getCurie().startsWith("HGNC:")) {
+			Gene withGene = null;
+			if (wg.getId() != null)
+				withGene = geneDAO.find(wg.getId());
+			if (withGene == null || withGene.getModEntityId() == null || !withGene.getModEntityId().startsWith("HGNC:")) {
 				addMessageResponse("with", ValidationConstants.INVALID_MESSAGE);
 				return null;
-			} else if (withGene.getObsolete() && !previousCuries.contains(withGene.getCurie())) {
+			} else if (withGene.getObsolete() && !previousIds.contains(withGene.getId())) {
 				addMessageResponse("with", ValidationConstants.OBSOLETE_MESSAGE);
 			} else {
 				validWithGenes.add(withGene);
@@ -180,18 +189,19 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		}
 
 		List<BiologicalEntity> validModifiers = new ArrayList<>();
-		List<String> previousCuries = new ArrayList<>();
+		List<Long> previousIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getDiseaseGeneticModifiers()))
-			previousCuries = dbEntity.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getCurie).collect(Collectors.toList());
+			previousIds = dbEntity.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getId).collect(Collectors.toList());
 		for (BiologicalEntity modifier : uiEntity.getDiseaseGeneticModifiers()) {
-			BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(modifier.getCurie());
-		
+			BiologicalEntity diseaseGeneticModifier = null;
+			if (modifier.getId() != null)
+				diseaseGeneticModifier = biologicalEntityDAO.find(modifier.getId());
 			if (diseaseGeneticModifier == null) {
 				addMessageResponse("diseaseGeneticModifiers", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
 
-			if (diseaseGeneticModifier.getObsolete() && !previousCuries.contains(diseaseGeneticModifier.getCurie())) {
+			if (diseaseGeneticModifier.getObsolete() && !previousIds.contains(diseaseGeneticModifier.getId())) {
 				addMessageResponse("diseaseGeneticModifiers", ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}
@@ -289,8 +299,8 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		
-		DOTerm term = validateObject(uiEntity, dbEntity);
-		dbEntity.setObject(term);
+		DOTerm term = validateObjectOntologyTerm(uiEntity, dbEntity);
+		dbEntity.setDiseaseAnnotationObject(term);
 
 		List<ECOTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
 		dbEntity.setEvidenceCodes(terms);

@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructS
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -23,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
@@ -33,15 +30,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "construct", description = "POJO that represents a construct")
 @ToString(exclude = {"constructGenomicEntityAssociations", "constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
-@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@AGRCurationSchemaVersion(min = "2.1.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 public class Construct extends Reagent {
 
@@ -68,8 +63,8 @@ public class Construct extends Reagent {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
-		@Index(name = "construct_reference_construct_id_index", columnList = "construct_id"),
-		@Index(name = "construct_reference_references_curie_index", columnList = "references_curie")
+		@Index(name = "construct_reference_construct_index", columnList = "construct_id"),
+		@Index(name = "construct_reference_references_index", columnList = "references_id")
 	})
 	private List<Reference> references;
 	
@@ -79,9 +74,9 @@ public class Construct extends Reagent {
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
 	
-	@IndexedEmbedded(includePaths = {"objectGenomicEntity.curie", "objectGenomicEntity.name", "objectGenomicEntity.symbol", "relation.name",
-			"objectGenomicEntity.curie_keyword", "objectGenomicEntity.name_keyword", "objectGenomicEntity.symbol_keyword", "relation.name_keyword"})
-	@OneToMany(mappedBy = "subjectConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
+	@IndexedEmbedded(includePaths = {"constructGenomicEntityAssociationObject.curie", "constructGenomicEntityAssociationObject.modEntityId", "constructGenomicEntityAssociationObject.modInternalId", "constructGenomicEntityAssociationObject.name", "constructGenomicEntityAssociationObject.symbol", "relation.name",
+			"constructGenomicEntityAssociationObject.curie_keyword", "constructGenomicEntityAssociationObject.modEntityId_keyword", "constructGenomicEntityAssociationObject.modInternalId_keyword", "constructGenomicEntityAssociationObject.name_keyword", "constructGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"})
+	@OneToMany(mappedBy = "constructAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 }

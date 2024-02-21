@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -24,11 +24,11 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Affected Genomic Models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterface<AffectedGenomicModel>, BaseDTOCrudControllerInterface<AffectedGenomicModel, AffectedGenomicModelDTO> {
+public interface AffectedGenomicModelCrudInterface extends SubmittedObjectCrudInterface<AffectedGenomicModel>, BaseDTOCrudControllerInterface<AffectedGenomicModel, AffectedGenomicModelDTO> {
 
 	@Override
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AffectedGenomicModel> get(@PathParam("curie") String curie);
+	public ObjectResponse<AffectedGenomicModel> get(@PathParam("identifierString") String identifierString);
 
 	@POST
 	@Path("/bulk/{dataProvider}/agms")

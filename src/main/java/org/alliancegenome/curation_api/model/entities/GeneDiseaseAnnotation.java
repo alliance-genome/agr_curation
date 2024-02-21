@@ -6,7 +6,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -17,33 +16,41 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Indexed
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
 @JsonTypeName("GeneDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
+@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
+@Table(indexes = {
+	@Index(name = "GeneDiseaseAnnotation_DiseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id")
+})
 public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {
+			"curie", "modEntityId", "modInternalId", "curie_keyword", "modEntityId_keyword", "modInternalId_keyword",
+			"geneSymbol.formatText", "geneSymbol.displayText", "geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword",
+			"geneFullName.formatText", "geneFullName.displayText", "geneFullName.formatText_keyword", "geneFullName.displayText_keyword",
+			"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSystematicName.formatText_keyword", "geneSystematicName.displayText_keyword",
+			"geneSynonyms.formatText", "geneSynonyms.displayText", "geneSynonyms.formatText_keyword", "geneSynonyms.displayText_keyword",
+			"geneSecondaryIds.secondaryId", "geneSecondaryIds.secondaryId_keyword", "name", "name_keyword", "symbol", "symbol_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinColumn(foreignKey = @ForeignKey(name = "fk_genedasubject"))
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
-	private Gene subject;
+	private Gene diseaseAnnotationSubject;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
@@ -53,30 +60,39 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
-		if (subject == null)
+		if (diseaseAnnotationSubject == null)
 			return null;
-		return subject.getCurie();
+		return diseaseAnnotationSubject.getCurie();
 	}
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectTaxonCurie() {
-		if (subject == null)
+		if (diseaseAnnotationSubject == null)
 			return null;
-		if (subject.getTaxon() == null)
+		if (diseaseAnnotationSubject.getTaxon() == null)
 			return null;
-		return subject.getTaxon().getCurie();
+		return diseaseAnnotationSubject.getTaxon().getCurie();
+	}
+	
+	@Transient
+	@Override
+	@JsonIgnore
+	public String getSubjectIdentifier() {
+		if (diseaseAnnotationSubject == null)
+			return null;
+		return diseaseAnnotationSubject.getIdentifier();
 	}
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectSpeciesName() {
-		if (subject == null)
+		if (diseaseAnnotationSubject == null)
 			return null;
-		if (subject.getTaxon() == null)
+		if (diseaseAnnotationSubject.getTaxon() == null)
 			return null;
-		return subject.getTaxon().getGenusSpecies();
+		return diseaseAnnotationSubject.getTaxon().getGenusSpecies();
 	}
 }

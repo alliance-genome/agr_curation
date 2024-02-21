@@ -36,7 +36,6 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		setSQLDao(geneDiseaseAnnotationDAO);
 	}
 
-	@Override
 	public ObjectResponse<GeneDiseaseAnnotation> get(String identifier) {
 		SearchResponse<GeneDiseaseAnnotation> ret = findByField("curie", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
@@ -85,9 +84,6 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
-
-	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(geneDiseaseAnnotationDAO, dataProvider);

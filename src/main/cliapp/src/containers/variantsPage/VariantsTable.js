@@ -53,10 +53,10 @@ export const VariantsTable = () => {
 		if (rowData?.taxon) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}>
 						{rowData.taxon.name} ({rowData.taxon.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip target={`.${"TAXON_NAME_"}${rowData.id}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 				</>
 			);
 		}
@@ -66,10 +66,10 @@ export const VariantsTable = () => {
 		if (rowData?.sourceGeneralConsequence) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"SGC_"}${rowData.curie.replace(':', '')}${rowData.sourceGeneralConsequence.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${"SGC_"}${rowData.id}${rowData.sourceGeneralConsequence.curie.replace(':', '')}`}>
 						{rowData.sourceGeneralConsequence?.name} ({rowData.sourceGeneralConsequence?.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"SGC_"}${rowData.curie.replace(':', '')}${rowData.sourceGeneralConsequence?.curie.replace(':', '')}`} content= {`${rowData.sourceGeneralConsequence?.name} (${rowData.sourceGeneralConsequence?.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip target={`.${"SGC_"}${rowData.id}${rowData.sourceGeneralConsequence?.curie.replace(':', '')}`} content= {`${rowData.sourceGeneralConsequence?.name} (${rowData.sourceGeneralConsequence?.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 				</>
 			);
 		}
@@ -79,10 +79,10 @@ export const VariantsTable = () => {
 		if (rowData?.variantType) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"SGC_"}${rowData.curie.replace(':', '')}${rowData.variantType.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${"SGC_"}${rowData.id}${rowData.variantType.curie.replace(':', '')}`}>
 						{rowData.variantType?.name} ({rowData.variantType?.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"SGC_"}${rowData.curie.replace(':', '')}${rowData.variantType?.curie.replace(':', '')}`} content= {`${rowData.variantType?.name} (${rowData.variantType?.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip target={`.${"SGC_"}${rowData.id}${rowData.variantType?.curie.replace(':', '')}`} content= {`${rowData.variantType?.name} (${rowData.variantType?.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 				</>
 			);
 		}
@@ -189,6 +189,18 @@ export const VariantsTable = () => {
 			header: "Curie",
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
+		},
+		{
+			field: "modEntityId",
+			header: "MOD Entity ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+		},
+		{
+			field: "modInternalId",
+			header: "MOD Internal ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "taxon.name",

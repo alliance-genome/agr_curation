@@ -88,7 +88,6 @@ public class ConstructITCase extends BaseITCase {
 	private ConstructFullNameSlotAnnotation constructFullName;
 	private ConstructSynonymSlotAnnotation constructSynonym;
 	private Gene gene;
-	private Gene gene2;
 	private VocabularyTerm geAssociationRelation;
 	
 	private void loadRequiredEntities() {
@@ -133,7 +132,6 @@ public class ConstructITCase extends BaseITCase {
 		constructSynonym = createConstructSynonymSlotAnnotation(List.of(reference), "Test synonym", systematicNameType, exactSynonymScope, "https://test.org");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		gene = createGene("TEST:AssociatedGenomicEntity1", "NCBITaxon:6239", false, symbolNameType);
-		gene2 = createGene("TEST:AssociatedGenomicEntity2", "NCBITaxon:6239", false, symbolNameType);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
 		geAssociationRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
 	}
@@ -164,7 +162,7 @@ public class ConstructITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get("/api/construct/findBy/" + CONSTRUCT).
+			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is(CONSTRUCT)).
@@ -270,7 +268,7 @@ public class ConstructITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get("/api/construct/findBy/" + CONSTRUCT).
+			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is(CONSTRUCT)).
@@ -329,7 +327,8 @@ public class ConstructITCase extends BaseITCase {
 			post("/api/construct").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
 			body("errorMessages.constructSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
@@ -339,6 +338,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		construct.setConstructSymbol(null);
 		construct.setDataProvider(null);
+		construct.setModEntityId(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -347,8 +347,9 @@ public class ConstructITCase extends BaseITCase {
 			put("/api/construct").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.constructSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
 			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
@@ -357,6 +358,7 @@ public class ConstructITCase extends BaseITCase {
 	public void createConstructWithMissingRequiredFieldsLevel2() {
 		Construct construct = new Construct();
 		construct.setDataProvider(dataProvider);
+		construct.setModEntityId("Construct:0005");
 		
 		ConstructComponentSlotAnnotation invalidComponent = new ConstructComponentSlotAnnotation();
 		ConstructSymbolSlotAnnotation invalidSymbol = new ConstructSymbolSlotAnnotation();
@@ -443,6 +445,7 @@ public class ConstructITCase extends BaseITCase {
 	public void createConstructWithEmptyRequiredFields() {
 		Construct construct = new Construct();
 		
+		construct.setModInternalId("");
 		construct.setDataProvider(dataProvider);
 		ConstructComponentSlotAnnotation invalidComponent = createConstructComponentSlotAnnotation(isRegulatedByRelation, List.of(reference), "", taxon, "C. elegans", List.of(relatedNote));
 		construct.setConstructComponents(List.of(invalidComponent));
@@ -459,7 +462,8 @@ public class ConstructITCase extends BaseITCase {
 			post("/api/construct").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
 			body("errorMessages.constructSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -476,6 +480,8 @@ public class ConstructITCase extends BaseITCase {
 	@Order(8)
 	public void editConstructWithEmptyRequiredFields() {
 		Construct construct = getConstruct(CONSTRUCT);
+		construct.setModEntityId("");
+		construct.setModInternalId("");
 		ConstructComponentSlotAnnotation component = construct.getConstructComponents().get(0);
 		component.setComponentSymbol("");
 		construct.setConstructComponents(List.of(component));
@@ -496,7 +502,8 @@ public class ConstructITCase extends BaseITCase {
 			put("/api/construct").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
+			body("errorMessages", is(aMapWithSize(5))).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
 			body("errorMessages.constructSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -533,7 +540,7 @@ public class ConstructITCase extends BaseITCase {
 		
 		
 		Construct construct = new Construct();
-		construct.setModEntityId(CONSTRUCT);
+		construct.setModEntityId("Construct:0009");
 		construct.setReferences(List.of(nonPersistedReference));
 		construct.setDateCreated(datetime);
 		construct.setDataProvider(invalidDataProvider);
@@ -662,7 +669,7 @@ public class ConstructITCase extends BaseITCase {
 		ConstructSynonymSlotAnnotation obsoleteSynonym = createConstructSynonymSlotAnnotation(List.of(obsoleteReference), "Test synonym", obsoleteNameType, obsoleteSynonymScope, "https://test.org");
 		
 		Construct construct = new Construct();
-		construct.setModEntityId(CONSTRUCT);
+		construct.setModEntityId("Construct:0011");
 		construct.setReferences(List.of(obsoleteReference));
 		construct.setDateCreated(datetime);
 		construct.setDataProvider(obsoleteDataProvider);
@@ -803,7 +810,7 @@ public class ConstructITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get("/api/construct/findBy/" + CONSTRUCT).
+			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
 			body("entity", hasKey("constructComponents")).
@@ -844,7 +851,7 @@ public class ConstructITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get("/api/construct/findBy/" + CONSTRUCT).
+			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("constructComponents"))).
@@ -860,6 +867,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = new Construct();
 		construct.setConstructSymbol(constructSymbol);
 		construct.setDataProvider(dataProvider);
+		construct.setModEntityId("Construct:0015");
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -876,6 +884,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = new Construct();
 		construct.setConstructSymbol(constructSymbol);
 		construct.setDataProvider(dataProvider);
+		construct.setModEntityId("Construct:0016");
 		
 		ConstructComponentSlotAnnotation minimalComponent = createConstructComponentSlotAnnotation(isRegulatedByRelation, null, "minimalCmp", null, null, null);
 		ConstructSymbolSlotAnnotation minimalConstructSymbol = createConstructSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
@@ -902,6 +911,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = new Construct();
 		construct.setConstructSymbol(constructSymbol);
 		construct.setDataProvider(dataProvider);
+		construct.setModEntityId("Construct:0017");
 		
 		ConstructComponentSlotAnnotation component = createConstructComponentSlotAnnotation(isRegulatedByRelation, null, "dnCmp", null, null, List.of(relatedNote, relatedNote));
 		construct.setConstructComponents(List.of(component));
@@ -924,7 +934,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		
 		ConstructGenomicEntityAssociation geAssociation = new ConstructGenomicEntityAssociation();
-		geAssociation.setObjectGenomicEntity(gene);
+		geAssociation.setConstructGenomicEntityAssociationObject(gene);
 		geAssociation.setRelation(geAssociationRelation);
 		construct.setConstructGenomicEntityAssociations(List.of(geAssociation));
 		
@@ -938,11 +948,11 @@ public class ConstructITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get("/api/construct/findBy/" + CONSTRUCT).
+			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
 			body("entity", hasKey("constructGenomicEntityAssociations")).
-			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(gene.getCurie()));
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(gene.getModEntityId()));
 	}
 	
 	@Test
@@ -962,7 +972,7 @@ public class ConstructITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get("/api/construct/findBy/" + CONSTRUCT).
+			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("constructGenomicEntityAssociations")));
@@ -974,7 +984,7 @@ public class ConstructITCase extends BaseITCase {
 		Construct construct = getConstruct(CONSTRUCT);
 		
 		ConstructGenomicEntityAssociation geneAssociation = new ConstructGenomicEntityAssociation();
-		geneAssociation.setObjectGenomicEntity(gene);
+		geneAssociation.setConstructGenomicEntityAssociationObject(gene);
 		geneAssociation.setRelation(systematicNameType);
 		construct.setConstructGenomicEntityAssociations(List.of(geneAssociation));
 		

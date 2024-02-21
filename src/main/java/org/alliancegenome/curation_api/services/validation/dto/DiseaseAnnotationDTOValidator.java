@@ -6,9 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
@@ -18,6 +16,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.BiologicalEntityService;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
@@ -40,9 +40,9 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 	@Inject
 	VocabularyTermService vocabularyTermService;
 	@Inject
-	GeneDAO geneDAO;
+	GeneService geneService;
 	@Inject
-	BiologicalEntityDAO biologicalEntityDAO;
+	BiologicalEntityService biologicalEntityService;
 	@Inject
 	DataProviderDTOValidator dataProviderDtoValidator;
 	@Inject
@@ -58,7 +58,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			DOTerm disease = doTermService.findByCurieOrSecondaryId(dto.getDoTermCurie());
 			if (disease == null)
 				daResponse.addErrorMessage("do_term_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDoTermCurie() + ")");
-			annotation.setObject(disease);
+			annotation.setDiseaseAnnotationObject(disease);
 		}
 
 		if (CollectionUtils.isEmpty(dto.getEvidenceCodeCuries())) {
@@ -84,15 +84,15 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			annotation.setNegated(false);
 		}
 
-		if (CollectionUtils.isNotEmpty(dto.getWithGeneCuries())) {
+		if (CollectionUtils.isNotEmpty(dto.getWithGeneIdentifiers())) {
 			List<Gene> withGenes = new ArrayList<>();
-			for (String withCurie : dto.getWithGeneCuries()) {
-				if (!withCurie.startsWith("HGNC:")) {
-					daResponse.addErrorMessage("with_gene_curies", ValidationConstants.INVALID_MESSAGE + " (" + withCurie + ")");
+			for (String withIdentifier : dto.getWithGeneIdentifiers()) {
+				if (!withIdentifier.startsWith("HGNC:")) {
+					daResponse.addErrorMessage("with_gene_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + withIdentifier + ")");
 				} else {
-					Gene withGene = geneDAO.getByIdOrCurie(withCurie);
+					Gene withGene = geneService.findByIdentifierString(withIdentifier);
 					if (withGene == null) {
-						daResponse.addErrorMessage("with_gene_curies", ValidationConstants.INVALID_MESSAGE + " (" + withCurie + ")");
+						daResponse.addErrorMessage("with_gene_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + withIdentifier + ")");
 					} else {
 						withGenes.add(withGene);
 					}
@@ -102,7 +102,7 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 		} else {
 			annotation.setWith(null);
 		}
-		
+
 		DataProvider secondaryDataProvider = null;
 		if (dto.getSecondaryDataProviderDto() != null) {
 			ObjectResponse<DataProvider> dpResponse = dataProviderDtoValidator.validateDataProviderDTO(dto.getSecondaryDataProviderDto(), annotation.getSecondaryDataProvider());
@@ -129,21 +129,21 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			annotation.setDiseaseQualifiers(null);
 		}
 
-		if (CollectionUtils.isNotEmpty(dto.getDiseaseGeneticModifierCuries()) || StringUtils.isNotBlank(dto.getDiseaseGeneticModifierRelationName())) {
-			if (CollectionUtils.isEmpty(dto.getDiseaseGeneticModifierCuries())) {
-				daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_curies");
+		if (CollectionUtils.isNotEmpty(dto.getDiseaseGeneticModifierIdentifiers()) || StringUtils.isNotBlank(dto.getDiseaseGeneticModifierRelationName())) {
+			if (CollectionUtils.isEmpty(dto.getDiseaseGeneticModifierIdentifiers())) {
+				daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_identifiers");
 			} else if (StringUtils.isBlank(dto.getDiseaseGeneticModifierRelationName())) {
-				daResponse.addErrorMessage("disease_genetic_modifier_curies", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_relation_name");
+				daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_relation_name");
 			} else {
 				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY,
 					dto.getDiseaseGeneticModifierRelationName()).getEntity();
 				if (diseaseGeneticModifierRelation == null)
 					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
 				List<BiologicalEntity> diseaseGeneticModifiers = new ArrayList<>();
-				for (String modifierCurie : dto.getDiseaseGeneticModifierCuries()) {
-					BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(modifierCurie);
+				for (String modifierIdentifier : dto.getDiseaseGeneticModifierIdentifiers()) {
+					BiologicalEntity diseaseGeneticModifier = biologicalEntityService.findByIdentifierString(modifierIdentifier);
 					if (diseaseGeneticModifier == null) {
-						daResponse.addErrorMessage("disease_genetic_modifier_curies", ValidationConstants.INVALID_MESSAGE + " (" + modifierCurie + ")");
+						daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + modifierIdentifier + ")");
 					} else {
 						diseaseGeneticModifiers.add(diseaseGeneticModifier);
 					}

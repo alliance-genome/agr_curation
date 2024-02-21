@@ -74,7 +74,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
@@ -210,7 +210,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -341,7 +341,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void alleleBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_01_no_curie.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_01_no_mod_ids.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_02_no_taxon.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_03_no_allele_mutation_type_mutation_types.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_04_no_allele_symbol.json");
@@ -373,7 +373,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void alleleBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_01_empty_curie.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_01_empty_mod_ids.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_02_empty_taxon.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_03_empty_allele_mutation_type_mutation_types.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_04_empty_allele_symbol_display_text.json");
@@ -450,7 +450,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -479,7 +479,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			when().
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
 			statusCode(200).
-			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
 			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -557,7 +557,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		when().
 		get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
 		statusCode(200).
-			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.modEntityId", is("ALLELETEST:Allele0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -661,7 +661,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:DN01").
 			then().
 			statusCode(200).
-			body("entity.curie", is("ALLELETEST:DN01")).
+			body("entity.modEntityId", is("ALLELETEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
 	}
 	

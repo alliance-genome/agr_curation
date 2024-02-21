@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.view.View;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Setter
-@Getter
-@AGRCurationSchemaVersion(min = "1.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class }, submitted = true)
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class }, submitted = true)
 public class ConstructGenomicEntityAssociationDTO extends EvidenceAssociationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
@@ -28,8 +28,8 @@ public class ConstructGenomicEntityAssociationDTO extends EvidenceAssociationDTO
 	private String genomicEntityRelationName;
 	
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("genomic_entity_curie")
-	private String genomicEntityCurie;
+	@JsonProperty("genomic_entity_identifier")
+	private String genomicEntityIdentifier;
 	
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("note_dtos")

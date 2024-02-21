@@ -1,6 +1,6 @@
 [
   {
-    "curie": "ALLELETEST:MR20",
+    "mod_entity_id": "ALLELETEST:MR20",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

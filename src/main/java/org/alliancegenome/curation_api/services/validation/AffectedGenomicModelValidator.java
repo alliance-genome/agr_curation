@@ -1,19 +1,12 @@
 package org.alliancegenome.curation_api.services.validation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 
@@ -21,7 +14,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AffectedGenomicModelValidator extends GenomicEntityValidator {
+public class AffectedGenomicModelValidator extends GenomicEntityValidator<AffectedGenomicModel> {
 
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
@@ -34,16 +27,17 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 	public AffectedGenomicModel validateAffectedGenomicModelUpdate(AffectedGenomicModel uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not update AGM: [" + uiEntity.getCurie() + "]";
+		errorMessage = "Could not update AGM: [" + uiEntity.getIdentifier() + "]";
 
-		String curie = validateCurie(uiEntity);
-		if (curie == null) {
+		Long id = uiEntity.getId();
+		if (id == null) {
+			addMessageResponse("No AGM ID provided");
 			throw new ApiErrorException(response);
 		}
 
-		AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(curie);
+		AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(id);
 		if (dbEntity == null) {
-			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("id", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
 		
@@ -54,11 +48,9 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 	
 	public AffectedGenomicModel validateAffectedGenomicModelCreate(AffectedGenomicModel uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not create AGM [" + uiEntity.getCurie() + "]";
+		errorMessage = "Could not create AGM";
 
 		AffectedGenomicModel dbEntity = new AffectedGenomicModel();
-		String curie = validateCurie(uiEntity);
-		dbEntity.setCurie(curie);
 		
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, true);
 		
@@ -67,34 +59,13 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 	
 	private AffectedGenomicModel validateAffectedGenomicModel(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
 
+		dbEntity = (AffectedGenomicModel) validateGenomicEntityFields(uiEntity, dbEntity);
+		
 		String name = handleStringField(uiEntity.getName());
 		dbEntity.setName(name);
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
-		dbEntity.setTaxon(taxon);
-		
-		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
-		dbEntity.setDataProvider(dataProvider);
-		
 		VocabularyTerm subtype = validateSubtype(uiEntity, dbEntity);
 		dbEntity.setSubtype(subtype);
-
-		List<Long> currentXrefIds;
-		if (dbEntity.getCrossReferences() == null) {
-			currentXrefIds = new ArrayList<>();
-		} else {
-			currentXrefIds = dbEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
-		}
-		
-		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
-		dbEntity.setCrossReferences(crossReferences);
-		List<Long> mergedIds = crossReferences == null ? new ArrayList<>() :
-			crossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
-		for (Long currentXrefId : currentXrefIds) {
-			if (!mergedIds.contains(currentXrefId)) {
-				crossReferenceDAO.remove(currentXrefId);
-			}
-		}
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);

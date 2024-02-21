@@ -90,10 +90,9 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<String> associationIdStrings = alleleGeneAssociationDAO.findFilteredIds(params);
-		associationIdStrings.removeIf(Objects::isNull);
-		List<Long> associationIds = associationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
+		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		List<Long> associationIds = alleleGeneAssociationDAO.findFilteredIds(params);
+		associationIds.removeIf(Objects::isNull);
 		
 		return associationIds;
 	}
@@ -136,13 +135,13 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return null;
 	}
 	
-	public ObjectResponse<AlleleGeneAssociation> getAssociation(String alleleCurie, String relationName, String geneCurie) {
+	public ObjectResponse<AlleleGeneAssociation> getAssociation(Long alleleId, String relationName, Long geneId) {
 		AlleleGeneAssociation association = null;
-		
+
 		Map<String, Object> params = new HashMap<>();
-		params.put("subject.curie", alleleCurie);
+		params.put("alleleAssociationSubject.id", alleleId);
 		params.put("relation.name", relationName);
-		params.put("objectGene.curie", geneCurie);
+		params.put("alleleGeneAssociationObject.id", geneId);
 
 		SearchResponse<AlleleGeneAssociation> resp = alleleGeneAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null)
@@ -155,7 +154,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	}
 	
 	private void addAssociationToAllele(AlleleGeneAssociation association) {
-		Allele allele = association.getSubject();
+		Allele allele = association.getAlleleAssociationSubject();
 		List<AlleleGeneAssociation> currentAssociations = allele.getAlleleGeneAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();
@@ -167,7 +166,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	}
 	
 	private void addAssociationToGene(AlleleGeneAssociation association) {
-		Gene gene = association.getObjectGene();
+		Gene gene = association.getAlleleGeneAssociationObject();
 		List<AlleleGeneAssociation> currentAssociations = gene.getAlleleGeneAssociations();
 		if (currentAssociations == null)
 			currentAssociations = new ArrayList<>();

@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.services.InformationContentEntityService;
-import org.alliancegenome.curation_api.services.validation.AuditedObjectValidator;
+import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.inject.Inject;

@@ -92,18 +92,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		return entities;
 	}
 
-	public E find(String id) {
-		Log.debug("SqlDAO: find: " + id + " " + myClass);
-		if (id != null) {
-			E entity = entityManager.find(myClass, id);
-			Log.debug("Entity Found: " + entity);
-			return entity;
-		} else {
-			Log.debug("Input Param is null: " + id);
-			return null;
-		}
-	}
-
 	public E find(Long id) {
 		Log.debug("SqlDAO: find: " + id + " " + myClass);
 		if (id != null) {
@@ -116,19 +104,19 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		}
 	}
 	
-	public List<String> findFilteredIds(Map<String, Object> params) {
-		List<String> primaryKeys = new ArrayList<>();
+	public List<Long> findFilteredIds(Map<String, Object> params) {
+		List<Long> primaryKeys = new ArrayList<>();
 		SearchResponse<E> results = findByParams(params);
 		for (E entity : results.getResults()) {
-			String pkString = returnStringId(entity);
-			if (pkString != null)
-				primaryKeys.add(pkString);
+			Long pk = returnId(entity);
+			if (pk != null)
+				primaryKeys.add(pk);
 		}
 		
 		return primaryKeys;
 	}
 
-	public SearchResponse<String> findAllIds() {
+	public SearchResponse<Long> findAllIds() {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
@@ -140,14 +128,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
-		SearchResponse<String> results = new SearchResponse<String>();
+		SearchResponse<Long> results = new SearchResponse<Long>();
 
-		List<String> primaryKeys = new ArrayList<>();
+		List<Long> primaryKeys = new ArrayList<>();
 
 		for (E entity : allQuery.getResultList()) {
-			String pkString = returnStringId(entity);
-			if (pkString != null)
-				primaryKeys.add(pkString);
+			Long pk = returnId(entity);
+			if (pk != null)
+				primaryKeys.add(pk);
 		}
 
 		results.setResults(primaryKeys);
@@ -155,18 +143,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		return results;
 	}
 	
-	private String returnStringId(E entity) {
-		String pkString = null;
+	private Long returnId(E entity) {
+		Long pk = null;
 		try {
-			pkString = (String) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
+			pk = (Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
 		} catch (ClassCastException e) {
-			try {
-				pkString = Long.toString((Long) entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
-			} catch (Exception ex) {
-				Log.error("Could not convert entity ID to string: " + ex.getMessage());
-			}
+			Log.error("Could not convert entity ID to string: " + e.getMessage());
 		}
-		return pkString;
+		return pk;
 	}
 	
 	public SearchResponse<E> findAll() {
@@ -206,20 +190,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	public E merge(E entity) {
 		Log.debug("SqlDAO: merge: " + entity);
 		entityManager.merge(entity);
-		return entity;
-	}
-
-	@Transactional
-	public E remove(String id) {
-		Log.debug("SqlDAO: remove: " + id);
-		E entity = find(id);
-
-		try {
-			entityManager.remove(entity);
-			entityManager.flush();
-		} catch (PersistenceException e) {
-			handlePersistenceException(entity, e);
-		}
 		return entity;
 	}
 

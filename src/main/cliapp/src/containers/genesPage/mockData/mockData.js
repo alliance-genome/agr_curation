@@ -21,7 +21,7 @@ export const data = {
 				"internal": false,
 				"obsolete": false,
 				"dbDateUpdated": "2023-05-16T12:31:21.941713Z",
-				"curie": "WB:WBGene00003771",
+				"modEntityId": "WB:WBGene00003771",
 				"taxon": {
 						"internal": false,
 						"obsolete": false,

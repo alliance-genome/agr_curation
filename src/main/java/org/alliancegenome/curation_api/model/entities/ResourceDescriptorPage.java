@@ -3,10 +3,8 @@ package org.alliancegenome.curation_api.model.entities;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -27,18 +25,19 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString()
+@ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "resourcedescriptorpage_resourcedescriptor_id_index", columnList = "resourcedescriptor_id"),
+@Table(indexes = {
+		@Index(name = "resourcedescriptorpage_resourcedescriptor_id_index", columnList = "resourcedescriptor_id"),
 		@Index(name = "resourcedescriptorpage_createdby_id_index", columnList = "createdby_id"),
-		@Index(name = "resourcedescriptorpage_updatedby_id_index", columnList = "updatedby_id")})
+		@Index(name = "resourcedescriptorpage_updatedby_id_index", columnList = "updatedby_id")
+})
 @Schema(name = "ResourceDescriptorPage", description = "Annotation class representing a resource descriptor page")
-public class ResourceDescriptorPage extends GeneratedAuditedObject {
+public class ResourceDescriptorPage extends AuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

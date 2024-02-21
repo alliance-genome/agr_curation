@@ -3,11 +3,12 @@ import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { SubjectAutocompleteTemplate  } from '../Autocomplete/SubjectAutocompleteTemplate';
 import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
+import { getIdentifier } from "../../utils/utils";
 
 const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = [
-		"curie", "crossReferences.referencedCurie", "geneFullName.formatText", "geneFullName.displayText",
+		"curie", "modEntityId", "crossReferences.referencedCurie", "geneFullName.formatText", "geneFullName.displayText",
 		"geneSymbol.formatText", "geneSymbol.displayText", "geneSynonyms.formatText", "geneSynonyms.displayText",
 		"geneSystematicName.formatText", "geneSystematicName.displayText", "geneSecondaryIds.secondaryId"
 	];
@@ -24,16 +25,17 @@ export const GeneEditor = ({ props, errorMessages, onChange, dataKey }) => {
 		<>
 			<AutocompleteEditor
 				search={geneSearch}
-				initialValue={props?.rowData?.objectGene?.curie}
+				initialValue={getIdentifier(props?.rowData?.object)}
 				rowProps={props}
-				fieldName='objectGene'
+				fieldName="object"
+				subField="modEntityId"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 				<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
 					onValueChangeHandler={onChange}
 				/>
 			<DialogErrorMessageComponent
 				errorMessages={errorMessages[dataKey]}
-				errorField={"objectGene"}
+				errorField={"object"}
 			/>
 		</>
 	);

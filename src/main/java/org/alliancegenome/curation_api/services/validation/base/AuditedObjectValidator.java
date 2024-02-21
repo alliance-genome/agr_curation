@@ -1,9 +1,10 @@
-package org.alliancegenome.curation_api.services.validation;
+package org.alliancegenome.curation_api.services.validation.base;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -25,10 +26,14 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 	public ObjectResponse<E> response;
 
 	public E validateAuditedObjectFields(E uiEntity, E dbEntity, Boolean newEntity) {
-		Boolean internal = uiEntity.getInternal() == null ? false : uiEntity.getInternal();
+		Boolean defaultInternal = false;
+		if (uiEntity instanceof Note)
+			defaultInternal = true;
+		
+		Boolean internal = uiEntity.getInternal() == null ? defaultInternal : uiEntity.getInternal();
 		dbEntity.setInternal(internal);
 
-		Boolean obsolete = uiEntity.getObsolete() == null ? false : uiEntity.getObsolete();
+		Boolean obsolete = uiEntity.getObsolete() == null ? defaultInternal : uiEntity.getObsolete();
 		dbEntity.setObsolete(obsolete);
 
 		if (newEntity && uiEntity.getDateCreated() == null) {

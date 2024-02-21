@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecut
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 
 import jakarta.annotation.PostConstruct;
@@ -32,5 +33,9 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 	@Override
 	public APIResponse updateAgmDiseaseAnnotations(String dataProvider, List<AGMDiseaseAnnotationDTO> annotations) {
 		return agmDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
+	}
+	
+	public ObjectResponse<AGMDiseaseAnnotation> get(String identifierString) {
+		return agmDiseaseAnnotationService.get(identifierString);
 	}
 }

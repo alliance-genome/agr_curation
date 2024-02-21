@@ -83,7 +83,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("VARIANTTEST:Variant0001")).
+			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
@@ -120,7 +120,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("VARIANTTEST:Variant0001")).
+			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
@@ -150,7 +150,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void variantBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "MR_01_no_curie.json");
+		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "MR_01_no_mod_ids.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "MR_02_no_taxon.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "MR_03_no_variant_type.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "MR_04_no_data_provider.json");
@@ -166,7 +166,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void variantBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "ER_01_empty_curie.json");
+		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "ER_01_empty_mod_ids.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "ER_02_empty_taxon.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "ER_03_empty_variant_type.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "ER_04_empty_data_provider_source_organization_abbreviation.json");
@@ -205,7 +205,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("VARIANTTEST:Variant0001")).
+			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -226,7 +226,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("VARIANTTEST:Variant0001")).
+			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
 			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -245,7 +245,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:Variant0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("VARIANTTEST:Variant0001")).
+			body("entity.modEntityId", is("VARIANTTEST:Variant0001")).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -282,7 +282,7 @@ public class VariantBulkUploadITCase extends BaseITCase {
 			get(variantGetEndpoint + "VARIANTTEST:DN01").
 			then().
 			statusCode(200).
-			body("entity.curie", is("VARIANTTEST:DN01")).
+			body("entity.modEntityId", is("VARIANTTEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
 	}
 	

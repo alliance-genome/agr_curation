@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.slotAnnotations.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDTOValidator;
@@ -59,16 +60,19 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		geneResponse = new ObjectResponse<Gene>();
 		
 		Gene gene = null;
-		if (StringUtils.isBlank(dto.getCurie())) {
-			geneResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isNotBlank(dto.getModEntityId())) {
+			SearchResponse<Gene> response = geneDAO.findByField("modEntityId", dto.getModEntityId());
+			if (response != null && response.getSingleResult() != null)
+				gene = response.getSingleResult();
 		} else {
-			gene = geneDAO.find(dto.getCurie());
+			geneResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (gene == null)
 			gene = new Gene();
 
-		gene.setCurie(dto.getCurie());
+		gene.setModEntityId(dto.getModEntityId());
+		gene.setModInternalId(handleStringField(dto.getModInternalId()));
 
 		ObjectResponse<Gene> geResponse = validateGenomicEntityDTO(gene, dto, dataProvider);
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());

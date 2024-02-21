@@ -125,7 +125,7 @@ public class GeneITCase extends BaseITCase {
 		loadRequiredEntities();
 		
 		Gene gene = new Gene();
-		gene.setCurie(GENE);
+		gene.setModEntityId(GENE);
 		gene.setDateCreated(datetime);
 		gene.setTaxon(taxon);
 		gene.setGeneType(soTerm);
@@ -149,7 +149,7 @@ public class GeneITCase extends BaseITCase {
 			get("/api/gene/" + GENE).
 			then().
 			statusCode(200).
-			body("entity.curie", is(GENE)).
+			body("entity.modEntityId", is(GENE)).
 			body("entity.taxon.curie", is(taxon.getCurie())).
 			body("entity.geneType.curie", is(soTerm.getCurie())).
 			body("entity.internal", is(false)).
@@ -249,7 +249,7 @@ public class GeneITCase extends BaseITCase {
 			get("/api/gene/" + GENE).
 			then().
 			statusCode(200).
-			body("entity.curie", is(GENE)).
+			body("entity.modEntityId", is(GENE)).
 			body("entity.taxon.curie", is(taxon2.getCurie())).
 			body("entity.geneType.curie", is(soTerm2.getCurie())).
 			body("entity.internal", is(true)).
@@ -300,16 +300,16 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId")).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(4)
-	public void editGeneWithMissingCurie() {
+	public void editGeneWithMissingModEntityId() {
 		Gene gene = getGene(GENE);
-		gene.setCurie(null);
+		gene.setModEntityId(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -319,7 +319,7 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
 	}
 
 	@Test
@@ -348,7 +348,7 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithEmptyRequiredFieldsLevel1() {
 
 		Gene gene = new Gene();
-		gene.setCurie("");
+		gene.setModEntityId("");
 		gene.setTaxon(taxon);
 		gene.setGeneSymbol(geneSymbol);
 		
@@ -360,14 +360,14 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
 	}
 	
 	@Test
 	@Order(7)
-	public void editGeneWithEmptyCurie() {
+	public void editGeneWithEmptyModEntityId() {
 		Gene gene = getGene(GENE);
-		gene.setCurie("");
+		gene.setModEntityId("");
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -377,7 +377,7 @@ public class GeneITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.curie", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId"));
 	}
 	
 	@Test
@@ -385,7 +385,7 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithMissingRequiredFieldsLevel2() {
 
 		Gene gene = new Gene();
-		gene.setCurie("GENE:0008");
+		gene.setModEntityId("GENE:0008");
 		gene.setTaxon(taxon);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = new GeneSymbolSlotAnnotation();
@@ -490,7 +490,7 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithEmptyRequiredFieldsLevel2() {
 
 		Gene gene = new Gene();
-		gene.setCurie("GENE:0010");
+		gene.setModEntityId("GENE:0010");
 		gene.setTaxon(taxon);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(null, "", symbolNameType, null, null);
@@ -591,7 +591,7 @@ public class GeneITCase extends BaseITCase {
 		invalidDataProvider.setSourceOrganization(nonPersistedOrganization);
 		
 		Gene gene = new Gene();
-		gene.setCurie("GENE:0012");
+		gene.setModEntityId("GENE:0012");
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
 		gene.setDataProvider(invalidDataProvider);
@@ -714,7 +714,7 @@ public class GeneITCase extends BaseITCase {
 	@Order(14)
 	public void createGeneWithObsoleteFields() {
 		Gene gene = new Gene();
-		gene.setCurie("GENE:0014");
+		gene.setModEntityId("GENE:0014");
 		gene.setTaxon(obsoleteTaxon);
 		gene.setGeneType(obsoleteSoTerm);
 		gene.setDataProvider(obsoleteDataProvider);
@@ -926,7 +926,7 @@ public class GeneITCase extends BaseITCase {
 	@Order(18)
 	public void createGeneWithOnlyRequiredFields() {		
 		Gene gene = new Gene();
-		gene.setCurie("GENE:0020");
+		gene.setModEntityId("GENE:0020");
 		gene.setTaxon(taxon);
 		gene.setGeneSymbol(geneSymbol);
 		
@@ -943,7 +943,7 @@ public class GeneITCase extends BaseITCase {
 	@Order(19)
 	public void createGeneWithOnlyRequiredFieldsLevel2() {
 		Gene gene = new Gene();
-		gene.setCurie("GENE:0021");
+		gene.setModEntityId("GENE:0021");
 		gene.setTaxon(taxon);
 
 		GeneSymbolSlotAnnotation minimalGeneSymbol = createGeneSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);

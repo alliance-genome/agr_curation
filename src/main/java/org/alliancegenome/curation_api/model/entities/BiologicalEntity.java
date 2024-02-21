@@ -3,13 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BiologicalEntityTypeBridge;
-import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.TypeBinderRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -26,37 +22,43 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"), @JsonSubTypes.Type(value = Allele.class, name = "Allele"),
-	@JsonSubTypes.Type(value = Gene.class, name = "Gene") })
-@Audited
+	@JsonSubTypes.Type(value = Gene.class, name = "Gene"), @JsonSubTypes.Type(value = Variant.class, name = "Variant") })
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
-@Inheritance(strategy = InheritanceType.JOINED)
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"), @Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"), @Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id")})
-public class BiologicalEntity extends CurieAuditedObject {
+@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SubmittedObject.class })
+@Table(
+	indexes = {
+		@Index(name = "biologicalentity_taxon_index", columnList = "taxon_id"),
+		@Index(name = "biologicalentity_curie_index", columnList = "curie"),
+		@Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "biologicalentity_modentityid_index", columnList = "modentityid"),
+		@Index(name = "biologicalentity_modinternalid_index", columnList = "modinternalid"),
+		@Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id"),
+	},
+	uniqueConstraints = {
+		@UniqueConstraint(name = "biologicalentity_curie_uk", columnNames = "curie"),
+		@UniqueConstraint(name = "biologicalentity_modentityid_uk", columnNames = "modentityid"),
+		@UniqueConstraint(name = "biologicalentity_modinternalid_uk", columnNames = "modinternalid")
+	}
+)
+public class BiologicalEntity extends SubmittedObject {
 
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private NCBITaxonTerm taxon;
-	
-	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
-			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
-	private DataProvider dataProvider;
 
 }

@@ -6,9 +6,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -21,6 +18,9 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
+import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationRetrievalHelper;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
@@ -38,11 +38,11 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 	@Inject
 	VocabularyTermService vocabularyTermService;
 	@Inject
-	AffectedGenomicModelDAO agmDAO;
+	AffectedGenomicModelService agmService;
 	@Inject
-	GeneDAO geneDAO;
+	GeneService geneService;
 	@Inject
-	AlleleDAO alleleDAO;
+	AlleleService alleleService;
 
 	public AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException, ObjectValidationException {
 
@@ -56,16 +56,16 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		Reference validatedReference = refResponse.getEntity().getSingleReference();
 		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
 
-		if (StringUtils.isBlank(dto.getAgmCurie())) {
-			adaResponse.addErrorMessage("agm_curie", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isBlank(dto.getAgmIdentifier())) {
+			adaResponse.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			agm = agmDAO.find(dto.getAgmCurie());
+			agm = agmService.findByIdentifierString(dto.getAgmIdentifier());
 			if (agm == null) {
-				adaResponse.addErrorMessage("agm_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmCurie() + ")");
+				adaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ")");
 			} else {
 				String annotationId;
 				String identifyingField;
-				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAgmCurie(), refCurie);
+				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAgmIdentifier(), refCurie);
 				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
@@ -83,11 +83,11 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
 				annotation = DiseaseAnnotationRetrievalHelper.getCurrentDiseaseAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
-				annotation.setSubject(agm);
+				annotation.setDiseaseAnnotationSubject(agm);
 				
 				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !agm.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
 						!dataProvider.sourceOrganization.equals(agm.getDataProvider().getSourceOrganization().getAbbreviation())) {
-					adaResponse.addErrorMessage("agm_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmCurie() + ") for " + dataProvider.name() + " load");
+					adaResponse.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ") for " + dataProvider.name() + " load");
 				}
 			}
 		}
@@ -106,21 +106,21 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
-		if (StringUtils.isNotBlank(dto.getInferredGeneCurie())) {
-			Gene inferredGene = geneDAO.find(dto.getInferredGeneCurie());
+		if (StringUtils.isNotBlank(dto.getInferredGeneIdentifier())) {
+			Gene inferredGene = geneService.findByIdentifierString(dto.getInferredGeneIdentifier());
 			if (inferredGene == null)
-				adaResponse.addErrorMessage("inferred_gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredGeneCurie() + ")");
+				adaResponse.addErrorMessage("inferred_gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredGeneIdentifier() + ")");
 			annotation.setInferredGene(inferredGene);
 		} else {
 			annotation.setInferredGene(null);
 		}
 
-		if (CollectionUtils.isNotEmpty(dto.getAssertedGeneCuries())) {
+		if (CollectionUtils.isNotEmpty(dto.getAssertedGeneIdentifiers())) {
 			List<Gene> assertedGenes = new ArrayList<>();
-			for (String assertedGeneCurie : dto.getAssertedGeneCuries()) {
-				Gene assertedGene = geneDAO.find(assertedGeneCurie);
+			for (String assertedGeneIdentifier : dto.getAssertedGeneIdentifiers()) {
+				Gene assertedGene = geneService.findByIdentifierString(assertedGeneIdentifier);
 				if (assertedGene == null) {
-					adaResponse.addErrorMessage("asserted_gene_curies", ValidationConstants.INVALID_MESSAGE + " (" + assertedGeneCurie + ")");
+					adaResponse.addErrorMessage("asserted_gene_identifiers", ValidationConstants.INVALID_MESSAGE + " (" + assertedGeneIdentifier + ")");
 				} else {
 					assertedGenes.add(assertedGene);
 				}
@@ -130,19 +130,19 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			annotation.setAssertedGenes(null);
 		}
 
-		if (StringUtils.isNotBlank(dto.getInferredAlleleCurie())) {
-			Allele inferredAllele = alleleDAO.find(dto.getInferredAlleleCurie());
+		if (StringUtils.isNotBlank(dto.getInferredAlleleIdentifier())) {
+			Allele inferredAllele = alleleService.findByIdentifierString(dto.getInferredAlleleIdentifier());
 			if (inferredAllele == null)
-				adaResponse.addErrorMessage("inferred_allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredAlleleCurie() + ")");
+				adaResponse.addErrorMessage("inferred_allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredAlleleIdentifier() + ")");
 			annotation.setInferredAllele(inferredAllele);
 		} else {
 			annotation.setInferredAllele(null);
 		}
 
-		if (StringUtils.isNotBlank(dto.getAssertedAlleleCurie())) {
-			Allele assertedAllele = alleleDAO.find(dto.getAssertedAlleleCurie());
+		if (StringUtils.isNotBlank(dto.getAssertedAlleleIdentifier())) {
+			Allele assertedAllele = alleleService.findByIdentifierString(dto.getAssertedAlleleIdentifier());
 			if (assertedAllele == null)
-				adaResponse.addErrorMessage("asserted_allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAssertedAlleleCurie() + ")");
+				adaResponse.addErrorMessage("asserted_allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAssertedAlleleIdentifier() + ")");
 			annotation.setAssertedAllele(assertedAllele);
 		} else {
 			annotation.setAssertedAllele(null);

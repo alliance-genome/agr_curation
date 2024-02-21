@@ -14,7 +14,7 @@ import { DuplicationAction } from "../Actions/DuplicationAction";
 import { EntityDetailsAction } from "../Actions/EntityDetailsAction";
 
 
-import { filterColumns, orderColumns } from '../../utils/utils';
+import { filterColumns, orderColumns, getIdentifier } from '../../utils/utils';
 import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
@@ -289,8 +289,8 @@ export const GenericDataTable = (props) => {
 					}
 					{hasDetails &&
 						<Column field="details"
-						editor={(props) => <EntityDetailsAction curie={props.rowData?.curie} disabled={true}/>}
-						body={(props) => <EntityDetailsAction curie={props?.curie} disabled={isInEditMode}/>}
+						editor={(props) => <EntityDetailsAction identifier={getIdentifier(props.rowData)} disabled={true}/>} 
+						body={(props) => <EntityDetailsAction identifier={getIdentifier(props)} disabled={isInEditMode}/>} 
 						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}

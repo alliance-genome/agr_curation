@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
@@ -14,12 +15,14 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -53,7 +56,7 @@ public class BaseDTOValidator {
 			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedByCurie());
 		entity.setUpdatedBy(updatedBy);
 
-		Boolean internal = false;
+		Boolean internal = dto instanceof NoteDTO ? true : false;
 		if (dto.getInternal() != null)
 			internal = dto.getInternal();
 		entity.setInternal(internal);
@@ -141,5 +144,19 @@ public class BaseDTOValidator {
 		geResponse.setEntity(entity);
 
 		return geResponse;
+	}
+	
+	public String handleStringField(String string) {
+		if (StringUtils.isNotBlank(string))
+			return string;
+		
+		return null;
+	}
+	
+	public List<String> handleStringListField(List<String> list) {
+		if (CollectionUtils.isEmpty(list))
+			return null;
+		
+		return list;
 	}
 }

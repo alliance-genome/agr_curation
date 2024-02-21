@@ -26,7 +26,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("06 - Molecule bulk upload - FMS")
-@Order(6)
+@Order(501)
 public class MoleculeBulkUploadFmsITCase {
 
 	@BeforeEach

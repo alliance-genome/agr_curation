@@ -137,10 +137,10 @@ export const AllelesTable = () => {
 		if (rowData?.taxon) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
 						{rowData.taxon.name} ({rowData.taxon.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip target={`.${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 				</>
 			);
 		}
@@ -152,10 +152,10 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const DetailMessage = ({curie, text, display}) => {
+	const DetailMessage = ({modEntityId, text, display}) => {
 		if (display) {
 			return (
-				<Message severity="info" text={<Link target="_blank" to={`allele/${curie}`}>{text}</Link>}/>
+				<Message severity="info" text={<Link target="_blank" to={`allele/${modEntityId}`}>{text}</Link>}/>
 			);
 		};
 		return null;
@@ -178,9 +178,9 @@ export const AllelesTable = () => {
 			};
 			return (
 				<>
-					<div className={`${rowData.curie.replace(':','')}${rowData.references[0].curie.replace(':', '')}`}>
+					<div className={`${rowData.modEntityId.replace(':','')}${rowData.references[0].curie.replace(':', '')}`}>
 						<ListTableCell template={listTemplate} listData={refStrings}/>
-						<DetailMessage curie={`${rowData.curie}`} display={displayDetailMessage} text="View all references on Allele Detail Page"/>
+						<DetailMessage modEntityId={`${rowData.modEntityId}`} display={displayDetailMessage} text="View all references on Allele Detail Page"/>
 					</div>
 				</>
 			);
@@ -1095,6 +1095,18 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
+			field: "modEntityId",
+			header: "MOD Entity ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
+		},
+		{
+			field: "modInternalId",
+			header: "MOD Internal ID",
+			sortable:  true,
+			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+		},
+		{
 			field: "alleleFullName.displayText",
 			header: "Name",
 			body: fullNameTemplate,
@@ -1290,7 +1302,6 @@ export const AllelesTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					dataKey="curie"
 					endpoint="allele"
 					tableName="Alleles"
 					columns={columns}

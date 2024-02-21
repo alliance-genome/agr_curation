@@ -49,7 +49,6 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		setSQLDao(diseaseAnnotationDAO);
 	}
 	
-	@Override
 	public ObjectResponse<DiseaseAnnotation> get(String identifier) {
 		SearchResponse<DiseaseAnnotation> ret = findByField("curie", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
@@ -120,12 +119,12 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	public List<Long> getAllReferencedConditionRelationIds() {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		
-		List<String> daIds = diseaseAnnotationDAO.findAllIds().getResults();
+		List<Long> daIds = diseaseAnnotationDAO.findAllIds().getResults();
 		pdh.startProcess("Checking DAs for referenced Conditions ", daIds.size());
 		
 		List<Long> conditionRelationIds = new ArrayList<>();
-		daIds.forEach(idString -> {
-			DiseaseAnnotation annotation = diseaseAnnotationDAO.find(Long.parseLong(idString));
+		daIds.forEach(daId -> {
+			DiseaseAnnotation annotation = diseaseAnnotationDAO.find(daId);
 			if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
 				List<Long> crIds = annotation.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
 				conditionRelationIds.addAll(crIds);
@@ -142,20 +141,18 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		
 		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		
-		List<String> annotationIdStrings = dao.findFilteredIds(params);
-		annotationIdStrings.removeIf(Objects::isNull);
+		List<Long> annotationIds = dao.findFilteredIds(params);
+		annotationIds.removeIf(Objects::isNull);
 		
 		if (StringUtils.equals(dataProvider.toString(), "HUMAN")) {
 			Map<String, Object> newParams = new HashMap<>();
 			newParams.put(EntityFieldConstants.SECONDARY_DATA_PROVIDER, dataProvider.sourceOrganization);
-			newParams.put(EntityFieldConstants.SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-			List<String> additionalIdStrings = dao.findFilteredIds(newParams);
-			annotationIdStrings.addAll(additionalIdStrings);
+			newParams.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+			List<Long> additionalIds = dao.findFilteredIds(newParams);
+			annotationIds.addAll(additionalIds);
 		}
-		
-		List<Long> annotationIds = annotationIdStrings.stream().map(Long::parseLong).collect(Collectors.toList());
 		
 		return annotationIds;
 	}

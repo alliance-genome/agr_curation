@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
+import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

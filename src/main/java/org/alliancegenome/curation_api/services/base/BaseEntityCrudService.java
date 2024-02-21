@@ -52,25 +52,11 @@ public abstract class BaseEntityCrudService<E extends BaseEntity, D extends Base
 		return ret;
 	}
 
-	public ObjectResponse<E> get(String id) {
-		E object = dao.find(id);
-		ObjectResponse<E> ret = new ObjectResponse<E>(object);
-		return ret;
-	}
-
 	@Transactional
 	public ObjectResponse<E> update(E entity) {
 		// log.info("Authed Person: " + authenticatedPerson);
 		E object = dao.merge(entity);
 		ObjectResponse<E> ret = new ObjectResponse<E>(object);
-		return ret;
-	}
-
-	@Transactional
-	public ObjectResponse<E> delete(String id) {
-		// log.info("Authed Person: " + authenticatedPerson);
-		E object = dao.remove(id);
-		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
 	}
 

@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -22,7 +21,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -30,8 +28,8 @@ import lombok.ToString;
 @Schema(name = "GeneToGeneOrthologyCurated", description = "POJO that represents curated orthology between two genes")
 @AGRCurationSchemaVersion(min = "1.7.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class, GeneToGeneOrthology.class })
 @Table(indexes = {
-	@Index(name = "genetogeneorthologycurated_singlereference_index", columnList = "singlereference_curie"),
-	@Index(name = "genetogeneorthologycurated_evidencecode_index", columnList = "evidencecode_curie")
+	@Index(name = "genetogeneorthologycurated_singlereference_index", columnList = "singlereference_id"),
+	@Index(name = "genetogeneorthologycurated_evidencecode_index", columnList = "evidencecode_id")
 })
 public class GeneToGeneOrthologyCurated extends GeneToGeneOrthology {
 

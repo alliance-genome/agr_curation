@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.slotAnnotations.alle
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
@@ -80,13 +81,18 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 			return null;
 		}
 		List<SOTerm> validMutationTypes = new ArrayList<>();
+		List<Long> previousIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getMutationTypes()))
+			previousIds = dbEntity.getMutationTypes().stream().map(SOTerm::getId).collect(Collectors.toList());
 		for (SOTerm mt : uiEntity.getMutationTypes()) {
-			SOTerm mutationType = soTermDAO.find(mt.getCurie());
+			SOTerm mutationType = null;
+			if (mt.getId() != null)
+				mutationType = soTermDAO.find(mt.getId());
 			if (mutationType == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
-			if (mutationType.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getMutationTypes()) || !dbEntity.getMutationTypes().contains(mutationType))) {
+			if (mutationType.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getMutationTypes()) || !previousIds.contains(mutationType.getId()))) {
 				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}

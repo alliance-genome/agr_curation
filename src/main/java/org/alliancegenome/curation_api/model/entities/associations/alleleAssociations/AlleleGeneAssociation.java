@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -24,32 +23,33 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociation.class })
+@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociation.class })
 @Schema(name = "AlleleGeneAssociation", description = "POJO representing an association between an allele and a gene")
 @Table(indexes = {
-		@Index(name = "allelegeneassociation_subject_index", columnList = "subject_curie"),
-		@Index(name = "allelegeneassociation_object_index", columnList = "objectGene_curie")
+		@Index(name = "allelegeneassociation_alleleassociationsubject_index", columnList = "alleleassociationsubject_id"),
+		@Index(name = "allelegeneassociation_allelegeneassociationobject_index", columnList = "allelegeneassociationobject_id")
 		})
 public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "alleleSymbol.displayText", "alleleSymbol.formatText", "alleleFullName.displayText", "alleleFullName.formatText",
-			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword", "alleleFullName.formatText_keyword"})
+			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword", "alleleFullName.formatText_keyword",
+			"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("alleleGeneAssociations")
 	@Fetch(FetchMode.JOIN)
-	private Allele subject;
+	private Allele alleleAssociationSubject;
 	
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
-			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword"})
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
+			"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
-	private Gene objectGene;
+	private Gene alleleGeneAssociationObject;
 }

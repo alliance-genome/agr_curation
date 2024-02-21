@@ -5,8 +5,10 @@ import java.util.List;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class OrthologyFmsDTO extends BaseDTO {
 	private Integer gene1Species;
 	private Integer gene2Species;
