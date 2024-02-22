@@ -1,5 +1,5 @@
 import { ListTableCell } from "../../ListTableCell";
-import { getGenomicEntityText } from "../../../utils/utils";
+import { getGenomicEntityText, getIdentifier } from "../../../utils/utils";
 import { Tooltip } from "primereact/tooltip";
 
 export const GenomicEntityListTemplate = ({ genomicEntities }) => {
@@ -10,9 +10,11 @@ export const GenomicEntityListTemplate = ({ genomicEntities }) => {
 
   const genomicEntityStrings = genomicEntities.map((genomicEntity) => {
     const text = getGenomicEntityText(genomicEntity);
-    if(!text) return genomicEntity.curie; 
-    if(!genomicEntity.curie) return text;
-    return `${text} (${genomicEntity.curie})`;
+    const indentifier = getIdentifier(genomicEntity);
+
+    if(!text) return indentifier; 
+    if(!indentifier) return text;
+    return `${text} (${indentifier})`;
   });
 
   const sortedGenomicEntityStrings = genomicEntityStrings.sort();

@@ -13,15 +13,15 @@ import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
+
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
 import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
 import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate'; 
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
-
-
-
+import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -36,8 +36,6 @@ import { NewAnnotationForm } from "./NewAnnotationForm";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
-import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -945,7 +943,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationObject.name",
 		header: "Disease",
-		body: (rowData) => <DiseaseTemplate object={rowData.object}/>,
+		body: (rowData) => <DiseaseTemplate object={rowData.diseaseAnnotationObject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
