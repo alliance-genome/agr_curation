@@ -20,14 +20,14 @@ const geneSearch = (event, setFiltered, setInputValue) => {
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 };
 
-export const GeneEditor = ({ props, errorMessages, onChange, dataKey }) => {
+export const GeneEditor = ({ props, errorMessages, onChange, dataKey, fieldName }) => {
 	return (
 		<>
 			<AutocompleteEditor
 				search={geneSearch}
-				initialValue={getIdentifier(props?.rowData?.object)}
+				initialValue={getIdentifier(props?.rowData?.[fieldName])}
 				rowProps={props}
-				fieldName="object"
+				fieldName={fieldName}
 				subField="modEntityId"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 				<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
@@ -35,7 +35,7 @@ export const GeneEditor = ({ props, errorMessages, onChange, dataKey }) => {
 				/>
 			<DialogErrorMessageComponent
 				errorMessages={errorMessages[dataKey]}
-				errorField={"object"}
+				errorField={fieldName}
 			/>
 		</>
 	);
