@@ -281,7 +281,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span class= "-my-4 p-1 underline">
+					<span className= "-my-4 p-1 underline">
 						{handle && handle}
 					</span>
 				</Button>
