@@ -922,7 +922,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationSubject.symbol",
 		header: "Subject",
-		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.subject}/>,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
 		editor: (props) => subjectEditorTemplate(props),
