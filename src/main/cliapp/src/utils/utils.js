@@ -124,6 +124,15 @@ export function getIdentifier(data) {
 	return "";
 }
 
+export const getGenomicEntityText = (genomicEntity) => {
+	if (genomicEntity.geneSymbol) return genomicEntity.geneSymbol.displayText;
+	if (genomicEntity.alleleSymbol) return genomicEntity.alleleSymbol.displayText;
+	if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
+	if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
+	if (genomicEntity.name) return genomicEntity.name;
+	return null;
+};
+
 export function getRefStrings(referenceItems) {
 	if (!referenceItems)
 		return;
@@ -480,12 +489,3 @@ export const processOptionalField = (eventValue) => {
 	if (!eventValue.curie) return {curie: eventValue};
 	return eventValue;
 }
-
-export const getGenomicEntityText = (genomicEntity) => {
-  if (genomicEntity.geneSymbol) return genomicEntity.geneSymbol.displayText;
-  if (genomicEntity.alleleSymbol) return genomicEntity.alleleSymbol.displayText;
-  if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
-  if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
-  if (genomicEntity.name) return genomicEntity.name;
-  return null;
-};

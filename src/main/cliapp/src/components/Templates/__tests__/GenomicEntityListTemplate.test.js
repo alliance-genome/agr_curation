@@ -148,49 +148,49 @@ describe('GenomicEntityListTemplate', () => {
         geneFullName: {
           displayText: "Gene Full Name 1",
         },
-        curie: 'CURIE1'
+        curie: 'ID1'
       },
       {
         geneSymbol: null,
         geneFullName: {
           displayText: "Gene Full Name 2",
         },
-        curie: 'CURIE2'
+        modEntityId: 'ID2'
       },
       {
         geneSymbol: {
           displayText: "Gene Symbol 3",
         },
         geneFullName: null,
-        curie: 'CURIE3'
+        modInternalId: 'ID3'
       },
     ];
 
     const result = render(<GenomicEntityListTemplate genomicEntities={genomicEntities} />);
 
-    const genomicEntity1 = result.getByText('Gene Symbol 1 (CURIE1)');
-    const genomicEntity2 = result.getByText('Gene Full Name 2 (CURIE2)');
-    const genomicEntity3 = result.getByText('Gene Symbol 3 (CURIE3)');
+    const genomicEntity1 = result.getByText('Gene Symbol 1 (ID1)');
+    const genomicEntity2 = result.getByText('Gene Full Name 2 (ID2)');
+    const genomicEntity3 = result.getByText('Gene Symbol 3 (ID3)');
 
     expect(genomicEntity1).toBeInTheDocument();
     expect(genomicEntity2).toBeInTheDocument();
     expect(genomicEntity3).toBeInTheDocument();
   });
-  it('should render genomicEntities and curie in a tooltip when genomicEntity has geneSymbol', async () => {
+  it('should render genomicEntities and curie in a tooltip when genomicEntity has alleleSymbol', async () => {
     const genomicEntities = [
-      { alleleSymbol: { displayText: 'Allele Symbol C' }, curie: 'CURIE1' },
-      { alleleSymbol: { displayText: 'Allele Symbol A' }, curie: 'CURIE2' },
-      { alleleSymbol: { displayText: 'Allele Symbol B' }, curie: 'CURIE3' },
+      { alleleSymbol: { displayText: 'Allele Symbol C' }, curie: 'ID1' },
+      { alleleSymbol: { displayText: 'Allele Symbol A' }, modEntityId: 'ID2' },
+      { alleleSymbol: { displayText: 'Allele Symbol B' }, modInternalId: 'ID3' },
     ];
 
     const result = render(<GenomicEntityListTemplate genomicEntities={genomicEntities} />);
 
-    let listContentArray = result.getAllByText('Allele Symbol A (CURIE2)');
+    let listContentArray = result.getAllByText('Allele Symbol A (ID2)');
     expect(listContentArray).toHaveLength(1);
 
     fireEvent.mouseEnter(result.container.firstChild);
 
     //using find... here because it's async and the tooltip is dynamically added
-    expect(await result.findAllByText('Allele Symbol A (CURIE2)')).toHaveLength(2);
+    expect(await result.findAllByText('Allele Symbol A (ID2)')).toHaveLength(2);
   });
 });
