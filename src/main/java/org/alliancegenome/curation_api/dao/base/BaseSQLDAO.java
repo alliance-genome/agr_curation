@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.dao.base;
 
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +15,8 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.processing.IndexProcessDisplayService;
-import org.alliancegenome.curation_api.util.EsClientFactory;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.sqm.internal.QuerySqmImpl;
 import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
@@ -273,7 +267,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				public void indexingCompleted() {
 					ph.finishProcess();
-					setRefreshInterval("1s");
 				}
 			});
 
@@ -281,7 +274,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
-		setRefreshInterval("-1");
 		indexer.start();
 	}
 
@@ -312,7 +304,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				@Override
 				public void indexingCompleted() {
 					ph.finishProcess();
-					setRefreshInterval("1s");
 				}
 
 			});
@@ -321,26 +312,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
-		setRefreshInterval("-1");
 		indexer.start();
-	}
-
-	public void setRefreshInterval(String value) {
-		RestHighLevelClient client = EsClientFactory.createClient(esHosts, esProtocol);
-		Log.info("Creating Settings Search Client: " + esProtocol + "://" + esHosts);
-
-		Map<String, String> settings = new HashMap<>();
-		settings.put("refresh_interval", value);
-		Log.info("Setting Refresh Interval: " + settings);
-		UpdateSettingsRequest request = new UpdateSettingsRequest();
-		request.indices("_all");
-		request.settings(settings);
-		try {
-			AcknowledgedResponse resp = client.indices().putSettings(request, RequestOptions.DEFAULT);
-			Log.info("Settings Change Complete: " + resp.isAcknowledged());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public SearchResponse<E> searchAll(Pagination pagination) {
