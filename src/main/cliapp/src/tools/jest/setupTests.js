@@ -45,27 +45,29 @@ const mockOktaTokenStorage = {
 		accessToken: "test access token",
 	}
 };
+let mockConsoleError;
+let mockConsoleWarn;
 // Establish API and local storage mocking before all tests.
 beforeAll(() => {
 	server.listen({
-		onUnhandledRequest: 'warn',
+		onUnhandledRequest: 'bypass',
 	});
 	window.localStorage.clear();
 	setLocalStorage('okta-token-storage', mockOktaTokenStorage);
 });
 
 beforeEach(() => {
-	jest.spyOn(console, 'error');
-	jest.spyOn(console, 'warn');
-	console.error.mockImplementation(() => {});
-	console.warn.mockImplementation(() => {});
+	mockConsoleError = jest.spyOn(console, 'error');
+	mockConsoleWarn = jest.spyOn(console, 'warn');
+	mockConsoleError.mockImplementation(() => {});
+	mockConsoleWarn.mockImplementation(() => {});
 });
 
 // Reset any request handlers that we may add during the tests,
 // so they don't affect other tests.
 afterEach(() => {
-	console.error.mockRestore();
-	console.warn.mockRestore();
+	mockConsoleError.mockRestore();
+	mockConsoleWarn.mockRestore();
 	server.resetHandlers();
 });
 
