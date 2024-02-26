@@ -106,6 +106,7 @@ export default (
 		<SecureRoute path="/ontology/cl" render={() => <ErrorBoundary><GeneralOntologyComponent name="CL" endpoint="clterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/cmo" render={() => <ErrorBoundary><GeneralOntologyComponent name="CMO" endpoint="cmoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/bspo" render={() => <ErrorBoundary><GeneralOntologyComponent name="BSPO" endpoint="bspoterm" /></ErrorBoundary>} />
+		<SecureRoute path="ontology/geno" render={() => <ErrorBoundary><GeneralOntologyComponent name="GENO" endpoint="genoterm" /></ErrorBoundary>} />
 
 		<SecureRoute path="/fmsdatafiles" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/fmsdatatypes/:dataType" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />
