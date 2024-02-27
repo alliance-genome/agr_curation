@@ -3,7 +3,7 @@ import { Toast } from 'primereact/toast';
 import { NameTemplate } from './NameTemplate';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { DefinitionTemplate } from './DefinitionTemplate';
-import { BooleanTemplate } from '../../components/BooleanTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { GenericDataTree } from '../../components/GenericDataTree';
 import { getDefaultTableState } from '../../service/TableStateService';

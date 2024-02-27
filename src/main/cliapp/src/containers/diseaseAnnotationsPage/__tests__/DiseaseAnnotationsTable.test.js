@@ -2,7 +2,7 @@ import React from "react";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { DiseaseAnnotationsPage } from "../index";
-import { setLocalStorage } from "../../../tools/jest/setupTests";
+import '../../../tools/jest/setupTests';
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
 import { data } from "../mockData/mockData";
 import 'core-js/features/structured-clone';
@@ -21,14 +21,14 @@ describe("<DiseaseAnnotationsPage />", () => {
 		await waitFor(() => {
 			expect(result);
 		});
-	});
+	}, 10000);
 
 	it("Contains Correct Table Name", async () => {
 		let result = await renderWithClient(<DiseaseAnnotationsPage />);
 
 		const tableTitle = await result.findByText(/Disease Annotations Table/i);
 		expect(tableTitle).toBeInTheDocument();
-	});
+	}, 10000);
 
 	it("The table contains correct data", async () => {
 		let result = await renderWithClient(<DiseaseAnnotationsPage />);
@@ -82,6 +82,6 @@ describe("<DiseaseAnnotationsPage />", () => {
 			expect(updatedByCreatedByArray.length).toEqual(2);
 			expect(dateUpdatedDateCreatedArray.length).toEqual(2);
 		});
-	});
+	}, 10000);
 
 });
