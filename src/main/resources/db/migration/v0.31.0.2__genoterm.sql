@@ -1,10 +1,10 @@
 -- GENOTerm tables
 CREATE TABLE genoterm (
-    curie character varying(255) NOT NULL
+    id bigint NOT NULL
 );
 
 ALTER TABLE ONLY genoterm
-    ADD CONSTRAINT genoterm_pkey PRIMARY KEY (curie);
+    ADD CONSTRAINT genoterm_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY genoterm
-    ADD CONSTRAINT genoterm_curie_fk FOREIGN KEY (curie) REFERENCES ontologyterm(curie);
+    ADD CONSTRAINT genoterm_id_fk FOREIGN KEY (id) REFERENCES ontologyterm(id);
