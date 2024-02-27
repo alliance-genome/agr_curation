@@ -98,16 +98,98 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		}
 	}
 	
-	public List<Long> findFilteredIds(Map<String, Object> params) {
-		List<Long> primaryKeys = new ArrayList<>();
-		SearchResponse<E> results = findByParams(params);
-		for (E entity : results.getResults()) {
-			Long pk = returnId(entity);
-			if (pk != null)
-				primaryKeys.add(pk);
+	private List<Predicate> buildRestrictions(Root<E> root, Map<String, Object> params, Logger.Level level) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		List<Predicate> restrictions = new ArrayList<>();
+
+		for (String key : params.keySet()) {
+			Path<Object> column = null;
+			Log.log(level, "Key: " + key);
+			if (key.contains(".")) {
+				String[] objects = key.split("\\.");
+				for (String s : objects) {
+					Log.log(level, "Looking up: " + s);
+					if (column != null) {
+						Log.log(level, "Looking up via column: " + s);
+						Path<Object> pathColumn = column.get(s);
+						if (pathColumn.getJavaType().equals(List.class)) {
+							column = ((Join) column).join(s);
+						} else {
+							column = pathColumn;
+						}
+					} else {
+						Log.log(level, "Looking up via root: " + s);
+						column = root.get(s);
+						if (column.getJavaType().equals(List.class))
+							column = root.join(s);
+					}
+
+					Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+				}
+			} else {
+				Log.log(level, "Looking up via root: " + key);
+				column = root.get(key);
+				// Don't need to join to these tables if value is null, the isEmpty will catch the condition later
+				Object value = params.get(key);
+				if(value != null) {
+					if (column instanceof SqmPluralValuedSimplePath)
+						column = root.join(key);
+				}
+			}
+
+			Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+			
+			Object value = params.get(key);
+			
+			if(value == null) {
+				restrictions.add(builder.isEmpty(root.get(key)));
+			} else if (value instanceof Integer) {
+				Log.log(level, "Integer Type: " + value);
+				Integer desiredValue = (Integer) value;
+				restrictions.add(builder.equal(column, desiredValue));
+			} else if (value instanceof Enum) {
+				Log.log(level, "Enum Type: " + value);
+				restrictions.add(builder.equal(column, value));
+			} else if (value instanceof Long) {
+				Log.log(level, "Long Type: " + value);
+				Long desiredValue = (Long) value;
+				restrictions.add(builder.equal(column, desiredValue));
+			} else if (value instanceof Boolean) {
+				Log.log(level, "Boolean Type: " + value);
+				Boolean desiredValue = (Boolean) value;
+				restrictions.add(builder.equal(column, desiredValue));
+			} else if (value instanceof String) {
+				Log.log(level, "String Type: " + value);
+				String desiredValue = (String) value;
+				restrictions.add(builder.equal(column, desiredValue));
+			} else {
+				// Not sure what to do here as we have a non supported value
+				Log.info("Unsupprted Value: " + value);
+			}
 		}
 		
-		return primaryKeys;
+		return restrictions;
+	}
+	
+	public List<Long> findFilteredIds(Map<String, Object> params) {
+		Logger.Level level = Level.DEBUG;
+		if(params.containsKey("debug")) {
+			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
+		}
+		
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> query = builder.createQuery(Long.class);
+		Root<E> root = query.from(myClass);
+		
+		List<Predicate> restrictions = buildRestrictions(root, params, level);
+
+		query.orderBy(builder.asc(root.get("id")));
+		query.where(builder.and(restrictions.toArray(new Predicate[0])));
+		query.select(root.get("id"));
+		
+		List<Long> filteredIds = entityManager.createQuery(query).getResultList();
+			
+		return filteredIds;
 	}
 
 	public SearchResponse<Long> findAllIds() {
@@ -492,99 +574,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Root<E> countRoot = countQuery.from(myClass);
 
 		// System.out.println("Root: " + root);
-		List<Predicate> restrictions = new ArrayList<>();
-		List<Predicate> countRestrictions = new ArrayList<>();
-
-		for (String key : params.keySet()) {
-			Path<Object> column = null;
-			Path<Object> countColumn = null;
-			Log.log(level, "Key: " + key);
-			if (key.contains(".")) {
-				String[] objects = key.split("\\.");
-				for (String s : objects) {
-					Log.log(level, "Looking up: " + s);
-					if (column != null) {
-						Log.log(level, "Looking up via column: " + s);
-						Path<Object> pathColumn = column.get(s);
-						if (pathColumn.getJavaType().equals(List.class)) {
-							column = ((Join) column).join(s);
-						} else {
-							column = pathColumn;
-						}
-						Path<Object> pathCountColumn = countColumn.get(s);
-						if (pathCountColumn.getJavaType().equals(List.class)) {
-							countColumn = ((Join) countColumn).join(s);
-						} else {
-							countColumn = pathCountColumn;
-						}
-					} else {
-						Log.log(level, "Looking up via root: " + s);
-						column = root.get(s);
-						if (column.getJavaType().equals(List.class)) {
-							column = root.join(s);
-						}
-						countColumn = countRoot.get(s);
-						if (countColumn.getJavaType().equals(List.class)) {
-							countColumn = countRoot.join(s);
-						}
-					}
-
-					Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-					Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
-				}
-			} else {
-				Log.log(level, "Looking up via root: " + key);
-				column = root.get(key);
-				countColumn = countRoot.get(key);
-				// Don't need to join to these tables if value is null, the isEmpty will catch the condition later
-				Object value = params.get(key);
-				if(value != null) {
-					if (column instanceof SqmPluralValuedSimplePath) {
-						column = root.join(key);
-					}
-					if (countColumn instanceof SqmPluralValuedSimplePath) {
-						countColumn = countRoot.join(key);
-					}
-				}
-			}
-
-			Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			Log.log(level, "Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
-
-			Object value = params.get(key);
-			
-			if(value == null) {
-				restrictions.add(builder.isEmpty(root.get(key)));
-				countRestrictions.add(builder.isEmpty(countRoot.get(key)));
-			} else if (value instanceof Integer) {
-				Log.log(level, "Integer Type: " + value);
-				Integer desiredValue = (Integer) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
-			} else if (value instanceof Enum) {
-				Log.log(level, "Enum Type: " + value);
-				restrictions.add(builder.equal(column, value));
-				countRestrictions.add(builder.equal(countColumn, value));
-			} else if (value instanceof Long) {
-				Log.log(level, "Long Type: " + value);
-				Long desiredValue = (Long) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
-			} else if (value instanceof Boolean) {
-				Log.log(level, "Boolean Type: " + value);
-				Boolean desiredValue = (Boolean) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
-			} else if (value instanceof String) {
-				Log.log(level, "String Type: " + value);
-				String desiredValue = (String) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
-			} else {
-				// Not sure what to do here as we have a non supported value
-				Log.info("Unsupprted Value: " + value);
-			}
-		}
+		List<Predicate> restrictions = buildRestrictions(root, params, level);
+		List<Predicate> countRestrictions = buildRestrictions(countRoot, params, level);
 
 		if (orderByField != null) {
 			query.orderBy(builder.asc(root.get(orderByField)));
