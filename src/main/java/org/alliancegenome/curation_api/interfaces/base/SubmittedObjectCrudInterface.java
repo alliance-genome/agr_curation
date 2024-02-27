@@ -3,9 +3,14 @@ package org.alliancegenome.curation_api.interfaces.base;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.validation.constraints.Null;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -22,6 +27,12 @@ public interface SubmittedObjectCrudInterface<E extends SubmittedObject> extends
 	@GET
 	@Path("/{identifierString}")
 	@JsonView(View.FieldsOnly.class)
+	@APIResponses(
+			@APIResponse(description = "Get the Entity by Identifier String",
+			responseCode = "200",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = Null.class)))
+			)
 	public ObjectResponse<E> get(@PathParam("identifierString") String identifierString);
 
 	@Override
