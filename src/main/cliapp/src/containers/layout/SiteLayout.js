@@ -267,6 +267,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
+											{ label: 'Genotype Ontology (GENO)', icon: 'pi pi-fw pi-home', to: '/ontology/geno'},
 											{ label: 'Measurement Method Ontology (MMO)', icon: 'pi pi-fw pi-home', to: '/ontology/mmo' },
 											{ label: 'Molecular Interactions Ontology (MI)', icon: 'pi pi-fw pi-home', to: '/ontology/mi' },
 											{ label: 'Mouse Pathology Ontology (MPATH)', icon: 'pi pi-fw pi-home', to: '/ontology/mpath' },
