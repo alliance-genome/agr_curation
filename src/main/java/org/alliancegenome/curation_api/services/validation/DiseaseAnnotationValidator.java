@@ -10,7 +10,6 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
@@ -24,8 +23,10 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
 
@@ -34,7 +35,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	@Inject
 	EcoTermDAO ecoTermDAO;
 	@Inject
-	DoTermDAO doTermDAO;
+	DoTermService doTermService;
 	@Inject
 	GeneDAO geneDAO;
 	@Inject
@@ -56,14 +57,15 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		}
 		
 		DOTerm diseaseTerm = null;
-		if (uiEntity.getDiseaseAnnotationObject().getId() != null)
-			diseaseTerm = doTermDAO.find(uiEntity.getDiseaseAnnotationObject().getId());
-		if (diseaseTerm == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		} else if (diseaseTerm.getObsolete() && (dbEntity.getDiseaseAnnotationObject() == null || !diseaseTerm.getId().equals(dbEntity.getDiseaseAnnotationObject().getId()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
+		if (StringUtils.isNotBlank(uiEntity.getDiseaseAnnotationObject().getCurie())) {
+			diseaseTerm = doTermService.findByCurie(uiEntity.getDiseaseAnnotationObject().getCurie());
+			if (diseaseTerm == null) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			} else if (diseaseTerm.getObsolete() && (dbEntity.getDiseaseAnnotationObject() == null || !diseaseTerm.getId().equals(dbEntity.getDiseaseAnnotationObject().getId()))) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
 		}
 		return diseaseTerm;
 	}

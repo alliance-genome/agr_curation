@@ -57,7 +57,7 @@ export const data = {
 				"curie": "sgd test curie",
 				"name": "SGD Strain Background test"
 			}, 
-			"diseaseGeneticModifiers": {"symbol": "disease genetic modifier test"},
+			"diseaseGeneticModifiers": [{"symbol": "disease genetic modifier test"}],
 			"diseaseQualifiers": [{"name": "disease qualifiers test"}],
 			"dateCreated": "2017-06-08T14:15:35Z",
 			"dateUpdated": "2017-06-08T14:15:35Z",

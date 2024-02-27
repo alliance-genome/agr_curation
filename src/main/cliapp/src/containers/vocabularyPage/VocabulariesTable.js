@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
-import { BooleanTemplate } from '../../components/BooleanTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { VocabularyService } from "../../service/VocabularyService";
 import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
