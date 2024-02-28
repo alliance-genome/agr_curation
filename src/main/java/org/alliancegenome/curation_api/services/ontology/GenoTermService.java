@@ -10,13 +10,13 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class GenoTermService extends BaseOntologyTermService<GENOTerm, GenoTermDAO> {
-    
-    @Inject
-    GenoTermDAO genoTermDAO;
+	
+	@Inject
+	GenoTermDAO genoTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(genoTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(genoTermDAO);
+	}
 }
