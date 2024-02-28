@@ -8,12 +8,20 @@ import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/Evid
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
+
+import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
+import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
+import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate'; 
+import { IdTemplate } from '../../components/Templates/IdTemplate'; 
+import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
+import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
+import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -22,11 +30,9 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
-import { Tooltip } from 'primereact/tooltip';
 import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, getIdentifier } from '../../utils/utils';
 import { useNewAnnotationReducer } from "./useNewAnnotationReducer";
 import { NewAnnotationForm } from "./NewAnnotationForm";
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
@@ -165,210 +171,6 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	const withTemplate = (rowData) => {
-		if (rowData && rowData.with) {
-			const sortedWithGenes = rowData.with.sort((a, b) => (a.geneSymbol.displayText > b.geneSymbol.displayText) ? 1 : (getIdentifier(a) === getIdentifier(b)) ? 1 : -1);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item.geneSymbol.displayText + ' (' + getIdentifier(item) + ')'}
-					</EllipsisTableCell>
-				);
-			};
-			return(
-				<div className= "-my-4 p-1">
-					<ListTableCell template={listTemplate} listData={sortedWithGenes}/>
-				</div>
-			);
-		}
-	};
-
-	const assertedGenesBodyTemplate = (rowData) => {
-		if (rowData && rowData.assertedGenes && rowData.assertedGenes.length > 0) {
-			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.geneSymbol?.displayText > b.geneSymbol?.displayText) ? 1 : (getIdentifier(a) === getIdentifier(b)) ? 1 : -1);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item.geneSymbol?.displayText + ' (' + getIdentifier(item) + ')'}
-					</EllipsisTableCell>
-				);
-			};
-			const identifier = getIdentifier(rowData.assertedGenes[0]);
-			return (
-				<>
-					<div className={`-my-4 p-1 a${rowData.id}${identifier.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedAssertedGenes}/>
-					</div>
-					<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedAssertedGenes}/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
-	const evidenceTemplate = (rowData) => {
-		if (rowData?.evidenceCodes && rowData.evidenceCodes.length > 0) {
-			const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item.abbreviation + ' - ' + item.name + ' (' + item.curie + ')'}
-					</EllipsisTableCell>
-				);
-			};
-			return (
-				<>
-					<div className={`-my-4 p-1 a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
-					</div>
-					<Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
-	const singleReferenceBodyTemplate = (rowData) => {
-		if (rowData && rowData.singleReference) {
-			let refString = getRefString(rowData.singleReference);
-			return (
-				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
-						dangerouslySetInnerHTML={{
-							__html: refString
-						}}
-					/>
-					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
-						<div dangerouslySetInnerHTML={{
-							__html: refString
-						}}
-						/>
-					</Tooltip>
-				</>
-			);
-
-		}
-	};
-
-	const inferredGeneBodyTemplate = (rowData) => {
-		if (rowData && rowData.inferredGene) {
-			const identifier = getIdentifier(rowData.inferredGene);
-			return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ig${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.inferredGene.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.ig${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredGene.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-		}
-	};
-
-	const inferredAlleleBodyTemplate = (rowData) => {
-		if (rowData && rowData.inferredAllele) {
-			const identifier = getIdentifier(rowData.inferredAllele);
-			if (rowData.inferredAllele.alleleSymbol?.displayText) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleSymbol?.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.ia${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleSymbol?.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleFullName?.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.ia${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.inferredAllele.alleleFullName?.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			}
-		}
-	};
-
-	const assertedAlleleBodyTemplate = (rowData) => {
-		if (rowData && rowData.assertedAllele) {
-			const identifier = getIdentifier(rowData.assertedAllele);
-			if (rowData.assertedAllele.alleleSymbol) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis aa${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.assertedAllele.alleleSymbol.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.aa${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.assertedAllele.alleleSymbol.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis aa${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.assertedAllele.alleleFullName.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.aa${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.assertedAllele.alleleFullName.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			}
-		}
-	};
-
-	const diseaseQualifiersBodyTemplate = (rowData) => {
-		if (rowData && rowData.diseaseQualifiers) {
-			const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
-			const listTemplate = (item) => item.name;
-			return(
-				<div className= "-my-4 p-1">
-					<ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers}/>
-				</div>
-			)
-		}
-	};
-
-	const negatedTemplate = (rowData) => {
-		if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
-		}
-	};
-
 	const relatedNotesTemplate = (rowData) => {
 		if (rowData?.relatedNotes) {
 			return (
@@ -479,7 +281,7 @@ export const DiseaseAnnotationsTable = () => {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span class= "-my-4 p-1 underline">
+					<span className= "-my-4 p-1 underline">
 						{handle && handle}
 					</span>
 				</Button>
@@ -513,16 +315,6 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const diseaseBodyTemplate = (rowData) => {
-		if (rowData.diseaseAnnotationObject) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.diseaseAnnotationObject.curie.replace(':', '')}`}>{rowData.diseaseAnnotationObject.name} ({rowData.diseaseAnnotationObject.curie})</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.id}${rowData.diseaseAnnotationObject.curie.replace(':', '')}`} content={`${rowData.diseaseAnnotationObject.name} (${rowData.diseaseAnnotationObject.curie})`} />
-				</>
-			)
-		}
-	};
 
 	const onRelationEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
@@ -1046,145 +838,6 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	const subjectBodyTemplate = (rowData) => {
-		if (rowData.diseaseAnnotationSubject) {
-			const identifier = getIdentifier(rowData.diseaseAnnotationSubject);
-			if (rowData.diseaseAnnotationSubject.geneSymbol) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneSymbol.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.alleleSymbol) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleSymbol.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleSymbol.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.geneFullName) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneFullName.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.geneFullName.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.alleleFullName) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleFullName.displayText + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.alleleFullName.displayText + ' (' + identifier + ')'
-							}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else if (rowData.diseaseAnnotationSubject.name) {
-				return (
-					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${identifier.replace(':', '')}`}
-							dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.name + ' (' + identifier + ')'
-							}}
-						/>
-						<Tooltip target={`.a${rowData.id}${identifier.replace(':', '')}`}>
-							<div dangerouslySetInnerHTML={{
-								__html: rowData.diseaseAnnotationSubject.name + ' (' + identifier + ')'
-								}}
-							/>
-						</Tooltip>
-					</>
-				)
-			} else {
-				return <div className='overflow-hidden text-overflow-ellipsis' >{identifier}</div>;
-			}
-		}
-	};
-
-	const sgdStrainBackgroundBodyTemplate = (rowData) => {
-		if (rowData.sgdStrainBackground) {
-			const identifier = getIdentifier(rowData.sgdStrainBackground);
-			if (rowData.sgdStrainBackground.name) {
-				return <div className='overflow-hidden text-overflow-ellipsis'
-					dangerouslySetInnerHTML={{
-						__html: rowData.sgdStrainBackground.name + ' (' + identifier + ')'
-					}}
-				/>;
-			} else {
-				return <div className='overflow-hidden text-overflow-ellipsis' >{identifier}</div>;
-			}
-		}
-	};
-
-	const geneticModifiersBodyTemplate = (rowData) => {
-		if (rowData?.diseaseGeneticModifiers && rowData.diseaseGeneticModifiers.length > 0) {
-			const diseaseGeneticModifierStrings = [];
-			rowData.diseaseGeneticModifiers.forEach((dgm) => {
-				const identifier = getIdentifier(dgm);
-				if (dgm.geneSymbol || dgm.alleleSymbol) {
-					let symbolValue = dgm.geneSymbol ? dgm.geneSymbol.displayText : dgm.alleleSymbol.displayText;
-					diseaseGeneticModifierStrings.push(symbolValue + ' (' + identifier + ')');
-				} else if (dgm.name) {
-					diseaseGeneticModifierStrings.push(dgm.name + ' (' + identifier + ')');
-				} else {
-					diseaseGeneticModifierStrings.push(identifier);
-				}
-			});
-			const sortedDiseaseGeneticModifierStrings = diseaseGeneticModifierStrings.sort();
-			const listTemplate = (dgmString) => {
-				return (
-					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{__html: dgmString}}/>
-					</EllipsisTableCell>
-				)
-			};
-			return (
-				<>
-					<div className={`-my-4 p-1 a${rowData.id}${getIdentifier(rowData.diseaseGeneticModifiers[0]).replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
-					</div>
-					<Tooltip target={`.a${rowData.id}${getIdentifier(rowData.diseaseGeneticModifiers[0]).replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedDiseaseGeneticModifierStrings}/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
 	const onReferenceValueChange = (event, setFieldValue, props) => {
 		defaultAutocompleteOnChange(props, event, "singleReference", setFieldValue);
 	};
@@ -1218,17 +871,6 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	const uniqueIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`c${rowData.id}`}>
-					{rowData.uniqueId}
-				</EllipsisTableCell>
-				<Tooltip target={`.c${rowData.id}`} content={rowData.uniqueId} />
-			</>
-		)
-	};
 
 	const uniqueIdEditorTemplate = (props) => {
 		return (
@@ -1244,30 +886,6 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	const modEntityIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>
-					{rowData.modEntityId}
-				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.modEntityId} />
-			</>
-		)
-	};
-
-	const modInternalIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`b${rowData.id}`}>
-					{rowData.modInternalId}
-				</EllipsisTableCell>
-				<Tooltip target={`.b${rowData.id}`} content={rowData.modInternalId} />
-			</>
-		)
-	};
-
 	const sgdStrainBackgroundEditorSelector = (props) => {
 		if (props.rowData.type === "GeneDiseaseAnnotation") {
 			return sgdStrainBackgroundEditorTemplate(props);
@@ -1280,7 +898,7 @@ export const DiseaseAnnotationsTable = () => {
 	const columns = [{
 		field: "uniqueId",
 		header: "Unique ID",
-		body: uniqueIdBodyTemplate,
+		body: (rowData) => <IdTemplate id={rowData.uniqueId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		editor: (props) => uniqueIdEditorTemplate(props)
@@ -1288,21 +906,21 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "modEntityId",
 		header: "MOD Annotation ID",
-		body: modEntityIdBodyTemplate,
+		body: (rowData) => <IdTemplate id={rowData.modEntityId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 	},
 	{
 		field: "modInternalId",
 		header: "MOD Internal ID",
-		body: modInternalIdBodyTemplate,
+		body: (rowData) => <IdTemplate id={rowData.modInternalId}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 	},
 	{
 		field: "diseaseAnnotationSubject.symbol",
 		header: "Subject",
-		body: subjectBodyTemplate,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
 		editor: (props) => subjectEditorTemplate(props),
@@ -1317,7 +935,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "negated",
 		header: "Negated",
-		body: negatedTemplate,
+		body: (rowData) => <BooleanTemplate value={rowData.negated}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		editor: (props) => negatedEditor(props)
@@ -1325,7 +943,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationObject.name",
 		header: "Disease",
-		body: diseaseBodyTemplate,
+		body: (rowData) => <DiseaseTemplate object={rowData.diseaseAnnotationObject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
@@ -1333,7 +951,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "singleReference.primaryCrossReferenceCurie",
 		header: "Reference",
-		body: singleReferenceBodyTemplate,
+		body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 		editor: (props) => referenceEditorTemplate(props),
@@ -1342,7 +960,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "evidenceCodes.abbreviation",
 		header: "Evidence Code",
-		body: evidenceTemplate,
+		body: (rowData) => <EvidenceCodesTemplate evidenceCodes={rowData.evidenceCodes}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 		editor: (props) => evidenceEditorTemplate(props)
@@ -1350,7 +968,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "with.geneSymbol.displayText",
 		header: "With",
-		body: withTemplate,
+		body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.withFilterConfig,
 		editor: (props) => withEditorTemplate(props)
@@ -1389,7 +1007,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseQualifiers.name",
 		header: "Disease Qualifiers",
-		body: diseaseQualifiersBodyTemplate,
+		body: (rowData) => <DiseaseQualifiersTemplate diseaseQualifiers={rowData.diseaseQualifiers}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
 		editor: (props) => diseaseQualifiersEditor(props)
@@ -1397,7 +1015,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "sgdStrainBackground.name",
 		header: "SGD Strain Background",
-		body: sgdStrainBackgroundBodyTemplate,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.sgdStrainBackground}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
 		editor: (props) => sgdStrainBackgroundEditorSelector(props)
@@ -1419,7 +1037,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseGeneticModifiers.symbol",
 		header: "Genetic Modifiers",
-		body: geneticModifiersBodyTemplate,
+		body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifiers}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.geneticModifiersFilterConfig,
 		editor: (props) => geneticModifiersEditorTemplate(props),
@@ -1427,14 +1045,14 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "inferredGene.geneSymbol.displayText",
 		header: "Inferred Gene",
-		body: inferredGeneBodyTemplate,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredGene}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 	},
 	{
 		field: "assertedGenes.geneSymbol.displayText",
 		header: "Asserted Genes",
-		body: assertedGenesBodyTemplate,
+		body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedGenes}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 		editor: (props) => assertedGenesEditorTemplate(props),
@@ -1442,14 +1060,14 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "inferredAllele.alleleSymbol.displayText",
 		header: "Inferred Allele",
-		body: inferredAlleleBodyTemplate,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredAllele}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 	},
 	{
 		field: "assertedAllele.alleleSymbol.displayText",
 		header: "Asserted Allele",
-		body: assertedAlleleBodyTemplate,
+		body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.assertedAllele}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
 		editor: (props) => assertedAlleleEditorTemplate(props),
@@ -1493,7 +1111,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "internal",
 		header: "Internal",
-		body: internalTemplate,
+		body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.internalFilterConfig,
 		editor: (props) => internalEditor(props)
@@ -1501,7 +1119,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "obsolete",
 		header: "Obsolete",
-		body: obsoleteTemplate,
+		body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		editor: (props) => obsoleteEditor(props)
@@ -1583,3 +1201,4 @@ export const DiseaseAnnotationsTable = () => {
 		</>
 	);
 };
+

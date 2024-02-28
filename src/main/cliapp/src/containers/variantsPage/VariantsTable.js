@@ -316,7 +316,7 @@ export const VariantsTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					dataKey="curie"
+					dataKey="id"
 					endpoint="variant"
 					tableName="Variants"
 					columns={columns}

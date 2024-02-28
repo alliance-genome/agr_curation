@@ -41,11 +41,6 @@ public class SystemController implements SystemControllerInterface {
 	}
 
 	@Override
-	public void updateRefreshIntervalOnAllIndexes() {
-		systemSQLDAO.setRefreshInterval();
-	}
-
-	@Override
 	public void deleteUnusedConditionsAndExperiments() {
 		List<Long> inUseCrIds = diseaseAnnotationService.getAllReferencedConditionRelationIds();
 		conditionRelationService.deleteUnusedConditions(inUseCrIds);

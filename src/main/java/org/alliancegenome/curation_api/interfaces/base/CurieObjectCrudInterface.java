@@ -8,11 +8,16 @@ import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.validation.constraints.Null;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -42,6 +47,12 @@ public interface CurieObjectCrudInterface<E extends CurieObject> {
 	@GET
 	@Path("/{curie}")
 	@JsonView(View.FieldsOnly.class)
+	@APIResponses(
+			@APIResponse(description = "Get the Entity by CURIE",
+			responseCode = "200",
+					content = @Content(mediaType = "application/json",
+							schema = @Schema(implementation = Null.class)))
+			)
 	public ObjectResponse<E> get(@PathParam("curie") String curie);
 
 	@PUT

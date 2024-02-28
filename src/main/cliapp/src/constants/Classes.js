@@ -57,6 +57,7 @@ export const CLASSES = Object.freeze({
   CLTerm: { name: "CL", link: "/#/ontology/cl", type: 'ontology', },
   CMOTerm: { name: "CMO", link: "/#/ontology/cmo", type: 'ontology', },
   BSPOTerm: { name: "BSPO", link: "/#/ontology/bspo", type: 'ontology', },
+  GENOTerm: { name: "GENO", link: "/#/ontology/geno", type: 'ontology', },
 
   CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
   BulkLoad: { name: "Bulk Loads / Failed Loads", link: "/#/dataloads", type: 'system', },

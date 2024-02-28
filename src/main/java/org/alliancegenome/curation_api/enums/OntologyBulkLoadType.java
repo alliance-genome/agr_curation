@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.DPOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EMAPATerm;
 import org.alliancegenome.curation_api.model.entities.ontology.FBDVTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.HPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MATerm;
@@ -85,7 +86,8 @@ public enum OntologyBulkLoadType {
 	PW(PWTerm.class),
 	CL(CLTerm.class),
 	CMO(CMOTerm.class),
-	BSPO(BSPOTerm.class);
+	BSPO(BSPOTerm.class),
+	GENO(GENOTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 
