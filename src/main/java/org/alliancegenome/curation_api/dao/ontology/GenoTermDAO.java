@@ -7,8 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class GenoTermDAO extends BaseSQLDAO<GENOTerm> {
-    
-    protected GenoTermDAO() {
-        super(GENOTerm.class);
-    }
+	
+	protected GenoTermDAO() {
+		super(GENOTerm.class);
+	}
 }
