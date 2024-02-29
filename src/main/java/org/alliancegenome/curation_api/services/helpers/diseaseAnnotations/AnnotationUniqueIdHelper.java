@@ -4,22 +4,26 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.enums.FmsConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.EvidenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.ExperimentalConditionFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public abstract class DiseaseAnnotationUniqueIdHelper {
+public abstract class AnnotationUniqueIdHelper {
 
 	public static final String DELIMITER = "|";
 
@@ -47,6 +51,14 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		return uniqueId.getUniqueId();
 	}
 
+	public static String getConditionRelationUniqueId(ConditionRelationFmsDTO dto, String relationType) {
+		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
+		uniqueId.add(relationType);
+		if (CollectionUtils.isNotEmpty(dto.getConditions()))
+			dto.getConditions().forEach(experimentalCondition -> uniqueId.add(getExperimentalConditionUniqueId(experimentalCondition)));
+		return uniqueId.getUniqueId();
+	}
+
 	public static String getDiseaseAnnotationUniqueId(DiseaseAnnotationDTO annotationDTO, String subjectIdentifier, String refCurie) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(subjectIdentifier);
@@ -65,7 +77,7 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
 				gen.add(conditionDTO.getConditionRelationTypeName());
 				if (CollectionUtils.isNotEmpty(conditionDTO.getConditionDtos()))
-					gen.add(conditionDTO.getConditionDtos().stream().map(DiseaseAnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+					gen.add(conditionDTO.getConditionDtos().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
 				return gen.getUniqueId();
 			}).collect(Collectors.toList()));
 		}
@@ -93,7 +105,7 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 			uniqueId.addList(annotation.getConditionRelations().stream().map(condition -> {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
 				gen.add(condition.getConditionRelationType().getName());
-				gen.add(condition.getConditions().stream().map(DiseaseAnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+				gen.add(condition.getConditions().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
 				return gen.getUniqueId();
 			}).collect(Collectors.toList()));
 		}
@@ -102,6 +114,48 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		if (annotation.getDiseaseGeneticModifierRelation() != null)
 			uniqueId.add(annotation.getDiseaseGeneticModifierRelation().getName());
 		uniqueId.addSubmittedObjectList(annotation.getDiseaseGeneticModifiers());
+		return uniqueId.getUniqueId();
+	}
+	
+	public static String getPhenotypeAnnotationUniqueId(PhenotypeFmsDTO annotationFmsDTO, String subjectIdentifier, String refCurie) {
+		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
+		uniqueId.add(subjectIdentifier);
+		uniqueId.add("has_phenotype");
+		uniqueId.add(annotationFmsDTO.getPhenotypeStatement());
+		if (CollectionUtils.isNotEmpty(annotationFmsDTO.getPhenotypeTermIdentifiers()))
+			uniqueId.addList(annotationFmsDTO.getPhenotypeTermIdentifiers().stream().map(PhenotypeTermIdentifierFmsDTO::getTermId).collect(Collectors.toList()));
+		uniqueId.add(refCurie);
+		if (CollectionUtils.isNotEmpty(annotationFmsDTO.getConditionRelations())) {
+			uniqueId.addList(annotationFmsDTO.getConditionRelations().stream().map(conditionFmsDTO -> {
+				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
+				gen.add(FmsConditionRelation.valueOf(conditionFmsDTO.getConditionRelationType()).agrRelation);
+				if (CollectionUtils.isNotEmpty(conditionFmsDTO.getConditions()))
+					gen.add(conditionFmsDTO.getConditions().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+				return gen.getUniqueId();
+			}).collect(Collectors.toList()));
+		}
+		
+		return uniqueId.getUniqueId();
+	}
+
+	public static String getPhenotypeAnnotationUniqueId(PhenotypeAnnotation annotation) {
+		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
+		uniqueId.add(annotation.getSubjectIdentifier());
+		if (annotation.getRelation() != null)
+			uniqueId.add(annotation.getRelation().getName());
+		if (annotation.getPhenotypeAnnotationObject() != null)
+			uniqueId.add(annotation.getPhenotypeAnnotationObject());
+		uniqueId.add(annotation.getRelation().getName());
+		if (annotation.getSingleReference()!= null)
+			uniqueId.add(annotation.getSingleReference().getCurie());
+		if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
+			uniqueId.addList(annotation.getConditionRelations().stream().map(condition -> {
+				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
+				gen.add(condition.getConditionRelationType().getName());
+				gen.add(condition.getConditions().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+				return gen.getUniqueId();
+			}).collect(Collectors.toList()));
+		}
 		return uniqueId.getUniqueId();
 	}
 
@@ -137,7 +191,20 @@ public abstract class DiseaseAnnotationUniqueIdHelper {
 		return uniqueId.getUniqueId();
 	}
 
-	public String getEvidenceCuri(EvidenceFmsDTO dto) {
+	public static String getExperimentalConditionUniqueId(ExperimentalConditionFmsDTO dto) {
+		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
+		uniqueId.add(dto.getConditionClassId());
+		uniqueId.add(dto.getConditionId());
+		uniqueId.add(dto.getAnatomicalOntologyId());
+		uniqueId.add(dto.getChemicalOntologyId());
+		uniqueId.add(dto.getGeneOntologyId());
+		uniqueId.add(dto.getNcbiTaxonId());
+		uniqueId.add(dto.getConditionQuantity());
+		uniqueId.add(dto.getConditionStatement());
+		return uniqueId.getUniqueId();
+	}
+
+	public String getEvidenceCurie(EvidenceFmsDTO dto) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 
 		if (dto.getPublication().getCrossReference() != null) {

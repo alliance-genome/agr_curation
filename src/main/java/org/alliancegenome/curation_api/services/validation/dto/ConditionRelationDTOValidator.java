@@ -18,7 +18,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +55,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		}
 		String refCurie = reference == null ? null : reference.getCurie();
 
-		String uniqueId = DiseaseAnnotationUniqueIdHelper.getConditionRelationUniqueId(dto, refCurie);
+		String uniqueId = AnnotationUniqueIdHelper.getConditionRelationUniqueId(dto, refCurie);
 		SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", uniqueId);
 
 		if (searchResponseRel == null || searchResponseRel.getSingleResult() == null) {

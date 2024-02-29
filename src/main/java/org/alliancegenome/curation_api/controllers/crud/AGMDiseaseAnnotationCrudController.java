@@ -30,7 +30,6 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 		setService(agmDiseaseAnnotationService);
 	}
 
-	@Override
 	public APIResponse updateAgmDiseaseAnnotations(String dataProvider, List<AGMDiseaseAnnotationDTO> annotations) {
 		return agmDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}

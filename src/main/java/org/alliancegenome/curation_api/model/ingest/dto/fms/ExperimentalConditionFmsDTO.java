@@ -15,6 +15,8 @@ public class ExperimentalConditionFmsDTO extends BaseDTO {
 	
 	private String conditionStatement;
 	
+	private String conditionId;
+	
 	private String conditionQuantity;
 	
 	private String anatomicalOntologyId;

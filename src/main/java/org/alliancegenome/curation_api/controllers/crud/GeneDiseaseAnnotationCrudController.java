@@ -31,12 +31,10 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 		setService(geneDiseaseAnnotationService);
 	}
 
-	@Override
 	public APIResponse updateGeneDiseaseAnnotations(String dataProvider, List<GeneDiseaseAnnotationDTO> annotations) {
 		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 	
-	@Override
 	public ObjectResponse<GeneDiseaseAnnotation> get(String identifierString) {
 		return geneDiseaseAnnotationService.get(identifierString);
 	}

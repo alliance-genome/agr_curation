@@ -20,8 +20,8 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationRetrievalHelper;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.AnnotationRetrievalHelper;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.AnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -60,7 +60,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			} else {
 				String annotationId;
 				String identifyingField;
-				String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAlleleIdentifier(), refCurie);
+				String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAlleleIdentifier(), refCurie);
 				
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
@@ -76,7 +76,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				}
 
 				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
-				annotation = DiseaseAnnotationRetrievalHelper.getCurrentDiseaseAnnotation(annotation, annotationList);
+				annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
 				annotation.setDiseaseAnnotationSubject(allele);
 				

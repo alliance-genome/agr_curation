@@ -31,7 +31,6 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 		setService(alleleDiseaseAnnotationService);
 	}
 
-	@Override
 	public APIResponse updateAlleleDiseaseAnnotations(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
 		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}

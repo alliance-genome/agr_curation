@@ -33,7 +33,7 @@ public class DiseaseAnnotationUniqueIdUpdateHelper {
 		if (annotation == null)
 			return;
 		
-		annotation.setUniqueId(DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(annotation));
+		annotation.setUniqueId(AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(annotation));
 		diseaseAnnotationDAO.merge(annotation);
 	}
 	
