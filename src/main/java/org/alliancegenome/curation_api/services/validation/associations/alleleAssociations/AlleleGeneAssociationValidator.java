@@ -115,6 +115,14 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
+		else {
+			// fix for SCRUM-3738
+			if (objectEntity.getGeneSymbol() != null){
+				if(objectEntity.getGeneSymbol().getEvidence() != null) {
+					objectEntity.getGeneSymbol().getEvidence().size(); 
+				}
+			}
+		}
 
 		if (objectEntity.getObsolete() && (dbEntity.getAlleleGeneAssociationObject() == null || !objectEntity.getId().equals(dbEntity.getAlleleGeneAssociationObject().getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
