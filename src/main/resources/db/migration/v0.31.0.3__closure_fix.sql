@@ -1,4 +1,4 @@
-ALTER TABLE OntologyTerm ADD COLUMN OntologyTermType VARCHAR(32);
+ALTER TABLE OntologyTerm ADD COLUMN OntologyTermType VARCHAR(64);
 
 UPDATE OntologyTerm o SET OntologyTermType = 'ECOTerm' FROM ECOTerm t WHERE o.id = t.id;
 UPDATE OntologyTerm o SET OntologyTermType = 'SOTerm' FROM SOTerm t WHERE o.id = t.id;
