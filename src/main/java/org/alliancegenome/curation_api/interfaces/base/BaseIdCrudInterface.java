@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBodySchema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -37,50 +38,172 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 	@POST
 	@Path("/")
 	@JsonView(View.FieldsOnly.class)
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectResponse<E> create(E entity);
 
 	@POST
 	@Path("/multiple")
 	@JsonView(View.FieldsOnly.class)
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectListResponse<E> create(List<E> entities);
 
 	@GET
 	@Path("/{id}")
 	@JsonView(View.FieldsOnly.class)
 	@APIResponses(
-			@APIResponse(description = "Get the entity by ID",
+		@APIResponse(
+			description = "Get Entity by Id",
 			responseCode = "200",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(implementation = Null.class)))
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
 			)
+		)
+	)
 	public ObjectResponse<E> get(@PathParam("id") Long id);
 
 	@PUT
 	@Path("/")
 	@JsonView(View.FieldsOnly.class)
+	@RequestBody( 
+		description = "Put Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectResponse<E> update(E entity);
 
 	@DELETE
 	@Path("/{id}")
 	@JsonView(View.FieldsOnly.class)
+	@APIResponses(
+		@APIResponse(
+			description = "Delete Entity by Id",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectResponse<E> delete(@PathParam("id") Long id);
 
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.FieldsAndLists.class)
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public SearchResponse<E> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
 	@Path("/findForPublic")
 	@Tag(name = "Public Web API Database Searching Endpoints")
 	@JsonView(View.ForPublic.class)
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public SearchResponse<E> findForPublic(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 	
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.FieldsAndLists.class })
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public SearchResponse<E> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@GET
