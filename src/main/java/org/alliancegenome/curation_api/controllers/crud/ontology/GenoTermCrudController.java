@@ -12,12 +12,12 @@ import jakarta.inject.Inject;
 
 public class GenoTermCrudController extends BaseOntologyTermController<GenoTermService, GENOTerm, GenoTermDAO> implements GenoTermCrudInterface {
  
-    @Inject
-    GenoTermService genoTermService;
+	@Inject
+	GenoTermService genoTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(genoTermService, GENOTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(genoTermService, GENOTerm.class);
+	}
 }
