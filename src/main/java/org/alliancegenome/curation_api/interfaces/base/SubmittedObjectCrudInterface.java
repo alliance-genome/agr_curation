@@ -30,7 +30,6 @@ public interface SubmittedObjectCrudInterface<E extends SubmittedObject> extends
 	@APIResponses(
 		@APIResponse(
 			description = "Get the Entity by Identifier String",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -46,7 +45,6 @@ public interface SubmittedObjectCrudInterface<E extends SubmittedObject> extends
 	@APIResponses(
 		@APIResponse(
 			description = "Delete the Entity by Identifier String",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
