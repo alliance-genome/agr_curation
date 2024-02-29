@@ -84,107 +84,39 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	@Transactional
 	public E processUpdateRelationships(E inTerm) {
-		// TODO: 01 - figure out issues with ontologies
 		E term = findByCurie(inTerm.getCurie());
-		
-		HashSet<String> incomingParents = new HashSet<>();
-		HashSet<String> parentAdds = new HashSet<>();
-		HashSet<String> dbParents = new HashSet<>();
-		HashSet<String> parentDeletes = new HashSet<>();
 
-		if(term.getIsaParents() != null) {
-			for(OntologyTerm ot: term.getIsaParents()) {
-				dbParents.add(ot.getCurie());
-				parentDeletes.add(ot.getCurie());
-			}
-		}
-		
+		HashSet<OntologyTerm> parentSet = new HashSet<>();
 		if(inTerm.getIsaParents() != null) {
-			for(OntologyTerm ot: inTerm.getIsaParents()) {
-				incomingParents.add(ot.getCurie());
-				parentAdds.add(ot.getCurie());
-			}
-		}
-		
-		parentDeletes.removeAll(incomingParents);
-		parentAdds.removeAll(dbParents);
-		
-
-		if(term.getIsaParents() != null) {
-			term.getIsaParents().removeIf(f -> {
-				return parentDeletes.contains(f.getCurie());
+			inTerm.getIsaParents().forEach(o -> {
+				E parent = findByCurie(o.getCurie());
+				parentSet.add(parent);
 			});
-			if(inTerm.getIsaParents() != null) {
-				inTerm.getIsaParents().forEach(o -> {
-					if(parentAdds.contains(o.getCurie())) {
-						term.getIsaParents().add(o);
-					}
-				});
-			}
-		} else {
-			HashSet<OntologyTerm> set = new HashSet<>();
-			if(inTerm.getIsaParents() != null) {
-				inTerm.getIsaParents().forEach(o -> {
-					if(parentAdds.contains(o.getCurie())) {
-						set.add(o);
-					}
-				});
-				term.setIsaParents(set);
-			}
+			term.setIsaParents(parentSet);
 		}
 
-		
-		HashSet<String> incomingAncestors = new HashSet<>();
-		HashSet<String> ancestorAdds = new HashSet<>();
-		HashSet<String> dbAncestors = new HashSet<>();
-		HashSet<String> ancestorDeletes = new HashSet<>();
-
-		if(term.getIsaAncestors() != null) {
-			term.getIsaAncestors().forEach(o -> {
-				dbAncestors.add(o.getCurie());
-				ancestorDeletes.add(o.getCurie());
-			});
-		}
-		
+		HashSet<OntologyTerm> ancestorsSet = new HashSet<>();
 		if(inTerm.getIsaAncestors() != null) {
 			inTerm.getIsaAncestors().forEach(o -> {
-				incomingAncestors.add(o.getCurie());
-				ancestorAdds.add(o.getCurie());
+				E ancestor = findByCurie(o.getCurie());
+				ancestorsSet.add(ancestor);
 			});
+			term.setIsaAncestors(ancestorsSet);
 		}
-		
-		ancestorDeletes.removeAll(incomingAncestors);
-		ancestorAdds.removeAll(dbAncestors);
-		
-
-		if(term.getIsaAncestors() != null) {
-			term.getIsaAncestors().removeIf(f -> {
-				return ancestorDeletes.contains(f.getCurie());
-			});
-			if(inTerm.getIsaAncestors() != null) {
-				inTerm.getIsaAncestors().forEach(o -> {
-					if(ancestorAdds.contains(o.getCurie())) {
-						term.getIsaAncestors().add(o);
-					}
-				});
-			}
-		} else {
-			HashSet<OntologyTerm> set = new HashSet<>();
-			if(inTerm.getIsaAncestors() != null) {
-				inTerm.getIsaAncestors().forEach(o -> {
-					if(ancestorAdds.contains(o.getCurie())) {
-						set.add(o);
-					}
-				});
-				term.setIsaAncestors(set);
-			}
-		}
-		
-		term.setChildCount(term.getIsaChildren().size());
-		term.setDescendantCount(term.getIsaDescendants().size());
 		
 		return term;
 	}
+	
+	
+	@Transactional
+	public E processCounts(E inTerm) {
+		E term = findByCurie(inTerm.getCurie());
+		term.setChildCount(term.getIsaChildren().size());
+		term.setDescendantCount(term.getIsaDescendants().size());
+		return term;
+	}
+	
+	
 
 	private void handleDefinitionUrls(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentDefinitionUrls;
