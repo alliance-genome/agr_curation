@@ -265,13 +265,24 @@ public class OntologyExecutor {
 		}
 		ph.finishProcess();
 
-//		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
-//		ph.addDisplayHandler(loadProcessDisplayService);
-//		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-//		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-//			service.processUpdateRelationships(entry.getValue());
-//			ph1.progressProcess();
-//		}
-//		ph1.finishProcess();
+		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
+		ph.addDisplayHandler(loadProcessDisplayService);
+		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
+		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+			service.processUpdateRelationships(entry.getValue());
+			//Thread.sleep(5000);
+			ph1.progressProcess();
+		}
+		ph1.finishProcess();
+		
+		ProcessDisplayHelper ph2 = new ProcessDisplayHelper(10000);
+		ph.addDisplayHandler(loadProcessDisplayService);
+		ph2.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
+		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+			service.processCounts(entry.getValue());
+			//Thread.sleep(5000);
+			ph2.progressProcess();
+		}
+		ph2.finishProcess();
 	}
 }
