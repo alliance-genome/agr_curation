@@ -46,7 +46,7 @@ uirunlomu:
 run: docker-run
 
 apirun:
-	mvn compile quarkus:dev
+	mvn compile quarkus:dev -Djvm.args="-XX:ReservedCodeCacheSize=1g"
 
 docker:
 	docker build --build-arg OVERWRITE_VERSION=${GIT_VERSION} -t ${REG}/agr_curation:${RELEASE} .
