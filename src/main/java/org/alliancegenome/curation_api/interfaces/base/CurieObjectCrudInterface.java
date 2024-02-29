@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBodySchema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -37,44 +38,148 @@ public interface CurieObjectCrudInterface<E extends CurieObject> {
 	@POST
 	@Path("/")
 	@JsonView(View.FieldsOnly.class)
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectResponse<E> create(E entity);
 
 	@POST
 	@Path("/multiple")
 	@JsonView(View.FieldsOnly.class)
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectListResponse<E> create(List<E> entities);
 
 	@GET
 	@Path("/{curie}")
 	@JsonView(View.FieldsOnly.class)
 	@APIResponses(
-			@APIResponse(description = "Get the Entity by CURIE",
+		@APIResponse(
+			description = "Get the Entity by Curie",
 			responseCode = "200",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(implementation = Null.class)))
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
 			)
+		)
+	)
 	public ObjectResponse<E> get(@PathParam("curie") String curie);
 
 	@PUT
 	@Path("/")
 	@JsonView(View.FieldsOnly.class)
+	@RequestBody( 
+		description = "Put Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectResponse<E> update(E entity);
 
 	@DELETE
 	@Path("/{curie}")
 	@JsonView(View.FieldsOnly.class)
+	@APIResponses(
+		@APIResponse(
+			description = "Delete the Entity by Curie",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectResponse<E> delete(@PathParam("curie") String curie);
 
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.FieldsAndLists.class)
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public SearchResponse<E> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.FieldsAndLists.class })
+	@RequestBody( 
+		description = "Post Request",
+		content = @Content(
+			mediaType = "application/json",
+			schema = @Schema(implementation = Null.class
+			)
+		)
+	)
+	@APIResponses(
+		@APIResponse(
+			description = "Response Entity",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public SearchResponse<E> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@GET

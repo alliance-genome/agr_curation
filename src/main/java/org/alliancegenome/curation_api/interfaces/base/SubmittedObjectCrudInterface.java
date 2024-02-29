@@ -28,17 +28,31 @@ public interface SubmittedObjectCrudInterface<E extends SubmittedObject> extends
 	@Path("/{identifierString}")
 	@JsonView(View.FieldsOnly.class)
 	@APIResponses(
-			@APIResponse(description = "Get the Entity by Identifier String",
+		@APIResponse(
+			description = "Get the Entity by Identifier String",
 			responseCode = "200",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(implementation = Null.class)))
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
 			)
+		)
+	)
 	public ObjectResponse<E> get(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@DELETE
 	@Path("/{identifierString}")
 	@JsonView(View.FieldsOnly.class)
+	@APIResponses(
+		@APIResponse(
+			description = "Delete the Entity by Identifier String",
+			responseCode = "200",
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = Null.class)
+			)
+		)
+	)
 	public ObjectResponse<E> delete(@PathParam("identifierString") String identifierString);
 
 }
