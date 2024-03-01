@@ -8,17 +8,16 @@ import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBodySchema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.validation.constraints.Null;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.DefaultValue;
@@ -42,14 +41,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
-			schema = @Schema(implementation = Null.class
-			)
+			schema = @Schema(implementation = String.class)
 		)
 	)
 	@APIResponses(
 		@APIResponse(
 			description = "Response Entity",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -65,14 +62,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
-			schema = @Schema(implementation = Null.class
-			)
+			schema = @Schema(implementation = String.class)
 		)
 	)
 	@APIResponses(
 		@APIResponse(
 			description = "Response Entity",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -87,7 +82,6 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 	@APIResponses(
 		@APIResponse(
 			description = "Get Entity by Id",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -103,14 +97,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 		description = "Put Request",
 		content = @Content(
 			mediaType = "application/json",
-			schema = @Schema(implementation = Null.class
-			)
+			schema = @Schema(implementation = String.class)
 		)
 	)
 	@APIResponses(
 		@APIResponse(
 			description = "Response Entity",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -125,7 +117,6 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 	@APIResponses(
 		@APIResponse(
 			description = "Delete Entity by Id",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -142,14 +133,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
-			schema = @Schema(implementation = Null.class
-			)
+			schema = @Schema(implementation = String.class)
 		)
 	)
 	@APIResponses(
 		@APIResponse(
 			description = "Response Entity",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -166,14 +155,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
-			schema = @Schema(implementation = Null.class
-			)
+			schema = @Schema(implementation = String.class)
 		)
 	)
 	@APIResponses(
 		@APIResponse(
 			description = "Response Entity",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
@@ -190,14 +177,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
-			schema = @Schema(implementation = Null.class
-			)
+			schema = @Schema(implementation = String.class)
 		)
 	)
 	@APIResponses(
 		@APIResponse(
 			description = "Response Entity",
-			responseCode = "200",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
