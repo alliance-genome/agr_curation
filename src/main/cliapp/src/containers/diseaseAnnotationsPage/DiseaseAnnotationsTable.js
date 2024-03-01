@@ -12,7 +12,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
-import { ConditionRelationsDialog } from './ConditionRelationsDialog';
+import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
 
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
 import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 

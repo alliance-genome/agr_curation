@@ -91,7 +91,7 @@ public class BulkLoadJobExecutor {
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
 			moleculeExecutor.runLoad(bulkLoadFile);
-		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.PHENOTYPE_ANNOTATION) {
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.PHENOTYPE) {
 			phenotypeAnnotationExecutor.runLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ORTHOLOGY) {
 			orthologyExecutor.runLoad(bulkLoadFile);

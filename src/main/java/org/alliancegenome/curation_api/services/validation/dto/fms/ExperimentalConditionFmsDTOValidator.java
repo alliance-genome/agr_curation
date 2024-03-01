@@ -14,14 +14,12 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.ExperimentalConditio
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseFmsDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -29,7 +27,7 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 
-public class ExperimentalConditionFmsDTOValidator extends BaseFmsDTOValidator {
+public class ExperimentalConditionFmsDTOValidator {
 	
 	@Inject
 	ExperimentalConditionDAO experimentalConditionDAO;

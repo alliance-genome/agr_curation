@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.interfaces.crud.PhenotypeAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.PhenotypeAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
@@ -17,9 +18,10 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFms
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseFmsDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +30,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class PhenotypeAnnotationFmsDTOValidator extends BaseFmsDTOValidator {
+public class PhenotypeAnnotationFmsDTOValidator {
 
 	@Inject
 	ReferenceService referenceService;
@@ -38,6 +40,10 @@ public class PhenotypeAnnotationFmsDTOValidator extends BaseFmsDTOValidator {
 	ConditionRelationFmsDTOValidator conditionRelationFmsDtoValidator;
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	DataProviderService dataProviderService;
+	@Inject
+	VocabularyTermService vocabularyTermService;
 	
 	public <E extends PhenotypeAnnotation> ObjectResponse<E> validatePhenotypeAnnotation(E annotation, PhenotypeFmsDTO dto, BackendBulkDataProvider beDataProvider) {
 
@@ -78,8 +84,8 @@ public class PhenotypeAnnotationFmsDTOValidator extends BaseFmsDTOValidator {
 			annotation.setConditionRelations(null);
 		}
 		
-		DataProvider dataProvider = constructDataProvider(beDataProvider);
-		annotation.setDataProvider(dataProvider);
+		annotation.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
+		annotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.PHENOTYPE_RELATION_VOCABULARY, "has_phenotype").getEntity());
 		
 		OffsetDateTime creationDate = null;
 		if (StringUtils.isNotBlank(dto.getDateAssigned())) {

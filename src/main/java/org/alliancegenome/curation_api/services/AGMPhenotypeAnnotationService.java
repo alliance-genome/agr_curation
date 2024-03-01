@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.AGMPhenotypeAnnotationFmsDTOValidator;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -24,8 +25,6 @@ public class AGMPhenotypeAnnotationService extends BaseEntityCrudService<AGMPhen
 
 	@Inject
 	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
-	//@Inject
-	//AGMPhenotypeAnnotationValidator agmPhenotypeValidator;
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
 	@Inject
@@ -62,23 +61,18 @@ public class AGMPhenotypeAnnotationService extends BaseEntityCrudService<AGMPhen
 	@Override
 	@Transactional
 	public ObjectResponse<AGMPhenotypeAnnotation> update(AGMPhenotypeAnnotation uiEntity) {
-		//AGMPhenotypeAnnotation dbEntity = agmPhenotypeValidator.validateAnnotationUpdate(uiEntity);
-		//return new ObjectResponse<>(agmPhenotypeAnnotationDAO.persist(dbEntity));
 		return null;
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<AGMPhenotypeAnnotation> create(AGMPhenotypeAnnotation uiEntity) {
-		//AGMPhenotypeAnnotation dbEntity = agmPhenotypeValidator.validateAnnotationCreate(uiEntity);
-		//return new ObjectResponse<>(agmPhenotypeAnnotationDAO.persist(dbEntity));
 		return null;
 	}
 
 	@Transactional
 	public AGMPhenotypeAnnotation upsertPrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
-
 		return agmPhenotypeAnnotationDAO.persist(annotation);
 	}
 	

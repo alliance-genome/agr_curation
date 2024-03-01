@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -35,7 +36,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 		try {
 			
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataType());
+			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 			
 			PhenotypeIngestFmsDTO phenotypeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), PhenotypeIngestFmsDTO.class);
 			bulkLoadFile.setRecordCount(phenotypeData.getData().size());
@@ -55,7 +56,6 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			runLoad(history, phenotypeData.getData(), annotationIdsLoaded, dataProvider);
 			
 			runCleanup(phenotypeAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "phenotype annotation", bulkLoadFile.getMd5Sum());
-
 
 			history.finishLoad();
 			
@@ -118,7 +118,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 		for (PhenotypeFmsDTO dto : annotations) {
 			if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIds()))
 				continue;
-			
+
 			try {
 				Long primaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(dto, dataProvider);
 				if (primaryAnnotationId != null) {

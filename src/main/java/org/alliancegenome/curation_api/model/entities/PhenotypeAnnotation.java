@@ -25,6 +25,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -49,14 +50,14 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private String phenotypeAnnotationObject;
 
-	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
-			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
+	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name",
+			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
+	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
 	@JoinTable(indexes = {
-		@Index(name = "phenotypeannotation_phenotypeterm_phenotypeannotation_index", columnList = "phenotypeannotation_id"),
-		@Index(name = "phenotypeannotation_phenotypeterm_phenotypeterms_index", columnList = "phenotypeterms_id")
+		@Index(name = "phenotypeannotation_ontologyterm_phenotypeannotation_index", columnList = "phenotypeannotation_id"),
+		@Index(name = "phenotypeannotation_ontologyterm_phenotypeterms_index", columnList = "phenotypeterms_id")
 	})
 	private List<PhenotypeTerm> phenotypeTerms;
 

@@ -174,7 +174,6 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	}
 	
 	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		
 		if (StringUtils.isBlank(dto.getObjectId()))
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.REQUIRED_MESSAGE);
 		GenomicEntity phenotypeAnnotationSubject = genomicEntityService.findByIdentifierString(dto.getObjectId());

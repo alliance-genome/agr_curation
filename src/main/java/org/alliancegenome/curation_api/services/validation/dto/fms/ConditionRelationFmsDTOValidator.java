@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.validation.dto.base.BaseFmsDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -25,7 +24,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ConditionRelationFmsDTOValidator extends BaseFmsDTOValidator {
+public class ConditionRelationFmsDTOValidator {
 	
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
