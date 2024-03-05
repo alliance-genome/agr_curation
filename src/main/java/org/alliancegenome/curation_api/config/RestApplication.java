@@ -15,9 +15,12 @@ import jakarta.ws.rs.core.Application;
 @ApplicationPath("/api")
 @OpenAPIDefinition(
 		info = @Info(
-				description = "This is the Alliance Curation Java API", 
-				title = "Alliance of Genome Resources Curation API", 
-				version = "1.0 Alpha"), 
+				description = " <h3> This is the Alliance Curation Java API </h3>" + //
+				"<h1> !!!  Please note: Some Swagger widgets may crash this page when expanded !!! </h1>" + //
+				"<h1>For flat file of API documentation click on the link below <a href=\"/openapi\"><h1>OpenAPI definition download</h1></a></h1>",
+				title = "Alliance of Genome Resources Curation API ",
+				version = "1.0 Alpha"
+			), 
 		security = { @SecurityRequirement(name = "api_token") },
 		components = @Components(securitySchemes = {
 				@SecurityScheme(
