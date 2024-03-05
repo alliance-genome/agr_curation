@@ -31,6 +31,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.associations.AssociationIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
@@ -43,6 +44,7 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationValidator;
+import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -605,6 +607,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
+		Boolean hasIsAlleleOfRelation = false;
+		Set<String> validatedAssociationIdentities = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(uiAssociations)) {
 			for (int ix = 0; ix < uiAssociations.size(); ix++) {
 				AlleleGeneAssociation ga = uiAssociations.get(ix);
@@ -614,7 +618,26 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					response.addErrorMessages(field, ix, gaResponse.getErrorMessages());
 				} else {
 					ga = gaResponse.getEntity();
+					if (ga.getRelation().getName().equals(VocabularyConstants.ALLELE_OF_VOCABULARY_TERM)) {
+						if (hasIsAlleleOfRelation) {
+							Map<String, String> duplicateRelationError = new HashMap<>();
+							duplicateRelationError.put("relation", ValidationConstants.DUPLICATE_RELATION_PREFIX + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
+							response.addErrorMessages(field, ix, duplicateRelationError);
+							allValid = false;
+							continue;
+						}
+						hasIsAlleleOfRelation = true;
+					}
 					ga.setAlleleAssociationSubject(dbEntity);
+					String associationIdentity = AssociationIdentityHelper.alleleGeneAssociationIdentity(ga);
+					if (validatedAssociationIdentities.contains(associationIdentity)) {
+						Map<String, String> duplicateError = new HashMap<>();
+						duplicateError.put("relation", ValidationConstants.DUPLICATE_MESSAGE + " (" + associationIdentity + ")");
+						response.addErrorMessages(field, ix, duplicateError);
+						allValid = false;
+						continue;
+					}
+					validatedAssociationIdentities.add(associationIdentity);
 					validatedGeneAssociations.add(ga);
 				}
 			}

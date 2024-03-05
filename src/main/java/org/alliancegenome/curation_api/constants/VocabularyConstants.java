@@ -54,4 +54,5 @@ public final class VocabularyConstants {
 	
 	public static final String VARIANT_STATUS_VOCABULARY = "variant_status";
 
+	public static final String ALLELE_OF_VOCABULARY_TERM = "is_allele_of";
 }
