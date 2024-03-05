@@ -46,6 +46,7 @@ CREATE TABLE agmphenotypeannotation_gene (
 ALTER TABLE agmphenotypeannotation_gene ADD CONSTRAINT agmphenotypeannotation_gene_agmphenotypeannotation_id_fk FOREIGN KEY (agmphenotypeannotation_id) REFERENCES agmphenotypeannotation (id);
 ALTER TABLE agmphenotypeannotation_gene ADD CONSTRAINT agmphenotypeannotation_gene_assertedgenes_id_fk FOREIGN KEY (assertedgenes_id) REFERENCES gene (id);
 CREATE INDEX agmphenotypeannotation_gene_agmphenotypeannotation_index ON agmphenotypeannotation_gene USING btree (agmphenotypeannotation_id);
+CREATE INDEX agmphenotypeannotation_gene_assertedgenes_index ON agmphenotypeannotation_gene USING btree (assertedgenes_id);
 
 CREATE TABLE allelephenotypeannotation (
 	id bigint PRIMARY KEY,
@@ -67,6 +68,7 @@ CREATE TABLE allelephenotypeannotation_gene (
 ALTER TABLE allelephenotypeannotation_gene ADD CONSTRAINT allelephenotypeannotation_gene_gene_allelephenotypeannotation_id_fk FOREIGN KEY (allelephenotypeannotation_id) REFERENCES allelephenotypeannotation (id);
 ALTER TABLE allelephenotypeannotation_gene ADD CONSTRAINT allelephenotypeannotation_gene_assertedgenes_id_fk FOREIGN KEY (assertedgenes_id) REFERENCES gene (id);
 CREATE INDEX allelephenotypeannotation_gene_allelephenotypeannotation_index ON allelephenotypeannotation_gene USING btree (allelephenotypeannotation_id);
+CREATE INDEX allelephenotypeannotation_gene_assertedgenes_index ON allelephenotypeannotation_gene USING btree (assertedgenes_id);
 
 CREATE TABLE genephenotypeannotation (
 	id bigint PRIMARY KEY,
@@ -107,7 +109,7 @@ INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 	SELECT nextval('bulkload_seq'), 'PHENOTYPE', 'ZFIN Phenotype Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Phenotype Bulk Loads';
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
-	SELECT id, '0 0 22 ? * SUN-THU', true FROM bulkload WHERE backendbulkloadtype = 'PHENOTYPE';
+	SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'PHENOTYPE';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'PHENOTYPE', 'FB' FROM bulkload WHERE name = 'FB Phenotype Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)

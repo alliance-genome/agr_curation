@@ -91,7 +91,10 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = @Index(name = "agmphenotypeannotation_gene_agmphenotypeannotation_index", columnList = "agmphenotypeannotation_id"))
+	@JoinTable(indexes = {
+		@Index(name = "agmphenotypeannotation_gene_agmphenotypeannotation_index", columnList = "agmphenotypeannotation_id"),
+		@Index(name = "agmphenotypeannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
+	})
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
 	private List<Gene> assertedGenes;
 
