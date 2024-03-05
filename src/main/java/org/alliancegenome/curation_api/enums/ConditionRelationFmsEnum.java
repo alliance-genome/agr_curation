@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.enums;
 
-public enum FmsConditionRelation {
+public enum ConditionRelationFmsEnum {
 	ameliorates("ameliorated_by"),
 	exacerbates("exacerbated_by"),
 	has_condition("has_condition"),
@@ -8,13 +8,13 @@ public enum FmsConditionRelation {
 
 	public String agrRelation;
 	
-	private FmsConditionRelation(String agrRelation) {
+	private ConditionRelationFmsEnum(String agrRelation) {
 		this.agrRelation = agrRelation;
 	}
 
-	public static FmsConditionRelation findByName(String name) {
+	public static ConditionRelationFmsEnum findByName(String name) {
 		
-		for (FmsConditionRelation relation : values()) {
+		for (ConditionRelationFmsEnum relation : values()) {
 			if (relation.name().equals(name))
 				return relation;
 		}

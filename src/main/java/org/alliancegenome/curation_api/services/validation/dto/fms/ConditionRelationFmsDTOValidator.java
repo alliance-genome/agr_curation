@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.enums.FmsConditionRelation;
+import org.alliancegenome.curation_api.enums.ConditionRelationFmsEnum;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -39,12 +39,12 @@ public class ConditionRelationFmsDTOValidator {
 		ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<>();
 		
 		ConditionRelation relation;
-		FmsConditionRelation fmsConditionRelation = null;
+		ConditionRelationFmsEnum fmsConditionRelation = null;
 		
 		if (StringUtils.isBlank(dto.getConditionRelationType())) {
 			crResponse.addErrorMessage("conditionRelationType", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			fmsConditionRelation = FmsConditionRelation.findByName(dto.getConditionRelationType());
+			fmsConditionRelation = ConditionRelationFmsEnum.findByName(dto.getConditionRelationType());
 			if (fmsConditionRelation == null)
 				crResponse.addErrorMessage("conditionRelationType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionRelationType() + ")");
 		}

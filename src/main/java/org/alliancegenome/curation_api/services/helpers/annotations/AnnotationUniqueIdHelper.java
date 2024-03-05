@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.enums.FmsConditionRelation;
+import org.alliancegenome.curation_api.enums.ConditionRelationFmsEnum;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
@@ -130,9 +130,9 @@ public abstract class AnnotationUniqueIdHelper {
 			List<String> crIds = new ArrayList<>();
 			for (ConditionRelationFmsDTO crFmsDto : annotationFmsDTO.getConditionRelations()) {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
-				FmsConditionRelation fmsCr = null;
+				ConditionRelationFmsEnum fmsCr = null;
 				if (StringUtils.isNotBlank(crFmsDto.getConditionRelationType()))
-					fmsCr = FmsConditionRelation.findByName(crFmsDto.getConditionRelationType());
+					fmsCr = ConditionRelationFmsEnum.findByName(crFmsDto.getConditionRelationType());
 				if (fmsCr != null)
 					gen.add(fmsCr.agrRelation);
 				if (CollectionUtils.isNotEmpty(crFmsDto.getConditions()))
