@@ -127,7 +127,9 @@ public class AlleleITCase extends BaseITCase {
 	private DataProvider obsoleteDataProvider;
 	private Organization nonPersistedOrganization;
 	private Gene gene;
+	private Gene gene2;
 	private VocabularyTerm geneAssociationRelation;
+	private VocabularyTerm geneAssociationRelation2;
 	
 	
 	private void loadRequiredEntities() {
@@ -203,8 +205,10 @@ public class AlleleITCase extends BaseITCase {
 		nonPersistedOrganization.setAbbreviation("INV");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", false, symbolNameType);
+		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", false, symbolNameType);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
+		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");
 		
 	}
 	
@@ -1519,9 +1523,65 @@ public class AlleleITCase extends BaseITCase {
 			body("errorMessages", is(aMapWithSize(1))).
 			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
 	}
-
+	
 	@Test
 	@Order(25)
+	public void updateAlleleDetailsWithMultipleIsAlleleOfAssociations() {
+		Allele allele = getAllele(ALLELE);
+		
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(gene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		
+		AlleleGeneAssociation geneAssociation2 = new AlleleGeneAssociation();
+		geneAssociation2.setAlleleGeneAssociationObject(gene2);
+		geneAssociation2.setRelation(geneAssociationRelation);
+		
+		allele.setAlleleGeneAssociations(List.of(geneAssociation, geneAssociation2));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele/updateDetail").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_RELATION_PREFIX + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM));
+	}
+	
+	@Test
+	@Order(26)
+	public void updateAlleleDetailsWithDuplicateAssociation() {
+		Allele allele = getAllele(ALLELE);
+		
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(gene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		
+		AlleleGeneAssociation geneAssociation2 = new AlleleGeneAssociation();
+		geneAssociation2.setAlleleGeneAssociationObject(gene2);
+		geneAssociation2.setRelation(geneAssociationRelation2);
+		
+		AlleleGeneAssociation geneAssociation3 = new AlleleGeneAssociation();
+		geneAssociation3.setAlleleGeneAssociationObject(gene2);
+		geneAssociation3.setRelation(geneAssociationRelation2);
+		
+		allele.setAlleleGeneAssociations(List.of(geneAssociation, geneAssociation2, geneAssociation3));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele/updateDetail").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_MESSAGE + " (Allele:0001|duplication|TEST:AssociatedGene2)"));
+	}
+
+	@Test
+	@Order(27)
 	public void deleteAllele() {
 
 		RestAssured.given().
