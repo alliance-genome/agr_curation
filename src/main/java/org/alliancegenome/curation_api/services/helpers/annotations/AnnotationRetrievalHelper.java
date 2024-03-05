@@ -1,12 +1,12 @@
-package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
+package org.alliancegenome.curation_api.services.helpers.annotations;
 
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 
-public abstract class DiseaseAnnotationRetrievalHelper {
+public abstract class AnnotationRetrievalHelper {
 
-	public static <E extends DiseaseAnnotation> E getCurrentDiseaseAnnotation(E annotation, SearchResponse<E> annotationList) {
+	public static <E extends Annotation> E getCurrentAnnotation(E annotation, SearchResponse<E> annotationList) {
 		if (annotationList == null || CollectionUtils.isEmpty(annotationList.getResults()))
 			return annotation;
 		

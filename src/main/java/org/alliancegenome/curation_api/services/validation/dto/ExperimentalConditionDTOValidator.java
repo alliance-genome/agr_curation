@@ -13,9 +13,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.PersonService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.annotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
@@ -47,13 +46,11 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 	ExperimentalConditionOntologyTermService experimentalConditionOntologyTermService;
 	@Inject
 	ExperimentalConditionSummary experimentalConditionSummary;
-	@Inject
-	PersonService personService;
 
 	public ObjectResponse<ExperimentalCondition> validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
 		ObjectResponse<ExperimentalCondition> ecResponse = new ObjectResponse<ExperimentalCondition>();
 
-		String uniqueId = DiseaseAnnotationUniqueIdHelper.getExperimentalConditionUniqueId(dto);
+		String uniqueId = AnnotationUniqueIdHelper.getExperimentalConditionUniqueId(dto);
 
 		ExperimentalCondition experimentalCondition;
 		SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);

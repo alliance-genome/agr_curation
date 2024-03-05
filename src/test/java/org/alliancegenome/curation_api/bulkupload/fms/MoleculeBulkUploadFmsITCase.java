@@ -25,7 +25,7 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("06 - Molecule bulk upload - FMS")
+@DisplayName("501 - Molecule bulk upload - FMS")
 @Order(501)
 public class MoleculeBulkUploadFmsITCase {
 
@@ -40,7 +40,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(1)
 	public void moleculeBulkUploadCheckFields() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/01_all_fields.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/01_all_fields.json"));
 
 		// upload file
 		RestAssured.given().
@@ -79,7 +79,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(2)
 	public void moleculeBulkUploadNoId() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/02_no_id.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/02_no_id.json"));
 
 		// upload file
 		RestAssured.given().
@@ -103,7 +103,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(3)
 	public void moleculeBulkUploadNoName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/03_no_name.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/03_no_name.json"));
 
 		// upload file
 		RestAssured.given().
@@ -127,7 +127,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(4)
 	public void moleculeBulkUploadNoInchi() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/04_no_inchi.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/04_no_inchi.json"));
 
 		// upload file
 		RestAssured.given().
@@ -152,7 +152,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(5)
 	public void moleculeBulkUploadNoInchiKey() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/05_no_inchikey.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/05_no_inchikey.json"));
 
 		// upload file
 		RestAssured.given().
@@ -177,7 +177,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(6)
 	public void moleculeBulkUploadNoIupac() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/06_no_iupac.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/06_no_iupac.json"));
 
 		// upload file
 		RestAssured.given().
@@ -202,7 +202,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(7)
 	public void moleculeBulkUploadNoFormula() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/07_no_formula.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/07_no_formula.json"));
 
 		// upload file
 		RestAssured.given().
@@ -227,7 +227,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(8)
 	public void moleculeBulkUploadNoSmiles() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/08_no_smiles.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/08_no_smiles.json"));
 
 		// upload file
 		RestAssured.given().
@@ -252,7 +252,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(9)
 	public void moleculeBulkUploadNoSynonyms() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/09_no_synonyms.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/09_no_synonyms.json"));
 
 		// upload file
 		RestAssured.given().
@@ -277,7 +277,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(10)
 	public void moleculeBulkUploadNoCrossReferences() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/10_no_cross_references.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/10_no_cross_references.json"));
 
 		// upload file
 		RestAssured.given().
@@ -302,7 +302,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(11)
 	public void moleculeBulkUploadEmptyInchi() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/11_empty_inchi.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/11_empty_inchi.json"));
 
 		// upload file
 		RestAssured.given().
@@ -327,7 +327,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(12)
 	public void moleculeBulkUploadEmptyId() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/12_empty_id.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/12_empty_id.json"));
 
 		// upload file
 		RestAssured.given().
@@ -352,7 +352,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(13)
 	public void moleculeBulkUploadEmptyIupac() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/13_empty_iupac.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/13_empty_iupac.json"));
 
 		// upload file
 		RestAssured.given().
@@ -377,7 +377,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(14)
 	public void moleculeBulkUploadEmptyInchiKey() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/14_empty_inchikey.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/14_empty_inchikey.json"));
 
 		// upload file
 		RestAssured.given().
@@ -402,7 +402,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(15)
 	public void moleculeBulkUploadEmptyName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/15_empty_name.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/15_empty_name.json"));
 
 		// upload file
 		RestAssured.given().
@@ -427,7 +427,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(16)
 	public void moleculeBulkUploadEmptySmiles() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/16_empty_smiles.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/16_empty_smiles.json"));
 
 		// upload file
 		RestAssured.given().
@@ -452,7 +452,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(17)
 	public void moleculeBulkUploadEmptyFormula() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/17_empty_formula.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/17_empty_formula.json"));
 
 		// upload file
 		RestAssured.given().
@@ -477,7 +477,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(18)
 	public void moleculeBulkUploadEmptyCrossReferences() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/18_empty_cross_references.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/18_empty_cross_references.json"));
 
 		// upload file
 		RestAssured.given().
@@ -502,7 +502,7 @@ public class MoleculeBulkUploadFmsITCase {
 	@Test
 	@Order(19)
 	public void moleculeBulkUploadEmptySynonyms() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/19_empty_synonyms.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_molecule/19_empty_synonyms.json"));
 
 		// upload file
 		RestAssured.given().

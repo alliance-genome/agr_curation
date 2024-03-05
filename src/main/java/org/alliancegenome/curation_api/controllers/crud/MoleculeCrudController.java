@@ -30,7 +30,6 @@ public class MoleculeCrudController extends CurieObjectCrudController<MoleculeSe
 		setService(moleculeService);
 	}
 
-	@Override
 	public APIResponse updateMolecules(MoleculeIngestFmsDTO moleculeData) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
 		moleculeExecutor.runLoad(history, moleculeData);

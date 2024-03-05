@@ -18,8 +18,8 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdUpdateHelper;
+import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
+import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationUniqueIdUpdateHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +32,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
+public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
 	@Inject
 	DiseaseAnnotationDAO diseaseAnnotationDAO;
@@ -77,6 +77,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		return ret;
 	}
 
+	@Override
 	@Transactional
 	public DiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecateAnnotation) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);

@@ -61,7 +61,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		
 		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 		
-		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
+		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene disease annotation", bulkLoadFile.getMd5Sum());
 
 		history.finishLoad();
 		

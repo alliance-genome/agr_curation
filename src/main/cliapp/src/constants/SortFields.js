@@ -3,6 +3,8 @@ export const SORT_FIELDS = Object.freeze([
   "modEntityId",
   "modInternalId",
   "diseaseAnnotationSubject.symbol",
+  "phenotypeAnnotationSubject.symbol",
+  "phenotypeAnnotationObject",
   "relation.name",
   "negated",
   "diseaseAnnotationObject.name",

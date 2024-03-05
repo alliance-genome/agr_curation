@@ -5,18 +5,18 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
+import { EllipsisTableCell } from './EllipsisTableCell';
+import { ListTableCell } from './ListTableCell';
 import { Toast } from 'primereact/toast';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ValidationService } from '../../service/ValidationService';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
-import { SearchService } from '../../service/SearchService';
-import {autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange} from "../../utils/utils";
-import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { useControlledVocabularyService } from '../service/useControlledVocabularyService';
+import { ValidationService } from '../service/ValidationService';
+import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
+import { TrueFalseDropdown } from './TrueFalseDropDownSelector';
+import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
+import { ExConAutocompleteTemplate } from './Autocomplete/ExConAutocompleteTemplate';
+import { SearchService } from '../service/SearchService';
+import {autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange} from "../utils/utils";
+import {AutocompleteMultiEditor} from "./Autocomplete/AutocompleteMultiEditor";
 
 export const ConditionRelationsDialog = ({
 		originalConditionRelationsData, setOriginalConditionRelationsData,

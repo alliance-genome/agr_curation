@@ -10,6 +10,7 @@ import lombok.EqualsAndHashCode;
 public class PublicationFmsDTO extends BaseDTO {
 
 	private String publicationId;
+	
 	private CrossReferenceFmsDTO crossReference;
 
 }

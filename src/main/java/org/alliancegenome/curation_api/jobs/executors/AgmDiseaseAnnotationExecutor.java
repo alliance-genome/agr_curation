@@ -61,7 +61,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		
 		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 		
-		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
+		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation", bulkLoadFile.getMd5Sum());
 
 		history.finishLoad();
 		

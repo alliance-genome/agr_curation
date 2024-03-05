@@ -54,6 +54,15 @@ public class View {
 
 	public static class DiseaseAnnotationCreate extends DiseaseAnnotation {
 	}
+	
+	public static class PhenotypeAnnotationView extends FieldsOnly {
+	}
+
+	public static class PhenotypeAnnotationUpdate extends PhenotypeAnnotationView {
+	}
+
+	public static class PhenotypeAnnotationCreate extends PhenotypeAnnotationView {
+	}
 
 	public static class AlleleView extends FieldsOnly {
 	}

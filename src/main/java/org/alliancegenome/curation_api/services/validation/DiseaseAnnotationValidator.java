@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -286,7 +286,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		if (dbEntity.getDataProvider() == null)
 			return null;
 		
-		String uniqueId = DiseaseAnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(uiEntity);
+		String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(uiEntity);
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
 			SearchResponse<DiseaseAnnotation> response = diseaseAnnotationDAO.findByField("uniqueId", uniqueId);
