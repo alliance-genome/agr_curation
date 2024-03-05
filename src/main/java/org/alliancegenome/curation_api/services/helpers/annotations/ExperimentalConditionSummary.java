@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
+package org.alliancegenome.curation_api.services.helpers.annotations;
 
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;

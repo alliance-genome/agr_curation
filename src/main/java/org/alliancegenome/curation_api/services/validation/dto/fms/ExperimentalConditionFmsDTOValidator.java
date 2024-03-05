@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ExperimentalConditionFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.AnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
@@ -95,7 +95,7 @@ public class ExperimentalConditionFmsDTOValidator {
 		if (StringUtils.isNotBlank(dto.getNcbiTaxonId())) {
 			conditionTaxon = ncbiTaxonTermService.getTaxonFromDB(dto.getNcbiTaxonId());
 			if (conditionTaxon == null)
-				ecResponse.addErrorMessage("NCBITaxonID", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNcbiTaxonId() + ")");
+				ecResponse.addErrorMessage("NCBITaxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNcbiTaxonId() + ")");
 		}
 		experimentalCondition.setConditionTaxon(conditionTaxon);
 
@@ -111,11 +111,6 @@ public class ExperimentalConditionFmsDTOValidator {
 		if (StringUtils.isNotBlank(dto.getConditionQuantity()))
 			conditionQuantity = dto.getConditionQuantity();
 		experimentalCondition.setConditionQuantity(conditionQuantity);
-
-		String conditionFreeText = null;
-		if (StringUtils.isNotBlank(dto.getConditionStatement()))
-			conditionFreeText = dto.getConditionStatement();
-		experimentalCondition.setConditionFreeText(conditionFreeText);
 
 		if (StringUtils.isNotBlank(dto.getConditionStatement())) {
 			experimentalCondition.setConditionSummary(dto.getConditionStatement());

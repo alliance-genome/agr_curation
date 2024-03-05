@@ -17,7 +17,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.AnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -83,7 +83,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 			throw new ObjectValidationException(dto, "Primary annotation not found for " + primaryAnnotationSubject.getIdentifier());
 		AGMPhenotypeAnnotation primaryAnnotation = annotationSearch.getSingleResult();
 		if (!idsAdded.contains(primaryAnnotation.getId()))
-			throw new ObjectValidationException(dto, "Primary annotation not included in submitted file (" + primaryAnnotationUniqueId + ")");
+			throw new ObjectValidationException(dto, "Primary annotation not included in submission (" + primaryAnnotationUniqueId + ")");
 		
 		if (StringUtils.isBlank(dto.getObjectId())) {
 			apaResponse.addErrorMessage("objectId", ValidationConstants.REQUIRED_MESSAGE);

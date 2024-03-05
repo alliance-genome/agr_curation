@@ -23,7 +23,7 @@ public class ExperimentalConditionFmsDTO extends BaseDTO {
 	
 	private String geneOntologyId;
 	
-	@JsonProperty("NCBITaxonID")
+	@JsonProperty("NCBITaxonId")
 	private String ncbiTaxonId;
 	
 	private String chemicalOntologyId;

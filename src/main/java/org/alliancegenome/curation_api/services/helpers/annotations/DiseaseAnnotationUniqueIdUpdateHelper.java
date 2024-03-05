@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
+package org.alliancegenome.curation_api.services.helpers.annotations;
 
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;

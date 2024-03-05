@@ -54,13 +54,16 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		}
 		annotation.setPhenotypeAnnotationObject(dto.getPhenotypeStatement());	
 		
-		if (CollectionUtils.isNotEmpty(dto.getPhenotypeTermIdentifiers())) {
+		//TODO: remove ZFIN condition once ZFIN have mapped terms to PhenotypeTerm terms in FMS submissions
+		if (CollectionUtils.isNotEmpty(dto.getPhenotypeTermIdentifiers()) && !StringUtils.equals(beDataProvider.sourceOrganization, "ZFIN")) {
 			List<PhenotypeTerm> phenotypeTerms = new ArrayList<>();
 			for (PhenotypeTermIdentifierFmsDTO phenotypeTermIdentifier : dto.getPhenotypeTermIdentifiers()) {
 				if (StringUtils.isNotBlank(phenotypeTermIdentifier.getTermId())) {
 					PhenotypeTerm phenotypeTerm = phenotypeTermService.findByCurieOrSecondaryId(phenotypeTermIdentifier.getTermId());
 					if (phenotypeTerm == null) {
 						paResponse.addErrorMessage("phenotypeTermIdentifiers", ValidationConstants.INVALID_MESSAGE + " (" + phenotypeTermIdentifier.getTermId() + ")");
+					} else {
+						phenotypeTerms.add(phenotypeTerm);
 					}
 				}
 			}
@@ -94,6 +97,8 @@ public class PhenotypeAnnotationFmsDTOValidator {
 			} catch (DateTimeParseException e) {
 				paResponse.addErrorMessage("dateAssigned", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDateAssigned() + ")");
 			}
+		} else {
+			paResponse.addErrorMessage("dateAssigned", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		annotation.setDateCreated(creationDate);
 		

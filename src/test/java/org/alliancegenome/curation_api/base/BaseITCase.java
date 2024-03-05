@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -107,6 +108,10 @@ public class BaseITCase {
 	}
 	
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath) throws Exception {
+		checkSuccessfulBulkLoad(endpoint, filePath, 1);
+	}
+	
+	public void checkSuccessfulBulkLoad(String endpoint, String filePath, int nrRecords) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 		
 		RestAssured.given().
@@ -116,9 +121,9 @@ public class BaseITCase {
 			post(endpoint).
 			then().
 			statusCode(200).
-			body("history.totalRecords", is(1)).
+			body("history.totalRecords", is(nrRecords)).
 			body("history.failedRecords", is(0)).
-			body("history.completedRecords", is(1));
+			body("history.completedRecords", is(nrRecords));
 	}
 	
 	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String taxonCurie, String subtypeName, String name, Boolean obsolete) {
@@ -968,6 +973,11 @@ public class BaseITCase {
 					extract().body().as(getSearchResponseTypeRefOrganization());
 		
 		return response.getSingleResult();
+	}
+
+	protected TypeRef<SearchResponse<AGMPhenotypeAnnotation>> getSearchResponseTypeRefAGMPhenotypeAnnotation() {
+		return new TypeRef<SearchResponse <AGMPhenotypeAnnotation>>() {
+		};
 	}
 
 	private TypeRef<SearchResponse<Organization>> getSearchResponseTypeRefOrganization() {

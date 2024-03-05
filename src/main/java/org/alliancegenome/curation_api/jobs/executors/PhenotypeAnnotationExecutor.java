@@ -95,7 +95,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 		for (PhenotypeFmsDTO dto : annotations) {
 			if (CollectionUtils.isEmpty(dto.getPrimaryGeneticEntityIds()))
 				continue;
-			
+
 			try {
 				phenotypeAnnotationService.addInferredOrAssertedEntities(dto, idsAdded, dataProvider);
 				history.incrementCompleted();

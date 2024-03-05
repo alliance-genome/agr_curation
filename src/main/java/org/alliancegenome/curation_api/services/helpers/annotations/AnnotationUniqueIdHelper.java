@@ -1,5 +1,6 @@
-package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
+package org.alliancegenome.curation_api.services.helpers.annotations;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -126,15 +127,21 @@ public abstract class AnnotationUniqueIdHelper {
 			uniqueId.addList(annotationFmsDTO.getPhenotypeTermIdentifiers().stream().map(PhenotypeTermIdentifierFmsDTO::getTermId).collect(Collectors.toList()));
 		uniqueId.add(refCurie);
 		if (CollectionUtils.isNotEmpty(annotationFmsDTO.getConditionRelations())) {
-			uniqueId.addList(annotationFmsDTO.getConditionRelations().stream().map(conditionFmsDTO -> {
+			List<String> crIds = new ArrayList<>();
+			for (ConditionRelationFmsDTO crFmsDto : annotationFmsDTO.getConditionRelations()) {
 				UniqueIdGeneratorHelper gen = new UniqueIdGeneratorHelper();
-				gen.add(FmsConditionRelation.valueOf(conditionFmsDTO.getConditionRelationType()).agrRelation);
-				if (CollectionUtils.isNotEmpty(conditionFmsDTO.getConditions()))
-					gen.add(conditionFmsDTO.getConditions().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
-				return gen.getUniqueId();
-			}).collect(Collectors.toList()));
+				FmsConditionRelation fmsCr = null;
+				if (StringUtils.isNotBlank(crFmsDto.getConditionRelationType()))
+					fmsCr = FmsConditionRelation.findByName(crFmsDto.getConditionRelationType());
+				if (fmsCr != null)
+					gen.add(fmsCr.agrRelation);
+				if (CollectionUtils.isNotEmpty(crFmsDto.getConditions()))
+					gen.add(crFmsDto.getConditions().stream().map(AnnotationUniqueIdHelper::getExperimentalConditionUniqueId).collect(Collectors.joining(DELIMITER)));
+				crIds.add(gen.getUniqueId());
+			}
+			uniqueId.addAll(crIds);
 		}
-		
+
 		return uniqueId.getUniqueId();
 	}
 

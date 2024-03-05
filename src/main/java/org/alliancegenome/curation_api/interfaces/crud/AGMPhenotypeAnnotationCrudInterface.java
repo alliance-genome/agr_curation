@@ -1,10 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -24,7 +21,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - AGM Phenotype Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AGMPhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<AGMPhenotypeAnnotation>, BaseDTOCrudControllerInterface<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO> {
+public interface AGMPhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<AGMPhenotypeAnnotation> {
 
 	@GET
 	@Path("/findBy/{identifier}")

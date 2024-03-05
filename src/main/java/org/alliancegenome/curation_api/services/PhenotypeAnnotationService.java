@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -44,6 +44,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 
 	@Inject
 	PhenotypeAnnotationDAO phenotypeAnnotationDAO;
+	@Inject
+	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject
 	PersonService personService;
 	@Inject
@@ -147,28 +149,20 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	}
 	
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		return getAnnotationIdsByDataProvider(phenotypeAnnotationDAO, dataProvider);
+		List<Long> existingPhenotypeAnnotationIds = new ArrayList<>();
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider));
+		//TODO: add lists from other subtypes
+		return existingPhenotypeAnnotationIds;
 	}
 	
 	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, BackendBulkDataProvider dataProvider) {
-		//TODO: need some rules for XenBase submissions here
-		
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		
-		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
-			params.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB"))
+			params.put(EntityFieldConstants.PA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		
-		List<Long> annotationIds = phenotypeAnnotationDAO.findFilteredIds(params);
-		annotationIds.removeIf(Objects::isNull);
-		
-		if (StringUtils.equals(dataProvider.toString(), "HUMAN")) {
-			Map<String, Object> newParams = new HashMap<>();
-			newParams.put(EntityFieldConstants.SECONDARY_DATA_PROVIDER, dataProvider.sourceOrganization);
-			newParams.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-			List<Long> additionalIds = phenotypeAnnotationDAO.findFilteredIds(newParams);
-			annotationIds.addAll(additionalIds);
-		}
+		List<Long> annotationIds = dao.findFilteredIds(params);
 		
 		return annotationIds;
 	}
@@ -197,7 +191,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 
 	public void addInferredOrAssertedEntities(PhenotypeFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		for (String primaryGeneticEntityCurie : dto.getPrimaryGeneticEntityIds()) {
-			GenomicEntity primaryAnnotationSubject = genomicEntityService.findByIdentifierString(dto.getObjectId());
+			GenomicEntity primaryAnnotationSubject = genomicEntityService.findByIdentifierString(primaryGeneticEntityCurie);
 			if (primaryAnnotationSubject == null)
 				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
 		

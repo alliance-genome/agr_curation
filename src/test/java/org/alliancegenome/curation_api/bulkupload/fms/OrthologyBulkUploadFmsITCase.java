@@ -25,7 +25,7 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("07 - Orthology bulk upload - FMS")
+@DisplayName("502 - Orthology bulk upload - FMS")
 @Order(502)
 public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 
@@ -38,7 +38,7 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 	}
 
 	private final String orthologyBulkPostEndpoint = "/api/orthologygenerated/bulk/WB/orthologyfile";
-	private final String orthologyTestFilePath = "src/test/resources/bulk/fms/06_orthology/";
+	private final String orthologyTestFilePath = "src/test/resources/bulk/fms/02_orthology/";
 	private final String orthologyFindEndpoint = "/api/orthologygenerated/find?limit=100&page=0";
 	
 	@Test
