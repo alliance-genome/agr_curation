@@ -10,5 +10,6 @@ public final class ValidationConstants {
 	public static final String NON_UNIQUE_MESSAGE = "Field value is not unique";
 	public static final String UNSUPPORTED_MESSAGE = "Unsupported value specified";
 	public static final String DUPLICATE_MESSAGE = "Duplicate entries found";
+	public static final String DUPLICATE_RELATION_PREFIX = "Entries found with same relation field - ";
 
 }
