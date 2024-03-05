@@ -67,16 +67,12 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private VocabularyTerm relation;
 	
-	@Transient
 	public abstract String getSubjectCurie();
 
-	@Transient
 	public abstract String getSubjectTaxonCurie();
 
-	@Transient
 	public abstract String getSubjectSpeciesName();
 	
-	@Transient
 	public abstract String getSubjectIdentifier();
 
 	@Transient
