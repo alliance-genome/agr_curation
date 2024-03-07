@@ -1,8 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from "../../components/EllipsisTableCell";
-
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
@@ -17,7 +14,7 @@ export const AffectedGenomicModelTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	
+
 	const columns = [
 		{
 			field: "curie",
