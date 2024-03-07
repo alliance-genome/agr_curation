@@ -22,6 +22,7 @@ import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { NotTemplate } from '../../components/Templates/NotTemplate';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -935,7 +936,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "negated",
 		header: "Negated",
-		body: (rowData) => <BooleanTemplate value={rowData.negated}/>,
+		body: (rowData) => <NotTemplate value={rowData.negated}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
 		editor: (props) => negatedEditor(props)
