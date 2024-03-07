@@ -2,8 +2,7 @@ import React from 'react'
 import { Tooltip } from 'primereact/tooltip';
 import { EllipsisTableCell } from "../EllipsisTableCell";
 
-export const TaxonBodyTemplate = (props) => {
-    const { taxon, modEntityId } = props;
+export const TaxonBodyTemplate = ({taxon, modEntityId}) => {
     if (taxon) {
         return (
             <>
