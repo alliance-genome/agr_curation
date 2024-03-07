@@ -7,7 +7,8 @@ import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
-
+import { NameTemplate } from '../../components/Templates/NameTemplate';
+import { TaxonBodyTemplate } from '../../components/Templates/TaxonBodyTemplate';
 
 export const AffectedGenomicModelTable = () => {
 
@@ -16,31 +17,7 @@ export const AffectedGenomicModelTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-
-	const nameTemplate = (rowData) => {
-		return (
-			<>
-				<div className={`overflow-hidden text-overflow-ellipsis ${rowData.modEntityId.replace(':', '')}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
-				<Tooltip target={`.${rowData.modEntityId.replace(':', '')}`}>
-					<div dangerouslySetInnerHTML={{ __html: rowData.name }} />
-				</Tooltip>
-			</>
-		)
-	}
-
-	const taxonBodyTemplate = (rowData) => {
-		if (rowData.taxon) {
-				return (
-						<>
-								<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
-										{rowData.taxon.name} ({rowData.taxon.curie})
-								</EllipsisTableCell>
-								<Tooltip target={`.${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-						</>
-				);
-		}
-	};
-
+	
 	const columns = [
 		{
 			field: "curie",
@@ -63,7 +40,7 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "name",
 			header: "Name",
-			body: nameTemplate,
+			body: (rowData) => <NameTemplate name = {rowData.name} modEntityId = {rowData.modEntityId}/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
@@ -77,7 +54,7 @@ export const AffectedGenomicModelTable = () => {
 			field: "taxon.name",
 			header: "Taxon",
 			sortable: true,
-			body: taxonBodyTemplate,
+			body: (rowData) => <TaxonBodyTemplate taxon = {rowData.taxon} modEntityId = {rowData.modEntityId}/>,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		},
 		{
