@@ -84,7 +84,7 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 		ph.startProcess("Allele Gene Association Update for: " + dataProvider.name(), associations.size());
 		associations.forEach(associationDTO -> {
 			try {
-				AlleleGeneAssociation association = alleleGeneAssociationService.upsert(associationDTO, dataProvider);
+				GeneGeneAssociation association = alleleGeneAssociationService.upsert(associationDTO, dataProvider);
 				history.incrementCompleted();
 				if(idsAdded != null) {
 					idsAdded.add(association.getId());

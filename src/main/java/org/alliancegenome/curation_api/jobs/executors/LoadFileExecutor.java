@@ -31,6 +31,7 @@ import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 
 import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
@@ -39,6 +40,8 @@ public class LoadFileExecutor {
 
 	@Inject
 	protected ObjectMapper mapper;
+	@Inject
+	protected CsvMapper csvMapper;
 	@Inject
 	protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject
