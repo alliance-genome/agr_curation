@@ -1,13 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from "../../components/EllipsisTableCell";
-
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
-
+import { NameTemplate } from '../../components/Templates/NameTemplate';
+import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const AffectedGenomicModelTable = () => {
 
@@ -16,30 +15,6 @@ export const AffectedGenomicModelTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-
-	const nameTemplate = (rowData) => {
-		return (
-			<>
-				<div className={`overflow-hidden text-overflow-ellipsis ${rowData.modEntityId.replace(':', '')}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
-				<Tooltip target={`.${rowData.modEntityId.replace(':', '')}`}>
-					<div dangerouslySetInnerHTML={{ __html: rowData.name }} />
-				</Tooltip>
-			</>
-		)
-	}
-
-	const taxonBodyTemplate = (rowData) => {
-		if (rowData.taxon) {
-				return (
-						<>
-								<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
-										{rowData.taxon.name} ({rowData.taxon.curie})
-								</EllipsisTableCell>
-								<Tooltip target={`.${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-						</>
-				);
-		}
-	};
 
 	const columns = [
 		{
@@ -51,19 +26,21 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "modEntityId",
 			header: "MOD Entity ID",
+			body: (rowData) => <IdTemplate id = {rowData.modEntityId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
 			field: "modInternalId",
 			header: "MOD Internal ID",
+			body: (rowData) => <IdTemplate id = {rowData.modInternalId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "name",
 			header: "Name",
-			body: nameTemplate,
+			body: (rowData) => <NameTemplate name = {rowData.name}/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
@@ -77,7 +54,7 @@ export const AffectedGenomicModelTable = () => {
 			field: "taxon.name",
 			header: "Taxon",
 			sortable: true,
-			body: taxonBodyTemplate,
+			body: (rowData) => <TaxonTemplate taxon = {rowData.taxon}/>,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		},
 		{
@@ -116,7 +93,7 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "internal",
 			header: "Internal",
-			body: internalTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true
@@ -124,7 +101,7 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "obsolete",
 			header: "Obsolete",
-			body: obsoleteTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true
