@@ -3,9 +3,10 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { NameTemplate } from '../../components/Templates/NameTemplate';
-import { TaxonBodyTemplate } from '../../components/Templates/TaxonBodyTemplate';
+import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const AffectedGenomicModelTable = () => {
 
@@ -25,19 +26,21 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "modEntityId",
 			header: "MOD Entity ID",
+			body: (rowData) => <IdTemplate id = {rowData.modEntityId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
 			field: "modInternalId",
 			header: "MOD Internal ID",
+			body: (rowData) => <IdTemplate id = {rowData.modInternalId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "name",
 			header: "Name",
-			body: (rowData) => <NameTemplate name = {rowData.name} modEntityId = {rowData.modEntityId}/>,
+			body: (rowData) => <NameTemplate name = {rowData.name}/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
@@ -51,7 +54,7 @@ export const AffectedGenomicModelTable = () => {
 			field: "taxon.name",
 			header: "Taxon",
 			sortable: true,
-			body: (rowData) => <TaxonBodyTemplate taxon = {rowData.taxon} modEntityId = {rowData.modEntityId}/>,
+			body: (rowData) => <TaxonTemplate taxon = {rowData.taxon}/>,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig
 		},
 		{
@@ -90,7 +93,7 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "internal",
 			header: "Internal",
-			body: internalTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true
@@ -98,7 +101,7 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: "obsolete",
 			header: "Obsolete",
-			body: obsoleteTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true
