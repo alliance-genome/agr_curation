@@ -923,7 +923,7 @@ export const DiseaseAnnotationsTable = () => {
 	},
 	{
 		field: "negated",
-		header: "Not",
+		header: "NOT",
 		body: (rowData) => <NotTemplate value={rowData.negated}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.negatedFilterConfig,

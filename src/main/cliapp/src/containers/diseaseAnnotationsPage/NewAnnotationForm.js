@@ -76,7 +76,7 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "Not", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "NOT", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
 	let defaultUserSettings = getDefaultFormState("DiseaseAnnotations", newAnnotationOptionalFields, undefined);
 	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsFormSettings', defaultUserSettings, false);
@@ -567,11 +567,11 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFormFields?.includes("Not") && (
+					{selectedFormFields?.includes("NOT") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="not">Not</label>
+									<label htmlFor="negated">NOT</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<NotEditor value={newAnnotation.negated} editorChange={onDropdownFieldChange}/>
