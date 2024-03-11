@@ -6,6 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -17,6 +18,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
+import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,6 +32,8 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject
 	GenomicEntityService genomicEntityService;
+	@Inject
+	PhenotypeAnnotationService phenotypeAnnotationService;
 	
 	public AGMPhenotypeAnnotation validatePrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
@@ -78,12 +82,22 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		String refString = reference == null ? null : reference.getCurie();
 		
 		String primaryAnnotationUniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getIdentifier(), refString);
+		AGMPhenotypeAnnotation primaryAnnotation = null;
+		
 		SearchResponse<AGMPhenotypeAnnotation> annotationSearch = agmPhenotypeAnnotationDAO.findByField("uniqueId", primaryAnnotationUniqueId);
-		if (annotationSearch == null || annotationSearch.getSingleResult() == null)
-			throw new ObjectValidationException(dto, "Primary annotation not found for " + primaryAnnotationSubject.getIdentifier());
-		AGMPhenotypeAnnotation primaryAnnotation = annotationSearch.getSingleResult();
-		if (!idsAdded.contains(primaryAnnotation.getId()))
-			throw new ObjectValidationException(dto, "Primary annotation not included in submission (" + primaryAnnotationUniqueId + ")");
+		if (annotationSearch == null || annotationSearch.getSingleResult() == null) {
+			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
+			try {
+				Long primaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(inferredPrimaryDTO, dataProvider);
+				primaryAnnotation = agmPhenotypeAnnotationDAO.find(primaryAnnotationId);
+			} catch (ObjectUpdateException e) {
+				throw new ObjectValidationException(dto, "Could not construct primary annotation for " + inferredPrimaryDTO.getObjectId() + ": " + e.getData().getMessage());
+			} catch (Exception e) {
+				throw new ObjectValidationException(dto, e.getMessage());
+			}
+		} else {
+			primaryAnnotation = annotationSearch.getSingleResult();
+		}
 		
 		if (StringUtils.isBlank(dto.getObjectId())) {
 			apaResponse.addErrorMessage("objectId", ValidationConstants.REQUIRED_MESSAGE);
@@ -120,5 +134,18 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 			throw new ObjectValidationException(dto, apaResponse.errorMessagesString());
 		
 		return primaryAnnotation;
+	}
+	
+	private PhenotypeFmsDTO createPrimaryAnnotationDTO(PhenotypeFmsDTO dto, String primarySubjectId) {
+		PhenotypeFmsDTO primaryAnnotationDTO = new PhenotypeFmsDTO();
+		
+		primaryAnnotationDTO.setObjectId(primarySubjectId);
+		primaryAnnotationDTO.setPhenotypeStatement(dto.getPhenotypeStatement());
+		primaryAnnotationDTO.setPhenotypeTermIdentifiers(dto.getPhenotypeTermIdentifiers());
+		primaryAnnotationDTO.setEvidence(dto.getEvidence());
+		primaryAnnotationDTO.setDateAssigned(dto.getDateAssigned());
+		primaryAnnotationDTO.setConditionRelations(dto.getConditionRelations());
+		
+		return primaryAnnotationDTO;
 	}
 }

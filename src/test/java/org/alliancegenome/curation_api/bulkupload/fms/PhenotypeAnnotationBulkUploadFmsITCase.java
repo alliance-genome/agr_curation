@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -52,6 +54,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	private final String agmPhenotypeAnnotationFindEndpoint = "/api/agm-phenotype-annotation/find?limit=100&page=0";
 	private Long agmPaId;
 	private final String agm = "PATEST:AGM0001";
+	private final String agm2 = "PATEST:AGM0002";
 	private final String allele = "PATEST:Allele0001";
 	private final String gene = "PATEST:Gene0001";
 	private final String reference = "AGRKB:000000002";
@@ -77,7 +80,8 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		DataProvider dataProvider = createDataProvider("WB", false);
 		loadGenes(List.of(gene), "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "strain", dataProvider);	
+		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "strain", dataProvider);
+		loadAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "strain", dataProvider);	
 		loadMPTerm(mpTerm, "Test PhenotypeTerm");
 	}
 	
@@ -180,9 +184,52 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	public void allelePhenotypeAnnotationAddSecondaryAnnotationFieldsUpdate() throws Exception {
 		//TODO: add test for update of primary allele annotation
 	}
-
+	
 	@Test
 	@Order(8)
+	public void agmPhenotypeAnnotationInferredPrimaryAnnotation() throws Exception {
+		// Tests that an AGM primary annotation is inferred correctly if secondary annotation is loaded without primary annotation in database
+		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IF_01_infer_primary_agm_annotation_from_secondary_allele_annotation.json");
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{\"phenotypeAnnotationSubject.modEntityId\" : \"" + agm2 + "\"}").
+			post(agmPhenotypeAnnotationFindEndpoint).
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].phenotypeAnnotationSubject.modEntityId", is(agm2)).
+			body("results[0].phenotypeAnnotationObject", is(phenotypeStatement)).
+			body("results[0].relation.name", is("has_phenotype")).
+			body("results[0].dateCreated", is("2024-01-17T15:26:56Z")).
+			body("results[0].conditionRelations", hasSize(1)).
+			body("results[0].conditionRelations[0].internal", is(false)).
+			body("results[0].conditionRelations[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].conditionRelationType.name", is(conditionRelationType)).
+			body("results[0].conditionRelations[0].conditions", hasSize(1)).
+			body("results[0].conditionRelations[0].conditions[0].internal", is(false)).
+			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is(zecoTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is(expCondTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
+			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is(anatomyTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is(goTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
+			body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test")).
+			body("results[0].inferredGene.modEntityId", is(gene));
+	}
+	
+	@Test
+	@Order(9)
+	public void allelePhenotypeAnnotationInferredPrimaryAnnotation() throws Exception {
+		// TODO: add test for inferring Allele primary annotation from secondary annotation is loaded without primary annotation in database
+	}
+	
+	@Test
+	@Order(10)
 	public void phenotypeAnnotationBulkUploadMissingRequiredFields() throws Exception {
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_01_no_object_id.json");
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_02_no_date_assigned.json");
@@ -195,7 +242,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(9)
+	@Order(11)
 	public void phenotypeAnnotationBulkUploadEmptyRequiredFields() throws Exception {
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_01_empty_object_id.json");
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_02_empty_date_assigned.json");
@@ -208,7 +255,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(10)
+	@Order(12)
 	public void phenotypeAnnotationBulkUploadInvalidFields() throws Exception {
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_01_invalid_object_id.json");
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_02_invalid_primary_genetic_id.json");
@@ -226,7 +273,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(11)
+	@Order(13)
 	public void diseaseAnnotationBulkUploadSecondaryIds() throws Exception {
 		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "SI_01_secondary_ids.json");
 	}
