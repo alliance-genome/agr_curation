@@ -18,6 +18,7 @@ export function NotEditor({ props, value, editorChange }) {
 		<>
 			<Dropdown
 				aria-label='dropdown'
+				name="negated"
 				value={selectedValue}
 				options={options}
 				onChange={(e) => onChange(e)}

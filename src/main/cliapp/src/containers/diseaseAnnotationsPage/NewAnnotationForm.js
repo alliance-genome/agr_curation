@@ -6,6 +6,7 @@ import { Toast } from "primereact/toast";
 import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from "react-query";
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
+import { NotEditor } from "../../components/Editors/NotEditor";
 import { classNames } from "primereact/utils";
 import { DiseaseAnnotationService } from "../../service/DiseaseAnnotationService";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -75,7 +76,7 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "Not", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
 	let defaultUserSettings = getDefaultFormState("DiseaseAnnotations", newAnnotationOptionalFields, undefined);
 	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsFormSettings', defaultUserSettings, false);
@@ -566,22 +567,14 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFormFields?.includes("Negated") && (
+					{selectedFormFields?.includes("Not") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="negated">Negated</label>
+									<label htmlFor="not">Not</label>
 								</div>
 								<div className={widgetColumnSize}>
-									<Dropdown
-										name="negated"
-										value={newAnnotation.negated}
-										options={negatedTerms}
-										optionLabel='text'
-										optionValue='name'
-										onChange={onDropdownFieldChange}
-										className={classNames({'p-invalid': submitted && errorMessages.negated})}
-									/>
+									<NotEditor value={newAnnotation.negated} editorChange={onDropdownFieldChange}/>
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
