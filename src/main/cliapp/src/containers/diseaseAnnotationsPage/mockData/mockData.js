@@ -96,7 +96,7 @@ export const data = {
 					}
 				]
 			},
-			"negated": false,
+			"negated": true,
 			"relation": {
 				"dateCreated": "2022-01-26T09:40:54.020724Z",
 				"dateUpdated": "2022-01-26T09:40:54.020726Z",
