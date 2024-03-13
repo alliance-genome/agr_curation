@@ -3,14 +3,14 @@ import { NotEditor } from '../NotEditor';
 import '../../../tools/jest/setupTests';
 
 describe('NotEditor', () => {
-  it('should display "null" as the placeholder text when the initial value is false', () => {
+  it('should display "NOT" as the placeholder text when the initial value is true', () => {
     const props = {};
-    const value = false;
+    const value = true;
     const editorChange = jest.fn();
 
     const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
 
-    expect(result.getAllByText("null")).toHaveLength(2);
+    expect(result.getAllByText("NOT")).toHaveLength(2);
   });
 
   it('should render a Dropdown component with no options when value prop is undefined', () => {
@@ -33,7 +33,7 @@ describe('NotEditor', () => {
     const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
     const span = result.container.getElementsByTagName('span')[0];
     
-    expect(within(span).getByText('null')).toBeInTheDocument();
+    expect(within(span).getByText('empty')).toBeInTheDocument();
     
     fireEvent.click(span);
     
@@ -47,7 +47,7 @@ describe('NotEditor', () => {
 
   it('should call editorChange when an option is selected', () => {
     const props = {};
-    const value = true;
+    const value = false;
     const editorChange = jest.fn();
     const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
     const span = result.container.getElementsByTagName('span')[0];
@@ -55,7 +55,7 @@ describe('NotEditor', () => {
     fireEvent.click(span);
     
     
-    const option = result.getAllByText('null');
+    const option = result.getAllByText('NOT');
     fireEvent.click(option[0]);
     
     expect(editorChange).toHaveBeenCalledTimes(1);
