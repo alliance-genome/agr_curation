@@ -6,12 +6,22 @@ export function NotEditor({ props, value, editorChange }) {
 	const textString = value ? "NOT" : "";
 	const options = [
 		{ label: "NOT", value: true },
-		{ label: "null", value: false }
 	];
 
 	const onChange = (e) => {
-		setSelectedValue(e.value);
-		editorChange(e, props);
+		let event;
+		if(e.value === undefined){
+			event = {
+				target: {
+					value: false,
+					name: e.target.name
+				}
+			}
+		} else {
+			event = e;
+		}
+		setSelectedValue(event.target.value);
+		editorChange(event, props);
 	}
 
 	return (
@@ -22,7 +32,7 @@ export function NotEditor({ props, value, editorChange }) {
 				value={selectedValue}
 				options={options}
 				onChange={(e) => onChange(e)}
-				showClear={false}
+				showClear={true}
 				placeholder={textString}
 				style={{ width: '100%' }}
 			/>

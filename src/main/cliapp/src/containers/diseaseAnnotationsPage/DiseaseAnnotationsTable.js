@@ -432,10 +432,10 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onNegatedEditorValueChange = (event, props) => {
-		if(event.value === undefined || event.value === null) return;
+		if(event.target.value === undefined || event.target.value === null) return;
 
 		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].negated = event.value;
+		updatedAnnotations[props.rowIndex].negated = event.target.value;
 	}
 
 	const onInternalEditorValueChange = (props, event) => {
