@@ -3,7 +3,7 @@ import { Dropdown } from "primereact/dropdown";
 
 export function NotEditor({ props, value, editorChange }) {
 	const [selectedValue, setSelectedValue] = useState(value);
-	const textString = value ? "NOT" : "";
+	const textString = selectedValue ? "NOT" : "";
 	const options = [
 		{ label: "NOT", value: true },
 	];
