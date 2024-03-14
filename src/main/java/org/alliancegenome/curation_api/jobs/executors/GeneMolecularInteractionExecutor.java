@@ -5,29 +5,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
+import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 
+	@Inject
+	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	@Inject
+	GeneMolecularInteractionService geneMolecularInteractionService;
+	
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 		try {
 			
@@ -43,7 +50,7 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
 			
 			List<Long> interactionIdsLoaded = new ArrayList<>();
-			List<Long> interactionIdsBefore = null;// phenotypeAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
+			List<Long> interactionIdsBefore = geneMolecularInteractionDAO.findAllIds().getResults();
 			
 			//runLoad(history, interactionData), annotationIdsLoaded, dataProvider);
 			
@@ -70,52 +77,17 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 	}
 
 	
-	private void runLoad(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, List<Long> idsAdded, BackendBulkDataProvider dataProvider) {
+	private void runLoad(BulkLoadFileHistory history, List<PsiMiTabDTO> interactions, List<Long> idsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Phenotype annotation DTO Update for " + dataProvider.name(), annotations.size());
-
-		loadPrimaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
-		loadSecondaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
-		
-		ph.finishProcess();
-
-	}
-	
-	private void loadSecondaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
-		for (PhenotypeFmsDTO dto : annotations) {
-			if (CollectionUtils.isEmpty(dto.getPrimaryGeneticEntityIds()))
-				continue;
-
+		ph.startProcess("Gene Molecular Interaction DTO Update", interactions.size());
+		for (PsiMiTabDTO dto : interactions) {
 			try {
-				//phenotypeAnnotationService.addInferredOrAssertedEntities(dto, idsAdded, dataProvider);
-				history.incrementCompleted();
-			} catch (ObjectUpdateException e) {
-				history.incrementFailed();
-				addException(history, e.getData());
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
-			}
-
-			ph.progressProcess();
-		}
-		
-	}
-
-
-	private void loadPrimaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
-		for (PhenotypeFmsDTO dto : annotations) {
-			if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIds()))
-				continue;
-
-			try {
-				Long primaryAnnotationId = null;//phenotypeAnnotationService.upsertPrimaryAnnotation(dto, dataProvider);
-				if (primaryAnnotationId != null) {
+				GeneMolecularInteraction interaction = geneMolecularInteractionService.upsert(dto);
+				if (interaction != null) {
 					history.incrementCompleted();
 					if (idsAdded != null)
-						idsAdded.add(primaryAnnotationId);
+						idsAdded.add(interaction.getId());
 				} 
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
@@ -125,9 +97,11 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
-
+	
 			ph.progressProcess();
 		}
+		ph.finishProcess();
+
 	}
 
 }

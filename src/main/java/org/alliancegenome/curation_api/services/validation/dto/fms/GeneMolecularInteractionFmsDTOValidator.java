@@ -1,18 +1,21 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
-import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.interactions.InteractionHelper;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -21,53 +24,54 @@ import jakarta.inject.Inject;
 public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsDTOValidator {
 
 	@Inject
-	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
 	@Inject
 	GenomicEntityService genomicEntityService;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	
+	private ObjectResponse<GeneMolecularInteraction> gmiResponse;
 	
 	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ObjectValidationException {
 
-		ObjectResponse<GeneMolecularInteraction> gmiResponse = new ObjectResponse<GeneMolecularInteraction>();
+		gmiResponse = new ObjectResponse<GeneMolecularInteraction>();
 		GeneMolecularInteraction interaction = new GeneMolecularInteraction();
 		
-		ObjectResponse<Reference> refResponse = validateReference(dto);
+		ObjectResponse<List<Reference>> refResponse = validateReferences(dto);
 		gmiResponse.addErrorMessages(refResponse.getErrorMessages());
-			
-		Reference reference = refResponse.getEntity();
-		String refString = reference == null ? null : reference.getCurie();
+	
+		List<Reference> references = refResponse.getEntity();
+		String uniqueId = InteractionHelper.getGeneMolecularInteractionUniqueId(dto, references);
 		
-		String uniqueId = InteractionUniqueIdHelper.getInteractionUniqueId(dto, subject.getIdentifier(), refString);
-		SearchResponse<AGMPhenotypeAnnotation> annotationSearch = agmPhenotypeAnnotationDAO.findByField("uniqueId", uniqueId);
-		if (annotationSearch != null && annotationSearch.getSingleResult() != null)
-			annotation = annotationSearch.getSingleResult();
+		SearchResponse<GeneMolecularInteraction> interactionSearch = geneMolecularInteractionDAO.findByField("uniqueId", uniqueId);
+		if (interactionSearch != null && interactionSearch.getSingleResult() != null)
+			interaction = interactionSearch.getSingleResult();
 
-		annotation.setUniqueId(uniqueId);
-		annotation.setSingleReference(reference);
-		annotation.setPhenotypeAnnotationSubject(subject);
+		interaction.setUniqueId(uniqueId);
 		
-		// Reset implied/asserted fields as secondary annotations loaded separately
-		annotation.setAssertedAllele(null);
-		annotation.setAssertedGenes(null);
-		annotation.setInferredAllele(null);
-		annotation.setInferredGene(null);
+		ObjectResponse<GeneMolecularInteraction> giResponse = validateGeneInteraction(interaction, dto, references);
+		gmiResponse.addErrorMessages(giResponse.getErrorMessages());
+		interaction = giResponse.getEntity();
 		
-		ObjectResponse<AGMPhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, dataProvider);
-		apaResponse.addErrorMessages(paResponse.getErrorMessages());
-		annotation = paResponse.getEntity();
+		interaction.setRelation(vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_VOCABULARY_TERM_SET, VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM).getEntity());
 		
-		if (apaResponse.hasErrors())
+		MITerm detectionMethod = null;
+		if (CollectionUtils.isNotEmpty(dto.getInteractionDetectionMethods())) {
+			for (String detectionMethodString : dto.getInteractionDetectionMethods()) {
+				String detectionMethodCurie = InteractionHelper.extractCurieFromPsiMiFormat(detectionMethodString);
+				if (detectionMethodCurie != null) {
+					detectionMethod = miTermService.findByCurie(detectionMethodCurie);
+					if (detectionMethod == null)
+						gmiResponse.addErrorMessage("interactionDetectionMethods", ValidationConstants.INVALID_MESSAGE + " (" + detectionMethodCurie + ")");
+					break;
+				}
+			}
+		}
+		
+		if (gmiResponse.hasErrors())
 			throw new ObjectValidationException(dto, gmiResponse.errorMessagesString());
 		
 		return interaction;
 
-	}
-	
-	public ObjectResponse<Reference> validateReference(PsiMiTabDTO dto) {
-		ObjectResponse<Reference> refResponse = new ObjectResponse<>();
-		Reference reference = null;
-		
-		//TODO: work this out for PSI-MI-TAB input
-		refResponse.setEntity(reference);
-		return refResponse;
 	}
 }

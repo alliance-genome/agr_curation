@@ -2,16 +2,14 @@ package org.alliancegenome.curation_api.services;
 
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
-import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
+import org.alliancegenome.curation_api.services.validation.dto.fms.GeneMolecularInteractionFmsDTOValidator;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class GeneMolecularInteractionService extends GeneInteractionService<GeneMolecularInteraction, GeneMolecularInteractionDAO> {
 
@@ -27,7 +25,7 @@ public class GeneMolecularInteractionService extends GeneInteractionService<Gene
 		setSQLDao(geneMolecularInteractionDAO);
 	}
 
-	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
+	public GeneMolecularInteraction upsert(PsiMiTabDTO dto) throws ObjectUpdateException {
 		return geneMolInteractionValidator.validateGeneMolecularInteractionFmsDTO(dto);
 	}
 

@@ -34,7 +34,7 @@ import lombok.EqualsAndHashCode;
 @OnDelete(action = OnDeleteAction.CASCADE)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
 @Table(indexes = {
-	@Index(name = "genemolecularinteraction_aggregationdatatbase_index", columnList = "aggregationdatabase_id"),
+	@Index(name = "genemolecularinteraction_aggregationdatabase_index", columnList = "aggregationdatabase_id"),
 })
 public class GeneMolecularInteraction extends GeneInteraction {
 
