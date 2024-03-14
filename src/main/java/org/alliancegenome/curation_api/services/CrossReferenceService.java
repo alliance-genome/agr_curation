@@ -31,7 +31,6 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		setSQLDao(crossReferenceDAO);
 	}
 
-	@Transactional
 	public List<CrossReference> getMergedFmsXrefList(List<CrossReferenceFmsDTO> fmsCrossReferences, List<CrossReference> existingCrossReferences) {
 		Map<String, CrossReference> incomingXrefMap = new HashedMap<>();
 		if (CollectionUtils.isNotEmpty(fmsCrossReferences)) {
