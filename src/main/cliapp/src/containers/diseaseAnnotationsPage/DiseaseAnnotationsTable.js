@@ -22,6 +22,9 @@ import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { NotTemplate } from '../../components/Templates/NotTemplate';
+
+import { NotEditor } from '../../components/Editors/NotEditor';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
@@ -428,26 +431,12 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
-	const onNegatedEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
-		}
-	};
+	const onNegatedEditorValueChange = (event, props) => {
+		if(event.target.value === undefined || event.target.value === null) return;
 
-	const negatedEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms}
-					editorChange={onNegatedEditorValueChange}
-					props={props}
-					field={"negated"}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"negated"} />
-			</>
-		);
-	};
+		let updatedAnnotations = [...props.props.value];
+		updatedAnnotations[props.rowIndex].negated = event.target.value;
+	}
 
 	const onInternalEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
@@ -934,11 +923,11 @@ export const DiseaseAnnotationsTable = () => {
 	},
 	{
 		field: "negated",
-		header: "Negated",
-		body: (rowData) => <BooleanTemplate value={rowData.negated}/>,
+		header: "NOT",
+		body: (rowData) => <NotTemplate value={rowData.negated}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.negatedFilterConfig,
-		editor: (props) => negatedEditor(props)
+		editor: (props) => <NotEditor props={props} value={props.value} editorChange={onNegatedEditorValueChange}/>
 	},
 	{
 		field: "diseaseAnnotationObject.name",
