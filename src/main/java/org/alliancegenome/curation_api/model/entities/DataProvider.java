@@ -19,6 +19,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.List;
+
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -45,4 +47,16 @@ public class DataProvider extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private CrossReference crossReference;
 
+	public String getSourceUrl() {
+		List<String> urlExpceptionHandler = List.of("MGI", "SGD", "OMIM");
+		if (crossReference != null) {
+			String urlTemplate = crossReference.getResourceDescriptorPage().getUrlTemplate();
+			if (urlExpceptionHandler.contains(sourceOrganization.getAbbreviation())) {
+				// remove the prefix in the template as the prefix is already in the curie.
+				urlTemplate = urlTemplate.replace(sourceOrganization.getAbbreviation() + ":", "");
+			}
+			return urlTemplate.replace("[%s]", crossReference.getReferencedCurie());
+		}
+		return null;
+	}
 }
