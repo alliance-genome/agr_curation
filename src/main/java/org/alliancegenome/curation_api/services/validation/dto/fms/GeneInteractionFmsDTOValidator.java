@@ -98,6 +98,34 @@ public class GeneInteractionFmsDTOValidator {
 		}
 		interaction.setInteractorBType(interactorBType);
 		
+		MITerm interactionType = null;
+		if (CollectionUtils.isNotEmpty(dto.getInteractionTypes())) {
+			for (String interactionTypeString : dto.getInteractionTypes()) {
+				String interactionTypeCurie = InteractionHelper.extractCurieFromPsiMiFormat(interactionTypeString);
+				if (interactionTypeCurie != null) {
+					interactionType = miTermService.findByCurie(interactionTypeCurie);
+					if (interactionType == null)
+						giResponse.addErrorMessage("sourceDatabaseIds", ValidationConstants.INVALID_MESSAGE + " (" + interactionTypeCurie + ")");
+					break;
+				}
+			}
+		}
+		interaction.setInteractionType(interactionType);
+		
+		MITerm interactionSource = null;
+		if (CollectionUtils.isNotEmpty(dto.getSourceDatabaseIds())) {
+			for (String interactionSourceString : dto.getSourceDatabaseIds()) {
+				String interactionSourceCurie = InteractionHelper.extractCurieFromPsiMiFormat(interactionSourceString);
+				if (interactionSourceCurie != null) {
+					interactionSource = miTermService.findByCurie(interactionSourceCurie);
+					if (interactionSource == null)
+						giResponse.addErrorMessage("sourceDatabaseIds", ValidationConstants.INVALID_MESSAGE + " (" + interactionSourceCurie + ")");
+					break;
+				}
+			}
+		}
+		interaction.setInteractionSource(interactionSource);
+		
 		giResponse.setEntity(interaction);
 
 		return giResponse;

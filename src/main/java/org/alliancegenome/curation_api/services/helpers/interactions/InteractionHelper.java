@@ -8,12 +8,20 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
+import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections.CollectionUtils;
 
+import jakarta.inject.Inject;
+
 public abstract class InteractionHelper {
+	
+	@Inject
+	ResourceDescriptorPageService rdpService;
 
 	private static final Pattern PSI_MI_FORMAT = Pattern.compile("^[^:]+:\"([^\"]*)\"");
 	private static final Pattern WB_VAR_ANNOTATION = Pattern.compile("wormbase:(WBVar\\d+)\\D*");
@@ -67,6 +75,16 @@ public abstract class InteractionHelper {
 		return "WB:" + matcher.group(1);
 	}
 	
+	public static String getAggregationDatabaseMITermCurie(PsiMiTabDTO dto) {
+		String sourceDatabaseCurie = extractCurieFromPsiMiFormat(dto.getSourceDatabaseIds().get(0));
+		if (sourceDatabaseCurie == null)
+			return null;
+		if (sourceDatabaseCurie.equals("MI:0478") || sourceDatabaseCurie.equals("MI:0487") || sourceDatabaseCurie.equals("MI:0463")) {
+			return sourceDatabaseCurie;
+		}
+		return "MI:0670";
+	}
+	
 	public static List<String> extractPhenotypeStatements(List<String> annotations) {
 		List<String> statements = new ArrayList<>();
 		for (String annotation : annotations) {
@@ -85,5 +103,42 @@ public abstract class InteractionHelper {
 		// TODO: implement method to extract phenotype statement from annotations
 		// See code in agr_loader genetic_interaction_etl.py line 365
 		return null;
+	}
+	
+	public List<CrossReference> createAllianceXrefs(PsiMiTabDTO dto) {
+		List<CrossReference> xrefs = new ArrayList<>();
+		List<String> xrefStrings = new ArrayList<>();
+		xrefStrings.addAll(dto.getInteractionIds());
+		xrefStrings.addAll(dto.getInteractionXrefs());
+
+		for (String xrefString : xrefStrings) {
+			String xrefCurie = extractCurieFromPsiMiFormat(xrefString);
+			if (xrefCurie != null) {
+				CrossReference xref = createAllianceXref(xrefCurie);
+				if (xref != null)
+					xrefs.add(xref);
+			}
+		}
+		
+		if (CollectionUtils.isEmpty(xrefs))
+			return null;
+		
+		return xrefs;
+	}
+	
+	private CrossReference createAllianceXref(String curie) {
+		String[] curieParts = curie.split(":");
+		if (curieParts.length != 2)
+			return null;
+		ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor(curieParts[0], "gene/interactions");
+		if (rdp == null)
+			return null;
+		
+		CrossReference xref = new CrossReference();
+		xref.setDisplayName(curie);
+		xref.setReferencedCurie(curie);
+		xref.setResourceDescriptorPage(rdp);
+		
+		return xref;
 	}
 }

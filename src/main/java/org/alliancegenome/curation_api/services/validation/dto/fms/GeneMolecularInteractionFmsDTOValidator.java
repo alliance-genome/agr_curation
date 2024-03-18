@@ -67,6 +67,16 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 				}
 			}
 		}
+		interaction.setDetectionMethod(detectionMethod);
+		
+		MITerm aggregationDatabase = null;
+		String aggregationDatabaseCurie = InteractionHelper.getAggregationDatabaseMITermCurie(dto);
+		if (aggregationDatabaseCurie != null) {
+			aggregationDatabase = miTermService.findByCurie(aggregationDatabaseCurie);
+			if (aggregationDatabase == null)
+				gmiResponse.addErrorMessage("aggregationDatabase (inferred from sourceDatabaseIds)", ValidationConstants.INVALID_MESSAGE + " (" + aggregationDatabaseCurie + ")");
+		}
+		interaction.setAggregationDatabase(aggregationDatabase);		
 		
 		if (gmiResponse.hasErrors())
 			throw new ObjectValidationException(dto, gmiResponse.errorMessagesString());

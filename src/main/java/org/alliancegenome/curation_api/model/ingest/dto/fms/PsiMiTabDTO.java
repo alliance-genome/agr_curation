@@ -33,9 +33,9 @@ public class PsiMiTabDTO extends BaseDTO {
 	private String experimentalRoleB;
 	private String interactorAType;
 	private String interactorBType;
-	private String interactorAXref;
-	private String interactorBXref;
-	private String interactionXref;
+	private List<String> interactorAXrefs;
+	private List<String> interactorBXrefs;
+	private List<String> interactionXrefs;
 	private String interactorAAnnotations;
 	private String interactorBAnnotations;
 	private List<String> interactionAnnotations;
