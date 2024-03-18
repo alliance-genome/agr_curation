@@ -39,7 +39,6 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		setSQLDao(agmDiseaseAnnotationDAO);
 	}
 
-	@Override
 	public ObjectResponse<AGMDiseaseAnnotation> get(String identifier) {
 		SearchResponse<AGMDiseaseAnnotation> ret = findByField("curie", identifier);
 		if (ret != null && ret.getTotalResults() == 1)
@@ -88,9 +87,6 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		ObjectResponse<AGMDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
-
-	@Override
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) { }
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(agmDiseaseAnnotationDAO, dataProvider);

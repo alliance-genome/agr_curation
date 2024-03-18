@@ -6,12 +6,8 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.FreeTextValueBridge;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -24,7 +20,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -36,16 +31,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AttributeOverride(name = "internal", column = @Column(columnDefinition = "boolean default true", nullable = false))
 @Schema(name = "Note", description = "POJO that represents the Note")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
-@Table(indexes = { @Index(name = "Note_noteType_index", columnList = "noteType_id"), @Index(name = "Note_createdby_index", columnList = "createdBy_id"), @Index(name = "Note_updatedby_index", columnList = "updatedBy_id"),})
-public class Note extends GeneratedAuditedObject {
+@Table(indexes = {
+		@Index(name = "Note_noteType_index", columnList = "noteType_id"),
+		@Index(name = "Note_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "Note_updatedby_index", columnList = "updatedBy_id")
+})
+public class Note extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
 	@KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
@@ -63,6 +60,9 @@ public class Note extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.NoteView.class, View.AlleleView.class, View.ConstructView.class, View.VariantView.class })
-	@JoinTable(indexes = { @Index(columnList = "note_id"), @Index(columnList = "references_curie")})
+	@JoinTable(indexes = {
+		@Index(name = "note_reference_note_index", columnList = "note_id"),
+		@Index(name = "note_reference_references_index", columnList = "references_id")
+	})
 	private List<Reference> references;
 }

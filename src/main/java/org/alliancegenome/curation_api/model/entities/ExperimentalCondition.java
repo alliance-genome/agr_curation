@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -27,16 +26,23 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Audited
 @Entity
 @Indexed
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
+@Table(indexes = { 
+		@Index(name = "experimentalcondition_createdby_index", columnList = "createdBy_id"), 
+		@Index(name = "experimentalcondition_updatedby_index", columnList = "updatedBy_id")
+})
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class ExperimentalCondition extends UniqueIdAuditedObject {
 

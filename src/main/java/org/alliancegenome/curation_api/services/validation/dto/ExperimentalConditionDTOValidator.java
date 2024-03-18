@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services.validation.dto;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -14,13 +13,13 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.PersonService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.annotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOntologyTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -40,20 +39,18 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 	@Inject
 	AnatomicalTermService anatomicalTermService;
 	@Inject
-	NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject
 	GoTermService goTermService;
 	@Inject
 	ExperimentalConditionOntologyTermService experimentalConditionOntologyTermService;
 	@Inject
 	ExperimentalConditionSummary experimentalConditionSummary;
-	@Inject
-	PersonService personService;
 
 	public ObjectResponse<ExperimentalCondition> validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
 		ObjectResponse<ExperimentalCondition> ecResponse = new ObjectResponse<ExperimentalCondition>();
 
-		String uniqueId = DiseaseAnnotationUniqueIdHelper.getExperimentalConditionUniqueId(dto);
+		String uniqueId = AnnotationUniqueIdHelper.getExperimentalConditionUniqueId(dto);
 
 		ExperimentalCondition experimentalCondition;
 		SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
@@ -103,10 +100,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
 		NCBITaxonTerm conditionTaxon = null;
 		if (StringUtils.isNotBlank(dto.getConditionTaxonCurie())) {
-			conditionTaxon = ncbiTaxonTermDAO.find(dto.getConditionTaxonCurie());
-			if (conditionTaxon == null) {
-				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxonCurie());
-			}
+			conditionTaxon = ncbiTaxonTermService.getTaxonFromDB(dto.getConditionTaxonCurie());
 			if (conditionTaxon == null)
 				ecResponse.addErrorMessage("condition_taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionTaxonCurie() + ")");
 		}

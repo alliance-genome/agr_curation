@@ -1,6 +1,6 @@
 [
   {
-    "curie": "VARIANTTEST:IV04",
+    "mod_entity_id": "VARIANTTEST:IV04",
     "taxon_curie": "NCBITaxon:6239",
     "variant_type_curie": "SO:Invalid",
     "variant_status_name": "status_test",

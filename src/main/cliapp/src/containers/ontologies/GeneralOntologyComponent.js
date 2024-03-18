@@ -3,7 +3,7 @@ import { Toast } from 'primereact/toast';
 import { NameTemplate } from './NameTemplate';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { DefinitionTemplate } from './DefinitionTemplate';
-import { BooleanTemplate } from '../../components/BooleanTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { GenericDataTree } from '../../components/GenericDataTree';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -72,6 +72,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		{
 			field: "curie",
 			header: "Curie",
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig
 		}
 	);
@@ -79,6 +80,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		{
 			field: "name",
 			header: "Name",
+			sortable: true,
 			body: (rowData) => <NameTemplate rowData={rowData}/>,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
@@ -88,6 +90,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "definition",
 				header: "Definition",
+				sortable: true,
 				body: (rowData) => <DefinitionTemplate rowData={rowData} />,
 				filterConfig: FILTER_CONFIGS.definitionFilterConfig
 			},
@@ -98,6 +101,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "abbreviation",
 				header: "Abbreviation",
+				sortable: true,
 				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig
 			}
 		);
@@ -107,6 +111,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			{
 				field: "namespace",
 				header: "Name Space",
+				sortable: true,
 				filterConfig: FILTER_CONFIGS.namespaceFilterConfig
 			}
 		);
@@ -116,6 +121,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			field: "synonyms.name",
 			header: "Synonyms",
 			body: synonymsTemplate,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig
 		}
 	);
@@ -123,6 +129,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		{
 			field: "secondaryIdentifiers",
 			header: "Secondary IDs",
+			sortable: true,
 			body: secondaryIdsTemplate,
 			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig
 		}
@@ -131,6 +138,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		{
 			field: "obsolete",
 			header: "Obsolete",
+			sortable: true,
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig
 		}

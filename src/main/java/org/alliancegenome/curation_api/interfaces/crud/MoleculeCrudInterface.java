@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.CurieObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Molecule;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Molecules")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface MoleculeCrudInterface extends BaseCurieCrudInterface<Molecule> {
+public interface MoleculeCrudInterface extends CurieObjectCrudInterface<Molecule> {
 
 	@POST
 	@Path("/bulk/moleculefile")

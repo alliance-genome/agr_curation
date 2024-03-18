@@ -1,6 +1,6 @@
 [
   {
-    "curie": "GENETEST:IV15",
+    "mod_entity_id": "GENETEST:IV15",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": false,

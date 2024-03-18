@@ -1,6 +1,6 @@
 [
   {
-    "curie": "AGMTEST:MR02",
+    "mod_entity_id": "AGMTEST:MR02",
     "name": "TestAgm4",
     "internal": true,
     "obsolete": false,

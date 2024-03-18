@@ -20,8 +20,9 @@ public class BiologicalEntityTypeBridge implements TypeBinder {
 
 	@Override
 	public void bind(TypeBindingContext context) {
-		context.dependencies().use("curie").use("taxon");
-
+		
+		context.dependencies().useRootOnly();
+		
 		IndexSchemaElement schemaElement = context.indexSchemaElement();
 		
 		IndexFieldType<String> type = context.typeFactory().asString().analyzer("autocompleteAnalyzer").searchAnalyzer("autocompleteSearchAnalyzer").toIndexFieldType();

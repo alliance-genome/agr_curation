@@ -1,7 +1,7 @@
 [
   {
     "mod_entity_id": "DATEST:Annot0002",
-    "allele_curie": "DATEST:Allele0001",
+    "allele_identifier": "DATEST:Allele0001",
     "do_term_curie": "DATEST:Disease0001",
     "disease_relation_name": "is_implicated_in",
     "data_provider_dto": {

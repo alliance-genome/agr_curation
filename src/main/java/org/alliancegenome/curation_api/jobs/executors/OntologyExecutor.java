@@ -25,6 +25,7 @@ import org.alliancegenome.curation_api.services.ontology.DpoTermService;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
+import org.alliancegenome.curation_api.services.ontology.GenoTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.HpTermService;
 import org.alliancegenome.curation_api.services.ontology.MaTermService;
@@ -106,6 +107,7 @@ public class OntologyExecutor {
 	@Inject ClTermService clTermService;
 	@Inject CmoTermService cmoTermService;
 	@Inject BspoTermService bspoTermService;
+	@Inject GenoTermService genoTermService;
 
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject LoadProcessDisplayService loadProcessDisplayService;
@@ -114,25 +116,21 @@ public class OntologyExecutor {
 		bulkLoadFile.setRecordCount(0);
 
 		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-		BaseOntologyTermService service = null;
 		OntologyBulkLoadType ontologyType = bulkLoadFile.getBulkLoad().getOntologyType();
 
 		switch (ontologyType) {
 			case ZECO -> {
 				config.setLoadOnlyIRIPrefix("ZECO");
-				service = zecoTermService;
 				processTerms(bulkLoadFile, zecoTermService, config);
 			}
 			case EMAPA -> {
 				config.getAltNameSpaces().add("anatomical_structure");
-				service = emapaTermService;
 				processTerms(bulkLoadFile, emapaTermService, config);
 			}
 			case GO -> {
 				config.getAltNameSpaces().add("biological_process");
 				config.getAltNameSpaces().add("molecular_function");
 				config.getAltNameSpaces().add("cellular_component");
-				service = goTermService;
 				processTerms(bulkLoadFile, goTermService, config);
 			}
 			case SO -> processTerms(bulkLoadFile, soTermService, config);
@@ -232,6 +230,10 @@ public class OntologyExecutor {
 				config.setLoadOnlyIRIPrefix("BSPO");
 				processTerms(bulkLoadFile, bspoTermService, config);
 			}
+			case GENO -> {
+				config.setLoadOnlyIRIPrefix("GENO");
+				processTerms(bulkLoadFile, genoTermService, config);
+			}
 			default -> {
 				log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 				throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
@@ -246,7 +248,7 @@ public class OntologyExecutor {
 
 	private void processTerms(BulkLoadFile bulkLoadFile, OntologyBulkLoadType ontologyType, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
 
-		GenericOntologyLoadHelper loader = new GenericOntologyLoadHelper(ontologyType.getClazz(), config);
+		GenericOntologyLoadHelper<? extends OntologyTerm> loader = new GenericOntologyLoadHelper<>(ontologyType.getClazz(), config);
 
 		Map<String, ? extends OntologyTerm> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 
@@ -268,8 +270,19 @@ public class OntologyExecutor {
 		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
+			//Thread.sleep(5000);
 			ph1.progressProcess();
 		}
 		ph1.finishProcess();
+		
+		ProcessDisplayHelper ph2 = new ProcessDisplayHelper(10000);
+		ph.addDisplayHandler(loadProcessDisplayService);
+		ph2.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
+		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+			service.processCounts(entry.getValue());
+			//Thread.sleep(5000);
+			ph2.progressProcess();
+		}
+		ph2.finishProcess();
 	}
 }

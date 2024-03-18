@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.not;
 import java.time.OffsetDateTime;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,12 +36,13 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 	
 	private String constructModEntityId = "WB:Construct0001";
 	private String relationName = "is_regulated_by";
-	private String geneCurie = "GENETEST:Gene0001";
+	private String geneModEntityId = "GENETEST:Gene0001";
 	private String reference = "AGRKB:000000001";
 	private String reference2 = "AGRKB:000000021";
 	private String noteType = "comment";
 	private String noteType2 = "test_construct_component_summary";
-	private Long constructId;
+	private Construct construct;
+	private Gene gene;
 	
 	@BeforeEach
 	public void init() {
@@ -52,24 +55,29 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 	private final String constructGenomicEntityAssociationBulkPostEndpoint = "/api/constructgenomicentityassociation/bulk/WB/associationFile";
 	private final String constructGenomicEntityAssociationGetEndpoint = "/api/constructgenomicentityassociation/findBy";
 	private final String constructGenomicEntityAssociationTestFilePath = "src/test/resources/bulk/CA01_construct_genomic_entity_association/";
-	private final String constructGetEndpoint = "/api/construct/findBy/";
+	private final String constructGetEndpoint = "/api/construct/";
 	private final String geneGetEndpoint = "/api/gene/";
 
+	private void loadRequiredEntities() throws Exception {
+		gene = getGene(geneModEntityId);
+		construct = getConstruct(constructModEntityId);
+	}
+	
 	@Test
 	@Order(1)
 	public void constructGenomicEntityAssociationBulkUploadCheckFields() throws Exception {
-		constructId = getConstruct(constructModEntityId).getId();
+		loadRequiredEntities();
 		
 		checkSuccessfulBulkLoad(constructGenomicEntityAssociationBulkPostEndpoint, constructGenomicEntityAssociationTestFilePath + "AF_01_all_fields.json");
 	
 		RestAssured.given().
 			when().
-			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + geneCurie).
+			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct.getId() + "&relationName=" + relationName + "&genomicEntityId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.objectGenomicEntity.curie", is(geneCurie)).
-			body("entity.subjectConstruct.modEntityId", is(constructModEntityId)).
+			body("entity.constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructAssociationSubject.modEntityId", is(constructModEntityId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference)).
 			body("entity.internal", is(true)).
@@ -96,18 +104,18 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 			body("entity.modEntityId", is(constructModEntityId)).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(geneCurie)).
-			body("entity.constructGenomicEntityAssociations[0].subjectConstruct", not(hasKey("constructGenomicEntityAssociations")));
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociations[0].constructAssociationSubject", not(hasKey("constructGenomicEntityAssociations")));
 		
 		RestAssured.given().
 			when().
-			get(geneGetEndpoint + geneCurie).
+			get(geneGetEndpoint + geneModEntityId).
 			then().
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1)).
 			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity.curie", is(geneCurie)).
-			body("entity.constructGenomicEntityAssociations[0].objectGenomicEntity", not(hasKey("constructGenomicEntityAssociations")));
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
+			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject", not(hasKey("constructGenomicEntityAssociations")));
 	}
 	
 	@Test
@@ -117,11 +125,11 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 	
 		RestAssured.given().
 			when().
-			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + geneCurie).
+			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct.getId() + "&relationName=" + relationName + "&genomicEntityId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relation.name", is(relationName)).
-			body("entity.objectGenomicEntity.curie", is(geneCurie)).
+			body("entity.constructGenomicEntityAssociationObject.modEntityId", is(geneModEntityId)).
 			body("entity.evidence", hasSize(1)).
 			body("entity.evidence[0].curie", is(reference2)).
 			body("entity.internal", is(false)).
@@ -149,7 +157,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 		
 		RestAssured.given().
 			when().
-			get(geneGetEndpoint + geneCurie).
+			get(geneGetEndpoint + geneModEntityId).
 			then().
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1));
@@ -195,7 +203,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 		
 		RestAssured.given().
 			when().
-			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + geneCurie).
+			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct.getId() + "&relationName=" + relationName + "&genomicEntityId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("createdBy"))).
@@ -212,7 +220,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 		
 		RestAssured.given().
 			when().
-			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + geneCurie).
+			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct.getId() + "&relationName=" + relationName + "&genomicEntityId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
@@ -228,7 +236,7 @@ public class ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCas
 		
 		RestAssured.given().
 			when().
-			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + constructId + "&relationName=" + relationName + "&genomicEntityCurie=" + geneCurie).
+			get(constructGenomicEntityAssociationGetEndpoint + "?constructId=" + construct.getId() + "&relationName=" + relationName + "&genomicEntityId=" + gene.getId()).
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("createdBy"))).

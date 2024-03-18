@@ -1,6 +1,6 @@
 [
   {
-    "curie": "AGMTEST:MR06",
+    "mod_entity_id": "AGMTEST:MR06",
     "subtype_name": "fish",
     "name": "TestAgm1",
     "taxon_curie": "NCBITaxon:6239",

@@ -51,8 +51,8 @@ public class AlleleGeneAssociationCrudController extends
 		return alleleGeneAssociationExecutor.runLoad(dataProvider, associations);
 	}
 
-	public ObjectResponse<AlleleGeneAssociation> getAssociation(String alleleCurie, String relationName,
-			String geneCurie) {
-		return alleleGeneAssociationService.getAssociation(alleleCurie, relationName, geneCurie);
+	public ObjectResponse<AlleleGeneAssociation> getAssociation(Long alleleId, String relationName,
+			Long geneId) {
+		return alleleGeneAssociationService.getAssociation(alleleId, relationName, geneId);
 	}
 }

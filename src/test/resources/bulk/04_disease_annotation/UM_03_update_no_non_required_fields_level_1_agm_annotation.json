@@ -1,7 +1,7 @@
 [
   {
     "mod_entity_id": "DATEST:Annot0003",
-    "agm_curie": "DATEST:AGM0001",
+    "agm_identifier": "DATEST:AGM0001",
     "do_term_curie": "DATEST:Disease0001",
     "data_provider_dto": {
       "internal": false,

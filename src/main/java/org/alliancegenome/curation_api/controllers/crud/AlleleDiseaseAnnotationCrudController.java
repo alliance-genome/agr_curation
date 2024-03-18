@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExe
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
 
 import jakarta.annotation.PostConstruct;
@@ -30,8 +31,11 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 		setService(alleleDiseaseAnnotationService);
 	}
 
-	@Override
 	public APIResponse updateAlleleDiseaseAnnotations(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
 		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
+	}
+	
+	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifierString) {
+		return alleleDiseaseAnnotationService.get(identifierString);
 	}
 }

@@ -9,6 +9,7 @@ import { DashboardPage } from './containers/dashboardPage';
 import { DataLoadsPage } from './containers/dataLoadsPage/';
 import { ReportsPage } from './containers/reportsPage/';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
+import { PhenotypeAnnotationsPage } from './containers/phenotypeAnnotationsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
@@ -45,11 +46,12 @@ export default (
 		<SecureRoute path="/dataloads" render={() => <ErrorBoundary><DataLoadsPage /></ErrorBoundary>} />
 		<SecureRoute path="/reports" render={() => <ErrorBoundary><ReportsPage /></ErrorBoundary>} />
 		<SecureRoute path="/diseaseAnnotations" render={() => <ErrorBoundary><DiseaseAnnotationsPage /></ErrorBoundary>} />
+		<SecureRoute path="/phenotypeAnnotations" render={() => <ErrorBoundary><PhenotypeAnnotationsPage /></ErrorBoundary>} />
 		<SecureRoute path="/experimentalConditions" render={() => <ErrorBoundary><ExperimentalConditionsPage /></ErrorBoundary>} />
 		<SecureRoute path="/conditionRelations" render={() => <ErrorBoundary><ConditionRelationPage /></ErrorBoundary>} />
 		<SecureRoute path="/genes" render={() => <ErrorBoundary><GenesPage /></ErrorBoundary>} />
 		<SecureRoute path="/alleles" render={() => <ErrorBoundary><AllelesPage /></ErrorBoundary>} />
-		<SecureRoute path="/allele/:curie" render={() => <ErrorBoundary><AlleleDetailPage /></ErrorBoundary>} />
+		<SecureRoute path="/allele/:identifier" render={() => <ErrorBoundary><AlleleDetailPage /></ErrorBoundary>} />
 		<SecureRoute path="/variants" render={() => <ErrorBoundary><VariantsPage/></ErrorBoundary>} />
 		<SecureRoute path="/constructs" render={() => <ErrorBoundary><ConstructsPage/></ErrorBoundary>} />
 		<SecureRoute path="/molecules" render={() => <ErrorBoundary><MoleculesPage /></ErrorBoundary>} />
@@ -106,6 +108,7 @@ export default (
 		<SecureRoute path="/ontology/cl" render={() => <ErrorBoundary><GeneralOntologyComponent name="CL" endpoint="clterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/cmo" render={() => <ErrorBoundary><GeneralOntologyComponent name="CMO" endpoint="cmoterm" /></ErrorBoundary>} />
 		<SecureRoute path="/ontology/bspo" render={() => <ErrorBoundary><GeneralOntologyComponent name="BSPO" endpoint="bspoterm" /></ErrorBoundary>} />
+		<SecureRoute path="/ontology/geno" render={() => <ErrorBoundary><GeneralOntologyComponent name="GENO" endpoint="genoterm" /></ErrorBoundary>} />
 
 		<SecureRoute path="/fmsdatafiles" render={() => <ErrorBoundary><FMSComponent /></ErrorBoundary>} />
 		<SecureRoute path="/fmsdatatypes/:dataType" render={() => <ErrorBoundary><FMSDataTypesComponent /></ErrorBoundary>} />

@@ -49,8 +49,10 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
-		annotationIdsBefore.removeIf(Objects::isNull);
+		if (cleanUp) {
+			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
+			annotationIdsBefore.removeIf(Objects::isNull);
+		}
 		
 		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
@@ -59,7 +61,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		
 		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 		
-		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
+		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation", bulkLoadFile.getMd5Sum());
 
 		history.finishLoad();
 		
@@ -79,7 +81,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AGMDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
+	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AGMDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);

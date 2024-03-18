@@ -2,17 +2,12 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
@@ -20,23 +15,26 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationValidator;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class GeneValidator extends GenomicEntityValidator {
+public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	@Inject
 	GeneDAO geneDAO;
 	@Inject
-	SoTermDAO soTermDAO;
+	SoTermService soTermService;
 	@Inject
 	GeneSymbolSlotAnnotationValidator geneSymbolValidator;
 	@Inject
@@ -54,16 +52,17 @@ public class GeneValidator extends GenomicEntityValidator {
 
 	public Gene validateGeneUpdate(Gene uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not update Gene: [" + uiEntity.getCurie() + "]";
+		errorMessage = "Could not update Gene: [" + uiEntity.getIdentifier() + "]";
 
-		String curie = validateCurie(uiEntity);
-		if (curie == null) {
+		Long id = uiEntity.getId();
+		if (id == null) {
+			addMessageResponse("No Gene ID provided");
 			throw new ApiErrorException(response);
 		}
 
-		Gene dbEntity = geneDAO.find(curie);
+		Gene dbEntity = geneDAO.find(id);
 		if (dbEntity == null) {
-			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("id", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
 
@@ -74,11 +73,9 @@ public class GeneValidator extends GenomicEntityValidator {
 
 	public Gene validateGeneCreate(Gene uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not create Gene: [" + uiEntity.getCurie() + "]";
+		errorMessage = "Could not create Gene";
 
 		Gene dbEntity = new Gene();
-		String curie = validateCurie(uiEntity);
-		dbEntity.setCurie(curie);
 
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
@@ -87,28 +84,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
-		dbEntity.setTaxon(taxon);
-		
-		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
-		dbEntity.setDataProvider(dataProvider);
-
-		List<Long> currentXrefIds;
-		if (dbEntity.getCrossReferences() == null) {
-			currentXrefIds = new ArrayList<>();
-		} else {
-			currentXrefIds = dbEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
-		}
-		
-		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
-		dbEntity.setCrossReferences(crossReferences);
-		List<Long> mergedIds = crossReferences == null ? new ArrayList<>() :
-			crossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
-		for (Long currentXrefId : currentXrefIds) {
-			if (!mergedIds.contains(currentXrefId)) {
-				crossReferenceDAO.remove(currentXrefId);
-			}
-		}
+		dbEntity = (Gene) validateGenomicEntityFields(uiEntity, dbEntity);
 		
 		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
 		dbEntity.setGeneType(geneType);
@@ -160,16 +136,19 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {
-		if (uiEntity.getGeneType() == null)
+		if (ObjectUtils.isEmpty(uiEntity.getGeneType()))
 			return null;
 
-		SOTerm soTerm = soTermDAO.find(uiEntity.getGeneType().getCurie());
-		if (soTerm == null) {
-			addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
-			return null;
-		} else if (soTerm.getObsolete() && (dbEntity.getGeneType() == null || !soTerm.getCurie().equals(dbEntity.getGeneType().getCurie()))) {
-			addMessageResponse("geneType", ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
+		SOTerm soTerm = null;
+		if (StringUtils.isNotBlank(uiEntity.getGeneType().getCurie())) {
+			soTerm = soTermService.findByCurie(uiEntity.getGeneType().getCurie());
+			if (soTerm == null) {
+				addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
+				return null;
+			} else if (soTerm.getObsolete() && (dbEntity.getGeneType() == null || !soTerm.getId().equals(dbEntity.getGeneType().getId()))) {
+				addMessageResponse("geneType", ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
 		}
 		return soTerm;
 	}

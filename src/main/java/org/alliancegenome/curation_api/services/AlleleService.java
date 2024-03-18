@@ -18,7 +18,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
-import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,7 +31,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleDAO> {
+public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> {
 
 	@Inject AlleleDAO alleleDAO;
 	@Inject AlleleValidator alleleValidator;
@@ -73,17 +73,17 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	
 	@Override
 	@Transactional
-	public ObjectResponse<Allele> delete(String curie) {
-		removeOrDeprecateNonUpdated(curie, "Allele DELETE API call");
+	public ObjectResponse<Allele> delete(Long id) {
+		removeOrDeprecateNonUpdated(id, "Allele DELETE API call");
 		ObjectResponse<Allele> ret = new ObjectResponse<>();
 		return ret;
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdated(String curie, String loadDescription) {
-		Allele allele = alleleDAO.find(curie);
+	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+		Allele allele = alleleDAO.find(id);
 		if (allele != null) {
-			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
+			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(id);
 			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
@@ -112,19 +112,19 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 					alleleDAO.persist(allele);
 				}
 			} else {
-				alleleDAO.remove(curie);
+				alleleDAO.remove(id);
 			}
 		} else {
-			log.error("Failed getting allele: " + curie);
+			log.error("Failed getting allele: " + id);
 		}
 	}
 	
-	public List<String> getCuriesByDataProvider(String dataProvider) {
+	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
-		List<String> curies = alleleDAO.findFilteredIds(params);
-		curies.removeIf(Objects::isNull);
-		return curies;
+		List<Long> ids = alleleDAO.findFilteredIds(params);
+		ids.removeIf(Objects::isNull);
+		return ids;
 	}
 
 }

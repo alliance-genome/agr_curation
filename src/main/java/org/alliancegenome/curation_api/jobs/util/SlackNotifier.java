@@ -22,7 +22,7 @@ import jakarta.enterprise.inject.Instance;
 @ApplicationScoped
 public class SlackNotifier {
 	
-	@ConfigProperty(name = "net")
+	@ConfigProperty(name = "net", defaultValue="\"\"")
 	Instance<String> systemName;
 	@ConfigProperty(name = "slack.token")
 	Instance<String> slackToken;

@@ -48,18 +48,21 @@ public class GeneExecutor extends LoadFileExecutor {
 		List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 		if (genes == null) genes = new ArrayList<>();
 
-		List<String> geneCuriesLoaded = new ArrayList<>();
-		List<String> geneCuriesBefore = geneService.getCuriesByDataProvider(dataProvider);
-		log.debug("runLoad: Before: total " + geneCuriesBefore.size());
-
+		List<Long> geneIdsLoaded = new ArrayList<>();
+		List<Long> geneIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			geneIdsBefore.addAll(geneService.getIdsByDataProvider(dataProvider));
+			log.debug("runLoad: Before: total " + geneIdsBefore.size());
+		}
+		
 		bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 			
-		runLoad(history, genes, dataProvider, geneCuriesLoaded);
+		runLoad(history, genes, dataProvider, geneIdsLoaded);
 
-		if(cleanUp) runCleanup(geneService, history, bulkLoadFile, geneCuriesBefore, geneCuriesLoaded);
+		if(cleanUp) runCleanup(geneService, history, bulkLoadFile, geneIdsBefore, geneIdsLoaded);
 			
 		history.finishLoad();
 			
@@ -70,18 +73,18 @@ public class GeneExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad(String dataProviderName, List<GeneDTO> genes) {
 
-		List<String> curiesLoaded = new ArrayList<>();
+		List<Long> idsLoaded = new ArrayList<>();
 		
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-		runLoad(history, genes, dataProvider, curiesLoaded);
+		runLoad(history, genes, dataProvider, idsLoaded);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<GeneDTO> genes, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -90,8 +93,8 @@ public class GeneExecutor extends LoadFileExecutor {
 			try {
 				Gene gene = geneService.upsert(geneDTO, dataProvider);
 				history.incrementCompleted();
-				if (curiesAdded != null) {
-					curiesAdded.add(gene.getCurie());
+				if (idsAdded != null) {
+					idsAdded.add(gene.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

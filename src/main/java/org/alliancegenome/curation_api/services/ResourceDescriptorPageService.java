@@ -56,6 +56,9 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 			resourceRequestMap.put(resourceDescriptorPrefix, new Date());
 		}
 		
+		if (page != null && page.getResourceDescriptor() != null && page.getResourceDescriptor().getSynonyms() != null)
+			page.getResourceDescriptor().getSynonyms().size();
+				
 		return page;
 
 	}

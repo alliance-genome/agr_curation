@@ -38,7 +38,7 @@ const initialThemeState = {
 
 export const SiteLayout = (props) => {
 
-		const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState);
+		const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState, false);
 		const [staticMenuInactive, setStaticMenuInactive] = useState(false);
 		const [overlayMenuActive, setOverlayMenuActive] = useState(false);
 		const [mobileMenuActive, setMobileMenuActive] = useState(false);
@@ -222,6 +222,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
 												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
+												{ label: 'Phenotype Annotations', icon: 'pi pi-fw pi-home', to: '/phenotypeAnnotations' },
 												{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
 												{ label: 'Experiments', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
 												{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
@@ -267,6 +268,7 @@ export const SiteLayout = (props) => {
 												]
 											},
 											{ label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
+											{ label: 'Genotype Ontology (GENO)', icon: 'pi pi-fw pi-home', to: '/ontology/geno'},
 											{ label: 'Measurement Method Ontology (MMO)', icon: 'pi pi-fw pi-home', to: '/ontology/mmo' },
 											{ label: 'Molecular Interactions Ontology (MI)', icon: 'pi pi-fw pi-home', to: '/ontology/mi' },
 											{ label: 'Mouse Pathology Ontology (MPATH)', icon: 'pi pi-fw pi-home', to: '/ontology/mpath' },

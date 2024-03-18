@@ -46,13 +46,13 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 
 	public void deleteUnusedExperiments() {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		List<String> experimentIds = experimentalConditionDAO.findAllIds().getResults();
+		List<Long> experimentIds = experimentalConditionDAO.findAllIds().getResults();
 		pdh.startProcess("Delete unused Experiments", experimentIds.size());
-		experimentIds.forEach(idString -> {
+		experimentIds.forEach(ecId -> {
 			try {
-				experimentalConditionDAO.remove(Long.parseLong(idString));
+				experimentalConditionDAO.remove(ecId);
 			} catch (ApiErrorException ex) {
-				Log.debug("Skipping deletion of experiment " + idString + " as still in use");
+				Log.debug("Skipping deletion of experiment " + ecId + " as still in use");
 			}
 			pdh.progressProcess();
 		});

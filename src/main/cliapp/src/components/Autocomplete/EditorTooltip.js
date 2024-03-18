@@ -1,12 +1,16 @@
 import React from "react";
 import {Tooltip} from "primereact/tooltip";
+import { getIdentifier } from "../../utils/utils";
 
 export const EditorTooltip = ({op, autocompleteHoverItem}) => {
+	const identifier = getIdentifier(autocompleteHoverItem);
+	const identifierText = `Indentifier: ${identifier}`;
+
 	return (
 		<>
 			<Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack mouseTrackLeft={30}>
-				{autocompleteHoverItem.curie &&
-				<div>Curie: {autocompleteHoverItem.curie}
+				{identifier &&
+				<div>{identifierText}
 					<br/>
 				</div>
 				}

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 import io.quarkus.logging.Log;
@@ -28,7 +29,6 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		setSQLDao(organizationDAO);
 	}
 
-	@Override
 	public ObjectResponse<Organization> get(String orgId) {
 		
 		Organization org = null;
@@ -38,11 +38,11 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 				org = orgCacheMap.get(orgId);
 			} else {
 				Log.debug("Org not cached, caching org: (" + orgId + ")");
-				org = organizationDAO.find(orgId);
+				org = organizationDAO.find(Long.parseLong(orgId));
 				orgCacheMap.put(orgId, org);
 			}
 		} else {
-			org = organizationDAO.find(orgId);
+			org = organizationDAO.find(Long.parseLong(orgId));
 			orgRequest = new Date();
 		}
 
@@ -54,17 +54,22 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 	public ObjectResponse<Organization> getByAbbr(String abbr) {
 		
 		Organization org = null;
+		SearchResponse<Organization> orgResponse = null;
 		
 		if(orgRequest != null) {
 			if(orgCacheMap.containsKey(abbr)) {
 				org = orgCacheMap.get(abbr);
 			} else {
 				Log.debug("Org not cached, caching org: (" + abbr + ")");
-				org = organizationDAO.findByField("abbreviation", abbr).getSingleResult();
+				orgResponse = organizationDAO.findByField("abbreviation", abbr);
+				if (orgResponse != null)
+					org = orgResponse.getSingleResult();
 				orgCacheMap.put(abbr, org);
 			}
 		} else {
-			org = organizationDAO.findByField("abbreviation", abbr).getSingleResult();
+			orgResponse = organizationDAO.findByField("abbreviation", abbr);
+			if (orgResponse != null)
+				org = orgResponse.getSingleResult();
 			orgRequest = new Date();
 		}
 

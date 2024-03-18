@@ -37,11 +37,7 @@ public interface SystemControllerInterface {
 	@GET
 	@Path("/updatedauniqueids")
 	public void updateDiseaseAnnotationUniqueIds();
-	
-	@GET
-	@Path("/updaterefreshindex")
-	public void updateRefreshIntervalOnAllIndexes();
-	
+
 	@DELETE
 	@Path("/deletedUnusedConditionsAndExperiments")
 	public void deleteUnusedConditionsAndExperiments();

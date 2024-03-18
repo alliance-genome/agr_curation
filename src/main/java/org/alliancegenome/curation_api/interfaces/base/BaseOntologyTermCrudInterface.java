@@ -18,7 +18,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Tag(name = "CRUD - Ontology - Bulk")
-public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends BaseCurieCrudInterface<E> {
+public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends CurieObjectCrudInterface<E> {
 
 	@POST
 	@Path("/bulk/owl")

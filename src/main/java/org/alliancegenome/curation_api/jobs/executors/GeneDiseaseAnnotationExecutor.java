@@ -49,9 +49,11 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
-		annotationIdsBefore.addAll(geneDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
-		annotationIdsBefore.removeIf(Objects::isNull);
-
+		if (cleanUp) {
+			annotationIdsBefore.addAll(geneDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
+			annotationIdsBefore.removeIf(Objects::isNull);
+		}
+		
 		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());		
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		
@@ -59,7 +61,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		
 		runLoad(history, dataProvider, annotations, annotationIdsLoaded);
 		
-		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, bulkLoadFile.getMd5Sum());
+		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene disease annotation", bulkLoadFile.getMd5Sum());
 
 		history.finishLoad();
 		
@@ -79,7 +81,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	public void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<GeneDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
+	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<GeneDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -95,6 +97,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage(), e.getStackTrace()));
 			}

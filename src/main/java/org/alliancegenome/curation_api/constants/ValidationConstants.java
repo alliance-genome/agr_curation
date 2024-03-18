@@ -5,9 +5,11 @@ public final class ValidationConstants {
 	public static final String INVALID_MESSAGE = "Not a valid entry";
 	public static final String OBSOLETE_MESSAGE = "Obsolete term specified";
 	public static final String REQUIRED_MESSAGE = "Required field is empty";
+	public static final String REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE = "Field is required unless value is populated for ";
 	public static final String DEPENDENCY_MESSAGE_PREFIX = "Invalid without value for ";
 	public static final String NON_UNIQUE_MESSAGE = "Field value is not unique";
 	public static final String UNSUPPORTED_MESSAGE = "Unsupported value specified";
 	public static final String DUPLICATE_MESSAGE = "Duplicate entries found";
+	public static final String DUPLICATE_RELATION_PREFIX = "Entries found with same relation field - ";
 
 }

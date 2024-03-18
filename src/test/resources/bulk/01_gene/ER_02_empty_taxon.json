@@ -1,6 +1,6 @@
 [
   {
-    "curie": "GENETEST:ER02",
+    "mod_entity_id": "GENETEST:ER02",
     "taxon_curie": "",
     "internal": true,
     "obsolete": false,

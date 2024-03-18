@@ -1,6 +1,6 @@
 [
   {
-    "curie": "AGMTEST:Agm0001",
+    "mod_entity_id": "AGMTEST:Agm0001",
     "subtype_name": "genotype",
     "name": "TestAgm1a",
     "taxon_curie": "NCBITaxon:10116",

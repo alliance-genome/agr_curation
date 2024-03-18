@@ -1,22 +1,19 @@
 package org.alliancegenome.curation_api.interfaces.crud.bulkloads;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import io.smallrye.mutiny.Uni;
-import io.vertx.core.json.JsonArray;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Response;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import jakarta.ws.rs.core.MediaType;
+import com.fasterxml.jackson.annotation.JsonView;
 
-import java.util.ArrayList;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/bulkloadfilehistory")
 @Tag(name = "Bulk Load - CRUD")

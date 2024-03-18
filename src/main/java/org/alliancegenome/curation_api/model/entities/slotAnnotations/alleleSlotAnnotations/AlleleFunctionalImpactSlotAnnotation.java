@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -36,15 +35,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleFunctionalImpactSlotAnnotation", description = "POJO representing an allele functional impact slot annotation")
-@Table(indexes = { @Index(name = "allelefunctionalimpact_singleallele_curie_index", columnList = "singleallele_curie"),
-		@Index(name = "allelefunctionalimpact_phenotypeterm_curie_index", columnList = "phenotypeterm_curie")})
+@Table(indexes = { @Index(name = "allelefunctionalimpact_singleallele_index", columnList = "singleallele_id"),
+		@Index(name = "allelefunctionalimpact_phenotypeterm_index", columnList = "phenotypeterm_id")})
 public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
@@ -55,8 +53,8 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = { @Index(name = "allelefunctionalimpactslotannotation_id_index", columnList = "allelefunctionalimpactslotannotation_id"),
-		@Index(name = "allelefunctionalimpactslotannotation_functionalimpacts_id_index", columnList = "functionalimpacts_id"), })
+	@JoinTable(indexes = { @Index(name = "allelefunctionalimpactsa_vocabterm_afisa_index", columnList = "allelefunctionalimpactslotannotation_id"),
+		@Index(name = "allelefunctionalimpactsa_vocabterm_functionalimpacts_index", columnList = "functionalimpacts_id"), })
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<VocabularyTerm> functionalImpacts;
 

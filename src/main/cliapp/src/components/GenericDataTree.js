@@ -12,7 +12,6 @@ export const GenericDataTree = (props) => {
 	const [selectedTerm, setSelectedTerm] = useState();
 
 	const findNodeToModify = (nodes, id) => {
-
 		for(var node of nodes) {
 			if(node.children) {
 				var found = findNodeToModify(node.children, id);
@@ -32,7 +31,6 @@ export const GenericDataTree = (props) => {
 			setLoading(true);
 
 			const ontologyService = new OntologyService(props.endpoint);
-
 			let _nodes = [...nodes];
 
 			var modifyNode = findNodeToModify(_nodes, event.node.curie);
@@ -43,7 +41,12 @@ export const GenericDataTree = (props) => {
 					for(var node of res.data.entities) {
 						node.key = node.curie;
 						node.label = node.name + " (" + node.curie + ")";
-						node.leaf = false;
+						if(node?.childCount && node.childCount > 0) {
+							node.leaf = false;
+						}
+						else{
+							node.leaf = true;
+						}
 						modifyNode.children.push(node);
 					}
 					modifyNode.children.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : -1);
@@ -79,7 +82,12 @@ export const GenericDataTree = (props) => {
 			for(var node of res.data.entities) {
 				node.key = node.curie;
 				node.label = node.name + " (" + node.curie + ")";
-				node.leaf = false;
+				if(node?.childCount && node.childCount > 0) {
+					node.leaf = false;
+				}
+				else{
+					node.leaf = true;
+				}
 				if(node.obsolete === true) {
 					obsoleteNode.children.push(node);
 				} else {

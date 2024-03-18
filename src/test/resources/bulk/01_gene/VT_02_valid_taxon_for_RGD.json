@@ -1,6 +1,6 @@
 [
   {
-    "curie": "GENETEST:IT01",
+    "mod_entity_id": "GENETEST:IT01",
     "taxon_curie": "NCBITaxon:10116",
     "internal": true,
     "obsolete": true,

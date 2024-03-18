@@ -6,24 +6,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
-import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +28,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class VariantValidator extends GenomicEntityValidator {
+public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 	@Inject
 	VariantDAO variantDAO;
@@ -43,22 +39,23 @@ public class VariantValidator extends GenomicEntityValidator {
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject
-	SoTermDAO soTermDAO;
+	SoTermService soTermService;
 
 	private String errorMessage;
 
 	public Variant validateVariantUpdate(Variant uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not update Variant: [" + uiEntity.getCurie() + "]";
+		errorMessage = "Could not update Variant: [" + uiEntity.getIdentifier() + "]";
 
-		String curie = validateCurie(uiEntity);
-		if (curie == null) {
+		Long id = uiEntity.getId();
+		if (id == null) {
+			addMessageResponse("No Variant ID provided");
 			throw new ApiErrorException(response);
 		}
 
-		Variant dbEntity = variantDAO.find(curie);
+		Variant dbEntity = variantDAO.find(id);
 		if (dbEntity == null) {
-			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse("id", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
 
@@ -69,11 +66,9 @@ public class VariantValidator extends GenomicEntityValidator {
 
 	public Variant validateVariantCreate(Variant uiEntity) {
 		response = new ObjectResponse<>();
-		errorMessage = "Could not create Variant: [" + uiEntity.getCurie() + "]";
-
+		errorMessage = "Could not create Variant";
+		
 		Variant dbEntity = new Variant();
-		String curie = validateCurie(uiEntity);
-		dbEntity.setCurie(curie);
 
 		dbEntity = (Variant) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
@@ -82,28 +77,7 @@ public class VariantValidator extends GenomicEntityValidator {
 
 	public Variant validateVariant(Variant uiEntity, Variant dbEntity) {
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
-		dbEntity.setTaxon(taxon);
-		
-		DataProvider dataProvider = validateDataProvider(uiEntity, dbEntity);
-		dbEntity.setDataProvider(dataProvider);
-		
-		List<Long> currentXrefIds;
-		if (dbEntity.getCrossReferences() == null) {
-			currentXrefIds = new ArrayList<>();
-		} else {
-			currentXrefIds = dbEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
-		}
-		
-		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
-		dbEntity.setCrossReferences(crossReferences);
-		List<Long> mergedIds = crossReferences == null ? new ArrayList<>() :
-			crossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
-		for (Long currentXrefId : currentXrefIds) {
-			if (!mergedIds.contains(currentXrefId)) {
-				crossReferenceDAO.remove(currentXrefId);
-			}
-		}
+		dbEntity = (Variant) validateGenomicEntityFields(uiEntity, dbEntity);
 		
 		SOTerm variantType = validateVariantType(uiEntity, dbEntity);
 		dbEntity.setVariantType(variantType);
@@ -135,17 +109,20 @@ public class VariantValidator extends GenomicEntityValidator {
 	
 	public SOTerm validateVariantType(Variant uiEntity, Variant dbEntity) {
 		String field = "variantType";
-		if (ObjectUtils.isEmpty(uiEntity.getVariantType()) || StringUtils.isEmpty(uiEntity.getVariantType().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getVariantType())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		SOTerm variantType = soTermDAO.find(uiEntity.getVariantType().getCurie());
-		if (variantType == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		} else if (variantType.getObsolete() && (dbEntity.getVariantType() == null || !variantType.getCurie().equals(dbEntity.getVariantType().getCurie()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
+		SOTerm variantType = null;
+		if (StringUtils.isNotBlank(uiEntity.getVariantType().getCurie())) {
+			variantType = soTermService.findByCurie(uiEntity.getVariantType().getCurie());
+			if (variantType == null) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			} else if (variantType.getObsolete() && (dbEntity.getVariantType() == null || !variantType.getId().equals(dbEntity.getVariantType().getId()))) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
 		}
 		return variantType;
 	}
@@ -171,16 +148,19 @@ public class VariantValidator extends GenomicEntityValidator {
 	
 	public SOTerm validateSourceGeneralConsequence(Variant uiEntity, Variant dbEntity) {
 		String field = "sourceGeneralConsequence";
-		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence()) || StringUtils.isEmpty(uiEntity.getSourceGeneralConsequence().getCurie()))
+		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence()))
 			return null;
 		
-		SOTerm sourceGeneralConsequence = soTermDAO.find(uiEntity.getSourceGeneralConsequence().getCurie());
-		if (sourceGeneralConsequence == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		} else if (sourceGeneralConsequence.getObsolete() && (dbEntity.getSourceGeneralConsequence() == null || !sourceGeneralConsequence.getCurie().equals(dbEntity.getSourceGeneralConsequence().getCurie()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
+		SOTerm sourceGeneralConsequence = null;
+		if (StringUtils.isNotBlank(uiEntity.getSourceGeneralConsequence().getCurie())) {
+			sourceGeneralConsequence = soTermService.findByCurie(uiEntity.getSourceGeneralConsequence().getCurie());
+			if (sourceGeneralConsequence == null) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			} else if (sourceGeneralConsequence.getObsolete() && (dbEntity.getSourceGeneralConsequence() == null || !sourceGeneralConsequence.getId().equals(dbEntity.getSourceGeneralConsequence().getId()))) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
 		}
 		return sourceGeneralConsequence;
 	}

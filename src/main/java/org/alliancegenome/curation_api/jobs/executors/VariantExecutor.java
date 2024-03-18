@@ -43,18 +43,21 @@ public class VariantExecutor extends LoadFileExecutor {
 		
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		
-		List<String> variantCuriesLoaded = new ArrayList<>();
-		List<String> variantCuriesBefore = variantService.getCuriesByDataProvider(dataProvider.name());
-		Log.debug("runLoad: Before: total " + variantCuriesBefore.size());
+		List<Long> variantIdsLoaded = new ArrayList<>();
+		List<Long> variantIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			variantIdsBefore.addAll(variantService.getIdsByDataProvider(dataProvider.name()));
+			Log.debug("runLoad: Before: total " + variantIdsBefore.size());
+		}
 		
 		bulkLoadFile.setRecordCount(variants.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
 
-		runLoad(history, variants, dataProvider, variantCuriesLoaded);
+		runLoad(history, variants, dataProvider, variantIdsLoaded);
 			
-		if(cleanUp) runCleanup(variantService, history, bulkLoadFile, variantCuriesBefore, variantCuriesLoaded);
+		if(cleanUp) runCleanup(variantService, history, bulkLoadFile, variantIdsBefore, variantIdsLoaded);
 			
 		history.finishLoad();
 			
@@ -65,18 +68,18 @@ public class VariantExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad(String dataProviderName, List<VariantDTO> variants) {
 
-		List<String> curiesLoaded = new ArrayList<>();
+		List<Long> idsLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		runLoad(history, variants, dataProvider, curiesLoaded);
+		runLoad(history, variants, dataProvider, idsLoaded);
 		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<VariantDTO> variants, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<VariantDTO> variants, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -85,8 +88,8 @@ public class VariantExecutor extends LoadFileExecutor {
 			try {
 				Variant variant = variantService.upsert(variantDTO, dataProvider);
 				history.incrementCompleted();
-				if (curiesAdded != null) {
-					curiesAdded.add(variant.getCurie());
+				if (idsAdded != null) {
+					idsAdded.add(variant.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
