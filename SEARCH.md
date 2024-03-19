@@ -6,7 +6,7 @@ Endpoints are in the following structure
 
 POST /api/{object}/search
 
-{object} will be any of the objects that we have tables for in the UI and the datbase
+{object} will be any of the objects that we have tables for in the UI and the database
 
 ## Query Parameters
 
@@ -81,7 +81,7 @@ Filters will be "AND"ed together so in the above example "nameFilter" AND "obsol
 
 #### Fields
 
-Inside a single filter there can be multiple items listed. These items are the names of the fields in the linkML model starting with {object} and its field. These fields can be chanined together to get access to nested properties as in if {object} is a disease annotation then a field could be "diseaseAnnotationSubject.taxon.curie", which would query against the tax id that is on the subect of a disease annotation.
+Inside a single filter there can be multiple items listed. These items are the names of the fields in the linkML model starting with {object} and its field. These fields can be chanined together to get access to nested properties as in if {object} is a disease annotation then a field could be "diseaseAnnotationSubject.taxon.curie", which would query against the tax id that is on the subject of a disease annotation.
 
 Fields inside a single filter are "OR"ed together, in the above example for "obsoleteFilter" we are saying where field "obsolete" is false OR field "internal" is false.
 
@@ -111,7 +111,7 @@ In the context of a single filter we can specify that certain field needs to be 
 
 ### Sort Orders
 
-Sort orders is a list of objects that contain two fields on called "field" and the other called "order" field is the field in elasticSearch that we are going to order on which can also be a nest object field. Order is of two values 1 meaning assending and -1 descending.
+Sort orders is a list of objects that contain two fields on called "field" and the other called "order" field is the field in elasticSearch that we are going to order on which can also be a nest object field. Order is of two values 1 meaning ascending and -1 descending.
 
 ### Non Null Fields Table
 
@@ -123,7 +123,7 @@ This is a list of fields that we will aggregate the results on and add to the re
 
 ### Debug
 
-Deubg true will turn on some extra debugging in order to see the query getting sent to ElasticSearch and some duration statistics.
+Debug true will turn on some extra debugging in order to see the query getting sent to ElasticSearch and some duration statistics.
 
 ## Return Object "SearchResults"
 
