@@ -20,7 +20,7 @@ This will be the size of the page that comes back.
 
 ## POST Search Payload Example
 
-```javascript
+```json
 {
     "searchFilters": {
         "nameFilter": {
@@ -127,7 +127,7 @@ Debug true will turn on some extra debugging in order to see the query getting s
 
 ## Return Object "SearchResults"
 
-```javascript
+```json
 {
     "results": [
         { ... },
@@ -143,6 +143,7 @@ Debug true will turn on some extra debugging in order to see the query getting s
             "alliance": 14
         }
     }
+    "esQuery": "..."
     "totalResults": 1163,
     "returnedRecords": 5
 }
@@ -163,3 +164,137 @@ This is the count of the total results found on the whole query.
 ### Returned Results
 
 This is the count of the page of results, for each page should be the count that is in the result set. May be smaller then limit on the last page.
+
+### Examples
+
+POST /api/disease-annotation/search?limit=1&page=0
+
+Search Payload:
+
+```json
+{
+    "searchFilters": {
+        "internalFilter": {
+            "internal": {
+                "queryString": "false",
+                "tokenOperator": "OR"
+            }
+        },
+        "obsoleteFilter": {
+            "obsolete": {
+                "queryString": "false",
+                "tokenOperator": "OR"
+            }
+        },
+        "uniqueidFilter": {
+            "uniqueId": {
+                "queryString": "wb",
+                "tokenOperator": "AND"
+            }
+        }
+    },
+    "sortOrders": [
+        {
+            "field": "diseaseAnnotationSubject.symbol",
+            "order": 1
+        },
+        {
+            "field": "diseaseAnnotationSubject.name",
+            "order": 1
+        },
+        {
+            "field": "diseaseAnnotationSubject.modEntityId",
+            "order": 1
+        }
+    ],
+    "aggregations": [],
+    "nonNullFieldsTable": [],
+    "debug": "true"
+}
+```
+
+Return Payload
+
+```json
+{
+    "results": [
+        { ... }
+    ],
+    "totalResults": 1163,
+    "returnedRecords": 1,
+    "debug": "true",
+    "esQuery": "{\"query\":{\"bool\":{\"must\":[{\"simple_query_string\":{\"boost\":31000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"internal\"]}},{\"simple_query_string\":{\"boost\":21000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"obsolete\"]}},{\"simple_query_string\":{\"boost\":11000.0,\"query\":\"wb\",\"default_operator\":\"and\",\"fields\":[\"uniqueId\"]}},{\"match_all\":{}}],\"minimum_should_match\":\"0\"}},\"sort\":[{\"diseaseAnnotationSubject.symbol_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.name_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.modEntityId_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}}],\"docvalue_fields\":[\"_entity_type\"],\"_source\":false}"
+}
+```
+
+Destringify the esQuery:
+
+```json
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "simple_query_string": {
+                        "boost": 31000,
+                        "query": "false",
+                        "default_operator": "or",
+                        "fields": [
+                            "internal"
+                        ]
+                    }
+                },
+                {
+                    "simple_query_string": {
+                        "boost": 21000,
+                        "query": "false",
+                        "default_operator": "or",
+                        "fields": [
+                            "obsolete"
+                        ]
+                    }
+                },
+                {
+                    "simple_query_string": {
+                        "boost": 11000,
+                        "query": "wb",
+                        "default_operator": "and",
+                        "fields": [
+                            "uniqueId"
+                        ]
+                    }
+                },
+                {
+                    "match_all": {}
+                }
+            ],
+            "minimum_should_match": "0"
+        }
+    },
+    "sort": [
+        {
+            "diseaseAnnotationSubject.symbol_keyword": {
+                "order": "asc",
+                "unmapped_type": "keyword"
+            }
+        },
+        {
+            "diseaseAnnotationSubject.name_keyword": {
+                "order": "asc",
+                "unmapped_type": "keyword"
+            }
+        },
+        {
+            "diseaseAnnotationSubject.modEntityId_keyword": {
+                "order": "asc",
+                "unmapped_type": "keyword"
+            }
+        }
+    ],
+    "docvalue_fields": [
+        "_entity_type"
+    ],
+    "_source": false
+}
+```
+
