@@ -71,7 +71,7 @@ This will be the size of the page that comes back.
 
 ```
 
-### Search filters
+### Search filters (required)
 
 #### Filters
 
@@ -85,45 +85,45 @@ Inside a single filter there can be multiple items listed. These items are the n
 
 Fields inside a single filter are "OR"ed together, in the above example for "obsoleteFilter" we are saying where field "obsolete" is false OR field "internal" is false.
 
-##### Query String
+##### Query String (required)
 
 The queryString inside a field will be tokenized and a match will be performed on each token.
 
-##### Query Type
+##### Query Type (optional)
 
-Query type only has one option "matchQuery" this will do a "match" query in Elastic Search vs any other value it will do a simpleQueryString search instead.
+Query type only has one option "matchQuery" this will do a "match" query in Elastic Search vs any other value it will do a simpleQueryString search instead. Default is to use Simple Query String.
 
-##### Use Keyword Fields
+##### Use Keyword Fields (optional)
 
-This option will run against the _keyword fields vs the regular field names. In the above example for the uniqueId field the uniqueId_keyword field will be used instead.
+This option will run against the _keyword fields vs the regular field names. In the above example for the uniqueId field the uniqueId_keyword field will be used instead. Default is false.
 
-##### Token Operator
+##### Token Operator (optional)
 
-This option controls how the tokens are matched. Values are "AND" or "OR". So in the above example the name field will have to match pax6 OR pax
+This option controls how the tokens are matched. Values are "AND" or "OR". So in the above example the name field will have to match pax6 OR pax. Default value is AND.
 
-#### Non Null Fields
+#### Non Null Fields (optional)
 
 In the context of a single filter we can specify that certain fields needs to be populated, this will be AND'ed to the field criteria. As in this list of fields must have a non null value.
 
-#### Null Fields
+#### Null Fields (optional)
 
 In the context of a single filter we can specify that certain field needs to be empty or null, this will be AND'ed to the field criteria. As in this list of fields must have a non null value.
 
-### Sort Orders
+### Sort Orders (optional)
 
 Sort orders is a list of objects that contain two fields on called "field" and the other called "order" field is the field in elasticSearch that we are going to order on which can also be a nest object field. Order is of two values 1 meaning ascending and -1 descending.
 
-### Non Null Fields Table
+### Non Null Fields Table (optional)
 
 This is a list of fields that have to be non null across the whole "table" or query. This will filter out all records that have null's in the fields in this list.
 
-### Aggregations
+### Aggregations (optional)
 
 This is a list of fields that will be aggregated in the results. This will be in the returned object see the response object below.
 
-### Debug
+### Debug (optional)
 
-Debug true will turn on some extra debugging in order to see the query getting sent to ElasticSearch and some duration statistics.
+Debug true will turn on some extra debugging in order to see the query getting sent to ElasticSearch and some duration statistics. Default value is false.
 
 ## Return Object "SearchResults"
 
