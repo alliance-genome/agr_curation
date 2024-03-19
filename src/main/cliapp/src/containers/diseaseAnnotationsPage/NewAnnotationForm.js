@@ -78,6 +78,8 @@ export const NewAnnotationForm = ({
 	const areUiErrors = useRef(false);
 	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "NOT", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
+	const modFormFields = getModFormFields("DiseaseAnnotations");
+	newAnnotationOptionalFields = newAnnotationOptionalFields.filter(field => !modFormFields.includes(field));
 	let defaultUserSettings = getDefaultFormState("DiseaseAnnotations", newAnnotationOptionalFields, undefined);
 	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsFormSettings', defaultUserSettings, false);
 	const { selectedFormFields } = settingsKey;
@@ -415,7 +417,6 @@ export const NewAnnotationForm = ({
 	}
 
 	const setToModDefault = () => {
-		const modFormFields = getModFormFields("DiseaseAnnotations");
 		updateFormFields(modFormFields);
 	}
 
@@ -454,6 +455,8 @@ export const NewAnnotationForm = ({
 	const labelColumnSize = "col-3";
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
+	const requiredfield = <font color={'red'}>*</font>;
+	let required = '';
 
 	return(
 		<div>
@@ -487,11 +490,11 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFormFields?.includes("Asserted Genes") && (
+					{(modFormFields.includes("Asserted Genes") ? required = requiredfield : (required = '', selectedFormFields?.includes("Asserted Genes"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="assertedGenes">Asserted Genes</label>
+									<label htmlFor="assertedGenes">{required}Asserted Genes</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<AutocompleteFormMultiEditor
@@ -517,11 +520,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Asserted Allele") && (
+					{(modFormFields.includes("Asserted Allele") ? required = requiredfield : (required = '', selectedFormFields?.includes("Asserted Allele"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="assertedAllele">Asserted Allele</label>
+									<label htmlFor="assertedAllele">{required}Asserted Allele</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<AutocompleteFormEditor
@@ -567,10 +570,12 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
+					{(modFormFields.includes("Negated") ? required = requiredfield : (required = '', selectedFormFields?.includes("Negated"))) && (
 					{selectedFormFields?.includes("NOT") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
+									<label htmlFor="negated">{required}Negated</label>
 									<label htmlFor="negated">NOT</label>
 								</div>
 								<div className={widgetColumnSize}>
@@ -651,11 +656,11 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFormFields?.includes("With") && (
+					{(modFormFields.includes("With") ? required = requiredfield : (required = '', selectedFormFields?.includes("With"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="with">With</label>
+									<label htmlFor="with">{required}With</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<AutocompleteFormMultiEditor
@@ -680,11 +685,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Related Notes") && (
+					{(modFormFields.includes("Related Notes") ? required = requiredfield : (required = '', selectedFormFields?.includes("Related Notes"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label>Related Notes</label>
+									<label>{required}Related Notes</label>
 								</div>
 								<div className={classNames('col-9', {'border-2 border-red-300': submitted && errorMessages.relatedNotes && Object.keys(relatedNotesErrorMessages).length === 0})}>
 									<RelatedNotesForm
@@ -701,11 +706,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Experimental Conditions") && (
+					{(modFormFields.includes("Experimental Conditions") ? required = requiredfield : (required = '', selectedFormFields?.includes("Experimental Conditions"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label>Experimental Conditions</label>
+									<label>{required}Experimental Conditions</label>
 								</div>
 								<div className={classNames('col-9')} >
 									<ConditionRelationsForm
@@ -722,11 +727,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Experiments") && (
+					{(modFormFields.includes("Experiments") ? required = requiredfield : (required = '', selectedFormFields?.includes("Experiments"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="experiments">Experiments</label>
+									<label htmlFor="experiments">{required}Experiments</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<ConditionRelationHandleFormDropdown
@@ -748,11 +753,11 @@ export const NewAnnotationForm = ({
 					)}
 
 
-					{selectedFormFields?.includes("Genetic Sex") && (
+					{(modFormFields.includes("Genetic Sex") ? required = requiredfield : (required = '', selectedFormFields?.includes("Genetic Sex"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="geneticSex">Genetic Sex</label>
+									<label htmlFor="geneticSex">{required}Genetic Sex</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<ControlledVocabularyFormDropdown
@@ -771,11 +776,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Disease Qualifiers") && (
+					{(modFormFields.includes("Disease Qualifiers") ? required = requiredfield : (required = '', selectedFormFields?.includes("Disease Qualifiers"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="diseaseQualifiers">Disease Qualifiers</label>
+									<label htmlFor="diseaseQualifiers">{required}Disease Qualifiers</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<ControlledVocabularyFormMultiSelectDropdown
@@ -793,11 +798,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("SGD Strain Background") && (
+					{(modFormFields.includes("SGD Strain Background") ? required = requiredfield : (required = '', selectedFormFields?.includes("SGD Strain Background"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="sgdStrainBackground">SGD Strain Background</label>
+									<label htmlFor="sgdStrainBackground">{required}SGD Strain Background</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<AutocompleteFormEditor
@@ -823,11 +828,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Annotation Type") && (
+					{(modFormFields.includes("Annotation Type") ? required = requiredfield : (required = '', selectedFormFields?.includes("Annotation Type"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="annotationType">Annotation Type</label>
+									<label htmlFor="annotationType">{required}Annotation Type</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<ControlledVocabularyFormDropdown
@@ -847,11 +852,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Genetic Modifier Relation") && (
+					{(modFormFields.includes("Genetic Modifier Relation") ? required = requiredfield : (required = '', selectedFormFields?.includes("Genetic Modifier Relation"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="diseaseGeneticModifierRelation">Genetic Modifier Relation</label>
+									<label htmlFor="diseaseGeneticModifierRelation">{required}Genetic Modifier Relation</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<ControlledVocabularyFormDropdown
@@ -872,11 +877,11 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Genetic Modifiers") && (
+					{(modFormFields.includes("Genetic Modifiers") ? required = requiredfield : (required = '', selectedFormFields?.includes("Genetic Modifiers"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="diseaseGeneticModifier">Genetic Modifiers</label>
+									<label htmlFor="diseaseGeneticModifier">{required}Genetic Modifiers</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<AutocompleteFormMultiEditor
@@ -899,7 +904,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFormFields?.includes("Internal") && (
+					{(modFormFields.includes("Internal") ? required = requiredfield : (required = '', selectedFormFields?.includes("Internal"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
