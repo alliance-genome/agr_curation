@@ -64,7 +64,7 @@ This will be the size of the page that comes back.
             "order": 1
         }
     ],
-    "aggregations": [],
+    "aggregations": ["secondaryDataProvider.sourceOrganization.abbreviation"],
     "nonNullFieldsTable": [],
     "debug": "true",
 }
@@ -119,7 +119,7 @@ This is a list of fields that have to be non null across the whole "table" or qu
 
 ### Aggregations
 
-This is a list of fields that we will aggregate the results on and add to the returned object more about this in the response object below.
+This is a list of fields that will be aggregated in the results. This will be in the returned object see the response object below.
 
 ### Debug
 
@@ -127,3 +127,39 @@ Debug true will turn on some extra debugging in order to see the query getting s
 
 ## Return Object "SearchResults"
 
+```javascript
+{
+    "results": [
+        { ... },
+        { ... },
+        { ... },
+        { ... },
+        { ... }
+    ],
+    "aggregations": {
+        "secondaryDataProvider.sourceOrganization.abbreviation": {
+            "rgd": 11297,
+            "omim": 200,
+            "alliance": 14
+        }
+    }
+    "totalResults": 1163,
+    "returnedRecords": 5
+}
+```
+
+### Results
+
+This is the list of objects coming back from the system.
+
+### Aggregations
+
+Aggregations will be an object containing fields by field name. Each entry will have all the values under, with the counts.
+
+### Total Results
+
+This is the count of the total results found on the whole query.
+
+### Returned Results
+
+This is the count of the page of results, for each page should be the count that is in the result set. May be smaller then limit on the last page.
