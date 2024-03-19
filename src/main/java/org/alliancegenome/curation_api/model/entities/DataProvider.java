@@ -48,10 +48,11 @@ public class DataProvider extends AuditedObject {
 	private CrossReference crossReference;
 
 	public String getSourceUrl() {
-		List<String> urlExpceptionHandler = List.of("MGI", "SGD", "OMIM");
+		List<String> urlExceptionHandler = List.of("MGI", "SGD", "OMIM");
 		if (crossReference != null) {
-			String urlTemplate = crossReference.getResourceDescriptorPage().getUrlTemplate();
-			if (urlExpceptionHandler.contains(sourceOrganization.getAbbreviation())) {
+			ResourceDescriptorPage resourceDescriptorPage = crossReference.getResourceDescriptorPage();
+			String urlTemplate = resourceDescriptorPage != null ? resourceDescriptorPage.getUrlTemplate() : "";
+			if (urlExceptionHandler.contains(sourceOrganization.getAbbreviation())) {
 				// remove the prefix in the template as the prefix is already in the curie.
 				urlTemplate = urlTemplate.replace(sourceOrganization.getAbbreviation() + ":", "");
 			}
