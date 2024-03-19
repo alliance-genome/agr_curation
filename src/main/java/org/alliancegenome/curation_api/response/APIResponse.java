@@ -21,6 +21,7 @@ public class APIResponse {
 	@JsonView({ View.FieldsOnly.class })
 	private Map<String, String> errorMessages;
 	
+	@org.eclipse.microprofile.graphql.Ignore
 	@JsonView({ View.FieldsOnly.class })
 	private Map<String, Object> supplementalData = new HashMap<>();
 
