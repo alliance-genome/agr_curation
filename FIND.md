@@ -22,7 +22,7 @@ This will be the size of the page that comes back.
 
 ```javascript
 {
-    "vocabulary.vocabularyLabel": "disease_genetic_modifier_relation",
+    "vocabulary.vocabularyLabel": "disease_qualifier",
     "debug": "true"
 }
 ```
@@ -40,31 +40,16 @@ Debug true will turn on some extra debugging in order to see the query getting s
 ```javascript
 {
     "results": [
-        { ... },
-        { ... },
-        { ... },
-        { ... },
-        { ... }
     ],
-    "aggregations": {
-        "secondaryDataProvider.sourceOrganization.abbreviation": {
-            "rgd": 11297,
-            "omim": 200,
-            "alliance": 14
-        }
-    }
-    "totalResults": 1163,
-    "returnedRecords": 5
+    "totalResults": 7,
+    "returnedRecords": 7,
+    "dbQuery": "select alias_1764182562 from org.alliancegenome.curation_api.model.entities.VocabularyTerm alias_1764182562 where alias_1764182562.vocabulary.vocabularyLabel = disease_qualifier order by alias_1764182562.id asc nulls last"
 }
 ```
 
 ### Results
 
 This is the list of objects coming back from the system.
-
-### Aggregations
-
-Aggregations will be an object containing fields by field name. Each entry will have all the values under, with the counts.
 
 ### Total Results
 
@@ -73,3 +58,7 @@ This is the count of the total results found on the whole query.
 ### Returned Results
 
 This is the count of the page of results, for each page should be the count that is in the result set. May be smaller then limit on the last page.
+
+### DB Query
+
+This is the JQL query that will be run against the database.
