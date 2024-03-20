@@ -6,14 +6,14 @@ const modTableSettings = {
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Experimental Conditions", "Disease Qualifiers", "Inferred Gene",
 				"Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By",
 				"Date Created", "Internal", "Obsolete",
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Experimental Conditions", "Disease Qualifiers",
 				"Asserted Genes", "Asserted Allele"
 			],
@@ -35,13 +35,13 @@ const modTableSettings = {
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-				"Subject", "Disease Relation", "Negated", "Disease",
+				"Subject", "Disease Relation", "NOT", "Disease",
 				"Reference", "Evidence Code", "With", "SGD Strain Background",
 				"Annotation Type", "Data Provider", "Updated By", "Date Updated",
 				"Created By", "Date Created", "Internal", "Obsolete"
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With", "SGD Strain Background", "Annotation Type"
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code", "With", "SGD Strain Background", "Annotation Type"
 			],
 			filters: {
 				dataProviderFilter: {
@@ -72,13 +72,13 @@ const modTableSettings = {
 			],
 			selectedColumnNames: [
 				"MOD Annotation ID", "Subject", "Asserted Genes", "Disease Relation",
-				"Negated", "Disease", "Reference", "Evidence Code", "Related Notes",
+				"NOT", "Disease", "Reference", "Evidence Code", "Related Notes",
 				"Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation",
 				"Genetic Modifiers", "Data Provider", "Updated By", "Date Updated", "Created By",
 				"Date Created", "Internal", "Obsolete",
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation", "Genetic Modifiers", "Asserted Genes"
 			],
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
@@ -91,13 +91,13 @@ const modTableSettings = {
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-				"Obsolete", "Reference", "Subject", "Negated",
+				"Obsolete", "Reference", "Subject", "NOT",
 				"Disease Relation", "Disease", "Evidence Code", "Inferred Gene",
 				"Genetic Modifier Relation", "Genetic Modifiers", "Related Notes", "Data Provider",
 				"Updated By", "Date Updated", "Created By", "Date Created"
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Genetic Modifier Relation", "Genetic Modifiers"
 			],
 			filters: {
@@ -154,6 +154,7 @@ const modTableSettings = {
 				"Date Created", "Obsolete"
 			],
 			selectedFormFields: [
+				"Subject","Disease Relation", "Disease", "Reference","Evidence Code",
 				"Experimental Conditions"
 			],
 			filters: {
@@ -175,12 +176,12 @@ const modTableSettings = {
 			multiSortMeta: [],
 			selectedColumnNames: [
 				"Internal", "Obsolete", "Subject", "Disease Relation",
-				"Negated", "Disease", "Reference", "Evidence Code",
+				"NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Inferred Gene", "Inferred Allele", "Data Provider",
 				"Updated By", "Date Updated", "Created By", "Date Created",
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes"
 			],
 			filters: {
@@ -204,13 +205,13 @@ const modTableSettings = {
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-				"Unique ID", "MOD Annotation ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With",
+				"Unique ID", "MOD Annotation ID", "Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code", "With",
 				"Related Notes", "Experiments", "Experimental Conditions", "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type",
 				"Genetic Modifier Relation", "Genetic Modifiers", "Inferred Gene", "Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By", "Date Created", "Internal", "Obsolete"
 			],
 			selectedFormFields: [
-				"Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+				"Asserted Genes", "Asserted Allele", "NOT", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 				"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers", "Internal"
 			],
 			filters: {},

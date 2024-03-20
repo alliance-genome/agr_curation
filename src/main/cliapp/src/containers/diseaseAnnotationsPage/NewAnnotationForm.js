@@ -20,7 +20,7 @@ import { ControlledVocabularyFormDropdown } from '../../components/ControlledVoc
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/ControlledVocabularyFormMultiSelector';
 import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
-import { autocompleteSearch, buildAutocompleteFilter, validateFormBioEntityFields, validateTable } from "../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter, validateModFormFields, validateFormBioEntityFields, validateTable } from "../../utils/utils";
 import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
 import { SubjectAdditionalFieldData } from "../../components/FieldData/SubjectAdditionalFieldData";
 import { AssertedAlleleAdditionalFieldData } from "../../components/FieldData/AssertedAlleleAdditionalFieldData";
@@ -76,7 +76,7 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "NOT", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+	let newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "NOT", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
 	const modFormFields = getModFormFields("DiseaseAnnotations");
 	newAnnotationOptionalFields = newAnnotationOptionalFields.filter(field => !modFormFields.includes(field));
@@ -115,10 +115,11 @@ export const NewAnnotationForm = ({
 		);
 
 		areUiErrors.current = false;
+		validateModFormFields(newAnnotation, modFormFields, uiErrorMessages, setUiErrorMessages, areUiErrors);
 		validateFormBioEntityFields(newAnnotation, uiErrorMessages, setUiErrorMessages, areUiErrors);
 		if (areUiErrors.current) {
-			newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages", errorMessages: uiErrorMessages});
-			newAnnotationDispatch({ type: "SET_IS_ENABLED", value: false });
+			//newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages", errorMessages: uiErrorMessages});
+			newAnnotationDispatch({ type: "SET_IS_ENABLED", value: true });
 
 			return;
 		}
@@ -452,7 +453,7 @@ export const NewAnnotationForm = ({
 	</>
 	);
 
-	const labelColumnSize = "col-3";
+	const labelColumnSize = "col-2";
 	const widgetColumnSize = "col-4";
 	const fieldDetailsColumnSize = "col-5";
 	const requiredfield = <font color={'red'}>*</font>;
@@ -514,6 +515,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedGenes"}/>
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"assertedGenes"}/>
 									<AssertedGenesAdditionalFieldData fieldData={newAnnotation.assertedGenes}/>
 								</div>
 							</div>
@@ -567,22 +569,22 @@ export const NewAnnotationForm = ({
 						</div>
 						<div className={fieldDetailsColumnSize}>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"relation"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"relation"}/>
 						</div>
 					</div>
 
-					{(modFormFields.includes("Negated") ? required = requiredfield : (required = '', selectedFormFields?.includes("Negated"))) && (
-					{selectedFormFields?.includes("NOT") && (
+					{(modFormFields.includes("NOT") ? required = requiredfield : (required = '', selectedFormFields?.includes("NOT"))) && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="negated">{required}Negated</label>
-									<label htmlFor="negated">NOT</label>
+									<label htmlFor="negated">{required}NOT</label>
 								</div>
 								<div className={widgetColumnSize}>
 									<NotEditor value={newAnnotation.negated} editorChange={onDropdownFieldChange}/>
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"negated"}/>
 								</div>
 							</div>
 						</>
@@ -605,6 +607,7 @@ export const NewAnnotationForm = ({
 						</div>
 						<div className={fieldDetailsColumnSize}>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseAnnotationObject"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"diseaseAnnotationObject"}/>
 							<DiseaseAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationObject}/>
 						</div>
 					</div>
@@ -628,6 +631,7 @@ export const NewAnnotationForm = ({
 						</div>
 						<div className={fieldDetailsColumnSize}>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"singleReference"}/>
 							<SingleReferenceAdditionalFieldData fieldData={newAnnotation.singleReference}/>
 						</div>
 					</div>
@@ -652,6 +656,7 @@ export const NewAnnotationForm = ({
 						</div>
 						<div className={fieldDetailsColumnSize}>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"evidenceCodes"}/>
 							<EvidenceCodesAdditionalFieldData fieldData={newAnnotation.evidenceCodes}/>
 						</div>
 					</div>
@@ -679,6 +684,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"with"}/>
 									<WithAdditionalFieldData fieldData={newAnnotation.with}/>
 								</div>
 							</div>
@@ -722,6 +728,7 @@ export const NewAnnotationForm = ({
 										buttonIsDisabled={isConditionRelationButtonEnabled()}
 										editingRows={conditionRelationsEditingRows}
 									/>
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"conditionRelations"}/>
 								</div>
 							</div>
 						</>
@@ -747,6 +754,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelations[0]?.handle"}/>
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"conditionRelations"}/>
 								</div>
 							</div>
 						</>
@@ -771,6 +779,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"geneticSex"} />
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"geneticSex"}/>
 								</div>
 							</div>
 						</>
@@ -793,6 +802,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseQualifiers"} />
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"diseaseQualifiers"}/>
 								</div>
 							</div>
 						</>
@@ -847,6 +857,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationType"} />
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"annotationType"}/>
 								</div>
 							</div>
 						</>
@@ -898,6 +909,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseGeneticModifiers"}/>
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"diseaseGeneticModifiers"}/>
 									<GeneticModifiersAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifiers}/>
 								</div>
 							</div>
@@ -923,6 +935,7 @@ export const NewAnnotationForm = ({
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
+									<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"internal"}/>
 								</div>
 							</div>
 						</>
