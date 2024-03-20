@@ -233,7 +233,7 @@ export function getModTableState(table, widthsObject, defaultColumnNames) {
 export function getModFormFields(table) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	const modFormFields = modTableSettings[mod][table]['selectedFormFields'];
+	const modFormFields = modTableSettings[mod]?modTableSettings[mod][table]['selectedFormFields']:modTableSettings['Default'][table]['selectedFormFields'];
 	return modFormFields;
 };
 
