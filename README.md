@@ -33,6 +33,9 @@ These instructions will get you a copy of the project and the API up and running
    *  [Database](#database)
 -  [Loading Data](#loading-data)
 -  [Submitting Data](#submitting-data)
+-  [Querying Data](#querying-data)
+   *  [Elastic Search](#search)
+   *  [Database Serarch](#find)
 
 ## Developing
 Before you start coding for a new feature or making a bugfix,
@@ -667,6 +670,16 @@ The LinkML version for which the file is being submitted now needs to be added t
   "linkml_version" : "v1.3.2",
   "disease_agm_ingest_set" : [ {
 ```
+
+## Querying Data
+
+### Search
+
+Documentation to use the [API search endpoints](SEARCH.md).
+
+### Find
+
+Documentation to use the [API find endpoints](FIND.md).
 
 ## EB Deployment (beta)
 This section is WIP.
