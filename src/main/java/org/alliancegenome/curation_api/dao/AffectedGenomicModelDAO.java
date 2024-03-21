@@ -15,6 +15,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	
 	protected AffectedGenomicModelDAO() {
 		super(AffectedGenomicModel.class);
@@ -28,6 +29,14 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put("diseaseGeneticModifiers.id", agmId);
 		results.addAll(diseaseAnnotationDAO.findFilteredIds(dgmParams));
+
+		return results;
+	}
+	
+	public List<Long> findReferencingPhenotypeAnnotations(Long agmId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("phenotypeAnnotationSubject.id", agmId);
+		List<Long> results = agmPhenotypeAnnotationDAO.findFilteredIds(params);
 
 		return results;
 	}
