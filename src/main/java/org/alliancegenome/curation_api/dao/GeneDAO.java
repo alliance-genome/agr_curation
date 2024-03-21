@@ -19,6 +19,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
+	@Inject GeneInteractionDAO geneInteractionDAO;
 
 	protected GeneDAO() {
 		super(Gene.class);
@@ -52,6 +53,18 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		Map<String, Object> withParams = new HashMap<>();
 		withParams.put("with.id", geneId);
 		results.addAll(diseaseAnnotationDAO.findFilteredIds(withParams));
+		
+		return results;
+	}
+	
+	public List<Long> findReferencingInteractions(Long geneId) {
+		Map<String, Object> subjectParams = new HashMap<>();
+		subjectParams.put("geneAssociationSubject.id", geneId);
+		List<Long> results = geneInteractionDAO.findFilteredIds(subjectParams);
+		
+		Map<String, Object> objectParams = new HashMap<>();
+		objectParams.put("geneGeneAssociationObject", geneId);
+		results.addAll(geneInteractionDAO.findFilteredIds(objectParams));
 		
 		return results;
 	}
