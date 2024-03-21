@@ -1,7 +1,7 @@
 import { confirmDialog } from 'primereact/confirmdialog';
 import { SORT_FIELDS } from '../constants/SortFields';
 
-import { FIELD_SETS} from '../constants/FilterFields';
+import { FIELD_SETS } from '../constants/FilterFields';
 import { ValidationService } from '../service/ValidationService';
 
 export function returnSorted(event, originalSort) {
@@ -49,11 +49,11 @@ export function filterColumns(columns, selectedColumnNames) {
 };
 
 export function orderColumns(columns, orderedColumnNames) {
-	if(!orderedColumnNames) return columns;
+	if (!orderedColumnNames) return columns;
 	let orderedColumns = [];
 	orderedColumnNames.forEach((columnName) => {
 		var column = columns.find(col => col.header === columnName); // Once column names change it can't be assumed that everyones settings are changed.
-		if(column) {
+		if (column) {
 			orderedColumns.push(column);
 		}
 	});
@@ -138,7 +138,7 @@ export function getRefStrings(referenceItems) {
 		return;
 
 	let refStrings = [];
-	referenceItems.forEach((referenceItem) => {refStrings.push(getRefString(referenceItem))});
+	referenceItems.forEach((referenceItem) => { refStrings.push(getRefString(referenceItem)) });
 
 	return refStrings.sort();
 }
@@ -152,9 +152,9 @@ export function getRefString(referenceItem) {
 
 	let xrefCuries = [];
 	if (referenceItem.cross_references) {
-		referenceItem.cross_references.forEach((x,i) => xrefCuries.push(x.curie));
+		referenceItem.cross_references.forEach((x, i) => xrefCuries.push(x.curie));
 	} else {
-		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.referencedCurie));
+		referenceItem.crossReferences.forEach((x, i) => xrefCuries.push(x.referencedCurie));
 	}
 
 	if (xrefCuries.length === 0)
@@ -184,12 +184,12 @@ export function getRefString(referenceItem) {
 	}
 	if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
 		sortedCuries.push(xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1));
-	} 
+	}
 	if (xrefCuries.length > 0) {
 		sortedCuries = sortedCuries.concat(xrefCuries.sort());
 	}
 	sortedCuries.push(referenceItem.curie);
-	
+
 	let primaryXrefCurie = sortedCuries.splice(0, 1);
 
 	return primaryXrefCurie + ' (' + sortedCuries.join('|') + ')';
@@ -206,7 +206,7 @@ function indexWithPrefix(array, prefix) {
 }
 
 
-export function genericConfirmDialog({ header, message, accept, reject }){
+export function genericConfirmDialog({ header, message, accept, reject }) {
 	confirmDialog({
 		message,
 		header,
@@ -221,18 +221,18 @@ export function genericConfirmDialog({ header, message, accept, reject }){
 function containsMatch(inputValue, selectedItem) {
 	for (const part of inputValue.split(/[^a-z0-9]/i)) {
 		if (part.length > 0 && selectedItem.indexOf(part) !== -1)
-			 return 1;
+			return 1;
 	}
 	return 0;
 }
 
-export function filterDropDownObject(inputValue, object){
+export function filterDropDownObject(inputValue, object) {
 	const trimmedValue = trimWhitespace(inputValue.toLowerCase());
 	let _object = global.structuredClone(object);
-	
+
 	if (_object.geneSystematicName) {
 		if (containsMatch(trimmedValue, _object.geneSystematicName.displayText.toString().toLowerCase()) === 0)
-			_object = { ..._object, geneSystematicName: {}};
+			_object = { ..._object, geneSystematicName: {} };
 	}
 
 	const listFields = new Map([
@@ -244,9 +244,9 @@ export function filterDropDownObject(inputValue, object){
 		["geneSecondaryIds", "secondaryId"],
 		["alleleSynonyms", "displayText"],
 		["alleleSecondaryIds", "secondaryId"]
-	  ]);
+	]);
 
-	listFields.forEach (function(subField, field) {
+	listFields.forEach(function (subField, field) {
 		if (_object[field] && _object[field]?.length > 0) {
 			const filteredItems = [];
 			_object[field].forEach((item) => {
@@ -274,18 +274,18 @@ export function onSelectionOver(event, item, query, op, setAutocompleteHoverItem
 }
 
 
-export function autocompleteSearch(searchService, endpoint, filterName, filter, setSuggestions, otherFilters={}, applyObsoleteFilter=true) {
+export function autocompleteSearch(searchService, endpoint, filterName, filter, setSuggestions, otherFilters = {}, applyObsoleteFilter = true) {
 	const obsoleteFilter = applyObsoleteFilter && endpoint !== 'literature-reference' ? {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
+		obsoleteFilter: {
+			"obsolete": {
+				queryString: false
 			}
-		} : {};
-	searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters, ...obsoleteFilter})
+		}
+	} : {};
+	searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters, ...obsoleteFilter })
 		.then((data) => {
 			if (data.results?.length > 0) {
-				 setSuggestions(data.results);
+				setSuggestions(data.results);
 			} else {
 				setSuggestions([]);
 			}
@@ -305,18 +305,18 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 	return filter;
 }
 
-export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField="curie") {
-	
+export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField = "curie") {
+
 	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
-	
+
 	let updatedRows = [...rowProps.props.value];
-	
+
 	if (!event.target.value) {
 		updatedRows[index][fieldName] = null;
 		setFieldValue('');
 		return;
 	}
-	
+
 	if (typeof event.target.value === "object") {
 		updatedRows[index][fieldName] = event.target.value;
 		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
@@ -343,7 +343,7 @@ export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFiel
 	setFieldValue(updatedRows[index][fieldName]);
 }
 
-const isPropValuesEqual = (subject, target, propName) => {return subject[propName] === target[propName]};
+const isPropValuesEqual = (subject, target, propName) => { return subject[propName] === target[propName] };
 
 export function getUniqueItemsByProperty(items, propName) {
 	return items.filter((item, index, array) => index === array.findIndex(foundItem => isPropValuesEqual(foundItem, item, propName))
@@ -354,7 +354,7 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
-		if(updatedRow[field] && Object.keys(updatedRow[field]).length === 1){
+		if (updatedRow[field] && Object.keys(updatedRow[field]).length === 1) {
 			const errorObject = {
 				severity: "error",
 				message: "Must select from autosuggest"
@@ -379,14 +379,52 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 	})
 }
 
-export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
+export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors, mod) {
+	const fields = [
+		"relation",
+		"diseaseAnnotationObject",
+		"singleReference",
+		"evidenceCodes",
+	]
+
+	const isEmptyObject = (field) => {
+		if ((Object.keys(newAnnotationForm[field]).length !== 0)) {
+			for (let key in newAnnotationForm[field]) {
+				if (newAnnotationForm[field][key] === "") {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+		}
+	}
+
+	let _uiErrorMessages = {};
+	fields.forEach((field) => {
+		if (newAnnotationForm[field] === null || newAnnotationForm[field].length === 0 || isEmptyObject(field)) {
+			_uiErrorMessages[field] = "This is a required field";
+			setUiErrorMessages({ ..._uiErrorMessages });
+			areUiErrors.current = true;
+		}
+	})
+	if (mod.includes('ZFINStaff')) {
+		if (newAnnotationForm.conditionRelations.length === 0 || !newAnnotationForm.conditionRelations[0]["handle"]) {
+			_uiErrorMessages["conditionRelation"] = "This is a required field";
+			setUiErrorMessages({ ..._uiErrorMessages });
+			areUiErrors.current = true;
+		}
+	}
+}
+
+export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors) {
 	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
 
 	bioEntityFieldNames.forEach((field) => {
-		if(newAnnotationForm[field] && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("curie") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modEntityId") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modInternalId")){
+		if (newAnnotationForm[field] && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("curie") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modEntityId") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modInternalId")) {
 			const _uiErrorMessages = {};
 			_uiErrorMessages[field] = "Must select from autosuggest";
-			setUiErrorMessages({..._uiErrorMessages});
+			setUiErrorMessages({ ..._uiErrorMessages });
 			areUiErrors.current = true;
 		}
 	})
@@ -404,18 +442,18 @@ export const removeInvalidFilters = (currentFilters) => {
 		});
 
 		for (let filterName in currentFiltersCopy) {
-			if(validFilters[filterName]) {
+			if (validFilters[filterName]) {
 				let validFields = validFilters[filterName].fields;
 				const invalidFields = [];
-				for(let fieldName in currentFiltersCopy[filterName]) {
-					if(!validFields.includes(fieldName)) {
+				for (let fieldName in currentFiltersCopy[filterName]) {
+					if (!validFields.includes(fieldName)) {
 						invalidFields.push(fieldName);
 					}
 				}
 				invalidFields.forEach(fieldName => {
 					delete currentFiltersCopy[filterName][fieldName];
 				});
-				if(Object.keys(currentFiltersCopy[filterName]).length === 0) {
+				if (Object.keys(currentFiltersCopy[filterName]).length === 0) {
 					delete currentFiltersCopy[filterName];
 				}
 			} else {
@@ -458,13 +496,13 @@ export const validate = async (entities, endpoint, validationService) => {
 };
 
 export const validateTable = async (endpoint, errorType, table, dispatch) => {
-	if(!table) return false;
+	if (!table) return false;
 	const validationService = new ValidationService();
 	const results = await validate(table, endpoint, validationService);
 	const errors = [];
 	let anyErrors = false;
 	results.forEach((result, index) => {
-		const {isError, data} = result;
+		const { isError, data } = result;
 		if (isError) {
 			errors[index] = {};
 			if (!data) return;
@@ -477,7 +515,7 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 			anyErrors = true;
 		}
 	});
-	dispatch({type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors});
+	dispatch({ type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors });
 	return anyErrors;
 }
 
@@ -485,7 +523,7 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 //handles optional autocomplete fields so that a string isn't sent to the backend 
 //when a value is removed or not selected from the dropdown
 export const processOptionalField = (eventValue) => {
-	if(!eventValue || eventValue === "") return null;
-	if (!eventValue.curie) return {curie: eventValue};
+	if (!eventValue || eventValue === "") return null;
+	if (!eventValue.curie) return { curie: eventValue };
 	return eventValue;
 }

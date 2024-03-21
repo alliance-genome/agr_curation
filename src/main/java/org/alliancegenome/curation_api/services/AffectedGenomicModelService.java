@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -42,6 +43,8 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	AffectedGenomicModelDTOValidator agmDtoValidator;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	PhenotypeAnnotationService phenotypeAnnotationService;
 	@Inject
 	PersonService personService;
 	@Inject
@@ -86,6 +89,12 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
+					anyReferencingEntities = true;
+			}
+			List<Long> referencingPAIds = agmDAO.findReferencingPhenotypeAnnotations(id);
+			for (Long paId : referencingPAIds) {
+				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
+				if (referencingPA != null)
 					anyReferencingEntities = true;
 			}
 			if (CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
