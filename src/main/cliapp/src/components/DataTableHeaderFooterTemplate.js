@@ -24,7 +24,7 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 											/>
 											{modReset &&
 												<ConfirmButton
-													buttonText="Set MOD Defaults"
+													buttonText="Set to MOD Defaults"
 													headerText={`${title} MOD Default Reset`}
 													messageText= {`Are you sure? This will reset the local state of the ${title} to the MOD default settings.`}
 													acceptHandler={setToModDefault}

@@ -379,6 +379,53 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 	})
 }
 
+export function validateModFormFields(newAnnotationForm, modFormFields, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
+	const fields = {
+		"Subject" : "diseaseAnnotationSubject",
+		"Asserted Genes" : "assertedGenes",
+		"Asserted Allele" : "assertedAllele",	
+		"Disease Relation" : "relation",
+		"NOT" : "negated", 
+		"Disease" : "diseaseAnnotationObject",
+		"Reference" : "singleReference",
+		"Evidence Code" : "evidenceCodes",
+		"With" : "with",
+		"Related Notes" : "relatedNotes",
+		"Experimental Conditions" : "conditionRelations",
+		"Experiments" : "conditionRelations",
+		"Genetic Sex" : "geneticSex",
+		"Disease Qualifiers" : "diseaseQualifiers",
+		"SGD Strain Background" : "sgdStrainBackground",
+		"Annotation Type" : "annotationType",
+		"Genetic Modifier Relation" : "diseaseGeneticModifierRelation",
+		"Genetic Modifiers" : "diseaseGeneticModifiers",
+		"Internal" : "internal"
+	}
+
+	const isEmptyObject = (field) => {
+		if((Object.keys(newAnnotationForm[field]).length !== 0 && field !== "diseaseAnnotationSubject")){
+			for( let key in newAnnotationForm[field]){
+				if(newAnnotationForm[field][key] === ""){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+		}
+	}
+	
+	const _uiErrorMessages = {};
+	modFormFields.forEach((field) => {
+		let fieldKey = fields[field];
+		if(newAnnotationForm[fieldKey] === null || newAnnotationForm[fieldKey].length === 0 || isEmptyObject(fieldKey) ){
+			_uiErrorMessages[fieldKey] = "Mod specific fields are required";
+			setUiErrorMessages({..._uiErrorMessages});
+			areUiErrors.current = true;
+		}
+	})
+}
+
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages,  setUiErrorMessages, areUiErrors) {
 	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
 
