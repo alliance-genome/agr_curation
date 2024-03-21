@@ -21,9 +21,6 @@ import jakarta.inject.Inject;
 
 public abstract class InteractionHelper {
 	
-	@Inject
-	ResourceDescriptorPageService rdpService;
-
 	private static final Pattern PSI_MI_FORMAT = Pattern.compile("^[^:]+:\"([^\"]*)\"");
 	private static final Pattern WB_VAR_ANNOTATION = Pattern.compile("wormbase:(WBVar\\d+)\\D*");
 
@@ -110,12 +107,17 @@ public abstract class InteractionHelper {
 		return null;
 	}
 	
-	public List<CrossReference> createAllianceXrefs(PsiMiTabDTO dto) {
+	public static List<CrossReference> createAllianceXrefs(PsiMiTabDTO dto) {
 		List<CrossReference> xrefs = new ArrayList<>();
 		List<String> xrefStrings = new ArrayList<>();
-		xrefStrings.addAll(dto.getInteractionIds());
-		xrefStrings.addAll(dto.getInteractionXrefs());
+		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
+			xrefStrings.addAll(dto.getInteractionIds());
+		if (CollectionUtils.isNotEmpty(dto.getInteractionXrefs()))
+			xrefStrings.addAll(dto.getInteractionXrefs());
 
+		if (CollectionUtils.isEmpty(xrefStrings))
+			return null;
+			
 		for (String xrefString : xrefStrings) {
 			String xrefCurie = extractCurieFromPsiMiFormat(xrefString);
 			if (xrefCurie != null) {
@@ -131,10 +133,11 @@ public abstract class InteractionHelper {
 		return xrefs;
 	}
 	
-	private CrossReference createAllianceXref(String curie) {
+	private static CrossReference createAllianceXref(String curie) {
 		String[] curieParts = curie.split(":");
 		if (curieParts.length != 2)
 			return null;
+		ResourceDescriptorPageService rdpService = new ResourceDescriptorPageService();
 		ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor(curieParts[0], "gene/interactions");
 		if (rdp == null)
 			return null;

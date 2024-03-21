@@ -1,10 +1,17 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneInteraction;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
@@ -31,6 +38,8 @@ public class GeneInteractionFmsDTOValidator {
 	GeneService geneService;
 	@Inject
 	MiTermService miTermService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 	
 	public <E extends GeneInteraction> ObjectResponse<E> validateGeneInteraction(E interaction, PsiMiTabDTO dto, List<Reference> references) {
 
@@ -124,6 +133,20 @@ public class GeneInteractionFmsDTOValidator {
 		}
 		interaction.setInteractionSource(interactionSource);
 		
+		List<CrossReference> xrefs = updateInteractionXrefs(interaction.getCrossReferences(), dto);
+		if (interaction.getCrossReferences() != null)
+			interaction.getCrossReferences().clear();
+		if (CollectionUtils.isNotEmpty(xrefs)) {
+			if (interaction.getCrossReferences() == null)
+				interaction.setCrossReferences(new ArrayList<>());
+			interaction.getCrossReferences().addAll(xrefs);
+		}
+		
+		OffsetDateTime dateCreated = processPsiMiTabDateFormat(dto.getCreationDate());
+		OffsetDateTime dateUpdated = processPsiMiTabDateFormat(dto.getUpdateDate());
+		interaction.setDateCreated(dateCreated);
+		interaction.setDateUpdated(dateUpdated);
+		
 		giResponse.setEntity(interaction);
 
 		return giResponse;
@@ -169,6 +192,35 @@ public class GeneInteractionFmsDTOValidator {
 			refResponse.setEntity(validatedReferences);
 		
 		return refResponse;
+	}
+	
+	private List<CrossReference> updateInteractionXrefs(List<CrossReference> existingXrefs, PsiMiTabDTO dto) {
+		List<CrossReference> newXrefs = InteractionHelper.createAllianceXrefs(dto);
+		if (CollectionUtils.isEmpty(newXrefs))
+			return null;
+		if (CollectionUtils.isEmpty(existingXrefs))
+			return newXrefs;
+		
+		Map<String, CrossReference> existingXrefMap = existingXrefs.stream()
+				.collect(Collectors.toMap(CrossReference::getReferencedCurie, Function.identity()));
+		List<CrossReference> updatedXrefs = new ArrayList<>();
+		for (CrossReference newXref : newXrefs) {
+			if (existingXrefMap.containsKey(newXref.getReferencedCurie())) {
+				updatedXrefs.add(existingXrefMap.get(newXref.getReferencedCurie()));
+			} else {
+				updatedXrefs.add(crossReferenceDAO.persist(newXref));
+			}
+		}
+		
+		return updatedXrefs;
+	}
+	
+	private OffsetDateTime processPsiMiTabDateFormat(String dateString) {
+		if (StringUtils.isBlank(dateString))
+			return null;
+		DateTimeFormatter dtf = DateTimeFormatter.ISO_DATE;
+		dateString = dateString.replace("/", "-");
+		return OffsetDateTime.parse(dateString, dtf);
 	}
 
 }

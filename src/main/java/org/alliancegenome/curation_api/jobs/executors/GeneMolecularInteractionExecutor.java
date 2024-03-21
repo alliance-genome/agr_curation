@@ -24,7 +24,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -92,7 +91,6 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 				} 
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
-				Log.info("ERROR: " + e.getData().getMessage() + " : " + e.getData().getJsonObject());
 				addException(history, e.getData());
 			} catch (Exception e) {
 				e.printStackTrace();
