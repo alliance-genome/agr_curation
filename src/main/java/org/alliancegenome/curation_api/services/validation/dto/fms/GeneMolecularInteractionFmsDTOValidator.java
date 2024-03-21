@@ -34,6 +34,10 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 	
 	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ObjectValidationException {
 
+		// TODO: remove check once loading interactions where interactors are referenced by xref
+		if (!InteractionHelper.isAllianceInteractor(dto.getInteractorAIdentifier()) || !InteractionHelper.isAllianceInteractor(dto.getInteractorBIdentifier()))
+			throw new ObjectValidationException(dto, "Loading interactions via interactor xrefs is not yet implemented");
+		
 		gmiResponse = new ObjectResponse<GeneMolecularInteraction>();
 		GeneMolecularInteraction interaction = new GeneMolecularInteraction();
 		

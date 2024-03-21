@@ -1,8 +1,8 @@
 import { render, fireEvent } from '@testing-library/react';
-import { DiseaseTemplate } from '../DiseaseTemplate';
+import { OntologyTermTemplate } from '../OntologyTermTemplate';
 import '../../../tools/jest/setupTests';
 
-describe('DiseaseTemplate', () => {
+describe('OntologyTermTemplate', () => {
 
   it('should render the name and curie of the disease object in an EllipsisTableCell component', () => {
     const object = {
@@ -10,7 +10,7 @@ describe('DiseaseTemplate', () => {
       curie: 'Disease Curie'
     };
 
-    const result = render(<DiseaseTemplate object={object} />);
+    const result = render(<OntologyTermTemplate object={object} />);
 
     const content = result.getByText('Disease Name (Disease Curie)');
     expect(content).toBeInTheDocument();
@@ -22,7 +22,7 @@ describe('DiseaseTemplate', () => {
       curie: 'Disease Curie'
     };
 
-    const result = render(<DiseaseTemplate object={object} />);
+    const result = render(<OntologyTermTemplate object={object} />);
 
     const divContentArray = result.getAllByText('Disease Name (Disease Curie)');
     expect(divContentArray).toHaveLength(1);
@@ -32,7 +32,7 @@ describe('DiseaseTemplate', () => {
   });
 
   it('should return null if the object is falsy', () => {
-    const result = render(<DiseaseTemplate object={null} />);
+    const result = render(<OntologyTermTemplate object={null} />);
 
     expect(result.container.firstChild).toBeNull();
   });
@@ -40,7 +40,7 @@ describe('DiseaseTemplate', () => {
   it('should render an empty EllipsisTableCell component if the object has no name or curie', () => {
     const object = {};
 
-    const result = render(<DiseaseTemplate object={object} />);
+    const result = render(<OntologyTermTemplate object={object} />);
 
     const ellipsisTableCell = result.container.firstChild;
     expect(ellipsisTableCell).toHaveTextContent('');
@@ -51,7 +51,7 @@ describe('DiseaseTemplate', () => {
       name: 'Disease Name'
     };
 
-    const result = render(<DiseaseTemplate object={object} />);
+    const result = render(<OntologyTermTemplate object={object} />);
 
     const ellipsisTableCell = result.getByText('Disease Name');
     expect(ellipsisTableCell).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('DiseaseTemplate', () => {
       curie: 'Disease Curie'
     };
 
-    const result = render(<DiseaseTemplate object={object} />);
+    const result = render(<OntologyTermTemplate object={object} />);
 
     const ellipsisTableCell = result.getByText('Disease Curie');
     expect(ellipsisTableCell).toBeInTheDocument();

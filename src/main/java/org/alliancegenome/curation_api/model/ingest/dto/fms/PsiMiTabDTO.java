@@ -28,7 +28,7 @@ public class PsiMiTabDTO extends BaseDTO {
 	private String confidenceScore;
 	private String complexExpansion;
 	private String biologicalRoleA;
-	private String biologicalRoleB
+	private String biologicalRoleB;
 	private String experimentalRoleA;
 	private String experimentalRoleB;
 	private String interactorAType;
@@ -46,7 +46,7 @@ public class PsiMiTabDTO extends BaseDTO {
 	private String interactorAChecksum;
 	private String interactorBChecksum;
 	private String interactionChecksum;
-	private Boolean negativeInteraction;
+	private String negativeInteraction;
 	private String interactorAFeatures;
 	private String interactorBFeatures;
 	private String interactorAStoichiometry;

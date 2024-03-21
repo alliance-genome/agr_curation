@@ -6,24 +6,25 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.GeneInteractionService;
 import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -34,14 +35,14 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
 	@Inject
 	GeneMolecularInteractionService geneMolecularInteractionService;
+	@Inject
+	GeneInteractionService geneInteractionService;
 	
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 		try {
 			
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
-			
 			CsvSchema psiMiTabSchema = CsvSchemaBuilder.psiMiTabSchema();
+			CsvMapper csvMapper = new CsvMapper();
 			MappingIterator<PsiMiTabDTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS)
 					.readerFor(PsiMiTabDTO.class).with(psiMiTabSchema)
 					.readValues(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
@@ -52,9 +53,9 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 			List<Long> interactionIdsLoaded = new ArrayList<>();
 			List<Long> interactionIdsBefore = geneMolecularInteractionDAO.findAllIds().getResults();
 			
-			//runLoad(history, interactionData), annotationIdsLoaded, dataProvider);
+			runLoad(history, interactionData, interactionIdsLoaded);
 			
-			//runCleanup(phenotypeAnnotationService, history, interactionIdsBefore, interactionIdsLoaded, "phenotype annotation", bulkLoadFile.getMd5Sum());
+			runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
 
 			history.finishLoad();
 			
@@ -91,6 +92,7 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 				} 
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
+				Log.info("ERROR: " + e.getData().getMessage() + " : " + e.getData().getJsonObject());
 				addException(history, e.getData());
 			} catch (Exception e) {
 				e.printStackTrace();

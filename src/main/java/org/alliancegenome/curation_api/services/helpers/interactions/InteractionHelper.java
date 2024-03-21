@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
 
@@ -29,14 +30,16 @@ public abstract class InteractionHelper {
 	public static String getGeneMolecularInteractionUniqueId(PsiMiTabDTO dto, List<Reference> references) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(getGeneInteractionUniqueId(dto, references, VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM));
-		uniqueId.addAll(dto.getInteractionDetectionMethods().stream().map(dm -> extractCurieFromPsiMiFormat(dm)).collect(Collectors.toList()));
+		if (dto.getInteractionDetectionMethods() != null)
+			uniqueId.addAll(dto.getInteractionDetectionMethods().stream().map(dm -> extractCurieFromPsiMiFormat(dm)).collect(Collectors.toList()));
 		return uniqueId.getUniqueId();
 	}
 	
 	public static String getGeneGeneticInteractionUniqueId(PsiMiTabDTO dto, List<Reference> references) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(getGeneInteractionUniqueId(dto, references, VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM));
-		uniqueId.addAll(dto.getSourceDatabaseIds().stream().map(sd -> extractCurieFromPsiMiFormat(sd)).collect(Collectors.toList()));
+		if (dto.getSourceDatabaseIds() != null)
+			uniqueId.addAll(dto.getSourceDatabaseIds().stream().map(sd -> extractCurieFromPsiMiFormat(sd)).collect(Collectors.toList()));
 		uniqueId.add(extractWBVarCurieFromAnnotations(dto.getInteractorAAnnotations()));
 		uniqueId.addAll(extractPhenotypeStatements(dto.getInteractionAnnotations()));
 		return uniqueId.getUniqueId();
@@ -47,8 +50,10 @@ public abstract class InteractionHelper {
 		uniqueId.add(PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractorAIdentifier()));
 		uniqueId.add(relation);
 		uniqueId.add(PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractorBIdentifier()));
-		uniqueId.addAll(references.stream().map(Reference::getCurie).collect(Collectors.toList()));
-		uniqueId.addAll(dto.getInteractionTypes().stream().map(it -> extractCurieFromPsiMiFormat(it)).collect(Collectors.toList()));
+		if (references != null)
+			uniqueId.addAll(references.stream().map(Reference::getCurie).collect(Collectors.toList()));
+		if (dto.getInteractionTypes() != null)
+			uniqueId.addAll(dto.getInteractionTypes().stream().map(it -> extractCurieFromPsiMiFormat(it)).collect(Collectors.toList()));
 		uniqueId.add(extractCurieFromPsiMiFormat(dto.getExperimentalRoleA()));
 		uniqueId.add(extractCurieFromPsiMiFormat(dto.getExperimentalRoleB()));
 		uniqueId.add(extractCurieFromPsiMiFormat(dto.getInteractorAType()));
@@ -140,5 +145,33 @@ public abstract class InteractionHelper {
 		xref.setResourceDescriptorPage(rdp);
 		
 		return xref;
+	}
+	
+	public static String getAllianceCurie(String psiMiTabIdentifier) {
+		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
+		if (psiMiTabIdParts.length != 2)
+			return null;
+		
+		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
+		if (prefix == null)
+			return null;
+		
+		return prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
+	}
+	
+	// TODO: Can remove this method once loading interactions where interactors are referenced by xref
+	public static Boolean isAllianceInteractor(String psiMiTabIdentifier) {
+		if (StringUtils.isBlank(psiMiTabIdentifier))
+			return false;
+		
+		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
+		if (psiMiTabIdParts.length != 2)
+			return false;
+		
+		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
+		if (prefix == null)
+			return false;
+		
+		return prefix.isModPrefix;
 	}
 }

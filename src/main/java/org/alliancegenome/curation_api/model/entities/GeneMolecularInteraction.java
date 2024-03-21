@@ -35,6 +35,7 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
 @Table(indexes = {
 	@Index(name = "genemolecularinteraction_aggregationdatabase_index", columnList = "aggregationdatabase_id"),
+	@Index(name = "genemolecularinteraction_detectionmethod_index", columnList = "detectionmethod_id")
 })
 public class GeneMolecularInteraction extends GeneInteraction {
 

@@ -22,6 +22,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
@@ -37,7 +38,8 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Gene_Interaction", description = "Annotation class representing a gene interaction")
 @Table(indexes = { 
-	@Index(name = "geneinteraction_curie_index", columnList = "curie"),
+	@Index(name = "geneinteraction_interactionId_index", columnList = "interactionid"),
+	@Index(name = "geneinteraction_uniqueId_index", columnList = "uniqueid"),
 	@Index(name = "geneinteraction_interactionsource_index", columnList = "interactionsource_id"),
 	@Index(name = "geneinteraction_interactiontype_index", columnList = "interactiontype_id"),
 	@Index(name = "geneinteraction_interactorarole_index", columnList = "interactorarole_id"),
@@ -50,11 +52,13 @@ public abstract class GeneInteraction extends GeneGeneAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true, length = 2000)
 	@JsonView({ View.FieldsOnly.class })
 	protected String uniqueId;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "interactionId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true)
 	@JsonView({ View.FieldsOnly.class })
 	protected String interactionId;
 	
