@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import jakarta.inject.Inject;
 
-public abstract class InteractionHelper {
+public abstract class InteractionStringHelper {
 	
 	private static final Pattern PSI_MI_FORMAT = Pattern.compile("^[^:]+:\"([^\"]*)\"");
 	private static final Pattern WB_VAR_ANNOTATION = Pattern.compile("wormbase:(WBVar\\d+)\\D*");
@@ -107,50 +107,8 @@ public abstract class InteractionHelper {
 		return null;
 	}
 	
-	public static List<CrossReference> createAllianceXrefs(PsiMiTabDTO dto) {
-		List<CrossReference> xrefs = new ArrayList<>();
-		List<String> xrefStrings = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
-			xrefStrings.addAll(dto.getInteractionIds());
-		if (CollectionUtils.isNotEmpty(dto.getInteractionXrefs()))
-			xrefStrings.addAll(dto.getInteractionXrefs());
-
-		if (CollectionUtils.isEmpty(xrefStrings))
-			return null;
-			
-		for (String xrefString : xrefStrings) {
-			String xrefCurie = extractCurieFromPsiMiFormat(xrefString);
-			if (xrefCurie != null) {
-				CrossReference xref = createAllianceXref(xrefCurie);
-				if (xref != null)
-					xrefs.add(xref);
-			}
-		}
-		
-		if (CollectionUtils.isEmpty(xrefs))
-			return null;
-		
-		return xrefs;
-	}
-	
-	private static CrossReference createAllianceXref(String curie) {
-		String[] curieParts = curie.split(":");
-		if (curieParts.length != 2)
-			return null;
-		ResourceDescriptorPageService rdpService = new ResourceDescriptorPageService();
-		ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor(curieParts[0], "gene/interactions");
-		if (rdp == null)
-			return null;
-		
-		CrossReference xref = new CrossReference();
-		xref.setDisplayName(curie);
-		xref.setReferencedCurie(curie);
-		xref.setResourceDescriptorPage(rdp);
-		
-		return xref;
-	}
-	
 	public static String getAllianceCurie(String psiMiTabIdentifier) {
+		// For converting curies with prefixes that differ from those used at AGR, e.g. wormbase:WBGene000001
 		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
 		if (psiMiTabIdParts.length != 2)
 			return null;

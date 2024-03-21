@@ -12,11 +12,13 @@ import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.interactions.InteractionHelper;
+import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.apache.commons.collections.CollectionUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -24,7 +26,7 @@ import jakarta.inject.Inject;
 public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsDTOValidator {
 
 	@Inject
-	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	GeneMolecularInteractionService geneMolecularInteractionService;
 	@Inject
 	GenomicEntityService genomicEntityService;
 	@Inject
@@ -35,23 +37,31 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ObjectValidationException {
 
 		// TODO: remove check once loading interactions where interactors are referenced by xref
-		if (!InteractionHelper.isAllianceInteractor(dto.getInteractorAIdentifier()) || !InteractionHelper.isAllianceInteractor(dto.getInteractorBIdentifier()))
+		if (!InteractionStringHelper.isAllianceInteractor(dto.getInteractorAIdentifier()) || !InteractionStringHelper.isAllianceInteractor(dto.getInteractorBIdentifier()))
 			throw new ObjectValidationException(dto, "Loading interactions via interactor xrefs is not yet implemented");
 		
+		GeneMolecularInteraction interaction = null;
 		gmiResponse = new ObjectResponse<GeneMolecularInteraction>();
-		GeneMolecularInteraction interaction = new GeneMolecularInteraction();
 		
 		ObjectResponse<List<Reference>> refResponse = validateReferences(dto);
 		gmiResponse.addErrorMessages(refResponse.getErrorMessages());
 	
 		List<Reference> references = refResponse.getEntity();
-		String uniqueId = InteractionHelper.getGeneMolecularInteractionUniqueId(dto, references);
+		String uniqueId = InteractionStringHelper.getGeneMolecularInteractionUniqueId(dto, references);
 		
-		SearchResponse<GeneMolecularInteraction> interactionSearch = geneMolecularInteractionDAO.findByField("uniqueId", uniqueId);
-		if (interactionSearch != null && interactionSearch.getSingleResult() != null)
-			interaction = interactionSearch.getSingleResult();
-
+		String interactionId = null;
+		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
+			interactionId = InteractionStringHelper.getAllianceCurie(dto.getInteractionIds().get(0));
+		
+		String searchValue = interactionId == null ? uniqueId : interactionId;
+		ObjectResponse<GeneMolecularInteraction> interactionResponse = geneMolecularInteractionService.get(searchValue);
+		if (interactionResponse != null)
+			interaction = interactionResponse.getEntity();
+		if (interaction == null)
+			interaction = new GeneMolecularInteraction();
+		
 		interaction.setUniqueId(uniqueId);
+		interaction.setInteractionId(interactionId);
 		
 		ObjectResponse<GeneMolecularInteraction> giResponse = validateGeneInteraction(interaction, dto, references);
 		gmiResponse.addErrorMessages(giResponse.getErrorMessages());
@@ -62,7 +72,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		MITerm detectionMethod = null;
 		if (CollectionUtils.isNotEmpty(dto.getInteractionDetectionMethods())) {
 			for (String detectionMethodString : dto.getInteractionDetectionMethods()) {
-				String detectionMethodCurie = InteractionHelper.extractCurieFromPsiMiFormat(detectionMethodString);
+				String detectionMethodCurie = InteractionStringHelper.extractCurieFromPsiMiFormat(detectionMethodString);
 				if (detectionMethodCurie != null) {
 					detectionMethod = miTermService.findByCurie(detectionMethodCurie);
 					if (detectionMethod == null)
@@ -74,7 +84,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		interaction.setDetectionMethod(detectionMethod);
 		
 		MITerm aggregationDatabase = null;
-		String aggregationDatabaseCurie = InteractionHelper.getAggregationDatabaseMITermCurie(dto);
+		String aggregationDatabaseCurie = InteractionStringHelper.getAggregationDatabaseMITermCurie(dto);
 		if (aggregationDatabaseCurie != null) {
 			aggregationDatabase = miTermService.findByCurie(aggregationDatabaseCurie);
 			if (aggregationDatabase == null)
@@ -82,6 +92,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		}
 		interaction.setAggregationDatabase(aggregationDatabase);		
 		
+		Log.info("INTERACTION: " + interaction);
 		if (gmiResponse.hasErrors())
 			throw new ObjectValidationException(dto, gmiResponse.errorMessagesString());
 		

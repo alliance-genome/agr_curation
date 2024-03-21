@@ -31,11 +31,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
+@ToString(callSuper = true)
 @Schema(name = "Gene_Interaction", description = "Annotation class representing a gene interaction")
 @Table(indexes = { 
 	@Index(name = "geneinteraction_interactionId_index", columnList = "interactionid"),

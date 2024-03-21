@@ -21,7 +21,8 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.services.helpers.interactions.InteractionHelper;
+import org.alliancegenome.curation_api.services.helpers.interactions.InteractionCrossReferenceHelper;
+import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +41,8 @@ public class GeneInteractionFmsDTOValidator {
 	MiTermService miTermService;
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	InteractionCrossReferenceHelper interactionXrefHelper;
 	
 	public <E extends GeneInteraction> ObjectResponse<E> validateGeneInteraction(E interaction, PsiMiTabDTO dto, List<Reference> references) {
 
@@ -75,7 +78,7 @@ public class GeneInteractionFmsDTOValidator {
 		
 		MITerm interactorARole = null;
 		if (StringUtils.isNotBlank(dto.getExperimentalRoleA())) {
-			interactorARole = miTermService.findByCurie(InteractionHelper.extractCurieFromPsiMiFormat(dto.getExperimentalRoleA()));
+			interactorARole = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getExperimentalRoleA()));
 			if (interactorARole == null)
 				giResponse.addErrorMessage("experimentalRoleA", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleA() + ")");
 		}
@@ -83,7 +86,7 @@ public class GeneInteractionFmsDTOValidator {
 		
 		MITerm interactorBRole = null;
 		if (StringUtils.isNotBlank(dto.getExperimentalRoleB())) {
-			interactorBRole = miTermService.findByCurie(InteractionHelper.extractCurieFromPsiMiFormat(dto.getExperimentalRoleB()));
+			interactorBRole = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getExperimentalRoleB()));
 			if (interactorBRole == null)
 				giResponse.addErrorMessage("experimentalRoleB", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleB() + ")");
 		}
@@ -91,7 +94,7 @@ public class GeneInteractionFmsDTOValidator {
 		
 		MITerm interactorAType = null;
 		if (StringUtils.isNotBlank(dto.getInteractorAType())) {
-			interactorAType = miTermService.findByCurie(InteractionHelper.extractCurieFromPsiMiFormat(dto.getInteractorAType()));
+			interactorAType = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getInteractorAType()));
 			if (interactorAType == null)
 				giResponse.addErrorMessage("interactorAType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorAType() + ")");
 		}
@@ -99,7 +102,7 @@ public class GeneInteractionFmsDTOValidator {
 		
 		MITerm interactorBType = null;
 		if (StringUtils.isNotBlank(dto.getInteractorBType())) {
-			interactorBType = miTermService.findByCurie(InteractionHelper.extractCurieFromPsiMiFormat(dto.getInteractorBType()));
+			interactorBType = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getInteractorBType()));
 			if (interactorBType == null)
 				giResponse.addErrorMessage("interactorBType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorBType() + ")");
 		}
@@ -108,11 +111,11 @@ public class GeneInteractionFmsDTOValidator {
 		MITerm interactionType = null;
 		if (CollectionUtils.isNotEmpty(dto.getInteractionTypes())) {
 			for (String interactionTypeString : dto.getInteractionTypes()) {
-				String interactionTypeCurie = InteractionHelper.extractCurieFromPsiMiFormat(interactionTypeString);
+				String interactionTypeCurie = InteractionStringHelper.extractCurieFromPsiMiFormat(interactionTypeString);
 				if (interactionTypeCurie != null) {
 					interactionType = miTermService.findByCurie(interactionTypeCurie);
 					if (interactionType == null)
-						giResponse.addErrorMessage("sourceDatabaseIds", ValidationConstants.INVALID_MESSAGE + " (" + interactionTypeCurie + ")");
+						giResponse.addErrorMessage("interactionTypes", ValidationConstants.INVALID_MESSAGE + " (" + interactionTypeCurie + ")");
 					break;
 				}
 			}
@@ -122,7 +125,7 @@ public class GeneInteractionFmsDTOValidator {
 		MITerm interactionSource = null;
 		if (CollectionUtils.isNotEmpty(dto.getSourceDatabaseIds())) {
 			for (String interactionSourceString : dto.getSourceDatabaseIds()) {
-				String interactionSourceCurie = InteractionHelper.extractCurieFromPsiMiFormat(interactionSourceString);
+				String interactionSourceCurie = InteractionStringHelper.extractCurieFromPsiMiFormat(interactionSourceString);
 				if (interactionSourceCurie != null) {
 					interactionSource = miTermService.findByCurie(interactionSourceCurie);
 					if (interactionSource == null)
@@ -178,7 +181,7 @@ public class GeneInteractionFmsDTOValidator {
 		if(CollectionUtils.isNotEmpty(dto.getPublicationIds())) {
 			for (String publicationId : dto.getPublicationIds()) {
 				Reference reference = null;
-				String alliancePubXrefCurie = InteractionHelper.getAllianceCurie(publicationId);
+				String alliancePubXrefCurie = InteractionStringHelper.getAllianceCurie(publicationId);
 				if (alliancePubXrefCurie != null)
 					reference = referenceService.retrieveFromDbOrLiteratureService(alliancePubXrefCurie);
 				if (reference == null) {
@@ -195,7 +198,7 @@ public class GeneInteractionFmsDTOValidator {
 	}
 	
 	private List<CrossReference> updateInteractionXrefs(List<CrossReference> existingXrefs, PsiMiTabDTO dto) {
-		List<CrossReference> newXrefs = InteractionHelper.createAllianceXrefs(dto);
+		List<CrossReference> newXrefs = interactionXrefHelper.createAllianceXrefs(dto);
 		if (CollectionUtils.isEmpty(newXrefs))
 			return null;
 		if (CollectionUtils.isEmpty(existingXrefs))
@@ -218,9 +221,9 @@ public class GeneInteractionFmsDTOValidator {
 	private OffsetDateTime processPsiMiTabDateFormat(String dateString) {
 		if (StringUtils.isBlank(dateString))
 			return null;
-		DateTimeFormatter dtf = DateTimeFormatter.ISO_DATE;
+		DateTimeFormatter dtf = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 		dateString = dateString.replace("/", "-");
-		return OffsetDateTime.parse(dateString, dtf);
+		return OffsetDateTime.parse(dateString + "T00:00:00+00:00", dtf);
 	}
 
 }

@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -16,8 +17,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
@@ -28,6 +31,11 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneMolecularInteractionCrudInterface extends BaseIdCrudInterface<GeneMolecularInteraction> {
 
+	@GET
+	@Path("/findBy/{identifierString}")
+	@JsonView(View.GeneInteractionView.class)
+	public ObjectResponse<GeneMolecularInteraction> get(@PathParam("identifierString") String identifierString);
+	
 	@Override
 	@POST
 	@Path("/search")
