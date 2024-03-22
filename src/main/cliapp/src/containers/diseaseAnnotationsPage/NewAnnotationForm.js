@@ -130,6 +130,9 @@ export const NewAnnotationForm = ({
 					if (closeAfterSubmit) {
 						newAnnotationDispatch({ type: "RESET" });
 					}
+					else {
+						setUiErrorMessages({});
+					}
 					//Invalidating the query immediately after success leads to api results that don't always include the new annotation
 					setTimeout(() => {
 						queryClient.invalidateQueries("DiseaseAnnotations").then(() => {
@@ -166,8 +169,8 @@ export const NewAnnotationForm = ({
 
 	const handleClear = () => {
 		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
-		if (withRef.current.getInput()) withRef.current.getInput().value = "";
-		if (evidenceCodesRef.current.getInput().value) evidenceCodesRef.current.getInput().value = "";
+		if (withRef.current?.getInput()) withRef.current.getInput().value = "";
+		if (evidenceCodesRef.current?.getInput().value) evidenceCodesRef.current.getInput().value = "";
 		newAnnotationDispatch({ type: "CLEAR" });
 		newAnnotationDispatch({ type: "SET_IS_ENABLED", value: false });
 		newAnnotationDispatch({ type: "SET_IS_ASSERTED_GENE_ENABLED", value: false });
@@ -748,8 +751,8 @@ export const NewAnnotationForm = ({
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelation"} />
-										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"conditionRelation"} />
+										<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelations"} />
+										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"conditionRelations"} />
 									</div>
 								</div>
 							</>
