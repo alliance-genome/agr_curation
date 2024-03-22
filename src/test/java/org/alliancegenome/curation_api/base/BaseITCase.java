@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -977,6 +978,10 @@ public class BaseITCase {
 
 	protected TypeRef<SearchResponse<AGMPhenotypeAnnotation>> getSearchResponseTypeRefAGMPhenotypeAnnotation() {
 		return new TypeRef<SearchResponse <AGMPhenotypeAnnotation>>() {
+		};
+	}
+	protected TypeRef<SearchResponse<GenePhenotypeAnnotation>> getSearchResponseTypeRefGenePhenotypeAnnotation() {
+		return new TypeRef<SearchResponse <GenePhenotypeAnnotation>>() {
 		};
 	}
 

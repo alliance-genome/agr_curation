@@ -45,7 +45,6 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 		annotation.setUniqueId(uniqueId);
 		annotation.setSingleReference(reference);
 		annotation.setPhenotypeAnnotationSubject(subject);
-		//does there need to be validation for SgdStrainBackground? would it work like it does in the GeneDiseaseAnnotationValidator?
 		
 		
 		ObjectResponse<GenePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, dataProvider);

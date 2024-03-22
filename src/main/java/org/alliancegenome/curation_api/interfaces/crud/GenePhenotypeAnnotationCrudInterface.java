@@ -18,7 +18,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/gene-phenotype-annotation")
-@Tag(name = "CRUD - AGM Phenotype Annotations")
+@Tag(name = "CRUD - Gene Phenotype Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GenePhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<GenePhenotypeAnnotation> {
