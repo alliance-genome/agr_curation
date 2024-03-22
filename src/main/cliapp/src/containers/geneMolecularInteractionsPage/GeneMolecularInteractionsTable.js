@@ -160,7 +160,7 @@ export const GeneMolecularInteractionsTable = () => {
 		widthsObject[col.field] = 10;
 	});
 
-	const initialTableState = getDefaultTableState("PhenotypeAnnotations", defaultColumnNames, undefined, widthsObject);
+	const initialTableState = getDefaultTableState("GeneMolecularInteractions", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
