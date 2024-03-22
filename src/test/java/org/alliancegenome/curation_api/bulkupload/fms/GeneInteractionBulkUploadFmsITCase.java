@@ -51,6 +51,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 	private final String gene1 = "WB:GITestGene0001";
 	private final String gene2 = "WB:GITestGene0002";
 	private final String reference = "AGRKB:000000002";
+	private final String reference2 = "AGRKB:000000021";
 	private final String miTerm1 = "MI:Test0001";
 	private final String miTerm2 = "MI:Test0002";
 	private final String miTerm3 = "MI:Test0003";
@@ -106,6 +107,114 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			body("entity.aggregationDatabase.curie", is(defaultAggregationDbTerm)).
 			body("entity.detectionMethod.curie", is(miTerm7)).
 			body("entity.crossReferences[0].referencedCurie", is(geneMolecularInteractionId));
+	}
+	
+	@Test
+	@Order(2)
+	public void geneMolecularInteractionBulkUploadUpdateCheckFields() throws Exception {
+		
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "UD_01_update_all_fields_gene_molecular_interaction.json");
+		
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + geneMolecularInteractionId).
+			then().
+			statusCode(200).
+			body("entity.interactionId", is(geneMolecularInteractionId)).
+			body("entity.uniqueId", is("WB:GITestGene0002|physically_interacts_with|WB:GITestGene0001|AGRKB:000000021|MI:Test0003|MI:Test0004|MI:Test0005|MI:Test0006|MI:Test0007|MI:Test0001")).
+			body("entity.geneAssociationSubject.modEntityId", is(gene2)).
+			body("entity.geneGeneAssociationObject.modEntityId", is(gene1)).
+			body("entity.relation.name", is(VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM)).
+			body("entity.dateCreated", is("2024-01-18T00:00:00Z")).
+			body("entity.dateUpdated", is("2024-01-19T00:00:00Z")).
+			body("entity.evidence[0].curie", is(reference2)).
+			body("entity.interactionSource.curie", is(miTerm2)).
+			body("entity.interactionType.curie", is(miTerm3)).
+			body("entity.interactorARole.curie", is(miTerm4)).
+			body("entity.interactorBRole.curie", is(miTerm5)).
+			body("entity.interactorAType.curie", is(miTerm6)).
+			body("entity.interactorBType.curie", is(miTerm7)).
+			body("entity.aggregationDatabase.curie", is(defaultAggregationDbTerm)).
+			body("entity.detectionMethod.curie", is(miTerm1)).
+			body("entity.crossReferences[0].referencedCurie", is(geneMolecularInteractionId));
+	}
+	
+	@Test
+	@Order(3)
+	public void geneInteractionBulkUploadMissingRequiredFields() throws Exception {
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_01_no_interactor_a_identifier.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_02_no_interactor_b_identifier.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_03_no_interaction_type.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_04_no_source_database_ids.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_05_no_interactor_a_type.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_06_no_interactor_b_type.json");
+	}
+	
+	@Test
+	@Order(4)
+	public void geneInteractionBulkUploadEmptyRequiredFields() throws Exception {
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_01_empty_interactor_a_identifier.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_02_empty_interactor_b_identifier.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_03_empty_interaction_type.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_04_empty_source_database_ids.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_05_empty_interactor_a_type.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_06_empty_interactor_b_type.json");
+	}
+	
+	@Test
+	@Order(5)
+	public void geneMolecularInteractionBulkUploadUpdateMissingNonRequiredFields() throws Exception {
+		
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "AF_01_all_fields_gene_molecular_interaction.json");
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "UM_01_update_no_non_required_fields_gene_molecular_interaction.json");
+		
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + geneMolecularInteractionId).
+			then().
+			statusCode(200).
+			body("entity.interactionId", is(geneMolecularInteractionId)).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("evidence"))).
+			body("entity", not(hasKey("interactorARole"))).
+			body("entity", not(hasKey("interactorBRole"))).
+			body("entity", not(hasKey("detectionMethod")));
+	}
+	
+	@Test
+	@Order(6)
+	public void geneMolecularInteractionBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
+		
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "AF_01_all_fields_gene_molecular_interaction.json");
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "UE_01_update_empty_non_required_fields_gene_molecular_interaction.json");
+		
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + geneMolecularInteractionId).
+			then().
+			statusCode(200).
+			body("entity.interactionId", is(geneMolecularInteractionId)).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("evidence"))).
+			body("entity", not(hasKey("interactorARole"))).
+			body("entity", not(hasKey("interactorBRole"))).
+			body("entity", not(hasKey("detectionMethod")));
+	}
+	
+	@Test
+	@Order(7)
+	public void geneInteractionBulkUploadInvalidFields() throws Exception {
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_01_invalid_interactor_a_identifier.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_02_invalid_interactor_b_identifier.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_03_invalid_publication_ids.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_04_invalid_source_database_ids.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_05_invalid_interaction_types.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_06_invalid_experimental_role_a.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_07_invalid_experimental_role_b.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_08_invalid_interactor_a_type.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_09_invalid_interactor_b_type.json");
 	}
 	
 }

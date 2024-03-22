@@ -97,6 +97,8 @@ public class GeneInteractionFmsDTOValidator {
 			interactorAType = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getInteractorAType()));
 			if (interactorAType == null)
 				giResponse.addErrorMessage("interactorAType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorAType() + ")");
+		} else {
+			giResponse.addErrorMessage("interactorAType", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		interaction.setInteractorAType(interactorAType);
 		
@@ -105,6 +107,8 @@ public class GeneInteractionFmsDTOValidator {
 			interactorBType = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getInteractorBType()));
 			if (interactorBType == null)
 				giResponse.addErrorMessage("interactorBType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorBType() + ")");
+		} else {
+			giResponse.addErrorMessage("interactorBType", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		interaction.setInteractorBType(interactorBType);
 		
@@ -120,6 +124,9 @@ public class GeneInteractionFmsDTOValidator {
 				}
 			}
 		}
+		if (interactionType == null) {
+			giResponse.addErrorMessage("interactionType", ValidationConstants.REQUIRED_MESSAGE);
+		}
 		interaction.setInteractionType(interactionType);
 		
 		MITerm interactionSource = null;
@@ -133,6 +140,9 @@ public class GeneInteractionFmsDTOValidator {
 					break;
 				}
 			}
+		}
+		if (interactionSource == null) {
+			giResponse.addErrorMessage("sourceDatabaseIds", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		interaction.setInteractionSource(interactionSource);
 		

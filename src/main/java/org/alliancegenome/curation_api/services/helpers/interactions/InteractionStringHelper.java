@@ -8,16 +8,11 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
-import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import jakarta.inject.Inject;
 
 public abstract class InteractionStringHelper {
 	
@@ -60,6 +55,9 @@ public abstract class InteractionStringHelper {
 
 	public static String extractCurieFromPsiMiFormat(String psiMiString) {
 		// For extracting curies from PSI-MI fields of format <prefix>:"<curie>"(<description>)
+		if (StringUtils.isBlank(psiMiString))
+			return null;
+		
 		Matcher matcher = PSI_MI_FORMAT.matcher(psiMiString);
 		
 		if (!matcher.find())
@@ -69,6 +67,9 @@ public abstract class InteractionStringHelper {
 	}
 	
 	public static String extractWBVarCurieFromAnnotations(String annotationsString) {
+		if (annotationsString.isBlank())
+			return null;
+		
 		Matcher matcher = WB_VAR_ANNOTATION.matcher(annotationsString);
 		
 		if (!matcher.find())

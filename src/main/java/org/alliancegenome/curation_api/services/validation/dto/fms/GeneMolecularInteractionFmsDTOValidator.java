@@ -4,14 +4,12 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
@@ -92,10 +90,11 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		}
 		interaction.setAggregationDatabase(aggregationDatabase);		
 		
-		Log.info("INTERACTION: " + interaction);
-		if (gmiResponse.hasErrors())
+		if (gmiResponse.hasErrors()) {
+			Log.info("ERROR: " + gmiResponse.errorMessagesString());
 			throw new ObjectValidationException(dto, gmiResponse.errorMessagesString());
-		
+		}
+			
 		return interaction;
 
 	}
