@@ -63,6 +63,7 @@ public class JobScheduler {
 	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false") Boolean reindexSchedulingEnabled;
 
 	private ZonedDateTime lastCheck = null;
+	private Boolean checksInProgress = false;
 
 	@PostConstruct
 	public void init() {
@@ -103,8 +104,10 @@ public class JobScheduler {
 
 	@Scheduled(every = "1s")
 	public void scheduleCronGroupJobs() {
-		if (loadSchedulingEnabled) {
+		if (loadSchedulingEnabled && !checksInProgress) {
 			ZonedDateTime start = ZonedDateTime.now();
+			Log.info("START: " + start);
+			checksInProgress = true;
 			// log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
 			SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
 			for (BulkLoadGroup g : groups.getResults()) {
@@ -145,6 +148,7 @@ public class JobScheduler {
 				}
 			}
 			lastCheck = start;
+			checksInProgress = false;
 		}
 	}
 
