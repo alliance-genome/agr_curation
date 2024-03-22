@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -47,6 +48,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	PhenotypeAnnotationDAO phenotypeAnnotationDAO;
 	@Inject
 	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject
+	GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
 	@Inject
 	PersonService personService;
 	@Inject
@@ -154,6 +157,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		List<Long> existingPhenotypeAnnotationIds = new ArrayList<>();
 		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, dataProvider));
 		//TODO: add lists from other subtypes
 		return existingPhenotypeAnnotationIds;
 	}

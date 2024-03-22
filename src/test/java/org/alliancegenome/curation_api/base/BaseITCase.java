@@ -980,11 +980,6 @@ public class BaseITCase {
 		return new TypeRef<SearchResponse <AGMPhenotypeAnnotation>>() {
 		};
 	}
-	protected TypeRef<SearchResponse<GenePhenotypeAnnotation>> getSearchResponseTypeRefGenePhenotypeAnnotation() {
-		return new TypeRef<SearchResponse <GenePhenotypeAnnotation>>() {
-		};
-	}
-
 	private TypeRef<SearchResponse<Organization>> getSearchResponseTypeRefOrganization() {
 		return new TypeRef<SearchResponse <Organization>>() {
 		};

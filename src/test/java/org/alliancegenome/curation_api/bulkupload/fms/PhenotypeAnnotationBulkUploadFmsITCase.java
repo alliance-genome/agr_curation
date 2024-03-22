@@ -141,7 +141,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	public void genePhenotypeAnnotationBulkUploadCheckFields() throws Exception {
 		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "AF_01_all_fields_primary_gene_annotation.json");
 		
-		SearchResponse<GenePhenotypeAnnotation> response = RestAssured.given().
+		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
@@ -171,10 +171,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 			body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test")).
 			body("results[0].singleReference.curie", is(reference)).
 			body("results[0].phenotypeTerms", hasSize(1)).
-			body("results[0].phenotypeTerms[0].curie", is(mpTerm)).
-			extract().body().as(getSearchResponseTypeRefGenePhenotypeAnnotation());
-			
-		agmPaId = response.getResults().get(0).getId();
+			body("results[0].phenotypeTerms[0].curie", is(mpTerm));
 	}
 
 	@Test
