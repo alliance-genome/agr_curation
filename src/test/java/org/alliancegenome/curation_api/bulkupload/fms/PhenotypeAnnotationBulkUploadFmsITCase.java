@@ -139,8 +139,6 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void genePhenotypeAnnotationBulkUploadCheckFields() throws Exception {
-		loadRequiredEntities();
-		
 		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "AF_01_all_fields_primary_gene_annotation.json");
 		
 		SearchResponse<GenePhenotypeAnnotation> response = RestAssured.given().
