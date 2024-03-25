@@ -44,6 +44,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -1211,6 +1212,22 @@ public class BaseITCase {
 			body(goTerm).
 			when().
 			put("/api/goterm").
+			then().
+			statusCode(200);
+	}
+	
+	public void loadMITerm(String curie, String name) throws Exception {
+		MITerm miTerm = new MITerm();
+		miTerm.setCurie(curie);
+		miTerm.setName(name);
+		miTerm.setObsolete(false);
+		miTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(miTerm).
+			when().
+			put("/api/miterm").
 			then().
 			statusCode(200);
 	}

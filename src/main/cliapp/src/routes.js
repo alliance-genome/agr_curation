@@ -10,6 +10,7 @@ import { DataLoadsPage } from './containers/dataLoadsPage/';
 import { ReportsPage } from './containers/reportsPage/';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { PhenotypeAnnotationsPage } from './containers/phenotypeAnnotationsPage';
+import { GeneMolecularInteractionsPage } from './containers/geneMolecularInteractionsPage/GeneMolecularInteractionsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
@@ -47,6 +48,7 @@ export default (
 		<SecureRoute path="/reports" render={() => <ErrorBoundary><ReportsPage /></ErrorBoundary>} />
 		<SecureRoute path="/diseaseAnnotations" render={() => <ErrorBoundary><DiseaseAnnotationsPage /></ErrorBoundary>} />
 		<SecureRoute path="/phenotypeAnnotations" render={() => <ErrorBoundary><PhenotypeAnnotationsPage /></ErrorBoundary>} />
+		<SecureRoute path="/geneMolecularInteractions" render={() => <ErrorBoundary><GeneMolecularInteractionsPage /></ErrorBoundary>} />
 		<SecureRoute path="/experimentalConditions" render={() => <ErrorBoundary><ExperimentalConditionsPage /></ErrorBoundary>} />
 		<SecureRoute path="/conditionRelations" render={() => <ErrorBoundary><ConditionRelationPage /></ErrorBoundary>} />
 		<SecureRoute path="/genes" render={() => <ErrorBoundary><GenesPage /></ErrorBoundary>} />

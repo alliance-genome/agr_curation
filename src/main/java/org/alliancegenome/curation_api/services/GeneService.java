@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneInteraction;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
@@ -53,6 +54,8 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	AlleleGeneAssociationService alleleGeneAssociationService;
 	@Inject
 	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject
+	GeneInteractionService geneInteractionService;
 	@Inject
 	PhenotypeAnnotationService phenotypeAnnotationService;
 
@@ -111,6 +114,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			for (Long orthId : referencingOrthologyPairs) {
 				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
 				if (referencingOrthoPair != null)
+					anyReferencingEntities = true;
+			}
+			List<Long> referencingInteractions = geneDAO.findReferencingInteractions(id);
+			for (Long interactionId : referencingInteractions) {
+				GeneInteraction referencingInteraction = geneInteractionService.deprecateOrDeleteInteraction(interactionId, false, loadDescription, true);
+				if (referencingInteraction != null)
 					anyReferencingEntities = true;
 			}
 			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {

@@ -18,7 +18,7 @@ import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesT
 import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
 import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate'; 
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
-import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
@@ -932,7 +932,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationObject.name",
 		header: "Disease",
-		body: (rowData) => <DiseaseTemplate object={rowData.diseaseAnnotationObject}/>,
+		body: (rowData) => <OntologyTermTemplate object={rowData.diseaseAnnotationObject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
