@@ -231,3 +231,11 @@ export function getDefaultTableState(table, defaultColumnNames, defaultVisibleCo
 			tableSettingsKeyName: `${table}TableSettings`
 	}
 }
+
+export function getDefaultFormState(form, defaultFieldNames, defaultVisibleFields){
+	return {
+		selectedFormFields: defaultVisibleFields ? defaultVisibleFields : defaultFieldNames,
+		orderedFormFields: defaultFieldNames,
+		formSettingsKeyName: `${form}FormSettings`
+	}
+}

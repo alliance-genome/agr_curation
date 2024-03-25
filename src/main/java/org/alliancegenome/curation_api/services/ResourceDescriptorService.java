@@ -70,17 +70,22 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 	public ObjectResponse<ResourceDescriptor> getByPrefix(String prefix) {
 		
 		ResourceDescriptor rd = null;
-		
+		SearchResponse<ResourceDescriptor> rdResponse = null;
 		if(prefixRequest != null) {
 			if(prefixCacheMap.containsKey(prefix)) {
 				rd = prefixCacheMap.get(prefix);
 			} else {
 				Log.debug("RD not cached, caching rd: (" + prefix + ")");
-				rd = resourceDescriptorDAO.findByField("prefix", prefix).getSingleResult();
-				prefixCacheMap.put(prefix, rd);
+				rdResponse = resourceDescriptorDAO.findByField("prefix", prefix);
+				if (rdResponse != null && rdResponse.getSingleResult() != null) {
+					rd = rdResponse.getSingleResult();
+					prefixCacheMap.put(prefix, rd);
+				}
 			}
 		} else {
-			rd = resourceDescriptorDAO.findByField("prefix", prefix).getSingleResult();
+			rdResponse = resourceDescriptorDAO.findByField("prefix", prefix);
+			if (rdResponse != null && rdResponse.getSingleResult() != null)
+				rd = rdResponse.getSingleResult();
 			prefixRequest = new Date();
 		}
 

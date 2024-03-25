@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.DiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 
 import jakarta.annotation.PostConstruct;
@@ -20,5 +21,9 @@ public class DiseaseAnnotationCrudController extends BaseEntityCrudController<Di
 	@PostConstruct
 	protected void init() {
 		setService(diseaseAnnotationService);
+	}
+	
+	public ObjectResponse<DiseaseAnnotation> get(String identifierString) {
+		return diseaseAnnotationService.get(identifierString);
 	}
 }

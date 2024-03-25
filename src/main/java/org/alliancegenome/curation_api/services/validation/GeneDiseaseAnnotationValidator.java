@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -64,7 +63,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 
 		Gene subject = validateSubject(uiEntity, dbEntity);
-		dbEntity.setSubject(subject);
+		dbEntity.setDiseaseAnnotationSubject(subject);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
@@ -83,19 +82,22 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
-			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
+		String field = "diseaseAnnotationSubject";
+		if (ObjectUtils.isEmpty(uiEntity.getDiseaseAnnotationSubject())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		Gene subjectEntity = geneDAO.find(uiEntity.getSubject().getCurie());
+		Gene subjectEntity = null;
+		if (uiEntity.getDiseaseAnnotationSubject().getId() != null)
+			subjectEntity = geneDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
 		if (subjectEntity == null) {
-			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
-			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
+		if (subjectEntity.getObsolete() && (dbEntity.getDiseaseAnnotationSubject() == null || !subjectEntity.getId().equals(dbEntity.getDiseaseAnnotationSubject().getId()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
@@ -126,17 +128,20 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		if (uiEntity.getSgdStrainBackground() == null)
+		String field = "sgdStrainBackground";
+		if (ObjectUtils.isEmpty(uiEntity.getSgdStrainBackground()))
 			return null;
 
-		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
+		AffectedGenomicModel sgdStrainBackground = null;
+		if (uiEntity.getSgdStrainBackground().getId() != null)
+			sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getId());
 		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
-			addMessageResponse("sgdStrainBackground", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (sgdStrainBackground.getObsolete() && (dbEntity.getSgdStrainBackground() == null || !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie()))) {
-			addMessageResponse("sgdStrainBackground", ValidationConstants.OBSOLETE_MESSAGE);
+		if (sgdStrainBackground.getObsolete() && (dbEntity.getSgdStrainBackground() == null || !sgdStrainBackground.getId().equals(dbEntity.getSgdStrainBackground().getId()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 

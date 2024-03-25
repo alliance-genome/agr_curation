@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -21,23 +20,22 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "NameSlotAnnotation", description = "POJO representing a name slot annotation")
-@Table(indexes = { @Index(name = "nameslotannotation_nametype_index", columnList = "nameType_id"), @Index(name = "nameslotannotation_synonymscope_index", columnList = "synonymScope_id") })
+@Table(indexes = {
+	@Index(name = "nameslotannotation_nametype_index", columnList = "nameType_id"),
+	@Index(name = "nameslotannotation_synonymscope_index", columnList = "synonymScope_id")
+})
 public abstract class NameSlotAnnotation extends SlotAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)

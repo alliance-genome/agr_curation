@@ -19,7 +19,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -47,7 +46,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Indexed
 @Entity
 @Data
@@ -60,7 +58,12 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"primaryCrossReferenceCurie", "crossReferences.referencedCurie", "crossReferences.displayName", "curie", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "references_curie") })
+	@Fetch(FetchMode.JOIN)
+	@JoinTable(indexes = {
+		@Index(name = "allele_reference_allele_index", columnList = "allele_id"),
+		@Index(name = "allele_reference_references_index", columnList = "references_id"),
+		@Index(name = "allele_reference_allele_references_index", columnList = "allele_id, references_id")
+	})
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<Reference> references;
 
@@ -76,7 +79,7 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private Boolean isExtinct;
 
-	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 
 	@IndexedEmbedded(includePaths = { "mutationTypes.curie", "mutationTypes.name", "evidence.curie", "mutationTypes.curie_keyword", "mutationTypes.name_keyword", "evidence.curie_keyword"})
@@ -139,9 +142,10 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
 	
-	@IndexedEmbedded(includePaths = {"objectGene.curie", "objectGene.geneSymbol.displayText", "objectGene.geneSymbol.formatText", "objectGene.geneFullName.displayText", "objectGene.geneFullName.formatText",
-			"objectGene.curie_keyword", "objectGene.geneSymbol.displayText_keyword", "objectGene.geneSymbol.formatText_keyword", "objectGene.geneFullName.displayText_keyword", "objectGene.geneFullName.formatText_keyword"})
-	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@IndexedEmbedded(includePaths = {"alleleGeneAssociationObject.curie", "alleleGeneAssociationObject.geneSymbol.displayText", "alleleGeneAssociationObject.geneSymbol.formatText", "alleleGeneAssociationObject.geneFullName.displayText", "alleleGeneAssociationObject.geneFullName.formatText",
+			"alleleGeneAssociationObject.curie_keyword", "alleleGeneAssociationObject.geneSymbol.displayText_keyword", "alleleGeneAssociationObject.geneSymbol.formatText_keyword", "alleleGeneAssociationObject.geneFullName.displayText_keyword", "alleleGeneAssociationObject.geneFullName.formatText_keyword",
+			"alleleGeneAssociationObject.modEntityId", "alleleGeneAssociationObject.modInternalId", "alleleGeneAssociationObject.modEntityId_keyword", "alleleGeneAssociationObject.modInternalId_keyword" })
+	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
 	
@@ -149,7 +153,9 @@ public class Allele extends GenomicEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
-	@JoinTable(indexes = { @Index(columnList = "allele_curie"), @Index(columnList = "relatedNotes_id")})
+	@JoinTable(indexes = {
+		@Index(name = "allele_note_allele_index", columnList = "allele_id"),
+		@Index(name = "allele_note_relatednotes_index", columnList = "relatedNotes_id")})
 	private List<Note> relatedNotes;
 
 }

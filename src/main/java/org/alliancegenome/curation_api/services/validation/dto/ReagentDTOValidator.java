@@ -6,8 +6,6 @@ import org.alliancegenome.curation_api.model.entities.Reagent;
 import org.alliancegenome.curation_api.model.ingest.dto.ReagentDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -24,23 +22,10 @@ public class ReagentDTOValidator extends AnnotationDTOValidator {
 		ObjectResponse<E> reagentResponse = validateAuditedObjectDTO(reagent, dto);
 		reagent = reagentResponse.getEntity();
 
-		if (StringUtils.isNotBlank(dto.getModEntityId())) {
-			reagent.setModEntityId(dto.getModEntityId());
-		} else {
-			reagent.setModEntityId(null);
-		}
+		reagent.setModEntityId(handleStringField(dto.getModEntityId()));
+		reagent.setModInternalId(handleStringField(dto.getModInternalId()));
 		
-		if (StringUtils.isNotBlank(dto.getModInternalId())) {
-			reagent.setModInternalId(dto.getModInternalId());
-		} else {
-			reagent.setModInternalId(null);
-		}
-		
-		if (CollectionUtils.isNotEmpty(dto.getSecondaryIdentifiers())) {
-			reagent.setSecondaryIdentifiers(dto.getSecondaryIdentifiers());
-		} else {
-			reagent.setSecondaryIdentifiers(null);
-		}
+		reagent.setSecondaryIdentifiers(handleStringListField(dto.getSecondaryIdentifiers()));
 		
 		if (dto.getDataProviderDto() == null) {
 			reagentResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);

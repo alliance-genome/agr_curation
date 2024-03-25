@@ -1,6 +1,6 @@
 [
   {
-    "curie": "ALLELETEST:ER22",
+    "mod_entity_id": "ALLELETEST:ER22",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

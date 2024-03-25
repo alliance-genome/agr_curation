@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecu
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
 
 import jakarta.annotation.PostConstruct;
@@ -30,8 +31,11 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 		setService(geneDiseaseAnnotationService);
 	}
 
-	@Override
 	public APIResponse updateGeneDiseaseAnnotations(String dataProvider, List<GeneDiseaseAnnotationDTO> annotations) {
 		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
+	}
+	
+	public ObjectResponse<GeneDiseaseAnnotation> get(String identifierString) {
+		return geneDiseaseAnnotationService.get(identifierString);
 	}
 }

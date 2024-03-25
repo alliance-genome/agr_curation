@@ -43,18 +43,21 @@ public class AlleleExecutor extends LoadFileExecutor {
 		
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		
-		List<String> alleleCuriesLoaded = new ArrayList<>();
-		List<String> alleleCuriesBefore = alleleService.getCuriesByDataProvider(dataProvider.name());
-		Log.debug("runLoad: Before: total " + alleleCuriesBefore.size());
+		List<Long> alleleIdsLoaded = new ArrayList<>();
+		List<Long> alleleIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			alleleIdsBefore.addAll(alleleService.getIdsByDataProvider(dataProvider.name()));
+			Log.debug("runLoad: Before: total " + alleleIdsBefore.size());
+		}
 		
 		bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 		
-		runLoad(history, alleles, dataProvider, alleleCuriesLoaded);
+		runLoad(history, alleles, dataProvider, alleleIdsLoaded);
 			
-		if(cleanUp) runCleanup(alleleService, history, bulkLoadFile, alleleCuriesBefore, alleleCuriesLoaded);
+		if(cleanUp) runCleanup(alleleService, history, bulkLoadFile, alleleIdsBefore, alleleIdsLoaded);
 			
 		history.finishLoad();
 			
@@ -65,19 +68,20 @@ public class AlleleExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad(String dataProviderName, List<AlleleDTO> alleles) {
 
-		List<String> curiesLoaded = new ArrayList<>();
+		List<Long> idsLoaded = new ArrayList<>();
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		runLoad(history, alleles, dataProvider, curiesLoaded);
+		runLoad(history, alleles, dataProvider, idsLoaded);
 		
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<AlleleDTO> alleles, BackendBulkDataProvider dataProvider, List<String> curiesAdded) {
+	public void runLoad(BulkLoadFileHistory history, List<AlleleDTO> alleles, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
+
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -86,8 +90,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 			try {
 				Allele allele = alleleService.upsert(alleleDTO, dataProvider);
 				history.incrementCompleted();
-				if (curiesAdded != null) {
-					curiesAdded.add(allele.getCurie());
+				if (idsAdded != null) {
+					idsAdded.add(allele.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

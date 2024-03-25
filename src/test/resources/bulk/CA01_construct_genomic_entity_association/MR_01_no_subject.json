@@ -1,7 +1,7 @@
 [
   {
     "relation_name": "is_regulated_by",
-    "genomic_entity_curie": "GENETEST:Gene0001",
+    "genomic_entity_identifier": "GENETEST:Gene0001",
      "evidence_curies": [
       "PMID:25920550"
     ],

@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.services.validation.slotAnnotations.alle
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.ontology.PhenotypeTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -11,7 +10,10 @@ import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -22,7 +24,7 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 	@Inject
 	AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
 	@Inject
-	PhenotypeTermDAO phenotypeTermDAO;
+	PhenotypeTermService phenotypeTermService;
 	@Inject
 	VocabularyTermService vocabularyTermService;
 
@@ -103,16 +105,19 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 
 	public PhenotypeTerm validatePhenotypeTerm(AlleleInheritanceModeSlotAnnotation uiEntity, AlleleInheritanceModeSlotAnnotation dbEntity) {
 		String field = "phenotypeTerm";
-		if (uiEntity.getPhenotypeTerm() == null)
+		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm()))
 			return null;
 		
-		PhenotypeTerm phenotypeTerm = phenotypeTermDAO.find(uiEntity.getPhenotypeTerm().getCurie());
-		if (phenotypeTerm == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getCurie().equals(dbEntity.getPhenotypeTerm().getCurie()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
+		PhenotypeTerm phenotypeTerm = null;
+		if (StringUtils.isNotBlank(uiEntity.getPhenotypeTerm().getCurie())) {
+			phenotypeTerm = phenotypeTermService.findByCurie(uiEntity.getPhenotypeTerm().getCurie());
+			if (phenotypeTerm == null) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			} else if (phenotypeTerm.getObsolete() && (dbEntity.getPhenotypeTerm() == null || !phenotypeTerm.getId().equals(dbEntity.getPhenotypeTerm().getId()))) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
 		}
 		return phenotypeTerm;
 	}

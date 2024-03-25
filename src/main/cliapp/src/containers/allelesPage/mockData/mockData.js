@@ -24,7 +24,7 @@ export const data = {
                 "internal": false,
                 "obsolete": false,
                 "dbDateUpdated": "2023-04-05T02:49:57.970413Z",
-                "curie": "FB:FBal0196303",
+                "modEntityId": "FB:FBal0196303",
                 "taxon": {
                     "internal": false,
                     "obsolete": false,
@@ -530,7 +530,7 @@ export const alleleDetailData = {
         "internal": false,
         "obsolete": false,
         "dbDateUpdated": "2023-04-14T22:58:06.51117Z",
-        "curie": "MGI:5146840",
+        "modEntityId": "MGI:5146840",
         "taxon": {
             "internal": false,
             "obsolete": false,
@@ -721,6 +721,8 @@ export const mockSettingsData = {
 	"multiSortMeta": [],
 	"selectedColumnNames": [
         "Curie",
+        "MOD Entity ID",
+        "MOD Internal ID",
         "Name",
         "Symbol",
         "Secondary IDs",

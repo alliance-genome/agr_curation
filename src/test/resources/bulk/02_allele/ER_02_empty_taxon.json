@@ -1,6 +1,6 @@
 [
   {
-    "curie": "ALLELETEST:ER02",
+    "mod_entity_id": "ALLELETEST:ER02",
     "taxon_curie": "",
     "internal": true,
     "obsolete": false,

@@ -3,7 +3,7 @@
     "mod_entity_id": "DATEST:IV02",
     "internal": false,
     "obsolete": false,
-    "gene_curie": "DATEST:Gene0001",
+    "gene_identifier": "DATEST:Gene0001",
     "do_term_curie": "DATEST:Disease0001",
     "data_provider_dto": {
       "internal": false,
@@ -61,11 +61,11 @@
         ]
       }
     ],
-    "disease_genetic_modifier_curies": [
+    "disease_genetic_modifier_identifiers": [
       "DATEST:Gene0002"
     ],
     "disease_genetic_modifier_relation_name": "ameliorated_by",
-    "with_gene_curies": [
+    "with_gene_identifiers": [
       "HGNC:0001"
     ],
     "reference_curie": "PMID:25920554",
@@ -83,7 +83,7 @@
     "created_by_curie": "DATEST:Person0001",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "09/03/2022",
-    "sgd_strain_background_curie": "SGD:AGM0001",
+    "sgd_strain_background_identifier": "SGD:AGM0001",
     "annotation_type_name": "manually_curated",
     "disease_qualifier_names": [
       "susceptibility"

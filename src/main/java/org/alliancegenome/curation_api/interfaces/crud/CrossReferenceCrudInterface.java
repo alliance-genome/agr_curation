@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -13,5 +13,5 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Cross References")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface CrossReferenceCrudInterface extends BaseCurieCrudInterface<CrossReference> {
+public interface CrossReferenceCrudInterface extends BaseIdCrudInterface<CrossReference> {
 }

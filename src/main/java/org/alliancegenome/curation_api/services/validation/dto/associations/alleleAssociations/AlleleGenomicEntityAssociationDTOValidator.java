@@ -3,8 +3,6 @@ package org.alliancegenome.curation_api.services.validation.dto.associations.all
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
@@ -21,10 +19,6 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	NoteDAO noteDAO;
 	@Inject
 	NoteDTOValidator noteDtoValidator;
 	@Inject

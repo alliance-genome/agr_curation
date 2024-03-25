@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -30,16 +29,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleInheritanceModeSlotAnnotation", description = "POJO representing an allele inheritance mode slot annotation")
-@Table(indexes = { @Index(name = "alleleinheritancemode_singleallele_curie_index", columnList = "singleallele_curie"),
-		@Index(name = "alleleinheritancemode_inheritancemode_id_index", columnList = "inheritancemode_id"),
-		@Index(name = "alleleinheritancemode_phenotypeterm_curie_index", columnList = "phenotypeterm_curie")})
+@Table(indexes = { @Index(name = "alleleinheritancemode_singleallele_index", columnList = "singleallele_id"),
+		@Index(name = "alleleinheritancemode_inheritancemode_index", columnList = "inheritancemode_id"),
+		@Index(name = "alleleinheritancemode_phenotypeterm_index", columnList = "phenotypeterm_id")})
 public class AlleleInheritanceModeSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne

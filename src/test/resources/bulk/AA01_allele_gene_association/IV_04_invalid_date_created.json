@@ -1,8 +1,8 @@
 [
   {
-    "allele_curie": "ALLELETEST:Allele0001",
+    "allele_identifier": "ALLELETEST:Allele0001",
     "relation_name": "is_allele_of",
-    "gene_curie": "GENETEST:Gene0001",
+    "gene_identifier": "GENETEST:Gene0001",
     "evidence_code_curie": "DATEST:Evidence0001",
     "evidence_curies": [
       "PMID:25920550"

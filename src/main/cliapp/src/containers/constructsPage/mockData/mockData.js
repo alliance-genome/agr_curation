@@ -297,7 +297,7 @@ export const data = {
 						"internal": false,
 						"obsolete": false,
 						"id": 135641224,
-						"subject": {
+						"constructAssociationSubject": {
 							"createdBy": {
 								"internal": false,
 								"obsolete": false,
@@ -657,7 +657,7 @@ export const data = {
 							"name": "expresses (RO:0002292)",
 							"definition": "Indicates that the construct expresses the indicated GenomicEntity"
 						},
-						"objectGenomicEntity": {
+						"constructGenomicEntityAssociationObject": {
 							"type": "Gene",
 							"createdBy": {
 								"internal": false,

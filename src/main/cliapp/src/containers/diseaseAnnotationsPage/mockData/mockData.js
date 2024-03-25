@@ -57,7 +57,7 @@ export const data = {
 				"curie": "sgd test curie",
 				"name": "SGD Strain Background test"
 			}, 
-			"diseaseGeneticModifiers": {"symbol": "disease genetic modifier test"},
+			"diseaseGeneticModifiers": [{"symbol": "disease genetic modifier test"}],
 			"diseaseQualifiers": [{"name": "disease qualifiers test"}],
 			"dateCreated": "2017-06-08T14:15:35Z",
 			"dateUpdated": "2017-06-08T14:15:35Z",
@@ -67,7 +67,7 @@ export const data = {
 			"dbDateUpdated": "2023-03-16T15:24:38.954678Z",
 			"id": 18394375,
 			"uniqueId": "MGI:5560505|DOID:0050545|AGRKB:101000000827851",
-			"object": {
+			"diseaseAnnotationObject": {
 				"internal": false,
 				"obsolete": false,
 				"dbDateUpdated": "2023-04-02T22:02:52.730635Z",
@@ -96,7 +96,7 @@ export const data = {
 					}
 				]
 			},
-			"negated": false,
+			"negated": true,
 			"relation": {
 				"dateCreated": "2022-01-26T09:40:54.020724Z",
 				"dateUpdated": "2022-01-26T09:40:54.020726Z",
@@ -176,7 +176,7 @@ export const data = {
 					}
 				}
 			},
-			"subject": {
+			"diseaseAnnotationSubject": {
 				"type": "AffectedGenomicModel",
 				"internal": false,
 				"obsolete": false,

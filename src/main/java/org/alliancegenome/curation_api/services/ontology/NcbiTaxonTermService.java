@@ -2,9 +2,13 @@ package org.alliancegenome.curation_api.services.ontology;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.interfaces.ncbi.NCBIRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponseDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
@@ -12,6 +16,7 @@ import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import si.mazi.rescu.RestProxyFactory;
 
 @RequestScoped
 public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm, NcbiTaxonTermDAO> {
@@ -28,6 +33,10 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 		setSQLDao(ncbiTaxonTermDAO);
 	}
 
+	private final int MAX_ATTEMPTS = 5;
+	
+	private NCBIRESTInterface api = RestProxyFactory.createProxy(NCBIRESTInterface.class, "https://eutils.ncbi.nlm.nih.gov");
+	
 	@Override
 	public ObjectResponse<NCBITaxonTerm> get(String taxonCurie) {
 		NCBITaxonTerm term = null;
@@ -51,15 +60,54 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 	}
 	
 	
-	private NCBITaxonTerm getTaxonFromDB(String taxonCurie) {
-		NCBITaxonTerm taxon = ncbiTaxonTermDAO.find(taxonCurie);
+	public NCBITaxonTerm getTaxonFromDB(String taxonCurie) {
+		NCBITaxonTerm taxon = findByCurie(taxonCurie);
 		if (taxon == null) {
-			taxon = ncbiTaxonTermDAO.downloadAndSave(taxonCurie);
+			taxon = downloadAndSave(taxonCurie);
 			if (taxon == null) {
 				Log.warn("Taxon ID could not be found");
 			}
 		}
 		return taxon;
+	}
+	
+	public NCBITaxonTerm downloadAndSave(String taxonCurie) {
+		
+		Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:(\\d+)$");
+		Matcher taxonIdMatcher = taxonIdPattern.matcher(taxonCurie);
+		if (!taxonIdMatcher.find()) {
+			return null;
+		}
+
+		HashMap<String, Object> taxonMap = null;
+		int attemptsRemaining = MAX_ATTEMPTS;
+		while (attemptsRemaining-- > 0) {
+			try {
+				NCBITaxonResponseDTO resp = api.getTaxonFromNCBI("taxonomy", "json", taxonIdMatcher.group(1));
+				HashMap<String, Object> result = resp.getResult();
+				taxonMap = (HashMap<String, Object>) result.get(taxonIdMatcher.group(1));
+
+				break;
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
+
+		if (taxonMap == null || taxonMap.get("error") != null)
+			return null;
+
+		String name = (String) taxonMap.get("scientificname");
+		NCBITaxonTerm taxon = new NCBITaxonTerm();
+		taxon.setName(name);
+		taxon.setCurie(taxonCurie);
+		if (taxonMap.get("status").equals("active")) {
+			taxon.setObsolete(false);
+		} else {
+			taxon.setObsolete(true);
+		}
+
+		return ncbiTaxonTermDAO.persist(taxon);
 	}
 
 }

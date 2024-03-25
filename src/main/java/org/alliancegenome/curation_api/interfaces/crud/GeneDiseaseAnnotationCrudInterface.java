@@ -33,11 +33,13 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<GeneDiseaseAnnotation> get(@PathParam("identifier") String identifier);
 
+	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
 	public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation entity);
 
+	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)

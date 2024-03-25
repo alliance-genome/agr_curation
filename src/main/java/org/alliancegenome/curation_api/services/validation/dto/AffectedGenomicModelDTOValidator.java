@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -24,27 +25,26 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 	@Inject
 	VocabularyTermService vocabularyTermService;
 
-	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
-		ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<AffectedGenomicModel>();
+	private ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<AffectedGenomicModel>();
 
+	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+		
 		AffectedGenomicModel agm = null;
-		if (StringUtils.isBlank(dto.getCurie())) {
-			agmResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isNotBlank(dto.getModEntityId())) {
+			SearchResponse<AffectedGenomicModel> response = affectedGenomicModelDAO.findByField("modEntityId", dto.getModEntityId());
+			if (response != null && response.getSingleResult() != null)
+				agm = response.getSingleResult();
 		} else {
-			agm = affectedGenomicModelDAO.find(dto.getCurie());
+			agmResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (agm == null)
 			agm = new AffectedGenomicModel();
 
-		agm.setCurie(dto.getCurie());
-
-		if (StringUtils.isNotBlank(dto.getName())) {
-			agm.setName(dto.getName());
-		} else {
-			agm.setName(null);
-		}
-
+		agm.setModEntityId(dto.getModEntityId());
+		agm.setModInternalId(handleStringField(dto.getModInternalId()));
+		agm.setName(handleStringField(dto.getName()));
+		
 		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto, dataProvider);
 		agmResponse.addErrorMessages(geResponse.getErrorMessages());
 
@@ -60,6 +60,8 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 				agmResponse.addErrorMessage("subtype_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSubtypeName() + ")");
 		}
 		agm.setSubtype(subtype);
+		
+		agmResponse.convertErrorMessagesToMap();
 
 		if (agmResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, agmResponse.errorMessagesString());

@@ -35,7 +35,7 @@ describe("<AllelesTable />", () => {
 	it("Contains Correct Table Data", async () => {
 		let result = await renderWithClient(<BrowserRouter><AllelesTable /></BrowserRouter>);
 
-		const curieTd = await result.findByText(/FB:FBal0196303/i);
+		const modEntityIdTd = await result.findByText(/FB:FBal0196303/i);
 		const nameTd = await result.findByText(/Saccharomyces cerevisiae UAS construct a of Stefancsik/i);
 		const symbolTd = await result.findByText(/symbol display text/i);
 		const secondaryIdsTd = await result.findByText(/FB:FBal0123136/i);
@@ -47,7 +47,7 @@ describe("<AllelesTable />", () => {
 		const alleleDatabaseStatusTd = await result.findByText(/approved/i);
 
 		await waitFor(() => {
-			expect(curieTd).toBeInTheDocument();
+			expect(modEntityIdTd).toBeInTheDocument();
 			expect(nameTd).toBeInTheDocument();
 			expect(symbolTd).toBeInTheDocument();
 			expect(secondaryIdsTd).toBeInTheDocument();

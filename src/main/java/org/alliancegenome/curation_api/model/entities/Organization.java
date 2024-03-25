@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.model.entities;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -26,17 +25,16 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @Entity
-@Audited
-@Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.4.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Agent.class })
 @Table(indexes = {
-	@Index(name = "organization_homepageresourcedescriptorpage_id_index", columnList = "homepageresourcedescriptorpage_id"),
-	@Index(name = "organization_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "organization_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "organization_homepageresourcedescriptorpage_id_index", columnList = "homepageresourcedescriptorpage_id"),
+		@Index(name = "organization_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "organization_updatedby_index", columnList = "updatedBy_id")
 })
 public class Organization extends Agent {
 

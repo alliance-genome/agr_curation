@@ -35,7 +35,7 @@ public interface ConstructGenomicEntityAssociationCrudInterface extends BaseIdCr
 	@GET
 	@Path("/findBy")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(@QueryParam("constructId") Long constructId, @QueryParam("relationName") String relationName, @QueryParam("genomicEntityCurie") String geneCurie);
+	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(@QueryParam("constructId") Long constructId, @QueryParam("relationName") String relationName, @QueryParam("genomicEntityId") Long genomicEntityId);
 	
 	@POST
 	@Path("/validate")

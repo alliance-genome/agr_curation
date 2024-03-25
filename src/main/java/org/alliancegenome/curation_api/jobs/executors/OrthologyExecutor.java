@@ -102,7 +102,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 	}
 
 
-	public void runLoad(BulkLoadFileHistory history, String dataProvider, OrthologyIngestFmsDTO orthologyData, List<Pair<String, String>> orthoPairsAdded) {
+	private void runLoad(BulkLoadFileHistory history, String dataProvider, OrthologyIngestFmsDTO orthologyData, List<Pair<String, String>> orthoPairsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(dataProvider + " Orthology DTO Update", orthologyData.getData().size());

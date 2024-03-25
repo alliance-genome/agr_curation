@@ -25,8 +25,8 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("07 - Orthology bulk upload - FMS")
-@Order(7)
+@DisplayName("502 - Orthology bulk upload - FMS")
+@Order(502)
 public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach
@@ -38,7 +38,7 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 	}
 
 	private final String orthologyBulkPostEndpoint = "/api/orthologygenerated/bulk/WB/orthologyfile";
-	private final String orthologyTestFilePath = "src/test/resources/bulk/fms/06_orthology/";
+	private final String orthologyTestFilePath = "src/test/resources/bulk/fms/02_orthology/";
 	private final String orthologyFindEndpoint = "/api/orthologygenerated/find?limit=100&page=0";
 	
 	@Test
@@ -56,8 +56,8 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 				statusCode(200).
 				body("totalResults", is(1)).
 				body("results", hasSize(1)).
-				body("results[0].subjectGene.curie", is("GENETEST:Gene0001")).
-				body("results[0].objectGene.curie", is("HGNC:0001")).
+				body("results[0].subjectGene.modEntityId", is("GENETEST:Gene0001")).
+				body("results[0].objectGene.modEntityId", is("HGNC:0001")).
 				body("results[0].subjectGene.taxon.curie", is("NCBITaxon:6239")).
 				body("results[0].objectGene.taxon.curie", is("NCBITaxon:9606")).
 				body("results[0].moderateFilter", is(false)).

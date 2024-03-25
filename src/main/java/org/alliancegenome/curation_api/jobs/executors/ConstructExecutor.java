@@ -51,8 +51,11 @@ public class ConstructExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		
 		List<Long> constructIdsLoaded = new ArrayList<>();
-		List<Long> constructIdsBefore = constructService.getConstructIdsByDataProvider(dataProvider);
-		Log.debug("runLoad: Before: total " + constructIdsBefore.size());
+		List<Long> constructIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			constructIdsBefore.addAll(constructService.getConstructIdsByDataProvider(dataProvider));
+			Log.debug("runLoad: Before: total " + constructIdsBefore.size());
+		}
 		
 		bulkLoadFile.setRecordCount(constructs.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
@@ -82,7 +85,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 
-	public void runLoad(BulkLoadFileHistory history, List<ConstructDTO> constructs, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
+	private void runLoad(BulkLoadFileHistory history, List<ConstructDTO> constructs, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -108,7 +111,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 	}
 	
-	public void runCleanup(ConstructService service, BulkLoadFileHistory history, String dataProviderName, List<Long> constructIdsBefore, List<Long> constructIdsAfter, String md5sum) {
+	private void runCleanup(ConstructService service, BulkLoadFileHistory history, String dataProviderName, List<Long> constructIdsBefore, List<Long> constructIdsAfter, String md5sum) {
 		Log.debug("runLoad: After: " + dataProviderName + " " + constructIdsAfter.size());
 
 		List<Long> distinctAfter = constructIdsAfter.stream().distinct().collect(Collectors.toList());

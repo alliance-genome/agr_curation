@@ -94,10 +94,10 @@ export const ConstructsTable = () => {
 				<>
 					<Button className="p-button-text" onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
 						<EllipsisTableCell otherClasses={`fn_${rowData.id}`}>
-							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.formatText}}></div>
+							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.displayText}}></div>
 						</EllipsisTableCell>
 						<Tooltip target={`.fn_${rowData.id}`}>
-							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.formatText}}/>
+							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.displayText}}/>
 						</Tooltip>
 					</Button>	
 				</>
@@ -157,10 +157,10 @@ export const ConstructsTable = () => {
 					<Button className="p-button-text" 
 						onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
 							<EllipsisTableCell otherClasses={`sym_${rowData.id}`}>
-								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.constructSymbol.formatText }} />
+								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.constructSymbol.displayText }} />
 							</EllipsisTableCell>
 							<Tooltip target={`.sym_${rowData.id}`}>
-								<div dangerouslySetInnerHTML={{__html: rowData.constructSymbol.formatText}}/>
+								<div dangerouslySetInnerHTML={{__html: rowData.constructSymbol.displayText}}/>
 							</Tooltip>
 					</Button>
 				</>
@@ -274,12 +274,12 @@ export const ConstructsTable = () => {
 			const componentSet = new Set();
 			for(var i = 0; i < rowData.constructGenomicEntityAssociations.length; i++){
 				let symbolValue = "";
-				if (rowData.constructGenomicEntityAssociations[i]?.objectGenomicEntity.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.objectGenomicEntity.alleleSymbol) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.geneSymbol ? rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.alleleSymbol.displayText;
-				} else if (rowData.constructGenomicEntityAssociations[i]?.objectGenomicEntity.name) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.name;
+				if (rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.alleleSymbol) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.geneSymbol ? rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.alleleSymbol.displayText;
+				} else if (rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.name) {
+					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.name;
 				} else {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].objectGenomicEntity.curie;
+					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.curie;
 				}
 				let relationName = "";
 				if (rowData.constructGenomicEntityAssociations[i]?.relation?.name) {
@@ -380,7 +380,7 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
 		},
 		{
-			field: "constructGenomicEntityAssociations.objectGenomicEntity.symbol",
+			field: "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol",
 			header: "Component Associations",
 			body: genomicComponentsTemplate,
 			sortable: { isInEditMode },

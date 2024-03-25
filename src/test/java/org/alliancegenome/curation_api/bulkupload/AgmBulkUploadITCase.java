@@ -58,7 +58,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity.modEntityId", is("AGMTEST:Agm0001")).
 			body("entity.name", is("TestAgm1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.subtype.name", is("fish")).
@@ -84,7 +84,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity.modEntityId", is("AGMTEST:Agm0001")).
 			body("entity.name", is("TestAgm1a")).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.subtype.name", is("genotype")).
@@ -103,7 +103,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void agmBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_01_no_curie.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_01_no_mod_ids.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_02_no_taxon.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_03_no_subtype.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_04_no_data_provider.json");
@@ -117,7 +117,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void agmBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_01_empty_curie.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_01_empty_mod_ids.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_02_empty_taxon.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_03_empty_subtype.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_04_empty_data_provider_source_organization_abbreviation.json");
@@ -150,7 +150,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity.modEntityId", is("AGMTEST:Agm0001")).
 			body("entity", not(hasKey("name"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
@@ -169,7 +169,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity.modEntityId", is("AGMTEST:Agm0001")).
 			body("entity", not(hasKey("name"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).

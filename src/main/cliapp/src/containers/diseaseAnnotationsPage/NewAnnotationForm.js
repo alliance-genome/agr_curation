@@ -3,9 +3,10 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
- import { MultiSelect } from 'primereact/multiselect';
+import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from "react-query";
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
+import { NotEditor } from "../../components/Editors/NotEditor";
 import { classNames } from "primereact/utils";
 import { DiseaseAnnotationService } from "../../service/DiseaseAnnotationService";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -32,7 +33,8 @@ import { WithAdditionalFieldData } from "../../components/FieldData/WithAddition
 import { GeneticModifiersAdditionalFieldData } from "../../components/FieldData/GeneticModifiersAdditionalFieldData";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 import { ConfirmButton } from "../../components/ConfirmButton";
-import { getModFormFields } from "../../service/TableStateService";
+import { getDefaultFormState, getModFormFields } from "../../service/TableStateService";
+import { useGetUserSettings } from "../../service/useGetUserSettings";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -74,9 +76,11 @@ export const NewAnnotationForm = ({
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	const areUiErrors = useRef(false);
-	const optionalFields = ["Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+	const newAnnotationOptionalFields = ["Asserted Genes", "Asserted Allele", "NOT", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
 							"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"];
-	const [selectedFields, setSelectedFields] = useState(optionalFields);
+	let defaultUserSettings = getDefaultFormState("DiseaseAnnotations", newAnnotationOptionalFields, undefined);
+	const { settings: settingsKey , mutate: setSettingsKey } = useGetUserSettings('DiseaseAnnotationsFormSettings', defaultUserSettings, false);
+	const { selectedFormFields } = settingsKey;
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
 			diseaseAnnotationService = new DiseaseAnnotationService();
@@ -175,10 +179,6 @@ export const NewAnnotationForm = ({
 		handleSubmit(event, false);
 	}
 
-	const handleShowAllFields = () => {
-		setSelectedFields(optionalFields);
-	}
-
 	const onSingleReferenceChange = (event) => {
 		setUiErrorMessages({});
 		newAnnotationDispatch({
@@ -198,7 +198,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["name", "curie", "crossReferences.referencedCurie"];
+		const autocompleteFields = ["name", "curie", "modEntityId", "modInternalId", "crossReferences.referencedCurie"];
 		const endpoint = "agm";
 		const filterName = "sgdStrainBackgroundFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -214,7 +214,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const geneticModifiersSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "modEntityId", "modInternalId", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifiersFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -256,12 +256,14 @@ export const NewAnnotationForm = ({
 			"alleleFullName.displayText",
 			"alleleSynonyms.displayText",
 			"geneSynonyms.displayText",
+			"modEntityId",
+			"modInternalId",
 			"curie",
 			"crossReferences.referencedCurie",
 			"alleleSecondaryIds.secondaryId",
 		];
 		const endpoint = "biologicalentity";
-		const filterName = "subjectFilter";
+		const filterName = "diseaseAnnotationSubjectFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -352,7 +354,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "modEntityId", "modInternalId", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -386,7 +388,7 @@ export const NewAnnotationForm = ({
 	);
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "modEntityId", "modInternalId", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "assertedGenesFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -395,7 +397,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const assertedAlleleSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "alleleSynonyms.displayText"];
+		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "modEntityId", "modInternalId", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "alleleSynonyms.displayText"];
 		const endpoint = "allele";
 		const filterName = "assertedAlleleFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -403,9 +405,18 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
+	const updateFormFields = (updatedFields) => {
+		let updatedSettings = {...defaultUserSettings, selectedFormFields: updatedFields};
+		setSettingsKey(updatedSettings);
+	};
+
+	const handleShowAllFields = () => {
+		updateFormFields(newAnnotationOptionalFields);
+	}
+
 	const setToModDefault = () => {
 		const modFormFields = getModFormFields("DiseaseAnnotations");
-		setSelectedFields(modFormFields);
+		updateFormFields(modFormFields);
 	}
 
 	const dialogHeader = (
@@ -417,11 +428,11 @@ export const NewAnnotationForm = ({
 			<SplitterPanel size={10} style={{textAlign: 'right', padding: '5px'}}>
 				<MultiSelect
 					aria-label='columnToggle'
-					options={optionalFields}
-					value={selectedFields}
+					options={newAnnotationOptionalFields}
+					value={selectedFormFields}
 					filter
 					resetFilterOnHide
-					onChange={(e) => setSelectedFields(e.value)}
+					onChange={(e) => updateFormFields(e.value)}
 					className='w-20rem text-center'
 					maxSelectedLabels={4}
 				/>
@@ -453,29 +464,30 @@ export const NewAnnotationForm = ({
 				<form>
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="subject"><font color={'red'}>*</font>Subject</label>
+							<label htmlFor="diseaseAnnotationSubject"><font color={'red'}>*</font>Subject</label>
 						</div>
 						<div className={widgetColumnSize}>
 							<AutocompleteFormEditor
-								initialValue={newAnnotation.subject}
+								initialValue={newAnnotation.diseaseAnnotationSubject}
 								search={subjectSearch}
-								fieldName='subject'
-								name="subject"
+								fieldName='diseaseAnnotationSubject'
+								subField="modEntityId"
+								name="diseaseAnnotationSubject"
 								searchService={searchService}
 								onValueChangeHandler={onSubjectChange}
 								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseAnnotationSubject})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
-							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"subject"}/>
-							<SubjectAdditionalFieldData fieldData={newAnnotation.subject}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseAnnotationSubject"}/>
+							<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={"diseaseAnnotationSubject"}/>
+							<SubjectAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationSubject}/>
 						</div>
 					</div>
 
-					{selectedFields.includes("Asserted Genes") && (
+					{selectedFormFields?.includes("Asserted Genes") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -486,6 +498,7 @@ export const NewAnnotationForm = ({
 										customRef={assertedGenesRef}
 										search={assertedGenesSearch}
 										name="assertedGenes"
+										subField="modEntityId"
 										label="Asserted Genes"
 										fieldName='assertedGenes'
 										disabled = {!isAssertedGeneEnabled}
@@ -504,7 +517,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Asserted Allele") && (
+					{selectedFormFields?.includes("Asserted Allele") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -517,6 +530,7 @@ export const NewAnnotationForm = ({
 										name="assertedAllele"
 										label="Asserted Allele"
 										fieldName='assertedAllele'
+										subField="modEntityId"
 										disabled = {!isAssertedAlleleEnabled}
 										initialValue={newAnnotation.assertedAllele}
 										onValueChangeHandler={onSingleReferenceChange}
@@ -553,22 +567,14 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFields.includes("Negated") && (
+					{selectedFormFields?.includes("NOT") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
-									<label htmlFor="negated">Negated</label>
+									<label htmlFor="negated">NOT</label>
 								</div>
 								<div className={widgetColumnSize}>
-									<Dropdown
-										name="negated"
-										value={newAnnotation.negated}
-										options={negatedTerms}
-										optionLabel='text'
-										optionValue='name'
-										onChange={onDropdownFieldChange}
-										className={classNames({'p-invalid': submitted && errorMessages.negated})}
-									/>
+									<NotEditor value={newAnnotation.negated} editorChange={onDropdownFieldChange}/>
 								</div>
 								<div className={fieldDetailsColumnSize}>
 									<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
@@ -579,22 +585,22 @@ export const NewAnnotationForm = ({
 
 					<div className="grid">
 						<div className={labelColumnSize}>
-							<label htmlFor="object"><font color={'red'}>*</font>Disease</label>
+							<label htmlFor="diseaseAnnotationObject"><font color={'red'}>*</font>Disease</label>
 						</div>
 						<div className={widgetColumnSize}>
 							<AutocompleteFormEditor
-								name="object"
+								name="diseaseAnnotationObject"
 								search={diseaseSearch}
 								label="Disease"
-								fieldName='object'
-								initialValue={newAnnotation.object}
+								fieldName='diseaseAnnotationObject'
+								initialValue={newAnnotation.diseaseAnnotationObject}
 								onValueChangeHandler={onDiseaseChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseAnnotationObject})}
 							/>
 						</div>
 						<div className={fieldDetailsColumnSize}>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
-							<DiseaseAdditionalFieldData fieldData={newAnnotation.object}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseAnnotationObject"}/>
+							<DiseaseAdditionalFieldData fieldData={newAnnotation.diseaseAnnotationObject}/>
 						</div>
 					</div>
 
@@ -645,7 +651,7 @@ export const NewAnnotationForm = ({
 						</div>
 					</div>
 
-					{selectedFields.includes("With") && (
+					{selectedFormFields?.includes("With") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -658,6 +664,7 @@ export const NewAnnotationForm = ({
 										name="with"
 										label="With"
 										fieldName='with'
+										subField="modEntityId"
 										initialValue={newAnnotation.with}
 										onValueChangeHandler={onArrayFieldChange}
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
@@ -673,7 +680,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Related Notes") && (
+					{selectedFormFields?.includes("Related Notes") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -694,7 +701,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Experimental Conditions") && (
+					{selectedFormFields?.includes("Experimental Conditions") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -715,7 +722,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Experiments") && (
+					{selectedFormFields?.includes("Experiments") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -741,7 +748,7 @@ export const NewAnnotationForm = ({
 					)}
 
 
-					{selectedFields.includes("Genetic Sex") && (
+					{selectedFormFields?.includes("Genetic Sex") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -764,7 +771,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Disease Qualifiers") && (
+					{selectedFormFields?.includes("Disease Qualifiers") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -786,7 +793,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("SGD Strain Background") && (
+					{selectedFormFields?.includes("SGD Strain Background") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -800,6 +807,7 @@ export const NewAnnotationForm = ({
 										fieldName='sgdStrainBackground'
 										name="sgdStrainBackground"
 										label="SGD Strain Background"
+										subField="modEntityId"
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 											<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 										onValueChangeHandler={onSingleReferenceChange}
@@ -815,7 +823,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Annotation Type") && (
+					{selectedFormFields?.includes("Annotation Type") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -839,7 +847,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Genetic Modifier Relation") && (
+					{selectedFormFields?.includes("Genetic Modifier Relation") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -864,7 +872,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Genetic Modifiers") && (
+					{selectedFormFields?.includes("Genetic Modifiers") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>
@@ -876,6 +884,7 @@ export const NewAnnotationForm = ({
 										initialValue={newAnnotation.diseaseGeneticModifiers}
 										fieldName='diseaseGeneticModifiers'
 										name="diseaseGeneticModifiers"
+										subField="modEntityId"
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 											<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 										onValueChangeHandler={onArrayFieldChange}
@@ -890,7 +899,7 @@ export const NewAnnotationForm = ({
 						</>
 					)}
 
-					{selectedFields.includes("Internal") && (
+					{selectedFormFields?.includes("Internal") && (
 						<>
 							<div className="grid">
 								<div className={labelColumnSize}>

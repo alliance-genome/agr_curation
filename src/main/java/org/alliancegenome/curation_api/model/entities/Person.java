@@ -5,7 +5,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -29,22 +28,28 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Audited
-@Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Agent.class })
-@Table(indexes = { 
-	@Index(name = "person_createdby_index", columnList = "createdBy_id"), 
-	@Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
-	@Index(name = "person_allianceMember_index", columnList = "allianceMember_id"),
+@Table(indexes = {
+		@Index(name = "person_createdby_index", columnList = "createdBy_id"), 
+		@Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
+		@Index(name = "person_allianceMember_index", columnList = "allianceMember_id"),
 })
 public class Person extends Agent {
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true, length = 2000)
+	@JsonView({ View.FieldsOnly.class })
+	@EqualsAndHashCode.Include
+	protected String uniqueId;
+	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "firstName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })

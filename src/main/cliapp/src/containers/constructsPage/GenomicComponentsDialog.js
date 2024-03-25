@@ -9,6 +9,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { Button } from 'primereact/button';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
+import { getIdentifier } from '../../utils/utils';
 
 export const GenomicComponentsDialog = ({
 	originalComponentsData,
@@ -90,13 +91,13 @@ export const GenomicComponentsDialog = ({
 
 	const componentTemplate = (rowData) => {
 		let componentDisplayValue = "";
-		if (rowData.objectGenomicEntity.geneSymbol || rowData.objectGenomicEntity.alleleSymbol) {
-			let symbolValue = rowData.objectGenomicEntity.geneSymbol ? rowData.objectGenomicEntity.geneSymbol.displayText : rowData.objectGenomicEntity.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + rowData.objectGenomicEntity.curie + ')';
-		} else if (rowData.objectGenomicEntity.name) {
-			componentDisplayValue = rowData.objectGenomicEntity.name + ' (' + rowData.objectGenomicEntity.curie + ')';
+		if (rowData.constructGenomicEntityAssociationObject.geneSymbol || rowData.constructGenomicEntityAssociationObject.alleleSymbol) {
+			let symbolValue = rowData.constructGenomicEntityAssociationObject.geneSymbol ? rowData.constructGenomicEntityAssociationObject.geneSymbol.displayText : rowData.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
+			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.constructGenomicEntityAssociationObject) + ')';
+		} else if (rowData.constructGenomicEntityAssociationObject.name) {
+			componentDisplayValue = rowData.constructGenomicEntityAssociationObject.name + ' (' + getIdentifier(rowData.constructGenomicEntityAssociationObject) + ')';
 		} else {
-			componentDisplayValue = rowData.objectGenomicEntity.curie;
+			componentDisplayValue = getIdentifier(rowData.constructGenomicEntityAssociationObject);
 		}
 		return (
 			<>
@@ -131,7 +132,7 @@ export const GenomicComponentsDialog = ({
 					<DataTable value={localComponents} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 							ref={tableRef} >
 						<Column field="relation.name" header="Relation" headerClassName='surface-0'/>
-						<Column field="objectGenomicEntity.curie" header="Component" headerClassName='surface-0' body={componentTemplate}/>
+						<Column field="constructGenomicEntityAssociationObject.modEntityId" header="Component" headerClassName='surface-0' body={componentTemplate}/>
 						<Column field="relatedNotes.freeText" header="Related Notes" headerClassName='surface-0' body={relatedNotesTemplate}/>
 						<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName='surface-0'/>

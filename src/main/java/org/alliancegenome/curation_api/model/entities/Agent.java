@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.model.entities;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
@@ -15,6 +14,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @MappedSuperclass
-public class Agent extends UniqueIdAuditedObject {
+public class Agent extends AuditedObject {
 
 }
