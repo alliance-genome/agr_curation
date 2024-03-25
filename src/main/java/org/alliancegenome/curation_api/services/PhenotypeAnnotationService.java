@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -22,6 +23,7 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
@@ -47,6 +49,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	@Inject
 	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject
+	GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
+	@Inject
 	PersonService personService;
 	@Inject
 	PersonDAO personDAO;
@@ -56,6 +60,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	ReferenceService referenceService;
 	@Inject
 	AGMPhenotypeAnnotationService agmPhenotypeAnnotationService;
+	@Inject
+	GenePhenotypeAnnotationService genePhenotypeAnnotationService;
 
 	HashMap<String, List<PhenotypeFmsDTO>> unprocessedAnnotationsMap = new HashMap<>();
 	
@@ -151,6 +157,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		List<Long> existingPhenotypeAnnotationIds = new ArrayList<>();
 		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, dataProvider));
 		//TODO: add lists from other subtypes
 		return existingPhenotypeAnnotationIds;
 	}
@@ -181,7 +188,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		} else if (phenotypeAnnotationSubject instanceof Allele) {
 			// TODO: point to AllelePhenotypeAnnotationService method
 		} else if (phenotypeAnnotationSubject instanceof Gene) {
-			// TODO: point to GenePhenotypeAnnotationService method
+			GenePhenotypeAnnotation annotation = genePhenotypeAnnotationService.upsertPrimaryAnnotation((Gene) phenotypeAnnotationSubject, dto, dataProvider);
+			return annotation.getId();
 		} else {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 		}
@@ -199,8 +207,6 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 				agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, idsAdded, dataProvider);
 			} else if (primaryAnnotationSubject instanceof Allele) {
 				// TODO: point to AllelePhenotypeAnnotationService method
-			} else if (primaryAnnotationSubject instanceof Gene) {
-				// TODO: point to GenePhenotypeAnnotationService method
 			} else {
 				throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 			}

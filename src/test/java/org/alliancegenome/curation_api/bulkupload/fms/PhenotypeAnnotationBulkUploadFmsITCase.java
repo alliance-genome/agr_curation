@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -52,6 +53,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	private final String phenotypeAnnotationTestFilePath = "src/test/resources/bulk/fms/03_phenotype_annotation/";
 	private final String phenotypeAnnotationGetEndpoint = "/api/phenotype-annotation/";
 	private final String agmPhenotypeAnnotationFindEndpoint = "/api/agm-phenotype-annotation/find?limit=100&page=0";
+	private final String genePhenotypeAnnotationFindEndpoint = "/api/gene-phenotype-annotation/find?limit=100&page=0";
 	private Long agmPaId;
 	private final String agm = "PATEST:AGM0001";
 	private final String agm2 = "PATEST:AGM0002";
@@ -137,7 +139,39 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void genePhenotypeAnnotationBulkUploadCheckFields() throws Exception {
-		//TODO: add test for loading of primary gene phenotype annotation
+		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "AF_01_all_fields_primary_gene_annotation.json");
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(genePhenotypeAnnotationFindEndpoint).
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].phenotypeAnnotationSubject.modEntityId", is(gene)).
+			body("results[0].phenotypeAnnotationObject", is(phenotypeStatement)).
+			body("results[0].relation.name", is("has_phenotype")).
+			body("results[0].dateCreated", is("2024-01-17T15:26:56Z")).
+			body("results[0].conditionRelations", hasSize(1)).
+			body("results[0].conditionRelations[0].internal", is(false)).
+			body("results[0].conditionRelations[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].conditionRelationType.name", is(conditionRelationType)).
+			body("results[0].conditionRelations[0].conditions", hasSize(1)).
+			body("results[0].conditionRelations[0].conditions[0].internal", is(false)).
+			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is(zecoTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is(expCondTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
+			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is(anatomyTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is(goTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
+			body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm)).
+			body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test")).
+			body("results[0].singleReference.curie", is(reference)).
+			body("results[0].phenotypeTerms", hasSize(1)).
+			body("results[0].phenotypeTerms[0].curie", is(mpTerm));
 	}
 
 	@Test
