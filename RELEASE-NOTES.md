@@ -3,6 +3,22 @@
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
 
+## v0.31.0
+* New features
+  * Replaced Negated column/field with NOT in disease annotation table and new annotation form (SCRUM-3794)
+  * Enabled loading of AGM Phenotype Annotations from FMS (SCRUM-3712)
+  * Added restrictions to Allele Gene Associations to prevent duplicate associations or multiple is_allele_of associations (SCRUM-3625 & SCRUM-3626)
+  * Added GENO Ontology load (SCRUM-3694)
+  * Establised persistence of new annotation pop-up field visibility settings for disease annotations (SCRUM-3661)
+* Fixes and maintenance
+  * Aligned codebase with LinkML v2.2.0 (SCRUM-3515)
+  * Fixed WB Molecular bulk load error (SCRUM-3823)
+  * Added warning and provided openAPI definition download link on Swagger page (SCRUM-3779)
+  * Automated cleanup of exception messages from old submissions (SCRUM-3795)
+  * Removed unnecessary glyphs from ontology tree where no child terms (SCRUM-3249)
+  * Improved speed of closure queries to address failing ontology loads (SCRUM-3780)
+  * Improved speed of ID retrieval for data cleanup (SCRUM-3770)
+
 ## v0.30.0
 * New features
    * Enable "New Annotation" pop-up field-visibility custom settings for disease annotations (SCRUM-2680)
