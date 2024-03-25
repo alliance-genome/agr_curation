@@ -241,7 +241,7 @@ export function getDefaultTableState(table, defaultColumnNames, defaultVisibleCo
 	return {
 		page: 0,
 		first: 0,
-		rows: 50,
+		rows: 10,
 		multiSortMeta: [],
 		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
 		orderedColumnNames: defaultColumnNames,
