@@ -40,6 +40,7 @@ public class PersonSetting extends AuditedObject {
 	@JsonView(View.PersonSettingView.class)
 	private String settingsKey;
 
+	@org.eclipse.microprofile.graphql.Ignore
 	@JdbcTypeCode(SqlTypes.JSON)
 	@JsonView(View.PersonSettingView.class)
 	private Map<String, Object> settingsMap;
