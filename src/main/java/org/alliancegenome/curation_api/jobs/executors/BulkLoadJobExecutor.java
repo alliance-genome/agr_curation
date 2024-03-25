@@ -46,6 +46,7 @@ public class BulkLoadJobExecutor {
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
 	@Inject PhenotypeAnnotationExecutor phenotypeAnnotationExecutor;
+	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
@@ -91,6 +92,8 @@ public class BulkLoadJobExecutor {
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
 			moleculeExecutor.runLoad(bulkLoadFile);
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.INTERACTION_MOL) {
+			geneMolecularInteractionExecutor.runLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.PHENOTYPE) {
 			phenotypeAnnotationExecutor.runLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ORTHOLOGY) {
