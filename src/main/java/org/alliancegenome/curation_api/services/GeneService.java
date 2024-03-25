@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneInteraction;
+import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
@@ -55,6 +56,8 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 	@Inject
 	GeneInteractionService geneInteractionService;
+	@Inject
+	PhenotypeAnnotationService phenotypeAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -99,6 +102,14 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 				if (referencingDA != null)
 					anyReferencingEntities = true;
 			}
+
+			List<Long> referencingPAIds = geneDAO.findReferencingPhenotypeAnnotations(id);
+			for (Long paId : referencingPAIds) {
+				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
+				if (referencingPA != null)
+					anyReferencingEntities = true;
+			}
+
 			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(id);
 			for (Long orthId : referencingOrthologyPairs) {
 				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);

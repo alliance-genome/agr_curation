@@ -11,6 +11,7 @@ export const CLASSES = Object.freeze({
   PhenotypeAnnotation: { name: "Phenotype Annotations", link: "/#/phenotypeAnnotations", type: 'entity', },
   AGMPhenotypeAnnotation: { name: "AGM Phenotype Annotations", link: "/#/phenotypeAnnotations", type: 'entity', },
   GeneMolecularInteraction: { name: "Gene Molecular Interactions", link: "/#/geneMolecularInteractions", type: 'entity', },
+  GenePhenotypeAnnotation: { name: "Gene Phenotype Annotations", link: "/#/phenotypeAnnotations", type: 'entity', },
   ExperimentalCondition: { name: "Experimental Conditions", link: "/#/experimentalConditions", type: 'entity', },
   ConditionRelation: { name: "Condition Relations", link: "/#/conditionRelations", type: 'entity', },
   Construct: { name: "Constructs", link: "/#/constructs", type: 'entity' },

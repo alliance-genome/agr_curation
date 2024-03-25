@@ -20,6 +20,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
 	@Inject GeneInteractionDAO geneInteractionDAO;
+	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
 
 	protected GeneDAO() {
 		super(Gene.class);
@@ -78,6 +79,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		objectParams.put("objectGene.id", geneId);
 		results.addAll(geneToGeneOrthologyDAO.findFilteredIds(objectParams));
 		
+		return results;
+	}
+
+	public List<Long> findReferencingPhenotypeAnnotations(Long geneId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("phenotypeAnnotationSubject.id", geneId);
+		List<Long> results = genePhenotypeAnnotationDAO.findFilteredIds(params);
+
 		return results;
 	}
 }
