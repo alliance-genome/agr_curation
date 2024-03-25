@@ -35,7 +35,7 @@ These instructions will get you a copy of the project and the API up and running
 -  [Submitting Data](#submitting-data)
 -  [Querying Data](#querying-data)
    *  [Elastic Search](#search)
-   *  [Database Serarch](#find)
+   *  [Database Search](#find)
 
 ## Developing
 Before you start coding for a new feature or making a bugfix,
