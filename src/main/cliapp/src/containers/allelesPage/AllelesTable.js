@@ -3,7 +3,6 @@ import { useMutation } from 'react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
@@ -23,6 +22,9 @@ import { ReferencesTableEditor } from '../../components/Editors/references/Refer
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 
 import { ReferencesTemplate } from '../../components/Templates/reference/ReferencesTemplate';
+import { IdTemplate } from '../../components/Templates/IdTemplate'; 
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -145,13 +147,6 @@ export const AllelesTable = () => {
 			);
 		}
 	}
-
-	//Todo: replace
-	const isExtinctTemplate = (rowData) => {
-		if (rowData && rowData.isExtinct !== null && rowData.isExtinct !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.isExtinct)}</EllipsisTableCell>;
-		}
-	};
 
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
@@ -356,7 +351,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	//todo replace
 	const synonymsTemplate = (rowData) => {
 		if (rowData?.alleleSynonyms) {
 			const synonymSet = new Set();
@@ -446,7 +440,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	//todo: replace
 	const inheritanceModesTemplate = (rowData) => {
 		if (rowData?.alleleInheritanceModes) {
 			const inheritanceModeSet = new Set();
@@ -783,7 +776,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	//todo: replace
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
@@ -972,7 +964,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	//todo: replace
 	const secondaryIdsTemplate = (rowData) => {
 		if (rowData?.alleleSecondaryIds) {
 			const listTemplate = (item) => {
@@ -1060,18 +1051,21 @@ export const AllelesTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
+			body: (rowData) => <IdTemplate id={rowData.curie}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
 			field: "modEntityId",
 			header: "MOD Entity ID",
+			body: (rowData) => <IdTemplate id={rowData.modEntityId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
 			field: "modInternalId",
 			header: "MOD Internal ID",
+			body: (rowData) => <IdTemplate id={rowData.modInternalId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
@@ -1181,7 +1175,7 @@ export const AllelesTable = () => {
 		{
 			field: "isExtinct",
 			header: "Is Extinct",
-			body: isExtinctTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.isExtinct}/>,
 			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: true,
 			editor: (props) => (
@@ -1232,7 +1226,7 @@ export const AllelesTable = () => {
 		{
 			field: "internal",
 			header: "Internal",
-			body: internalTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true,
@@ -1243,7 +1237,7 @@ export const AllelesTable = () => {
 		{
 			field: "obsolete",
 			header: "Obsolete",
-			body: obsoleteTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true,
