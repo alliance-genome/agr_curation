@@ -19,17 +19,17 @@ public abstract class InteractionStringHelper {
 	private static final Pattern PSI_MI_FORMAT = Pattern.compile("^[^:]+:\"([^\"]*)\"");
 	private static final Pattern WB_VAR_ANNOTATION = Pattern.compile("wormbase:(WBVar\\d+)\\D*");
 
-	public static String getGeneMolecularInteractionUniqueId(PsiMiTabDTO dto, List<Reference> references) {
+	public static String getGeneMolecularInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
-		uniqueId.add(getGeneInteractionUniqueId(dto, references, VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM));
+		uniqueId.add(getGeneInteractionUniqueId(dto, interactionId, references, VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM));
 		if (dto.getInteractionDetectionMethods() != null)
 			uniqueId.addAll(dto.getInteractionDetectionMethods().stream().map(dm -> extractCurieFromPsiMiFormat(dm)).collect(Collectors.toList()));
 		return uniqueId.getUniqueId();
 	}
 	
-	public static String getGeneGeneticInteractionUniqueId(PsiMiTabDTO dto, List<Reference> references) {
+	public static String getGeneGeneticInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
-		uniqueId.add(getGeneInteractionUniqueId(dto, references, VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM));
+		uniqueId.add(getGeneInteractionUniqueId(dto, interactionId, references, VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM));
 		if (dto.getSourceDatabaseIds() != null)
 			uniqueId.addAll(dto.getSourceDatabaseIds().stream().map(sd -> extractCurieFromPsiMiFormat(sd)).collect(Collectors.toList()));
 		uniqueId.add(extractWBVarCurieFromAnnotations(dto.getInteractorAAnnotations()));
@@ -37,8 +37,9 @@ public abstract class InteractionStringHelper {
 		return uniqueId.getUniqueId();
 	}
 	
-	public static String getGeneInteractionUniqueId(PsiMiTabDTO dto, List<Reference> references, String relation) {
+	public static String getGeneInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references, String relation) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
+		uniqueId.add(interactionId);
 		uniqueId.add(PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractorAIdentifier()));
 		uniqueId.add(relation);
 		uniqueId.add(PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractorBIdentifier()));

@@ -91,7 +91,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.interactionId", is(geneMolecularInteractionId)).
-			body("entity.uniqueId", is("WB:GITestGene0001|physically_interacts_with|WB:GITestGene0002|AGRKB:000000002|MI:Test0002|MI:Test0003|MI:Test0004|MI:Test0005|MI:Test0006|MI:Test0007")).
+			body("entity.uniqueId", is("WB:WBInteraction0001|WB:GITestGene0001|physically_interacts_with|WB:GITestGene0002|AGRKB:000000002|MI:Test0002|MI:Test0003|MI:Test0004|MI:Test0005|MI:Test0006|MI:Test0007")).
 			body("entity.geneAssociationSubject.modEntityId", is(gene1)).
 			body("entity.geneGeneAssociationObject.modEntityId", is(gene2)).
 			body("entity.relation.name", is(VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM)).
