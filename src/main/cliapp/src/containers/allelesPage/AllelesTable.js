@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
@@ -24,7 +23,7 @@ import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTabl
 import { ReferencesTemplate } from '../../components/Templates/reference/ReferencesTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-
+import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -132,21 +131,6 @@ export const AllelesTable = () => {
 		}
 		return alleleService.saveAllele(updatedAllele);
 	});
-
-
-	//Todo: replace
-	const taxonTemplate = (rowData) => {
-		if (rowData?.taxon) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
-						{rowData.taxon.name} ({rowData.taxon.curie})
-					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-				</>
-			);
-		}
-	}
 
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
@@ -1112,7 +1096,7 @@ export const AllelesTable = () => {
 		{
 			field: "taxon.name",
 			header: "Taxon",
-			body: taxonTemplate,
+			body: (rowData) => <TaxonTemplate taxon = {rowData.taxon}/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
