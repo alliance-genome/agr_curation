@@ -42,7 +42,7 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 
 	@Transactional
 	public GeneMolecularInteraction upsert(PsiMiTabDTO dto) throws ObjectUpdateException {
-		GeneMolecularInteraction interaction =  geneMolInteractionValidator.validateGeneMolecularInteractionFmsDTO(dto);
+		GeneMolecularInteraction interaction = geneMolInteractionValidator.validateGeneMolecularInteractionFmsDTO(dto);
 		return geneMolecularInteractionDAO.persist(interaction);
 	}
 
