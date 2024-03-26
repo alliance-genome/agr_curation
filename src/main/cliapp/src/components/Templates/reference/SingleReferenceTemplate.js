@@ -1,4 +1,4 @@
-import { getRefString } from "../../utils/utils";
+import { getRefString } from "../../../utils/utils";
 import { Tooltip } from "primereact/tooltip";
 
 export const SingleReferenceTemplate = ({ singleReference }) => {

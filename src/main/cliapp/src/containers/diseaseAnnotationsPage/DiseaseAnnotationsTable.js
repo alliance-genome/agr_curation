@@ -15,7 +15,7 @@ import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
 
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
-import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
+import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate'; 
 import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate'; 
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';

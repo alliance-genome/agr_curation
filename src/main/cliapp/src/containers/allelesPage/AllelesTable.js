@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
-import { Message } from 'primereact/message';
-import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
@@ -24,11 +22,12 @@ import { InCollectionTableEditor } from '../../components/Editors/inCollection/I
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 
+import { ReferencesTemplate } from '../../components/Templates/reference/ReferencesTemplate';
+
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
-import { getRefStrings } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
@@ -133,6 +132,7 @@ export const AllelesTable = () => {
 	});
 
 
+	//Todo: replace
 	const taxonTemplate = (rowData) => {
 		if (rowData?.taxon) {
 			return (
@@ -146,45 +146,10 @@ export const AllelesTable = () => {
 		}
 	}
 
+	//Todo: replace
 	const isExtinctTemplate = (rowData) => {
 		if (rowData && rowData.isExtinct !== null && rowData.isExtinct !== undefined) {
 			return <EllipsisTableCell>{JSON.stringify(rowData.isExtinct)}</EllipsisTableCell>;
-		}
-	};
-
-	const DetailMessage = ({modEntityId, text, display}) => {
-		if (display) {
-			return (
-				<Message severity="info" text={<Link target="_blank" to={`allele/${modEntityId}`}>{text}</Link>}/>
-			);
-		};
-		return null;
-	}
-
-	const referencesTemplate = (rowData) => {
-		if (rowData && rowData.references && rowData.references.length > 0) {
-			let refStrings = getRefStrings(rowData.references);
-			let displayDetailMessage = false;
-			if (refStrings.length > 5) {
-				refStrings = refStrings.slice(0,5);
-				displayDetailMessage = true;
-			}
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item}
-					</EllipsisTableCell>
-				);
-			};
-			return (
-				<>
-					<div className={`${rowData.modEntityId.replace(':','')}${rowData.references[0].curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={refStrings}/>
-						<DetailMessage modEntityId={`${rowData.modEntityId}`} display={displayDetailMessage} text="View all references on Allele Detail Page"/>
-					</div>
-				</>
-			);
-
 		}
 	};
 
@@ -391,6 +356,7 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	//todo replace
 	const synonymsTemplate = (rowData) => {
 		if (rowData?.alleleSynonyms) {
 			const synonymSet = new Set();
@@ -480,6 +446,7 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	//todo: replace
 	const inheritanceModesTemplate = (rowData) => {
 		if (rowData?.alleleInheritanceModes) {
 			const inheritanceModeSet = new Set();
@@ -816,6 +783,7 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	//todo: replace
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
@@ -1004,6 +972,7 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	//todo: replace
 	const secondaryIdsTemplate = (rowData) => {
 		if (rowData?.alleleSecondaryIds) {
 			const listTemplate = (item) => {
@@ -1189,7 +1158,7 @@ export const AllelesTable = () => {
 		{
 			field: "references.primaryCrossReferenceCurie",
 			header: "References",
-			body: referencesTemplate,
+			body: (rowData) => <ReferencesTemplate references={rowData.references} identifier={rowData.modEntityId}/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />
