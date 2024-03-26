@@ -44,12 +44,13 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		ObjectResponse<List<Reference>> refResponse = validateReferences(dto);
 		gmiResponse.addErrorMessages(refResponse.getErrorMessages());
 	
-		List<Reference> references = refResponse.getEntity();
-		String uniqueId = InteractionStringHelper.getGeneMolecularInteractionUniqueId(dto, references);
-		
 		String interactionId = null;
 		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
 			interactionId = InteractionStringHelper.getAllianceCurie(dto.getInteractionIds().get(0));
+		
+		List<Reference> references = refResponse.getEntity();
+		
+		String uniqueId = InteractionStringHelper.getGeneMolecularInteractionUniqueId(dto, interactionId, references);
 		
 		String searchValue = interactionId == null ? uniqueId : interactionId;
 		ObjectResponse<GeneMolecularInteraction> interactionResponse = geneMolecularInteractionService.get(searchValue);
