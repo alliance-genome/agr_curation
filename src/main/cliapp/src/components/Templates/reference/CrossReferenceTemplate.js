@@ -1,5 +1,5 @@
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { differentiateCrossReferences } from '../../containers/allelesPage/utils';
+import { EllipsisTableCell } from '../../EllipsisTableCell';
+import { differentiateCrossReferences } from '../../../containers/allelesPage/utils';
 
 export const CrossReferencesTemplate = ({ rowData }) => {
   if (!rowData) return null;
