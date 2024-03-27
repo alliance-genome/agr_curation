@@ -24,7 +24,7 @@ import { ReferencesTemplate } from '../../components/Templates/reference/Referen
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
-import { FullNameTemplate } from '../../components/Templates/dialog/FullNameTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -207,16 +207,6 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const symbolTemplate = (rowData) => {
-		return (
-			<>
-				<Button className="p-button-text"
-					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />
-				</Button>
-			</>
-		);
-	};
 
 	const symbolEditor = (props) => {
 		return (
@@ -236,11 +226,11 @@ export const AllelesTable = () => {
 		)
 	};
 
-	const handleSymbolOpen = (event, rowData, isInEdit) => {
+	const handleSymbolOpen = (alleleSymbol) => {
 		let _symbolData = {};
-		_symbolData["originalSymbols"] = [rowData.alleleSymbol];
+		_symbolData["originalSymbols"] = [alleleSymbol];
 		_symbolData["dialog"] = true;
-		_symbolData["isInEdit"] = isInEdit;
+		_symbolData["isInEdit"] = false;
 		setSymbolData(() => ({
 			..._symbolData
 		}));
@@ -503,21 +493,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const germlineTransmissionStatusTemplate = (rowData) => {
-		if (rowData?.alleleGermlineTransmissionStatus) {
-			return (
-				<>
-					<Button className="p-button-text"
-						onClick={(event) => { handleGermlineTransmissionStatusOpen(event, rowData, false) }} >
-						<span style={{ textDecoration: 'underline' }}>
-							{`${rowData.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name}`}
-						</span>								
-					</Button>
-				</>
-			);
-		}
-	};
-
 	const germlineTransmissionStatusEditor = (props) => {
 		if (props?.rowData?.alleleGermlineTransmissionStatus) {
 			return (
@@ -555,11 +530,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleGermlineTransmissionStatusOpen = (event, rowData, isInEdit) => {
+	const handleGermlineTransmissionStatusOpen = (alleleGermlineTransmissionStatus) => {
 		let _germlineTransmissionStatusData = {};
-		_germlineTransmissionStatusData["originalGermlineTransmissionStatuses"] = [rowData.alleleGermlineTransmissionStatus];
+		_germlineTransmissionStatusData["originalGermlineTransmissionStatuses"] = [alleleGermlineTransmissionStatus];
 		_germlineTransmissionStatusData["dialog"] = true;
-		_germlineTransmissionStatusData["isInEdit"] = isInEdit;
+		_germlineTransmissionStatusData["isInEdit"] = false;
 		setGermlineTransmissionStatusData(() => ({
 			..._germlineTransmissionStatusData
 		}));
@@ -671,21 +646,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const databaseStatusTemplate = (rowData) => {
-		if (rowData?.alleleDatabaseStatus?.databaseStatus) {
-			return (
-				<>
-					<Button className="p-button-text"
-						onClick={(event) => { handleDatabaseStatusOpen(event, rowData, false) }} >
-						<span style={{ textDecoration: 'underline' }}>
-							{`${rowData.alleleDatabaseStatus.databaseStatus.name}`}
-						</span>								
-					</Button>
-				</>
-			);
-		}
-	};
-
 	const databaseStatusEditor = (props) => {
 		if (props?.rowData?.alleleDatabaseStatus?.databaseStatus) {
 			return (
@@ -723,11 +683,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleDatabaseStatusOpen = (event, rowData, isInEdit) => {
+	const handleDatabaseStatusOpen = (alleleDatabaseStatus) => {
 		let _databaseStatusData = {};
-		_databaseStatusData["originalDatabaseStatuses"] = [rowData.alleleDatabaseStatus];
+		_databaseStatusData["originalDatabaseStatuses"] = [alleleDatabaseStatus];
 		_databaseStatusData["dialog"] = true;
-		_databaseStatusData["isInEdit"] = isInEdit;
+		_databaseStatusData["isInEdit"] = false;
 		setDatabaseStatusData(() => ({
 			..._databaseStatusData
 		}));
@@ -1044,7 +1004,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFullName.displayText",
 			header: "Name",
-			body: (rowData) => <FullNameTemplate alleleFullName={rowData.alleleFullName} handleOpen={handleFullNameOpen}/>,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleFullName}
+				handleOpen={handleFullNameOpen}
+				text={rowData.alleleFullName?.displayText}
+			/>,
 			editor: (props) => fullNameEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
@@ -1052,8 +1016,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSymbol.displayText",
 			header: "Symbol",
-			//todo
-			body: symbolTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleSymbol}
+				handleOpen={handleSymbolOpen}
+				text={rowData.alleleSymbol?.displayText}
+			/>,
 			editor: (props) => symbolEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
@@ -1114,8 +1081,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleGermlineTransmissionStatus.germlineTransmissionStatus.name",
 			header: "Germline Transmission Status",
-			//todo
-			body: germlineTransmissionStatusTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleGermlineTransmissionStatus}
+				handleOpen={handleGermlineTransmissionStatusOpen}
+				text={rowData.alleleGermlineTransmissionStatus?.germlineTransmissionStatus?.name}
+			/>,
 			editor: (props) => germlineTransmissionStatusEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
@@ -1123,8 +1093,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleDatabaseStatus.databaseStatus.name",
 			header: "Database Status",
-			//todo
-			body: databaseStatusTemplate,
+			//todo -- maybe
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleDatabaseStatus}
+				handleOpen={handleDatabaseStatusOpen}
+				text={rowData.alleleDatabaseStatus?.databaseStatus?.name}
+			/>,
 			editor: (props) => databaseStatusEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
