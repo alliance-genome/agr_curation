@@ -8,9 +8,7 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
-import { ListTableCell } from '../../components/ListTableCell';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { Tooltip } from 'primereact/tooltip';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 
 export const GeneGeneticInteractionsTable = () => {
 
@@ -38,29 +36,6 @@ export const GeneGeneticInteractionsTable = () => {
 		'interactionSource.name': ['interactionSource.curie'],
 		'interactorAGeneticPerturbation.alleleSymbolDisplayText': ['interactorAGeneticPerturbation.alleleFullName.displayText', 'interactorAGeneticPerturbation.modEntityId'],
 		'interactorBGeneticPerturbation.alleleSymbolDisplayText': ['interactorBGeneticPerturbation.alleleFullName.displayText', 'interactorBGeneticPerturbation.modEntityId']
-	};
-
-	const phenotypesOrTraitsBodyTemplate = (rowData) => {
-		if (rowData?.phenotypesOrTraits && rowData.phenotypesOrTraits.length > 0) {
-			const sortedPhenotypesOrTraits = rowData.phenotypesOrTraits.sort();
-			const listTemplate = (phenotypeOrTrait) => {
-				return (
-					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{__html: phenotypeOrTrait}}/>
-					</EllipsisTableCell>
-				)
-			};
-			return (
-				<>
-					<div className={`pot_${rowData.id}`}>
-						<ListTableCell template={listTemplate} listData={sortedPhenotypesOrTraits}/>
-					</div>
-					<Tooltip target={`.pot_${rowData.id}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedPhenotypesOrTraits}/>
-					</Tooltip>
-				</>
-			);
-		}
 	};
 
 	const columns = [{
@@ -158,7 +133,7 @@ export const GeneGeneticInteractionsTable = () => {
 		header: "Phenotypes / Traits",
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.phenotypesOrTraitsFilterConfig,
-		body: phenotypesOrTraitsBodyTemplate
+		body: (rowData) => <StringListTemplate list={rowData.phenotypesOrTraits}/>
 	},
 	{
 		field: "evidence.curie",
