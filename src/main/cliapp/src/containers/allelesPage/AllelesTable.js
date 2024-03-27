@@ -442,11 +442,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleInheritanceModesOpen = (event, rowData, isInEdit) => {
+	const handleInheritanceModesOpen = (alleleInheritanceModes) => {
 		let _inheritanceModesData = {};
-		_inheritanceModesData["originalInheritanceModes"] = rowData.alleleInheritanceModes;
+		_inheritanceModesData["originalInheritanceModes"] = alleleInheritanceModes;
 		_inheritanceModesData["dialog"] = true;
-		_inheritanceModesData["isInEdit"] = isInEdit;
+		_inheritanceModesData["isInEdit"] = false;
 		setInheritanceModesData(() => ({
 			..._inheritanceModesData
 		}));
@@ -1005,7 +1005,7 @@ export const AllelesTable = () => {
 			body: (rowData) => <ListDialogTemplate
 				entities={rowData.alleleSynonyms}
 				handleOpen={handleSynonymsOpen}
-				textField={"displayText"}
+				getTextField={(entity) => entity?.displayText}
 			/>,			
 			editor: (props) => synonymsEditor(props),
 			sortable: true,
@@ -1049,7 +1049,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFunctionalImpacts.functionalImpacts.name",
 			header: "Functional Impacts",
-			//todo -- maybe
+			//todo -- nested list template
 			body: functionalImpactsTemplate,
 			editor: (props) => functionalImpactsEditor(props),
 			sortable: true,
@@ -1090,8 +1090,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
 			header: "Inheritance Modes",
-			//todo -- maybe
-			body: inheritanceModesTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleInheritanceModes}
+				handleOpen={handleInheritanceModesOpen}
+				getTextField={(entity) => entity?.inheritanceMode?.name}
+			/>,	
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
 			editor: (props) => inheritanceModesEditor(props),
