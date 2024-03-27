@@ -24,6 +24,7 @@ import { ReferencesTemplate } from '../../components/Templates/reference/Referen
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
+import { FullNameTemplate } from '../../components/Templates/dialog/FullNameTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -260,19 +261,6 @@ export const AllelesTable = () => {
 		}));
 	};
 	
-	const fullNameTemplate = (rowData) => {
-		if (rowData?.alleleFullName) {
-			return (
-				<>
-					<Button className="p-button-text"
-						onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleFullName.displayText }} />								
-					</Button>
-				</>
-			);
-		}
-	};
-
 	const fullNameEditor = (props) => {
 		if (props?.rowData?.alleleFullName) {
 			return (
@@ -310,11 +298,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleFullNameOpen = (event, rowData, isInEdit) => {
+	const handleFullNameOpen = (alleleFullName) => {
 		let _fullNameData = {};
-		_fullNameData["originalFullNames"] = [rowData.alleleFullName];
+		_fullNameData["originalFullNames"] = [alleleFullName];
 		_fullNameData["dialog"] = true;
-		_fullNameData["isInEdit"] = isInEdit;
+		_fullNameData["isInEdit"] = false;
 		setFullNameData(() => ({
 			..._fullNameData
 		}));
@@ -1056,7 +1044,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFullName.displayText",
 			header: "Name",
-			body: fullNameTemplate,
+			body: (rowData) => <FullNameTemplate alleleFullName={rowData.alleleFullName} handleOpen={handleFullNameOpen}/>,
 			editor: (props) => fullNameEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
@@ -1064,6 +1052,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSymbol.displayText",
 			header: "Symbol",
+			//todo
 			body: symbolTemplate,
 			editor: (props) => symbolEditor(props),
 			sortable: true,
@@ -1072,6 +1061,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSynonyms.displayText",
 			header: "Synonyms",
+			//todo
 			body: synonymsTemplate,
 			editor: (props) => synonymsEditor(props),
 			sortable: true,
@@ -1080,6 +1070,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSecondaryIds.secondaryId",
 			header: "Secondary IDs",
+			//todo
 			body: secondaryIdsTemplate,
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: true,
@@ -1088,6 +1079,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleNomenclatureEvents.nomenclatureEvent.name",
 			header: "Nomenclature Events",
+			//todo
 			body: nomenclatureEventsTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
@@ -1104,6 +1096,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleMutationTypes.mutationTypes.name",
 			header: "Mutation Types",
+			//todo
 			body: mutationTypesTemplate,
 			editor: (props) => mutationTypesEditor(props),
 			sortable: true,
@@ -1112,6 +1105,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFunctionalImpacts.functionalImpacts.name",
 			header: "Functional Impacts",
+			//todo
 			body: functionalImpactsTemplate,
 			editor: (props) => functionalImpactsEditor(props),
 			sortable: true,
@@ -1120,6 +1114,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleGermlineTransmissionStatus.germlineTransmissionStatus.name",
 			header: "Germline Transmission Status",
+			//todo
 			body: germlineTransmissionStatusTemplate,
 			editor: (props) => germlineTransmissionStatusEditor(props),
 			sortable: true,
@@ -1128,6 +1123,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleDatabaseStatus.databaseStatus.name",
 			header: "Database Status",
+			//todo
 			body: databaseStatusTemplate,
 			editor: (props) => databaseStatusEditor(props),
 			sortable: true,
@@ -1144,6 +1140,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
 			header: "Inheritance Modes",
+			//todo
 			body: inheritanceModesTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
@@ -1169,6 +1166,7 @@ export const AllelesTable = () => {
 		{
 			field: "relatedNotes.freeText",
 			header: "Related Notes",
+			//todo
 			body: relatedNotesTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
