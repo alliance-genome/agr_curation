@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionCrossReferenceHelper;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.alliancegenome.curation_api.services.ontology.MiTermService;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,7 +32,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class GeneInteractionFmsDTOValidator {
+public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 
 	@Inject
 	ReferenceService referenceService;

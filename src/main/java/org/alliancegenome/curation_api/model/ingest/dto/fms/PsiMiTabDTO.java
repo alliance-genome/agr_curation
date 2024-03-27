@@ -36,8 +36,8 @@ public class PsiMiTabDTO extends BaseDTO {
 	private List<String> interactorAXrefs;
 	private List<String> interactorBXrefs;
 	private List<String> interactionXrefs;
-	private String interactorAAnnotations;
-	private String interactorBAnnotations;
+	private String interactorAAnnotationString;
+	private String interactorBAnnotationString;
 	private List<String> interactionAnnotations;
 	private String hostOrganismTaxonId;
 	private String interactionParameters;

@@ -1,7 +1,7 @@
 import React from "react";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
-import { DiseaseAnnotationsPage, GeneMolecularInteractionsPage } from "../index";
+import { GeneMolecularInteractionsPage } from "../index";
 import '../../../tools/jest/setupTests';
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
 import { data } from "../mockData/mockData";

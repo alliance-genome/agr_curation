@@ -304,6 +304,14 @@ export const FIELD_SETS = Object.freeze({
     filterName: "inferredGeneFilter",
     fields: ["inferredGene.geneSymbol.displayText", "inferredGene.geneSymbol.formatText", "inferredGene.curie", "inferredGene.modEntityId", "inferredGene.modInternalId"]
   },
+  interactorAGeneticPerturbationFieldSet: {
+    filterName: "interactorAGeneticPerturbationFilter",
+    fields: ["interactorAGeneticPerturbation.alleleSymbol.displayText", "interactorAGeneticPerturbation.alleleSymbol.formatText", "interactorAGeneticPerturbation.curie", "interactorAGeneticPerturbation.modEntityId", "interactorAGeneticPerturbation.modInternalId"],
+  },
+  interactorBGeneticPerturbationFieldSet: {
+    filterName: "interactorBGeneticPerturbationFilter",
+    fields: ["interactorBGeneticPerturbation.alleleSymbol.displayText", "interactorBGeneticPerturbation.alleleSymbol.formatText", "interactorBGeneticPerturbation.curie", "interactorBGeneticPerturbation.modEntityId", "interactorBGeneticPerturbation.modInternalId"],
+  },
   interactorARoleFieldSet: {
     filterName: "interactorARoleFilter",
     fields: ["interactorARole.curie", "interactorARole.name"]
@@ -403,6 +411,10 @@ export const FIELD_SETS = Object.freeze({
   phenotypeAnnotationSubjectFieldSet: {
     filterName: "phenotypeAnnotationSubjectFilter",
     fields: ["phenotypeAnnotationSubject.symbol", "phenotypeAnnotationSubject.name", "phenotypeAnnotationSubject.curie", "phenotypeAnnotationSubject.modEntityId", "phenotypeAnnotationSubject.modInternalId"],
+  },
+  phenotypesOrTraitsFieldSet: {
+    filterName: "phenotypesOrTraitsFilter",
+    fields: ["phenotypesOrTraits"],
   },
   prefixFieldSet: {
     filterName: "prefixFilter",
@@ -604,6 +616,8 @@ export const FILTER_CONFIGS = Object.freeze({
   inCollectionFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.inCollectionFieldSet], useKeywordFields: true },
   inferredAlleleFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.inferredAlleleFieldSet] },
   inferredGeneFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.inferredGeneFieldSet] },
+  interactorAGeneticPerturbationFilterConfig: { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorAGeneticPerturbationFieldSet] },
+  interactorBGeneticPerturbationFilterConfig: { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorBGeneticPerturbationFieldSet] },
   interactorARoleFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorARoleFieldSet] },
   interactorBRoleFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorBRoleFieldSet] },
   interactorATypeFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorATypeFieldSet] },
@@ -619,6 +633,7 @@ export const FILTER_CONFIGS = Object.freeze({
   namespaceFilterConfig:                    { filterComponentType: 'input', fieldSets: [FIELD_SETS.namespaceFieldSet] },
   phenotypeAnnotationSubjectFilterConfig:   { filterComponentType: "input", fieldSets: [FIELD_SETS.phenotypeAnnotationSubjectFieldSet] },
   phenotypeAnnotationObjectFilterConfig:    { filterComponentType: "input", fieldSets: [FIELD_SETS.phenotypeAnnotationObjectFieldSet] },
+  phenotypesOrTraitsFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.phenotypesOrTraitsFieldSet] },
   diseaseAnnotationSubjectFieldConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.diseaseAnnotationSubjectFieldSet] },
   diseaseAnnotationObjectFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.diseaseAnnotationObjectFieldSet] },
   ontologySynonymsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.ontologySynonymsFieldSet] },
