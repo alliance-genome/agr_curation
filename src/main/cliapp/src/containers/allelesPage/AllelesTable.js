@@ -376,35 +376,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const inheritanceModesTemplate = (rowData) => {
-		if (rowData?.alleleInheritanceModes) {
-			const inheritanceModeSet = new Set();
-			for(var i = 0; i < rowData.alleleInheritanceModes.length; i++){
-				if (rowData.alleleInheritanceModes[i].inheritanceMode) {
-					inheritanceModeSet.add(rowData.alleleInheritanceModes[i].inheritanceMode.name);
-				}
-			}
-			if (inheritanceModeSet.size > 0) {
-				const sortedInheritanceModes = Array.from(inheritanceModeSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleInheritanceModesOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedInheritanceModes}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
-
 	const inheritanceModesEditor = (props) => {
 		if (props?.rowData?.alleleInheritanceModes) {
 			return (
@@ -529,35 +500,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const nomenclatureEventsTemplate = (rowData) => {
-		if (rowData?.alleleNomenclatureEvents) {
-			const nomenclatureEventSet = new Set();
-			for(var i = 0; i < rowData.alleleNomenclatureEvents.length; i++){
-				if (rowData.alleleNomenclatureEvents[i].nomenclatureEvent) {
-					nomenclatureEventSet.add(rowData.alleleNomenclatureEvents[i].nomenclatureEvent.name);
-				}
-			}
-			if (nomenclatureEventSet.size > 0) {
-				const sortedNomenclatureEvents = Array.from(nomenclatureEventSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text text-left"
-							onClick={(event) => { handleNomenclatureEventsOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedNomenclatureEvents}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
-
 	const nomenclatureEventsEditor = (props) => {
 		if (props?.rowData?.alleleNomenclatureEvents) {
 			return (
@@ -595,11 +537,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleNomenclatureEventsOpen = (event, rowData, isInEdit) => {
+	const handleNomenclatureEventsOpen = (alleleNomenclatureEvents) => {
 		let _nomenclatureEventsData = {};
-		_nomenclatureEventsData["originalNomenclatureEvents"] = rowData.alleleNomenclatureEvents;
+		_nomenclatureEventsData["originalNomenclatureEvents"] = alleleNomenclatureEvents;
 		_nomenclatureEventsData["dialog"] = true;
-		_nomenclatureEventsData["isInEdit"] = isInEdit;
+		_nomenclatureEventsData["isInEdit"] = false;
 		setNomenclatureEventsData(() => ({
 			..._nomenclatureEventsData
 		}));
@@ -1024,7 +966,11 @@ export const AllelesTable = () => {
 			field: "alleleNomenclatureEvents.nomenclatureEvent.name",
 			header: "Nomenclature Events",
 			//todo -- maybe
-			body: nomenclatureEventsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleNomenclatureEvents}
+				handleOpen={handleNomenclatureEventsOpen}
+				getTextField={(entity) => entity?.nomenclatureEvent?.name}
+			/>,	
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
 			editor: (props) => nomenclatureEventsEditor(props),
