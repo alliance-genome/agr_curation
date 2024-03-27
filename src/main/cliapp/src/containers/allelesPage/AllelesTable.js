@@ -25,6 +25,7 @@ import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -313,33 +314,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const synonymsTemplate = (rowData) => {
-		if (rowData?.alleleSynonyms) {
-			const synonymSet = new Set();
-			for(var i = 0; i < rowData.alleleSynonyms.length; i++){
-				if (rowData.alleleSynonyms[i].displayText) {
-					synonymSet.add(rowData.alleleSynonyms[i].displayText);
-				}
-			}
-			if (synonymSet.size > 0) {
-				const sortedSynonyms = Array.from(synonymSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: item }} />	
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleSynonymsOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
-
 	const synonymsEditor = (props) => {
 		if (props?.rowData?.alleleSynonyms) {
 			return (
@@ -377,11 +351,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleSynonymsOpen = (event, rowData, isInEdit) => {
+	const handleSynonymsOpen = (alleleSynonyms) => {
 		let _synonymsData = {};
-		_synonymsData["originalSynonyms"] = rowData.alleleSynonyms;
+		_synonymsData["originalSynonyms"] = alleleSynonyms;
 		_synonymsData["dialog"] = true;
-		_synonymsData["isInEdit"] = isInEdit;
+		_synonymsData["isInEdit"] = false;
 		setSynonymsData(() => ({
 			..._synonymsData
 		}));
@@ -1028,8 +1002,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSynonyms.displayText",
 			header: "Synonyms",
-			//todo
-			body: synonymsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleSynonyms}
+				handleOpen={handleSynonymsOpen}
+				textField={"displayText"}
+			/>,			
 			editor: (props) => synonymsEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSynonymsFilterConfig,
@@ -1046,7 +1023,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleNomenclatureEvents.nomenclatureEvent.name",
 			header: "Nomenclature Events",
-			//todo
+			//todo -- maybe
 			body: nomenclatureEventsTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
@@ -1063,7 +1040,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleMutationTypes.mutationTypes.name",
 			header: "Mutation Types",
-			//todo
+			//todo -- nested list template
 			body: mutationTypesTemplate,
 			editor: (props) => mutationTypesEditor(props),
 			sortable: true,
@@ -1072,7 +1049,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFunctionalImpacts.functionalImpacts.name",
 			header: "Functional Impacts",
-			//todo
+			//todo -- maybe
 			body: functionalImpactsTemplate,
 			editor: (props) => functionalImpactsEditor(props),
 			sortable: true,
@@ -1093,7 +1070,6 @@ export const AllelesTable = () => {
 		{
 			field: "alleleDatabaseStatus.databaseStatus.name",
 			header: "Database Status",
-			//todo -- maybe
 			body: (rowData) => <TextDialogTemplate
 				entity={rowData.alleleDatabaseStatus}
 				handleOpen={handleDatabaseStatusOpen}
@@ -1114,7 +1090,7 @@ export const AllelesTable = () => {
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
 			header: "Inheritance Modes",
-			//todo
+			//todo -- maybe
 			body: inheritanceModesTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
