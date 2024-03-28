@@ -1,7 +1,7 @@
 import { Button } from "primereact/button";
 import { ListTableCell } from "../../ListTableCell";
 
-export const NestedListDialogTemplate = ({ entities, subType, handleOpen, getTextString }) => {
+export const NestedListDialogTemplate = ({ entities, subType, handleOpen, getTextString, underline=true }) => {
   if (!entities || entities.length === 0 || !handleOpen || !subType || !getTextString) return null;
   
   const strings = entities.flatMap((entity) => entity[subType]?.map(item => getTextString(item)) || []);
@@ -10,7 +10,7 @@ export const NestedListDialogTemplate = ({ entities, subType, handleOpen, getTex
 
   const listTemplate = (item) => {
     return (
-      <span style={{ textDecoration: 'underline' }}>
+      <span className={underline ? "underline" : ""}>
         {item && item}
       </span>
     );

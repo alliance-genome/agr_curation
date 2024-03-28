@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { ListTableCell } from '../../components/ListTableCell';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
@@ -749,26 +748,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const secondaryIdsTemplate = (rowData) => {
-		if (rowData?.alleleSecondaryIds) {
-			const listTemplate = (item) => {
-				return (
-					<span style={{ textDecoration: 'underline' }}>
-						{item && item}
-					</span>
-				);
-			};
-			return (
-				<>
-					<Button className="p-button-text"
-							onClick={(event) => { handleSecondaryIdsOpen(event, rowData, false) }} >
-						<ListTableCell template={listTemplate} listData={rowData.alleleSecondaryIds.map(a => a.secondaryId).sort()}/>
-					</Button>
-				</>
-			);
-		}
-	};
-
 	const secondaryIdsEditor = (props) => {
 		if (props?.rowData?.alleleSecondaryIds) {
 			return (
@@ -807,11 +786,11 @@ export const AllelesTable = () => {
 
 
 
-	const handleSecondaryIdsOpen = (event, rowData, isInEdit) => {
+	const handleSecondaryIdsOpen = (alleleSecondaryIds) => {
 		let _secondaryIdsData = {};
-		_secondaryIdsData["originalSecondaryIds"] = rowData.alleleSecondaryIds;
+		_secondaryIdsData["originalSecondaryIds"] = alleleSecondaryIds;
 		_secondaryIdsData["dialog"] = true;
-		_secondaryIdsData["isInEdit"] = isInEdit;
+		_secondaryIdsData["isInEdit"] = false;
 		setSecondaryIdsData(() => ({
 			..._secondaryIdsData
 		}));
@@ -885,6 +864,7 @@ export const AllelesTable = () => {
 				entities={rowData.alleleSynonyms}
 				handleOpen={handleSynonymsOpen}
 				getTextField={(entity) => entity?.displayText}
+				underline={false}
 			/>,			
 			editor: (props) => synonymsEditor(props),
 			sortable: true,
@@ -894,7 +874,11 @@ export const AllelesTable = () => {
 			field: "alleleSecondaryIds.secondaryId",
 			header: "Secondary IDs",
 			//todo
-			body: secondaryIdsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleSecondaryIds}
+				handleOpen={handleSecondaryIdsOpen}
+				getTextField={(entity) => entity?.secondaryId}
+			/>,			
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,

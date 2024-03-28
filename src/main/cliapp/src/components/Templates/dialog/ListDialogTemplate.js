@@ -1,12 +1,15 @@
 import { Button } from "primereact/button";
 import { ListTableCell } from "../../ListTableCell";
 
-export const ListDialogTemplate = ({ entities, handleOpen, getTextField }) => {
+export const ListDialogTemplate = ({ entities, handleOpen, getTextField, underline = true }) => {
   if (!entities || entities.length === 0 || !handleOpen || !getTextField) return null;
   const uniqueItemsSet = new Set(entities.map(entity => getTextField(entity)));
   const sortedItems = Array.from(uniqueItemsSet).sort();
   const listTemplate = (item) => (
-    <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: item }} />
+    <div
+      className={`overflow-hidden text-overflow-ellipsis ${underline ? "underline" : ""}`}
+      dangerouslySetInnerHTML={{ __html: item }}
+    />
   );
   return (
     <>
