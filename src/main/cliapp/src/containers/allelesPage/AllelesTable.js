@@ -26,6 +26,7 @@ import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -134,11 +135,12 @@ export const AllelesTable = () => {
 		return alleleService.saveAllele(updatedAllele);
 	});
 
-	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+	const handleRelatedNotesOpen = (relatedNotes) => {
+		console.log("relatedNotes", relatedNotes);
 		let _relatedNotesData = {};
-		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
+		_relatedNotesData["originalRelatedNotes"] = relatedNotes;
 		_relatedNotesData["dialog"] = true;
-		_relatedNotesData["isInEdit"] = isInEdit;
+		_relatedNotesData["isInEdit"] = false;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
 		}));
@@ -157,19 +159,6 @@ export const AllelesTable = () => {
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
 		}));
-	};
-
-	const relatedNotesTemplate = (rowData) => {
-		if (rowData?.relatedNotes) {
-			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-					<span style={{ textDecoration: 'underline' }}>
-						{`Notes(${rowData.relatedNotes.length})`}
-					</span>
-				</Button>
-			)
-		}
 	};
 
 	const relatedNotesEditor = (props) => {
@@ -993,8 +982,11 @@ export const AllelesTable = () => {
 		{
 			field: "relatedNotes.freeText",
 			header: "Related Notes",
-			//todo
-			body: relatedNotesTemplate,
+			body: (rowData) => <CountDialogTemplate
+				entities={rowData.relatedNotes}
+				handleOpen={handleRelatedNotesOpen}
+				text={"Notes"}
+			/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			editor: relatedNotesEditor

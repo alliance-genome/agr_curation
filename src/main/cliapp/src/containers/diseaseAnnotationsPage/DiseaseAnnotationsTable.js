@@ -23,6 +23,7 @@ import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { NotTemplate } from '../../components/Templates/NotTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 
 import { NotEditor } from '../../components/Editors/NotEditor';
 
@@ -124,11 +125,11 @@ export const DiseaseAnnotationsTable = () => {
 		handleNewAnnotationOpen();
 	}
 
-	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+	const handleRelatedNotesOpen = (relatedNotes) => {
 		let _relatedNotesData = {};
-		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
+		_relatedNotesData["originalRelatedNotes"] = relatedNotes;
 		_relatedNotesData["dialog"] = true;
-		_relatedNotesData["isInEdit"] = isInEdit;
+		_relatedNotesData["isInEdit"] = false;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
 		}));
@@ -172,19 +173,6 @@ export const DiseaseAnnotationsTable = () => {
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
-	};
-
-	const relatedNotesTemplate = (rowData) => {
-		if (rowData?.relatedNotes) {
-			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-					<span className="-my-4 p-1 underline">
-						{`Notes(${rowData.relatedNotes.length})`}
-					</span>
-				</Button>
-			)
-		}
 	};
 
 	const relatedNotesEditor = (props) => {
@@ -965,7 +953,11 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "relatedNotes.freeText",
 		header: "Related Notes",
-		body: relatedNotesTemplate,
+		body: (rowData) => <CountDialogTemplate
+			entities={rowData.relatedNotes}
+			handleOpen={handleRelatedNotesOpen}
+			text={"Notes"}
+		/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 		editor: relatedNotesEditor
