@@ -138,7 +138,6 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void allelePhenotypeAnnotationBulkUploadCheckFields() throws Exception {
-		loadRequiredEntities();
 		
 		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "AF_01_all_fields_primary_allele_annotation.json");
 		
