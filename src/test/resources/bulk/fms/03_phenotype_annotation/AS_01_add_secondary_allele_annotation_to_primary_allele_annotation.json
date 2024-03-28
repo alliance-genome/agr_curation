@@ -1,0 +1,79 @@
+[
+    {
+      "objectId": "PATEST:Allele0001",
+      "phenotypeTermIdentifiers": [
+        {
+          "termId": "PATEST:MPTerm001",
+          "termOrder": 1
+        }
+      ],
+      "phenotypeStatement": "test phenotype statement",
+      "evidence": {
+        "publicationId": "PMID:25920554",
+        "crossReference": {
+          "id": "ZFIN:ZDB-PUB-130927-9",
+          "pages": [
+            "reference"
+          ],
+          "curie": "ZFIN:ZDB-PUB-130927-9"
+        }
+      },
+      "dateAssigned": "2024-01-17T07:26:56-08:00",
+      "conditionRelations": [
+        {
+          "conditionRelationType": "exacerbates",
+          "conditions": [
+            {
+              "conditionClassId": "PATEST:ExpCondTerm0001",
+              "conditionStatement": "condition summary test",
+              "conditionId": "PATEST:ExpCondTerm0002",
+              "conditionQuantity": "Some amount",
+              "anatomicalOntologyId": "PATEST:AnatomyTerm0001",
+              "geneOntologyId": "PATEST:GOTerm0001",
+              "NCBITaxonId": "NCBITaxon:6239",
+              "chemicalOntologyId": "PATEST:ChemicalTerm0001"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "objectId": "PATEST:Allele0001",
+      "primaryGeneticEntityIDs": ["PATEST:Allele0001"],
+      "phenotypeTermIdentifiers": [
+        {
+          "termId": "PATEST:MPTerm001",
+          "termOrder": 1
+        }
+      ],
+      "phenotypeStatement": "test phenotype statement",
+      "evidence": {
+        "publicationId": "PMID:25920554",
+        "crossReference": {
+          "id": "ZFIN:ZDB-PUB-130927-9",
+          "pages": [
+            "reference"
+          ],
+          "curie": "ZFIN:ZDB-PUB-130927-9"
+        }
+      },
+      "dateAssigned": "2024-01-17T07:26:56-08:00",
+      "conditionRelations": [
+        {
+          "conditionRelationType": "exacerbates",
+          "conditions": [
+            {
+              "conditionClassId": "PATEST:ExpCondTerm0001",
+              "conditionStatement": "condition summary test",
+              "conditionId": "PATEST:ExpCondTerm0002",
+              "conditionQuantity": "Some amount",
+              "anatomicalOntologyId": "PATEST:AnatomyTerm0001",
+              "geneOntologyId": "PATEST:GOTerm0001",
+              "NCBITaxonId": "NCBITaxon:6239",
+              "chemicalOntologyId": "PATEST:ChemicalTerm0001"
+            }
+          ]
+        }
+      ]
+    }
+  ]
