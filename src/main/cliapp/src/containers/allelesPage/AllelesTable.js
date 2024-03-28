@@ -687,37 +687,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const functionalImpactsTemplate = (rowData) => {
-		if (rowData?.alleleFunctionalImpacts) {
-			const functionalImpactSet = new Set();
-			for(var i = 0; i < rowData.alleleFunctionalImpacts.length; i++){
-				if (rowData.alleleFunctionalImpacts[i].functionalImpacts) {
-					for(var j = 0; j < rowData.alleleFunctionalImpacts[i].functionalImpacts.length; j++) {
-						functionalImpactSet.add(rowData.alleleFunctionalImpacts[i].functionalImpacts[j].name);
-					}
-				}
-			}
-			if (functionalImpactSet.size > 0) {
-				const sortedFunctionalImpacts = Array.from(functionalImpactSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleFunctionalImpactsOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedFunctionalImpacts}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
-
 	const functionalImpactsEditor = (props) => {
 		if (props?.rowData?.alleleFunctionalImpacts) {
 			return (
@@ -755,11 +724,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleFunctionalImpactsOpen = (event, rowData, isInEdit) => {
+	const handleFunctionalImpactsOpen = (alleleFunctionalImpacts) => {
 		let _functionalImpactsData = {};
-		_functionalImpactsData["originalFunctionalImpacts"] = rowData.alleleFunctionalImpacts;
+		_functionalImpactsData["originalFunctionalImpacts"] = alleleFunctionalImpacts;
 		_functionalImpactsData["dialog"] = true;
-		_functionalImpactsData["isInEdit"] = isInEdit;
+		_functionalImpactsData["isInEdit"] = false;
 		setFunctionalImpactsData(() => ({
 			..._functionalImpactsData
 		}));
@@ -966,8 +935,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFunctionalImpacts.functionalImpacts.name",
 			header: "Functional Impacts",
-			//todo -- nested list template
-			body: functionalImpactsTemplate,
+			body: (rowData) => <NestedListDialogTemplate
+				entities={rowData.alleleFunctionalImpacts}
+				subTypes={"functionalImpacts"}
+				handleOpen={handleFunctionalImpactsOpen}
+				getTextString={(item) => item.name}
+			/>,
 			editor: (props) => functionalImpactsEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleFunctionalImpactsFilterConfig,
