@@ -26,6 +26,7 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -624,39 +625,6 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const mutationTypesTemplate = (rowData) => {
-		if (rowData?.alleleMutationTypes) {
-			const mutationTypeSet = new Set();
-			for(var i = 0; i < rowData.alleleMutationTypes.length; i++){
-				if (rowData.alleleMutationTypes[i].mutationTypes) {
-					for(var j = 0; j < rowData.alleleMutationTypes[i].mutationTypes.length; j++) {
-						let mtString = rowData.alleleMutationTypes[i].mutationTypes[j].name + ' (' +
-							rowData.alleleMutationTypes[i].mutationTypes[j].curie + ')';
-						mutationTypeSet.add(mtString);
-					}
-				}
-			}
-			if (mutationTypeSet.size > 0) {
-				const sortedMutationTypes = Array.from(mutationTypeSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleMutationTypesOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedMutationTypes}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
-
 	const mutationTypesEditor = (props) => {
 		if (props?.rowData?.alleleMutationTypes) {
 			return (
@@ -694,11 +662,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleMutationTypesOpen = (event, rowData, isInEdit) => {
+	const handleMutationTypesOpen = (alleleMutationTypes) => {
 		let _mutationTypesData = {};
-		_mutationTypesData["originalMutationTypes"] = rowData.alleleMutationTypes;
+		_mutationTypesData["originalMutationTypes"] = alleleMutationTypes;
 		_mutationTypesData["dialog"] = true;
-		_mutationTypesData["isInEdit"] = isInEdit;
+		_mutationTypesData["isInEdit"] = false;
 		setMutationTypesData(() => ({
 			..._mutationTypesData
 		}));
@@ -965,7 +933,6 @@ export const AllelesTable = () => {
 		{
 			field: "alleleNomenclatureEvents.nomenclatureEvent.name",
 			header: "Nomenclature Events",
-			//todo -- maybe
 			body: (rowData) => <ListDialogTemplate
 				entities={rowData.alleleNomenclatureEvents}
 				handleOpen={handleNomenclatureEventsOpen}
@@ -986,8 +953,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleMutationTypes.mutationTypes.name",
 			header: "Mutation Types",
-			//todo -- nested list template
-			body: mutationTypesTemplate,
+			body: (rowData) => <NestedListDialogTemplate
+				entities={rowData.alleleMutationTypes}
+				subTypes={"mutationTypes"}
+				handleOpen={handleMutationTypesOpen}
+				getTextString={(item) => `${item.name} (${item.curie})`}
+			/>,
 			editor: (props) => mutationTypesEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,

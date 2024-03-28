@@ -10,7 +10,7 @@ export const ListDialogTemplate = ({ entities, handleOpen, getTextField }) => {
   );
   return (
     <>
-      <Button className="p-button-text" onClick={() => { handleOpen(entities); }}>
+      <Button className="p-button-text" onClick={() => handleOpen(entities)}>
         <ListTableCell template={listTemplate} listData={sortedItems} />
       </Button>
     </>
