@@ -2,7 +2,7 @@ import { Button } from "primereact/button";
 import { ListTableCell } from "../../ListTableCell";
 
 export const ListDialogTemplate = ({ entities, handleOpen, getTextField }) => {
-  if (!entities) return null;
+  if (!entities || entities.length === 0 || !handleOpen || !getTextField) return null;
   const uniqueItemsSet = new Set(entities.map(entity => getTextField(entity)));
   const sortedItems = Array.from(uniqueItemsSet).sort();
   const listTemplate = (item) => (
