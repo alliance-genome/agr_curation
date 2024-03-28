@@ -64,7 +64,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		List<Long> results = geneInteractionDAO.findFilteredIds(subjectParams);
 		
 		Map<String, Object> objectParams = new HashMap<>();
-		objectParams.put("geneGeneAssociationObject", geneId);
+		objectParams.put("geneGeneAssociationObject.id", geneId);
 		results.addAll(geneInteractionDAO.findFilteredIds(objectParams));
 		
 		return results;
