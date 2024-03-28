@@ -61,6 +61,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	private final String agm = "PATEST:AGM0001";
 	private final String agm2 = "PATEST:AGM0002";
 	private final String allele = "PATEST:Allele0001";
+	private final String allele2 = "PATEST:Allele0002";
 	private final String gene = "PATEST:Gene0001";
 	private final String reference = "AGRKB:000000002";
 	private final String conditionRelationType = "exacerbated_by";
@@ -85,6 +86,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		DataProvider dataProvider = createDataProvider("WB", false);
 		loadGenes(List.of(gene), "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, dataProvider);
+		loadAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "strain", dataProvider);
 		loadAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "strain", dataProvider);	
 		loadMPTerm(mpTerm, "Test PhenotypeTerm");
@@ -322,13 +324,13 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{\"phenotypeAnnotationSubject.modEntityId\" : \"" + allele + "\"}").
+			body("{\"phenotypeAnnotationSubject.modEntityId\" : \"" + allele2 + "\"}").
 			post(allelePhenotypeAnnotationFindEndpoint).
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
-			body("results[0].phenotypeAnnotationSubject.modEntityId", is(allele)).
+			body("results[0].phenotypeAnnotationSubject.modEntityId", is(allele2)).
 			body("results[0].phenotypeAnnotationObject", is(phenotypeStatement)).
 			body("results[0].relation.name", is("has_phenotype")).
 			body("results[0].dateCreated", is("2024-01-17T15:26:56Z")).
