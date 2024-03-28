@@ -38,7 +38,7 @@
       ]
     },
     {
-      "objectId": "PATEST:Allele0001",
+      "objectId": "PATEST:Gene0001",
       "primaryGeneticEntityIDs": ["PATEST:Allele0001"],
       "phenotypeTermIdentifiers": [
         {

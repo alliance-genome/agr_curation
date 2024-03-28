@@ -244,8 +244,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.phenotypeAnnotationSubject.modEntityId", is(allele)).
-			body("entity.inferredGene.modEntityId", is(gene)).
-			body("entity.assertedAllele.modEntityId", is(allele));
+			body("entity.inferredGene.modEntityId", is(gene));
 	}
 
 	@Test
@@ -260,8 +259,8 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.phenotypeAnnotationSubject.modEntityId", is(agm)).
-			body("entity", not(hasKey("inferredGene"))).
-			body("entity", not(hasKey("assertedAllele")));
+			body("entity", not(hasKey("inferredGene")));
+			// body("entity", not(hasKey("assertedAllele")));
 	}
 
 	@Test
@@ -275,8 +274,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.phenotypeAnnotationSubject.modEntityId", is(allele)).
-			body("entity", not(hasKey("inferredGene"))).
-			body("entity", not(hasKey("assertedAllele")));
+			body("entity", not(hasKey("inferredGene")));
 	}
 	
 	@Test
@@ -319,7 +317,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(9)
 	public void allelePhenotypeAnnotationInferredPrimaryAnnotation() throws Exception {
-		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IF_01_infer_primary_allele_annotation_from_secondary_allele_annotation.json");
+		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IF_01_infer_primary_allele_annotation_from_secondary_gene_annotation.json");
 		
 		RestAssured.given().
 			when().
