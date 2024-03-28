@@ -236,7 +236,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(5)
 	public void allelePhenotypeAnnotationAddSecondaryAnnotationFields() throws Exception {
-		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "AS_01_add_secondary_allele_annotation_to_primary_allele_annotation.json", 3);
+		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "AS_01_add_secondary_gene_annotation_to_primary_allele_annotation.json", 2);
 		
 		RestAssured.given().
 			when().
