@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.helpers.interactions;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,17 +22,18 @@ public abstract class InteractionStringHelper {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(getGeneInteractionUniqueId(dto, interactionId, references, VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM));
 		if (dto.getInteractionDetectionMethods() != null)
-			uniqueId.addAll(dto.getInteractionDetectionMethods().stream().map(dm -> extractCurieFromPsiMiFormat(dm)).collect(Collectors.toList()));
+			uniqueId.addList(dto.getInteractionDetectionMethods().stream().map(dm -> extractCurieFromPsiMiFormat(dm)).collect(Collectors.toList()));
 		return uniqueId.getUniqueId();
 	}
 	
-	public static String getGeneGeneticInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references) {
+	public static String getGeneGeneticInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references, List<String> phenotypesOrTraits) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(getGeneInteractionUniqueId(dto, interactionId, references, VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM));
 		if (dto.getSourceDatabaseIds() != null)
-			uniqueId.addAll(dto.getSourceDatabaseIds().stream().map(sd -> extractCurieFromPsiMiFormat(sd)).collect(Collectors.toList()));
-		uniqueId.add(extractWBVarCurieFromAnnotations(dto.getInteractorAAnnotations()));
-		uniqueId.addAll(extractPhenotypeStatements(dto.getInteractionAnnotations()));
+			uniqueId.addList(dto.getSourceDatabaseIds().stream().map(sd -> extractCurieFromPsiMiFormat(sd)).collect(Collectors.toList()));
+		uniqueId.add(extractWBVarCurieFromAnnotations(dto.getInteractorAAnnotationString()));
+		uniqueId.add(extractWBVarCurieFromAnnotations(dto.getInteractorBAnnotationString()));
+		uniqueId.addList(phenotypesOrTraits);
 		return uniqueId.getUniqueId();
 	}
 	
@@ -44,9 +44,9 @@ public abstract class InteractionStringHelper {
 		uniqueId.add(relation);
 		uniqueId.add(PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractorBIdentifier()));
 		if (references != null)
-			uniqueId.addAll(references.stream().map(Reference::getCurie).collect(Collectors.toList()));
+			uniqueId.addList(references.stream().map(Reference::getCurie).collect(Collectors.toList()));
 		if (dto.getInteractionTypes() != null)
-			uniqueId.addAll(dto.getInteractionTypes().stream().map(it -> extractCurieFromPsiMiFormat(it)).collect(Collectors.toList()));
+			uniqueId.addList(dto.getInteractionTypes().stream().map(it -> extractCurieFromPsiMiFormat(it)).collect(Collectors.toList()));
 		uniqueId.add(extractCurieFromPsiMiFormat(dto.getExperimentalRoleA()));
 		uniqueId.add(extractCurieFromPsiMiFormat(dto.getExperimentalRoleB()));
 		uniqueId.add(extractCurieFromPsiMiFormat(dto.getInteractorAType()));
@@ -68,7 +68,7 @@ public abstract class InteractionStringHelper {
 	}
 	
 	public static String extractWBVarCurieFromAnnotations(String annotationsString) {
-		if (annotationsString.isBlank())
+		if (StringUtils.isBlank(annotationsString))
 			return null;
 		
 		Matcher matcher = WB_VAR_ANNOTATION.matcher(annotationsString);
@@ -80,6 +80,8 @@ public abstract class InteractionStringHelper {
 	}
 	
 	public static String getAggregationDatabaseMITermCurie(PsiMiTabDTO dto) {
+		if (CollectionUtils.isEmpty(dto.getSourceDatabaseIds()))
+			return null;
 		String sourceDatabaseCurie = extractCurieFromPsiMiFormat(dto.getSourceDatabaseIds().get(0));
 		if (sourceDatabaseCurie == null)
 			return null;
@@ -87,26 +89,6 @@ public abstract class InteractionStringHelper {
 			return sourceDatabaseCurie;
 		}
 		return "MI:0670";
-	}
-	
-	public static List<String> extractPhenotypeStatements(List<String> annotations) {
-		List<String> statements = new ArrayList<>();
-		for (String annotation : annotations) {
-			String statement = extractPhenotypeStatement(annotation);
-			if (statement != null)
-				statements.add(statement);
-		}
-		
-		if (CollectionUtils.isEmpty(statements))
-			return null;
-		
-		return statements;
-	}
-	
-	private static String extractPhenotypeStatement(String annotation) {
-		// TODO: implement method to extract phenotype statement from annotations
-		// See code in agr_loader genetic_interaction_etl.py line 365
-		return null;
 	}
 	
 	public static String getAllianceCurie(String psiMiTabIdentifier) {

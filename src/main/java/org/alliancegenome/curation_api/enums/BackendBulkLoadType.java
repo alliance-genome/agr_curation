@@ -18,7 +18,8 @@ public enum BackendBulkLoadType {
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
 	VARIANT("json"),
-	INTERACTION_MOL("tsv");
+	INTERACTION_MOL("tsv"),
+	INTERACTION_GEN("tsv");
 	
 	public String fileExtension;
 	

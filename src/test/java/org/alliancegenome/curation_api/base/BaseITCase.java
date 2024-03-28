@@ -24,7 +24,6 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -48,6 +47,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
@@ -1304,6 +1304,22 @@ public class BaseITCase {
 			body(soTerm).
 			when().
 			put("/api/soterm").
+			then().
+			statusCode(200);
+	}
+	
+	public void loadWbPhenotypeTerm(String curie, String name) throws Exception {
+		WBPhenotypeTerm wbTerm = new WBPhenotypeTerm();
+		wbTerm.setCurie(curie);
+		wbTerm.setName(name);
+		wbTerm.setObsolete(false);
+		wbTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(wbTerm).
+			when().
+			put("/api/wbphenotypeterm").
 			then().
 			statusCode(200);
 	}
