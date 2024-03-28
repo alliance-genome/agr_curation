@@ -1,10 +1,10 @@
 import { Button } from "primereact/button";
 import { ListTableCell } from "../../ListTableCell";
 
-export const NestedListDialogTemplate = ({ entities, subTypes, handleOpen, getTextString }) => {
-  if (!entities || entities.length === 0 || !handleOpen || !subTypes || !getTextString) return null;
+export const NestedListDialogTemplate = ({ entities, subType, handleOpen, getTextString }) => {
+  if (!entities || entities.length === 0 || !handleOpen || !subType || !getTextString) return null;
   
-  const strings = entities.flatMap((entity) => entity[subTypes]?.map(item => getTextString(item)) || []);
+  const strings = entities.flatMap((entity) => entity[subType]?.map(item => getTextString(item)) || []);
   const uniqueStrings = new Set(strings);
   const sortedStrings = Array.from(uniqueStrings).sort();
 
@@ -15,7 +15,7 @@ export const NestedListDialogTemplate = ({ entities, subTypes, handleOpen, getTe
       </span>
     );
   };
-  
+
   return (
     <>
       <Button className="p-button-text" onClick={() => handleOpen(entities)} >

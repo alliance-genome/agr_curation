@@ -924,7 +924,7 @@ export const AllelesTable = () => {
 			header: "Mutation Types",
 			body: (rowData) => <NestedListDialogTemplate
 				entities={rowData.alleleMutationTypes}
-				subTypes={"mutationTypes"}
+				subType={"mutationTypes"}
 				handleOpen={handleMutationTypesOpen}
 				getTextString={(item) => `${item.name} (${item.curie})`}
 			/>,
@@ -937,7 +937,7 @@ export const AllelesTable = () => {
 			header: "Functional Impacts",
 			body: (rowData) => <NestedListDialogTemplate
 				entities={rowData.alleleFunctionalImpacts}
-				subTypes={"functionalImpacts"}
+				subType={"functionalImpacts"}
 				handleOpen={handleFunctionalImpactsOpen}
 				getTextString={(item) => item.name}
 			/>,
