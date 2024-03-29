@@ -12,9 +12,9 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AllelePhenotypeAnnotationCrudController extends BaseEntityCrudController<AllelePhenotypeAnnotationService, AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO> implements AllelePhenotypeAnnotationCrudInterface {
-    
-    @Inject
+public class AllelePhenotypeAnnotationCrudController extends BaseEntityCrudController<AllelePhenotypeAnnotationService, AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO>implements AllelePhenotypeAnnotationCrudInterface {
+
+	@Inject
 	AllelePhenotypeAnnotationService allelePhenotypeAnnotationService;
 
 	@Override
@@ -22,7 +22,7 @@ public class AllelePhenotypeAnnotationCrudController extends BaseEntityCrudContr
 	protected void init() {
 		setService(allelePhenotypeAnnotationService);
 	}
-	
+
 	public ObjectResponse<AllelePhenotypeAnnotation> get(String identifierString) {
 		return allelePhenotypeAnnotationService.get(identifierString);
 	}

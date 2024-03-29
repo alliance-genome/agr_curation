@@ -22,8 +22,8 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AllelePhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<AllelePhenotypeAnnotation> {
-    
-    @GET
+
+	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<AllelePhenotypeAnnotation> get(@PathParam("identifier") String identifier);
@@ -39,6 +39,5 @@ public interface AllelePhenotypeAnnotationCrudInterface extends BaseIdCrudInterf
 	@Path("/")
 	@JsonView(View.PhenotypeAnnotationView.class)
 	public ObjectResponse<AllelePhenotypeAnnotation> create(AllelePhenotypeAnnotation entity);
-
 
 }

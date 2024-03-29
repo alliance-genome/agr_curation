@@ -22,7 +22,7 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AllelePhenotypeAnnotationService extends BaseEntityCrudService<AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO> {
     
-    @Inject
+	@Inject
 	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
@@ -60,13 +60,13 @@ public class AllelePhenotypeAnnotationService extends BaseEntityCrudService<Alle
 	@Override
 	@Transactional
 	public ObjectResponse<AllelePhenotypeAnnotation> update(AllelePhenotypeAnnotation uiEntity) {
-		return null;
+		throw new UnsupportedOperationException("Not implemented yet.");
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<AllelePhenotypeAnnotation> create(AllelePhenotypeAnnotation uiEntity) {
-		return null;
+		throw new UnsupportedOperationException("Not implemented yet.");
 	}
 
 	@Transactional
@@ -75,7 +75,7 @@ public class AllelePhenotypeAnnotationService extends BaseEntityCrudService<Alle
 		return allelePhenotypeAnnotationDAO.persist(annotation);
 	}
 	
-    @Transactional
+	@Transactional
 	public void addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, idsAdded, dataProvider);
 		allelePhenotypeAnnotationDAO.persist(annotation);

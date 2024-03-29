@@ -8,7 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class AllelePhenotypeAnnotationDAO extends BaseSQLDAO<AllelePhenotypeAnnotation> {
 
-    protected AllelePhenotypeAnnotationDAO() {
+	protected AllelePhenotypeAnnotationDAO() {
 		super(AllelePhenotypeAnnotation.class);
 	}
 
