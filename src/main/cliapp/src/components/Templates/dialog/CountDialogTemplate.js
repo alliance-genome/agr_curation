@@ -1,7 +1,7 @@
 import { Button } from "primereact/button";
 
 export const CountDialogTemplate = ({ entities, handleOpen, text }) => {
-  if (!entities || !handleOpen || !text) return null;
+  if (!entities || entities.length === 0 || !handleOpen || !text) return null;
 
   return (
     <Button className="p-button-text" onClick={() => handleOpen(entities)} >
