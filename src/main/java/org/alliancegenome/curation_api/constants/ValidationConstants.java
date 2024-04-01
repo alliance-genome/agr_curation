@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.constants;
 public final class ValidationConstants {
 
 	public static final String INVALID_MESSAGE = "Not a valid entry";
+	public static final String INVALID_TYPE_MESSAGE = INVALID_MESSAGE + " - unexpected object type found";
 	public static final String OBSOLETE_MESSAGE = "Obsolete term specified";
 	public static final String REQUIRED_MESSAGE = "Required field is empty";
 	public static final String REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE = "Field is required unless value is populated for ";
