@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneInteractionDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
@@ -8,7 +9,6 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.GeneInteraction;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 import io.quarkus.logging.Log;
@@ -33,18 +33,10 @@ public class GeneInteractionService extends BaseEntityCrudService<GeneInteractio
 	}
 	
 	public ObjectResponse<GeneInteraction> get(String identifier) {
-		SearchResponse<GeneInteraction> ret = findByField("interactionId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneInteraction>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneInteraction>(ret.getResults().get(0));
-				
-		return new ObjectResponse<GeneInteraction>();
+		List<String> identifierFields = List.of("interactionId", "uniqueId");
+		GeneInteraction interaction = findByAlternativeFields(identifierFields, identifier);
+		return new ObjectResponse<GeneInteraction>(interaction);
 	}
-
-
 
 	public GeneInteraction deprecateOrDeleteInteraction(Long id, Boolean throwApiError, String loadDescription, Boolean deprecateInteraction) {
 		GeneInteraction interaction = geneInteractionDAO.find(id);

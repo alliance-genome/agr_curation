@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
+import org.alliancegenome.curation_api.controllers.base.BaseAnnotationDTOCrudController;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AGMDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
@@ -17,7 +17,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AGMDiseaseAnnotationService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> implements AGMDiseaseAnnotationCrudInterface {
+public class AGMDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudController<AGMDiseaseAnnotationService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> implements AGMDiseaseAnnotationCrudInterface {
 
 	@Inject
 	AGMDiseaseAnnotationService agmDiseaseAnnotationService;

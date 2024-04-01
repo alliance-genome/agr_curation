@@ -6,12 +6,11 @@ import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.AllelePhenotypeAnnotationFmsDTOValidator;
 
 import jakarta.annotation.PostConstruct;
@@ -20,7 +19,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class AllelePhenotypeAnnotationService extends BaseEntityCrudService<AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO> {
+public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO> {
     
 	@Inject
 	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
@@ -35,26 +34,6 @@ public class AllelePhenotypeAnnotationService extends BaseEntityCrudService<Alle
 	@PostConstruct
 	protected void init() {
 		setSQLDao(allelePhenotypeAnnotationDAO);
-	}
-
-	public ObjectResponse<AllelePhenotypeAnnotation> get(String identifier) {
-		SearchResponse<AllelePhenotypeAnnotation> ret = findByField("curie", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AllelePhenotypeAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AllelePhenotypeAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<>(ret.getResults().get(0));
-				
-		return new ObjectResponse<>();
 	}
 
 	@Override
@@ -84,12 +63,18 @@ public class AllelePhenotypeAnnotationService extends BaseEntityCrudService<Alle
 	@Override
 	@Transactional
 	public ObjectResponse<AllelePhenotypeAnnotation> delete(Long id) {
-		phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "Allele phenotype annotation DELETE API call", false);
+		deprecateOrDeleteAnnotationAndNotes(id, true, "Allele phenotype annotation DELETE API call", false);
 		ObjectResponse<AllelePhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, dataProvider);
+	}
+
+	@Override
+	public AllelePhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
+			String loadDescription, Boolean deprecate) {
+		return (AllelePhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

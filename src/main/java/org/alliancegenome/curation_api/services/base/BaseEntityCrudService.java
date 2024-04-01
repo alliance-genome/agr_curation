@@ -78,6 +78,17 @@ public abstract class BaseEntityCrudService<E extends BaseEntity, D extends Base
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 		return dao.searchByParams(pagination, params);
 	}
+	
+	public E findByAlternativeFields(List<String> fields, String value) {
+		if (value == null)
+			return null;
+		for (String field : fields) {
+			SearchResponse<E> result = findByField(field, value);
+			if (result != null && result.getSingleResult() != null)
+				return result.getSingleResult();
+		}
+		return null;
+	}
 
 	public void reindex() {
 		dao.reindex();

@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.base;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -35,28 +37,10 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 	public abstract void removeOrDeprecateNonUpdated(Long id, String loadDescription);
 
 	public E findByIdentifierString(String id) {
-		if (id != null) {
-			SearchResponse<E> response = null;
-			if (id.startsWith("AGRKB:")) {
-				response = findByField("curie", id);
-			} else {
-				response = findByField("modEntityId", id);
-				if (response == null || response.getSingleResult() == null) {
-					response = findByField("modInternalId", id);
-				}
-			}
-			
-			if (response == null || response.getSingleResult() == null) {
-				Log.debug("Entity Not Found: " + id);
-				return null;
-			}
-			
-			E entity = response.getSingleResult();
-			Log.debug("Entity Found: " + entity);
-			return entity;
-		} else {
-			Log.debug("Input Param is null: " + id);
-			return null;
-		}
+		if (id != null && id.startsWith("AGRKB:"))
+			return findByCurie(id);
+		
+		List<String> alternativeFields = List.of("modEntityId", "modInternalId");
+		return findByAlternativeFields(alternativeFields, id);
 	}
 }
