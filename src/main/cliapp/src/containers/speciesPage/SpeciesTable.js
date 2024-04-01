@@ -3,7 +3,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-
+import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
 
 export const SpeciesTable = () => {
 
@@ -12,13 +12,6 @@ export const SpeciesTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-
-	const commonNamesBody = (rowData) => {
-		if(Array.isArray(rowData.commonNames)) {
-			return rowData.commonNames.join(', ');
-		}
-	};
-
 
 	const columns = [
 		{
@@ -54,7 +47,7 @@ export const SpeciesTable = () => {
 			header: "Common Names",
 			sortable: false,
 			filter: true,
-			body: commonNamesBody,
+			body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames}/>,
 			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig
 		},
 		{
@@ -109,8 +102,8 @@ export const SpeciesTable = () => {
 					isEditable={false}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
-					toasts={{toast_topleft, toast_topright }}
-					errorObject = {{errorMessages, setErrorMessages}}
+					toasts={{ toast_topleft, toast_topright }}
+					errorObject={{ errorMessages, setErrorMessages }}
 					widthsObject={widthsObject}
 				/>
 			</div>
