@@ -217,19 +217,20 @@ export const SiteLayout = (props) => {
 								{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
 								{
 										label: 'Data Tables', icon: 'pi pi-fw pi-sitemap',
+										//Add and update new items in alphabetical order
 										items: [
 												{ label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
 												{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
 												{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 												{ label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
-												{ label: 'Phenotype Annotations', icon: 'pi pi-fw pi-home', to: '/phenotypeAnnotations' },
-												{ label: 'Gene Genetic Interactions', icon: 'pi pi-fw pi-home', to: '/geneGeneticInteractions' },
-												{ label: 'Gene Molecular Interactions', icon: 'pi pi-fw pi-home', to: '/geneMolecularInteractions' },
 												{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
 												{ label: 'Experiments', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
 												{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
+												{ label: 'Gene Genetic Interactions', icon: 'pi pi-fw pi-home', to: '/geneGeneticInteractions' },
+												{ label: 'Gene Molecular Interactions', icon: 'pi pi-fw pi-home', to: '/geneMolecularInteractions' },
 												{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
+												{ label: 'Phenotype Annotations', icon: 'pi pi-fw pi-home', to: '/phenotypeAnnotations' },
 												{ label: 'Species', icon: 'pi pi-fw pi-home', to: '/species'},
 												{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants'}
 										]
