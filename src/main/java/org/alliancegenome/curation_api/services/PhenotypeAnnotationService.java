@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -24,6 +25,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
@@ -51,6 +53,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	@Inject
 	GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
 	@Inject
+	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject
 	PersonService personService;
 	@Inject
 	PersonDAO personDAO;
@@ -62,6 +66,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	AGMPhenotypeAnnotationService agmPhenotypeAnnotationService;
 	@Inject
 	GenePhenotypeAnnotationService genePhenotypeAnnotationService;
+	@Inject
+	AllelePhenotypeAnnotationService allelePhenotypeAnnotationService;
 
 	HashMap<String, List<PhenotypeFmsDTO>> unprocessedAnnotationsMap = new HashMap<>();
 	
@@ -158,7 +164,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		List<Long> existingPhenotypeAnnotationIds = new ArrayList<>();
 		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider));
 		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, dataProvider));
-		//TODO: add lists from other subtypes
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, dataProvider));
 		return existingPhenotypeAnnotationIds;
 	}
 	
@@ -186,7 +192,8 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationService.upsertPrimaryAnnotation((AffectedGenomicModel) phenotypeAnnotationSubject, dto, dataProvider);
 			return annotation.getId();
 		} else if (phenotypeAnnotationSubject instanceof Allele) {
-			// TODO: point to AllelePhenotypeAnnotationService method
+			AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationService.upsertPrimaryAnnotation((Allele) phenotypeAnnotationSubject, dto, dataProvider);
+			return annotation.getId();
 		} else if (phenotypeAnnotationSubject instanceof Gene) {
 			GenePhenotypeAnnotation annotation = genePhenotypeAnnotationService.upsertPrimaryAnnotation((Gene) phenotypeAnnotationSubject, dto, dataProvider);
 			return annotation.getId();
@@ -194,7 +201,6 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + dto.getObjectId() + ")");
 		}
 		
-		return null;
 	}
 
 	public void addInferredOrAssertedEntities(PhenotypeFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
@@ -206,7 +212,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			if (primaryAnnotationSubject instanceof AffectedGenomicModel) {
 				agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, idsAdded, dataProvider);
 			} else if (primaryAnnotationSubject instanceof Allele) {
-				// TODO: point to AllelePhenotypeAnnotationService method
+				allelePhenotypeAnnotationService.addInferredOrAssertedEntities((Allele) primaryAnnotationSubject, dto, idsAdded, dataProvider);
 			} else {
 				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
 			}

@@ -10,6 +10,7 @@ export const CLASSES = Object.freeze({
   GeneDiseaseAnnotation: { name: "Gene Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
   PhenotypeAnnotation: { name: "Phenotype Annotations", link: "/#/phenotypeAnnotations", type: 'entity', },
   AGMPhenotypeAnnotation: { name: "AGM Phenotype Annotations", link: "/#/phenotypeAnnotations", type: 'entity', },
+  AllelePhenotypeAnnotation: { name: "Allele Phenotype Annotations", link: "/#/phenotypeAnnotations", type: 'entity', },
   GeneGeneticInteraction: { name: "Gene Genetic Interactions", link: "/#/geneGeneticInteractions", type: 'entity', },
   GeneMolecularInteraction: { name: "Gene Molecular Interactions", link: "/#/geneMolecularInteractions", type: 'entity', },
   GenePhenotypeAnnotation: { name: "Gene Phenotype Annotations", link: "/#/phenotypeAnnotations", type: 'entity', },

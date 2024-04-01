@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -979,6 +980,10 @@ public class BaseITCase {
 
 	protected TypeRef<SearchResponse<AGMPhenotypeAnnotation>> getSearchResponseTypeRefAGMPhenotypeAnnotation() {
 		return new TypeRef<SearchResponse <AGMPhenotypeAnnotation>>() {
+		};
+	}
+	protected TypeRef<SearchResponse<AllelePhenotypeAnnotation>> getSearchResponseTypeRefAllelePhenotypeAnnotation() {
+		return new TypeRef<SearchResponse <AllelePhenotypeAnnotation>>() {
 		};
 	}
 	private TypeRef<SearchResponse<Organization>> getSearchResponseTypeRefOrganization() {

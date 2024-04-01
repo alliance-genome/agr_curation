@@ -16,6 +16,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	
 	protected AlleleDAO() {
 		super(Allele.class);
@@ -38,6 +39,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put("diseaseGeneticModifiers.id", alleleId);
 		results.addAll(diseaseAnnotationDAO.findFilteredIds(dgmParams));
+
+		return results;
+	}
+
+	public List<Long> findReferencingPhenotypeAnnotations(Long alleleId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("phenotypeAnnotationSubject.id", alleleId);
+		List<Long> results = allelePhenotypeAnnotationDAO.findFilteredIds(params);
 
 		return results;
 	}
