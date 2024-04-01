@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -19,23 +18,9 @@ public abstract class BaseAnnotationCrudService<E extends Annotation, D extends 
 	public abstract E deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate);
 
 	public ObjectResponse<E> get(String identifier) {
-		SearchResponse<E> ret = findByField("curie", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<E>(ret.getResults().get(0));
-		
-		ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<E>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<E>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<E>(ret.getResults().get(0));
-				
-		return new ObjectResponse<E>();
+		List<String> identifierFields = List.of("curie", "modEntityId", "modInternalId", "uniqueId");
+		E annotation = findByAlternativeFields(identifierFields, identifier);
+		return new ObjectResponse<E>(annotation);
 	}
 	
 	protected List<Long> getAllReferencedConditionRelationIds(D dao) {
