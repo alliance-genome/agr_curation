@@ -191,7 +191,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			GenePhenotypeAnnotation annotation = genePhenotypeAnnotationService.upsertPrimaryAnnotation((Gene) phenotypeAnnotationSubject, dto, dataProvider);
 			return annotation.getId();
 		} else {
-			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
+			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + dto.getObjectId() + ")");
 		}
 		
 		return null;
@@ -208,7 +208,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			} else if (primaryAnnotationSubject instanceof Allele) {
 				// TODO: point to AllelePhenotypeAnnotationService method
 			} else {
-				throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
+				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryAnnotationSubject + ")");
 			}
 		}
 	} 
