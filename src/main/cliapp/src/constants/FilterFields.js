@@ -230,11 +230,11 @@ export const FIELD_SETS = Object.freeze({
   },
   geneAssociationSubjectFieldSet: {
     filterName: "geneAssociationSubjectFilter",
-    fields: ["geneAssociationSubject.geneSymbol.displayText", "geneAssociationSubject.geneSymbol.formatText"],
+    fields: ["geneAssociationSubject.geneSymbol.displayText", "geneAssociationSubject.geneSymbol.formatText", "geneAssociationSubject.curie", "geneAssociationSubject.modEntityId", "geneAssociationSubject.modInternalId"],
   },
   geneGeneAssociationObjectFieldSet: {
     filterName: "geneGeneAssociationObjectFilter",
-    fields: ["geneGeneAssociationObject.geneSymbol.displayText", "geneGeneAssociationObject.geneSymbol.formatText"],
+    fields: ["geneGeneAssociationObject.geneSymbol.displayText", "geneGeneAssociationObject.geneSymbol.formatText", "geneGeneAssociationObject.curie", "geneGeneAssociationObject.modEntityId", "geneGeneAssociationObject.modInternalId"],
   },
   geneNameFieldSet: {
     filterName: "geneNameFilter",
