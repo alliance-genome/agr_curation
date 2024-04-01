@@ -177,7 +177,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			} else if (primaryAnnotationSubject instanceof Allele) {
 				allelePhenotypeAnnotationService.addInferredOrAssertedEntities((Allele) primaryAnnotationSubject, dto, idsAdded, dataProvider);
 			} else {
-				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryAnnotationSubject + ")");
+				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
 			}
 		}
 	} 
