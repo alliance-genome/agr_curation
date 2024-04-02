@@ -58,6 +58,7 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		ObjectResponse<E> ret = new ObjectResponse<E>(object);
 		return ret;
 	}
+	
 	public ObjectResponse<E> getByIdentifier(String identifier) {
 		List<String> identifierFields = List.of("curie", "modEntityId", "modInternalId", "uniqueId");
 		E annotation = findByAlternativeFields(identifierFields, identifier);
