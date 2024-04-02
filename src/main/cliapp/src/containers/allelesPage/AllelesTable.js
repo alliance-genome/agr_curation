@@ -19,7 +19,7 @@ import { InCollectionTableEditor } from '../../components/Editors/inCollection/I
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 
-import { ReferencesTemplate } from '../../components/Templates/reference/ReferencesTemplate';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
@@ -947,7 +947,11 @@ export const AllelesTable = () => {
 		{
 			field: "references.primaryCrossReferenceCurie",
 			header: "References",
-			body: (rowData) => <ReferencesTemplate references={rowData.references} identifier={rowData.modEntityId}/>,
+			body: (rowData) => <TruncatedReferencesTemplate 
+				references={rowData.references} 
+				identifier={rowData.modEntityId}
+				detailPage="Allele"
+			/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />

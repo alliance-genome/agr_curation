@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
-import { ReferencesTemplate } from '../reference/ReferencesTemplate';
+import { TruncatedReferencesTemplate } from '../reference/TruncatedReferencesTemplate';
 import '../../../tools/jest/setupTests';
 import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom.min';
 
-describe("ReferencesTemplate", () => {
+describe("TruncatedReferencesTemplate", () => {
 
   it('should render a list of references when references prop is not null and has length greater than 0', () => {
     const references = [
@@ -37,7 +37,7 @@ describe("ReferencesTemplate", () => {
 
     const identifier = '123';
 
-    const result = render(<ReferencesTemplate references={references} identifier={identifier} />);
+    const result = render(<TruncatedReferencesTemplate references={references} identifier={identifier} detailPage="Name"/>);
 
     const reference1 = result.getByText('PMID:000001 (FB:FBgn0000001|MGI:MGI:0000001|RGD:2000001|SGD:S000001|WB:WBGene00000001|ZFIN:ZDB-GENE-000000-1|ExtraCurie:111|MainCurie:111)');
     const reference2 = result.getByText('PMID:000002 (FB:FBgn0000002|MGI:MGI:0000002|RGD:2000002|SGD:S000002|WB:WBGene00000002|ZFIN:ZDB-GENE-000000-2|ExtraCurie:222|MainCurie:222)');
@@ -49,7 +49,7 @@ describe("ReferencesTemplate", () => {
     const references = null;
     const identifier = '123';
 
-    const result = render(<ReferencesTemplate references={references} identifier={identifier} />);
+    const result = render(<TruncatedReferencesTemplate references={references} identifier={identifier} detailPage="Name"/>);
 
     expect(result.container.firstChild).toBeNull();
   });
@@ -104,7 +104,7 @@ describe("ReferencesTemplate", () => {
 
     const result = render(
       <BrowserRouter>
-        <ReferencesTemplate references={references} identifier={identifier} />
+        <TruncatedReferencesTemplate references={references} identifier={identifier} detailPage="Name"/>
       </BrowserRouter>
     );
     //using queryBy here because getBy will return an error if not found and the point is to test that reference6 isn't shown
@@ -172,7 +172,7 @@ describe("ReferencesTemplate", () => {
 
     const result = render(
       <BrowserRouter>
-        <ReferencesTemplate references={references} identifier={identifier} />
+        <TruncatedReferencesTemplate references={references} identifier={identifier} detailPage="Name"/>
       </BrowserRouter>
     );
 

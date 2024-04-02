@@ -2,8 +2,8 @@ import { ListTableCell } from "../../ListTableCell";
 import { DetailMessage } from "../../DetailMessage";
 import { SingleReferenceTemplate } from "./SingleReferenceTemplate";
 
-export const ReferencesTemplate = ({ references, identifier }) => {
-  if (!references || references.length === 0) return null;
+export const TruncatedReferencesTemplate = ({ references, identifier, detailPage }) => {
+  if (!references || references.length === 0 || !detailPage) return null;
   let truncatedReferences = references;
   let displayDetailMessage = false;
   
@@ -20,7 +20,7 @@ export const ReferencesTemplate = ({ references, identifier }) => {
     <>
       <div className={targetClass}>
         <ListTableCell template={listTemplate} listData={truncatedReferences} />
-        <DetailMessage identifier={`${identifier}`} display={displayDetailMessage} text="View all references on Allele Detail Page" />
+        <DetailMessage identifier={`${identifier}`} display={displayDetailMessage} text={`View all references on ${detailPage} Detail Page`} />
       </div>
     </>
   );
