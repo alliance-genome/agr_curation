@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { CrossReferenceTemplate } from '../reference/CrossReferenceTemplate';
 import '../../../tools/jest/setupTests';
+import 'core-js/features/structured-clone';
 
 describe("CrossReferenceTemplate", () => {
 

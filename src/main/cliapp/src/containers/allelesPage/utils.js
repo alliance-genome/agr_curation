@@ -19,10 +19,10 @@ export const getCrossReferences = (reference) => {
   let curieField;
 
   if (reference.cross_references) {
-    crossReferences = reference.cross_references;
+    crossReferences = global.structuredClone(reference.cross_references);
     curieField = "curie";
   } else if (reference.crossReferences) {
-    crossReferences = reference.crossReferences;
+    crossReferences = global.structuredClone(reference.crossReferences);
     curieField = "referencedCurie";
   } else {
     return {};
