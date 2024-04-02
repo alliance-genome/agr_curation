@@ -24,6 +24,7 @@ import { GenomicEntityListTemplate } from '../../components/Templates/genomicEnt
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { NotTemplate } from '../../components/Templates/NotTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 
 import { NotEditor } from '../../components/Editors/NotEditor';
 
@@ -250,20 +251,6 @@ export const DiseaseAnnotationsTable = () => {
 				</>
 			)
 
-		}
-	};
-
-	const conditionRelationHandleTemplate = (rowData) => {
-		if (rowData?.conditionRelations && rowData.conditionRelations[0]?.handle) {
-			let handle = rowData.conditionRelations[0].handle;
-			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span className= "-my-4 p-1 underline">
-						{handle && handle}
-					</span>
-				</Button>
-			)
 		}
 	};
 
@@ -952,7 +939,17 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "conditionRelations.handle",
 		header: "Experiments",
-		body: conditionRelationHandleTemplate,
+		body: (rowData) => {
+			if (!rowData.conditionRelations?.[0]?.handle) return null;
+			return (			
+				<TextDialogTemplate
+					entity={rowData.conditionRelations}
+					handleOpen={handleConditionRelationsOpen}
+					text={rowData.conditionRelations[0].handle}
+					underline={false}
+				/>
+			);
+		},
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
 		editor: (props) => conditionRelationHandleEditor(props)
