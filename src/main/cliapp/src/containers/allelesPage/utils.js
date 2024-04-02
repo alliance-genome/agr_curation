@@ -7,22 +7,22 @@ export const generateCrossRefSearchFields = (references) => {
 };
 
 export const generateCrossRefSearchField = (reference) => {
-  const { crossReferences, curieField } = differentiateCrossReferences(reference);
+  const { crossReferences, curieField } = getCrossReferences(reference);
 
   let refStrings = crossReferences.map((crossRef) => crossRef[curieField]);
 
   return refStrings.join();
 };
 
-export const differentiateCrossReferences = (reference) => {
+export const getCrossReferences = (reference) => {
   let crossReferences;
   let curieField;
 
   if (reference.cross_references) {
-    crossReferences = global.structuredClone(reference.cross_references);
+    crossReferences = reference.cross_references;
     curieField = "curie";
   } else if (reference.crossReferences) {
-    crossReferences = global.structuredClone(reference.crossReferences);
+    crossReferences = reference.crossReferences;
     curieField = "referencedCurie";
   } else {
     return {};

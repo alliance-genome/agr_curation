@@ -1,24 +1,18 @@
-import { EllipsisTableCell } from '../../EllipsisTableCell';
-import { differentiateCrossReferences } from '../../../containers/allelesPage/utils';
+import { ListTableCell } from '../../ListTableCell';
+import { getCrossReferences } from '../../../containers/allelesPage/utils';
 
-export const CrossReferencesTemplate = ({ rowData }) => {
-  if (!rowData) return null;
+export const CrossReferenceTemplate = ({ reference }) => {
+  if (!reference) return null;
 
-  const { crossReferences, curieField } = differentiateCrossReferences(rowData);
+  const { crossReferences, curieField } = getCrossReferences(reference);
 
   const sortedCrossReferences = crossReferences?.sort((a, b) => (a[curieField] > b[curieField]) ? 1 : -1);
 
+  const listTemplate = (item) => item[curieField];
+
   return (
     <div>
-      <ul>
-        {sortedCrossReferences?.map((reference, index) =>
-          <li key={index}>
-            <EllipsisTableCell>
-              {reference[curieField]}
-            </EllipsisTableCell>
-          </li>
-        )}
-      </ul>
+      <ListTableCell template={listTemplate} listData={sortedCrossReferences} />
     </div>
   );
 };
