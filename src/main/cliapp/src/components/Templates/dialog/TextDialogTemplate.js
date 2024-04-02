@@ -8,7 +8,7 @@ export const TextDialogTemplate = ({ entity, handleOpen, text, underline=true })
       <Button className="p-button-text"
         onClick={() => { handleOpen(entity) }} >
         <div
-          className={`-my-4 p-1 overflow-hidden text-overflow-ellipsis ${underline ? "underline" : ""}`}
+          className={`-my-2 p-1 overflow-hidden text-overflow-ellipsis ${underline ? "underline" : ""}`}
           dangerouslySetInnerHTML={{ __html: text }}
         />
       </Button>

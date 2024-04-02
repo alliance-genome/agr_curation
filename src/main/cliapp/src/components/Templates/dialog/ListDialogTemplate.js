@@ -3,7 +3,7 @@ import { ListTableCell } from "../../ListTableCell";
 
 export const ListDialogTemplate = ({ entities, handleOpen, getTextField, underline = true }) => {
   if (!entities || entities.length === 0 || !handleOpen || !getTextField) return null;
-  
+
   const uniqueItemsSet = new Set(entities.map(entity => getTextField(entity)));
   const sortedItems = Array.from(uniqueItemsSet).sort();
 
@@ -13,12 +13,14 @@ export const ListDialogTemplate = ({ entities, handleOpen, getTextField, underli
       dangerouslySetInnerHTML={{ __html: item }}
     />
   );
-  
+
   return (
     <>
-      <Button className="p-button-text" onClick={() => handleOpen(entities)}>
-        <ListTableCell template={listTemplate} listData={sortedItems} />
-      </Button>
+      <div className={`-my-4 p-1`}>
+        <Button className="p-button-text" onClick={() => handleOpen(entities)}>
+          <ListTableCell template={listTemplate} listData={sortedItems} />
+        </Button>
+      </div>
     </>
   );
 };
