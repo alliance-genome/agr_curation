@@ -6,7 +6,7 @@ export const CrossReferenceTemplate = ({ reference }) => {
 
   const { crossReferences, curieField } = getCrossReferences(reference);
 
-  const sortedCrossReferences = crossReferences?.sort((a, b) => (a[curieField] > b[curieField]) ? 1 : -1);
+  const sortedCrossReferences = crossReferences?.toSorted((a, b) => (a[curieField] > b[curieField]) ? 1 : -1);
 
   const listTemplate = (item) => item[curieField];
 
