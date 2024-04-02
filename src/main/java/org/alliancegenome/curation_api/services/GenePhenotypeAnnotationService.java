@@ -56,7 +56,7 @@ public class GenePhenotypeAnnotationService extends BaseAnnotationCrudService<Ge
 	
 	@Override
 	@Transactional
-	public ObjectResponse<GenePhenotypeAnnotation> delete(Long id) {
+	public ObjectResponse<GenePhenotypeAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "Gene phenotype annotation DELETE API call", false);
 		ObjectResponse<GenePhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;

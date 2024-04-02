@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
@@ -34,14 +34,14 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Genes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GeneCrudInterface extends SubmittedObjectCrudInterface<Gene>, BaseDTOCrudControllerInterface<Gene, GeneDTO> {
+public interface GeneCrudInterface extends SubmittedObjectCrudInterface<Gene>, BaseUpsertControllerInterface<Gene, GeneDTO> {
 
 	@Override
 	@GET
 	@Query("api_gene_get")
 	@Path("/{identifierString}")
 	@JsonView(View.GeneDetailView.class)
-	public ObjectResponse<Gene> get(@PathParam("identifierString") String identifierString);
+	public ObjectResponse<Gene> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@POST
 	@Path("/bulk/{dataProvider}/genes")

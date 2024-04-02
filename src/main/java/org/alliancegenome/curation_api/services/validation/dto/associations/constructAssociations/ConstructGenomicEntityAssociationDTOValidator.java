@@ -51,7 +51,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
-			ObjectResponse<Construct> constructResponse = constructService.get(dto.getConstructIdentifier());
+			ObjectResponse<Construct> constructResponse = constructService.getByIdentifier(dto.getConstructIdentifier());
 			if (constructResponse == null || constructResponse.getEntity() == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {

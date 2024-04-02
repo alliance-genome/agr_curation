@@ -1,12 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
@@ -14,13 +12,10 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationUniqueIdUpdateHelper;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -50,7 +45,7 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 	
 	@Override
 	@Transactional
-	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
+	public ObjectResponse<DiseaseAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "Disease annotation DELETE API call", false);
 		ObjectResponse<DiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;

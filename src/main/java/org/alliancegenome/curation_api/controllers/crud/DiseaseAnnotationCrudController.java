@@ -23,7 +23,7 @@ public class DiseaseAnnotationCrudController extends BaseEntityCrudController<Di
 		setService(diseaseAnnotationService);
 	}
 	
-	public ObjectResponse<DiseaseAnnotation> get(String identifierString) {
-		return diseaseAnnotationService.get(identifierString);
+	public ObjectResponse<DiseaseAnnotation> getByIdentifier(String identifierString) {
+		return diseaseAnnotationService.getByIdentifier(identifierString);
 	}
 }

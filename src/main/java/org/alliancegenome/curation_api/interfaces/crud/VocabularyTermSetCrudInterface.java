@@ -34,7 +34,7 @@ public interface VocabularyTermSetCrudInterface extends BaseIdCrudInterface<Voca
 	@GET
 	@Path("/{id}")
 	@JsonView(View.VocabularyTermSetView.class)
-	ObjectResponse<VocabularyTermSet> get(@PathParam("id") Long id);
+	ObjectResponse<VocabularyTermSet> getById(@PathParam("id") Long id);
 
 	@GET
 	@Path("/{id}/terms")

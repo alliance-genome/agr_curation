@@ -23,7 +23,7 @@ public class AGMPhenotypeAnnotationCrudController extends BaseEntityCrudControll
 		setService(agmPhenotypeAnnotationService);
 	}
 	
-	public ObjectResponse<AGMPhenotypeAnnotation> get(String identifierString) {
-		return agmPhenotypeAnnotationService.get(identifierString);
+	public ObjectResponse<AGMPhenotypeAnnotation> getByIdentifier(String identifierString) {
+		return agmPhenotypeAnnotationService.getByIdentifier(identifierString);
 	}
 }

@@ -30,24 +30,24 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 		return service.create(entities);
 	}
 
-	public ObjectResponse<E> get(Long id) {
-		return service.get(id);
+	public ObjectResponse<E> getById(Long id) {
+		return service.getById(id);
 	}
 	
-	public ObjectResponse<E> get(String curie) {
-		return service.get(curie);
+	public ObjectResponse<E> getByCurie(String curie) {
+		return service.getByCurie(curie);
 	}
 
 	public ObjectResponse<E> update(E entity) {
 		return service.update(entity);
 	}
 
-	public ObjectResponse<E> delete(String curie) {
-		return service.delete(curie);
+	public ObjectResponse<E> deleteByCurie(String curie) {
+		return service.deleteByCurie(curie);
 	}
 	
-	public ObjectResponse<E> delete(Long id) {
-		return service.delete(id);
+	public ObjectResponse<E> deleteById(Long id) {
+		return service.deleteById(id);
 	}
 
 	public SearchResponse<E> findByField(String field, String value) {

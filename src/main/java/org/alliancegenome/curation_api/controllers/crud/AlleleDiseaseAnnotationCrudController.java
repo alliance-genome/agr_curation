@@ -35,8 +35,8 @@ public class AlleleDiseaseAnnotationCrudController extends BaseAnnotationDTOCrud
 		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 	
-	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifierString) {
-		return alleleDiseaseAnnotationService.get(identifierString);
+	public ObjectResponse<AlleleDiseaseAnnotation> getByIdentifier(String identifierString) {
+		return alleleDiseaseAnnotationService.getByIdentifier(identifierString);
 	}
 
 }

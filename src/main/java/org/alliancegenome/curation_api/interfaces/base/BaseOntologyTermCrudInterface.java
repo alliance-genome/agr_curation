@@ -20,12 +20,12 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Ontology - Bulk")
 public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends BaseIdCrudInterface<E> {
 
+	public void init();
+
 	@POST
 	@Path("/bulk/owl")
 	@Consumes(MediaType.APPLICATION_XML)
 	public String updateTerms(@DefaultValue("true") @QueryParam("async") boolean async, @RequestBody String fullText);
-
-	public void init();
 
 	@GET
 	@Path("/rootNodes")

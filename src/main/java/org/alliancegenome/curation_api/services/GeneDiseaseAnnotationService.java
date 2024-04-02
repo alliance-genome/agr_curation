@@ -58,7 +58,7 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 
 	@Override
 	@Transactional
-	public ObjectResponse<GeneDiseaseAnnotation> delete(Long id) {
+	public ObjectResponse<GeneDiseaseAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "Gene disease annotation DELETE API call", false);
 		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 
-public interface BaseDTOCrudControllerInterface<E extends AuditedObject, T extends BaseDTO> {
+public interface BaseUpsertControllerInterface<E extends AuditedObject, T extends BaseDTO> {
 
 	@POST
 	@Path("/upsert")

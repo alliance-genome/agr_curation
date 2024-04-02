@@ -62,7 +62,7 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 
 	@Override
 	@Transactional
-	public ObjectResponse<AllelePhenotypeAnnotation> delete(Long id) {
+	public ObjectResponse<AllelePhenotypeAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "Allele phenotype annotation DELETE API call", false);
 		ObjectResponse<AllelePhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;

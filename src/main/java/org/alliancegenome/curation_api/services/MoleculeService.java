@@ -49,15 +49,6 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	protected void init() {
 		setSQLDao(moleculeDAO);
 	}
-
-	@Transactional
-	public Molecule getByCurie(String id) {
-		Molecule molecule = findByCurie(id);
-		if (molecule != null) {
-			molecule.getSynonyms().size();
-		}
-		return molecule;
-	}
 	
 	@Override
 	@Transactional

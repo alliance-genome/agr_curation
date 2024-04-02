@@ -26,7 +26,7 @@ public interface AllelePhenotypeAnnotationCrudInterface extends BaseIdCrudInterf
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AllelePhenotypeAnnotation> get(@PathParam("identifier") String identifier);
+	public ObjectResponse<AllelePhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT

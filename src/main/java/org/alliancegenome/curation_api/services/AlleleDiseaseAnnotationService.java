@@ -58,7 +58,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 
 	@Override
 	@Transactional
-	public ObjectResponse<AlleleDiseaseAnnotation> delete(Long id) {
+	public ObjectResponse<AlleleDiseaseAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "Allele disease annotation DELETE API call", false);
 		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;

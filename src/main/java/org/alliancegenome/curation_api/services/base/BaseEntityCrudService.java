@@ -47,16 +47,21 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		return ret;
 	}
 
-	public ObjectResponse<E> get(String curie) {
+	public ObjectResponse<E> getById(Long id) {
+		E object = dao.find(id);
+		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		return ret;
+	}
+
+	public ObjectResponse<E> getByCurie(String curie) {
 		E object = findByCurie(curie);
 		ObjectResponse<E> ret = new ObjectResponse<E>(object);
 		return ret;
 	}
-	
-	public ObjectResponse<E> get(Long id) {
-		E object = dao.find(id);
-		ObjectResponse<E> ret = new ObjectResponse<E>(object);
-		return ret;
+	public ObjectResponse<E> getByIdentifier(String identifier) {
+		List<String> identifierFields = List.of("curie", "modEntityId", "modInternalId", "uniqueId");
+		E annotation = findByAlternativeFields(identifierFields, identifier);
+		return new ObjectResponse<E>(annotation);
 	}
 	
 	public E findByCurie(String curie) {
@@ -86,7 +91,7 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 
 
 	@Transactional
-	public ObjectResponse<E> delete(String curie) {
+	public ObjectResponse<E> deleteByCurie(String curie) {
 		E object = findByCurie(curie);
 		if (object != null)
 			dao.remove(object.getId());
@@ -95,7 +100,7 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 	}
 	
 	@Transactional
-	public ObjectResponse<E> delete(Long id) {
+	public ObjectResponse<E> deleteById(Long id) {
 		E object = dao.remove(id);
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;

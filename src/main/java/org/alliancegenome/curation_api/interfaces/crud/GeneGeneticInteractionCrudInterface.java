@@ -34,7 +34,7 @@ public interface GeneGeneticInteractionCrudInterface extends BaseIdCrudInterface
 	@GET
 	@Path("/findBy/{identifierString}")
 	@JsonView(View.GeneInteractionView.class)
-	public ObjectResponse<GeneGeneticInteraction> get(@PathParam("identifierString") String identifierString);
+	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(@PathParam("identifierString") String identifierString);
 	
 	@Override
 	@POST

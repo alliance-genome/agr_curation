@@ -30,8 +30,8 @@ public class PhenotypeAnnotationCrudController extends BaseEntityCrudController<
 		setService(phenotypeAnnotationService);
 	}
 	
-	public ObjectResponse<PhenotypeAnnotation> get(String identifierString) {
-		return phenotypeAnnotationService.get(identifierString);
+	public ObjectResponse<PhenotypeAnnotation> getByIdentifier(String identifierString) {
+		return phenotypeAnnotationService.getByIdentifier(identifierString);
 	}
 	
 	public APIResponse updatePhenotypeAnnotations(String dataProvider, List<PhenotypeFmsDTO> annotations) {

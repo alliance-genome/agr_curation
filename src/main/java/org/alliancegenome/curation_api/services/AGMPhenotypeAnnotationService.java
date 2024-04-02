@@ -62,7 +62,7 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 
 	@Override
 	@Transactional
-	public ObjectResponse<AGMPhenotypeAnnotation> delete(Long id) {
+	public ObjectResponse<AGMPhenotypeAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "AGM phenotype annotation DELETE API call", false);
 		ObjectResponse<AGMPhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;

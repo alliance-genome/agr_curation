@@ -31,7 +31,7 @@ public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 	@GET
 	@JsonView(View.NoteView.class)
 	@Path("/{id}")
-	public ObjectResponse<Note> get(@PathParam("id") Long id);
+	public ObjectResponse<Note> getById(@PathParam("id") Long id);
 
 	@POST
 	@Path("/")

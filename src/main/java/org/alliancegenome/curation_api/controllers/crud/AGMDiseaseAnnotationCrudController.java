@@ -34,8 +34,8 @@ public class AGMDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudCon
 		return agmDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 	
-	public ObjectResponse<AGMDiseaseAnnotation> get(String identifierString) {
-		return agmDiseaseAnnotationService.get(identifierString);
+	public ObjectResponse<AGMDiseaseAnnotation> getByIdentifier(String identifierString) {
+		return agmDiseaseAnnotationService.getByIdentifier(identifierString);
 	}
 
 }
