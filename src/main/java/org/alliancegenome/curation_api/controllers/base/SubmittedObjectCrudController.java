@@ -4,14 +4,14 @@ import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 
 public abstract class SubmittedObjectCrudController<S extends SubmittedObjectCrudService<E, T, D>, E extends SubmittedObject, T extends BaseDTO, D extends BaseEntityDAO<E>> extends BaseEntityCrudController<S, E, D> implements 
-	SubmittedObjectCrudInterface<E>,
+	BaseSubmittedObjectCrudInterface<E>,
 	BaseUpsertControllerInterface<E, T> 
 {
 

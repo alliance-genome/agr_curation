@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -31,7 +31,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Variants")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface VariantCrudInterface extends SubmittedObjectCrudInterface<Variant>, BaseUpsertControllerInterface<Variant, VariantDTO> {
+public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<Variant>, BaseUpsertControllerInterface<Variant, VariantDTO> {
 
 	@POST
 	@Path("/bulk/{dataProvider}/variants")

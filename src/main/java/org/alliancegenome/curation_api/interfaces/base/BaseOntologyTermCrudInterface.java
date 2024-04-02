@@ -1,5 +1,9 @@
 package org.alliancegenome.curation_api.interfaces.base;
 
+import org.alliancegenome.curation_api.interfaces.base.crud.BaseCreateControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.crud.BaseDeleteCurieControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.crud.BaseReadCurieControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.crud.BaseUpdateControllerInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -18,7 +22,15 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Tag(name = "CRUD - Ontology - Bulk")
-public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends BaseIdCrudInterface<E> {
+public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends 
+	BaseCreateControllerInterface<E>,
+	BaseReadCurieControllerInterface<E>,
+	BaseUpdateControllerInterface<E>,
+	BaseDeleteCurieControllerInterface<E>,
+	BaseSearchControllerInterface<E>,
+	BaseFindControllerInterface<E>,
+	BaseReindexControllerInterface
+{
 
 	public void init();
 

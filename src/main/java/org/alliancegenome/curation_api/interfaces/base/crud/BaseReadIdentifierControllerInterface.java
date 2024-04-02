@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.base;
+package org.alliancegenome.curation_api.interfaces.base.crud;
 
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -20,20 +20,20 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseReadIdControllerInterface<E extends AuditedObject> {
+public interface BaseReadIdentifierControllerInterface<E extends AuditedObject> {
 
 	@GET
-	@Path("/{id}")
+	@Path("/{identifierString}")
 	@JsonView(View.FieldsOnly.class)
 	@APIResponses(
 		@APIResponse(
-			description = "Get Entity by Id",
+			description = "Get the Entity by Identifier String",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
 			)
 		)
 	)
-	public ObjectResponse<E> getById(@PathParam("id") Long id);
-	
+	public ObjectResponse<E> getByIdentifier(@PathParam("identifierString") String identifierString);
+
 }

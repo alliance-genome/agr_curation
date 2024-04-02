@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -31,7 +31,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Alleles")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AlleleCrudInterface extends SubmittedObjectCrudInterface<Allele>, BaseUpsertControllerInterface<Allele, AlleleDTO> {
+public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Allele>, BaseUpsertControllerInterface<Allele, AlleleDTO> {
 
 	@POST
 	@Path("/bulk/{dataProvider}/alleles")

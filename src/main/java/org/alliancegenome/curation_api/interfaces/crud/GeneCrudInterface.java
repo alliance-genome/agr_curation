@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Genes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GeneCrudInterface extends SubmittedObjectCrudInterface<Gene>, BaseUpsertControllerInterface<Gene, GeneDTO> {
+public interface GeneCrudInterface extends BaseSubmittedObjectCrudInterface<Gene>, BaseUpsertControllerInterface<Gene, GeneDTO> {
 
 	@Override
 	@GET

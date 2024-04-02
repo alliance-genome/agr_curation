@@ -2,9 +2,9 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseReadIdentifierCurieControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.crud.BaseReadIdentifierControllerInterface;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -24,8 +24,8 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Affected Genomic Models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AffectedGenomicModelCrudInterface extends SubmittedObjectCrudInterface<AffectedGenomicModel>, 
-	BaseReadIdentifierCurieControllerInterface<AffectedGenomicModel>,
+public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCrudInterface<AffectedGenomicModel>, 
+	BaseReadIdentifierControllerInterface<AffectedGenomicModel>,
 	BaseUpsertControllerInterface<AffectedGenomicModel, AffectedGenomicModelDTO> {
 
 	@POST

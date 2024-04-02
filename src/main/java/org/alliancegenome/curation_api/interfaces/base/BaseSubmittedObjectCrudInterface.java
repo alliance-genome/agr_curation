@@ -1,10 +1,10 @@
 package org.alliancegenome.curation_api.interfaces.base;
 
 import org.alliancegenome.curation_api.interfaces.base.crud.BaseCreateControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.crud.BaseDeleteIdControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.crud.BaseReadIdControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.crud.BaseDeleteIdentifierControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.crud.BaseReadIdentifierControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.crud.BaseUpdateControllerInterface;
-import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
@@ -12,14 +12,14 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseIdCrudInterface<E extends AuditedObject> extends 
+public interface BaseSubmittedObjectCrudInterface<E extends SubmittedObject> extends 
 	BaseCreateControllerInterface<E>,
-	BaseReadIdControllerInterface<E>,
+	BaseReadIdentifierControllerInterface<E>,
 	BaseUpdateControllerInterface<E>,
-	BaseDeleteIdControllerInterface<E>,
+	BaseDeleteIdentifierControllerInterface<E>,
 	BaseSearchControllerInterface<E>,
 	BaseFindControllerInterface<E>,
 	BaseReindexControllerInterface
 {
-	
+
 }

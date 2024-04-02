@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.base;
+package org.alliancegenome.curation_api.interfaces.base.crud;
 
 import java.util.List;
 

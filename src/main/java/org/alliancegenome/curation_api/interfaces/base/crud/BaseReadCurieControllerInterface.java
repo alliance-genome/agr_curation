@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.base;
+package org.alliancegenome.curation_api.interfaces.base.crud;
 
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -12,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -20,20 +20,20 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseDeleteIdControllerInterface<E extends AuditedObject> {
+public interface BaseReadCurieControllerInterface<E extends AuditedObject> {
 
-	@DELETE
-	@Path("/{id}")
+	@GET
+	@Path("/{curie}")
 	@JsonView(View.FieldsOnly.class)
 	@APIResponses(
 		@APIResponse(
-			description = "Delete Entity by Id",
+			description = "Get the Entity by Curie",
 			content = @Content(
 				mediaType = "application/json",
 				schema = @Schema(implementation = Null.class)
 			)
 		)
 	)
-	public ObjectResponse<E> deleteById(@PathParam("id") Long id);
-	
+	public ObjectResponse<E> getByCurie(@PathParam("curie") String curie);
+
 }
