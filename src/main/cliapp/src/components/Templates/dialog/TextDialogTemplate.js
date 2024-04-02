@@ -1,6 +1,6 @@
 import { Button } from "primereact/button";
 
-export const TextDialogTemplate = ({ entity, handleOpen, text }) => {
+export const TextDialogTemplate = ({ entity, handleOpen, text, underline=true }) => {
   if (!entity || !handleOpen || !text) return null;
 
   return (
@@ -8,7 +8,7 @@ export const TextDialogTemplate = ({ entity, handleOpen, text }) => {
       <Button className="p-button-text"
         onClick={() => { handleOpen(entity) }} >
         <div
-          className='overflow-hidden text-overflow-ellipsis'
+          className={`-my-4 p-1 overflow-hidden text-overflow-ellipsis ${underline ? "underline" : ""}`}
           dangerouslySetInnerHTML={{ __html: text }}
         />
       </Button>

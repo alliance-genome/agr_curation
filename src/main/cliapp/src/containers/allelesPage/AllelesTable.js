@@ -829,6 +829,7 @@ export const AllelesTable = () => {
 				entity={rowData.alleleFullName}
 				handleOpen={handleFullNameOpen}
 				text={rowData.alleleFullName?.displayText}
+				underline={false}
 			/>,
 			editor: (props) => fullNameEditor(props),
 			sortable: true,
@@ -841,6 +842,7 @@ export const AllelesTable = () => {
 				entity={rowData.alleleSymbol}
 				handleOpen={handleSymbolOpen}
 				text={rowData.alleleSymbol?.displayText}
+				underline={false}
 			/>,
 			editor: (props) => symbolEditor(props),
 			sortable: true,
