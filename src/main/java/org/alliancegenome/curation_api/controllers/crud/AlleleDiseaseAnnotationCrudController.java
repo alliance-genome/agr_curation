@@ -38,4 +38,5 @@ public class AlleleDiseaseAnnotationCrudController extends BaseAnnotationDTOCrud
 	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifierString) {
 		return alleleDiseaseAnnotationService.get(identifierString);
 	}
+
 }

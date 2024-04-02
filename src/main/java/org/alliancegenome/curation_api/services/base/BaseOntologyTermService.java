@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends CurieObjectCrudService<E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;

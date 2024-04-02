@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.base;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -32,7 +32,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseIdCrudInterface<E extends BaseEntity> {
+public interface BaseIdCrudInterface<E extends AuditedObject> {
 
 	@POST
 	@Path("/")

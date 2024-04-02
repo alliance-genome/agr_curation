@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
-public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E, D>, E extends BaseEntity, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E> {
+public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E, D>, E extends AuditedObject, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E> {
 
 	protected BaseEntityCrudService<E, D> service;
 
@@ -33,11 +33,19 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 	public ObjectResponse<E> get(Long id) {
 		return service.get(id);
 	}
+	
+	public ObjectResponse<E> get(String curie) {
+		return service.get(curie);
+	}
 
 	public ObjectResponse<E> update(E entity) {
 		return service.update(entity);
 	}
 
+	public ObjectResponse<E> delete(String curie) {
+		return service.delete(curie);
+	}
+	
 	public ObjectResponse<E> delete(Long id) {
 		return service.delete(id);
 	}

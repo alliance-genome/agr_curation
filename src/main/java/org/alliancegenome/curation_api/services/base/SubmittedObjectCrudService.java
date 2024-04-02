@@ -8,12 +8,10 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 
-import io.quarkus.logging.Log;
 import jakarta.transaction.Transactional;
 
-public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T extends BaseDTO, D extends BaseEntityDAO<E>> extends CurieObjectCrudService<E, D> {
+public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T extends BaseDTO, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, D> {
 
 	@Override
 	public ObjectResponse<E> get(String identifierString) {
@@ -30,6 +28,10 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 			dao.remove(object.getId());
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
+	}
+	
+	public E upsert(T dto) throws ObjectUpdateException {
+		return upsert(dto, null);
 	}
 	
 	public abstract E upsert(T dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException;

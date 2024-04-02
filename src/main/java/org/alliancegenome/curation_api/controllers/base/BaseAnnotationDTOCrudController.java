@@ -21,7 +21,7 @@ public abstract class BaseAnnotationDTOCrudController<S extends BaseAnnotationDT
 	}
 	
 	public E upsert(T dto) throws ObjectUpdateException {
-		return upsert(dto, null);
+		return service.upsert(dto);
 	}
 
 	public E upsert(T dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {

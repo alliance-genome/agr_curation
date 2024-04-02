@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfi
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-public abstract class BaseOntologyTermController<S extends BaseOntologyTermService<E, D>, E extends OntologyTerm, D extends BaseEntityDAO<E>> extends CurieObjectCrudController<S, E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermController<S extends BaseOntologyTermService<E, D>, E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudController<S, E, BaseEntityDAO<E>> {
 
 	private GenericOntologyLoadHelper<E> loader;
 

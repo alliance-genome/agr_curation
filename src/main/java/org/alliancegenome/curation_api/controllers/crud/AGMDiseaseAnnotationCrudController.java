@@ -37,4 +37,5 @@ public class AGMDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudCon
 	public ObjectResponse<AGMDiseaseAnnotation> get(String identifierString) {
 		return agmDiseaseAnnotationService.get(identifierString);
 	}
+
 }

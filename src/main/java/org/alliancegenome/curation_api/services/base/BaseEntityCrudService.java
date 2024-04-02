@@ -7,16 +7,17 @@ import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
+import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseEntityCrudService<E extends BaseEntity, D extends BaseEntityDAO<E>> {
+public abstract class BaseEntityCrudService<E extends AuditedObject, D extends BaseEntityDAO<E>> {
 
 	protected BaseSQLDAO<E> dao;
 
@@ -46,12 +47,35 @@ public abstract class BaseEntityCrudService<E extends BaseEntity, D extends Base
 		return ret;
 	}
 
+	public ObjectResponse<E> get(String curie) {
+		E object = findByCurie(curie);
+		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		return ret;
+	}
+	
 	public ObjectResponse<E> get(Long id) {
 		E object = dao.find(id);
 		ObjectResponse<E> ret = new ObjectResponse<E>(object);
 		return ret;
 	}
-
+	
+	public E findByCurie(String curie) {
+		if (curie != null) {
+			SearchResponse<E> response = findByField("curie", curie);
+			if (response == null || response.getSingleResult() == null) {
+				Log.debug("Entity Not Found: " + curie);
+				return null;
+			}
+			E entity = response.getSingleResult();
+			Log.debug("Entity Found: " + entity);
+			return entity;
+		} else {
+			Log.debug("Input Param is null: " + curie);
+			return null;
+		}
+	}
+	
+	
 	@Transactional
 	public ObjectResponse<E> update(E entity) {
 		// log.info("Authed Person: " + authenticatedPerson);
@@ -60,13 +84,23 @@ public abstract class BaseEntityCrudService<E extends BaseEntity, D extends Base
 		return ret;
 	}
 
+
+	@Transactional
+	public ObjectResponse<E> delete(String curie) {
+		E object = findByCurie(curie);
+		if (object != null)
+			dao.remove(object.getId());
+		ObjectResponse<E> ret = new ObjectResponse<>(object);
+		return ret;
+	}
+	
 	@Transactional
 	public ObjectResponse<E> delete(Long id) {
 		E object = dao.remove(id);
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
 	}
-
+	
 	public SearchResponse<E> findByField(String field, String value) {
 		return dao.findByField(field, value);
 	}

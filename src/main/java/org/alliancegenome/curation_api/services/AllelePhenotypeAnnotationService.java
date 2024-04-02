@@ -20,7 +20,7 @@ import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO> {
-    
+	
 	@Inject
 	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject

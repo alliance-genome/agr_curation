@@ -10,6 +10,10 @@ public abstract class BaseAnnotationDTOCrudService<E extends Annotation, T exten
 
 	protected abstract void init();
 
+	public E upsert(T dto) throws ObjectUpdateException {
+		return upsert(dto, null);
+	}
+	
 	public abstract E upsert(T dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException;
 
 }
