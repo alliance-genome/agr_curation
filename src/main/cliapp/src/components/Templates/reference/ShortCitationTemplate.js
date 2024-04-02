@@ -1,7 +1,8 @@
-export const ShortCitationTemplate = ({ rowData }) => {
-  if (!rowData) return null;
+import { getShortCitation } from "../../../containers/allelesPage/utils";
+export const ShortCitationTemplate = ({ reference }) => {
+  if (!reference) return null;
 
-  const shortCitation = differentiateShortCitation(rowData);
+  const shortCitation = getShortCitation(reference);
 
   return (
     <div>
@@ -10,15 +11,3 @@ export const ShortCitationTemplate = ({ rowData }) => {
   );
 };
 
-const differentiateShortCitation = (reference) => {
-  let shortCitation;
-  if(!reference.short_citation && !reference.shortCitation) return
-
-  if (reference.short_citation) {
-    shortCitation = global.structuredClone(reference.short_citation);
-  } else if (reference.shortCitation) {
-    shortCitation = global.structuredClone(reference.shortCitation);
-  } 
-  
-  return shortCitation;
-};

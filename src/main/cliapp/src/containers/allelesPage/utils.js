@@ -31,6 +31,19 @@ export const getCrossReferences = (reference) => {
   return { crossReferences, curieField };
 };
 
+export const getShortCitation = (reference) => {
+  let shortCitation;
+  if(!reference.short_citation && !reference.shortCitation) return
+
+  if (reference.short_citation) {
+    shortCitation = reference.short_citation;
+  } else if (reference.shortCitation) {
+    shortCitation = reference.shortCitation;
+  } 
+  
+  return shortCitation;
+};
+
 export const generateCurieSearchField = (entities) => {
   if (!entities) return;
   let curieStrings = entities.map((entity) => entity.curie);

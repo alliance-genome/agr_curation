@@ -23,7 +23,7 @@ export const ReferencesFormTable = ({
       <Column field="curie" header="Curie" sortable filter showFilterMenu={false} filterMatchMode='contains'/>
       <Column field="crossReferences" header="Cross References" body={(data) => <CrossReferenceTemplate reference={data} />}
         filter filterField='crossReferencesFilter' filterMatchMode='contains' showFilterMenu={false} />
-      <Column field="shortCitation"  sortable header="Short Citation" body={(data) => <ShortCitationTemplate rowData={data}/>} 
+      <Column field="shortCitation"  sortable header="Short Citation" body={(data) => <ShortCitationTemplate reference={data}/>} 
       filterField='shortCitation' filter showFilterMenu={false} filterMatchMode='contains'/>
     </DataTable>
   );
