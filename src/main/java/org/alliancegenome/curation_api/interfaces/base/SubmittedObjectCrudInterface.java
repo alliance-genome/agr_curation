@@ -21,9 +21,8 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface SubmittedObjectCrudInterface<E extends SubmittedObject> extends CurieObjectCrudInterface<E> {
+public interface SubmittedObjectCrudInterface<E extends SubmittedObject> extends BaseIdCrudInterface<E> {
 
-	@Override
 	@GET
 	@Path("/{identifierString}")
 	@JsonView(View.FieldsOnly.class)
@@ -38,7 +37,6 @@ public interface SubmittedObjectCrudInterface<E extends SubmittedObject> extends
 	)
 	public ObjectResponse<E> get(@PathParam("identifierString") String identifierString);
 
-	@Override
 	@DELETE
 	@Path("/{identifierString}")
 	@JsonView(View.FieldsOnly.class)
