@@ -12,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -22,7 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BaseDeleteCurieControllerInterface<E extends AuditedObject> {
 
-	@GET
+	@DELETE
 	@Path("/{curie}")
 	@JsonView(View.FieldsOnly.class)
 	@APIResponses(
