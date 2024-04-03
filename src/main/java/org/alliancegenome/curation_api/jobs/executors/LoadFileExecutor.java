@@ -176,7 +176,7 @@ public class LoadFileExecutor {
 
 		history.setTotalDeleteRecords((long)idsToRemove.size());
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of annotations linked to unloaded " + dataProviderName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
@@ -205,7 +205,7 @@ public class LoadFileExecutor {
 
 		history.setTotalDeleteRecords((long)idsToRemove.size());
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of primary objects " + dataProviderName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
@@ -233,7 +233,7 @@ public class LoadFileExecutor {
 
 		history.setTotalDeleteRecords((long)idsToRemove.size());
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("Deletion/deprecation of associations " + dataProviderName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
@@ -261,7 +261,7 @@ public class LoadFileExecutor {
 
 		history.setTotalDeleteRecords((long)idsToRemove.size());
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("Deletion/deprecation of interactions", idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {

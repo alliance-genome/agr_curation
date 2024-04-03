@@ -80,7 +80,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 
 	
 	private void runLoad(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, List<Long> idsAdded, BackendBulkDataProvider dataProvider) {
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Phenotype annotation DTO Update for " + dataProvider.name(), annotations.size());
 
