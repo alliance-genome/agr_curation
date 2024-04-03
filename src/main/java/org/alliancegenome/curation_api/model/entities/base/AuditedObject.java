@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.base;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
@@ -34,18 +35,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.SequenceGenerator;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = { "createdBy", "updatedBy" })
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 @MappedSuperclass
 @Schema(name = "AuditedObject", description = "POJO that represents the AuditedObject")
-public class AuditedObject extends BaseEntity {
+public class AuditedObject implements Serializable {
 
 	@Id
 	@DocumentId

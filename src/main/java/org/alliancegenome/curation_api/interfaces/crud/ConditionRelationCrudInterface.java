@@ -43,7 +43,7 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
 	@GET
 	@Path("/{id}")
 	@JsonView(View.ConditionRelationView.class)
-	ObjectResponse<ConditionRelation> get(@PathParam("id") Long id);
+	ObjectResponse<ConditionRelation> getById(@PathParam("id") Long id);
 
 	@POST
 	@Path("/validate")

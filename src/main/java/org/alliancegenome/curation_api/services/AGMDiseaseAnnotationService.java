@@ -61,7 +61,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 
 	@Override
 	@Transactional
-	public ObjectResponse<AGMDiseaseAnnotation> delete(Long id) {
+	public ObjectResponse<AGMDiseaseAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "AGM disease annotation DELETE API call", false);
 		ObjectResponse<AGMDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;

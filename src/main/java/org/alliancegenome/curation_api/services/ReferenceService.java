@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.CurieObjectCrudService;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.references.ReferenceSynchronisationHelper;
 
 import jakarta.annotation.PostConstruct;
@@ -15,7 +15,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ReferenceService extends CurieObjectCrudService<Reference, ReferenceDAO> {
+public class ReferenceService extends BaseEntityCrudService<Reference, ReferenceDAO> {
 
 	@Inject
 	ReferenceDAO referenceDAO;

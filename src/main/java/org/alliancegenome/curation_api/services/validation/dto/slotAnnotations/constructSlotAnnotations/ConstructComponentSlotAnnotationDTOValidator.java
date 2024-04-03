@@ -67,7 +67,7 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 		}
 		
 		if (StringUtils.isNotBlank(dto.getTaxonCurie())) {
-			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
+			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
 				ccsaResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
 			}

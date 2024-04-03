@@ -100,7 +100,7 @@ public class DataProviderValidator extends AuditedObjectValidator<DataProvider> 
 			return null;
 		}
 		
-		Organization sourceOrganization = organizationService.get(uiEntity.getSourceOrganization().getId()).getEntity();
+		Organization sourceOrganization = organizationService.getById(uiEntity.getSourceOrganization().getId()).getEntity();
 		if (sourceOrganization == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

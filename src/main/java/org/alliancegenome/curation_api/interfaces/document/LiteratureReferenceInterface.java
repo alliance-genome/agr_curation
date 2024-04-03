@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.document;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseIdDocumentInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSearchControllerInterface;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -13,6 +13,6 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "Document - Literature Reference")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface LiteratureReferenceInterface extends BaseIdDocumentInterface<LiteratureReference> {
+public interface LiteratureReferenceInterface extends BaseSearchControllerInterface<LiteratureReference> {
 
 }

@@ -42,7 +42,7 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@GET
 	@Path("/{id}")
 	@JsonView(View.VocabularyTermView.class)
-	public ObjectResponse<VocabularyTerm> get(@PathParam("id") Long id);
+	public ObjectResponse<VocabularyTerm> getById(@PathParam("id") Long id);
 
 	@GET
 	@Path("/findBy")

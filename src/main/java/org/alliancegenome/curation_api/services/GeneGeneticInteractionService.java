@@ -29,7 +29,7 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 		setSQLDao(geneGeneticInteractionDAO);
 	}
 	
-	public ObjectResponse<GeneGeneticInteraction> get(String identifier) {
+	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(String identifier) {
 		List<String> identifierFields = List.of("interactionId", "uniqueId");
 		GeneGeneticInteraction interaction = findByAlternativeFields(identifierFields, identifier);
 		return new ObjectResponse<GeneGeneticInteraction>(interaction);

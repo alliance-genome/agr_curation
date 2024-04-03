@@ -69,7 +69,7 @@ public class OrthologyFmsDTOValidator {
 				if (dto.getGene1Species() == null) {
 					orthologyResponse.addErrorMessage("gene1Species", ValidationConstants.REQUIRED_MESSAGE);
 				} else {
-					ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get("NCBITaxon:" + dto.getGene1Species());
+					ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie("NCBITaxon:" + dto.getGene1Species());
 					NCBITaxonTerm subjectTaxon = taxonResponse.getEntity();
 					if (subjectTaxon == null) {
 						orthologyResponse.addErrorMessage("gene1Species", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGene1Species() + ")");
@@ -89,7 +89,7 @@ public class OrthologyFmsDTOValidator {
 				if (dto.getGene2Species() == null) {
 					orthologyResponse.addErrorMessage("gene2Species", ValidationConstants.REQUIRED_MESSAGE);
 				} else {
-					ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get("NCBITaxon:" + dto.getGene2Species());
+					ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie("NCBITaxon:" + dto.getGene2Species());
 					NCBITaxonTerm objectTaxon = taxonResponse.getEntity();
 					if (objectTaxon == null) {
 						orthologyResponse.addErrorMessage("gene2Species", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGene2Species() + ")");

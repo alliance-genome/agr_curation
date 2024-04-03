@@ -35,7 +35,7 @@ public class GeneDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudCo
 		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 	
-	public ObjectResponse<GeneDiseaseAnnotation> get(String identifierString) {
-		return geneDiseaseAnnotationService.get(identifierString);
+	public ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(String identifierString) {
+		return geneDiseaseAnnotationService.getByIdentifier(identifierString);
 	}
 }

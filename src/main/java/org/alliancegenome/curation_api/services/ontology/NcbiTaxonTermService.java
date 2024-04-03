@@ -38,7 +38,7 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 	private NCBIRESTInterface api = RestProxyFactory.createProxy(NCBIRESTInterface.class, "https://eutils.ncbi.nlm.nih.gov");
 	
 	@Override
-	public ObjectResponse<NCBITaxonTerm> get(String taxonCurie) {
+	public ObjectResponse<NCBITaxonTerm> getByCurie(String taxonCurie) {
 		NCBITaxonTerm term = null;
 		
 		if(taxonRequest != null) {

@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -53,7 +53,7 @@ import jakarta.persistence.metamodel.IdentifiableType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.transaction.Transactional;
 
-public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
+public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts") String esHosts;
 

@@ -16,7 +16,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.CurieObjectCrudService;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.MoleculeValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +29,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class MoleculeService extends CurieObjectCrudService<Molecule, MoleculeDAO> {
+public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO> {
 
 	@Inject
 	MoleculeDAO moleculeDAO;
@@ -48,15 +48,6 @@ public class MoleculeService extends CurieObjectCrudService<Molecule, MoleculeDA
 	@PostConstruct
 	protected void init() {
 		setSQLDao(moleculeDAO);
-	}
-
-	@Transactional
-	public Molecule getByCurie(String id) {
-		Molecule molecule = findByCurie(id);
-		if (molecule != null) {
-			molecule.getSynonyms().size();
-		}
-		return molecule;
 	}
 	
 	@Override

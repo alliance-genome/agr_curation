@@ -23,7 +23,7 @@ public class GenePhenotypeAnnotationCrudController extends BaseEntityCrudControl
 		setService(genePhenotypeAnnotationService);
 	}
 	
-	public ObjectResponse<GenePhenotypeAnnotation> get(String identifierString) {
-		return genePhenotypeAnnotationService.get(identifierString);
+	public ObjectResponse<GenePhenotypeAnnotation> getByIdentifier(String identifierString) {
+		return genePhenotypeAnnotationService.getByIdentifier(identifierString);
 	}
 }

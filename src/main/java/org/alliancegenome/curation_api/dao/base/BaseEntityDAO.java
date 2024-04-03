@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.dao.base;
 
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 
-public abstract class BaseEntityDAO<E extends BaseEntity> {
+public abstract class BaseEntityDAO<E extends AuditedObject> {
 
 	protected Class<E> myClass;
 

@@ -26,8 +26,8 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFmsDTOValidator {
-    
-    @Inject
+	
+	@Inject
 	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject
 	GenomicEntityService genomicEntityService;

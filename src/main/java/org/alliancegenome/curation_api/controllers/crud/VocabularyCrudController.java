@@ -27,8 +27,8 @@ public class VocabularyCrudController extends BaseEntityCrudController<Vocabular
 	}
 
 	@Override
-	public ObjectResponse<Vocabulary> get(Long id) {
-		return vocabularyService.get(id);
+	public ObjectResponse<Vocabulary> getById(Long id) {
+		return vocabularyService.getById(id);
 	}
 
 	public ObjectResponse<Vocabulary> findByName(String name) {
@@ -42,7 +42,7 @@ public class VocabularyCrudController extends BaseEntityCrudController<Vocabular
 
 	@Override
 	public ObjectListResponse<VocabularyTerm> getTerms(Long id) {
-		ObjectResponse<Vocabulary> vocab = vocabularyService.get(id);
+		ObjectResponse<Vocabulary> vocab = vocabularyService.getById(id);
 		ObjectListResponse<VocabularyTerm> terms = new ObjectListResponse<VocabularyTerm>();
 		terms.setEntities(vocab.getEntity().getMemberTerms());
 		return terms;

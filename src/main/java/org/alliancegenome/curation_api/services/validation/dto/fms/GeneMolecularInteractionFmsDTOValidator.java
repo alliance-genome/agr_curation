@@ -16,7 +16,6 @@ import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -53,7 +52,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		String uniqueId = InteractionStringHelper.getGeneMolecularInteractionUniqueId(dto, interactionId, references);
 		
 		String searchValue = interactionId == null ? uniqueId : interactionId;
-		ObjectResponse<GeneMolecularInteraction> interactionResponse = geneMolecularInteractionService.get(searchValue);
+		ObjectResponse<GeneMolecularInteraction> interactionResponse = geneMolecularInteractionService.getByIdentifier(searchValue);
 		if (interactionResponse != null)
 			interaction = interactionResponse.getEntity();
 		if (interaction == null)
