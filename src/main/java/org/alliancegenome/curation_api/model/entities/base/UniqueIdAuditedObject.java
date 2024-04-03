@@ -23,7 +23,7 @@ public class UniqueIdAuditedObject extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true, length = 2000)
+	@Column(unique = true, length = 3000)
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
