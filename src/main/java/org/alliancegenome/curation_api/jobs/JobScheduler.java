@@ -151,7 +151,7 @@ public class JobScheduler {
 			lastCheck = start;
 			sem.release();
 		} else {
-			Log.info("loadScheduling not enabled or unable to aquire lock");
+			Log.debug("scheduleCronGroupJobs: loadSchedulingEnabled: " + loadSchedulingEnabled + " or unable to aquire lock");
 		}
 	}
 
