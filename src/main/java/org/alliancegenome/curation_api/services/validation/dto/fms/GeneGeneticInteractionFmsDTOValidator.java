@@ -15,10 +15,8 @@ import org.alliancegenome.curation_api.services.GeneGeneticInteractionService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionAnnotationsHelper;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
-import org.apache.cassandra.thrift.Cassandra.login_args;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -59,7 +57,7 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 		String uniqueId = InteractionStringHelper.getGeneGeneticInteractionUniqueId(dto, interactionId, references, phenotypesOrTraits);
 		
 		String searchValue = interactionId == null ? uniqueId : interactionId;
-		ObjectResponse<GeneGeneticInteraction> interactionResponse = geneGeneticInteractionService.get(searchValue);
+		ObjectResponse<GeneGeneticInteraction> interactionResponse = geneGeneticInteractionService.getByIdentifier(searchValue);
 		if (interactionResponse != null)
 			interaction = interactionResponse.getEntity();
 		if (interaction == null)

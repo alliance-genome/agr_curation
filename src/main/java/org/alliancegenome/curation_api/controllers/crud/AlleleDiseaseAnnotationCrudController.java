@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
+import org.alliancegenome.curation_api.controllers.base.BaseAnnotationDTOCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
@@ -17,7 +17,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController<AlleleDiseaseAnnotationService, AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO>
+public class AlleleDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudController<AlleleDiseaseAnnotationService, AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO>
 	implements AlleleDiseaseAnnotationCrudInterface {
 
 	@Inject
@@ -35,7 +35,8 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 	
-	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifierString) {
-		return alleleDiseaseAnnotationService.get(identifierString);
+	public ObjectResponse<AlleleDiseaseAnnotation> getByIdentifier(String identifierString) {
+		return alleleDiseaseAnnotationService.getByIdentifier(identifierString);
 	}
+
 }

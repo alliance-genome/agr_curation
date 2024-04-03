@@ -8,8 +8,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnnotationDTOValidator;
 
@@ -19,7 +18,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
+public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
 
 	@Inject
 	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
@@ -34,26 +33,6 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@PostConstruct
 	protected void init() {
 		setSQLDao(alleleDiseaseAnnotationDAO);
-	}
-
-	public ObjectResponse<AlleleDiseaseAnnotation> get(String identifier) {
-		SearchResponse<AlleleDiseaseAnnotation> ret = findByField("curie", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
-				
-		return new ObjectResponse<AlleleDiseaseAnnotation>();
 	}
 
 	@Override
@@ -79,13 +58,19 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 
 	@Override
 	@Transactional
-	public ObjectResponse<AlleleDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "Allele disease annotation DELETE API call", false);
+	public ObjectResponse<AlleleDiseaseAnnotation> deleteById(Long id) {
+		deprecateOrDeleteAnnotationAndNotes(id, true, "Allele disease annotation DELETE API call", false);
 		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(alleleDiseaseAnnotationDAO, dataProvider);
+	}
+	
+	@Override
+	public AlleleDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
+			String loadDescription, Boolean deprecate) {
+		return (AlleleDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

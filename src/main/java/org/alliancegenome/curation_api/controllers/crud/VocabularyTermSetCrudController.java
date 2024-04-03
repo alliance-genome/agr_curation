@@ -37,7 +37,7 @@ public class VocabularyTermSetCrudController extends BaseEntityCrudController<Vo
 
 	@Override
 	public ObjectListResponse<VocabularyTerm> getTerms(Long id) {
-		ObjectResponse<VocabularyTermSet> vocab = vocabularyTermSetService.get(id);
+		ObjectResponse<VocabularyTermSet> vocab = vocabularyTermSetService.getById(id);
 		ObjectListResponse<VocabularyTerm> terms = new ObjectListResponse<VocabularyTerm>();
 		terms.setEntities(vocab.getEntity().getMemberTerms());
 		return terms;

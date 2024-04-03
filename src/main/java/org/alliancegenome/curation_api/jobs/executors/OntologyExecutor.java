@@ -256,7 +256,7 @@ public class OntologyExecutor {
 
 		bulkLoadFile.setDateLastLoaded(OffsetDateTime.now());
 		bulkLoadFileDAO.merge(bulkLoadFile);
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
@@ -265,7 +265,7 @@ public class OntologyExecutor {
 		}
 		ph.finishProcess();
 
-		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
@@ -275,7 +275,7 @@ public class OntologyExecutor {
 		}
 		ph1.finishProcess();
 		
-		ProcessDisplayHelper ph2 = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph2.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {

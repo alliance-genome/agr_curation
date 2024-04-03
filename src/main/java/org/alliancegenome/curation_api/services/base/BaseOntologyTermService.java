@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends CurieObjectCrudService<E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
@@ -35,20 +35,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	@AuthenticatedUser
 	Person authenticatedPerson;
 
-	public E findByCurieOrSecondaryId(String id) {
-		
-		E term = findByCurie(id);
-		if (term != null)
-			return term;
-		
-		SearchResponse<E> response = dao.findByField("secondaryIdentifiers", id);
-
-		if (response == null)
-			return null;
-		if (response.getTotalResults() == 1)
-			return response.getSingleResult();
-		
-		return null;
+	public E findByCurieOrSecondaryId(String id) {		
+		List<String> identifierFields = List.of("curie", "secondaryIdentifiers");
+		return findByAlternativeFields(identifierFields, id);
 	}
 	
 	@Transactional

@@ -37,7 +37,7 @@ public class PersonSettingController implements PersonSettingInterface {
 	@Transactional
 	public ObjectResponse<PersonSetting> deleteUserSetting(String settingsKey) {
 		PersonSetting setting = getSetting(settingsKey);
-		personSettingService.delete(setting.getId());
+		personSettingService.deleteById(setting.getId());
 		return new ObjectResponse<>(setting);
 	}
 
@@ -49,7 +49,7 @@ public class PersonSettingController implements PersonSettingInterface {
 
 		if (setting == null) {
 			setting = new PersonSetting();
-			ObjectResponse<Person> personResp = personService.get(authenticatedPerson.getId());
+			ObjectResponse<Person> personResp = personService.getById(authenticatedPerson.getId());
 			Person person = personResp.getEntity();
 			setting.setPerson(person);
 			setting.setUpdatedBy(person);

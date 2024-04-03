@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
-import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -22,18 +21,14 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -77,29 +72,9 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		setSQLDao(phenotypeAnnotationDAO);
 	}
 	
-	public ObjectResponse<PhenotypeAnnotation> get(String identifier) {
-		SearchResponse<PhenotypeAnnotation> ret = findByField("curie", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<PhenotypeAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<PhenotypeAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<PhenotypeAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<PhenotypeAnnotation>(ret.getResults().get(0));
-				
-		return new ObjectResponse<PhenotypeAnnotation>();
-	}
-	
 	@Override
 	@Transactional
-	public ObjectResponse<PhenotypeAnnotation> delete(Long id) {
+	public ObjectResponse<PhenotypeAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "Phenotype annotation DELETE API call", false);
 		ObjectResponse<PhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
@@ -141,23 +116,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	}
 
 	public List<Long> getAllReferencedConditionRelationIds() {
-		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		
-		List<Long> paIds = phenotypeAnnotationDAO.findAllIds().getResults();
-		pdh.startProcess("Checking PAs for referenced Conditions ", paIds.size());
-		
-		List<Long> conditionRelationIds = new ArrayList<>();
-		paIds.forEach(paId -> {
-			PhenotypeAnnotation annotation = phenotypeAnnotationDAO.find(paId);
-			if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
-				List<Long> crIds = annotation.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
-				conditionRelationIds.addAll(crIds);
-			}
-			pdh.progressProcess();
-		});
-		pdh.finishProcess();
-		
-		return conditionRelationIds;
+		return getAllReferencedConditionRelationIds(phenotypeAnnotationDAO);
 	}
 	
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {

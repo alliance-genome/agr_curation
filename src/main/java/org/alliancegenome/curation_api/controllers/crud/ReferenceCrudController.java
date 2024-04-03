@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import org.alliancegenome.curation_api.controllers.base.CurieObjectCrudController;
+import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ReferenceCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -12,7 +12,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ReferenceCrudController extends CurieObjectCrudController<ReferenceService, Reference, ReferenceDAO> implements ReferenceCrudInterface {
+public class ReferenceCrudController extends BaseEntityCrudController<ReferenceService, Reference, ReferenceDAO> implements ReferenceCrudInterface {
 
 	@Inject
 	ReferenceService referenceService;

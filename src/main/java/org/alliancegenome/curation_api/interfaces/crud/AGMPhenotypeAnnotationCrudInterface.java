@@ -26,7 +26,7 @@ public interface AGMPhenotypeAnnotationCrudInterface extends BaseIdCrudInterface
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AGMPhenotypeAnnotation> get(@PathParam("identifier") String identifier);
+	public ObjectResponse<AGMPhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT

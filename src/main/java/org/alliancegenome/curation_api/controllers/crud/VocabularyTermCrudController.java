@@ -27,17 +27,17 @@ public class VocabularyTermCrudController extends BaseEntityCrudController<Vocab
 	}
 
 	@Override
-	public ObjectResponse<VocabularyTerm> delete(Long id) {
+	public ObjectResponse<VocabularyTerm> deleteById(Long id) {
 		ObjectResponse<VocabularyTerm> ret;
 		try {
-			ret = vocabularyTermService.delete(id);
+			ret = vocabularyTermService.deleteById(id);
 		} catch (ConstraintViolationException cve) {
 			ret = new ObjectResponse<>();
 			ret.setErrorMessage("Could not delete vocabulary term: [" + id + "]");
 			throw new ApiErrorException(ret);
 		} catch (Exception p) {
 			String message = ExceptionUtils.getRootCauseMessage(p);
-			message = "Vocabulary Term [" + get(id).getEntity().getName() + "] is still being used. \r\n" + message;
+			message = "Vocabulary Term [" + vocabularyTermService.getById(id).getEntity().getName() + "] is still being used. \r\n" + message;
 			ret = new ObjectResponse<>();
 			ret.setErrorMessage(message);
 			throw new ApiErrorException(ret);

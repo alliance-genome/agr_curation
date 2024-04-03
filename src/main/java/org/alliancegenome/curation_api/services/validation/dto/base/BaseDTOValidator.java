@@ -102,7 +102,7 @@ public class BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getTaxonCurie())) {
 			beResponse.addErrorMessage("taxon_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
+			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
 			}

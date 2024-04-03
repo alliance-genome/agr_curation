@@ -1,11 +1,12 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.GeneGeneticInteractionFmsDTOValidator;
 
@@ -28,16 +29,10 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 		setSQLDao(geneGeneticInteractionDAO);
 	}
 	
-	public ObjectResponse<GeneGeneticInteraction> get(String identifier) {
-		SearchResponse<GeneGeneticInteraction> ret = findByField("interactionId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneGeneticInteraction>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneGeneticInteraction>(ret.getResults().get(0));
-				
-		return new ObjectResponse<GeneGeneticInteraction>();
+	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(String identifier) {
+		List<String> identifierFields = List.of("interactionId", "uniqueId");
+		GeneGeneticInteraction interaction = findByAlternativeFields(identifierFields, identifier);
+		return new ObjectResponse<GeneGeneticInteraction>(interaction);
 	}
 
 	@Transactional
