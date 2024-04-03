@@ -3,7 +3,7 @@ import { BrowserRouter } from "react-router-dom/cjs/react-router-dom";
 import { waitFor } from "@testing-library/react";
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AllelesTable } from "../AllelesTable";
-import { setLocalStorage } from "../../../tools/jest/setupTests";
+import "../../../tools/jest/setupTests";
 import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
 import { data } from "../mockData/mockData.js";
 import 'core-js/features/structured-clone';

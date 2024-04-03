@@ -356,8 +356,9 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				phenotypeAnnotationTestFilePath + "IV_01_invalid_object_id.json");
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
 				phenotypeAnnotationTestFilePath + "IV_02_invalid_primary_genetic_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_03_invalid_phenotype_term_identifier.json");
+		// TODO: Re-enable test if we stop ignoring invalid terms for this field
+		//checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
+		//		phenotypeAnnotationTestFilePath + "IV_03_invalid_phenotype_term_identifier.json");
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
 				phenotypeAnnotationTestFilePath + "IV_04_invalid_evidence.json");
 		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,

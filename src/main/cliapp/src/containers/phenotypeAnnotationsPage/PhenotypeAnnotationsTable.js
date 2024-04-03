@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
-import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
+import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate'; 
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
