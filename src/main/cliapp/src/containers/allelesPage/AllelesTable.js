@@ -1,11 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
-import { Message } from 'primereact/message';
-import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
@@ -24,11 +19,19 @@ import { InCollectionTableEditor } from '../../components/Editors/inCollection/I
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
+import { IdTemplate } from '../../components/Templates/IdTemplate'; 
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
-import { getRefStrings } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 
@@ -132,67 +135,12 @@ export const AllelesTable = () => {
 		return alleleService.saveAllele(updatedAllele);
 	});
 
-
-	const taxonTemplate = (rowData) => {
-		if (rowData?.taxon) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
-						{rowData.taxon.name} ({rowData.taxon.curie})
-					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.modEntityId.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-				</>
-			);
-		}
-	}
-
-	const isExtinctTemplate = (rowData) => {
-		if (rowData && rowData.isExtinct !== null && rowData.isExtinct !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.isExtinct)}</EllipsisTableCell>;
-		}
-	};
-
-	const DetailMessage = ({modEntityId, text, display}) => {
-		if (display) {
-			return (
-				<Message severity="info" text={<Link target="_blank" to={`allele/${modEntityId}`}>{text}</Link>}/>
-			);
-		};
-		return null;
-	}
-
-	const referencesTemplate = (rowData) => {
-		if (rowData && rowData.references && rowData.references.length > 0) {
-			let refStrings = getRefStrings(rowData.references);
-			let displayDetailMessage = false;
-			if (refStrings.length > 5) {
-				refStrings = refStrings.slice(0,5);
-				displayDetailMessage = true;
-			}
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item}
-					</EllipsisTableCell>
-				);
-			};
-			return (
-				<>
-					<div className={`${rowData.modEntityId.replace(':','')}${rowData.references[0].curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={refStrings}/>
-						<DetailMessage modEntityId={`${rowData.modEntityId}`} display={displayDetailMessage} text="View all references on Allele Detail Page"/>
-					</div>
-				</>
-			);
-
-		}
-	};
-
-	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+	const handleRelatedNotesOpen = (relatedNotes) => {
+		console.log("relatedNotes", relatedNotes);
 		let _relatedNotesData = {};
-		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
+		_relatedNotesData["originalRelatedNotes"] = relatedNotes;
 		_relatedNotesData["dialog"] = true;
-		_relatedNotesData["isInEdit"] = isInEdit;
+		_relatedNotesData["isInEdit"] = false;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
 		}));
@@ -211,19 +159,6 @@ export const AllelesTable = () => {
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
 		}));
-	};
-
-	const relatedNotesTemplate = (rowData) => {
-		if (rowData?.relatedNotes) {
-			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-					<span style={{ textDecoration: 'underline' }}>
-						{`Notes(${rowData.relatedNotes.length})`}
-					</span>
-				</Button>
-			)
-		}
 	};
 
 	const relatedNotesEditor = (props) => {
@@ -262,16 +197,6 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const symbolTemplate = (rowData) => {
-		return (
-			<>
-				<Button className="p-button-text"
-					onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />
-				</Button>
-			</>
-		);
-	};
 
 	const symbolEditor = (props) => {
 		return (
@@ -291,11 +216,11 @@ export const AllelesTable = () => {
 		)
 	};
 
-	const handleSymbolOpen = (event, rowData, isInEdit) => {
+	const handleSymbolOpen = (alleleSymbol) => {
 		let _symbolData = {};
-		_symbolData["originalSymbols"] = [rowData.alleleSymbol];
+		_symbolData["originalSymbols"] = [alleleSymbol];
 		_symbolData["dialog"] = true;
-		_symbolData["isInEdit"] = isInEdit;
+		_symbolData["isInEdit"] = false;
 		setSymbolData(() => ({
 			..._symbolData
 		}));
@@ -316,19 +241,6 @@ export const AllelesTable = () => {
 		}));
 	};
 	
-	const fullNameTemplate = (rowData) => {
-		if (rowData?.alleleFullName) {
-			return (
-				<>
-					<Button className="p-button-text"
-						onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleFullName.displayText }} />								
-					</Button>
-				</>
-			);
-		}
-	};
-
 	const fullNameEditor = (props) => {
 		if (props?.rowData?.alleleFullName) {
 			return (
@@ -366,11 +278,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleFullNameOpen = (event, rowData, isInEdit) => {
+	const handleFullNameOpen = (alleleFullName) => {
 		let _fullNameData = {};
-		_fullNameData["originalFullNames"] = [rowData.alleleFullName];
+		_fullNameData["originalFullNames"] = [alleleFullName];
 		_fullNameData["dialog"] = true;
-		_fullNameData["isInEdit"] = isInEdit;
+		_fullNameData["isInEdit"] = false;
 		setFullNameData(() => ({
 			..._fullNameData
 		}));
@@ -389,33 +301,6 @@ export const AllelesTable = () => {
 		setFullNameData(() => ({
 			..._fullNameData
 		}));
-	};
-
-	const synonymsTemplate = (rowData) => {
-		if (rowData?.alleleSynonyms) {
-			const synonymSet = new Set();
-			for(var i = 0; i < rowData.alleleSynonyms.length; i++){
-				if (rowData.alleleSynonyms[i].displayText) {
-					synonymSet.add(rowData.alleleSynonyms[i].displayText);
-				}
-			}
-			if (synonymSet.size > 0) {
-				const sortedSynonyms = Array.from(synonymSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: item }} />	
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleSynonymsOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
-						</Button>
-					</>
-				);
-			}
-		}
 	};
 
 	const synonymsEditor = (props) => {
@@ -455,11 +340,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleSynonymsOpen = (event, rowData, isInEdit) => {
+	const handleSynonymsOpen = (alleleSynonyms) => {
 		let _synonymsData = {};
-		_synonymsData["originalSynonyms"] = rowData.alleleSynonyms;
+		_synonymsData["originalSynonyms"] = alleleSynonyms;
 		_synonymsData["dialog"] = true;
-		_synonymsData["isInEdit"] = isInEdit;
+		_synonymsData["isInEdit"] = false;
 		setSynonymsData(() => ({
 			..._synonymsData
 		}));
@@ -478,35 +363,6 @@ export const AllelesTable = () => {
 		setSynonymsData(() => ({
 			..._synonymsData
 		}));
-	};
-
-	const inheritanceModesTemplate = (rowData) => {
-		if (rowData?.alleleInheritanceModes) {
-			const inheritanceModeSet = new Set();
-			for(var i = 0; i < rowData.alleleInheritanceModes.length; i++){
-				if (rowData.alleleInheritanceModes[i].inheritanceMode) {
-					inheritanceModeSet.add(rowData.alleleInheritanceModes[i].inheritanceMode.name);
-				}
-			}
-			if (inheritanceModeSet.size > 0) {
-				const sortedInheritanceModes = Array.from(inheritanceModeSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleInheritanceModesOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedInheritanceModes}/>
-						</Button>
-					</>
-				);
-			}
-		}
 	};
 
 	const inheritanceModesEditor = (props) => {
@@ -546,11 +402,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleInheritanceModesOpen = (event, rowData, isInEdit) => {
+	const handleInheritanceModesOpen = (alleleInheritanceModes) => {
 		let _inheritanceModesData = {};
-		_inheritanceModesData["originalInheritanceModes"] = rowData.alleleInheritanceModes;
+		_inheritanceModesData["originalInheritanceModes"] = alleleInheritanceModes;
 		_inheritanceModesData["dialog"] = true;
-		_inheritanceModesData["isInEdit"] = isInEdit;
+		_inheritanceModesData["isInEdit"] = false;
 		setInheritanceModesData(() => ({
 			..._inheritanceModesData
 		}));
@@ -569,21 +425,6 @@ export const AllelesTable = () => {
 		setInheritanceModesData(() => ({
 			..._inheritanceModesData
 		}));
-	};
-
-	const germlineTransmissionStatusTemplate = (rowData) => {
-		if (rowData?.alleleGermlineTransmissionStatus) {
-			return (
-				<>
-					<Button className="p-button-text"
-						onClick={(event) => { handleGermlineTransmissionStatusOpen(event, rowData, false) }} >
-						<span style={{ textDecoration: 'underline' }}>
-							{`${rowData.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name}`}
-						</span>								
-					</Button>
-				</>
-			);
-		}
 	};
 
 	const germlineTransmissionStatusEditor = (props) => {
@@ -623,11 +464,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleGermlineTransmissionStatusOpen = (event, rowData, isInEdit) => {
+	const handleGermlineTransmissionStatusOpen = (alleleGermlineTransmissionStatus) => {
 		let _germlineTransmissionStatusData = {};
-		_germlineTransmissionStatusData["originalGermlineTransmissionStatuses"] = [rowData.alleleGermlineTransmissionStatus];
+		_germlineTransmissionStatusData["originalGermlineTransmissionStatuses"] = [alleleGermlineTransmissionStatus];
 		_germlineTransmissionStatusData["dialog"] = true;
-		_germlineTransmissionStatusData["isInEdit"] = isInEdit;
+		_germlineTransmissionStatusData["isInEdit"] = false;
 		setGermlineTransmissionStatusData(() => ({
 			..._germlineTransmissionStatusData
 		}));
@@ -646,35 +487,6 @@ export const AllelesTable = () => {
 		setGermlineTransmissionStatusData(() => ({
 			..._germlineTransmissionStatusData
 		}));
-	};
-
-	const nomenclatureEventsTemplate = (rowData) => {
-		if (rowData?.alleleNomenclatureEvents) {
-			const nomenclatureEventSet = new Set();
-			for(var i = 0; i < rowData.alleleNomenclatureEvents.length; i++){
-				if (rowData.alleleNomenclatureEvents[i].nomenclatureEvent) {
-					nomenclatureEventSet.add(rowData.alleleNomenclatureEvents[i].nomenclatureEvent.name);
-				}
-			}
-			if (nomenclatureEventSet.size > 0) {
-				const sortedNomenclatureEvents = Array.from(nomenclatureEventSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text text-left"
-							onClick={(event) => { handleNomenclatureEventsOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedNomenclatureEvents}/>
-						</Button>
-					</>
-				);
-			}
-		}
 	};
 
 	const nomenclatureEventsEditor = (props) => {
@@ -714,11 +526,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleNomenclatureEventsOpen = (event, rowData, isInEdit) => {
+	const handleNomenclatureEventsOpen = (alleleNomenclatureEvents) => {
 		let _nomenclatureEventsData = {};
-		_nomenclatureEventsData["originalNomenclatureEvents"] = rowData.alleleNomenclatureEvents;
+		_nomenclatureEventsData["originalNomenclatureEvents"] = alleleNomenclatureEvents;
 		_nomenclatureEventsData["dialog"] = true;
-		_nomenclatureEventsData["isInEdit"] = isInEdit;
+		_nomenclatureEventsData["isInEdit"] = false;
 		setNomenclatureEventsData(() => ({
 			..._nomenclatureEventsData
 		}));
@@ -737,21 +549,6 @@ export const AllelesTable = () => {
 		setNomenclatureEventsData(() => ({
 			..._nomenclatureEventsData
 		}));
-	};
-
-	const databaseStatusTemplate = (rowData) => {
-		if (rowData?.alleleDatabaseStatus?.databaseStatus) {
-			return (
-				<>
-					<Button className="p-button-text"
-						onClick={(event) => { handleDatabaseStatusOpen(event, rowData, false) }} >
-						<span style={{ textDecoration: 'underline' }}>
-							{`${rowData.alleleDatabaseStatus.databaseStatus.name}`}
-						</span>								
-					</Button>
-				</>
-			);
-		}
 	};
 
 	const databaseStatusEditor = (props) => {
@@ -791,11 +588,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleDatabaseStatusOpen = (event, rowData, isInEdit) => {
+	const handleDatabaseStatusOpen = (alleleDatabaseStatus) => {
 		let _databaseStatusData = {};
-		_databaseStatusData["originalDatabaseStatuses"] = [rowData.alleleDatabaseStatus];
+		_databaseStatusData["originalDatabaseStatuses"] = [alleleDatabaseStatus];
 		_databaseStatusData["dialog"] = true;
-		_databaseStatusData["isInEdit"] = isInEdit;
+		_databaseStatusData["isInEdit"] = false;
 		setDatabaseStatusData(() => ({
 			..._databaseStatusData
 		}));
@@ -814,39 +611,6 @@ export const AllelesTable = () => {
 		setDatabaseStatusData(() => ({
 			..._databaseStatusData
 		}));
-	};
-
-	const mutationTypesTemplate = (rowData) => {
-		if (rowData?.alleleMutationTypes) {
-			const mutationTypeSet = new Set();
-			for(var i = 0; i < rowData.alleleMutationTypes.length; i++){
-				if (rowData.alleleMutationTypes[i].mutationTypes) {
-					for(var j = 0; j < rowData.alleleMutationTypes[i].mutationTypes.length; j++) {
-						let mtString = rowData.alleleMutationTypes[i].mutationTypes[j].name + ' (' +
-							rowData.alleleMutationTypes[i].mutationTypes[j].curie + ')';
-						mutationTypeSet.add(mtString);
-					}
-				}
-			}
-			if (mutationTypeSet.size > 0) {
-				const sortedMutationTypes = Array.from(mutationTypeSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleMutationTypesOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedMutationTypes}/>
-						</Button>
-					</>
-				);
-			}
-		}
 	};
 
 	const mutationTypesEditor = (props) => {
@@ -886,11 +650,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleMutationTypesOpen = (event, rowData, isInEdit) => {
+	const handleMutationTypesOpen = (alleleMutationTypes) => {
 		let _mutationTypesData = {};
-		_mutationTypesData["originalMutationTypes"] = rowData.alleleMutationTypes;
+		_mutationTypesData["originalMutationTypes"] = alleleMutationTypes;
 		_mutationTypesData["dialog"] = true;
-		_mutationTypesData["isInEdit"] = isInEdit;
+		_mutationTypesData["isInEdit"] = false;
 		setMutationTypesData(() => ({
 			..._mutationTypesData
 		}));
@@ -909,37 +673,6 @@ export const AllelesTable = () => {
 		setMutationTypesData(() => ({
 			..._mutationTypesData
 		}));
-	};
-
-	const functionalImpactsTemplate = (rowData) => {
-		if (rowData?.alleleFunctionalImpacts) {
-			const functionalImpactSet = new Set();
-			for(var i = 0; i < rowData.alleleFunctionalImpacts.length; i++){
-				if (rowData.alleleFunctionalImpacts[i].functionalImpacts) {
-					for(var j = 0; j < rowData.alleleFunctionalImpacts[i].functionalImpacts.length; j++) {
-						functionalImpactSet.add(rowData.alleleFunctionalImpacts[i].functionalImpacts[j].name);
-					}
-				}
-			}
-			if (functionalImpactSet.size > 0) {
-				const sortedFunctionalImpacts = Array.from(functionalImpactSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleFunctionalImpactsOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedFunctionalImpacts}/>
-						</Button>
-					</>
-				);
-			}
-		}
 	};
 
 	const functionalImpactsEditor = (props) => {
@@ -979,11 +712,11 @@ export const AllelesTable = () => {
 		}
 	};
 
-	const handleFunctionalImpactsOpen = (event, rowData, isInEdit) => {
+	const handleFunctionalImpactsOpen = (alleleFunctionalImpacts) => {
 		let _functionalImpactsData = {};
-		_functionalImpactsData["originalFunctionalImpacts"] = rowData.alleleFunctionalImpacts;
+		_functionalImpactsData["originalFunctionalImpacts"] = alleleFunctionalImpacts;
 		_functionalImpactsData["dialog"] = true;
-		_functionalImpactsData["isInEdit"] = isInEdit;
+		_functionalImpactsData["isInEdit"] = false;
 		setFunctionalImpactsData(() => ({
 			..._functionalImpactsData
 		}));
@@ -1002,26 +735,6 @@ export const AllelesTable = () => {
 		setFunctionalImpactsData(() => ({
 			..._functionalImpactsData
 		}));
-	};
-
-	const secondaryIdsTemplate = (rowData) => {
-		if (rowData?.alleleSecondaryIds) {
-			const listTemplate = (item) => {
-				return (
-					<span style={{ textDecoration: 'underline' }}>
-						{item && item}
-					</span>
-				);
-			};
-			return (
-				<>
-					<Button className="p-button-text"
-							onClick={(event) => { handleSecondaryIdsOpen(event, rowData, false) }} >
-						<ListTableCell template={listTemplate} listData={rowData.alleleSecondaryIds.map(a => a.secondaryId).sort()}/>
-					</Button>
-				</>
-			);
-		}
 	};
 
 	const secondaryIdsEditor = (props) => {
@@ -1062,11 +775,11 @@ export const AllelesTable = () => {
 
 
 
-	const handleSecondaryIdsOpen = (event, rowData, isInEdit) => {
+	const handleSecondaryIdsOpen = (alleleSecondaryIds) => {
 		let _secondaryIdsData = {};
-		_secondaryIdsData["originalSecondaryIds"] = rowData.alleleSecondaryIds;
+		_secondaryIdsData["originalSecondaryIds"] = alleleSecondaryIds;
 		_secondaryIdsData["dialog"] = true;
-		_secondaryIdsData["isInEdit"] = isInEdit;
+		_secondaryIdsData["isInEdit"] = false;
 		setSecondaryIdsData(() => ({
 			..._secondaryIdsData
 		}));
@@ -1091,25 +804,33 @@ export const AllelesTable = () => {
 		{
 			field: "curie",
 			header: "Curie",
+			body: (rowData) => <IdTemplate id={rowData.curie}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
 			field: "modEntityId",
 			header: "MOD Entity ID",
+			body: (rowData) => <IdTemplate id={rowData.modEntityId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
 			field: "modInternalId",
 			header: "MOD Internal ID",
+			body: (rowData) => <IdTemplate id={rowData.modInternalId}/>,
 			sortable:  true,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "alleleFullName.displayText",
 			header: "Name",
-			body: fullNameTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleFullName}
+				handleOpen={handleFullNameOpen}
+				text={rowData.alleleFullName?.displayText}
+				underline={false}
+			/>,
 			editor: (props) => fullNameEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
@@ -1117,7 +838,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSymbol.displayText",
 			header: "Symbol",
-			body: symbolTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleSymbol}
+				handleOpen={handleSymbolOpen}
+				text={rowData.alleleSymbol?.displayText}
+				underline={false}
+			/>,
 			editor: (props) => symbolEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
@@ -1125,7 +851,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSynonyms.displayText",
 			header: "Synonyms",
-			body: synonymsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleSynonyms}
+				handleOpen={handleSynonymsOpen}
+				getTextField={(entity) => entity?.displayText}
+				underline={false}
+			/>,			
 			editor: (props) => synonymsEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSynonymsFilterConfig,
@@ -1133,7 +864,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleSecondaryIds.secondaryId",
 			header: "Secondary IDs",
-			body: secondaryIdsTemplate,
+			//todo
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleSecondaryIds}
+				handleOpen={handleSecondaryIdsOpen}
+				getTextField={(entity) => entity?.secondaryId}
+			/>,			
 			editor: (props) => secondaryIdsEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
@@ -1141,7 +877,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleNomenclatureEvents.nomenclatureEvent.name",
 			header: "Nomenclature Events",
-			body: nomenclatureEventsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleNomenclatureEvents}
+				handleOpen={handleNomenclatureEventsOpen}
+				getTextField={(entity) => entity?.nomenclatureEvent?.name}
+			/>,	
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
 			editor: (props) => nomenclatureEventsEditor(props),
@@ -1149,7 +889,7 @@ export const AllelesTable = () => {
 		{
 			field: "taxon.name",
 			header: "Taxon",
-			body: taxonTemplate,
+			body: (rowData) => <TaxonTemplate taxon = {rowData.taxon}/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
@@ -1157,7 +897,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleMutationTypes.mutationTypes.name",
 			header: "Mutation Types",
-			body: mutationTypesTemplate,
+			body: (rowData) => <NestedListDialogTemplate
+				entities={rowData.alleleMutationTypes}
+				subType={"mutationTypes"}
+				handleOpen={handleMutationTypesOpen}
+				getTextString={(item) => `${item.name} (${item.curie})`}
+			/>,
 			editor: (props) => mutationTypesEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,
@@ -1165,7 +910,12 @@ export const AllelesTable = () => {
 		{
 			field: "alleleFunctionalImpacts.functionalImpacts.name",
 			header: "Functional Impacts",
-			body: functionalImpactsTemplate,
+			body: (rowData) => <NestedListDialogTemplate
+				entities={rowData.alleleFunctionalImpacts}
+				subType={"functionalImpacts"}
+				handleOpen={handleFunctionalImpactsOpen}
+				getTextString={(item) => item.name}
+			/>,
 			editor: (props) => functionalImpactsEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleFunctionalImpactsFilterConfig,
@@ -1173,7 +923,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleGermlineTransmissionStatus.germlineTransmissionStatus.name",
 			header: "Germline Transmission Status",
-			body: germlineTransmissionStatusTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleGermlineTransmissionStatus}
+				handleOpen={handleGermlineTransmissionStatusOpen}
+				text={rowData.alleleGermlineTransmissionStatus?.germlineTransmissionStatus?.name}
+			/>,
 			editor: (props) => germlineTransmissionStatusEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
@@ -1181,7 +935,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleDatabaseStatus.databaseStatus.name",
 			header: "Database Status",
-			body: databaseStatusTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.alleleDatabaseStatus}
+				handleOpen={handleDatabaseStatusOpen}
+				text={rowData.alleleDatabaseStatus?.databaseStatus?.name}
+			/>,
 			editor: (props) => databaseStatusEditor(props),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
@@ -1189,7 +947,11 @@ export const AllelesTable = () => {
 		{
 			field: "references.primaryCrossReferenceCurie",
 			header: "References",
-			body: referencesTemplate,
+			body: (rowData) => <TruncatedReferencesTemplate 
+				references={rowData.references} 
+				identifier={rowData.modEntityId}
+				detailPage="Allele"
+			/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />
@@ -1197,7 +959,11 @@ export const AllelesTable = () => {
 		{
 			field: "alleleInheritanceModes.inheritanceMode.name",
 			header: "Inheritance Modes",
-			body: inheritanceModesTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.alleleInheritanceModes}
+				handleOpen={handleInheritanceModesOpen}
+				getTextField={(entity) => entity?.inheritanceMode?.name}
+			/>,	
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
 			editor: (props) => inheritanceModesEditor(props),
@@ -1212,7 +978,7 @@ export const AllelesTable = () => {
 		{
 			field: "isExtinct",
 			header: "Is Extinct",
-			body: isExtinctTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.isExtinct}/>,
 			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 			sortable: true,
 			editor: (props) => (
@@ -1222,7 +988,11 @@ export const AllelesTable = () => {
 		{
 			field: "relatedNotes.freeText",
 			header: "Related Notes",
-			body: relatedNotesTemplate,
+			body: (rowData) => <CountDialogTemplate
+				entities={rowData.relatedNotes}
+				handleOpen={handleRelatedNotesOpen}
+				text={"Notes"}
+			/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			editor: relatedNotesEditor
@@ -1263,7 +1033,7 @@ export const AllelesTable = () => {
 		{
 			field: "internal",
 			header: "Internal",
-			body: internalTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true,
@@ -1274,7 +1044,7 @@ export const AllelesTable = () => {
 		{
 			field: "obsolete",
 			header: "Obsolete",
-			body: obsoleteTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true,

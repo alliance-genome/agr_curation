@@ -7,14 +7,14 @@ export const generateCrossRefSearchFields = (references) => {
 };
 
 export const generateCrossRefSearchField = (reference) => {
-  const { crossReferences, curieField } = differentiateCrossReferences(reference);
+  const { crossReferences, curieField } = getCrossReferences(reference);
 
   let refStrings = crossReferences.map((crossRef) => crossRef[curieField]);
 
   return refStrings.join();
 };
 
-export const differentiateCrossReferences = (reference) => {
+export const getCrossReferences = (reference) => {
   let crossReferences;
   let curieField;
 
@@ -29,6 +29,19 @@ export const differentiateCrossReferences = (reference) => {
   }
 
   return { crossReferences, curieField };
+};
+
+export const getShortCitation = (reference) => {
+  let shortCitation;
+  if(!reference.short_citation && !reference.shortCitation) return
+
+  if (reference.short_citation) {
+    shortCitation = reference.short_citation;
+  } else if (reference.shortCitation) {
+    shortCitation = reference.shortCitation;
+  } 
+  
+  return shortCitation;
 };
 
 export const generateCurieSearchField = (entities) => {

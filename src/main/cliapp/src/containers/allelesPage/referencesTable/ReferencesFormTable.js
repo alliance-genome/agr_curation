@@ -1,8 +1,8 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { CrossReferencesTemplate } from '../../../components/Templates/CrossReferenceTemplate';
-import { ShortCitationTemplate } from '../../../components/Templates/ShortCitationTemplate';
+import { CrossReferenceTemplate } from '../../../components/Templates/reference/CrossReferenceTemplate';
+import { ShortCitationTemplate } from '../../../components/Templates/reference/ShortCitationTemplate';
 
 export const ReferencesFormTable = ({
   references,
@@ -21,9 +21,9 @@ export const ReferencesFormTable = ({
       <Column body={(data) => <DeleteAction deletionHandler={deletionHandler} id={data?.dataKey} />} header="Action"
         className='min-w-4rem max-w-4rem' bodyClassName="text-center" frozen />
       <Column field="curie" header="Curie" sortable filter showFilterMenu={false} filterMatchMode='contains'/>
-      <Column field="crossReferences" header="Cross References" body={(data) => <CrossReferencesTemplate rowData={data} />}
+      <Column field="crossReferences" header="Cross References" body={(data) => <CrossReferenceTemplate reference={data} />}
         filter filterField='crossReferencesFilter' filterMatchMode='contains' showFilterMenu={false} />
-      <Column field="shortCitation"  sortable header="Short Citation" body={(data) => <ShortCitationTemplate rowData={data}/>} 
+      <Column field="shortCitation"  sortable header="Short Citation" body={(data) => <ShortCitationTemplate reference={data}/>} 
       filterField='shortCitation' filter showFilterMenu={false} filterMatchMode='contains'/>
     </DataTable>
   );

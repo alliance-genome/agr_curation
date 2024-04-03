@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { Tooltip } from 'primereact/tooltip';
 import { EllipsisTableCell } from "../EllipsisTableCell";
 
@@ -20,4 +20,4 @@ const getTextString = (taxon) => {
     if (!taxon.curie) return taxon.name;
     if (!taxon.curie && !taxon.name) return "";
     return `${taxon.name} (${taxon.curie})`;
-}
+};
