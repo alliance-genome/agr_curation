@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
@@ -40,6 +41,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Inject PersonService personService;
 	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -88,6 +90,13 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
 				if (referencingDA != null)
+					anyReferencingEntities = true;
+			}
+
+			List<Long> referencingPAIds = alleleDAO.findReferencingPhenotypeAnnotations(id);
+			for (Long paId : referencingPAIds) {
+				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
+				if (referencingPA != null)
 					anyReferencingEntities = true;
 			}
 			if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {

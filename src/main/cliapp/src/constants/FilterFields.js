@@ -8,6 +8,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "abstractFilter",
     fields: ["abstract"],
   },
+  aggregationDatabaseFieldSet: {
+    filterName: "aggregationDatabaseFilter",
+    fields: ["aggregationDatabase.curie", "aggregationDatabase.name"]
+  },
   agmAggregationFieldSet: {
     filterName: "alleleAggregationFilter",
     fields: ['dataProvider.sourceOrganization.abbreviation'],
@@ -192,6 +196,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "definitionFilter",
     fields: ["definition"],
   },
+  detectionMethodFieldSet: {
+    filterName: "detectionMethodFilter",
+    fields: ["detectionMethod.curie", "detectionMethod.name"]
+  },
   diseaseAnnotationSubjectFieldSet: {
     filterName: "diseaseAnnotationSubjectFilter",
     fields: ["diseaseAnnotationSubject.symbol", "diseaseAnnotationSubject.name", "diseaseAnnotationSubject.curie", "diseaseAnnotationSubject.modEntityId", "diseaseAnnotationSubject.modInternalId"],
@@ -199,6 +207,10 @@ export const FIELD_SETS = Object.freeze({
   diseaseQualifiersFieldSet: {
     filterName: "diseaseQualifiersFilter",
     fields: ["diseaseQualifiers.name"],
+  },
+  evidenceFieldSet: {
+    filterName: "evidenceFilter",
+    fields: ["evidence.curie"],
   },
   evidenceCodesFieldSet: {
     filterName: "evidenceCodesFilter",
@@ -215,6 +227,14 @@ export const FIELD_SETS = Object.freeze({
   geneAggregationFieldSet: {
     filterName: "geneAggregationFilter",
     fields: ['dataProvider.sourceOrganization.abbreviation'],
+  },
+  geneAssociationSubjectFieldSet: {
+    filterName: "geneAssociationSubjectFilter",
+    fields: ["geneAssociationSubject.geneSymbol.displayText", "geneAssociationSubject.geneSymbol.formatText", "geneAssociationSubject.curie", "geneAssociationSubject.modEntityId", "geneAssociationSubject.modInternalId"],
+  },
+  geneGeneAssociationObjectFieldSet: {
+    filterName: "geneGeneAssociationObjectFilter",
+    fields: ["geneGeneAssociationObject.geneSymbol.displayText", "geneGeneAssociationObject.geneSymbol.formatText", "geneGeneAssociationObject.curie", "geneGeneAssociationObject.modEntityId", "geneGeneAssociationObject.modInternalId"],
   },
   geneNameFieldSet: {
     filterName: "geneNameFilter",
@@ -248,6 +268,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "geneticSexFilter",
     fields: ["geneticSex.name"],
   },
+  gmiAggregationFieldSet: {
+    filterName: "gmiAggregationFilter",
+    fields: ['relation.name'],
+  },
   handleFieldSet: {
     filterName: "handleFilter",
     fields: ["handle"],
@@ -279,6 +303,42 @@ export const FIELD_SETS = Object.freeze({
   inferredGeneFieldSet: {
     filterName: "inferredGeneFilter",
     fields: ["inferredGene.geneSymbol.displayText", "inferredGene.geneSymbol.formatText", "inferredGene.curie", "inferredGene.modEntityId", "inferredGene.modInternalId"]
+  },
+  interactorAGeneticPerturbationFieldSet: {
+    filterName: "interactorAGeneticPerturbationFilter",
+    fields: ["interactorAGeneticPerturbation.alleleSymbol.displayText", "interactorAGeneticPerturbation.alleleSymbol.formatText", "interactorAGeneticPerturbation.curie", "interactorAGeneticPerturbation.modEntityId", "interactorAGeneticPerturbation.modInternalId"],
+  },
+  interactorBGeneticPerturbationFieldSet: {
+    filterName: "interactorBGeneticPerturbationFilter",
+    fields: ["interactorBGeneticPerturbation.alleleSymbol.displayText", "interactorBGeneticPerturbation.alleleSymbol.formatText", "interactorBGeneticPerturbation.curie", "interactorBGeneticPerturbation.modEntityId", "interactorBGeneticPerturbation.modInternalId"],
+  },
+  interactorARoleFieldSet: {
+    filterName: "interactorARoleFilter",
+    fields: ["interactorARole.curie", "interactorARole.name"]
+  },
+  interactorBRoleFieldSet: {
+    filterName: "interactorBRoleFilter",
+    fields: ["interactorBRole.curie", "interactorBRole.name"]
+  },
+  interactorATypeFieldSet: {
+    filterName: "interactorATypeFilter",
+    fields: ["interactorAType.curie", "interactorAType.name"]
+  },
+  interactorBTypeFieldSet: {
+    filterName: "interactorBTypeFilter",
+    fields: ["interactorBType.curie", "interactorBType.name"]
+  },
+  interactionIdFieldSet: {
+    filterName: "interactionIdFilter",
+    fields: ["interactionId"]
+  },
+  interactionSourceFieldSet: {
+    filterName: "interactionSourceFilter",
+    fields: ["interactionSource.curie", "interactionSource.name"]
+  },
+  interactionTypeFieldSet: {
+    filterName: "interactionTypeFilter",
+    fields: ["interactionType.curie", "interactionType.name"]
   },
   internalFieldSet: {
     filterName: "internalFilter",
@@ -352,6 +412,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "phenotypeAnnotationSubjectFilter",
     fields: ["phenotypeAnnotationSubject.symbol", "phenotypeAnnotationSubject.name", "phenotypeAnnotationSubject.curie", "phenotypeAnnotationSubject.modEntityId", "phenotypeAnnotationSubject.modInternalId"],
   },
+  phenotypesOrTraitsFieldSet: {
+    filterName: "phenotypesOrTraitsFilter",
+    fields: ["phenotypesOrTraits"],
+  },
   prefixFieldSet: {
     filterName: "prefixFilter",
     fields: ["prefix"],
@@ -409,16 +473,16 @@ export const FIELD_SETS = Object.freeze({
 	  fields: ["displayName"]
   },
   speciesAbbreviationFieldSet: {
-	filterName: "speciesAbbreviationFilter",
-	fields: ["abbreviation"]
+	  filterName: "speciesAbbreviationFilter",
+	  fields: ["abbreviation"]
   },
   speciesCommonNameFieldSet: {
-	filterName: "speciesCommonNameFilter",
-	fields: ["commonNames"]
+	  filterName: "speciesCommonNameFilter",
+	  fields: ["commonNames"]
   },
   speciesAggregationFieldSet: {
-  filterName: "speciesAggregationFilter",
-  fields: ['dataProvider.sourceOrganization.abbreviation'],
+    filterName: "speciesAggregationFilter",
+    fields: ['dataProvider.sourceOrganization.abbreviation'],
   },
   speciesAssemblyFieldSet: {
 	  filterName: "speciesAssemblyFilter",
@@ -493,6 +557,7 @@ export const FIELD_SETS = Object.freeze({
 export const FILTER_CONFIGS = Object.freeze({
   abbreviationFilterConfig:                 { filterComponentType: 'input', fieldSets: [FIELD_SETS.abbreviationFieldSet] },
   abstractFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.abstractFieldSet]},
+  aggregationDatabaseFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.aggregationDatabaseFieldSet]},
   alleleFunctionalImpactsFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleFunctionalImpactsFieldSet] },
   alleleGermlineTransmissionStatusFilterConfig: {filterComponentType: "input", fieldSets: [FIELD_SETS.alleleGermlineTransmissionStatusFieldSet]},
   alleleDatabaseStatusFilterConfig:         { filterComponentType: "input", fieldSets: [FIELD_SETS.alleleDatabaseStatusFieldSet]},
@@ -532,8 +597,12 @@ export const FILTER_CONFIGS = Object.freeze({
   dateUpdatedFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.dataUpdatedFieldSet] },
   defaultUrlTemplateFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.defaultUrlTemplateFieldSet] },
   definitionFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.definitionFieldSet] },
+  detectionMethodFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.detectionMethodFieldSet] },
   experimentalConditionFilterConfig:        { filterComponentType: "input", fieldSets: [FIELD_SETS.experimentalConditionFieldSet] },
+  evidenceFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.evidenceFieldSet] },
   formulaFilterConfig:                      { filterComponentType: "input", fieldSets: [FIELD_SETS.formulaFieldSet] },
+  geneAssociationSubjectFilterConfig:       { filterComponentType: "input", fieldSets: [FIELD_SETS.geneAssociationSubjectFieldSet] },
+  geneGeneAssociationObjectFilterConfig:    { filterComponentType: "input", fieldSets: [FIELD_SETS.geneGeneAssociationObjectFieldSet] },
   geneNameFilterConfig:                     { filterComponentType: "input", fieldSets: [FIELD_SETS.geneNameFieldSet] },
   geneSecondaryIdsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.geneSecondaryIdsFieldSet] },
   geneSymbolFilterConfig:                   { filterComponentType: "input", fieldSets: [FIELD_SETS.geneSymbolFieldSet] },
@@ -547,6 +616,15 @@ export const FILTER_CONFIGS = Object.freeze({
   inCollectionFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.inCollectionFieldSet], useKeywordFields: true },
   inferredAlleleFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.inferredAlleleFieldSet] },
   inferredGeneFilterConfig:                 { filterComponentType: "input", fieldSets: [FIELD_SETS.inferredGeneFieldSet] },
+  interactorAGeneticPerturbationFilterConfig: { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorAGeneticPerturbationFieldSet] },
+  interactorBGeneticPerturbationFilterConfig: { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorBGeneticPerturbationFieldSet] },
+  interactorARoleFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorARoleFieldSet] },
+  interactorBRoleFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorBRoleFieldSet] },
+  interactorATypeFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorATypeFieldSet] },
+  interactorBTypeFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactorBTypeFieldSet] },
+  interactionIdFilterConfig:                { filterComponentType: "input", fieldSets: [FIELD_SETS.interactionIdFieldSet] },
+  interactionSourceFilterConfig:            { filterComponentType: "input", fieldSets: [FIELD_SETS.interactionSourceFieldSet] },
+  interactionTypeFilterConfig:              { filterComponentType: "input", fieldSets: [FIELD_SETS.interactionTypeFieldSet] },
   iupacFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.iupacFieldSet] },
   literatureCrossReferenceFilterConfig:     { filterComponentType: "input", fieldSets: [FIELD_SETS.literatureCrossReferenceFieldSet] },
   modentityidFilterConfig:                  { filterComponentType: "input", fieldSets: [FIELD_SETS.modentityidFieldSet] },
@@ -555,6 +633,7 @@ export const FILTER_CONFIGS = Object.freeze({
   namespaceFilterConfig:                    { filterComponentType: 'input', fieldSets: [FIELD_SETS.namespaceFieldSet] },
   phenotypeAnnotationSubjectFilterConfig:   { filterComponentType: "input", fieldSets: [FIELD_SETS.phenotypeAnnotationSubjectFieldSet] },
   phenotypeAnnotationObjectFilterConfig:    { filterComponentType: "input", fieldSets: [FIELD_SETS.phenotypeAnnotationObjectFieldSet] },
+  phenotypesOrTraitsFilterConfig:           { filterComponentType: "input", fieldSets: [FIELD_SETS.phenotypesOrTraitsFieldSet] },
   diseaseAnnotationSubjectFieldConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.diseaseAnnotationSubjectFieldSet] },
   diseaseAnnotationObjectFilterConfig:      { filterComponentType: "input", fieldSets: [FIELD_SETS.diseaseAnnotationObjectFieldSet] },
   ontologySynonymsFilterConfig:             { filterComponentType: "input", fieldSets: [FIELD_SETS.ontologySynonymsFieldSet] },
@@ -606,6 +685,7 @@ export const FILTER_CONFIGS = Object.freeze({
   diseaseQualifiersFilterConfig:            { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.diseaseQualifiersFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   relationFilterConfig:                     { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.relationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   paRelationFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.relationFieldSet], aggregationFieldSet: FIELD_SETS.paAggregationFieldSet, useKeywordFields: true },
+  gmiRelationFilterConfig:                  { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.relationFieldSet], aggregationFieldSet: FIELD_SETS.gmiAggregationFieldSet, useKeywordFields: true },
   geneticModifierRelationFilterConfig:      { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticModifierRelationFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   geneticSexFilterConfig:                   { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.geneticSexFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },
   secondaryDataProviderFilterConfig:        { filterComponentType: "multiselect", fieldSets: [FIELD_SETS.secondaryDataProviderFieldSet], aggregationFieldSet: FIELD_SETS.daAggregationFieldSet, useKeywordFields: true },

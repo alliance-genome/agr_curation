@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
+import org.alliancegenome.curation_api.services.GeneInteractionService;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
@@ -247,6 +248,33 @@ public class LoadFileExecutor {
 		}
 		ph.finishProcess();
 		
+	}
+	
+	protected void runCleanup(GeneInteractionService service, BulkLoadFileHistory history, List<Long> idsBefore, List<Long> idsAfter, String md5sum) {
+		Log.debug("runLoad: After: " + idsAfter.size());
+
+		List<Long> distinctAfter = idsAfter.stream().distinct().collect(Collectors.toList());
+		Log.debug("runLoad: Distinct: " + distinctAfter.size());
+
+		List<Long> idsToRemove = ListUtils.subtract(idsBefore, distinctAfter);
+		Log.debug("runLoad: Remove: " + idsToRemove.size());
+
+		history.setTotalDeleteRecords((long)idsToRemove.size());
+		
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion/deprecation of interactions", idsToRemove.size());
+		for (Long id : idsToRemove) {
+			try {
+				String loadDescription = " Gene interaction bulk load (" + md5sum + ")";
+				service.deprecateOrDeleteInteraction(id, false, loadDescription, false);
+				history.incrementDeleted();
+			} catch (Exception e) {
+				history.incrementDeleteFailed();
+				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
 	}
 	
 	protected void failLoad(BulkLoadFile bulkLoadFile, Exception e) {

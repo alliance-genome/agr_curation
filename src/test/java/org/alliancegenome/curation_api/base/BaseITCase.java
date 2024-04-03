@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -43,9 +44,11 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
@@ -979,7 +982,10 @@ public class BaseITCase {
 		return new TypeRef<SearchResponse <AGMPhenotypeAnnotation>>() {
 		};
 	}
-
+	protected TypeRef<SearchResponse<AllelePhenotypeAnnotation>> getSearchResponseTypeRefAllelePhenotypeAnnotation() {
+		return new TypeRef<SearchResponse <AllelePhenotypeAnnotation>>() {
+		};
+	}
 	private TypeRef<SearchResponse<Organization>> getSearchResponseTypeRefOrganization() {
 		return new TypeRef<SearchResponse <Organization>>() {
 		};
@@ -1215,6 +1221,22 @@ public class BaseITCase {
 			statusCode(200);
 	}
 	
+	public void loadMITerm(String curie, String name) throws Exception {
+		MITerm miTerm = new MITerm();
+		miTerm.setCurie(curie);
+		miTerm.setName(name);
+		miTerm.setObsolete(false);
+		miTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(miTerm).
+			when().
+			put("/api/miterm").
+			then().
+			statusCode(200);
+	}
+	
 	public void loadMPTerm(String curie, String name) throws Exception {
 		MPTerm mpTerm = new MPTerm();
 		mpTerm.setCurie(curie);
@@ -1287,6 +1309,22 @@ public class BaseITCase {
 			body(soTerm).
 			when().
 			put("/api/soterm").
+			then().
+			statusCode(200);
+	}
+	
+	public void loadWbPhenotypeTerm(String curie, String name) throws Exception {
+		WBPhenotypeTerm wbTerm = new WBPhenotypeTerm();
+		wbTerm.setCurie(curie);
+		wbTerm.setName(name);
+		wbTerm.setObsolete(false);
+		wbTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(wbTerm).
+			when().
+			put("/api/wbphenotypeterm").
 			then().
 			statusCode(200);
 	}

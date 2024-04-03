@@ -49,7 +49,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 			"modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.AlleleView.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
 	private Gene alleleGeneAssociationObject;
 }

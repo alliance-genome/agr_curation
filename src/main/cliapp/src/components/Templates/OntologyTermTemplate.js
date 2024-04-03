@@ -1,7 +1,7 @@
 import { Tooltip } from "primereact/tooltip";
 import { EllipsisTableCell } from "../EllipsisTableCell";
 
-export const DiseaseTemplate = ({ object }) => {
+export const OntologyTermTemplate = ({ object }) => {
   if (!object) return null;
 
   const targetClass = `a${global.crypto.randomUUID()}`;

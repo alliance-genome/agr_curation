@@ -410,7 +410,7 @@ export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUi
 	})
 	if (mod.includes('ZFINStaff')) {
 		if (newAnnotationForm.conditionRelations.length === 0 || !newAnnotationForm.conditionRelations[0]["handle"]) {
-			_uiErrorMessages["conditionRelation"] = "This is a required field";
+			_uiErrorMessages["conditionRelations"] = "This is a required field";
 			setUiErrorMessages({ ..._uiErrorMessages });
 			areUiErrors.current = true;
 		}
