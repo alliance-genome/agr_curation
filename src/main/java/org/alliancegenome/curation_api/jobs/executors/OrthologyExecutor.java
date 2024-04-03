@@ -86,7 +86,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 		history.setTotalDeleteRecords((long)pairsToRemove.size());
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("Deletion/deprecation of orthology pairs " + dataProvider, pairsToRemove.size());
 		for (Pair<String,String> pairToRemove : pairsToRemove) {
 			try {
