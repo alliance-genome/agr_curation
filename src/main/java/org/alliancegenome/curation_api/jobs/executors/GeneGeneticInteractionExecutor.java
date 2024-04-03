@@ -78,7 +78,7 @@ public class GeneGeneticInteractionExecutor extends LoadFileExecutor {
 
 	
 	private void runLoad(BulkLoadFileHistory history, List<PsiMiTabDTO> interactions, List<Long> idsAdded) {
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Gene Genetic Interaction DTO Update", interactions.size());
 		for (PsiMiTabDTO dto : interactions) {

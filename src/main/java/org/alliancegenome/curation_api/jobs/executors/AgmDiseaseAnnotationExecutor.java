@@ -83,7 +83,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	
 	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AGMDiseaseAnnotationDTO> annotations, List<Long> idsAdded) {
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("AGM Disease Annotation Update for: " + dataProvider.name(), annotations.size());
 		annotations.forEach(annotationDTO -> {
