@@ -86,7 +86,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 		history.setTotalDeleteRecords((long)pairsToRemove.size());
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of orthology pairs " + dataProvider, pairsToRemove.size());
 		for (Pair<String,String> pairToRemove : pairsToRemove) {
 			try {
@@ -103,7 +103,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 
 	private void runLoad(BulkLoadFileHistory history, String dataProvider, OrthologyIngestFmsDTO orthologyData, List<Pair<String, String>> orthoPairsAdded) {
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(dataProvider + " Orthology DTO Update", orthologyData.getData().size());
 
