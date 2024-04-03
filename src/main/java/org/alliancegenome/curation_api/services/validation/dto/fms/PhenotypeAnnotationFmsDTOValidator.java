@@ -54,17 +54,13 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		}
 		annotation.setPhenotypeAnnotationObject(dto.getPhenotypeStatement());	
 		
-		//TODO: remove ZFIN condition once ZFIN have mapped terms to PhenotypeTerm terms in FMS submissions
-		if (CollectionUtils.isNotEmpty(dto.getPhenotypeTermIdentifiers()) && !StringUtils.equals(beDataProvider.sourceOrganization, "ZFIN")) {
+		if (CollectionUtils.isNotEmpty(dto.getPhenotypeTermIdentifiers())) {
 			List<PhenotypeTerm> phenotypeTerms = new ArrayList<>();
 			for (PhenotypeTermIdentifierFmsDTO phenotypeTermIdentifier : dto.getPhenotypeTermIdentifiers()) {
 				if (StringUtils.isNotBlank(phenotypeTermIdentifier.getTermId())) {
 					PhenotypeTerm phenotypeTerm = phenotypeTermService.findByCurieOrSecondaryId(phenotypeTermIdentifier.getTermId());
-					if (phenotypeTerm == null) {
-						paResponse.addErrorMessage("phenotypeTermIdentifiers", ValidationConstants.INVALID_MESSAGE + " (" + phenotypeTermIdentifier.getTermId() + ")");
-					} else {
+					if (phenotypeTerm != null)
 						phenotypeTerms.add(phenotypeTerm);
-					}
 				}
 			}
 			annotation.setPhenotypeTerms(phenotypeTerms);	
