@@ -1,10 +1,10 @@
 import { useRef, useState, useEffect } from 'react';
-import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 
 import { trimWhitespace, returnSorted, validateBioEntityFields } from '../../utils/utils';
 import { useGetUserSettings } from "../../service/useGetUserSettings";
 import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
+import { useGetTableData } from '../../service/useGetTableData';
 
 export const useGenericDataTable = ({
 	endpoint,
@@ -45,24 +45,17 @@ export const useGenericDataTable = ({
 	const [exceptionDialog, setExceptionDialog] = useState(false);
 	const [exceptionMessage,setExceptionMessage] = useState("");
 
-	useQuery([tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
-		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), 
-		{
-			onSuccess: (data) => {
-				setIsInEditMode(false);
-				setEntities(data.results);
-				setTotalRecords(data.totalResults);
-			},
-			onError: (error) => {
-				toast_topleft.current.show([
-					{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
-				])
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
-			enabled: !!(tableState.rows)
-		}
-	);
+	useGetTableData({
+		tableState,
+		endpoint,
+		sortMapping,
+		nonNullFieldsTable,
+		setIsInEditMode,
+		setEntities,
+		setTotalRecords,
+		toast_topleft,
+		searchService
+	});
 
 	useEffect(() => {
 		if (
