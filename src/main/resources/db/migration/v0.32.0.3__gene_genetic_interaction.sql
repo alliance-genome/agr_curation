@@ -1,0 +1,1 @@
+ALTER TABLE experimentalcondition ALTER COLUMN conditionsummary TYPE VARCHAR(2500);

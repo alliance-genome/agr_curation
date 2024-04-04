@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -53,7 +53,7 @@ import jakarta.persistence.metamodel.IdentifiableType;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.transaction.Transactional;
 
-public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
+public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts") String esHosts;
 
@@ -75,15 +75,50 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	@Transactional
 	public E persist(E entity) {
 		Log.debug("SqlDAO: persist: " + entity);
-		entityManager.persist(entity);
+		try {
+			entityManager.persist(entity);
+		} catch (Exception e) {
+			Log.error("Entity Persist Failed: " + entity);
+			throw e;
+		}
 		return entity;
 	}
 
 	@Transactional
 	public List<E> persist(List<E> entities) {
 		Log.debug("SqlDAO: persist: " + entities);
-		entityManager.persist(entities);
+		try {
+			entityManager.persist(entities);
+		} catch (Exception e) {
+			Log.error("Entity Persist Failed: " + entities);
+			throw e;
+		}
 		return entities;
+	}
+
+	@Transactional
+	public E merge(E entity) {
+		Log.debug("SqlDAO: merge: " + entity);
+		try {
+			entityManager.merge(entity);
+		} catch (Exception e) {
+			Log.error("Entity Persist Failed: " + entity);
+			throw e;
+		}
+		return entity;
+	}
+
+	@Transactional
+	public E remove(Long id) {
+		Log.debug("SqlDAO: remove: " + id);
+		E entity = find(id);
+		try {
+			entityManager.remove(entity);
+			entityManager.flush();
+		} catch (PersistenceException e) {
+			handlePersistenceException(entity, e);
+		}
+		return entity;
 	}
 
 	public E find(Long id) {
@@ -262,27 +297,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		return results;
 	}
 
-	@Transactional
-	public E merge(E entity) {
-		Log.debug("SqlDAO: merge: " + entity);
-		entityManager.merge(entity);
-		return entity;
-	}
-
-	@Transactional
-	public E remove(Long id) {
-		Log.debug("SqlDAO: remove: " + id);
-		E entity = find(id);
-
-		try {
-			entityManager.remove(entity);
-			entityManager.flush();
-		} catch (PersistenceException e) {
-			handlePersistenceException(entity, e);
-		}
-		return entity;
-	}
-
 	private void handlePersistenceException(E entity, Exception e) {
 		ObjectResponse<E> response = new ObjectResponse<E>(entity);
 		Throwable rootCause = e.getCause();
@@ -416,61 +430,65 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Log.log(level, "Search: " + pagination + " Params: " + params);
 
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
-			return p.bool(b -> {
+			return p.bool().with(b -> {
 				if (params.containsKey("searchFilters")) {
 					HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>) params.get("searchFilters");
 					outerBoost = searchFilters.keySet().size();
+					String filterOperator = (String) params.get("searchFilterOperator");
 					for (String filterName : searchFilters.keySet()) {
-						b.must(m -> {
-							return m.bool(s -> {
-								s.must(f -> f.bool(q -> {
-									innerBoost = searchFilters.get(filterName).keySet().size();
-									for (String field : searchFilters.get(filterName).keySet()) {
-										if (field.equals("nonNullFields") || field.equals("nullFields"))
-											continue;
-										float boost = (outerBoost * 10000) + (innerBoost * 1000);
+						BooleanPredicateClausesStep<?> bpStep = p.bool().with(s -> {
+							s.must(f -> f.bool().with(q -> {
+								innerBoost = searchFilters.get(filterName).keySet().size();
+								for (String field : searchFilters.get(filterName).keySet()) {
+									if (field.equals("nonNullFields") || field.equals("nullFields"))
+										continue;
+									float boost = (outerBoost * 10000) + (innerBoost * 1000);
 
-										String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
-										BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
+									String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
+									BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
 
-										Boolean useKeywordFields = (Boolean) searchFilters.get(filterName).get(field).get("useKeywordFields");
+									Boolean useKeywordFields = (Boolean) searchFilters.get(filterName).get(field).get("useKeywordFields");
 
-										String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
-										if (queryType != null && queryType.equals("matchQuery")) {
-											BooleanPredicateClausesStep<?> clause = p.bool();
-											if (useKeywordFields != null && useKeywordFields) {
-												clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost + 500));
-											}
-											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
-											q.should(clause);
-										} else { // assume simple query
-											BooleanPredicateClausesStep<?> clause = p.bool();
-											if (useKeywordFields != null && useKeywordFields) {
-												clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost + 500));
-											}
-											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost));
-											q.should(clause);
+									String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
+									if (queryType != null && queryType.equals("matchQuery")) {
+										BooleanPredicateClausesStep<?> clause = p.bool();
+										if (useKeywordFields != null && useKeywordFields) {
+											clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost + 500));
 										}
-										innerBoost--;
+										clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
+										q.should(clause);
+									} else { // assume simple query
+										BooleanPredicateClausesStep<?> clause = p.bool();
+										if (useKeywordFields != null && useKeywordFields) {
+											clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost + 500));
+										}
+										clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost));
+										q.should(clause);
 									}
+									innerBoost--;
+								}
+							}));
+							if (searchFilters.get(filterName).containsKey("nonNullFields")) {
+								s.must(f -> f.bool().with(q -> {
+									List<String> fields = (List<String>) searchFilters.get(filterName).get("nonNullFields");
+									fields.forEach(field -> q.must(p.exists().field(field)));
 								}));
-								if (searchFilters.get(filterName).containsKey("nonNullFields")) {
-									s.must(f -> f.bool(q -> {
-										List<String> fields = (List<String>) searchFilters.get(filterName).get("nonNullFields");
-										fields.forEach(field -> q.must(p.exists().field(field)));
-									}));
-								}
-								if (searchFilters.get(filterName).containsKey("nullFields")) {
-									s.must(f -> f.bool(q -> {
-										List<String> fields = (List<String>) searchFilters.get(filterName).get("nullFields");
-										fields.forEach(field -> q.mustNot(p.exists().field(field)));
-									}));
-								}
-							});
+							}
+							if (searchFilters.get(filterName).containsKey("nullFields")) {
+								s.must(f -> f.bool().with(q -> {
+									List<String> fields = (List<String>) searchFilters.get(filterName).get("nullFields");
+									fields.forEach(field -> q.mustNot(p.exists().field(field)));
+								}));
+							}
 						});
+						if(filterOperator.equals("OR")) {
+							b.should(bpStep);
+						} else {
+							b.must(bpStep);
+						}
 						outerBoost--;
 					}
-					if(outerBoost == 0) {
+					if(searchFilters.keySet().size() == 0) {
 						b.must(p.matchAll());
 					}
 				} else {
@@ -478,7 +496,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				}
 				if (params.containsKey("nonNullFieldsTable")) {
 					List<String> fields = (List<String>) params.get("nonNullFieldsTable");
-					fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
+					fields.forEach(field -> b.must(m -> m.bool().with(s -> s.should(p.exists().field(field)))));
 				}
 			});
 		});

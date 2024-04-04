@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ConditionRelationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ExperimentalConditionService;
+import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -20,6 +21,8 @@ public class SystemController implements SystemControllerInterface {
 	SystemSQLDAO systemSQLDAO;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	PhenotypeAnnotationService phenotypeAnnotationService;
 	@Inject
 	ConditionRelationService conditionRelationService;
 	@Inject
@@ -43,6 +46,7 @@ public class SystemController implements SystemControllerInterface {
 	@Override
 	public void deleteUnusedConditionsAndExperiments() {
 		List<Long> inUseCrIds = diseaseAnnotationService.getAllReferencedConditionRelationIds();
+		inUseCrIds.addAll(phenotypeAnnotationService.getAllReferencedConditionRelationIds());
 		conditionRelationService.deleteUnusedConditions(inUseCrIds);
 		experimentalConditionService.deleteUnusedExperiments();
 	}

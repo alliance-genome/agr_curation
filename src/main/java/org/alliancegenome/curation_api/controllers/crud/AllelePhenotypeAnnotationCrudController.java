@@ -23,7 +23,7 @@ public class AllelePhenotypeAnnotationCrudController extends BaseEntityCrudContr
 		setService(allelePhenotypeAnnotationService);
 	}
 
-	public ObjectResponse<AllelePhenotypeAnnotation> get(String identifierString) {
-		return allelePhenotypeAnnotationService.get(identifierString);
+	public ObjectResponse<AllelePhenotypeAnnotation> getByIdentifier(String identifierString) {
+		return allelePhenotypeAnnotationService.getByIdentifier(identifierString);
 	}
 }

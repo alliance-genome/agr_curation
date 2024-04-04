@@ -75,7 +75,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	
 	@Override
 	@Transactional
-	public ObjectResponse<Allele> delete(Long id) {
+	public ObjectResponse<Allele> deleteById(Long id) {
 		removeOrDeprecateNonUpdated(id, "Allele DELETE API call");
 		ObjectResponse<Allele> ret = new ObjectResponse<>();
 		return ret;

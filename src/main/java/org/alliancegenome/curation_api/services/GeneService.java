@@ -79,13 +79,19 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		return new ObjectResponse<Gene>(dbEntity);
 	}
 
-	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
+	@Override
+	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
+		return upsert(dto, null);
 	}
 	
 	@Override
+	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
+	}
+
+	@Override
 	@Transactional
-	public ObjectResponse<Gene> delete(Long id) {
+	public ObjectResponse<Gene> deleteById(Long id) {
 		removeOrDeprecateNonUpdated(id, "Gene DELETE API call");
 		ObjectResponse<Gene> ret = new ObjectResponse<>();
 		return ret;

@@ -24,7 +24,7 @@ public class GeneInteractionCrudController extends BaseEntityCrudController<Gene
 		setService(geneInteractionService);
 	}
 
-	public ObjectResponse<GeneInteraction> get(String identifierString) {
-		return geneInteractionService.get(identifierString);
+	public ObjectResponse<GeneInteraction> getByIdentifier(String identifierString) {
+		return geneInteractionService.getByIdentifer(identifierString);
 	}
 }

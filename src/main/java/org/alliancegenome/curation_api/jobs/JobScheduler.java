@@ -107,51 +107,53 @@ public class JobScheduler {
 
 	@Scheduled(every = "1s")
 	public void scheduleCronGroupJobs() {
-		if (loadSchedulingEnabled && sem.tryAcquire()) {
-			ZonedDateTime start = ZonedDateTime.now();
-			//Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
-			SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
-			for (BulkLoadGroup g : groups.getResults()) {
-				if (g.getLoads().size() > 0) {
-					for (BulkLoad b : g.getLoads()) {
-						if (b instanceof BulkScheduledLoad bsl) {
-							if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null && !bsl.getBulkloadStatus().isRunning()) {
-
-								CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-								CronParser parser = new CronParser(cronDefinition);
-								try {
-									Cron unixCron = parser.parse(bsl.getCronSchedule());
-									unixCron.validate();
-
-									if (lastCheck != null) {
-										ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
-										ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
-
-										if (lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
-											Log.info("Need to run Cron: " + bsl.getName());
-											bsl.setSchedulingErrorMessage(null);
-											bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
-											bulkLoadDAO.merge(bsl);
-											pendingJobEvents.fire(new PendingBulkLoadJobEvent(bsl.getId()));
+		if (loadSchedulingEnabled) {
+			if(sem.tryAcquire()) {
+				ZonedDateTime start = ZonedDateTime.now();
+				//Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
+				SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
+				for (BulkLoadGroup g : groups.getResults()) {
+					if (g.getLoads().size() > 0) {
+						for (BulkLoad b : g.getLoads()) {
+							if (b instanceof BulkScheduledLoad bsl) {
+								if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null && !bsl.getBulkloadStatus().isRunning()) {
+	
+									CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+									CronParser parser = new CronParser(cronDefinition);
+									try {
+										Cron unixCron = parser.parse(bsl.getCronSchedule());
+										unixCron.validate();
+	
+										if (lastCheck != null) {
+											ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
+											ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
+	
+											if (lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
+												Log.info("Need to run Cron: " + bsl.getName());
+												bsl.setSchedulingErrorMessage(null);
+												bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
+												bulkLoadDAO.merge(bsl);
+												pendingJobEvents.fire(new PendingBulkLoadJobEvent(bsl.getId()));
+											}
 										}
+									} catch (Exception e) {
+										bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
+										bsl.setErrorMessage(e.getLocalizedMessage());
+										bsl.setBulkloadStatus(JobStatus.FAILED);
+										slackNotifier.slackalert(bsl);
+										Log.error(e.getLocalizedMessage());
+										bulkLoadDAO.merge(bsl);
 									}
-								} catch (Exception e) {
-									bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
-									bsl.setErrorMessage(e.getLocalizedMessage());
-									bsl.setBulkloadStatus(JobStatus.FAILED);
-									slackNotifier.slackalert(bsl);
-									Log.error(e.getLocalizedMessage());
-									bulkLoadDAO.merge(bsl);
 								}
 							}
 						}
 					}
 				}
+				lastCheck = start;
+				sem.release();
+			} else {
+				Log.debug("scheduleCronGroupJobs: unable to aquire lock");
 			}
-			lastCheck = start;
-			sem.release();
-		} else {
-			Log.info("loadScheduling not enabled or unable to aquire lock");
 		}
 	}
 

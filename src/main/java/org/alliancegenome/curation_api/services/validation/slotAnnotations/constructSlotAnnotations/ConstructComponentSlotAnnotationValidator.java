@@ -144,7 +144,7 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie()))
 			return null;
 		
-		NCBITaxonTerm taxon = ncbiTaxonTermService.get(uiEntity.getTaxon().getCurie()).getEntity();
+		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(uiEntity.getTaxon().getCurie()).getEntity();
 		if (taxon == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

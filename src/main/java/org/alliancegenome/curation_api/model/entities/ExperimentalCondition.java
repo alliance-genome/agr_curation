@@ -55,6 +55,7 @@ public class ExperimentalCondition extends UniqueIdAuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "conditionSummary_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@Column(length = 2500)
 	private String conditionSummary;
 
 	@IndexedEmbedded(includeDepth = 1)

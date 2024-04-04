@@ -31,8 +31,8 @@ public class GeneMolecularInteractionCrudController extends BaseEntityCrudContro
 		setService(geneMolecularInteractionService);
 	}
 
-	public ObjectResponse<GeneMolecularInteraction> get(String identifierString) {
-		return geneMolecularInteractionService.get(identifierString);
+	public ObjectResponse<GeneMolecularInteraction> getByIdentifier(String identifierString) {
+		return geneMolecularInteractionService.getByIdentifier(identifierString);
 	}
 
 	public APIResponse updateInteractions(List<PsiMiTabDTO> interactionData) {
