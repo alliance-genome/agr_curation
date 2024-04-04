@@ -76,9 +76,15 @@ public class ExperimentalConditionFmsDTOValidator {
 
 		if (StringUtils.isNotBlank(dto.getConditionClassId())) {
 			ZECOTerm term = zecoTermService.findByCurieOrSecondaryId(dto.getConditionClassId());
-			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET))
-				ecResponse.addErrorMessage("conditionClassId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionClassId() + ")");
-			experimentalCondition.setConditionClass(term);
+			if (term == null) {
+				ecResponse.addErrorMessage("conditionClassId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionClassId() + ") not found");
+			} else if(term.getSubsets().isEmpty()) {
+				ecResponse.addErrorMessage("conditionClassId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionClassId() + ") term subsets are empty");
+			} else if(!term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
+				ecResponse.addErrorMessage("conditionClassId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionClassId() + ") term subsets do not contain: " + OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+			} else {
+				experimentalCondition.setConditionClass(term);
+			}
 		} else {
 			ecResponse.addErrorMessage("conditionClassId", ValidationConstants.REQUIRED_MESSAGE);
 		}
