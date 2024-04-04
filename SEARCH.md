@@ -50,6 +50,7 @@ This will be the size of the page that comes back.
             "nullFields": [],
         }
     },
+    "searchFilterOperator": "OR",
     "sortOrders": [
         {
             "field": "diseaseAnnotationSubject.symbol",
@@ -77,7 +78,7 @@ This will be the size of the page that comes back.
 
 All search filters need to have a unique name. Names only have meaning to the caller of the endpoint. In the above example "nameFilter" is only the name of the filter. It could be called "filter1" or any other name that makes sense to the caller.
 
-Filters will be "AND"ed together so in the above example "nameFilter" AND "obsoleteFilter" AND "uniqueidFilter".
+Filters by default will be "AND"ed together so in the above example "nameFilter" AND "obsoleteFilter" AND "uniqueidFilter". However if you wish to have them "OR"ed together set the "searchFilterOperator" to "OR".
 
 #### Fields
 
