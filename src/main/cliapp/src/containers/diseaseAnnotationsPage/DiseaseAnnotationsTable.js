@@ -41,10 +41,13 @@ import { NewAnnotationForm } from "./NewAnnotationForm";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 export const DiseaseAnnotationsTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
+	const [totalRecords, setTotalRecords] = useState(0);
 	const [conditionRelationsData, setConditionRelationsData] = useState({
 		conditionRelations: [],
 		isInEdit: false,
@@ -68,23 +71,25 @@ export const DiseaseAnnotationsTable = () => {
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 
-	const [newDiseaseAnnotation, setNewDiseaseAnnotation] = useState(null);
-
+	
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
-
+	
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
 	const uiErrorMessagesRef = useRef();
 	uiErrorMessagesRef.current = uiErrorMessages;
-
+	
 	const searchService = new SearchService();
-
+	
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	let diseaseAnnotationService = new DiseaseAnnotationService();
+	const [diseaseAnnotations, setDiseaseAnnotations] = useState([]);
+	const [newDiseaseAnnotation, setNewDiseaseAnnotation] = useState(null);
 
+	let diseaseAnnotationService = new DiseaseAnnotationService();
+	
 	const sortMapping = {
 		'diseaseAnnotationObject.name': ['diseaseAnnotationObject.curie', 'diseaseAnnotationObject.namespace'],
 		'diseaseAnnotationSubject.symbol': ['diseaseAnnotationSubject.name', 'diseaseAnnotationSubject.modEntityId'],
@@ -92,13 +97,13 @@ export const DiseaseAnnotationsTable = () => {
 		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.modEntityId']
 	};
-
-
-
+	
+	const searchEndpoint = "disease-annotation";
+	
 	const mutation = useMutation(updatedAnnotation => {
 		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
 	});
-
+	
 	const handleNewAnnotationOpen = () => {
 		newAnnotationDispatch({type: "OPEN_DIALOG"})
 	};
@@ -396,8 +401,12 @@ export const DiseaseAnnotationsTable = () => {
 	const onNegatedEditorValueChange = (event, props) => {
 		if(event.target.value === undefined || event.target.value === null) return;
 
-		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].negated = event.target.value;
+		props.editorCallback(event.target.value);
+
+		setDiseaseAnnotations((prevDiseaseAnnotations) => {
+			prevDiseaseAnnotations[props.rowIndex].negated = event.target.value;
+			return prevDiseaseAnnotations;
+		})
 	}
 
 	const onInternalEditorValueChange = (props, event) => {
@@ -1112,6 +1121,19 @@ export const DiseaseAnnotationsTable = () => {
 
 	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames, undefined, widthsObject);
 
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	useGetTableData({
+		tableState,
+		endpoint: searchEndpoint,
+		sortMapping,
+		setIsInEditMode,
+		setEntities: setDiseaseAnnotations,
+		setTotalRecords,
+		toast_topleft,
+		searchService
+	});
+
 	const headerButtons = (disabled=false) => {
 		return (
 			<>
@@ -1126,13 +1148,17 @@ export const DiseaseAnnotationsTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint="disease-annotation"
+					endpoint={searchEndpoint}
 					tableName="Disease Annotations"
+					entities={diseaseAnnotations}
+					setEntities={setDiseaseAnnotations}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={true}
-					sortMapping={sortMapping}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

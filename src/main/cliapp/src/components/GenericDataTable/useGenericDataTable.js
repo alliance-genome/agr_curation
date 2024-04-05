@@ -1,39 +1,32 @@
 import { useRef, useState, useEffect } from 'react';
-import { SearchService } from '../../service/SearchService';
 
 import { trimWhitespace, returnSorted, validateBioEntityFields } from '../../utils/utils';
-import { useGetUserSettings } from "../../service/useGetUserSettings";
 import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
-import { useGetTableData } from '../../service/useGetTableData';
 
 export const useGenericDataTable = ({
+	entities,
+	setEntities,
 	endpoint,
+	tableState,
+	setTableState,
 	tableName,
 	defaultColumnNames,
-	initialTableState,
  	curieFields,
 	idFields,
-	sortMapping,
-	nonNullFieldsTable,
 	mutation,
 	setIsInEditMode,
 	toasts,
 	errorObject,
 	newEntity,
 	deletionMethod,
-	widthsObject
+	widthsObject,
+	setTotalRecords,
+	totalRecords,
 }) => {
 
-
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
-
-	const [entities, setEntities] = useState(null);
-	const [totalRecords, setTotalRecords] = useState(0);
 	const [originalRows, setOriginalRows] = useState([]);
 	const [columnList, setColumnList] = useState([]);
 	const [editingRows, setEditingRows] = useState({});
-
-	const searchService = new SearchService();
 
 	const { errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages } = errorObject;
 	const closeRowRef = useRef([]);
@@ -44,18 +37,6 @@ export const useGenericDataTable = ({
 	const { toast_topleft, toast_topright } = toasts;
 	const [exceptionDialog, setExceptionDialog] = useState(false);
 	const [exceptionMessage,setExceptionMessage] = useState("");
-
-	useGetTableData({
-		tableState,
-		endpoint,
-		sortMapping,
-		nonNullFieldsTable,
-		setIsInEditMode,
-		setEntities,
-		setTotalRecords,
-		toast_topleft,
-		searchService
-	});
 
 	useEffect(() => {
 		if (
@@ -161,7 +142,6 @@ export const useGenericDataTable = ({
 			uiErrorMessagesCopy[index] = {};
 			setUiErrorMessages({ ...uiErrorMessagesCopy });
 		}
-
 	};
 	
 	//Todo: at some point it may make sense to refactor this function into a set of smaller utility functions and pass them down from the calling components
