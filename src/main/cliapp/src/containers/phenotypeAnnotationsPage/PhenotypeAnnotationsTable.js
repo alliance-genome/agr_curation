@@ -97,6 +97,12 @@ export const PhenotypeAnnotationsTable = () => {
 		filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig
 	},
 	{
+		field: "crossReference.displayName",
+		header: "Cross Reference",
+		sortable: true,
+		filterConfig: FILTER_CONFIGS.crossReferenceFilterConfig
+	},
+	{
 		field: "conditionRelations.uniqueId",
 		header: "Experimental Conditions",
 		body: conditionRelationsTemplate,

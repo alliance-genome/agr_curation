@@ -22,11 +22,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
@@ -66,6 +68,12 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private VocabularyTerm relation;
+	
+	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	private CrossReference crossReference;
 	
 	public abstract String getSubjectCurie();
 

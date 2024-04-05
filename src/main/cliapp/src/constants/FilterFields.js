@@ -152,6 +152,10 @@ export const FIELD_SETS = Object.freeze({
     filterName: "constructGenomicComponentsFilter",
     fields: ["constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.name", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.curie", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.modEntityId", "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.modInternalId", "constructGenomicEntityAssociations.relation.name"],
   },
+  crossReferenceFieldSet: {
+    filterName: "crossReferenceFilter",
+    fields: ["crossReference.displayName"]
+  },
   daConditionRelationsHandleFieldSet: {
     filterName: "daConditionRelationHandleFilter",
     fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
@@ -588,6 +592,7 @@ export const FILTER_CONFIGS = Object.freeze({
   constructComponentsFilterConfig:          { filterComponentType: "input", fieldSets: [FIELD_SETS.constructComponentsFieldSet]},
   constructGenomicComponentsFilterConfig:   { filterComponentType: "input", fieldSets: [FIELD_SETS.constructGenomicComponentsFieldSet]},
   createdByFilterConfig:                    { filterComponentType: "input", fieldSets: [FIELD_SETS.createdByFieldSet] },
+  crossReferenceFilterConfig:               { filterComponentType: "input", fieldSets: [FIELD_SETS.crossReferenceFieldSet] },
   curieFilterConfig:                        { filterComponentType: "input", fieldSets: [FIELD_SETS.curieFieldSet] },
 
   daConditionRelationsHandleFilterConfig:   { filterComponentType: "input", fieldSets: [FIELD_SETS.daConditionRelationsHandleFieldSet], nonNullFields: FIELD_SETS.conditionRelationsHandleFieldSet },

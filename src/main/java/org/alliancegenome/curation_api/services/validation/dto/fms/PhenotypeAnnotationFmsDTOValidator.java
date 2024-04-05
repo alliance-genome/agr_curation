@@ -4,15 +4,19 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
@@ -20,6 +24,8 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentif
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
+import org.alliancegenome.curation_api.services.ResourceDescriptorService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.apache.commons.collections.CollectionUtils;
@@ -39,11 +45,15 @@ public class PhenotypeAnnotationFmsDTOValidator {
 	@Inject
 	ConditionRelationFmsDTOValidator conditionRelationFmsDtoValidator;
 	@Inject
+	CrossReferenceFmsDTOValidator crossReferenceFmsDtoValidator;
+	@Inject
 	ConditionRelationDAO conditionRelationDAO;
 	@Inject
 	DataProviderService dataProviderService;
 	@Inject
 	VocabularyTermService vocabularyTermService;
+	@Inject
+	ResourceDescriptorPageService resourceDescriptorPageService;
 	
 	public <E extends PhenotypeAnnotation> ObjectResponse<E> validatePhenotypeAnnotation(E annotation, PhenotypeFmsDTO dto, BackendBulkDataProvider beDataProvider) {
 
@@ -86,6 +96,18 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		annotation.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
 		annotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.PHENOTYPE_RELATION_VOCABULARY, "has_phenotype").getEntity());
 		
+		CrossReference evidenceXref = null;
+		if (dto.getEvidence() != null && dto.getEvidence().getPublicationId() != null) {
+			if (annotation.getCrossReference() != null && Objects.equals(annotation.getCrossReference().getDisplayName(), dto.getEvidence().getPublicationId())) {
+				evidenceXref = annotation.getCrossReference();
+			} else {
+				evidenceXref = createXrefFromPublicationId(dto.getEvidence().getPublicationId());
+				if (evidenceXref == null)
+					paResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " for generating cross reference (" + dto.getEvidence().getPublicationId() + ")");
+			}
+		}
+		annotation.setCrossReference(evidenceXref);
+		
 		OffsetDateTime creationDate = null;
 		if (StringUtils.isNotBlank(dto.getDateAssigned())) {
 			try {
@@ -114,7 +136,10 @@ public class PhenotypeAnnotationFmsDTOValidator {
 			if (StringUtils.isBlank(dto.getEvidence().getPublicationId())) {
 				refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.REQUIRED_MESSAGE);
 			} else {
-				reference = referenceService.retrieveFromDbOrLiteratureService(dto.getEvidence().getPublicationId());
+				String refCurie = dto.getEvidence().getPublicationId();
+				if (refCurie.startsWith("OMIM:") || refCurie.startsWith("ORPHA:"))
+					refCurie = ReferenceConstants.RGD_OMIM_ORPHANET_REFERENCE;
+				reference = referenceService.retrieveFromDbOrLiteratureService(refCurie);
 				if (reference == null)
 					refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE);
 			}
@@ -122,6 +147,23 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		
 		refResponse.setEntity(reference);
 		return refResponse;
+	}
+	
+	private CrossReference createXrefFromPublicationId(String curie) {
+		CrossReference xref = new CrossReference();
+		
+		xref.setReferencedCurie(curie);
+		xref.setDisplayName(curie);
+		
+		String[] curieParts = curie.split(":");
+		String prefix = curieParts[0];
+		
+		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "default");
+		if (page == null)
+			return null;
+		xref.setResourceDescriptorPage(page);
+		
+		return xref;
 	}
 
 }
