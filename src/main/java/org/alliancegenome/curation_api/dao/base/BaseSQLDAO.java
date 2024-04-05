@@ -481,7 +481,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 								}));
 							}
 						});
-						if(filterOperator.equals("OR")) {
+						if(filterOperator != null && filterOperator.equals("OR")) {
 							b.should(bpStep);
 						} else {
 							b.must(bpStep);
