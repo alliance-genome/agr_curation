@@ -61,7 +61,7 @@ public class ResourceDescriptor extends AuditedObject {
 	@KeywordField(name = "synoynyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JoinTable(indexes = @Index(columnList = "resourcedescriptor_id"))
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.ResourceDescriptorView.class, View.FieldsAndLists.class })
 	private List<String> synonyms;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

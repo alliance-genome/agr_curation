@@ -115,7 +115,8 @@ export const SORT_FIELDS = Object.freeze([
   "aggregationDatabase.name",
   "interactorAGeneticPerturbation.alleleSymbol.displayText",
   "interactorBGeneticPerturbation.alleleSymbol.displayText",
-  "phenotypesOrTraits"
+  "phenotypesOrTraits",
+  "crossReference.displayName"
 ]);
 
 

@@ -32,7 +32,7 @@ public class CrossReferenceDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getPrefix())) {
 			crResponse.addErrorMessage("prefix", ValidationConstants.REQUIRED_MESSAGE); 
 		} else {
-			ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefix(dto.getPrefix());
+			ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefixOrSynonym(dto.getPrefix());
 			if (rdResponse == null || rdResponse.getEntity() == null) {
 				crResponse.addErrorMessage("prefix", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPrefix() + ")");
 			}
