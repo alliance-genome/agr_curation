@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
@@ -25,7 +24,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
-import org.alliancegenome.curation_api.services.ResourceDescriptorService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 import org.apache.commons.collections.CollectionUtils;
@@ -44,8 +42,6 @@ public class PhenotypeAnnotationFmsDTOValidator {
 	PhenotypeTermService phenotypeTermService;
 	@Inject
 	ConditionRelationFmsDTOValidator conditionRelationFmsDtoValidator;
-	@Inject
-	CrossReferenceFmsDTOValidator crossReferenceFmsDtoValidator;
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
 	@Inject

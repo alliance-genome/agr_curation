@@ -40,7 +40,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.2.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
+@AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Phenotype_Annotation", description = "Annotation class representing a phenotype annotation")
 @Table(indexes = { 
 	@Index(name = "phenotypeannotation_relation_index", columnList = "relation_id")
