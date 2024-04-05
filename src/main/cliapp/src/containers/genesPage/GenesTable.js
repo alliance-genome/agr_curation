@@ -13,6 +13,7 @@ import { SystematicNameDialog } from './SystematicNameDialog';
 import { ListTableCell } from '../../components/ListTableCell';
 import { Button } from 'primereact/button';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 export const GenesTable = () => {
 
@@ -271,6 +272,13 @@ export const GenesTable = () => {
 			header: "Data Provider",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
+		},
+		{
+			field: "crossReferences",
+			header: "Cross References",
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences}/>
 		},
 		{
 			field: "updatedBy.uniqueId",

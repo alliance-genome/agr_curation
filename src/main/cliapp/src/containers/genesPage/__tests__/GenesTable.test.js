@@ -40,6 +40,7 @@ describe("<GenesPage />", () => {
 		const secondaryIdsTd = await result.findByText(/WB:WBGene00000052/i); 
 		const systematicNameTd = await result.findByText("C35C5.5"); 
 		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
+		const xrefsTd = await result.findByText(/WBGene00003771Xref \(gene\)/);
 
 
 		await waitFor(() => {
@@ -50,6 +51,7 @@ describe("<GenesPage />", () => {
 			expect(secondaryIdsTd).toBeInTheDocument();
 			expect(systematicNameTd).toBeInTheDocument();
 			expect(taxonTd).toBeInTheDocument();
+			expect(xrefsTd).toBeInTheDocument();
 		});
 	});
 

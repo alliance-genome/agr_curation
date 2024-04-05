@@ -53,7 +53,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 			return response;
 		}
 		
-		response.setEntity(dbEntity);
+		response.setEntity(crossReferenceDAO.persist(dbEntity));
 
 		return response;
 	}

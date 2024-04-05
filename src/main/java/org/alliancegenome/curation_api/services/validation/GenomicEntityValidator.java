@@ -43,7 +43,7 @@ public class GenomicEntityValidator<E extends GenomicEntity> extends BiologicalE
 			for (int ix = 0; ix < uiEntity.getCrossReferences().size(); ix++) {
 				CrossReference xref = uiEntity.getCrossReferences().get(ix);
 				ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(xref, false);
-				if (xrefResponse.getEntity() == null) {
+				if (xrefResponse.hasErrors()) {
 					allValid = false;
 					response.addErrorMessages(field, ix, xrefResponse.getErrorMessages());
 				} else {

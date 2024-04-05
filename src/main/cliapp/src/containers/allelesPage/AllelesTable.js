@@ -27,6 +27,7 @@ import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialog
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -1002,6 +1003,13 @@ export const AllelesTable = () => {
 			header: "Data Provider",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
+		},
+		{
+			field: "crossReferences",
+			header: "Cross References",
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences}/>
 		},
 		{
 			field: "updatedBy.uniqueId",

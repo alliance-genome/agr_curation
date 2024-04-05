@@ -88,6 +88,16 @@
         "display_name": "TEST2:0001",
         "prefix": "TEST2"
       }
-    }
+    },
+    "cross_reference_dtos": [
+      {
+        "internal": false,
+        "obsolete": false,
+        "referenced_curie": "TEST2:Xref02",
+        "page_area": "homepage2",
+        "display_name": "TEST2:Xref02Display",
+        "prefix": "TEST2"
+      }
+    ]
   }
 ]

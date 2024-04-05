@@ -1,15 +1,16 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -31,64 +32,56 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		setSQLDao(crossReferenceDAO);
 	}
 
-	public List<CrossReference> getMergedFmsXrefList(List<CrossReferenceFmsDTO> fmsCrossReferences, List<CrossReference> existingCrossReferences) {
-		Map<String, CrossReference> incomingXrefMap = new HashedMap<>();
+	public List<CrossReference> getMergedFmsXrefList(List<CrossReferenceFmsDTO> fmsCrossReferences, List<CrossReference> existingXrefs) {
+		List<CrossReference> incomingXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fmsCrossReferences)) {
 			for (CrossReferenceFmsDTO fmsXref : fmsCrossReferences) {
 				String xrefCurie = fmsXref.getCurie();
-				if (CollectionUtils.isNotEmpty(fmsXref.getPages())) {
-					for (String xrefPage : fmsXref.getPages()) {
-						CrossReference xref = new CrossReference();
-						xref.setReferencedCurie(xrefCurie);
-						xref.setDisplayName(xrefCurie);
-						String prefix = xrefCurie.indexOf(":") == -1 ? xrefCurie :
-							xrefCurie.substring(0, xrefCurie.indexOf(":"));
-						xref.setResourceDescriptorPage(resourceDescriptorPageService.getPageForResourceDescriptor(prefix, xrefPage));
-						incomingXrefMap.put(getCrossReferenceUniqueId(xref), xref);
-					}
-				} else {
+				if (CollectionUtils.isEmpty(fmsXref.getPages()))
+					fmsXref.getPages().add("default");
+				for (String xrefPage : fmsXref.getPages()) {
 					CrossReference xref = new CrossReference();
 					xref.setReferencedCurie(xrefCurie);
 					xref.setDisplayName(xrefCurie);
-					incomingXrefMap.put(getCrossReferenceUniqueId(xref), xref);
+					String prefix = xrefCurie.indexOf(":") == -1 ? xrefCurie :
+						xrefCurie.substring(0, xrefCurie.indexOf(":"));
+					ResourceDescriptorPage rdp = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, xrefPage);
+					if (rdp != null) {
+						xref.setResourceDescriptorPage(rdp);
+						incomingXrefs.add(xref);
+					}
 				}
 			}
 		}
 		
-		return getMergedXrefList(incomingXrefMap, existingCrossReferences);
-	}
-	
-	public List<CrossReference> getMergedXrefList(List<CrossReference> incomingCrossReferences, List<CrossReference> existingCrossReferences) {
-		Map<String, CrossReference> incomingXrefMap = new HashedMap<>();
-		if (CollectionUtils.isNotEmpty(incomingCrossReferences)) {
-			for (CrossReference incomingCrossReference : incomingCrossReferences) {
-				incomingXrefMap.put(getCrossReferenceUniqueId(incomingCrossReference), incomingCrossReference);
-			}
-		}
-		
-		return getMergedXrefList(incomingXrefMap, existingCrossReferences); 
+		return getUpdatedXrefList(incomingXrefs, existingXrefs);
 	}
 	
 	@Transactional
-	public List<CrossReference> getMergedXrefList(Map<String, CrossReference> incomingXrefMap, List<CrossReference> existingCrossReferences) {
-		Map<String, CrossReference> currentXrefMap = new HashedMap<>();
-		if (CollectionUtils.isNotEmpty(existingCrossReferences)) {
-			for (CrossReference xref : existingCrossReferences) {
-				currentXrefMap.put(getCrossReferenceUniqueId(xref), xref);
+	public List<CrossReference> getUpdatedXrefList(List<CrossReference> incomingXrefs, List<CrossReference> existingXrefs) {
+		Map<String, CrossReference> existingXrefMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(existingXrefs)) {
+			for (CrossReference existingXref : existingXrefs) {
+				existingXrefMap.put(getCrossReferenceUniqueId(existingXref), existingXref);
 			}
 		}
 		
 		List<CrossReference> finalXrefs = new ArrayList<>();
-		incomingXrefMap.forEach((k, v) -> {
-			if (currentXrefMap.containsKey(k)) {
-				finalXrefs.add(updateCrossReference(currentXrefMap.get(k), v));
-			} else {
-				finalXrefs.add(crossReferenceDAO.persist(v));
+		if (CollectionUtils.isNotEmpty(incomingXrefs)) {
+			for (CrossReference incomingXref : incomingXrefs) {
+				String incomingXrefUniqueId = getCrossReferenceUniqueId(incomingXref);
+				if (existingXrefMap.containsKey(incomingXrefUniqueId)) {
+					finalXrefs.add(updateCrossReference(existingXrefMap.get(incomingXrefUniqueId), incomingXref));
+				} else {
+					finalXrefs.add(crossReferenceDAO.persist(incomingXref));
+				}
 			}
-		});
+		}
 		
 		return finalXrefs;
 	}
+	
+	
 	
 	public CrossReference updateCrossReference(CrossReference oldXref, CrossReference newXref) {
 		oldXref.setDisplayName(newXref.getDisplayName());
