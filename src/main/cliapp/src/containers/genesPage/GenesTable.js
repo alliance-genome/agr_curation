@@ -274,7 +274,7 @@ export const GenesTable = () => {
 			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
 		},
 		{
-			field: "crossReferences",
+			field: "crossReferences.displayName",
 			header: "Cross References",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,

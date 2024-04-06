@@ -249,7 +249,7 @@ export const VariantsTable = () => {
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{
-			field: "crossReferences",
+			field: "crossReferences.displayName",
 			header: "Cross References",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,

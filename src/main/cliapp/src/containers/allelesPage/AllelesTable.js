@@ -1005,7 +1005,7 @@ export const AllelesTable = () => {
 			filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
 		},
 		{
-			field: "crossReferences",
+			field: "crossReferences.displayName",
 			header: "Cross References",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
