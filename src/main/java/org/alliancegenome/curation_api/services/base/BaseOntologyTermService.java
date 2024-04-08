@@ -296,7 +296,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			mergedIds = new ArrayList<>();
 			dbTerm.setCrossReferences(null);
 		} else {
-			List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
+			List<CrossReference> mergedCrossReferences = crossReferenceService.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
 			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
 			dbTerm.setCrossReferences(mergedCrossReferences);
 		}

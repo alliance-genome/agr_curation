@@ -7,6 +7,7 @@ import { NameTemplate } from '../../components/Templates/NameTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 export const AffectedGenomicModelTable = () => {
 
@@ -62,6 +63,13 @@ export const AffectedGenomicModelTable = () => {
 			header: "Data Provider",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,
+		},
+		{
+			field: "crossReferences.displayName",
+			header: "Cross References",
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences}/>
 		},
 		{
 			field: "updatedBy.uniqueId",

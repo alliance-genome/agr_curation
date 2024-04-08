@@ -28,7 +28,7 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BiologicalEntity.class })
 public class GenomicEntity extends BiologicalEntity {
 
-	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword"})
+	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JoinTable(indexes = { 
@@ -36,7 +36,7 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "genomicentity_id", name = "genomicentity_crossreference_genomicentity_index"),
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class, View.AlleleView.class, View.GeneView.class, View.AffectedGenomicModelView.class })
 	private List<CrossReference> crossReferences;
 	
 
