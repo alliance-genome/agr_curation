@@ -5,6 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
@@ -15,6 +16,7 @@ import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -33,10 +35,6 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 	
 	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ObjectValidationException {
 
-		// TODO: remove check once loading interactions where interactors are referenced by xref
-		if (!InteractionStringHelper.isAllianceInteractor(dto.getInteractorAIdentifier()) || !InteractionStringHelper.isAllianceInteractor(dto.getInteractorBIdentifier()))
-			throw new ObjectValidationException(dto, "Loading interactions via interactor xrefs is not yet implemented");
-		
 		GeneMolecularInteraction interaction = null;
 		gmiResponse = new ObjectResponse<GeneMolecularInteraction>();
 		
@@ -47,9 +45,29 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
 			interactionId = InteractionStringHelper.getAllianceCurie(dto.getInteractionIds().get(0));
 		
+		Gene interactorA = null;
+		if (StringUtils.isBlank(dto.getInteractorAIdentifier())) {
+			gmiResponse.addErrorMessage("interactorAIdentifier", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			ObjectResponse<Gene> interactorAResponse = findAllianceGene(dto.getInteractorAIdentifier());
+			if (interactorAResponse.hasErrors())
+				gmiResponse.addErrorMessage("interactorAIdentifier", interactorAResponse.errorMessagesString());
+			interactorA = interactorAResponse.getEntity();
+		}
+		
+		Gene interactorB = null;
+		if (StringUtils.isBlank(dto.getInteractorBIdentifier())) {
+			gmiResponse.addErrorMessage("interactorBIdentifier", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			ObjectResponse<Gene> interactorBResponse = findAllianceGene(dto.getInteractorBIdentifier());
+			if (interactorBResponse.hasErrors())
+				gmiResponse.addErrorMessage("interactorBIdentifier", interactorBResponse.errorMessagesString());
+			interactorB = interactorBResponse.getEntity();
+		}
+		
 		List<Reference> references = refResponse.getEntity();
 		
-		String uniqueId = InteractionStringHelper.getGeneMolecularInteractionUniqueId(dto, interactionId, references);
+		String uniqueId = InteractionStringHelper.getGeneMolecularInteractionUniqueId(dto, interactorA, interactorB, interactionId, references);
 		
 		String searchValue = interactionId == null ? uniqueId : interactionId;
 		ObjectResponse<GeneMolecularInteraction> interactionResponse = geneMolecularInteractionService.getByIdentifier(searchValue);
@@ -59,6 +77,8 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 			interaction = new GeneMolecularInteraction();
 		
 		interaction.setUniqueId(uniqueId);
+		interaction.setGeneAssociationSubject(interactorA);
+		interaction.setGeneGeneAssociationObject(interactorB);
 		interaction.setInteractionId(interactionId);
 		
 		ObjectResponse<GeneMolecularInteraction> giResponse = validateGeneInteraction(interaction, dto, references);
@@ -92,7 +112,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		
 		if (gmiResponse.hasErrors())
 			throw new ObjectValidationException(dto, gmiResponse.errorMessagesString());
-
+		
 		return interaction;
 
 	}

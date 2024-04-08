@@ -51,8 +51,11 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 	private final String geneGeneticInteractionGetEndpoint = "/api/gene-genetic-interaction/findBy/";
 	private final String geneMolecularInteractionId = "WB:WBInteraction0001";
 	private final String geneGeneticInteractionId = "WB:WBInteraction0002";
+	private final String geneInteractionXrefLookupId = "WB:WBInteraction0003";
 	private final String gene1 = "WB:GITestGene0001";
 	private final String gene2 = "WB:GITestGene0002";
+	private final String gene3 = "WB:GITestGene0003";
+	private final String gene3xref = "NCBI_Gene:EZL1";
 	private final String reference = "AGRKB:000000002";
 	private final String reference2 = "AGRKB:000000021";
 	private final String miTerm1 = "MI:Test0001";
@@ -72,6 +75,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
 		loadGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
+		loadGeneWithXref(gene3, "NCBITaxon:6239", symbolTerm, dataProvider, gene3xref);
 		loadAllele(allele1, "GGITestVar1", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAllele(allele2, "GGITestVar2","NCBITaxon:6239", symbolTerm, dataProvider);
 		loadMITerm(miTerm1, "Test MITerm 1");
@@ -290,4 +294,17 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(geneGeneticInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_11_invalid_interactor_b_annotation_string.json");
 	}
 	
+	@Test
+	@Order(10)
+	public void geneInteractionBulkUploadXrefLookup() throws Exception {
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "XR_01_cross_reference_lookup.json");
+		
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + geneInteractionXrefLookupId).
+			then().
+			statusCode(200).
+			body("entity.geneAssociationSubject.modEntityId", is(gene3));
+			
+	}
 }

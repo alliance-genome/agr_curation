@@ -24,7 +24,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "crossReferences", "constructGenomicEntityAssociations" }, callSuper = true)
+@ToString(exclude = { "constructGenomicEntityAssociations" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BiologicalEntity.class })
 public class GenomicEntity extends BiologicalEntity {
 
@@ -36,6 +36,7 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "genomicentity_id", name = "genomicentity_crossreference_genomicentity_index"),
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")
 	})
+	@EqualsAndHashCode.Include
 	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class, View.AlleleView.class, View.GeneView.class, View.AffectedGenomicModelView.class })
 	private List<CrossReference> crossReferences;
 	

@@ -13,10 +13,10 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -57,6 +57,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
@@ -1178,6 +1179,10 @@ public class BaseITCase {
 	}
 	
 	public void loadGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) {
+		loadGeneWithXref(modEntityId, taxonCurie, symbolNameTerm, dataProvider, null);
+	}
+	
+	public void loadGeneWithXref(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider, String xrefCurie) {
 			Gene gene = new Gene();
 			gene.setModEntityId(modEntityId);
 			gene.setTaxon(getNCBITaxonTerm(taxonCurie));
@@ -1190,6 +1195,13 @@ public class BaseITCase {
 			
 			gene.setGeneSymbol(symbol);
 
+			if (StringUtils.isNotBlank(xrefCurie)) {
+				CrossReference xref = new CrossReference();
+				xref.setReferencedCurie(xrefCurie);
+				xref.setDisplayName(xrefCurie);
+				gene.setCrossReferences(List.of(xref));
+			}
+			
 			RestAssured.given().
 					contentType("application/json").
 					body(gene).

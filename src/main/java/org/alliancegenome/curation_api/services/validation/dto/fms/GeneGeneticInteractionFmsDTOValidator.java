@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
@@ -16,6 +17,7 @@ import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionAnnotationsHelper;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -36,10 +38,6 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 	
 	public GeneGeneticInteraction validateGeneGeneticInteractionFmsDTO(PsiMiTabDTO dto) throws ObjectValidationException {
 
-		// TODO: remove check once loading interactions where interactors are referenced by xref
-		if (!InteractionStringHelper.isAllianceInteractor(dto.getInteractorAIdentifier()) || !InteractionStringHelper.isAllianceInteractor(dto.getInteractorBIdentifier()))
-			throw new ObjectValidationException(dto, "Loading interactions via interactor xrefs is not yet implemented");
-		
 		GeneGeneticInteraction interaction = null;
 		ggiResponse = new ObjectResponse<GeneGeneticInteraction>();
 		
@@ -50,11 +48,31 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
 			interactionId = InteractionStringHelper.getAllianceCurie(dto.getInteractionIds().get(0));
 		
+		Gene interactorA = null;
+		if (StringUtils.isBlank(dto.getInteractorAIdentifier())) {
+			ggiResponse.addErrorMessage("interactorAIdentifier", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			ObjectResponse<Gene> interactorAResponse = findAllianceGene(dto.getInteractorAIdentifier());
+			if (interactorAResponse.hasErrors())
+				ggiResponse.addErrorMessage("interactorAIdentifier", interactorAResponse.errorMessagesString());
+			interactorA = interactorAResponse.getEntity();
+		}
+		
+		Gene interactorB = null;
+		if (StringUtils.isBlank(dto.getInteractorBIdentifier())) {
+			ggiResponse.addErrorMessage("interactorBIdentifier", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			ObjectResponse<Gene> interactorBResponse = findAllianceGene(dto.getInteractorBIdentifier());
+			if (interactorBResponse.hasErrors())
+				ggiResponse.addErrorMessage("interactorBIdentifier", interactorBResponse.errorMessagesString());
+			interactorB = interactorBResponse.getEntity();
+		}
+		
 		List<Reference> references = refResponse.getEntity();
 		
 		List<String> phenotypesOrTraits = interactionAnnotationsHelper.extractPhenotypeStatements(dto.getInteractionAnnotations());
 		
-		String uniqueId = InteractionStringHelper.getGeneGeneticInteractionUniqueId(dto, interactionId, references, phenotypesOrTraits);
+		String uniqueId = InteractionStringHelper.getGeneGeneticInteractionUniqueId(dto, interactorA, interactorB, interactionId, references, phenotypesOrTraits);
 		
 		String searchValue = interactionId == null ? uniqueId : interactionId;
 		ObjectResponse<GeneGeneticInteraction> interactionResponse = geneGeneticInteractionService.getByIdentifier(searchValue);
@@ -64,6 +82,8 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 			interaction = new GeneGeneticInteraction();
 		
 		interaction.setUniqueId(uniqueId);
+		interaction.setGeneAssociationSubject(interactorA);
+		interaction.setGeneGeneAssociationObject(interactorB);
 		interaction.setInteractionId(interactionId);
 		interaction.setPhenotypesOrTraits(handleStringListField(phenotypesOrTraits));
 		

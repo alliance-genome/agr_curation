@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
@@ -18,17 +19,17 @@ public abstract class InteractionStringHelper {
 	private static final Pattern PSI_MI_FORMAT = Pattern.compile("^[^:]+:\"([^\"]*)\"");
 	private static final Pattern WB_VAR_ANNOTATION = Pattern.compile("wormbase:(WBVar\\d+)\\D*");
 
-	public static String getGeneMolecularInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references) {
+	public static String getGeneMolecularInteractionUniqueId(PsiMiTabDTO dto, Gene interactorA, Gene interactorB, String interactionId, List<Reference> references) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
-		uniqueId.add(getGeneInteractionUniqueId(dto, interactionId, references, VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM));
+		uniqueId.add(getGeneInteractionUniqueId(dto, interactorA, interactorB, interactionId, references, VocabularyConstants.GENE_MOLECULAR_INTERACTION_RELATION_TERM));
 		if (dto.getInteractionDetectionMethods() != null)
 			uniqueId.addList(dto.getInteractionDetectionMethods().stream().map(dm -> extractCurieFromPsiMiFormat(dm)).collect(Collectors.toList()));
 		return uniqueId.getUniqueId();
 	}
 	
-	public static String getGeneGeneticInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references, List<String> phenotypesOrTraits) {
+	public static String getGeneGeneticInteractionUniqueId(PsiMiTabDTO dto, Gene interactorA, Gene interactorB, String interactionId, List<Reference> references, List<String> phenotypesOrTraits) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
-		uniqueId.add(getGeneInteractionUniqueId(dto, interactionId, references, VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM));
+		uniqueId.add(getGeneInteractionUniqueId(dto, interactorA, interactorB, interactionId, references, VocabularyConstants.GENE_GENETIC_INTERACTION_RELATION_TERM));
 		if (dto.getSourceDatabaseIds() != null)
 			uniqueId.addList(dto.getSourceDatabaseIds().stream().map(sd -> extractCurieFromPsiMiFormat(sd)).collect(Collectors.toList()));
 		uniqueId.add(extractWBVarCurieFromAnnotations(dto.getInteractorAAnnotationString()));
@@ -37,12 +38,14 @@ public abstract class InteractionStringHelper {
 		return uniqueId.getUniqueId();
 	}
 	
-	public static String getGeneInteractionUniqueId(PsiMiTabDTO dto, String interactionId, List<Reference> references, String relation) {
+	public static String getGeneInteractionUniqueId(PsiMiTabDTO dto, Gene interactorA, Gene interactorB, String interactionId, List<Reference> references, String relation) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(interactionId);
-		uniqueId.add(PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractorAIdentifier()));
+		if (interactorA != null)
+			uniqueId.add(interactorA.getIdentifier());
 		uniqueId.add(relation);
-		uniqueId.add(PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractorBIdentifier()));
+		if (interactorB != null)
+			uniqueId.add(interactorB.getIdentifier());
 		if (references != null)
 			uniqueId.addList(references.stream().map(Reference::getCurie).collect(Collectors.toList()));
 		if (dto.getInteractionTypes() != null)
