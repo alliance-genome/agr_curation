@@ -33,7 +33,8 @@ export const GenericDataTable = (props) => {
 		dataKey = 'id',
 		deprecateOption = false,
 		modReset = false,
-		highlightObsolete = true
+		highlightObsolete = true,
+		fetching
 	} = props;
 
 	const {
@@ -267,7 +268,7 @@ export const GenericDataTable = (props) => {
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-					rowClassName = {(props) => getRowClass(props)}>
+					rowClassName = {(props) => getRowClass(props)} loading={fetching} loadingIcon="pi pi-spin pi-spinner">
 					{props.isEditable &&
 						<Column field='rowEditor' rowEditor className={"p-text-center p-0 min-w-3rem max-w-3rem text-base"} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
 								bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0 w-3rem sticky'

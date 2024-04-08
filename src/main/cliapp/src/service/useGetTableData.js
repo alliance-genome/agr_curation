@@ -12,7 +12,7 @@ export const useGetTableData = ({
   searchService
 }) => {
 
-  useQuery([tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
+  return useQuery([tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
     () => searchService.search(
       endpoint,
       tableState.rows,

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
@@ -1123,7 +1124,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
-	useGetTableData({
+	const { isLoading, isFetching } = useGetTableData({
 		tableState,
 		endpoint: searchEndpoint,
 		sortMapping,
@@ -1133,6 +1134,14 @@ export const DiseaseAnnotationsTable = () => {
 		toast_topleft,
 		searchService
 	});
+
+	if (isLoading) {
+		return (
+			<div className='flex align-items-center justify-content-center h-screen'>
+				<ProgressSpinner />
+			</div>
+		);
+	}
 
 	const headerButtons = (disabled=false) => {
 		return (
@@ -1174,6 +1183,7 @@ export const DiseaseAnnotationsTable = () => {
 					widthsObject={widthsObject}
 					handleDuplication={handleDuplication}
 					duplicationEnabled={true}
+					fetching={isFetching}
 				/>
 			</div>
 			<NewAnnotationForm
