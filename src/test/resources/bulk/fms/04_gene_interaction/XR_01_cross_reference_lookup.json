@@ -1,0 +1,20 @@
+[
+	{
+		"interactorAIdentifier": "entrez gene/locuslink:EZL1",
+		"interactorBIdentifier": "wormbase:GITestGene0002",
+		"interactionDetectionMethods": ["psi-mi:\"MI:Test0007\"(Test MITerm 7)"],
+		"authors": ["Deplancke B et al. (2006)"],
+		"publicationIds": ["pubmed:25920554"],
+		"interactorATaxonId": "taxid:6239(caeel)|taxid:6239(Caenorhabditis elegans)",
+		"interactorBTaxonId": "taxid:6239(caeel)|taxid:6239(Caenorhabditis elegans)",
+		"interactionTypes": ["psi-mi:\"MI:Test0002\"(Test MITerm 2)"],
+		"sourceDatabaseIds": ["psi-mi:\"MI:Test0001\"(Test MITerm 1)"],
+		"interactionIds": ["wormbase:WBInteraction0003"],
+		"experimentalRoleA": "psi-mi:\"MI:Test0003\"(Test MITerm 3)",
+		"experimentalRoleB": "psi-mi:\"MI:Test0004\"(Test MITerm 4)",
+		"interactorAType": "psi-mi:\"MI:Test0005\"(Test MITerm 5)",
+		"interactorBType": "psi-mi:\"MI:Test0006\"(Test MITerm 6)",
+		"creationDate": "2024/01/17",
+		"updateDate": "2024/01/18"
+	}
+]

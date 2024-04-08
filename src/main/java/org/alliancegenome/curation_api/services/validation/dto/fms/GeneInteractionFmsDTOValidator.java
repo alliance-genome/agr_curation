@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionCrossReferenceHelper;
@@ -48,26 +49,6 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	public <E extends GeneInteraction> ObjectResponse<E> validateGeneInteraction(E interaction, PsiMiTabDTO dto, List<Reference> references) {
 
 		ObjectResponse<E> giResponse = new ObjectResponse<E>();
-		
-		Gene interactorA = null;
-		if (StringUtils.isBlank(dto.getInteractorAIdentifier())) {
-			giResponse.addErrorMessage("interactorAIdentifier", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			interactorA = findAllianceGene(dto.getInteractorAIdentifier());
-			if (interactorA == null)
-				giResponse.addErrorMessage("interactorAIdentifier", ValidationConstants.INVALID_MESSAGE);
-		}
-		interaction.setGeneAssociationSubject(interactorA);
-		
-		Gene interactorB = null;
-		if (StringUtils.isBlank(dto.getInteractorBIdentifier())) {
-			giResponse.addErrorMessage("interactorBIdentifier", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			interactorB = findAllianceGene(dto.getInteractorBIdentifier());
-			if (interactorB == null)
-				giResponse.addErrorMessage("interactorBIdentifier", ValidationConstants.INVALID_MESSAGE);
-		}
-		interaction.setGeneGeneAssociationObject(interactorB);
 		
 		if (CollectionUtils.isNotEmpty(references)) {
 			List<InformationContentEntity> evidence = new ArrayList<>();
@@ -167,23 +148,34 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 
 	}
 	
-	private Gene findAllianceGene(String psiMiTabIdentifier) {
+	protected ObjectResponse<Gene> findAllianceGene(String psiMiTabIdentifier) {
+		ObjectResponse<Gene> response = new ObjectResponse<>();
 		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
-		if (psiMiTabIdParts.length != 2)
-			return null;
-		
-		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
-		if (prefix == null)
-			return null;
-		
-		Gene allianceGene = null;
-		if (prefix.isModPrefix) {
-			allianceGene = geneService.findByIdentifierString(prefix.alliancePrefix + ":" + psiMiTabIdParts[1]);
-		} else {
-			// TODO: lookup gene via xref
+		if (psiMiTabIdParts.length != 2) {
+			response.addErrorMessage("curie", ValidationConstants.INVALID_MESSAGE + " (expecting <prefix:suffix>, got " + psiMiTabIdentifier + ")");
+			return response;
 		}
 		
-		return allianceGene;
+		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
+		if (prefix == null) {
+			response.addErrorMessage("curie", ValidationConstants.INVALID_MESSAGE + " (cannot convert prefix " + psiMiTabIdParts[0] + " to Alliance format)");
+			return response;
+		}
+		
+		Gene allianceGene = null;
+		String convertedCurie = prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
+		if (prefix.isModPrefix) {
+			allianceGene = geneService.findByIdentifierString(convertedCurie);
+		} else {
+			SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
+			if (searchResponse != null)
+				allianceGene = searchResponse.getSingleResult();
+		}
+		if (allianceGene == null)
+			response.addErrorMessage("curie", ValidationConstants.INVALID_MESSAGE + " (" + convertedCurie + " not found)");
+		response.setEntity(allianceGene);
+		
+		return response;
 	}
 	
 	protected ObjectResponse<List<Reference>> validateReferences(PsiMiTabDTO dto) {
