@@ -8,7 +8,9 @@ public enum PsiMiTabPrefixEnum {
 	entrez_gene_locuslink("NCBI_Gene", false),
 	pubmed("PMID", false),
 	doi("DOI", false),
-	mi("MI", false);
+	mi("MI", false),
+	ensembl("ENSEMBL", false),
+	refseq("RefSeq", false);
 
 	public String alliancePrefix;
 	public Boolean isModPrefix;
