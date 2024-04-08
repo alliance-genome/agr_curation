@@ -8,14 +8,24 @@ import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const AffectedGenomicModelTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [agms, setAgms] = useState([]);
+
+	const searchService = new SearchService();
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+
+	const searchEndpoint = "agm";
 
 	const columns = [
 		{
@@ -126,6 +136,17 @@ export const AffectedGenomicModelTable = () => {
 	});
 
 	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames, undefined, widthsObject);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	useGetTableData({
+		tableState,
+		endpoint: searchEndpoint,
+		setIsInEditMode,
+		setEntities: setAgms,
+		setTotalRecords,
+		toast_topleft,
+		searchService
+	});
 
 
 	return (
@@ -133,8 +154,14 @@ export const AffectedGenomicModelTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint="agm"
+					endpoint={searchEndpoint}
 					tableName="Affected Genomic Models"
+					entities={agms}
+					setEntities={setAgms}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
 					defaultColumnNames={defaultColumnNames}
 					initialTableState={initialTableState}
