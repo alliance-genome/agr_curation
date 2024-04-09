@@ -133,7 +133,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 				refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.REQUIRED_MESSAGE);
 			} else {
 				String refCurie = dto.getEvidence().getPublicationId();
-				if (refCurie.startsWith("OMIM:") || refCurie.startsWith("ORPHA:"))
+				if (refCurie.startsWith("OMIM:") || refCurie.startsWith("MIM:") || refCurie.startsWith("ORPHA:"))
 					refCurie = ReferenceConstants.RGD_OMIM_ORPHANET_REFERENCE;
 				reference = referenceService.retrieveFromDbOrLiteratureService(refCurie);
 				if (reference == null)
