@@ -22,8 +22,9 @@ public class CrossReferenceDTOValidator extends BaseDTOValidator {
 	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
 
-	public ObjectResponse<CrossReference> validateCrossReferenceDTO(CrossReferenceDTO dto) {
-		CrossReference xref = new CrossReference();
+	public ObjectResponse<CrossReference> validateCrossReferenceDTO(CrossReferenceDTO dto, CrossReference xref) {
+		if (xref == null)
+			xref = new CrossReference();
 
 		ObjectResponse<CrossReference> crResponse = validateAuditedObjectDTO(xref, dto);
 

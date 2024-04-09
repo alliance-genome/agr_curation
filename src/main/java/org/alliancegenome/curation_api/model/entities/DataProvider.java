@@ -11,6 +11,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToOne;
@@ -41,7 +42,7 @@ public class DataProvider extends AuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private CrossReference crossReference;
 

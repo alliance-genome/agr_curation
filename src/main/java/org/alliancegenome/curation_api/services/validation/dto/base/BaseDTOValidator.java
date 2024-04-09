@@ -153,7 +153,7 @@ public class BaseDTOValidator {
 		List<CrossReference> validatedXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getCrossReferenceDtos())) {
 			for (CrossReferenceDTO xrefDto : dto.getCrossReferenceDtos()) {
-				ObjectResponse<CrossReference> xrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(xrefDto);
+				ObjectResponse<CrossReference> xrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(xrefDto, null);
 				if (xrefResponse.hasErrors()) {
 					geResponse.addErrorMessage("cross_reference_dtos", xrefResponse.errorMessagesString());
 					break;
