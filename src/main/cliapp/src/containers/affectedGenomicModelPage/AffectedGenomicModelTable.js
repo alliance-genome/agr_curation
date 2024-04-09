@@ -126,7 +126,7 @@ export const AffectedGenomicModelTable = () => {
 		}
  ];
 
-	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;;
+	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;
 	const SEARCH_ENDPOINT = "agm";
 
 	const initialTableState = getDefaultTableState("AffectedGenomicModels", columns, DEFAULT_COLUMN_WIDTH);
