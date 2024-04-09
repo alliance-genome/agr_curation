@@ -25,7 +25,7 @@ export const AffectedGenomicModelTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const searchEndpoint = "agm";
+
 
 	const columns = [
 		{
@@ -126,21 +126,16 @@ export const AffectedGenomicModelTable = () => {
 		}
  ];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
-	});
-	const widthsObject = {};
+	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;;
+	const SEARCH_ENDPOINT = "agm";
 
-	columns.forEach((col) => {
-		widthsObject[col.field] = 100 / columns.length;
-	});
+	const initialTableState = getDefaultTableState("AffectedGenomicModels", columns, DEFAULT_COLUMN_WIDTH);
 
-	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames, undefined, widthsObject);
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
-	useGetTableData({
+	const { isFetching, isLoading } = useGetTableData({
 		tableState,
-		endpoint: searchEndpoint,
+		endpoint: SEARCH_ENDPOINT,
 		setIsInEditMode,
 		setEntities: setAgms,
 		setTotalRecords,
@@ -154,7 +149,7 @@ export const AffectedGenomicModelTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint={searchEndpoint}
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Affected Genomic Models"
 					entities={agms}
 					setEntities={setAgms}
@@ -163,14 +158,13 @@ export const AffectedGenomicModelTable = () => {
 					tableState={tableState}
 					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={false}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 	)

@@ -96,8 +96,6 @@ export const DiseaseAnnotationsTable = () => {
 		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.modEntityId']
 	};
-	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = "disease-annotation";
 	
 	const mutation = useMutation(updatedAnnotation => {
 		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
@@ -636,7 +634,7 @@ export const DiseaseAnnotationsTable = () => {
 	const onDiseaseValueChange = (event, setFieldValue, props) => {
 		defaultAutocompleteOnChange(props, event, "diseaseAnnotationObject", setFieldValue);
 	};
-
+	
 	const diseaseSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
 		const endpoint = "doterm";
@@ -936,7 +934,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "relatedNotes.freeText",
 		header: "Related Notes",
 		body: (rowData) => <CountDialogTemplate
-			entities={rowData.relatedNotes}
+		entities={rowData.relatedNotes}
 			handleOpen={handleRelatedNotesOpen}
 			text={"Notes"}
 		/>,
@@ -1106,13 +1104,16 @@ export const DiseaseAnnotationsTable = () => {
 		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		editor: (props) => obsoleteEditor(props)
 	}
-	];
+];
 
-	const initialTableState = getDefaultTableState("DiseaseAnnotations", columns, DEFAULT_COLUMN_WIDTH);
+const DEFAULT_COLUMN_WIDTH = 10;
+const SEARCH_ENDPOINT = "disease-annotation";
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+const initialTableState = getDefaultTableState("DiseaseAnnotations", columns, DEFAULT_COLUMN_WIDTH);
 
-	const { isLoading, isFetching } = useGetTableData({
+const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+const { isLoading, isFetching } = useGetTableData({
 		tableState,
 		endpoint: SEARCH_ENDPOINT,
 		sortMapping,
