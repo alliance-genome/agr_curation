@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
-import { ProgressSpinner } from 'primereact/progressspinner';
 
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
@@ -85,10 +84,9 @@ export const DiseaseAnnotationsTable = () => {
 	
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-
+	
 	const [diseaseAnnotations, setDiseaseAnnotations] = useState([]);
-	const [newDiseaseAnnotation, setNewDiseaseAnnotation] = useState(null);
-
+	
 	let diseaseAnnotationService = new DiseaseAnnotationService();
 	
 	const sortMapping = {
@@ -98,8 +96,8 @@ export const DiseaseAnnotationsTable = () => {
 		'sgdStrainBackground.name': ['sgdStrainBackground.modEntityId'],
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.modEntityId']
 	};
-	
-	const searchEndpoint = "disease-annotation";
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "disease-annotation";
 	
 	const mutation = useMutation(updatedAnnotation => {
 		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
@@ -1110,23 +1108,13 @@ export const DiseaseAnnotationsTable = () => {
 	}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
-	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("DiseaseAnnotations", defaultColumnNames, undefined, widthsObject);
+	const initialTableState = getDefaultTableState("DiseaseAnnotations", columns, DEFAULT_COLUMN_WIDTH);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
 	const { isLoading, isFetching } = useGetTableData({
 		tableState,
-		endpoint: searchEndpoint,
+		endpoint: SEARCH_ENDPOINT,
 		sortMapping,
 		setIsInEditMode,
 		setEntities: setDiseaseAnnotations,
@@ -1149,7 +1137,7 @@ export const DiseaseAnnotationsTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint={searchEndpoint}
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Disease Annotations"
 					entities={diseaseAnnotations}
 					setEntities={setDiseaseAnnotations}
@@ -1158,7 +1146,6 @@ export const DiseaseAnnotationsTable = () => {
 					tableState={tableState}
 					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
 					isEditable={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
@@ -1166,15 +1153,14 @@ export const DiseaseAnnotationsTable = () => {
 					toasts={{toast_topleft, toast_topright }}
 					errorObject={{errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages}}
 					headerButtons={headerButtons}
-					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
 					deprecationMethod={diseaseAnnotationService.deprecateDiseaseAnnotation}
 					deprecateOption={true}
 					modReset={true}
-					widthsObject={widthsObject}
 					handleDuplication={handleDuplication}
 					duplicationEnabled={true}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
 				/>
 			</div>

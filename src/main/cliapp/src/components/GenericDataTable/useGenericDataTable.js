@@ -10,7 +10,6 @@ export const useGenericDataTable = ({
 	tableState,
 	setTableState,
 	tableName,
-	defaultColumnNames,
  	curieFields,
 	idFields,
 	mutation,
@@ -19,9 +18,10 @@ export const useGenericDataTable = ({
 	errorObject,
 	newEntity,
 	deletionMethod,
-	widthsObject,
 	setTotalRecords,
 	totalRecords,
+	columns,
+	defaultColumnWidth
 }) => {
 
 	const [originalRows, setOriginalRows] = useState([]);
@@ -343,13 +343,13 @@ export const useGenericDataTable = ({
 	};
 
 	const setToModDefault = () => {
-		const modTableState = getModTableState(tableState.tableKeyName, widthsObject, defaultColumnNames);
+		const modTableState = getModTableState(tableState.tableKeyName, tableState.defaultColumnWidths, tableState.defaultColumnNames);
 		setTableState(modTableState);
 		dataTable.current.resetScroll();
 	}
 	
 	const resetTableState = () => {
-		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames, undefined, widthsObject);
+		let defaultTableState = getDefaultTableState(tableState.tableKeyName, columns, defaultColumnWidth);
 		
 		setTableState(defaultTableState);
 		dataTable.current.resetScroll();
@@ -381,7 +381,6 @@ export const useGenericDataTable = ({
 	return {
 		setSelectedColumnNames,
 		setOrderedColumnNames,
-		defaultColumnNames,
 		tableState,
 		onFilter,
 		setColumnList,

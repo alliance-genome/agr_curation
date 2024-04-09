@@ -58,7 +58,6 @@ export const GenericDataTable = (props) => {
 		handleDeletion,
 		handleDeprecation,
 		tableState,
-		defaultColumnNames,
 		exceptionDialog,
 		setExceptionDialog,
 		setToModDefault,
@@ -76,11 +75,11 @@ export const GenericDataTable = (props) => {
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 	const [allowDelete, setAllowDelete] = useState(false);
 
-	const createMultiselectComponent = (tableState,defaultColumnNames,isInEditMode) => {
+	const createMultiselectComponent = () => {
 		return (<MultiSelect
 				aria-label='columnToggle'
 				value={tableState.selectedColumnNames}
-				options={defaultColumnNames}
+				options={tableState.defaultColumnNames}
 				filter
 				resetFilterOnHide
 				onChange={e => {
@@ -101,8 +100,7 @@ export const GenericDataTable = (props) => {
 		<DataTableHeaderFooterTemplate
 				title = {tableName + " Table"}
 				tableState = {tableState}
-				defaultColumnNames = {defaultColumnNames}
-				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isInEditMode)}
+				multiselectComponent = {createMultiselectComponent()}
 				buttons = {headerButtons ? headerButtons(isInEditMode) : undefined}
 				tableStateConfirm = {tableStateConfirm}
 				setToModDefault = {setToModDefault}
