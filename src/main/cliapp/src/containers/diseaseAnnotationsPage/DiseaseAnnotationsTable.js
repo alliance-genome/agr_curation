@@ -36,7 +36,7 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
-import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, getIdentifier } from '../../utils/utils';
+import { getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, getIdentifier, setNewEntity } from '../../utils/utils';
 import { useNewAnnotationReducer } from "./useNewAnnotationReducer";
 import { NewAnnotationForm } from "./NewAnnotationForm";
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
@@ -1135,14 +1135,6 @@ export const DiseaseAnnotationsTable = () => {
 		searchService
 	});
 
-	if (isLoading) {
-		return (
-			<div className='flex align-items-center justify-content-center h-screen'>
-				<ProgressSpinner />
-			</div>
-		);
-	}
-
 	const headerButtons = (disabled=false) => {
 		return (
 			<>
@@ -1183,7 +1175,7 @@ export const DiseaseAnnotationsTable = () => {
 					widthsObject={widthsObject}
 					handleDuplication={handleDuplication}
 					duplicationEnabled={true}
-					fetching={isFetching}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 			<NewAnnotationForm
@@ -1192,7 +1184,7 @@ export const DiseaseAnnotationsTable = () => {
 				searchService={searchService}
 				relationsTerms={relationsTerms}
 				negatedTerms={booleanTerms}
-				setNewDiseaseAnnotation={setNewDiseaseAnnotation}
+				setNewDiseaseAnnotation={(newAnnotation) => setNewEntity(tableState, setDiseaseAnnotations, newAnnotation)}
 			/>
 			<RelatedNotesDialog
 				originalRelatedNotesData={relatedNotesData}

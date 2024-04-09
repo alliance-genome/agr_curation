@@ -527,3 +527,16 @@ export const processOptionalField = (eventValue) => {
 	if (!eventValue.curie) return { curie: eventValue };
 	return eventValue;
 }
+
+export const setNewEntity = (tableState, setEntities, newEntity) => {
+	if(!newEntity || !tableState || !setEntities) return;
+
+	if (
+			(tableState.filters && Object.keys(tableState.filters).length > 0) ||
+			(tableState.multiSortMeta && tableState.multiSortMeta.length > 0) ||
+			tableState.page > 0 
+	) return;
+
+	// Adds new entity to the top of the entities array when there are no filters, sorting, or pagination applied.
+	setEntities(previousEntities => [newEntity, ...previousEntities]);
+};
