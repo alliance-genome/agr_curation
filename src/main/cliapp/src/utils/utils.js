@@ -529,7 +529,7 @@ export const processOptionalField = (eventValue) => {
 }
 
 export const setNewEntity = (tableState, setEntities, newEntity) => {
-	if(!newEntity || !tableState || !setEntities) return;
+	if(!tableState || !setEntities || !newEntity) return;
 
 	if (
 			(tableState.filters && Object.keys(tableState.filters).length > 0) ||
