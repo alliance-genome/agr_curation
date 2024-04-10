@@ -25,8 +25,6 @@ export const AffectedGenomicModelTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-
-
 	const columns = [
 		{
 			field: "curie",
