@@ -1,33 +1,36 @@
-import React, {useRef, useState } from 'react';
-import {useMutation} from 'react-query';
-import {Toast} from 'primereact/toast';
-import {SearchService} from '../../service/SearchService';
-import {Messages} from 'primereact/messages';
-import {ControlledVocabularyDropdown} from "../../components/ControlledVocabularySelector";
-import {ErrorMessageComponent} from "../../components/Error/ErrorMessageComponent";
-import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
-import {EllipsisTableCell} from "../../components/EllipsisTableCell";
-import {ListTableCell} from "../../components/ListTableCell";
-import {Tooltip} from 'primereact/tooltip';
+import React, { useRef, useState } from 'react';
+import { useMutation } from 'react-query';
+import { Toast } from 'primereact/toast';
+import { SearchService } from '../../service/SearchService';
+import { Messages } from 'primereact/messages';
+import { ControlledVocabularyDropdown } from "../../components/ControlledVocabularySelector";
+import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
+import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
+import { EllipsisTableCell } from "../../components/EllipsisTableCell";
+import { ListTableCell } from "../../components/ListTableCell";
+import { Tooltip } from 'primereact/tooltip';
 import { Button } from 'primereact/button';
-import {ConditionRelationService} from "../../service/ConditionRelationService";
+import { ConditionRelationService } from "../../service/ConditionRelationService";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
 import { useNewRelationReducer } from './useNewRelationReducer';
-import {InputTextEditor} from "../../components/InputTextEditor";
-import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTable';
-import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefString, multipleAutocompleteOnChange} from '../../utils/utils';
-import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { InputTextEditor } from "../../components/InputTextEditor";
+import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
+import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefString, multipleAutocompleteOnChange, setNewEntity } from '../../utils/utils';
+import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 export const ConditionRelationTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
-	const [newConditionRelation, setNewConditionRelation] = useState(null);
+	const [totalRecords, setTotalRecords] = useState(0);
 	const { newRelationState, newRelationDispatch } = useNewRelationReducer();
+	const [conditionRelations, setConditionRelations] = useState([]);
 
 	const searchService = new SearchService();
 	const errorMessage = useRef(null);
@@ -51,7 +54,7 @@ export const ConditionRelationTable = () => {
 	});
 
 	const handleNewRelationOpen = () => {
-		newRelationDispatch({type: "OPEN_DIALOG"})
+		newRelationDispatch({ type: "OPEN_DIALOG" });
 	};
 
 
@@ -74,7 +77,7 @@ export const ConditionRelationTable = () => {
 					showClear={false}
 					placeholderText={props.rowData.conditionRelationType.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationType"}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationType"} />
 			</>
 		);
 	};
@@ -90,7 +93,7 @@ export const ConditionRelationTable = () => {
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const referenceEditorTemplate = (props) => {
 		return (
@@ -101,7 +104,7 @@ export const ConditionRelationTable = () => {
 					rowProps={props}
 					fieldName='singleReference'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
 					onValueChangeHandler={onReferenceValueChange}
 				/>
 				<ErrorMessageComponent
@@ -142,7 +145,7 @@ export const ConditionRelationTable = () => {
 
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const conditionRelationTemplate = (props) => {
 		return (
@@ -154,7 +157,7 @@ export const ConditionRelationTable = () => {
 					fieldName='conditions'
 					subField='conditionSummary'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+						<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
 					onValueChangeHandler={onConditionRelationValueChange}
 				/>
 				<ErrorMessageComponent
@@ -172,7 +175,7 @@ export const ConditionRelationTable = () => {
 					rowProps={props}
 					fieldName={'handle'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"handle"}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"handle"} />
 			</>
 		);
 	};
@@ -233,49 +236,58 @@ export const ConditionRelationTable = () => {
 
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "condition-relation";
+
+	const initialTableState = getDefaultTableState("Experiments", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isLoading, isFetching } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setConditionRelations,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
 
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("Experiments", defaultColumnNames, undefined, widthsObject);
-
-	const headerButtons = (disabled=false) => {
+	const headerButtons = (disabled = false) => {
 		return (
 			<>
-				<Button label="New Condition Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} disabled={disabled}/>&nbsp;&nbsp;
+				<Button label="New Condition Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} disabled={disabled} />&nbsp;&nbsp;
 			</>
 		);
 	};
 
 	return (
 		<div className="card">
-			<Toast ref={toast_topleft} position="top-left"/>
-			<Toast ref={toast_topright} position="top-right"/>
-			<Messages ref={errorMessage}/>
+			<Toast ref={toast_topleft} position="top-left" />
+			<Toast ref={toast_topright} position="top-right" />
+			<Messages ref={errorMessage} />
 			<GenericDataTable
-				endpoint="condition-relation"
+				endpoint={SEARCH_ENDPOINT}
 				tableName="Experiments"
 				columns={columns}
-				defaultColumnNames={defaultColumnNames}
-				initialTableState={initialTableState}
+				entities={conditionRelations}
+				setEntities={setConditionRelations}
+				totalRecords={totalRecords}
+				setTotalRecords={setTotalRecords}
+				tableState={tableState}
+				setTableState={setTableState}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				mutation={mutation}
 				isInEditMode={isInEditMode}
 				setIsInEditMode={setIsInEditMode}
-				toasts={{toast_topleft, toast_topright }}
-				errorObject={{errorMessages, setErrorMessages}}
+				toasts={{ toast_topleft, toast_topright }}
+				errorObject={{ errorMessages, setErrorMessages }}
 				headerButtons={headerButtons}
-				newEntity={newConditionRelation}
 				deletionEnabled={true}
 				deletionMethod={conditionRelationService.deleteConditionRelation}
-				widthsObject={widthsObject}
+				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+				fetching={isFetching || isLoading}
 			/>
 			<NewRelationForm
 				newRelationState={newRelationState}
@@ -283,8 +295,8 @@ export const ConditionRelationTable = () => {
 				searchService={searchService}
 				conditionRelationService={conditionRelationService}
 				conditionRelationTypeTerms={conditionRelationTypeTerms}
-				setNewConditionRelation={setNewConditionRelation}
+				setNewConditionRelation={(newConditionRelation) => setNewEntity(tableState, setConditionRelations, newConditionRelation)}
 			/>
 		</div>
-	)
-}
+	);
+};

@@ -385,7 +385,7 @@ export const ExperimentalConditionsTable = () => {
 				newConditionDispatch={newConditionDispatch}
 				searchService={searchService}
 				mutation={mutation}
-				setNewExperimentalCondition={(newAnnotation) => setNewEntity(tableState, setExperimentalConditions, newAnnotation)}
+				setNewExperimentalCondition={(newExCon) => setNewEntity(tableState, setExperimentalConditions, newExCon)}
 				curieAutocompleteFields={curieAutocompleteFields}
 			/>
 		</div>
