@@ -14,6 +14,10 @@ import { Button } from 'primereact/button';
 import { getRefStrings } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const ConstructsTable = () => {
 
@@ -34,6 +38,11 @@ export const ConstructsTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [constructs, setConstructs] = useState([]);
+
+	const searchService = new SearchService();
+	
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 	
@@ -444,17 +453,22 @@ export const ConstructsTable = () => {
 		}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "construct";
+
+	const initialTableState = getDefaultTableState("Constructs", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setConstructs,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("Constructs", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -463,18 +477,23 @@ export const ConstructsTable = () => {
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
 					dataKey="id"
-					endpoint="construct"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Constructs"
+					entities={constructs}
+					setEntities={setConstructs}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={false}
 					hasDetails={false}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 			<FullNameDialog
