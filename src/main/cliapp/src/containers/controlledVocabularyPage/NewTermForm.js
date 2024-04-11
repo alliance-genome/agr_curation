@@ -8,7 +8,7 @@ import {useMutation, useQueryClient} from "react-query";
 import {classNames} from "primereact/utils";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
-export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermDispatch, vocabularies, obsoleteTerms, vocabularyService}) => {
+export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, setNewTerm, newTermDispatch, vocabularies, obsoleteTerms, vocabularyService}) => {
 		const queryClient = useQueryClient();
 		const toast_success = useRef(null);
 		const toast_error = useRef(null);
@@ -31,7 +31,13 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
 				{
 						mutation.mutate(newTerm, {
 								onSuccess: (data) => {
-										queryClient.invalidateQueries('vocabterms');
+										//Invalidating the query immediately after success leads to api results that don't always include the new entity
+										setTimeout(() => {
+											queryClient.invalidateQueries("vocabterms").then(() => {
+												//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
+												setNewTerm(data.data.entity);
+											});
+										}, 1000);
 										toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Term Added'});
 										setSubmitted(false);
 										newTermDispatch({type: "RESET"});
