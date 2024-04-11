@@ -356,7 +356,7 @@ export const GenesTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint="gene"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Genes"
 					entities={genes}
 					setEntities={setGenes}

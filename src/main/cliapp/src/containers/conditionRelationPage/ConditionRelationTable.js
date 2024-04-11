@@ -269,13 +269,13 @@ export const ConditionRelationTable = () => {
 			<GenericDataTable
 				endpoint={SEARCH_ENDPOINT}
 				tableName="Experiments"
-				columns={columns}
 				entities={conditionRelations}
 				setEntities={setConditionRelations}
 				totalRecords={totalRecords}
 				setTotalRecords={setTotalRecords}
 				tableState={tableState}
 				setTableState={setTableState}
+				columns={columns}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				mutation={mutation}
