@@ -81,8 +81,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				E parent = findByCurie(o.getCurie());
 				parentSet.add(parent);
 			});
-			term.setIsaParents(parentSet);
 		}
+		term.setIsaParents(parentSet);
 
 		HashSet<OntologyTerm> ancestorsSet = new HashSet<>();
 		if(inTerm.getIsaAncestors() != null) {
@@ -90,8 +90,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				E ancestor = findByCurie(o.getCurie());
 				ancestorsSet.add(ancestor);
 			});
-			term.setIsaAncestors(ancestorsSet);
 		}
+		term.setIsaAncestors(ancestorsSet);
 		
 		return term;
 	}
