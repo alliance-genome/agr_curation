@@ -18,6 +18,8 @@ import { SearchService } from '../../service/SearchService';
 export const PhenotypeAnnotationsTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [phenotypeAnnotations, setPhenotypeAnnotations] = useState([]);
 	const [conditionRelationsData, setConditionRelationsData] = useState({
 		conditionRelations: [],
 		isInEdit: false,
@@ -32,9 +34,6 @@ export const PhenotypeAnnotationsTable = () => {
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
 	const uiErrorMessagesRef = useRef();
 	uiErrorMessagesRef.current = uiErrorMessages;
-
-	const [totalRecords, setTotalRecords] = useState(0);
-	const [phenotypeAnnotations, setPhenotypeAnnotations] = useState([]);
 
 	const searchService = new SearchService();
 

@@ -4,14 +4,22 @@ import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const SpeciesTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [species, setSpecies] = useState([]);
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+
+	const searchService = new SearchService();
 
 	const columns = [
 		{
@@ -76,17 +84,22 @@ export const SpeciesTable = () => {
 		}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "species";
+
+	const initialTableState = getDefaultTableState("Species", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setSpecies,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("Species", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -96,15 +109,20 @@ export const SpeciesTable = () => {
 				<GenericDataTable
 					endpoint="species"
 					tableName="Species"
+					entities={species}
+					setEntities={setSpecies}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={false}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}
 					errorObject={{ errorMessages, setErrorMessages }}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 		</>
