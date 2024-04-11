@@ -12,16 +12,24 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { InputTextEditor } from "../../components/InputTextEditor";
 import { TrueFalseDropdown } from "../../components/TrueFalseDropDownSelector";
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { SearchService } from '../../service/SearchService';
 
 export const VocabulariesTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
+	const [totalRecords, setTotalRecords] = useState(0);
 	const [errorMessages, setErrorMessages] = useState({});
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
+
+	const [vocabularies, setVocabularies] = useState([]);
+
+	const searchService = new SearchService();
 
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 
@@ -80,6 +88,7 @@ export const VocabulariesTable = () => {
 		{ 
 			field: "name", 
 			header: "Name", 
+			sortable: true,
 			body: (rowData) => stringBodyTemplate(rowData, "name"),
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => stringEditor(props, "name")
@@ -87,6 +96,7 @@ export const VocabulariesTable = () => {
 		{ 
 			field: "vocabularyDescription", 
 			header: "Description", 
+			sortable: true,
 			body: (rowData) => stringBodyTemplate(rowData, "vocabularyDescription"),
 			filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
 			editor: (props) => stringEditor(props, "vocabularyDescription")
@@ -94,6 +104,7 @@ export const VocabulariesTable = () => {
 		{ 
 			field: "obsolete", 
 			header: "Obsolete", 
+			sortable: true,
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditorTemplate(props)
@@ -101,42 +112,53 @@ export const VocabulariesTable = () => {
 		{
 			field: "vocabularyLabel",
 			header: "Label",
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
 			body: (rowData) => stringBodyTemplate(rowData, "vocabularyLabel")
 		}
 	]
+	
+	const DEFAULT_COLUMN_WIDTH = 20;
+	const SEARCH_ENDPOINT = "vocabulary";
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const initialTableState = getDefaultTableState("Vocabularies", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isLoading, isFetching } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setVocabularies,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 20;
-	});
-
-	const initialTableState = getDefaultTableState("Vocabularies", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable 
-					endpoint="vocabulary" 
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Vocabularies" 
+					entities={vocabularies}
+					setEntities={setVocabularies}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}	 
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
-					widthsObject={widthsObject}
 					deletionEnabled={true}
 					deletionMethod={vocabularyService.deleteVocabulary}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 	)
