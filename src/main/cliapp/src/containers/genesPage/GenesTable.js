@@ -14,11 +14,19 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { Button } from 'primereact/button';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const GenesTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [genes, setGenes] = useState([]);
+
+	const searchService = new SearchService();
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -325,17 +333,22 @@ export const GenesTable = () => {
 		}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 20; 
+	const SEARCH_ENDPOINT = "gene";
+
+	const initialTableState = getDefaultTableState("Genes", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setGenes,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 20;
-	});
-
-	const initialTableState = getDefaultTableState("Genes", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -343,17 +356,22 @@ export const GenesTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint="gene"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Genes"
+					entities={genes}
+					setEntities={setGenes}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={false}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 			<FullNameDialog

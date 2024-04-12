@@ -10,10 +10,16 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { Button } from 'primereact/button';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const PhenotypeAnnotationsTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [phenotypeAnnotations, setPhenotypeAnnotations] = useState([]);
 	const [conditionRelationsData, setConditionRelationsData] = useState({
 		conditionRelations: [],
 		isInEdit: false,
@@ -28,6 +34,8 @@ export const PhenotypeAnnotationsTable = () => {
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
 	const uiErrorMessagesRef = useRef();
 	uiErrorMessagesRef.current = uiErrorMessages;
+
+	const searchService = new SearchService();
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -172,27 +180,36 @@ export const PhenotypeAnnotationsTable = () => {
 	}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "phenotype-annotation";
+
+	const initialTableState = getDefaultTableState("PhenotypeAnnotations", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setPhenotypeAnnotations,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("PhenotypeAnnotations", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
 			<div className="card">
 				<GenericDataTable
-					endpoint="phenotype-annotation"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Phenotype Annotations"
+					entities={phenotypeAnnotations}
+					setEntities={setPhenotypeAnnotations}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					toasts={{toast_topleft, toast_topright }}
 					isEditable={false}
 					isInEditMode={isInEditMode}
@@ -202,8 +219,9 @@ export const PhenotypeAnnotationsTable = () => {
 					deletionEnabled={false}
 					deprecateOption={false}
 					modReset={false}
-					widthsObject={widthsObject}
 					duplicationEnabled={false}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 			<ConditionRelationsDialog

@@ -17,6 +17,10 @@ import { NewVocabularyForm } from "../../containers/controlledVocabularyPage/New
 import { Button } from "primereact/button";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { SearchService } from '../../service/SearchService';
+import { setNewEntity } from '../../utils/utils';
 
 export const ControlledVocabularyTable = () => {
 		const newTermReducer = (state, action) => {
@@ -35,11 +39,15 @@ export const ControlledVocabularyTable = () => {
 	errorMessagesRef.current = errorMessages;
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
+	const [totalRecords, setTotalRecords] = useState(0);
 	const [vocabularies, setVocabularies] = useState(null);
 	const [newTermDialog, setNewTermDialog] = useState(false);
 	const [newVocabularyDialog, setNewVocabularyDialog] = useState(false);
 	const [newTerm, newTermDispatch] = useReducer(newTermReducer, {});
 
+	const [terms, setTerms] = useState([]);
+
+	const searchService = new SearchService();
 
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 	let vocabularyService = new VocabularyService();
@@ -292,28 +300,37 @@ export const ControlledVocabularyTable = () => {
 		}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 13;
+	const SEARCH_ENDPOINT = "vocabularyterm";
+
+	const initialTableState = getDefaultTableState("ControlledVocabularyTerms", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isLoading, isFetching } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setTerms,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 13;
-	});
-
-	const initialTableState = getDefaultTableState("ControlledVocabularyTerms", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable 
-					endpoint="vocabularyterm" 
+					endpoint={SEARCH_ENDPOINT} 
 					tableName="Controlled Vocabulary Terms" 
+					entities={terms}
+					setEntities={setTerms}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}  
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
@@ -323,7 +340,8 @@ export const ControlledVocabularyTable = () => {
 					headerButtons={createButtons}
 					deletionEnabled={true}
 					deletionMethod={vocabularyService.deleteTerm}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 				<NewTermForm
 					newTermDialog = {newTermDialog}
@@ -333,6 +351,7 @@ export const ControlledVocabularyTable = () => {
 					vocabularies = {vocabularies}
 					obsoleteTerms = {obsoleteTerms}
 					vocabularyService = {vocabularyService}
+					setNewTerm={(newTerm) => setNewEntity(tableState, setTerms, newTerm)}
 				/>
 				<NewVocabularyForm
 					newVocabularyDialog = {newVocabularyDialog}

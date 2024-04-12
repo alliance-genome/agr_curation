@@ -44,8 +44,13 @@ export const NewConditionForm = ({
 		newConditionDispatch({type: "SUBMIT"});
 		mutation.mutate(newCondition, {
 			onSuccess: (data) => {
-				setNewExperimentalCondition(data.data.entity);
-				queryClient.invalidateQueries('ConditionRelationHandles');
+				//Invalidating the query immediately after success leads to api results that don't always include the new entity
+				setTimeout(() => {
+					queryClient.invalidateQueries("ExperimentalConditions").then(() => {
+						//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
+						setNewExperimentalCondition(data.data.entity);
+					});
+				}, 1000);
 				toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Relation Added'});
 				newConditionDispatch({type: "RESET"});
 			},

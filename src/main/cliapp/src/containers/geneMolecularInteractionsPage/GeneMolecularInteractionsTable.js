@@ -8,13 +8,21 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const GeneMolecularInteractionsTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
 	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [geneMolecularInteractions, setGeneMolecularInteractions] = useState([]);
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
+
+	const searchService = new SearchService();
 
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
 	const uiErrorMessagesRef = useRef();
@@ -150,27 +158,36 @@ export const GeneMolecularInteractionsTable = () => {
 	}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10; 
+	const SEARCH_ENDPOINT = "gene-molecular-interaction";
+
+	const initialTableState = getDefaultTableState("GeneMolecularInteractions", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setGeneMolecularInteractions,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("GeneMolecularInteractions", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
 			<div className="card">
 				<GenericDataTable
-					endpoint="gene-molecular-interaction"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Gene Molecular Interactions"
+					entities={geneMolecularInteractions}
+					setEntities={setGeneMolecularInteractions}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					toasts={{toast_topleft, toast_topright }}
 					isEditable={false}
 					isInEditMode={isInEditMode}
@@ -180,8 +197,9 @@ export const GeneMolecularInteractionsTable = () => {
 					deletionEnabled={false}
 					deprecateOption={false}
 					modReset={false}
-					widthsObject={widthsObject}
 					duplicationEnabled={false}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 		</>

@@ -43,8 +43,13 @@ export const NewVocabularyTermSetForm = ({
 		newVocabularyTermSetDispatch({type: "SUBMIT"});
 		mutation.mutate(newVocabularyTermSet, {
 			onSuccess: (data) => {
-				setNewVocabularyTermSet(data.data.entity);
-				queryClient.invalidateQueries('VocabularyTermSetHandles');
+				//Invalidating the query immediately after success leads to api results that don't always include the new entity
+				setTimeout(() => {
+					queryClient.invalidateQueries("VocabularyTermSets").then(() => {
+						//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
+						setNewVocabularyTermSet(data.data.entity);
+					});
+				}, 1000);
 				toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Vocabulary Term Set Added'});
 				newVocabularyTermSetDispatch({type: "RESET"});
 			},
