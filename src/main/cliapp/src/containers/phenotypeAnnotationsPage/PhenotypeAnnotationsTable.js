@@ -201,7 +201,7 @@ export const PhenotypeAnnotationsTable = () => {
 		<>
 			<div className="card">
 				<GenericDataTable
-					endpoint="phenotype-annotation"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Phenotype Annotations"
 					entities={phenotypeAnnotations}
 					setEntities={setPhenotypeAnnotations}

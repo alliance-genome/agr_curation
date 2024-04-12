@@ -357,7 +357,7 @@ export const ExperimentalConditionsTable = () => {
 			<Toast ref={toast_topleft} position="top-left" />
 			<Toast ref={toast_topright} position="top-right" />
 			<GenericDataTable
-				endpoint="experimental-condition"
+				endpoint={SEARCH_ENDPOINT}
 				tableName="Experimental Conditions"
 				entities={experimentalConditions}
 				setEntities={setExperimentalConditions}

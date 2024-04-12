@@ -1093,7 +1093,7 @@ export const AllelesTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint="allele"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Alleles"
 					entities={alleles}
 					setEntities={setAlleles}
