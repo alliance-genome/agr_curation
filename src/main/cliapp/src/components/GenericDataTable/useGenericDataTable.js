@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 
 import { trimWhitespace, returnSorted, validateBioEntityFields } from '../../utils/utils';
 import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
@@ -16,7 +16,6 @@ export const useGenericDataTable = ({
 	setIsInEditMode,
 	toasts,
 	errorObject,
-	newEntity,
 	deletionMethod,
 	setTotalRecords,
 	totalRecords,
@@ -37,23 +36,6 @@ export const useGenericDataTable = ({
 	const { toast_topleft, toast_topright } = toasts;
 	const [exceptionDialog, setExceptionDialog] = useState(false);
 	const [exceptionMessage,setExceptionMessage] = useState("");
-
-	useEffect(() => {
-		if (
-			(tableState.filters && Object.keys(tableState.filters).length > 0)
-			|| (tableState.multiSortMeta && tableState.multiSortMeta.length > 0)
-			|| tableState.page > 0
-			|| !newEntity
-		) return;
-
-		//adds new entity to the top of the table when there are no filters or sorting
-		setEntities((previousEntities) => {
-			const newEntities = global.structuredClone(previousEntities);
-			newEntities.unshift(newEntity);
-			return newEntities;
-		})
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [newEntity])
 
 	const onLazyLoad = (event) => {
 		let _tableState = {
