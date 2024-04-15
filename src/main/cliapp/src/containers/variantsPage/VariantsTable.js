@@ -20,6 +20,10 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const VariantsTable = () => {
 
@@ -28,6 +32,11 @@ export const VariantsTable = () => {
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 	
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [variants, setVariants] = useState([]);
+
+	const searchService = new SearchService();
+
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
 		isInEdit: false,
@@ -306,17 +315,22 @@ export const VariantsTable = () => {
 		}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "variant";
+
+	const initialTableState = getDefaultTableState("Variants", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setVariants,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("Variants", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -325,11 +339,15 @@ export const VariantsTable = () => {
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
 					dataKey="id"
-					endpoint="variant"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Variants"
+					entities={variants}
+					setEntities={setVariants}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={true}
 					hasDetails={false}
 					mutation={mutation}
@@ -337,7 +355,8 @@ export const VariantsTable = () => {
 					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 			<RelatedNotesDialog

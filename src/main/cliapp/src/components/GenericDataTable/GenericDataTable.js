@@ -33,7 +33,8 @@ export const GenericDataTable = (props) => {
 		dataKey = 'id',
 		deprecateOption = false,
 		modReset = false,
-		highlightObsolete = true
+		highlightObsolete = true,
+		fetching
 	} = props;
 
 	const {
@@ -57,7 +58,6 @@ export const GenericDataTable = (props) => {
 		handleDeletion,
 		handleDeprecation,
 		tableState,
-		defaultColumnNames,
 		exceptionDialog,
 		setExceptionDialog,
 		setToModDefault,
@@ -75,11 +75,11 @@ export const GenericDataTable = (props) => {
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 	const [allowDelete, setAllowDelete] = useState(false);
 
-	const createMultiselectComponent = (tableState,defaultColumnNames,isInEditMode) => {
+	const createMultiselectComponent = () => {
 		return (<MultiSelect
 				aria-label='columnToggle'
 				value={tableState.selectedColumnNames}
-				options={defaultColumnNames}
+				options={tableState.defaultColumnNames}
 				filter
 				resetFilterOnHide
 				onChange={e => {
@@ -100,8 +100,7 @@ export const GenericDataTable = (props) => {
 		<DataTableHeaderFooterTemplate
 				title = {tableName + " Table"}
 				tableState = {tableState}
-				defaultColumnNames = {defaultColumnNames}
-				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isInEditMode)}
+				multiselectComponent = {createMultiselectComponent()}
 				buttons = {headerButtons ? headerButtons(isInEditMode) : undefined}
 				tableStateConfirm = {tableStateConfirm}
 				setToModDefault = {setToModDefault}
@@ -267,7 +266,7 @@ export const GenericDataTable = (props) => {
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-					rowClassName = {(props) => getRowClass(props)}>
+					rowClassName = {(props) => getRowClass(props)} loading={fetching} loadingIcon="pi pi-spin pi-spinner">
 					{props.isEditable &&
 						<Column field='rowEditor' rowEditor className={"p-text-center p-0 min-w-3rem max-w-3rem text-base"} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
 								bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0 w-3rem sticky'

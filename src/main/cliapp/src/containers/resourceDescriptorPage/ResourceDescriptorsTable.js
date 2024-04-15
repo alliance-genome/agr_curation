@@ -6,10 +6,18 @@ import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { SearchService } from '../../service/SearchService';
 
 export const ResourceDescriptorsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+
+	const [resourceDescriptors, setResourceDescriptors] = useState();
+
+	const searchService = new SearchService();
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -86,12 +94,14 @@ export const ResourceDescriptorsTable = () => {
 		{ 
 			field: "prefix", 
 			header: "Prefix", 
+			sortable: true,
 			body: prefixBodyTemplate,
 			filterConfig: FILTER_CONFIGS.prefixFilterConfig
 		},
 		{ 
 			field: "name", 
 			header: "Name", 
+			sortable: true,
 			body: nameBodyTemplate,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig
 		},
@@ -104,51 +114,64 @@ export const ResourceDescriptorsTable = () => {
 		{ 
 			field: "idPattern", 
 			header: "ID Pattern", 
+			sortable: true,
 			body: idPatternBodyTemplate,
 			filterConfig: FILTER_CONFIGS.idPatternFilterConfig
 		},
 		{ 
 			field: "idExample", 
 			header: "ID Example", 
+			sortable: true,
 			body: idExampleBodyTemplate,
 			filterConfig: FILTER_CONFIGS.idExampleFilterConfig
 		},
 		{ 
 			field: "defaultUrlTemplate", 
 			header: "Default URL Template", 
+			sortable: true,
 			body: defaultUrlTemplateBodyTemplate,
 			filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig
 		}
 	]
+	
+	const DEFAULT_COLUMN_WIDTH = 20;
+	const SEARCH_ENDPOINT = "resourcedescriptor";
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const initialTableState = getDefaultTableState("ResourceDescriptors", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isLoading, isFetching } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setResourceDescriptors,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 20;
-	});
-
-	const initialTableState = getDefaultTableState("ResourceDescriptors", defaultColumnNames, undefined, widthsObject);
 
 	return (
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable 
-					endpoint="resourcedescriptor" 
+					endpoint={SEARCH_ENDPOINT} 
 					tableName="Resource Descriptors" 
+					entities={resourceDescriptors}
+					setEntities={setResourceDescriptors}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}	 
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={false}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 	)
