@@ -128,6 +128,7 @@ public class OntologyExecutor {
 				processTerms(bulkLoadFile, emapaTermService, config);
 			}
 			case GO -> {
+				config.setLoadOnlyIRIPrefix("GO"); // GO has to have both prefix and namespaces as obsolete terms do not show up in the namespace's
 				config.getAltNameSpaces().add("biological_process");
 				config.getAltNameSpaces().add("molecular_function");
 				config.getAltNameSpaces().add("cellular_component");
@@ -139,7 +140,10 @@ public class OntologyExecutor {
 				processTerms(bulkLoadFile, ecoTermService, config);
 				ecoTermService.updateAbbreviations();
 			}
-			case CHEBI -> processTerms(bulkLoadFile, chebiTermService, config);
+			case CHEBI -> {
+				config.setLoadOnlyIRIPrefix("CHEBI");
+				processTerms(bulkLoadFile, chebiTermService, config);
+			}
 			case ZFA -> {
 				config.getAltNameSpaces().add("zebrafish_anatomy");
 				processTerms(bulkLoadFile, zfaTermService, config);
