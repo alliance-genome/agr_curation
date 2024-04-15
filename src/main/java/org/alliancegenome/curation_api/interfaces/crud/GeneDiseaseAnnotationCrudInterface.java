@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -26,12 +26,12 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Gene Disease Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<GeneDiseaseAnnotation>, BaseDTOCrudControllerInterface<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO> {
+public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<GeneDiseaseAnnotation>, BaseUpsertControllerInterface<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO> {
 
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<GeneDiseaseAnnotation> get(@PathParam("identifier") String identifier);
+	public ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT

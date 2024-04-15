@@ -22,8 +22,9 @@ public class CrossReferenceDTOValidator extends BaseDTOValidator {
 	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
 
-	public ObjectResponse<CrossReference> validateCrossReferenceDTO(CrossReferenceDTO dto) {
-		CrossReference xref = new CrossReference();
+	public ObjectResponse<CrossReference> validateCrossReferenceDTO(CrossReferenceDTO dto, CrossReference xref) {
+		if (xref == null)
+			xref = new CrossReference();
 
 		ObjectResponse<CrossReference> crResponse = validateAuditedObjectDTO(xref, dto);
 
@@ -32,7 +33,7 @@ public class CrossReferenceDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getPrefix())) {
 			crResponse.addErrorMessage("prefix", ValidationConstants.REQUIRED_MESSAGE); 
 		} else {
-			ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefix(dto.getPrefix());
+			ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefixOrSynonym(dto.getPrefix());
 			if (rdResponse == null || rdResponse.getEntity() == null) {
 				crResponse.addErrorMessage("prefix", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPrefix() + ")");
 			}

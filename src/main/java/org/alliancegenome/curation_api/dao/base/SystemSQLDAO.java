@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
@@ -20,13 +20,13 @@ import jakarta.inject.Inject;
 import jakarta.persistence.Entity;
 
 @ApplicationScoped
-public class SystemSQLDAO extends BaseSQLDAO<BaseEntity> {
+public class SystemSQLDAO extends BaseSQLDAO<AuditedObject> {
 
 	@Inject
 	LiteratureReferenceDAO literatureReferenceDAO;
 
 	protected SystemSQLDAO() {
-		super(BaseEntity.class);
+		super(AuditedObject.class);
 	}
 
 	public ObjectResponse<Map<String, Object>> getSiteSummary() {

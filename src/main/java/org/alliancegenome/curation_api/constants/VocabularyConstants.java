@@ -55,4 +55,10 @@ public final class VocabularyConstants {
 	public static final String VARIANT_STATUS_VOCABULARY = "variant_status";
 
 	public static final String ALLELE_OF_VOCABULARY_TERM = "is_allele_of";
+
+	public static final String GENE_INTERACTION_RELATION_VOCABULARY = "gene_interaction_relation";
+	public static final String GENE_MOLECULAR_INTERACTION_RELATION_VOCABULARY_TERM_SET = "gene_molecular_interaction_relation";
+	public static final String GENE_GENETIC_INTERACTION_RELATION_VOCABULARY_TERM_SET = "gene_genetic_interaction_relation";
+	public static final String GENE_GENETIC_INTERACTION_RELATION_TERM = "genetically_interacts_with";
+	public static final String GENE_MOLECULAR_INTERACTION_RELATION_TERM = "physically_interacts_with";
 }

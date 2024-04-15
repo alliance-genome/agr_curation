@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import org.alliancegenome.curation_api.controllers.base.CurieObjectCrudController;
+import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.interfaces.crud.MoleculeCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
@@ -16,7 +16,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class MoleculeCrudController extends CurieObjectCrudController<MoleculeService, Molecule, MoleculeDAO> implements MoleculeCrudInterface {
+public class MoleculeCrudController extends BaseEntityCrudController<MoleculeService, Molecule, MoleculeDAO> implements MoleculeCrudInterface {
 
 	@Inject
 	MoleculeService moleculeService;

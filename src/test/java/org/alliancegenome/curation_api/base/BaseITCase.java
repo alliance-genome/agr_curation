@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -43,9 +44,11 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
@@ -54,6 +57,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
@@ -979,7 +983,10 @@ public class BaseITCase {
 		return new TypeRef<SearchResponse <AGMPhenotypeAnnotation>>() {
 		};
 	}
-
+	protected TypeRef<SearchResponse<AllelePhenotypeAnnotation>> getSearchResponseTypeRefAllelePhenotypeAnnotation() {
+		return new TypeRef<SearchResponse <AllelePhenotypeAnnotation>>() {
+		};
+	}
 	private TypeRef<SearchResponse<Organization>> getSearchResponseTypeRefOrganization() {
 		return new TypeRef<SearchResponse <Organization>>() {
 		};
@@ -1172,6 +1179,10 @@ public class BaseITCase {
 	}
 	
 	public void loadGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) {
+		loadGeneWithXref(modEntityId, taxonCurie, symbolNameTerm, dataProvider, null);
+	}
+	
+	public void loadGeneWithXref(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider, String xrefCurie) {
 			Gene gene = new Gene();
 			gene.setModEntityId(modEntityId);
 			gene.setTaxon(getNCBITaxonTerm(taxonCurie));
@@ -1184,6 +1195,13 @@ public class BaseITCase {
 			
 			gene.setGeneSymbol(symbol);
 
+			if (StringUtils.isNotBlank(xrefCurie)) {
+				CrossReference xref = new CrossReference();
+				xref.setReferencedCurie(xrefCurie);
+				xref.setDisplayName(xrefCurie);
+				gene.setCrossReferences(List.of(xref));
+			}
+			
 			RestAssured.given().
 					contentType("application/json").
 					body(gene).
@@ -1211,6 +1229,22 @@ public class BaseITCase {
 			body(goTerm).
 			when().
 			put("/api/goterm").
+			then().
+			statusCode(200);
+	}
+	
+	public void loadMITerm(String curie, String name) throws Exception {
+		MITerm miTerm = new MITerm();
+		miTerm.setCurie(curie);
+		miTerm.setName(name);
+		miTerm.setObsolete(false);
+		miTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(miTerm).
+			when().
+			put("/api/miterm").
 			then().
 			statusCode(200);
 	}
@@ -1287,6 +1321,22 @@ public class BaseITCase {
 			body(soTerm).
 			when().
 			put("/api/soterm").
+			then().
+			statusCode(200);
+	}
+	
+	public void loadWbPhenotypeTerm(String curie, String name) throws Exception {
+		WBPhenotypeTerm wbTerm = new WBPhenotypeTerm();
+		wbTerm.setCurie(curie);
+		wbTerm.setName(name);
+		wbTerm.setObsolete(false);
+		wbTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(wbTerm).
+			when().
+			put("/api/wbphenotypeterm").
 			then().
 			statusCode(200);
 	}

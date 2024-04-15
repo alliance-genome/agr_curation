@@ -4,6 +4,7 @@ import java.io.File;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.concurrent.Semaphore;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
@@ -63,6 +64,7 @@ public class JobScheduler {
 	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false") Boolean reindexSchedulingEnabled;
 
 	private ZonedDateTime lastCheck = null;
+	private Semaphore sem = new Semaphore(1);
 
 	@PostConstruct
 	public void init() {
@@ -72,6 +74,7 @@ public class JobScheduler {
 		for (BulkLoadGroup g : groups.getResults()) {
 			if (g.getLoads().size() > 0) {
 				for (BulkLoad b : g.getLoads()) {
+					boolean isFirst = true;
 					for (BulkLoadFile bf : b.getLoadFiles()) {
 						if (bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
 							if (bf.getLocalFilePath() != null) {
@@ -82,9 +85,10 @@ public class JobScheduler {
 							bf.setLocalFilePath(null);
 							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 							bf.setBulkloadStatus(JobStatus.FAILED);
-							slackNotifier.slackalert(bf);
+							if(isFirst) slackNotifier.slackalert(bf); // Only notify on the first failed file not all the failed files under a load
 							bulkLoadFileDAO.merge(bf);
 						}
+						isFirst = false;
 					}
 					if (b.getBulkloadStatus() == null) {
 						b.setBulkloadStatus(JobStatus.STOPPED);
@@ -104,47 +108,52 @@ public class JobScheduler {
 	@Scheduled(every = "1s")
 	public void scheduleCronGroupJobs() {
 		if (loadSchedulingEnabled) {
-			ZonedDateTime start = ZonedDateTime.now();
-			// log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
-			SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
-			for (BulkLoadGroup g : groups.getResults()) {
-				if (g.getLoads().size() > 0) {
-					for (BulkLoad b : g.getLoads()) {
-						if (b instanceof BulkScheduledLoad bsl) {
-							if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null) {
-
-								CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-								CronParser parser = new CronParser(cronDefinition);
-								try {
-									Cron unixCron = parser.parse(bsl.getCronSchedule());
-									unixCron.validate();
-
-									if (lastCheck != null) {
-										ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
-										ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
-
-										if (lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
-											Log.info("Need to run Cron: " + bsl.getName());
-											bsl.setSchedulingErrorMessage(null);
-											bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
-											bulkLoadDAO.merge(bsl);
-											pendingJobEvents.fire(new PendingBulkLoadJobEvent(bsl.getId()));
+			if(sem.tryAcquire()) {
+				ZonedDateTime start = ZonedDateTime.now();
+				//Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
+				SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
+				for (BulkLoadGroup g : groups.getResults()) {
+					if (g.getLoads().size() > 0) {
+						for (BulkLoad b : g.getLoads()) {
+							if (b instanceof BulkScheduledLoad bsl) {
+								if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null && !bsl.getBulkloadStatus().isRunning()) {
+	
+									CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+									CronParser parser = new CronParser(cronDefinition);
+									try {
+										Cron unixCron = parser.parse(bsl.getCronSchedule());
+										unixCron.validate();
+	
+										if (lastCheck != null) {
+											ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
+											ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
+	
+											if (lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
+												Log.info("Need to run Cron: " + bsl.getName());
+												bsl.setSchedulingErrorMessage(null);
+												bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
+												bulkLoadDAO.merge(bsl);
+												pendingJobEvents.fire(new PendingBulkLoadJobEvent(bsl.getId()));
+											}
 										}
+									} catch (Exception e) {
+										bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
+										bsl.setErrorMessage(e.getLocalizedMessage());
+										bsl.setBulkloadStatus(JobStatus.FAILED);
+										slackNotifier.slackalert(bsl);
+										Log.error(e.getLocalizedMessage());
+										bulkLoadDAO.merge(bsl);
 									}
-								} catch (Exception e) {
-									bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
-									bsl.setErrorMessage(e.getLocalizedMessage());
-									bsl.setBulkloadStatus(JobStatus.FAILED);
-									slackNotifier.slackalert(bsl);
-									Log.error(e.getLocalizedMessage());
-									bulkLoadDAO.merge(bsl);
 								}
 							}
 						}
 					}
 				}
+				lastCheck = start;
+				sem.release();
+			} else {
+				Log.debug("scheduleCronGroupJobs: unable to aquire lock");
 			}
-			lastCheck = start;
 		}
 	}
 
@@ -155,7 +164,7 @@ public class JobScheduler {
 			if (load.getBulkloadStatus().isPending()) {
 				load.setBulkloadStatus(load.getBulkloadStatus().getNextStatus());
 				bulkLoadDAO.merge(load);
-				// Log.info("Firing Start Event: " + load.getId());
+				// Log.info("Firing Start Job Event: " + load.getId());
 				startedJobEvents.fire(new StartedBulkLoadJobEvent(load.getId()));
 			}
 		}
@@ -168,7 +177,7 @@ public class JobScheduler {
 			if (fileLoad.getBulkloadStatus().isPending()) {
 				fileLoad.setBulkloadStatus(fileLoad.getBulkloadStatus().getNextStatus());
 				bulkLoadFileDAO.merge(fileLoad);
-				// Log.info("Firing Start Event: " + fileLoad.getId());
+				// Log.info("Firing Start File Job Event: " + fileLoad.getId());
 				startedFileJobEvents.fire(new StartedBulkLoadFileJobEvent(fileLoad.getId()));
 			}
 		}

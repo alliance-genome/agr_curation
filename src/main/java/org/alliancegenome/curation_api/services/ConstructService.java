@@ -55,7 +55,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	}
 
 	@Override
-	public ObjectResponse<Construct> get(String identifier) {
+	public ObjectResponse<Construct> getByIdentifier(String identifier) {
 		Construct construct = findByIdentifierString(identifier);
 		if (construct == null) {
 			SearchResponse<Construct> response = findByField("uniqueId", identifier);
@@ -88,7 +88,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 
 	@Override
 	@Transactional
-	public ObjectResponse<Construct> delete(Long id) {
+	public ObjectResponse<Construct> deleteById(Long id) {
 		constructService.removeOrDeprecateNonUpdated(id, true, "Construct DELETE API call");
 		ObjectResponse<Construct> ret = new ObjectResponse<>();
 		return ret;

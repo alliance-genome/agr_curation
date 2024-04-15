@@ -18,7 +18,6 @@ import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 
 import io.quarkus.logging.Log;
-import io.quarkus.scheduler.Scheduled;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -64,7 +63,7 @@ public class ReportScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
+	//@Scheduled(every = "1s")
 	public void scheduleGroupJobs() {
 		if (schedulingEnabled) {
 			ZonedDateTime start = ZonedDateTime.now();
@@ -106,7 +105,7 @@ public class ReportScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
+	//@Scheduled(every = "1s")
 	public void runGroupJobs() {
 		SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll();
 		for (CurationReportGroup group : reportGroups.getResults()) {

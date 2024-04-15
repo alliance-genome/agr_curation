@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.controllers.base.BaseDTOCrudController;
+import org.alliancegenome.curation_api.controllers.base.BaseAnnotationDTOCrudController;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.GeneDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
@@ -17,7 +17,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<GeneDiseaseAnnotationService, GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO>
+public class GeneDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudController<GeneDiseaseAnnotationService, GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO>
 	implements GeneDiseaseAnnotationCrudInterface {
 
 	@Inject
@@ -35,7 +35,7 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
 	}
 	
-	public ObjectResponse<GeneDiseaseAnnotation> get(String identifierString) {
-		return geneDiseaseAnnotationService.get(identifierString);
+	public ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(String identifierString) {
+		return geneDiseaseAnnotationService.getByIdentifier(identifierString);
 	}
 }

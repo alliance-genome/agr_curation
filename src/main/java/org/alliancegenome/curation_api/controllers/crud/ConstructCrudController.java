@@ -16,8 +16,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ConstructCrudController extends SubmittedObjectCrudController<ConstructService, Construct, ConstructDTO, ConstructDAO>
-	implements ConstructCrudInterface {
+public class ConstructCrudController extends SubmittedObjectCrudController<ConstructService, Construct, ConstructDTO, ConstructDAO> implements ConstructCrudInterface {
 
 	@Inject
 	ConstructService constructService;
@@ -34,4 +33,6 @@ public class ConstructCrudController extends SubmittedObjectCrudController<Const
 	public APIResponse updateConstructs(String dataProvider, List<ConstructDTO> annotations) {
 		return constructExecutor.runLoad(dataProvider, annotations);
 	}
+
+	
 }

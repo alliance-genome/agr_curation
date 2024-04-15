@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -26,13 +26,13 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Constructs")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface ConstructCrudInterface extends SubmittedObjectCrudInterface<Construct>, BaseDTOCrudControllerInterface<Construct, ConstructDTO> {
+public interface ConstructCrudInterface extends BaseSubmittedObjectCrudInterface<Construct>, BaseUpsertControllerInterface<Construct, ConstructDTO> {
 
 	@Override
 	@GET
 	@Path("/{identifierString}")
 	@JsonView(View.ConstructView.class)
-	public ObjectResponse<Construct> get(@PathParam("identifierString") String identifierString);
+	public ObjectResponse<Construct> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT

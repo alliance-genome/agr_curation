@@ -31,7 +31,7 @@ public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<Dise
 	@GET
 	@Path("/findBy/{modEntityId|modInternalId|uniqueId}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<DiseaseAnnotation> get(@PathParam("identifier") String identifier);
+	public ObjectResponse<DiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@POST

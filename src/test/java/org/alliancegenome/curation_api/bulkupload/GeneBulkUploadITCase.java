@@ -143,7 +143,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage"));
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage")).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TEST:Xref01")).
+			body("entity.crossReferences[0].displayName", is("TEST:Xref01Display")).
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage"));
 	}
 	
 	@Test
@@ -225,7 +229,11 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.dataProvider.sourceOrganization.abbreviation", is(requiredDataProvider2)).
 			body("entity.dataProvider.crossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProvider.crossReference.displayName", is("TEST2:0001")).
-			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2"));
+			body("entity.dataProvider.crossReference.resourceDescriptorPage.name", is("homepage2")).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TEST2:Xref02")).
+			body("entity.crossReferences[0].displayName", is("TEST2:Xref02Display")).
+			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage2"));
 	}
 	
 	@Test
@@ -316,6 +324,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is("GENETEST:Gene0001")).
+			body("entity", not(hasKey("crossReferences"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -388,6 +397,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("crossReferences"))).
 			body("entity.geneSymbol", not(hasKey("synonymScope"))).
 			body("entity.geneSymbol", not(hasKey("synonymUrl"))).
 			body("entity.geneSymbol", not(hasKey("evidence"))).

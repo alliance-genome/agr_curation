@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
@@ -26,8 +25,6 @@ public class DataProviderDTOValidator extends BaseDTOValidator {
 	@Inject
 	CrossReferenceService crossReferenceService;
 	@Inject
-	CrossReferenceDAO crossReferenceDAO;
-	@Inject
 	CrossReferenceDTOValidator crossReferenceDtoValidator;
 	
 	public ObjectResponse<DataProvider> validateDataProviderDTO(DataProviderDTO dto, DataProvider dbEntity) {
@@ -49,33 +46,16 @@ public class DataProviderDTOValidator extends BaseDTOValidator {
 			}
 		}
 
-		String dbXrefUniqueId = null;
-		String newXrefUniqueId = null;
-		Long dbXrefId = null;
-		if (dbEntity.getCrossReference() != null) {
-			dbXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(dbEntity.getCrossReference());
-			dbXrefId = dbEntity.getCrossReference().getId();
-		}
-		
 		if (dto.getCrossReferenceDto() != null) {
-			ObjectResponse<CrossReference> crResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(dto.getCrossReferenceDto());
+			ObjectResponse<CrossReference> crResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(dto.getCrossReferenceDto(), dbEntity.getCrossReference());
 			if (crResponse.hasErrors()) {
 				dpResponse.addErrorMessage("cross_reference_dto", crResponse.errorMessagesString());
 			} else {
-				newXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(crResponse.getEntity()); 
-				if (dbXrefUniqueId == null || !dbXrefUniqueId.equals(newXrefUniqueId)) {
-					dbEntity.setCrossReference(crossReferenceDAO.persist(crResponse.getEntity()));
-				} else if (dbXrefUniqueId != null && dbXrefUniqueId.equals(newXrefUniqueId)) {
-					dbEntity.setCrossReference(crossReferenceService.updateCrossReference(dbEntity.getCrossReference(), crResponse.getEntity()));
-				}
+				dbEntity.setCrossReference(crResponse.getEntity());
 			}
 		} else {
 			dbEntity.setCrossReference(null);
 		}
-		
-		if (dbXrefId != null && (newXrefUniqueId == null || !dbXrefUniqueId.equals(newXrefUniqueId)) && !dpResponse.hasErrors())
-			crossReferenceDAO.remove(dbXrefId);
-
 		dpResponse.setEntity(dbEntity);
 
 		return dpResponse;

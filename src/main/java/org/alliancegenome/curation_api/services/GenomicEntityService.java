@@ -24,11 +24,17 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 	}
 
 	@Override
-	public GenomicEntity upsert(GenomicEntityDTO dto, BackendBulkDataProvider dataProvider)
-			throws ObjectUpdateException {
+	public GenomicEntity upsert(GenomicEntityDTO dto) throws ObjectUpdateException {
+		return null;
+	}
+	
+	@Override
+	public GenomicEntity upsert(GenomicEntityDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		return null;
 	}
 
 	@Override
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {}
+
+
 }

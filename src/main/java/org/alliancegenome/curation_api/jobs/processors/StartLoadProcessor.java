@@ -6,12 +6,11 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @ApplicationScoped
 public class StartLoadProcessor extends BulkLoadProcessor {
 
@@ -21,7 +20,7 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 	public void bulkLoadFile(@Observes StartedBulkLoadFileJobEvent event) { // An @Observes method should not be in a super class as then it gets run for every child class
 		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(event.getId());
 		if (!bulkLoadFile.getBulkloadStatus().isStarted()) {
-			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
+			Log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
 			// endLoad(bulkLoadFile, "Finished ended due to status: " +
 			// bulkLoadFile.getBulkloadStatus(), bulkLoadFile.getBulkloadStatus());
 			return;
@@ -39,7 +38,7 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 
 		} catch (Exception e) {
 			endLoadFile(bulkLoadFile, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage(), JobStatus.FAILED);
-			log.error("Load File: " + bulkLoadFile.getBulkLoad().getName() + " is failed");
+			Log.error("Load File: " + bulkLoadFile.getBulkLoad().getName() + " is failed");
 			e.printStackTrace();
 		}
 

@@ -25,6 +25,6 @@ public interface ResourceDescriptorCrudInterface extends BaseIdCrudInterface<Res
 	@GET
 	@Path("/{id}")
 	@JsonView(View.ResourceDescriptorView.class)
-	ObjectResponse<ResourceDescriptor> get(@PathParam("id") Long id);
+	ObjectResponse<ResourceDescriptor> getById(@PathParam("id") Long id);
 
 }

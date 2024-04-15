@@ -134,9 +134,4 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 
 	}
 
-	public E find(String id) {
-
-		return null;
-	}
-
 }

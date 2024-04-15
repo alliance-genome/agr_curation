@@ -34,7 +34,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 			addMessageResponse("No VocabularyTerm ID provided");
 			throw new ApiErrorException(response);
 		}
-		VocabularyTerm dbEntity = vocabularyTermService.get(id).getEntity();
+		VocabularyTerm dbEntity = vocabularyTermService.getById(id).getEntity();
 		if (dbEntity == null) {
 			addMessageResponse("Could not find VocabularyTerm with ID: [" + id + "]");
 			throw new ApiErrorException(response);
