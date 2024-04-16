@@ -52,7 +52,7 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 		if (StringUtils.isBlank(dto.getInteractorAIdentifier())) {
 			ggiResponse.addErrorMessage("interactorAIdentifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<Gene> interactorAResponse = findAllianceGene(dto.getInteractorAIdentifier());
+			ObjectResponse<Gene> interactorAResponse = findAllianceGene(dto.getInteractorAIdentifier(), dto.getInteractorATaxonId());
 			if (interactorAResponse.hasErrors())
 				ggiResponse.addErrorMessage("interactorAIdentifier", interactorAResponse.errorMessagesString());
 			interactorA = interactorAResponse.getEntity();
@@ -62,7 +62,7 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 		if (StringUtils.isBlank(dto.getInteractorBIdentifier())) {
 			ggiResponse.addErrorMessage("interactorBIdentifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<Gene> interactorBResponse = findAllianceGene(dto.getInteractorBIdentifier());
+			ObjectResponse<Gene> interactorBResponse = findAllianceGene(dto.getInteractorBIdentifier(), dto.getInteractorBTaxonId());
 			if (interactorBResponse.hasErrors())
 				ggiResponse.addErrorMessage("interactorBIdentifier", interactorBResponse.errorMessagesString());
 			interactorB = interactorBResponse.getEntity();

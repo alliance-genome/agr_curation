@@ -18,6 +18,7 @@ public abstract class InteractionStringHelper {
 	
 	private static final Pattern PSI_MI_FORMAT = Pattern.compile("^[^:]+:\"([^\"]*)\"");
 	private static final Pattern WB_VAR_ANNOTATION = Pattern.compile("wormbase:(WBVar\\d+)\\D*");
+	private static final Pattern PSI_MI_FORMAT_TAXON = Pattern.compile("^taxid:(\\d+)");
 
 	public static String getGeneMolecularInteractionUniqueId(PsiMiTabDTO dto, Gene interactorA, Gene interactorB, String interactionId, List<Reference> references) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
@@ -68,6 +69,19 @@ public abstract class InteractionStringHelper {
 			return null;
 		
 		return matcher.group(1);
+	}
+	
+	public static String getAllianceTaxonCurie(String psiMiTaxonString) {
+		// For retrieving Alliance taxon curie from PSI-MI taxon fields
+		if (StringUtils.isBlank(psiMiTaxonString))
+			return null;
+		
+		Matcher matcher = PSI_MI_FORMAT_TAXON.matcher(psiMiTaxonString);
+		
+		if (!matcher.find())
+			return null;
+		
+		return "NCBITaxon:" + matcher.group(1);
 	}
 	
 	public static String extractWBVarCurieFromAnnotations(String annotationsString) {
