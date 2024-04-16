@@ -10,7 +10,9 @@ import * as jose from 'jose'
 
 import { ConfirmButton } from '../../components/ConfirmButton';
 import {useGetUserSettings} from "../../service/useGetUserSettings";
-import ReactJson from 'react-json-view'
+import JsonView from 'react18-json-view'
+import 'react18-json-view/src/style.css'
+import 'react18-json-view/src/dark.css'
 import { PersonSettingsService } from "../../service/PersonSettingsService";
 
 const initialThemeState = {
@@ -114,7 +116,7 @@ export const ProfileComponent = () => {
 	const jsonTemplate = (props) => {
 		return (
 			<Panel headerTemplate={headerTemplate} toggleable collapsed>
-				<ReactJson src={props.value} theme={themeState?.layoutColorMode === "light" ? "rjv-default" : "google"}/>
+				<JsonView src={props.value} theme="default" dark={themeState?.layoutColorMode !== "light"}/>
 			</Panel>
 		);
 	};
@@ -123,7 +125,7 @@ export const ProfileComponent = () => {
 		return (
 			<>
 				<Panel headerTemplate={headerTemplate} toggleable collapsed>
-					<ReactJson src={props.value} theme={themeState?.layoutColorMode === "light" ? "rjv-default" : "google"} />
+					<JsonView src={props.value} theme="default" dark={themeState?.layoutColorMode !== "light"}/>
 				</Panel>
 				<ConfirmButton
 					buttonText="Reset Table"
