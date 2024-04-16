@@ -221,12 +221,14 @@ const modTableSettings = {
 	}
 };
 
-export function getModTableState(table, widthsObject, defaultColumnNames) {
+export function getModTableState(table, defaultColumnWidths, defaultColumnNames) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
 	const modTableState = global.structuredClone(modTableSettings[mod] ? modTableSettings[mod][table] : modTableSettings['Default'][table]);
-	modTableState.columnWidths = widthsObject;
+	modTableState.columnWidths = defaultColumnWidths;
+	modTableState.defaultColumnWidths = defaultColumnWidths;
 	modTableState.orderedColumnNames = defaultColumnNames;
+	modTableState.defaultColumnNames = defaultColumnNames;
 	return modTableState;
 };
 
