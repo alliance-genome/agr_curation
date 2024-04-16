@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -17,6 +18,7 @@ import org.alliancegenome.curation_api.model.entities.GeneInteraction;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -25,6 +27,7 @@ import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionCrossReferenceHelper;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.alliancegenome.curation_api.services.ontology.MiTermService;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +48,8 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject
 	InteractionCrossReferenceHelper interactionXrefHelper;
+	@Inject
+	NcbiTaxonTermService ncbiTaxonTermService;
 	
 	public <E extends GeneInteraction> ObjectResponse<E> validateGeneInteraction(E interaction, PsiMiTabDTO dto, List<Reference> references) {
 
@@ -56,6 +61,14 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 			interaction.setEvidence(evidence);
 		} else {
 			interaction.setEvidence(null);
+		}
+		
+		// Taxon strings are needed for xref check but don't need to be stored
+		if (StringUtils.isBlank(dto.getInteractorATaxonId())) {
+			giResponse.addErrorMessage("interactorATaxonId", ValidationConstants.REQUIRED_MESSAGE);
+		}
+		if (StringUtils.isBlank(dto.getInteractorBTaxonId())) {
+			giResponse.addErrorMessage("interactorBTaxonId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
 		MITerm interactorARole = null;
@@ -148,7 +161,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 
 	}
 	
-	protected ObjectResponse<Gene> findAllianceGene(String psiMiTabIdentifier) {
+	protected ObjectResponse<Gene> findAllianceGene(String psiMiTabIdentifier, String psiMiTabTaxonCurie) {
 		ObjectResponse<Gene> response = new ObjectResponse<>();
 		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
 		if (psiMiTabIdParts.length != 2) {
@@ -167,9 +180,28 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		if (prefix.isModPrefix) {
 			allianceGene = geneService.findByIdentifierString(convertedCurie);
 		} else {
+			String taxonCurie = InteractionStringHelper.getAllianceTaxonCurie(psiMiTabTaxonCurie);
+			if (taxonCurie == null) {
+				response.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE + " (expecting string starting taxid:<suffix>, got " + psiMiTabTaxonCurie + ")");
+				return response;
+			}
+			NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(taxonCurie).getEntity();
+			if (taxon == null) {
+				response.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE + " (" + taxonCurie + " not found)");
+				return response;
+			}
+			
 			SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
-			if (searchResponse != null)
-				allianceGene = searchResponse.getSingleResult();
+			if (searchResponse != null) {
+				// Need to check that returned gene belongs to MOD corresponding to taxon
+				for (Gene searchResult : searchResponse.getResults()) {
+					String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getSourceOrganization().getAbbreviation());
+					if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+						allianceGene = searchResult;
+						break;
+					}
+				}
+			}
 		}
 		if (allianceGene == null)
 			response.addErrorMessage("curie", ValidationConstants.INVALID_MESSAGE + " (" + convertedCurie + " not found)");
