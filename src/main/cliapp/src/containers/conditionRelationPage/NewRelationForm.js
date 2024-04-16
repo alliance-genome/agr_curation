@@ -48,7 +48,7 @@ export const NewRelationForm = ({
 			onSuccess: (data) => {
 				//Invalidating the query immediately after success leads to api results that don't always include the new entity
 				setTimeout(() => {
-					queryClient.invalidateQueries("Experiments").then(() => {
+					queryClient.invalidateQueries(['Experiments']).then(() => {
 						//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
 						setNewConditionRelation(data.data.entity);
 					});

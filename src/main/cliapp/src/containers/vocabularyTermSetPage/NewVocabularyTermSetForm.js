@@ -45,7 +45,7 @@ export const NewVocabularyTermSetForm = ({
 			onSuccess: (data) => {
 				//Invalidating the query immediately after success leads to api results that don't always include the new entity
 				setTimeout(() => {
-					queryClient.invalidateQueries("VocabularyTermSets").then(() => {
+					queryClient.invalidateQueries(['VocabularyTermSets']).then(() => {
 						//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
 						setNewVocabularyTermSet(data.data.entity);
 					});

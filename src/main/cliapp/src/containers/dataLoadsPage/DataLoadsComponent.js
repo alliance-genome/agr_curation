@@ -158,18 +158,18 @@ export const DataLoadsComponent = () => {
 	};
 
 	const refresh = () => {
-		queryClient.invalidateQueries('bulkloadtable');
+		queryClient.invalidateQueries(['bulkloadtable']);
 	};
 
 	const runLoad = (rowData) => {
 		getService().restartLoad(rowData.type, rowData.id).then(response => {
-			queryClient.invalidateQueries('bulkloadtable');
+			queryClient.invalidateQueries(['bulkloadtable']);
 		});
 	};
 
 	const runLoadFile = (rowData) => {
 		getService().restartLoadFile(rowData.id).then(response => {
-			queryClient.invalidateQueries('bulkloadtable');
+			queryClient.invalidateQueries(['bulkloadtable']);
 		});
 	};
 
@@ -181,19 +181,19 @@ export const DataLoadsComponent = () => {
 
 	const deleteLoadFile = (rowData) => {
 		getService().deleteLoadFile(rowData.id).then(response => {
-			queryClient.invalidateQueries('bulkloadtable');
+			queryClient.invalidateQueries(['bulkloadtable']);
 		});
 	};
 
 	const deleteLoad = (rowData) => {
 		getService().deleteLoad(rowData.type, rowData.id).then(response => {
-			queryClient.invalidateQueries('bulkloadtable');
+			queryClient.invalidateQueries(['bulkloadtable']);
 		});
 	};
 
 	const deleteGroup = (rowData) => {
 		getService().deleteGroup(rowData.id).then(response => {
-			queryClient.invalidateQueries('bulkloadtable');
+			queryClient.invalidateQueries(['bulkloadtable']);
 		});
 	};
 

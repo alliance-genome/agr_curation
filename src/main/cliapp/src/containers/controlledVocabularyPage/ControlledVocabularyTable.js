@@ -52,7 +52,7 @@ export const ControlledVocabularyTable = () => {
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 	let vocabularyService = new VocabularyService();
 
-	useQuery("vocabularies",() => vocabularyService.getVocabularies(), {
+	useQuery(['vocabularies'], () => vocabularyService.getVocabularies(), {
 			onSuccess: (data) => {
 					setVocabularies(data.data.results.sort(function (a, b) {
 						return a.name.localeCompare(b.name, 'en', {'sensitivity' : 'base'});

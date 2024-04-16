@@ -46,7 +46,7 @@ export const NewConditionForm = ({
 			onSuccess: (data) => {
 				//Invalidating the query immediately after success leads to api results that don't always include the new entity
 				setTimeout(() => {
-					queryClient.invalidateQueries("ExperimentalConditions").then(() => {
+					queryClient.invalidateQueries(['ExperimentalConditions']).then(() => {
 						//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
 						setNewExperimentalCondition(data.data.entity);
 					});

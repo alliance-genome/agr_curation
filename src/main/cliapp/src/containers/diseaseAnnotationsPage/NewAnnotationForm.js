@@ -125,7 +125,7 @@ export const NewAnnotationForm = ({
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
 				if (!(isRelatedNotesErrors || isExConErrors)) {
-					queryClient.invalidateQueries('DiseaseAnnotationsHandles');
+					queryClient.invalidateQueries(['DiseaseAnnotationsHandles']);
 					toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Annotation Added' });
 					if (closeAfterSubmit) {
 						newAnnotationDispatch({ type: "RESET" });
@@ -135,7 +135,7 @@ export const NewAnnotationForm = ({
 					}
 					//Invalidating the query immediately after success leads to api results that don't always include the new annotation
 					setTimeout(() => {
-						queryClient.invalidateQueries("DiseaseAnnotations").then(() => {
+						queryClient.invalidateQueries(['DiseaseAnnotations']).then(() => {
 							//needs to be set after api call otherwise the newly appended DA would be removed when there are no filters
 							setNewDiseaseAnnotation(data.data.entity);
 						});

@@ -55,7 +55,7 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 			console.log(event);
 			mutation.mutate(group, {
 				onSuccess: () => {
-					queryClient.invalidateQueries('bulkloadtable');
+					queryClient.invalidateQueries(['bulkloadtable']);
 					setSubmitted(false);
 					setBulkLoadGroupDialog(false);
 					setGroup(emptyGroup);

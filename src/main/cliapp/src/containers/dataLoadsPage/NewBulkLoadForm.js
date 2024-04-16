@@ -96,7 +96,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 
 		mutation.mutate(newBulkLoad, {
 			onSuccess: () => {
-				queryClient.invalidateQueries('bulkloadtable');
+				queryClient.invalidateQueries(['bulkloadtable']);
 				bulkLoadDispatch({ type: "RESET" });
 				hideFMS.current = true;
 				hideURL.current = true;

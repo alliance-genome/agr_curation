@@ -20,7 +20,7 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 		return stickyObject;
 	});
 	
-	useQuery(`${key}`, () => personSettingsService.getUserSettings(key), {
+	useQuery([`${key}`], () => personSettingsService.getUserSettings(key), {
 		onSuccess: (data) => {
 			let userSettings = defaultValue;
 			if(Object.keys(data).length === 0) {

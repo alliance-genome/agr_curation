@@ -52,7 +52,7 @@ export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) 
 			console.log(event);
 			mutation.mutate(group, {
 				onSuccess: () => {
-					queryClient.invalidateQueries('reporttable');
+					queryClient.invalidateQueries(['reporttable']);
 					setSubmitted(false);
 					setReportGroupDialog(false);
 					setGroup(emptyGroup);

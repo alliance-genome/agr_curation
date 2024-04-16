@@ -44,7 +44,7 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 
 		mutation.mutate(newReport, {
 			onSuccess: () => {
-				queryClient.invalidateQueries('reporttable');
+				queryClient.invalidateQueries(['reporttable']);
 				reportDispatch({ type: "RESET" });
 				setNewReportDialog(false);
 			},

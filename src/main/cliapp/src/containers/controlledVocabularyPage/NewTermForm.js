@@ -33,7 +33,7 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, setNewTe
 								onSuccess: (data) => {
 										//Invalidating the query immediately after success leads to api results that don't always include the new entity
 										setTimeout(() => {
-											queryClient.invalidateQueries("vocabterms").then(() => {
+											queryClient.invalidateQueries(['vocabterms']).then(() => {
 												//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
 												setNewTerm(data.data.entity);
 											});
