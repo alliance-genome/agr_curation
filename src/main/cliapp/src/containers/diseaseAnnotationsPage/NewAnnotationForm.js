@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { MultiSelect } from 'primereact/multiselect';
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { NotEditor } from "../../components/Editors/NotEditor";
 import { classNames } from "primereact/utils";

@@ -5,7 +5,7 @@ import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { ReportService } from '../../service/ReportService';
 
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) => {

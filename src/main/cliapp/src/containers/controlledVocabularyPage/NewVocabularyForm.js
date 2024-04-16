@@ -3,7 +3,7 @@ import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {classNames} from "primereact/utils";
 import {Button} from "primereact/button";
-import {useMutation,useQueryClient} from "react-query";
+import {useMutation,useQueryClient} from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from "primereact/dropdown";
 import {VocabularyService} from "../../service/VocabularyService";

@@ -1,6 +1,6 @@
 import React, {useRef, useState, useReducer} from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { useMutation, useQuery} from 'react-query';
+import { useMutation, useQuery} from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
 import { Tooltip } from 'primereact/tooltip';

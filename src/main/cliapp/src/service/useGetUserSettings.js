@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useState } from "react";
 import { PersonSettingsService } from "./PersonSettingsService";
 import { removeInvalidFilters, removeInvalidSorts } from '../utils/utils';

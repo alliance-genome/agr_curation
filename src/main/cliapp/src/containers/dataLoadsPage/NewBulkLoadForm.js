@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { DataLoadService } from '../../service/DataLoadService';
 import { InputText } from 'primereact/inputtext';
 import { FMSForm } from './FMSForm';

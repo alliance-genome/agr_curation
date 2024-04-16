@@ -1,8 +1,8 @@
 import 'react-app-polyfill/ie11';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App from './App';
 import { HashRouter } from 'react-router-dom';
 import ScrollToTop from './ScrollToTop';
