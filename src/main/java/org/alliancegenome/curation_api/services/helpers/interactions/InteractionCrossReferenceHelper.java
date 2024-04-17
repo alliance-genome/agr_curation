@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.interactions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
@@ -29,7 +30,7 @@ public class InteractionCrossReferenceHelper {
 			return null;
 			
 		for (String xrefString : xrefStrings) {
-			String xrefCurie = InteractionStringHelper.getAllianceCurie(xrefString);
+			String xrefCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(xrefString);
 			if (xrefCurie != null) {
 				CrossReference xref = createAllianceXref(xrefCurie);
 				if (xref != null)

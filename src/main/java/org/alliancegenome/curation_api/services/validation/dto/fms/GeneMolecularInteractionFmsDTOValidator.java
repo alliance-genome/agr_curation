@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
@@ -43,7 +44,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 	
 		String interactionId = null;
 		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
-			interactionId = InteractionStringHelper.getAllianceCurie(dto.getInteractionIds().get(0));
+			interactionId = PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractionIds().get(0));
 		
 		Gene interactorA = null;
 		if (StringUtils.isBlank(dto.getInteractorAIdentifier())) {
