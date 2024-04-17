@@ -108,19 +108,6 @@ public abstract class InteractionStringHelper {
 		return "MI:0670";
 	}
 	
-	public static String getAllianceCurie(String psiMiTabIdentifier) {
-		// For converting curies with prefixes that differ from those used at AGR, e.g. wormbase:WBGene000001
-		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
-		if (psiMiTabIdParts.length != 2)
-			return null;
-		
-		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
-		if (prefix == null)
-			return null;
-		
-		return prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
-	}
-	
 	// TODO: Can remove this method once loading interactions where interactors are referenced by xref
 	public static Boolean isAllianceInteractor(String psiMiTabIdentifier) {
 		if (StringUtils.isBlank(psiMiTabIdentifier))

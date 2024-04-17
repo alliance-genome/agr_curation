@@ -216,7 +216,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		if(CollectionUtils.isNotEmpty(dto.getPublicationIds())) {
 			for (String publicationId : dto.getPublicationIds()) {
 				Reference reference = null;
-				String alliancePubXrefCurie = InteractionStringHelper.getAllianceCurie(publicationId);
+				String alliancePubXrefCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(publicationId);
 				if (alliancePubXrefCurie != null)
 					reference = referenceService.retrieveFromDbOrLiteratureService(alliancePubXrefCurie);
 				if (reference == null) {
