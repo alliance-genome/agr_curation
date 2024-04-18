@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -70,7 +71,7 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 	private ResourceDescriptorPage getPageForResourceDescriptorFromDB(String resourceDescriptorPrefix, String pageName) {
 		
 		ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefixOrSynonym(resourceDescriptorPrefix);
-		if (rdResponse == null || rdResponse.getEntity() == null)
+		if (rdResponse == null || rdResponse.getEntity() == null || CollectionUtils.isEmpty(rdResponse.getEntity().getResourcePages()))
 			return null;
 		
 		for (ResourceDescriptorPage page : rdResponse.getEntity().getResourcePages()) {
