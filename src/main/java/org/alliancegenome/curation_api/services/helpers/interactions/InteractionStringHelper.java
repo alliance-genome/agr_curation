@@ -107,20 +107,4 @@ public abstract class InteractionStringHelper {
 		}
 		return "MI:0670";
 	}
-	
-	// TODO: Can remove this method once loading interactions where interactors are referenced by xref
-	public static Boolean isAllianceInteractor(String psiMiTabIdentifier) {
-		if (StringUtils.isBlank(psiMiTabIdentifier))
-			return false;
-		
-		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
-		if (psiMiTabIdParts.length != 2)
-			return false;
-		
-		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
-		if (prefix == null)
-			return false;
-		
-		return prefix.isModPrefix;
-	}
 }
