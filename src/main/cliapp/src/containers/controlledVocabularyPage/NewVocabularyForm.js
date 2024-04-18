@@ -67,13 +67,7 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 						mutation.mutate(vocabulary, {
 								onSuccess: (data) => {
 									if(setNewVocabulary) {
-										//Invalidating the query immediately after success leads to api results that don't always include the new entity
-										setTimeout(() => {
-											queryClient.invalidateQueries(['Vocabularies']).then(() => {
-												//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
-												setNewVocabulary(data.data.entity)
-											});
-										}, 1000);
+										setNewVocabulary(data.data.entity)
 									} else {
 											queryClient.invalidateQueries(['vocabularies']);
 										};

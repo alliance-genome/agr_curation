@@ -6,11 +6,11 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
-import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
 
@@ -22,7 +22,6 @@ export const NewConditionForm = ({
 	setNewExperimentalCondition,
 	curieAutocompleteFields,
 }) => {
-	const queryClient = useQueryClient();
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newCondition, errorMessages, submitted, newConditionDialog } = newConditionState;
@@ -41,30 +40,24 @@ export const NewConditionForm = ({
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		newConditionDispatch({type: "SUBMIT"});
+		newConditionDispatch({ type: "SUBMIT" });
 		mutation.mutate(newCondition, {
 			onSuccess: (data) => {
-				//Invalidating the query immediately after success leads to api results that don't always include the new entity
-				setTimeout(() => {
-					queryClient.invalidateQueries(['ExperimentalConditions']).then(() => {
-						//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
-						setNewExperimentalCondition(data.data.entity);
-					});
-				}, 1000);
-				toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Relation Added'});
-				newConditionDispatch({type: "RESET"});
+				setNewExperimentalCondition(data.data.entity);
+				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
+				newConditionDispatch({ type: "RESET" });
 			},
 			onError: (error) => {
 
 				const message =
 					error.response.data.errorMessages.uniqueId ?
-					"Page Error: New experimental condition is a duplicate of an existing experimental condition" :
-					error.response.data.errorMessage;
+						"Page Error: New experimental condition is a duplicate of an existing experimental condition" :
+						error.response.data.errorMessage;
 
 				toast_error.current.show([
-					{life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false}
+					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false }
 				]);
-				newConditionDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
+				newConditionDispatch({ type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages });
 			}
 		});
 	};
@@ -72,14 +65,14 @@ export const NewConditionForm = ({
 	const onCurieFieldChange = (event, setFieldValue) => {
 		const curie = event.value.curie;
 		const stringValue = event.value;
-		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};
+		const value = typeof event.value === "string" ? { curie: stringValue } : { curie };
 		setFieldValue(event.target.value);
 		newConditionDispatch({
 			type: "EDIT",
 			field: event.target.name,
 			value,
 		});
-	}
+	};
 
 	const conditionClassSearch = (event, setFiltered, setQuery) => {
 		const endpoint = "zecoterm";
@@ -91,10 +84,10 @@ export const NewConditionForm = ({
 					queryString: 'ZECO_0000267'
 				}
 			}
-		}
+		};
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	}
+	};
 
 	const conditionIdSearch = (event, setFiltered, setQuery) => {
 		const endpoint = "experimentalconditionontologyterm";
@@ -102,24 +95,24 @@ export const NewConditionForm = ({
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const conditionGeneOntologySearch = (event, setFiltered, setQuery) => {
 		const endpoint = "goterm";
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		
+
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const conditionChemicalSearch = (event, setFiltered, setQuery) => {
 		const endpoint = "chemicalterm";
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		setQuery(event.query)
+		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const conditionAnatomySearch = (event, setFiltered, setQuery) => {
 		const endpoint = "anatomicalterm";
@@ -127,7 +120,7 @@ export const NewConditionForm = ({
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const conditionTaxonSearch = (event, setFiltered, setQuery) => {
 		const endpoint = "ncbitaxonterm";
@@ -135,7 +128,7 @@ export const NewConditionForm = ({
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const onInternalChange = (event) => {
 		newConditionDispatch({
@@ -143,7 +136,7 @@ export const NewConditionForm = ({
 			field: event.target.name,
 			value: event.value,
 		});
-	}
+	};
 
 	const onTextChange = (event) => {
 		newConditionDispatch({
@@ -161,7 +154,7 @@ export const NewConditionForm = ({
 		</>
 	);
 
-	return(
+	return (
 		<div>
 			<Toast ref={toast_error} position="top-left" />
 			<Toast ref={toast_success} position="top-right" />
@@ -177,9 +170,9 @@ export const NewConditionForm = ({
 									initialValue={newCondition.conditionClass.curie}
 									fieldName="conditionClass"
 									onValueChangeHandler={onCurieFieldChange}
-									classNames={classNames({'p-invalid': submitted && errorMessages.conditionClass})}
+									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionClass })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionClass"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionClass"} />
 							</div>
 							<div className="field">
 								<label htmlFor="conditionId">Condition Term</label>
@@ -189,9 +182,9 @@ export const NewConditionForm = ({
 									initialValue={newCondition.conditionId.curie}
 									fieldname={"conditionId"}
 									onValueChangeHandler={onCurieFieldChange}
-									classNames={classNames({'p-invalid': submitted && errorMessages.conditionId})}
+									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionId })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionId"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionId"} />
 							</div>
 							<div className="field">
 								<label htmlFor="conditionGeneOntology">Gene Ontology</label>
@@ -201,9 +194,9 @@ export const NewConditionForm = ({
 									initialValue={newCondition.conditionGeneOntology.curie}
 									onValueChangeHandler={onCurieFieldChange}
 									fieldname={"conditionGeneOntology"}
-									classNames={classNames({'p-invalid': submitted && errorMessages.conditionGeneOntology})}
+									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionGeneOntology })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionGeneOntology"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionGeneOntology"} />
 							</div>
 							<div className="field">
 								<label htmlFor="conditionChemical">Chemical</label>
@@ -212,10 +205,10 @@ export const NewConditionForm = ({
 									search={conditionChemicalSearch}
 									initialValue={newCondition.conditionChemical.curie}
 									fieldname={"conditionChemical"}
-									classNames={classNames({'p-invalid': submitted && errorMessages.conditionChemical})}
+									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionChemical })}
 									onValueChangeHandler={onCurieFieldChange}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionChemical"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionChemical"} />
 							</div>
 							<div className="field">
 								<label htmlFor="conditionAnatomy">Anatomy</label>
@@ -225,9 +218,9 @@ export const NewConditionForm = ({
 									search={conditionAnatomySearch}
 									onValueChangeHandler={onCurieFieldChange}
 									fieldname={"conditionAnatomy"}
-									classNames={classNames({'p-invalid': submitted && errorMessages.conditionAnatomy})}
+									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionAnatomy })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionAnatomy"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionAnatomy"} />
 							</div>
 
 							<div className="field">
@@ -238,9 +231,9 @@ export const NewConditionForm = ({
 									search={conditionTaxonSearch}
 									onValueChangeHandler={onCurieFieldChange}
 									fieldname={"conditionTaxon"}
-									classNames={classNames({'p-invalid': submitted && errorMessages.conditionTaxon})}
+									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionTaxon })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionTaxon"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionTaxon"} />
 							</div>
 
 							<div className="field">
@@ -250,9 +243,9 @@ export const NewConditionForm = ({
 									name="conditionQuantity"
 									value={newCondition.conditionQuantity}
 									onChange={onTextChange}
-									className={classNames({'p-invalid': submitted && errorMessages.conditionQuantity})}
+									className={classNames({ 'p-invalid': submitted && errorMessages.conditionQuantity })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionQuantity"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionQuantity"} />
 							</div>
 
 
@@ -267,9 +260,9 @@ export const NewConditionForm = ({
 										{ label: 'false', value: false }
 									]}
 									onChange={onInternalChange}
-									className={classNames({'p-invalid': submitted && errorMessages.internal})}
+									className={classNames({ 'p-invalid': submitted && errorMessages.internal })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"} />
 							</div>
 
 							<div className="field">
@@ -279,9 +272,9 @@ export const NewConditionForm = ({
 									name="conditionFreeText"
 									value={newCondition.conditionFreeText}
 									onChange={onTextChange}
-									className={classNames({'p-invalid': submitted && errorMessages.conditionFreeText})}
+									className={classNames({ 'p-invalid': submitted && errorMessages.conditionFreeText })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionFreeText"}/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionFreeText"} />
 							</div>
 						</form>
 					</div>
@@ -289,4 +282,4 @@ export const NewConditionForm = ({
 			</Dialog>
 		</div>
 	);
-}
+};

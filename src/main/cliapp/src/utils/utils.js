@@ -537,6 +537,11 @@ export const setNewEntity = (tableState, setEntities, newEntity) => {
 			tableState.page > 0 
 	) return;
 
+	console.log("newEntity", newEntity);
+
 	// Adds new entity to the top of the entities array when there are no filters, sorting, or pagination applied.
-	setEntities(previousEntities => [newEntity, ...previousEntities]);
+	setEntities((previousEntities) => {
+		console.log("inside setEntities");
+		return [newEntity, ...previousEntities]
+	});
 };
