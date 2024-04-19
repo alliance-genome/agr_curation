@@ -3,6 +3,18 @@
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
 
+## v0.32.0
+* New features
+  * Loading Gene molecular interactions data from the FMS - phase 1 (SCRUM-3686)
+  * Enable MOD-specific required fields for new disease annotations and editing existing annotations (SCRUM-2755)
+  * GraphQL-like mechanism to trim unnecessary fields from API responses (SCRUM-3800)
+* Fixes and maintenance
+  * In search documentation
+  * In display after clicking on save and add on the New annotation form
+  * Change default number of rows rendered for each curation data table to 10 (SCRUM-3857)
+  * Vocabulary term lookup when creating experiments
+  * Changed the mod related setting specifically to ZFIN
+
 ## v0.31.0
 * New features
   * Replaced Negated column/field with NOT in disease annotation table and new annotation form (SCRUM-3794)
