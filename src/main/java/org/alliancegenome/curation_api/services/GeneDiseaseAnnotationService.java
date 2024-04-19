@@ -8,8 +8,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
+import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.GeneDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDiseaseAnnotationDTOValidator;
 
@@ -19,7 +18,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
+public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
 
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -34,26 +33,6 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneDiseaseAnnotationDAO);
-	}
-
-	public ObjectResponse<GeneDiseaseAnnotation> get(String identifier) {
-		SearchResponse<GeneDiseaseAnnotation> ret = findByField("curie", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
-				
-		return new ObjectResponse<GeneDiseaseAnnotation>();
 	}
 
 	@Override
@@ -79,13 +58,19 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 
 	@Override
 	@Transactional
-	public ObjectResponse<GeneDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "Gene disease annotation DELETE API call", false);
+	public ObjectResponse<GeneDiseaseAnnotation> deleteById(Long id) {
+		deprecateOrDeleteAnnotationAndNotes(id, true, "Gene disease annotation DELETE API call", false);
 		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(geneDiseaseAnnotationDAO, dataProvider);
+	}
+
+	@Override
+	public GeneDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
+			String loadDescription, Boolean deprecate) {
+		return (GeneDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

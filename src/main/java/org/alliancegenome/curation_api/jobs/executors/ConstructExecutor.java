@@ -87,7 +87,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 	private void runLoad(BulkLoadFileHistory history, List<ConstructDTO> constructs, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Construct Update for: " + dataProvider.name(), constructs.size());
 		constructs.forEach(constructDTO -> {

@@ -17,7 +17,7 @@ public enum BackendBulkDataProvider {
 	public String curiePrefix;
 	public Integer idPart;
 	public String sourceOrganization;	//The Source Organisation Abbreviation
-	public String resourceDescriptor;   //The organisation's name in the ResourceDescriptor file
+	public String resourceDescriptor;	//The organisation's name in the ResourceDescriptor file
 	public Boolean hasInferredGenePhenotypeAnnotations;
 	public Boolean hasAssertedGenePhenotypeAnnotations;
 	public Boolean hasInferredAllelePhenotypeAnnotations;

@@ -73,12 +73,22 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 		}
 		rd.setIdExample(idExample);
 		
+		List<ResourceDescriptorPage> rdPages = new ArrayList<>();
+		
 		String defaultUrlTemplate = null;
-		if (StringUtils.isNotBlank(dto.getDefaultUrl()))
+		ResourceDescriptorPageDTO defaultPageDTO = null;
+		if (StringUtils.isNotBlank(dto.getDefaultUrl())) {
 			defaultUrlTemplate = dto.getDefaultUrl();
+			defaultPageDTO = new ResourceDescriptorPageDTO();
+			defaultPageDTO.setName("default");
+			defaultPageDTO.setUrl(defaultUrlTemplate);
+			ObjectResponse<ResourceDescriptorPage> defaultRdPageResponse = resourceDescriptorPageDtoValidator.validateResourceDescriptorPageDTO(defaultPageDTO, dto.getDbPrefix());
+			if (defaultRdPageResponse.hasErrors())
+				rdResponse.addErrorMessage("default_url_template", "Error during default page construction: " + defaultRdPageResponse.errorMessagesString());
+			rdPages.add(defaultRdPageResponse.getEntity());
+		}
 		rd.setDefaultUrlTemplate(defaultUrlTemplate);
 		
-		List<ResourceDescriptorPage> rdPages = new ArrayList<>();
 		List<Long> previousPageIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(rd.getResourcePages()))
 			previousPageIds = rd.getResourcePages().stream().map(ResourceDescriptorPage::getId).collect(Collectors.toList());

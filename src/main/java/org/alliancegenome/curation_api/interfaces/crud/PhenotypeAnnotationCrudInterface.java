@@ -34,7 +34,7 @@ public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<Ph
 	@GET
 	@Path("/findBy/{modEntityId|modInternalId|uniqueId}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<PhenotypeAnnotation> get(@PathParam("identifier") String identifier);
+	public ObjectResponse<PhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@POST

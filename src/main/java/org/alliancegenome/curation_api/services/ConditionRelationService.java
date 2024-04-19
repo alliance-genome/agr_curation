@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -71,7 +72,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 		ConditionRelation conditionRelation = new ConditionRelation();
 		conditionRelation.setHandle(experimentName);
 		conditionRelation.setSingleReference(reference);
-		conditionRelation.setConditionRelationType(vocabularyTermService.getTermInVocabulary("Condition relation types", "has_condition").getEntity());
+		conditionRelation.setConditionRelationType(vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, "has_condition").getEntity());
 		ExperimentalCondition condition = new ExperimentalCondition();
 		condition.setUniqueId("ZECO:0000103");
 		HashMap<String, Object> params = new HashMap<>();

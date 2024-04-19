@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
-public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E, D>, E extends BaseEntity, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E> {
+public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E, D>, E extends AuditedObject, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E> {
 
 	protected BaseEntityCrudService<E, D> service;
 
@@ -30,16 +30,24 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 		return service.create(entities);
 	}
 
-	public ObjectResponse<E> get(Long id) {
-		return service.get(id);
+	public ObjectResponse<E> getById(Long id) {
+		return service.getById(id);
+	}
+	
+	public ObjectResponse<E> getByCurie(String curie) {
+		return service.getByCurie(curie);
 	}
 
 	public ObjectResponse<E> update(E entity) {
 		return service.update(entity);
 	}
 
-	public ObjectResponse<E> delete(Long id) {
-		return service.delete(id);
+	public ObjectResponse<E> deleteByCurie(String curie) {
+		return service.deleteByCurie(curie);
+	}
+	
+	public ObjectResponse<E> deleteById(Long id) {
+		return service.deleteById(id);
 	}
 
 	public SearchResponse<E> findByField(String field, String value) {

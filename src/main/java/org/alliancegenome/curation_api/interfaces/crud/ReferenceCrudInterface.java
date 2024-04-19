@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-import org.alliancegenome.curation_api.interfaces.base.CurieObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -19,7 +19,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Reference")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface ReferenceCrudInterface extends CurieObjectCrudInterface<Reference> {
+public interface ReferenceCrudInterface extends BaseIdCrudInterface<Reference> {
 
 	@GET
 	@Path("/sync")

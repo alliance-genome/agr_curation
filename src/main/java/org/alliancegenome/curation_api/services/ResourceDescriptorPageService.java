@@ -2,11 +2,12 @@ package org.alliancegenome.curation_api.services;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 import io.quarkus.logging.Log;
@@ -19,6 +20,8 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 
 	@Inject
 	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
+	@Inject
+	ResourceDescriptorService resourceDescriptorService;
 	
 	HashMap<String, Date> resourceRequestMap = new HashMap<>();
 	HashMap<String, HashMap<String, ResourceDescriptorPage>> resourcePageCacheMap = new HashMap<>();
@@ -65,12 +68,17 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 	
 	
 	private ResourceDescriptorPage getPageForResourceDescriptorFromDB(String resourceDescriptorPrefix, String pageName) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("name", pageName);
-		params.put("resourceDescriptor.prefix", resourceDescriptorPrefix);
-
-		SearchResponse<ResourceDescriptorPage> resp = resourceDescriptorPageDAO.findByParams(params);
-		return resp.getSingleResult();
+		
+		ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefixOrSynonym(resourceDescriptorPrefix);
+		if (rdResponse == null || rdResponse.getEntity() == null)
+			return null;
+		
+		for (ResourceDescriptorPage page : rdResponse.getEntity().getResourcePages()) {
+			if (Objects.equals(page.getName(), pageName))
+				return page;
+		}
+		
+		return null;
 	}
 	
 }

@@ -1,23 +1,18 @@
 package org.alliancegenome.curation_api.services.loads;
 
-import io.quarkus.logging.Log;
-import io.smallrye.mutiny.Uni;
-import io.vertx.core.json.JsonArray;
-import io.vertx.core.json.JsonObject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-
-import java.util.ArrayList;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @RequestScoped
 public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFileHistory, BulkLoadFileHistoryDAO> {

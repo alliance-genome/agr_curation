@@ -2,25 +2,30 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.alliancegenome.curation_api.services.validation.dto.CrossReferenceDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +46,10 @@ public class BaseDTOValidator {
 	DataProviderDTOValidator dataProviderDtoValidator;
 	@Inject
 	DataProviderDAO dataProviderDAO;
+	@Inject
+	CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject
+	CrossReferenceService crossReferenceService;
 
 	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO(E entity, D dto) {
 
@@ -102,7 +111,7 @@ public class BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getTaxonCurie())) {
 			beResponse.addErrorMessage("taxon_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
+			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
 			}
@@ -140,6 +149,29 @@ public class BaseDTOValidator {
 		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto, dataProvider);
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
+		
+		List<CrossReference> validatedXrefs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getCrossReferenceDtos())) {
+			for (CrossReferenceDTO xrefDto : dto.getCrossReferenceDtos()) {
+				ObjectResponse<CrossReference> xrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(xrefDto, null);
+				if (xrefResponse.hasErrors()) {
+					geResponse.addErrorMessage("cross_reference_dtos", xrefResponse.errorMessagesString());
+					break;
+				} else {
+					validatedXrefs.add(xrefResponse.getEntity());
+				}
+			}
+		}
+		
+		List<CrossReference> xrefs = crossReferenceService.getUpdatedXrefList(validatedXrefs, entity.getCrossReferences());
+		
+		if (entity.getCrossReferences() != null)
+			entity.getCrossReferences().clear();
+		if (xrefs != null) {
+			if (entity.getCrossReferences() == null)
+				entity.setCrossReferences(new ArrayList<>());
+			entity.getCrossReferences().addAll(xrefs);
+		}
 
 		geResponse.setEntity(entity);
 

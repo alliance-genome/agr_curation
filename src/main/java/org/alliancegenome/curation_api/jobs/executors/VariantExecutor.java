@@ -81,7 +81,7 @@ public class VariantExecutor extends LoadFileExecutor {
 
 	public void runLoad(BulkLoadFileHistory history, List<VariantDTO> variants, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("Variant Update for: " + dataProvider.name(), variants.size());
 		variants.forEach(variantDTO -> {

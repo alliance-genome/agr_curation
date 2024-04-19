@@ -19,6 +19,7 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 export const VariantsTable = () => {
 
@@ -246,6 +247,13 @@ export const VariantsTable = () => {
 			header: "Data Provider",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
+		},
+		{
+			field: "crossReferences.displayName",
+			header: "Cross References",
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences}/>
 		},
 		{
 			field: "updatedBy.uniqueId",

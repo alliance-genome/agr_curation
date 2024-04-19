@@ -15,14 +15,16 @@ import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
 
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate'; 
-import { SingleReferenceTemplate } from '../../components/Templates/SingleReferenceTemplate'; 
+import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate'; 
 import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate'; 
 import { IdTemplate } from '../../components/Templates/IdTemplate'; 
-import { DiseaseTemplate } from '../../components/Templates/DiseaseTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate'; 
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { NotTemplate } from '../../components/Templates/NotTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 
 import { NotEditor } from '../../components/Editors/NotEditor';
 
@@ -124,11 +126,11 @@ export const DiseaseAnnotationsTable = () => {
 		handleNewAnnotationOpen();
 	}
 
-	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+	const handleRelatedNotesOpen = (relatedNotes) => {
 		let _relatedNotesData = {};
-		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
+		_relatedNotesData["originalRelatedNotes"] = relatedNotes;
 		_relatedNotesData["dialog"] = true;
-		_relatedNotesData["isInEdit"] = isInEdit;
+		_relatedNotesData["isInEdit"] = false;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
 		}));
@@ -149,11 +151,11 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	const handleConditionRelationsOpen = (event, rowData, isInEdit) => {
+	const handleConditionRelationsOpen = (conditionRelations) => {
 		let _conditionRelationsData = {};
-		_conditionRelationsData["originalConditionRelations"] = rowData.conditionRelations;
+		_conditionRelationsData["originalConditionRelations"] = conditionRelations;
 		_conditionRelationsData["dialog"] = true;
-		_conditionRelationsData["isInEdit"] = isInEdit;
+		_conditionRelationsData["isInEdit"] = false;
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
@@ -172,19 +174,6 @@ export const DiseaseAnnotationsTable = () => {
 		setConditionRelationsData(() => ({
 			..._conditionRelationsData
 		}));
-	};
-
-	const relatedNotesTemplate = (rowData) => {
-		if (rowData?.relatedNotes) {
-			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-					<span className="-my-4 p-1 underline">
-						{`Notes(${rowData.relatedNotes.length})`}
-					</span>
-				</Button>
-			)
-		}
 	};
 
 	const relatedNotesEditor = (props) => {
@@ -223,25 +212,12 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const conditionRelationsTemplate = (rowData) => {
-		if (rowData?.conditionRelations && !rowData.conditionRelations[0]?.handle) {
-			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span className= "-my-4 p-1 underline">
-						{`Conditions (${rowData.conditionRelations.length})`}
-					</span>
-				</Button>
-			)
-		}
-	};
-
 	const conditionRelationsEditor = (props) => {
 
 		if (props.rowData?.conditionRelations) {
 			const handle = props.rowData.conditionRelations[0]?.handle;
 
-			if (handle) return conditionRelationsTemplate(props.rowData);
+			if (handle) return null;
 
 			return (
 				<>
@@ -275,20 +251,6 @@ export const DiseaseAnnotationsTable = () => {
 				</>
 			)
 
-		}
-	};
-
-	const conditionRelationHandleTemplate = (rowData) => {
-		if (rowData?.conditionRelations && rowData.conditionRelations[0]?.handle) {
-			let handle = rowData.conditionRelations[0].handle;
-			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
-					<span className= "-my-4 p-1 underline">
-						{handle && handle}
-					</span>
-				</Button>
-			)
 		}
 	};
 
@@ -932,7 +894,7 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "diseaseAnnotationObject.name",
 		header: "Disease",
-		body: (rowData) => <DiseaseTemplate object={rowData.diseaseAnnotationObject}/>,
+		body: (rowData) => <OntologyTermTemplate object={rowData.diseaseAnnotationObject}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 		editor: (props) => diseaseEditorTemplate(props),
@@ -965,7 +927,11 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "relatedNotes.freeText",
 		header: "Related Notes",
-		body: relatedNotesTemplate,
+		body: (rowData) => <CountDialogTemplate
+			entities={rowData.relatedNotes}
+			handleOpen={handleRelatedNotesOpen}
+			text={"Notes"}
+		/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 		editor: relatedNotesEditor
@@ -973,7 +939,17 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "conditionRelations.handle",
 		header: "Experiments",
-		body: conditionRelationHandleTemplate,
+		body: (rowData) => {
+			if (!rowData.conditionRelations?.[0]?.handle) return null;
+			return (			
+				<TextDialogTemplate
+					entity={rowData.conditionRelations}
+					handleOpen={handleConditionRelationsOpen}
+					text={rowData.conditionRelations[0].handle}
+					underline={false}
+				/>
+			);
+		},
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
 		editor: (props) => conditionRelationHandleEditor(props)
@@ -981,7 +957,16 @@ export const DiseaseAnnotationsTable = () => {
 	{
 		field: "conditionRelations.uniqueId",
 		header: "Experimental Conditions",
-		body: conditionRelationsTemplate,
+		body: (rowData) => {
+			if (rowData.conditionRelations?.[0]?.handle) return null;
+			return (			
+				<CountDialogTemplate
+					entities={rowData.conditionRelations}
+					handleOpen={handleConditionRelationsOpen}
+					text={"Conditions"}
+				/>
+			);
+		},
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.daConditionRelationsSummaryFilterConfig,
 		editor: (props) => conditionRelationsEditor(props)

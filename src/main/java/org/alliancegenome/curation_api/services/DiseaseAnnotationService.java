@@ -1,12 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
@@ -14,14 +12,10 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationUniqueIdUpdateHelper;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -49,29 +43,9 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 		setSQLDao(diseaseAnnotationDAO);
 	}
 	
-	public ObjectResponse<DiseaseAnnotation> get(String identifier) {
-		SearchResponse<DiseaseAnnotation> ret = findByField("curie", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modEntityId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("modInternalId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
-		
-		ret = findByField("uniqueId", identifier);
-		if (ret != null && ret.getTotalResults() == 1)
-			return new ObjectResponse<DiseaseAnnotation>(ret.getResults().get(0));
-				
-		return new ObjectResponse<DiseaseAnnotation>();
-	}
-	
 	@Override
 	@Transactional
-	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
+	public ObjectResponse<DiseaseAnnotation> deleteById(Long id) {
 		deprecateOrDeleteAnnotationAndNotes(id, true, "Disease annotation DELETE API call", false);
 		ObjectResponse<DiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
@@ -118,23 +92,7 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 	}
 
 	public List<Long> getAllReferencedConditionRelationIds() {
-		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		
-		List<Long> daIds = diseaseAnnotationDAO.findAllIds().getResults();
-		pdh.startProcess("Checking DAs for referenced Conditions ", daIds.size());
-		
-		List<Long> conditionRelationIds = new ArrayList<>();
-		daIds.forEach(daId -> {
-			DiseaseAnnotation annotation = diseaseAnnotationDAO.find(daId);
-			if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
-				List<Long> crIds = annotation.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
-				conditionRelationIds.addAll(crIds);
-			}
-			pdh.progressProcess();
-		});
-		pdh.finishProcess();
-		
-		return conditionRelationIds;
+		return getAllReferencedConditionRelationIds(diseaseAnnotationDAO);
 	}
 	
 	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, BackendBulkDataProvider dataProvider) {

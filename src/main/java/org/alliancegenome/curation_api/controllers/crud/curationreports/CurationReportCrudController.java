@@ -27,4 +27,5 @@ public class CurationReportCrudController extends BaseEntityCrudController<Curat
 	public ObjectResponse<CurationReport> restartReport(Long id) {
 		return curationReportService.restartReport(id);
 	}
+
 }

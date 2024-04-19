@@ -1,23 +1,23 @@
 const modTableSettings = {
-	RGDStaff:	{
-		DiseaseAnnotations:{
+	RGDStaff: {
+		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
 			rows: 50,
-			multiSortMeta:[],
+			multiSortMeta: [],
 			selectedColumnNames: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Experimental Conditions", "Disease Qualifiers", "Inferred Gene",
 				"Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By",
 				"Date Created", "Internal", "Obsolete",
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
-			"Related Notes", "Experimental Conditions", "Disease Qualifiers",
-			"Asserted Genes", "Asserted Allele"
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
+				"Related Notes", "Experimental Conditions", "Disease Qualifiers",
+				"Asserted Genes", "Asserted Allele"
 			],
-			filters:{
+			filters: {
 				dataProviderFilter: {
 					"dataProvider.sourceOrganization.abbreviation": { queryString: "RGD", tokenOperator: "AND" },
 					"dataProvider.sourceOrganization.fullName": { queryString: "RGD", tokenOperator: "AND" },
@@ -28,20 +28,20 @@ const modTableSettings = {
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings",
 		}
 	},
-	SGDStaff:	{
+	SGDStaff: {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-				"Subject", "Disease Relation", "Negated", "Disease",
+				"Subject", "Disease Relation", "NOT", "Disease",
 				"Reference", "Evidence Code", "With", "SGD Strain Background",
 				"Annotation Type", "Data Provider", "Updated By", "Date Updated",
 				"Created By", "Date Created", "Internal", "Obsolete"
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With", "SGD Strain Background", "Annotation Type"
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code", "With", "SGD Strain Background", "Annotation Type"
 			],
 			filters: {
 				dataProviderFilter: {
@@ -54,125 +54,145 @@ const modTableSettings = {
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
-	WBStaff:	{
+	WBStaff: {
 		DiseaseAnnotations: {
 			page: 0,
 			rows: 50,
 			first: 0,
 			filters: {
-					dataProviderFilter: {
-							"dataProvider.sourceOrganization.abbreviation": { queryString: "WB", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.fullName": { queryString: "WB", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.shortName": { queryString: "WB", tokenOperator: "AND" }
-					}
+				dataProviderFilter: {
+					"dataProvider.sourceOrganization.abbreviation": { queryString: "WB", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.fullName": { queryString: "WB", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.shortName": { queryString: "WB", tokenOperator: "AND" }
+				}
 			},
 			tableKeyName: "DiseaseAnnotations",
 			multiSortMeta: [
-					{ field: "dateCreated", order: -1 }
+				{ field: "dateCreated", order: -1 }
 			],
 			selectedColumnNames: [
-					"MOD Annotation ID", "Subject", "Asserted Genes", "Disease Relation",
-					"Negated", "Disease", "Reference", "Evidence Code", "Related Notes",
-					"Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation",
-					"Genetic Modifiers","Data Provider", "Updated By", "Date Updated", "Created By",
-					"Date Created", "Internal", "Obsolete",
+				"MOD Annotation ID", "Subject", "Asserted Genes", "Disease Relation",
+				"NOT", "Disease", "Reference", "Evidence Code", "Related Notes",
+				"Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation",
+				"Genetic Modifiers", "Data Provider", "Updated By", "Date Updated", "Created By",
+				"Date Created", "Internal", "Obsolete",
 			],
 			selectedFormFields: [
-					"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
-					"Related Notes", "Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation", "Genetic Modifiers", "Asserted Genes"
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
+				"Related Notes", "Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation", "Genetic Modifiers", "Asserted Genes"
 			],
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
-	FBStaff:	{
+	FBStaff: {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-					"Obsolete", "Reference", "Subject", "Negated",
-					"Disease Relation", "Disease", "Evidence Code", "Inferred Gene",
-					"Genetic Modifier Relation", "Genetic Modifiers", "Related Notes", "Data Provider",
-					"Updated By", "Date Updated", "Created By", "Date Created"
+				"Obsolete", "Reference", "Subject", "NOT",
+				"Disease Relation", "Disease", "Evidence Code", "Inferred Gene",
+				"Genetic Modifier Relation", "Genetic Modifiers", "Related Notes", "Data Provider",
+				"Updated By", "Date Updated", "Created By", "Date Created"
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Genetic Modifier Relation", "Genetic Modifiers"
 			],
 			filters: {
 				obsoleteFilter: {
 					obsolete: { queryString: "false", tokenOperator: "OR" }
 				},
-					dataProviderFilter: {
-							"dataProvider.sourceOrganization.abbreviation": { queryString: "FB", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.fullName": { queryString: "FB", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.shortName": { queryString: "FB", tokenOperator: "AND" }
-					}
+				dataProviderFilter: {
+					"dataProvider.sourceOrganization.abbreviation": { queryString: "FB", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.fullName": { queryString: "FB", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.shortName": { queryString: "FB", tokenOperator: "AND" }
+				}
 			},
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
-	ZFINStaff:	{
+	ZFINStaff: {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-					"Subject", "Experiments", "Disease Relation", "Disease",
-					"Evidence Code", "Reference", "Inferred Gene", "Inferred Allele",
-					"Data Provider", "Updated By", "Date Updated", "Created By",
-					"Date Created", "Obsolete"
+				"Subject", "Experiments", "Disease Relation", "Disease",
+				"Evidence Code", "Reference", "Inferred Gene", "Inferred Allele",
+				"Data Provider", "Updated By", "Date Updated", "Created By",
+				"Date Created", "Obsolete"
 			],
 			selectedFormFields: [
 				"Subject", "Disease Relation", "Disease", "Reference", "Evidence Code",
 				"Experiments"
 			],
 			filters: {
-					dataProviderFilter: {
-							"dataProvider.sourceOrganization.abbreviation": { queryString: "ZFIN", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.fullName": { queryString: "ZFIN", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.shortName": { queryString: "ZFIN", tokenOperator: "AND" }
-					}
+				dataProviderFilter: {
+					"dataProvider.sourceOrganization.abbreviation": { queryString: "ZFIN", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.fullName": { queryString: "ZFIN", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.shortName": { queryString: "ZFIN", tokenOperator: "AND" }
+				}
 			},
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
-	XBStaff:	{
-		DiseaseAnnotations: {
-			selectedFormFields: [
-				"Experimental Conditions"
-			]
-		}
-	},
-	MGIStaff:	{
+	XBStaff: {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-					"Internal", "Obsolete", "Subject", "Disease Relation",
-					"Negated", "Disease", "Reference", "Evidence Code",
-					"Related Notes", "Inferred Gene", "Inferred Allele", "Data Provider",
-					"Updated By", "Date Updated", "Created By", "Date Created",
+				"Subject", "Disease Relation", "Disease", "Experimental Conditions",
+				"Evidence Code", "Reference", "Asserted Genes",
+				"Data Provider", "Updated By", "Date Updated", "Created By",
+				"Date Created", "Obsolete"
 			],
 			selectedFormFields: [
-				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
-				"Related Notes"
-			],		
+				"Subject","Disease Relation", "Disease", "Reference","Evidence Code",
+				"Experimental Conditions"
+			],
 			filters: {
-					dataProviderFilter: {
-							"dataProvider.sourceOrganization.abbreviation": { queryString: "MGI", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.fullName": { queryString: "MGI", tokenOperator: "AND" },
-							"dataProvider.sourceOrganization.shortName": { queryString: "MGI", tokenOperator: "AND" }
-					},
-					obsoleteFilter: {
-							obsolete: { queryString: "false", tokenOperator: "OR" }
-					}
+				dataProviderFilter: {
+					"dataProvider.sourceOrganization.abbreviation": { queryString: "ZFIN", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.fullName": { queryString: "ZFIN", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.shortName": { queryString: "ZFIN", tokenOperator: "AND" }
+				}
+			},
+			tableKeyName: "DiseaseAnnotations",
+			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
+		}
+	},
+	MGIStaff: {
+		DiseaseAnnotations: {
+			page: 0,
+			first: 0,
+			rows: 50,
+			multiSortMeta: [],
+			selectedColumnNames: [
+				"Internal", "Obsolete", "Subject", "Disease Relation",
+				"NOT", "Disease", "Reference", "Evidence Code",
+				"Related Notes", "Inferred Gene", "Inferred Allele", "Data Provider",
+				"Updated By", "Date Updated", "Created By", "Date Created",
+			],
+			selectedFormFields: [
+				"Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code",
+				"Related Notes"
+			],
+			filters: {
+				dataProviderFilter: {
+					"dataProvider.sourceOrganization.abbreviation": { queryString: "MGI", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.fullName": { queryString: "MGI", tokenOperator: "AND" },
+					"dataProvider.sourceOrganization.shortName": { queryString: "MGI", tokenOperator: "AND" }
+				},
+				obsoleteFilter: {
+					obsolete: { queryString: "false", tokenOperator: "OR" }
+				}
 			},
 			tableKeyName: "DiseaseAnnotations",
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
@@ -185,14 +205,14 @@ const modTableSettings = {
 			rows: 50,
 			multiSortMeta: [],
 			selectedColumnNames: [
-				"Unique ID", "MOD Annotation ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code", "With",
-				"Related Notes", "Experiments" ,"Experimental Conditions", "Genetic Sex" ,"Disease Qualifiers", "SGD Strain Background" , "Annotation Type" ,
-				"Genetic Modifier Relation" , "Genetic Modifiers" , "Inferred Gene", "Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
+				"Unique ID", "MOD Annotation ID", "Subject", "Disease Relation", "NOT", "Disease", "Reference", "Evidence Code", "With",
+				"Related Notes", "Experiments", "Experimental Conditions", "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type",
+				"Genetic Modifier Relation", "Genetic Modifiers", "Inferred Gene", "Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By", "Date Created", "Internal", "Obsolete"
 			],
 			selectedFormFields: [
-				"Asserted Genes", "Asserted Allele", "Negated", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
-				"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers","Internal"
+				"Asserted Genes", "Asserted Allele", "NOT", "With", "Related Notes", "Experimental Conditions", "Experiments", "Genetic Sex",
+				"Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifiers", "Internal"
 			],
 			filters: {},
 			tableKeyName: "DiseaseAnnotations",
@@ -204,7 +224,7 @@ const modTableSettings = {
 export function getModTableState(table, widthsObject, defaultColumnNames) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	const modTableState = global.structuredClone(modTableSettings[mod]? modTableSettings[mod][table] : modTableSettings['Default'][table]);
+	const modTableState = global.structuredClone(modTableSettings[mod] ? modTableSettings[mod][table] : modTableSettings['Default'][table]);
 	modTableState.columnWidths = widthsObject;
 	modTableState.orderedColumnNames = defaultColumnNames;
 	return modTableState;
@@ -213,26 +233,26 @@ export function getModTableState(table, widthsObject, defaultColumnNames) {
 export function getModFormFields(table) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	const modFormFields = modTableSettings[mod][table]['selectedFormFields'];
+	const modFormFields = modTableSettings[mod]?modTableSettings[mod][table]['selectedFormFields']:modTableSettings['Default'][table]['selectedFormFields'];
 	return modFormFields;
 };
 
-export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns, widthsObject){
+export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns, widthsObject) {
 	return {
-			page: 0,
-			first: 0,
-			rows: 50,
-			multiSortMeta: [],
-			selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
-			orderedColumnNames: defaultColumnNames,
-			columnWidths: widthsObject,
-			filters: {},
-			tableKeyName: table,
-			tableSettingsKeyName: `${table}TableSettings`
+		page: 0,
+		first: 0,
+		rows: 10,
+		multiSortMeta: [],
+		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
+		orderedColumnNames: defaultColumnNames,
+		columnWidths: widthsObject,
+		filters: {},
+		tableKeyName: table,
+		tableSettingsKeyName: `${table}TableSettings`
 	}
 }
 
-export function getDefaultFormState(form, defaultFieldNames, defaultVisibleFields){
+export function getDefaultFormState(form, defaultFieldNames, defaultVisibleFields) {
 	return {
 		selectedFormFields: defaultVisibleFields ? defaultVisibleFields : defaultFieldNames,
 		orderedFormFields: defaultFieldNames,

@@ -103,7 +103,21 @@ export const SORT_FIELDS = Object.freeze([
   "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol",
   "variantStatus.name",
   "variantType.name",
-  "sourceGeneralConsequence.name"
+  "sourceGeneralConsequence.name",
+  "interactionId",
+  "interactionSource.name",
+  "interactionType.name",
+  "interactorARole.name",
+  "interactorBRole.name",
+  "interactorAType.name",
+  "interactorBType.name",
+  "detectionMethod.name",
+  "aggregationDatabase.name",
+  "interactorAGeneticPerturbation.alleleSymbol.displayText",
+  "interactorBGeneticPerturbation.alleleSymbol.displayText",
+  "phenotypesOrTraits",
+  "crossReference.displayName",
+  "crossReferences.displayName"
 ]);
 
 

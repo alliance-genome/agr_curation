@@ -69,6 +69,26 @@ export const data = {
 								}
 						}
 				},
+				"crossReferences": [
+					{
+						"internal": false,
+						"obsolete": false,
+						"dbDateCreated": "2023-05-16T12:31:21.940625Z",
+						"dbDateUpdated": "2023-05-16T12:31:21.940626Z",
+						"id": 79690913,
+						"referencedCurie": "WB:WBGene00002975",
+						"displayName": "WBGene00003771Xref",
+						"resourceDescriptorPage": {
+								"internal": false,
+								"obsolete": false,
+								"dbDateCreated": "2023-02-20T09:26:39.602562Z",
+								"dbDateUpdated": "2023-05-04T22:00:09.592619Z",
+								"id": 41750773,
+								"name": "gene",
+								"urlTemplate": "https://www.wormbase.org/db/get?name=[%s];class=Gene"
+						}
+					}
+				],	
 				"geneType": {
 						"internal": false,
 						"obsolete": false,

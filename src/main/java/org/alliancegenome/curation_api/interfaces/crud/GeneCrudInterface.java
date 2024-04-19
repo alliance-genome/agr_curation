@@ -3,14 +3,16 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
-import org.alliancegenome.curation_api.interfaces.base.SubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.graphql.GraphQLApi;
+import org.eclipse.microprofile.graphql.Query;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -27,17 +29,19 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
+@GraphQLApi
 @Path("/gene")
 @Tag(name = "CRUD - Genes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GeneCrudInterface extends SubmittedObjectCrudInterface<Gene>, BaseDTOCrudControllerInterface<Gene, GeneDTO> {
+public interface GeneCrudInterface extends BaseSubmittedObjectCrudInterface<Gene>, BaseUpsertControllerInterface<Gene, GeneDTO> {
 
 	@Override
 	@GET
+	@Query("api_gene_get")
 	@Path("/{identifierString}")
 	@JsonView(View.GeneDetailView.class)
-	public ObjectResponse<Gene> get(@PathParam("identifierString") String identifierString);
+	public ObjectResponse<Gene> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@POST
 	@Path("/bulk/{dataProvider}/genes")

@@ -37,4 +37,5 @@ public class GeneFullNameSlotAnnotationCrudController extends BaseEntityCrudCont
 	public ObjectResponse<GeneFullNameSlotAnnotation> validate(GeneFullNameSlotAnnotation entity) {
 		return geneFullNameService.validate(entity);
 	}
+
 }

@@ -22,7 +22,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends CurieObjectCrudService<E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
@@ -35,20 +35,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	@AuthenticatedUser
 	Person authenticatedPerson;
 
-	public E findByCurieOrSecondaryId(String id) {
-		
-		E term = findByCurie(id);
-		if (term != null)
-			return term;
-		
-		SearchResponse<E> response = dao.findByField("secondaryIdentifiers", id);
-
-		if (response == null)
-			return null;
-		if (response.getTotalResults() == 1)
-			return response.getSingleResult();
-		
-		return null;
+	public E findByCurieOrSecondaryId(String id) {		
+		List<String> identifierFields = List.of("curie", "secondaryIdentifiers");
+		return findByAlternativeFields(identifierFields, id);
 	}
 	
 	@Transactional
@@ -92,8 +81,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				E parent = findByCurie(o.getCurie());
 				parentSet.add(parent);
 			});
-			term.setIsaParents(parentSet);
 		}
+		term.setIsaParents(parentSet);
 
 		HashSet<OntologyTerm> ancestorsSet = new HashSet<>();
 		if(inTerm.getIsaAncestors() != null) {
@@ -101,8 +90,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				E ancestor = findByCurie(o.getCurie());
 				ancestorsSet.add(ancestor);
 			});
-			term.setIsaAncestors(ancestorsSet);
 		}
+		term.setIsaAncestors(ancestorsSet);
 		
 		return term;
 	}
@@ -307,7 +296,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			mergedIds = new ArrayList<>();
 			dbTerm.setCrossReferences(null);
 		} else {
-			List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
+			List<CrossReference> mergedCrossReferences = crossReferenceService.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
 			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
 			dbTerm.setCrossReferences(mergedCrossReferences);
 		}

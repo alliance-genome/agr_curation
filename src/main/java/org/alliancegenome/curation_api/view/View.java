@@ -63,6 +63,9 @@ public class View {
 
 	public static class PhenotypeAnnotationCreate extends PhenotypeAnnotationView {
 	}
+	
+	public static class AffectedGenomicModelView extends FieldsOnly {
+	}
 
 	public static class AlleleView extends FieldsOnly {
 	}
@@ -95,6 +98,9 @@ public class View {
 	}
 
 	public static class VariantCreate extends GeneView {
+	}
+	
+	public static class GeneInteractionView extends FieldsOnly {
 	}
 
 	public static class PersonSettingView {

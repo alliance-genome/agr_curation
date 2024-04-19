@@ -21,7 +21,8 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 	OrganizationDAO organizationDAO;
 
 	Date orgRequest = null;
-	HashMap<String, Organization> orgCacheMap = new HashMap<>();
+	HashMap<Long, Organization> orgIdCacheMap = new HashMap<>();
+	HashMap<String, Organization> orgAbbrCacheMap = new HashMap<>();
 	
 	@Override
 	@PostConstruct
@@ -29,20 +30,20 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		setSQLDao(organizationDAO);
 	}
 
-	public ObjectResponse<Organization> get(String orgId) {
+	public ObjectResponse<Organization> getById(Long id) {
 		
 		Organization org = null;
 		
 		if(orgRequest != null) {
-			if(orgCacheMap.containsKey(orgId)) {
-				org = orgCacheMap.get(orgId);
+			if(orgIdCacheMap.containsKey(id)) {
+				org = orgIdCacheMap.get(id);
 			} else {
-				Log.debug("Org not cached, caching org: (" + orgId + ")");
-				org = organizationDAO.find(Long.parseLong(orgId));
-				orgCacheMap.put(orgId, org);
+				Log.debug("Org not cached, caching org: (" + id + ")");
+				org = organizationDAO.find(id);
+				orgIdCacheMap.put(id, org);
 			}
 		} else {
-			org = organizationDAO.find(Long.parseLong(orgId));
+			org = organizationDAO.find(id);
 			orgRequest = new Date();
 		}
 
@@ -57,14 +58,14 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		SearchResponse<Organization> orgResponse = null;
 		
 		if(orgRequest != null) {
-			if(orgCacheMap.containsKey(abbr)) {
-				org = orgCacheMap.get(abbr);
+			if(orgAbbrCacheMap.containsKey(abbr)) {
+				org = orgAbbrCacheMap.get(abbr);
 			} else {
 				Log.debug("Org not cached, caching org: (" + abbr + ")");
 				orgResponse = organizationDAO.findByField("abbreviation", abbr);
 				if (orgResponse != null)
 					org = orgResponse.getSingleResult();
-				orgCacheMap.put(abbr, org);
+				orgAbbrCacheMap.put(abbr, org);
 			}
 		} else {
 			orgResponse = organizationDAO.findByField("abbreviation", abbr);

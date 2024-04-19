@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import { SingleReferenceTemplate } from '../SingleReferenceTemplate';
+import { SingleReferenceTemplate } from '../reference/SingleReferenceTemplate';
 import '../../../tools/jest/setupTests';
 
 describe("SingleReferenceTemplate", () => {
