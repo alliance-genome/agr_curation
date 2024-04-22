@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 
-import { trimWhitespace, returnSorted, validateBioEntityFields } from '../../utils/utils';
+import { trimWhitespace, returnSorted, validateBioEntityFields, restoreTableState } from '../../utils/utils';
 import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
 
 export const useGenericDataTable = ({
@@ -20,7 +20,11 @@ export const useGenericDataTable = ({
 	setTotalRecords,
 	totalRecords,
 	columns,
-	defaultColumnWidth
+	defaultColumnWidth,
+	isEditable, 
+	deletionEnabled, 
+	duplicationEnabled, 
+	hasDetails
 }) => {
 
 	const [originalRows, setOriginalRows] = useState([]);
@@ -326,19 +330,44 @@ export const useGenericDataTable = ({
 
 	const setToModDefault = () => {
 		const modTableState = getModTableState(tableState.tableKeyName, tableState.defaultColumnWidths, tableState.defaultColumnNames);
-		setTableState(modTableState);
+		restoreTableState(
+			columns, 
+			dataTable, 
+			modTableState.orderedColumnNames, 
+			isEditable, 
+			deletionEnabled, 
+			duplicationEnabled, 
+			hasDetails, 
+			modTableState
+		);
 		dataTable.current.resetScroll();
+		setTableState(modTableState);
 	}
 	
 	const resetTableState = () => {
 		let defaultTableState = getDefaultTableState(tableState.tableKeyName, columns, defaultColumnWidth);
-		
-		setTableState(defaultTableState);
+		restoreTableState(
+			columns, 
+			dataTable, 
+			defaultTableState.orderedColumnNames, 
+			isEditable, 
+			deletionEnabled, 
+			duplicationEnabled, 
+			hasDetails, 
+			defaultTableState
+		);
 		dataTable.current.resetScroll();
+		setTableState(defaultTableState);
 	}
 
 	const colReorderHandler = (event) => {
-		const columnNames = event.columns.filter(column => column.props.field !== 'rowEditor' && column.props.field !== 'delete').map(column => column.props.header);
+		const columnNames = event.columns.filter((column) => {
+			return column.props.field !== 'rowEditor' 
+			&& column.props.field !== 'delete' 
+			&& column.props.field !== 'duplicate'
+			&& column.props.field !== 'details';
+		})
+		.map(column => column.props.header);
 
 		for(let i = 0; i < tableState.orderedColumnNames.length; i++) {
 			if(!columnNames.includes(tableState.orderedColumnNames[i])) {

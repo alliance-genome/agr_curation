@@ -59,6 +59,23 @@ export function orderColumns(columns, orderedColumnNames) {
 	});
 	return orderedColumns;
 };
+export function orderColumnFields(columns, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails) {
+	if (!orderedColumnNames) return columns;
+	let orderedColumnFields = [];
+	orderedColumnNames.forEach((columnName) => {
+		let column = columns.find(col => col.header === columnName); 
+		if (column) {
+			orderedColumnFields.push(column.field);
+		}
+	});
+
+	if (hasDetails) orderedColumnFields.unshift('details');
+	if (duplicationEnabled) orderedColumnFields.unshift('duplicate');
+	if (deletionEnabled) orderedColumnFields.unshift('delete');
+	if (isEditable) orderedColumnFields.unshift('rowEditor');
+
+	return orderedColumnFields;
+};
 
 export function reorderArray(array, from, to) {
 	const item = array.splice(from, 1);
@@ -66,23 +83,8 @@ export function reorderArray(array, from, to) {
 	return array;
 };
 
-export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false, tableState) {
-	let initalColumnOrderObjects = [];
-	let initalColumnOrderFields = [];
-
-	defaultColumnOptions.forEach((option) => {
-		initalColumnOrderObjects.push(
-			columns.find((column) => {
-				return column.header === option;
-			})
-		);
-	});
-
-	initalColumnOrderFields = initalColumnOrderObjects.map(column => column.field);
-
-	if (deletionEnabled) initalColumnOrderFields.unshift('delete');
-
-	initalColumnOrderFields.unshift('rowEditor');
+export function restoreTableState(columns, dataTable, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails, tableState) {
+	let initalColumnOrderFields = orderColumnFields(columns, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails);
 
 	const newState = {
 		first: tableState.first,
