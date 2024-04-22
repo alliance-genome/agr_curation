@@ -7,18 +7,18 @@ import { CLASSES } from '../../constants/Classes';
 export const Dashboard = () => {
 
 	const [tableData, setTableData] = useState({});
-	const excludedEntities = [
-		"AGMDiseaseAnnotation",
-		"AlleleDiseaseAnnotation",
-		"GeneDiseaseAnnotation",
-		"AGMPhenotypeAnnotation",
-		"AllelePhenotypeAnnotation",
-		"GenePhenotypeAnnotation"
-	];
 
 	useEffect(() => {
 		let _tableData = {};
-
+		const excludedEntities = [
+			"AGMDiseaseAnnotation",
+			"AlleleDiseaseAnnotation",
+			"GeneDiseaseAnnotation",
+			"AGMPhenotypeAnnotation",
+			"AllelePhenotypeAnnotation",
+			"GenePhenotypeAnnotation"
+		];
+		
 		for (const key in CLASSES) {
 			const { type } = CLASSES[key];
 
