@@ -7,6 +7,14 @@ import { CLASSES } from '../../constants/Classes';
 export const Dashboard = () => {
 
 	const [tableData, setTableData] = useState({});
+	const excludedEntities = [
+		"AGMDiseaseAnnotation",
+		"AlleleDiseaseAnnotation",
+		"GeneDiseaseAnnotation",
+		"AGMPhenotypeAnnotation",
+		"AllelePhenotypeAnnotation",
+		"GenePhenotypeAnnotation"
+	];
 
 	useEffect(() => {
 		let _tableData = {};
@@ -17,11 +25,12 @@ export const Dashboard = () => {
 			if(!_tableData[type]){
 				_tableData[type] = [];
 			}
-
-			_tableData[type].push({
-				name: CLASSES[key].name,
-				link: CLASSES[key].link
-			});
+			if(!excludedEntities.includes(key)){
+				_tableData[type].push({
+					name: CLASSES[key].name,
+					link: CLASSES[key].link
+				});
+			}
 		}
 		setTableData(_tableData);
 	},[]);
