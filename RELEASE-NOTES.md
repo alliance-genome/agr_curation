@@ -3,6 +3,27 @@
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
 
+## v0.32.0
+* New features
+  * Loading Gene phenotype annotations from the FMS (SCRUM-3686)
+  * Loading Gene molecular interactions from the FMS - phase 1 (SCRUM-3806)
+  * Lading Allele phenotype annotations from the FMS (SCRUM-3711)
+  * Enable MOD-specific required fields for new disease annotations and editing existing annotations (SCRUM-2755)
+  * GraphQL-like mechanism to trim unnecessary fields from API responses (SCRUM-3800)
+  * Added functionality to OR filters in search
+* Fixes and maintenance
+  * In search documentation
+  * In display after clicking on save and add on the New annotation form
+  * Change default number of rows rendered for each curation data table to 10 (SCRUM-3857)
+  * Refactor Species Table Templates into Components (SCRUM-3765)
+  * Refactor Allele Table Templates into Components (SCRUM-3753)￼
+  * Vocabulary term lookup when creating experiments
+  * Changed the mod related setting specifically to ZFIN
+  * Changed the data tables items into alphabetical order
+  * Increase reporting interval for bulk loads
+  * Hardcode the RGD publication ID for OMIM and ORPHA ID cross references for Human gene phenotype annotations from the FMS(SCRUM-3883)
+  * ATP:0000035 not showing up in ATP ontology Tree View (SCRUM-3884)
+ 
 ## v0.31.0
 * New features
   * Replaced Negated column/field with NOT in disease annotation table and new annotation form (SCRUM-3794)
