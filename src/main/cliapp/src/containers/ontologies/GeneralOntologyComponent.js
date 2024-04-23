@@ -153,8 +153,9 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 17;
+	const obsoleteDefaultFilter = false;
 
-	const initialTableState = getDefaultTableState(name, columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState(name, columns, DEFAULT_COLUMN_WIDTH, obsoleteDefaultFilter);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
@@ -192,6 +193,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 						errorObject = {{errorMessages, setErrorMessages}}
 						defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 						fetching={isFetching || isLoading}
+						obsoleteDefaultFilter = {false}
 					/>
 			    </TabPanel>
 			    <TabPanel header="Tree View">

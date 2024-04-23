@@ -1108,8 +1108,9 @@ export const DiseaseAnnotationsTable = () => {
 
 const DEFAULT_COLUMN_WIDTH = 10;
 const SEARCH_ENDPOINT = "disease-annotation";
+const obsoleteDefaultFilter = false;
 
-const initialTableState = getDefaultTableState("DiseaseAnnotations", columns, DEFAULT_COLUMN_WIDTH);
+const initialTableState = getDefaultTableState("DiseaseAnnotations", columns, DEFAULT_COLUMN_WIDTH, obsoleteDefaultFilter);
 
 const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
@@ -1163,6 +1164,7 @@ const { isLoading, isFetching } = useGetTableData({
 					duplicationEnabled={true}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
+					obsoleteDefaultFilter = {false}
 				/>
 			</div>
 			<NewAnnotationForm
