@@ -1,6 +1,6 @@
 import React, {useRef, useState, useReducer} from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { useMutation, useQuery} from 'react-query';
+import { useMutation, useQuery} from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
 import { Tooltip } from 'primereact/tooltip';
@@ -52,7 +52,7 @@ export const ControlledVocabularyTable = () => {
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 	let vocabularyService = new VocabularyService();
 
-	useQuery("vocabularies",() => vocabularyService.getVocabularies(), {
+	useQuery(['vocabularies'], () => vocabularyService.getVocabularies(), {
 			onSuccess: (data) => {
 					setVocabularies(data.data.results.sort(function (a, b) {
 						return a.name.localeCompare(b.name, 'en', {'sensitivity' : 'base'});

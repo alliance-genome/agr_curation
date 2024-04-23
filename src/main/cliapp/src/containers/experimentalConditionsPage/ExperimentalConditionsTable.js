@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';

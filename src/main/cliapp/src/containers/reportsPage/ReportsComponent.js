@@ -1,5 +1,5 @@
 import React, { useReducer, useRef, useState } from 'react';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { SearchService } from '../../service/SearchService';
 import { ReportService } from '../../service/ReportService';
@@ -7,7 +7,7 @@ import { Messages } from 'primereact/messages';
 import { NewReportForm } from './NewReportForm';
 import { NewReportGroupForm } from './NewReportGroupForm';
 import { ReportDialog } from './ReportDialog/ReportDialog';
-import { useQueryClient } from 'react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { GroupTable } from './GroupTable';
 import { ReportTable } from './ReportTable';
 import { TopButtons } from './TopButtons';

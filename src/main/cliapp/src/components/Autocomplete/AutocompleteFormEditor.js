@@ -46,7 +46,7 @@ export const AutocompleteFormEditor = (
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
 				completeMethod={(event) => search(event, setSuggestions, setQuery, rowProps)}
-				onHide={(e) => op.current.hide(e)}
+				onHide={(e) => op.current?.hide(e)}
 				onChange={(e) => onValueChangeHandler(e)}
 				className={classNames}
 				inputClassName={inputClassNames}
