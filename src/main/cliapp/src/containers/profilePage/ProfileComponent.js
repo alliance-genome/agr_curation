@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -14,6 +14,8 @@ import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 import 'react18-json-view/src/dark.css'
 import { PersonSettingsService } from "../../service/PersonSettingsService";
+import { Toast } from 'primereact/toast';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -27,35 +29,58 @@ const initialThemeState = {
 export const ProfileComponent = () => {
 
 	const { settings: themeState, mutate: setThemeState } = useGetUserSettings("themeSettings", initialThemeState, false);
+	const queryClient = useQueryClient();
 
 	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
 
-	const { authState, oktaAuth } = useOktaAuth();
+	const { authState, } = useOktaAuth();
+	const toast_topright = useRef(null);
 
 	const personService = new PersonService();
 	const personSettingsService = new PersonSettingsService();
 
+	let deleteLocalStorage = (result, success, key) => {
+		if(result.status !== 200) success = false;
+		localStorage.removeItem(key);
+	}
+
 	const globalResetHandler = () =>{
+		let success = true;
 		if(localUserInfo && localUserInfo.settings) {
 			for (let setting of localUserInfo.settings) {
-				personSettingsService.deleteUserSettings(setting.settingsKey).then((data) => {
-					localStorage.removeItem(setting.settingsKey);
-				});
+				personSettingsService.deleteUserSettings(setting.settingsKey).then((result) => deleteLocalStorage(result, success, setting.settingsKey));
+			}
+			if(success){
+				toast_topright.current.show([
+					{ life: 7000, severity: 'success', summary: 'Update success: ',
+					detail: "Application state has been reset", sticky: false }
+				]);
+				queryClient.invalidateQueries(['localUserInfo']);
+			} else {
+				toast_topright.current.show([
+					{ life: 7000, severity: 'error', summary: 'Update error: ',
+					detail: "An error has occured while trying to reset your application state", sticky: false }
+				]);
 			}
 		}
-		setTimeout(() => {
-			window.location.reload();
-		}, 500);
 	};
-
+	
 	const resetTableState = (settingsKey) => {
-		personSettingsService.deleteUserSettings(settingsKey).then((data) => {
-			localStorage.removeItem(settingsKey);
-		});
-		setTimeout(() => {
-			window.location.reload();
-		}, 500);
+		let success = true;
+		personSettingsService.deleteUserSettings(settingsKey).then((result) => deleteLocalStorage(result, success, settingsKey));
+		if(success){
+			toast_topright.current.show([
+				{ life: 7000, severity: 'success', summary: 'Update success: ',
+				detail: "Table state has been reset", sticky: false }
+			]);
+			queryClient.invalidateQueries(['localUserInfo']);
+		} else {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'error', summary: 'Update error: ',
+				detail: "An error has occured while trying to reset your table state", sticky: false }
+			]);
+		}
 	};
 
 
@@ -72,17 +97,18 @@ export const ProfileComponent = () => {
 		});
 	}
 
-	useEffect(() => {
-			if (!authState || !authState.isAuthenticated) {
-					setLocalUserInfo(null);
-			} else {
-					personService.getUserInfo().then((data) => {
-						setLocalUserInfo(data);
-					}).catch((err) => {
-						console.log(err);
-					});
-			}
-	}, [authState, oktaAuth, setLocalUserInfo]); // eslint-disable-line react-hooks/exhaustive-deps
+	useQuery(['localUserInfo'],
+		() => personService.getUserInfo(), {
+		onSuccess: (data) => {
+			setLocalUserInfo(data);
+		},
+		onError: (error) => {
+			console.log(error);
+		},
+		keepPreviousData: true,
+		refetchOnWindowFocus: false,
+		enabled: !!(authState?.isAuthenticated),
+	});
 
 	const valueTemplate = (props) => {
 		return props.template(props);
@@ -157,44 +183,47 @@ export const ProfileComponent = () => {
 	}
 
 	return (
-		<div className="grid">
-			<div className="col-12">
-				<Card title="User Profile" subTitle="">
-					<DataTable value={userInfos} style={{ width: "100%"}}>
-						<Column field="name" header="Name" style={{ minWidth: '16rem' }} />
-						<Column field="value" header="Value" body={valueTemplate} />
-					</DataTable>
-				</Card>
-			</div>
-			<div className="col-6">
-				<div className="grid">
-					<div className="col-5">
-						<ConfirmButton
-							buttonText="Regenerate Curation API Token"
-							headerText="Regenerate Curation API Token"
-							messageText="Are you sure you want to regenerate the API token? This will immediately invalidate the prior token and it can't be used again."
-							acceptHandler={regenApiToken}
-						/>
-					</div>
-					<div className="col-4">
-						<ConfirmButton
-							buttonText="Global State Reset"
-							headerText="Global State Reset"
-							buttonClassName="p-button-danger mr-3"
-							messageText="Are you sure? This will reset the local state of all the data tables and your theme settings."
-							acceptHandler={globalResetHandler}
-						/>
-					</div>
-					<div className="col-3">
-						<ConfirmButton
-							buttonText="Reset Themes"
-							headerText="Reset Themes"
-							messageText="Are you sure? This will reset your theme settings."
-							acceptHandler={themeResetHandler}
-						/>
+		<>
+			<Toast ref={toast_topright} position="top-right"/>
+			<div className="grid">
+				<div className="col-12">
+					<Card title="User Profile" subTitle="">
+						<DataTable value={userInfos} style={{ width: "100%"}}>
+							<Column field="name" header="Name" style={{ minWidth: '16rem' }} />
+							<Column field="value" header="Value" body={valueTemplate} />
+						</DataTable>
+					</Card>
+				</div>
+				<div className="col-6">
+					<div className="grid">
+						<div className="col-5">
+							<ConfirmButton
+								buttonText="Regenerate Curation API Token"
+								headerText="Regenerate Curation API Token"
+								messageText="Are you sure you want to regenerate the API token? This will immediately invalidate the prior token and it can't be used again."
+								acceptHandler={regenApiToken}
+							/>
+						</div>
+						<div className="col-4">
+							<ConfirmButton
+								buttonText="Global State Reset"
+								headerText="Global State Reset"
+								buttonClassName="p-button-danger mr-3"
+								messageText="Are you sure? This will reset the local state of all the data tables and your theme settings."
+								acceptHandler={globalResetHandler}
+							/>
+						</div>
+						<div className="col-3">
+							<ConfirmButton
+								buttonText="Reset Themes"
+								headerText="Reset Themes"
+								messageText="Are you sure? This will reset your theme settings."
+								acceptHandler={themeResetHandler}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
