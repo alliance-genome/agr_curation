@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation } from '@tanstack/react-query';
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { LiteratureAutocompleteTemplate } from "../../components/Autocomplete/LiteratureAutocompleteTemplate";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
@@ -24,7 +24,6 @@ export const NewRelationForm = ({
 	conditionRelationTypeTerms,
 	setNewConditionRelation,
 }) => {
-	const queryClient = useQueryClient();
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newRelation, errorMessages, submitted, newRelationDialog } = newRelationState;
@@ -46,13 +45,7 @@ export const NewRelationForm = ({
 		newRelationDispatch({ type: "SUBMIT" });
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
-				//Invalidating the query immediately after success leads to api results that don't always include the new entity
-				setTimeout(() => {
-					queryClient.invalidateQueries("Experiments").then(() => {
-						//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
-						setNewConditionRelation(data.data.entity);
-					});
-				}, 1000);
+				setNewConditionRelation(data.data.entity);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
 				newRelationDispatch({ type: "RESET" });
 			},

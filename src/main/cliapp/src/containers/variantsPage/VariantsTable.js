@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';

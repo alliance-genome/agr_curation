@@ -3,7 +3,7 @@ import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {classNames} from "primereact/utils";
 import {Button} from "primereact/button";
-import {useMutation,useQueryClient} from "react-query";
+import {useMutation,useQueryClient} from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { Dropdown } from "primereact/dropdown";
 import {VocabularyService} from "../../service/VocabularyService";
@@ -67,15 +67,9 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 						mutation.mutate(vocabulary, {
 								onSuccess: (data) => {
 									if(setNewVocabulary) {
-										//Invalidating the query immediately after success leads to api results that don't always include the new entity
-										setTimeout(() => {
-											queryClient.invalidateQueries("Vocabularies").then(() => {
-												//needs to be set after api call otherwise the newly appended entity would be removed when there are no filters
-												setNewVocabulary(data.data.entity)
-											});
-										}, 1000);
+										setNewVocabulary(data.data.entity)
 									} else {
-											queryClient.invalidateQueries("vocabularies");
+											queryClient.invalidateQueries(['vocabularies']);
 										};
 										toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Vocabulary Added' });
 										setSubmitted(false);

@@ -6,7 +6,7 @@ import { classNames } from 'primereact/utils';
 import { DataLoadService } from '../../service/DataLoadService';
 import { useOktaAuth } from '@okta/okta-react';
 
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) => {
@@ -55,7 +55,7 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 			console.log(event);
 			mutation.mutate(group, {
 				onSuccess: () => {
-					queryClient.invalidateQueries('bulkloadtable');
+					queryClient.invalidateQueries(['bulkloadtable']);
 					setSubmitted(false);
 					setBulkLoadGroupDialog(false);
 					setGroup(emptyGroup);

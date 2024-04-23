@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MultiSelect } from 'primereact/multiselect';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { SearchService } from '../../service/SearchService';
 
 export function FilterComponentMultiSelect({ isInEditMode, filterConfig, currentFilters, onFilter, endpoint }) {
