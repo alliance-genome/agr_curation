@@ -239,17 +239,14 @@ export function getModFormFields(table) {
 	return modFormFields;
 };
 
-export function getDefaultTableState(tableName, columns, defaultColumnWidth, obsoleteDefaultFilter, defaultVisibleColumns) {
-	
-  const { defaultColumnNames, defaultColumnWidths } = columns.reduce((acc, col) => {
+export function getDefaultTableState(tableName, columns, defaultColumnWidth, defaultFilters = {}, defaultVisibleColumns) {
+
+	const { defaultColumnNames, defaultColumnWidths } = columns.reduce((acc, col) => {
     acc.defaultColumnNames.push(col.header);
     acc.defaultColumnWidths[col.field] = defaultColumnWidth;
     return acc;
   }, { defaultColumnNames: [], defaultColumnWidths: {} });
-  let filters = {};
-  if (typeof obsoleteDefaultFilter === 'boolean') {
-	filters = {obsoleteFilter: {obsolete: {queryString: `${obsoleteDefaultFilter}`, tokenOperator: "OR"}}};
-  }
+
   return {
     page: 0,
     first: 0,
@@ -260,7 +257,7 @@ export function getDefaultTableState(tableName, columns, defaultColumnWidth, obs
     defaultColumnNames,
     columnWidths: defaultColumnWidths,
     defaultColumnWidths,
-    filters,
+    filters: defaultFilters,
     tableKeyName: tableName,
     tableSettingsKeyName: `${tableName}TableSettings`
   };

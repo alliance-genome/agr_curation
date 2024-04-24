@@ -160,9 +160,9 @@ export const GeneMolecularInteractionsTable = () => {
 
 	const DEFAULT_COLUMN_WIDTH = 10; 
 	const SEARCH_ENDPOINT = "gene-molecular-interaction";
-	const obsoleteDefaultFilter = false;
+	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false", tokenOperator: "OR"}}};
 
-	const initialTableState = getDefaultTableState("GeneMolecularInteractions", columns, DEFAULT_COLUMN_WIDTH, obsoleteDefaultFilter);
+	const initialTableState = getDefaultTableState("GeneMolecularInteractions", columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
@@ -201,7 +201,7 @@ export const GeneMolecularInteractionsTable = () => {
 					duplicationEnabled={false}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
-					obsoleteDefaultFilter = {false}
+					defaultFilters = {defaultFilters}
 				/>
 			</div>
 		</>
