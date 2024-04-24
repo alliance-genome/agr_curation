@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
-import { useMutation } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query';
 import { classNames } from "primereact/utils";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
 
@@ -12,6 +12,7 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, setNewTe
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const [submitted, setSubmitted] = useState(false);
+	const queryClient = useQueryClient();
 
 	const hideTermDialog = () => {
 		newTermDispatch({ type: "RESET" });
@@ -29,7 +30,7 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, setNewTe
 		if ((newTerm.name && newTerm.name.trim()) && newTerm.vocabulary && newTerm.obsolete !== undefined) {
 			mutation.mutate(newTerm, {
 				onSuccess: (data) => {
-					setNewTerm(data.data.entity);
+					setNewTerm(data.data.entity, queryClient);
 					toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Term Added' });
 					setSubmitted(false);
 					newTermDispatch({ type: "RESET" });

@@ -351,7 +351,7 @@ export const ControlledVocabularyTable = () => {
 					vocabularies = {vocabularies}
 					obsoleteTerms = {obsoleteTerms}
 					vocabularyService = {vocabularyService}
-					setNewTerm={(newTerm) => setNewEntity(tableState, setTerms, newTerm)}
+					setNewTerm={(newTerm, queryClient) => setNewEntity(tableState, setTerms, newTerm, queryClient)}
 				/>
 				<NewVocabularyForm
 					newVocabularyDialog = {newVocabularyDialog}
