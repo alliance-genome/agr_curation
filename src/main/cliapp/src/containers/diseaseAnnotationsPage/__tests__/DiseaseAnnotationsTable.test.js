@@ -64,7 +64,7 @@ describe("<DiseaseAnnotationsPage />", () => {
 			expect(modInternalIdTd).toBeInTheDocument();
 			expect(subjectTd).toBeInTheDocument();
 			expect(relationTd).toBeInTheDocument();
-			expect(internalObsoleteArray.length).toEqual(2);
+			expect(internalObsoleteArray.length).toEqual(4);
 			expect(NOTArray.length).toEqual(2);
 			expect(diseaseTd).toBeInTheDocument();
 			expect(referenceTd).toBeInTheDocument();

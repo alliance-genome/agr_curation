@@ -182,8 +182,9 @@ export const PhenotypeAnnotationsTable = () => {
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = "phenotype-annotation";
+	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false", tokenOperator: "OR"}}};
 
-	const initialTableState = getDefaultTableState("PhenotypeAnnotations", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState("PhenotypeAnnotations", columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
@@ -222,6 +223,7 @@ export const PhenotypeAnnotationsTable = () => {
 					duplicationEnabled={false}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
+					defaultFilters = {defaultFilters}
 				/>
 			</div>
 			<ConditionRelationsDialog

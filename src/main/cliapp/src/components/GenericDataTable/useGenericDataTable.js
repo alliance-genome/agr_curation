@@ -24,7 +24,8 @@ export const useGenericDataTable = ({
 	isEditable, 
 	deletionEnabled, 
 	duplicationEnabled, 
-	hasDetails
+	hasDetails,
+	defaultFilters
 }) => {
 
 	const [originalRows, setOriginalRows] = useState([]);
@@ -345,7 +346,7 @@ export const useGenericDataTable = ({
 	}
 	
 	const resetTableState = () => {
-		let defaultTableState = getDefaultTableState(tableState.tableKeyName, columns, defaultColumnWidth);
+		let defaultTableState = getDefaultTableState(tableState.tableKeyName, columns, defaultColumnWidth, defaultFilters);
 		restoreTableState(
 			columns, 
 			dataTable, 
