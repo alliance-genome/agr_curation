@@ -288,7 +288,7 @@ export const VocabularyTermSetTable = () => {
 				newVocabularyTermSetDispatch={newVocabularyTermSetDispatch}
 				searchService={searchService}
 				vocabularyTermSetService={vocabularyTermSetService}
-				setNewVocabularyTermSet={(newTermSet) => setNewEntity(tableState, setTermSets, newTermSet)}
+				setNewVocabularyTermSet={(newTermSet, queryClient) => setNewEntity(tableState, setTermSets, newTermSet, queryClient)}
 			/>
 		</div>
 	)
