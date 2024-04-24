@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { LiteratureAutocompleteTemplate } from "../../components/Autocomplete/LiteratureAutocompleteTemplate";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
@@ -24,6 +24,7 @@ export const NewRelationForm = ({
 	conditionRelationTypeTerms,
 	setNewConditionRelation,
 }) => {
+	const queryClient = useQueryClient();
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newRelation, errorMessages, submitted, newRelationDialog } = newRelationState;
@@ -45,7 +46,7 @@ export const NewRelationForm = ({
 		newRelationDispatch({ type: "SUBMIT" });
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
-				setNewConditionRelation(data.data.entity);
+				setNewConditionRelation(data.data.entity, queryClient);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
 				newRelationDispatch({ type: "RESET" });
 			},
