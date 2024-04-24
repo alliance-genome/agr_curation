@@ -1,8 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
+import { SearchService } from '../../service/SearchService';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
 import { FunctionalImpactsDialog } from './functionalImpacts/FunctionalImpactsDialog';
 import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialog';
@@ -42,7 +45,12 @@ export const AllelesTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
+
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [alleles, setAlleles] = useState([]);
 	
+	const searchService = new SearchService();
+
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
 		isInEdit: false,
@@ -1062,17 +1070,22 @@ export const AllelesTable = () => {
 		}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "allele";
+
+	const initialTableState = getDefaultTableState("Alleles", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setAlleles,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("Alleles", defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -1080,11 +1093,15 @@ export const AllelesTable = () => {
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
-					endpoint="allele"
+					endpoint={SEARCH_ENDPOINT}
 					tableName="Alleles"
+					entities={alleles}
+					setEntities={setAlleles}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
 					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
 					isEditable={true}
 					hasDetails={true}
 					mutation={mutation}
@@ -1092,7 +1109,8 @@ export const AllelesTable = () => {
 					setIsInEditMode={setIsInEditMode}
 					toasts={{toast_topleft, toast_topright }}
 					errorObject = {{errorMessages, setErrorMessages}}
-					widthsObject={widthsObject}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
 				/>
 			</div>
 			<SymbolDialog

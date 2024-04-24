@@ -10,6 +10,6 @@ export class PersonSettingsService extends BaseAuthService {
 	}
 
 	deleteUserSettings(settingsKey) {
-		return this.api.delete(`/personsettings/${settingsKey}`).then(res => res.data);
+		return this.api.delete(`/personsettings/${settingsKey}`).then(res => res);
 	}
 }

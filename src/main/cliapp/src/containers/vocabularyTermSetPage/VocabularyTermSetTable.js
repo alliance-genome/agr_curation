@@ -1,5 +1,5 @@
 import React, {useRef, useState } from 'react';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Messages } from 'primereact/messages';
@@ -14,18 +14,21 @@ import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer
 import { InputTextEditor } from "../../components/InputTextEditor";
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEditor";
-import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from "../../utils/utils";
+import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, setNewEntity} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { Tooltip } from 'primereact/tooltip';
-
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 export const VocabularyTermSetTable = () => {
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
-	const [newVocabularyTermSet, setNewVocabularyTermSet] = useState(null);
+	const [totalRecords, setTotalRecords] = useState(0);
 	const { newVocabularyTermSetState, newVocabularyTermSetDispatch } = useNewVocabularyTermSetReducer();
+
+	const [termSets, setTermSets] = useState();
 
 	const searchService = new SearchService();
 	const errorMessage = useRef(null);
@@ -34,8 +37,6 @@ export const VocabularyTermSetTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
-
-
 
 	let vocabularyTermSetService = new VocabularyTermSetService();
 
@@ -229,17 +230,22 @@ export const VocabularyTermSetTable = () => {
 		}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 15;
+	const SEARCH_ENDPOINT = "vocabularytermset";
+
+	const initialTableState = getDefaultTableState("VocabularyTermSets", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isLoading, isFetching } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setTermSets,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 15;
-	});
-
-	const initialTableState = getDefaultTableState("VocabularyTermSets", defaultColumnNames, undefined, widthsObject);
 
 	const headerButtons = (disabled=false) => {
 		return (
@@ -255,11 +261,15 @@ export const VocabularyTermSetTable = () => {
 			<Toast ref={toast_topright} position="top-right"/>
 			<Messages ref={errorMessage}/>
 			<GenericDataTable
-				endpoint="vocabularytermset"
+				endpoint={SEARCH_ENDPOINT}
 				tableName="Vocabulary Term Sets"
+				entities={termSets}
+				setEntities={setTermSets}
+				totalRecords={totalRecords}
+				setTotalRecords={setTotalRecords}
+				tableState={tableState}
+				setTableState={setTableState}
 				columns={columns}
-				defaultColumnNames={defaultColumnNames}
-				initialTableState={initialTableState}
 				isEditable={true}
 				idFields={["vocabularyTermSetVocabulary, memberTerms"]}
 				mutation={mutation}
@@ -268,17 +278,17 @@ export const VocabularyTermSetTable = () => {
 				toasts={{toast_topleft, toast_topright }}
 				errorObject={{errorMessages, setErrorMessages}}
 				headerButtons={headerButtons}
-				newEntity={newVocabularyTermSet}
 				deletionEnabled={true}
 				deletionMethod={vocabularyTermSetService.deleteVocabularyTermSet}
-				widthsObject={widthsObject}
+				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+				fetching={isFetching || isLoading}
 			/>
 			<NewVocabularyTermSetForm
 				newVocabularyTermSetState={newVocabularyTermSetState}
 				newVocabularyTermSetDispatch={newVocabularyTermSetDispatch}
 				searchService={searchService}
 				vocabularyTermSetService={vocabularyTermSetService}
-				setNewVocabularyTermSet={setNewVocabularyTermSet}
+				setNewVocabularyTermSet={(newTermSet) => setNewEntity(tableState, setTermSets, newTermSet)}
 			/>
 		</div>
 	)

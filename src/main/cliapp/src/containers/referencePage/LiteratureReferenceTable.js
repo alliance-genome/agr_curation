@@ -8,11 +8,21 @@ import { Tooltip } from "primereact/tooltip";
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
+
 
 export const LiteratureReferenceTable = () => {
 
 		const [isInEditMode, setIsInEditMode] = useState(false);
 		const [errorMessages, setErrorMessages] = useState({});
+
+		const [totalRecords, setTotalRecords] = useState(0);
+		const [literatureReferences, setLiteratureReferences] = useState([]);
+		const searchService = new SearchService();
+
 
 		const toast_topleft = useRef(null);
 		const toast_topright = useRef(null);
@@ -109,34 +119,44 @@ export const LiteratureReferenceTable = () => {
 						filterConfig: FILTER_CONFIGS.literatureShortCitationFilterConfig,
 				}
 		];
-		const defaultColumnNames = columns.map((col) => {
-			return col.header;
-		});
-		const widthsObject = {};
-
-		columns.forEach((col) => {
-			widthsObject[col.field] = 20;
-		});
+		const DEFAULT_COLUMN_WIDTH = 20;
+		const SEARCH_ENDPOINT = "literature-reference";
 	
-		const initialTableState = getDefaultTableState("LiteratureReferences", defaultColumnNames, undefined, widthsObject);
+		const initialTableState = getDefaultTableState("LiteratureReferences", columns, DEFAULT_COLUMN_WIDTH);
+	
+		const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	
+		const { isLoading, isFetching } = useGetTableData({
+			tableState,
+			endpoint: SEARCH_ENDPOINT,
+			setIsInEditMode,
+			setEntities: setLiteratureReferences,
+			setTotalRecords,
+			toast_topleft,
+			searchService
+		});
 
 		return (
 						<Card>
 								<Toast ref={toast_topleft} position="top-left" />
 								<Toast ref={toast_topright} position="top-right" />
 								<GenericDataTable 
-									endpoint="literature-reference" 
+									endpoint={SEARCH_ENDPOINT} 
 									tableName="Literature References" 
-									dataKey="curie" 
+									entities={literatureReferences}
+									setEntities={setLiteratureReferences}
+									totalRecords={totalRecords}
+									setTotalRecords={setTotalRecords}
+									tableState={tableState}
+									setTableState={setTableState}
 									columns={columns}	 
-									defaultColumnNames={defaultColumnNames}
-									initialTableState={initialTableState}
+									dataKey="curie" 
 									isEditable={false}
 									isInEditMode={isInEditMode}
 									setIsInEditMode={setIsInEditMode}
 									toasts={{toast_topleft, toast_topright }}
 									errorObject = {{errorMessages, setErrorMessages}}
-									widthsObject={widthsObject}
+									fetching={isFetching || isLoading}
 								/>
 						</Card>
 		);

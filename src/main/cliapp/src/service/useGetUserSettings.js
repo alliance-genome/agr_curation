@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useState } from "react";
 import { PersonSettingsService } from "./PersonSettingsService";
 import { removeInvalidFilters, removeInvalidSorts } from '../utils/utils';
@@ -20,7 +20,7 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 		return stickyObject;
 	});
 	
-	useQuery(`${key}`, () => personSettingsService.getUserSettings(key), {
+	useQuery([`${key}`], () => personSettingsService.getUserSettings(key), {
 		onSuccess: (data) => {
 			let userSettings = defaultValue;
 			if(Object.keys(data).length === 0) {

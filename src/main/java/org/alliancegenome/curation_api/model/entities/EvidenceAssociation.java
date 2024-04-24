@@ -24,7 +24,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "evidenceAssociation", description = "POJO that represents an association supported by any number of information content entities")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
-
 public class EvidenceAssociation extends Association {
 
 	@IndexedEmbedded(includeDepth = 2)
