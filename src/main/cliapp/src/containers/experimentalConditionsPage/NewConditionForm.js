@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
@@ -25,6 +25,7 @@ export const NewConditionForm = ({
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newCondition, errorMessages, submitted, newConditionDialog } = newConditionState;
+	const queryClient = useQueryClient();
 
 	const mutation = useMutation(newCondition => {
 		if (!experimentalConditionService) {
@@ -43,7 +44,7 @@ export const NewConditionForm = ({
 		newConditionDispatch({ type: "SUBMIT" });
 		mutation.mutate(newCondition, {
 			onSuccess: (data) => {
-				setNewExperimentalCondition(data.data.entity);
+				setNewExperimentalCondition(data.data.entity, queryClient);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
 				newConditionDispatch({ type: "RESET" });
 			},
