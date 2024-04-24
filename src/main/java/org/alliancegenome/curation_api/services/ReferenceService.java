@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.services.helpers.references.ReferenceSync
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class ReferenceService extends BaseEntityCrudService<Reference, ReferenceDAO> {
@@ -35,7 +36,15 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	public void synchroniseReferences() {
 		refSyncHelper.synchroniseReferences();
 	}
-
+	
+	@Override
+	public ObjectResponse<Reference> getByCurie(String curie) {
+		Reference reference = retrieveFromDbOrLiteratureService(curie);
+		ObjectResponse<Reference> ret = new ObjectResponse<Reference>(reference);
+		return ret;
+	}
+	
+	@Transactional
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
 
