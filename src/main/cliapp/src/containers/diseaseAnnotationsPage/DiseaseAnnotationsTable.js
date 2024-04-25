@@ -1173,7 +1173,7 @@ const { isLoading, isFetching } = useGetTableData({
 				searchService={searchService}
 				relationsTerms={relationsTerms}
 				negatedTerms={booleanTerms}
-				setNewDiseaseAnnotation={(newAnnotation) => setNewEntity(tableState, setDiseaseAnnotations, newAnnotation)}
+				setNewDiseaseAnnotation={(newAnnotation, queryClient) => setNewEntity(tableState, setDiseaseAnnotations, newAnnotation, queryClient)}
 			/>
 			<RelatedNotesDialog
 				originalRelatedNotesData={relatedNotesData}

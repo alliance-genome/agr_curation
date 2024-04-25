@@ -180,7 +180,7 @@ export const VocabulariesTable = () => {
 			<NewVocabularyForm
 				newVocabularyDialog={newVocabularyDialog}
 				setNewVocabularyDialog={setNewVocabularyDialog}
-				setNewVocabulary={(newVocabulary) => setNewEntity(tableState, setVocabularies, newVocabulary)}
+				setNewVocabulary={(newVocabulary, queryClient) => setNewEntity(tableState, setVocabularies, newVocabulary, queryClient)}
 			/>
 		</div>
 	);

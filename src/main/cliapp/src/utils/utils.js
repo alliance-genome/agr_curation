@@ -530,20 +530,23 @@ export const processOptionalField = (eventValue) => {
 	return eventValue;
 }
 
-export const setNewEntity = (tableState, setEntities, newEntity) => {
+export const setNewEntity = (tableState, setEntities, newEntity, queryClient) => {
 	if(!tableState || !setEntities || !newEntity) return;
 
 	if (
 			(tableState.filters && Object.keys(tableState.filters).length > 0) ||
 			(tableState.multiSortMeta && tableState.multiSortMeta.length > 0) ||
 			tableState.page > 0 
-	) return;
-
-	console.log("newEntity", newEntity);
+	) {
+		//Invalidating the query immediately after success leads to api results that don't always include the new entity
+		setTimeout(() => {
+			queryClient.invalidateQueries([tableState.tableKeyName]);
+		}, 1000);
+		return;
+	};
 
 	// Adds new entity to the top of the entities array when there are no filters, sorting, or pagination applied.
 	setEntities((previousEntities) => {
-		console.log("inside setEntities");
 		return [newEntity, ...previousEntities]
 	});
 };
