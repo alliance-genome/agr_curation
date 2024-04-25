@@ -18,7 +18,7 @@ export const NestedListDialogTemplate = ({ entities, subType, handleOpen, getTex
 
   return (
     <>
-      <div className={`-my-4 p-1`}>
+      <div className={`-my-4 p-0`}>
         <Button className="p-button-text" onClick={() => handleOpen(entities)} >
           <ListTableCell template={listTemplate} listData={sortedStrings} />
         </Button >
