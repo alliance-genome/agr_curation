@@ -233,7 +233,6 @@ export const ConstructsTable = () => {
 			header: "References",
 			body: (rowData) => <TruncatedReferencesTemplate 
 				references={rowData.references} 
-				identifier={rowData.modEntityId}
 			/>,
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,

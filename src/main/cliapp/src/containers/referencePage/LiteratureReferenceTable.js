@@ -10,7 +10,8 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { NameTemplate } from '../../components/Templates/NameTemplate';
 import { SearchService } from '../../service/SearchService';
 
 
@@ -87,7 +88,9 @@ export const LiteratureReferenceTable = () => {
 						field: "cross_references.curie",
 						header: "Cross References",
 						sortable: true,
-						body: crossReferenceTemplate,
+						body: (rowData) => <StringListTemplate 
+						list = {rowData.cross_references.map(reference=>reference.curie)}
+						/>,
 						filter: true,
 						filterConfig: FILTER_CONFIGS.literatureCrossReferenceFilterConfig, 
 				}, {
@@ -95,21 +98,21 @@ export const LiteratureReferenceTable = () => {
 						header: "Title",
 						sortable: true,
 						filter: true,
-						body : titleTemplate,
+						body: (rowData) => <NameTemplate name = {rowData.title}/>,
 						filterConfig: FILTER_CONFIGS.titleFilterConfig, 
 				}, {
 						field: "abstract",
 						header: "Abstract",
 						sortable: true,
 						filter: true,
-						body : abstractTemplate,
+						body: (rowData) => <NameTemplate name = {rowData.abstract}/>,
 						filterConfig: FILTER_CONFIGS.abstractFilterConfig, 
 				}, {
 						field: "citation",
 						header: "Citation",
 						sortable: true,
 						filter: true,
-						body : citationTemplate,
+						body: (rowData) => <NameTemplate name = {rowData.citation}/>,
 						filterConfig: FILTER_CONFIGS.citationFilterConfig, 
 				}, {
 						field: "short_citation",

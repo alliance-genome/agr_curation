@@ -16,7 +16,7 @@ export const ListDialogTemplate = ({ entities, handleOpen, getTextField, underli
 
   return (
     <>
-      <div className={`-m-1 p-0`}>
+      <div className={`-m-0 p-0`}>
         <Button className="-my-2 p-0 p-button-text" onClick={() => handleOpen(entities)}>
           <ListTableCell template={listTemplate} listData={sortedItems} />
         </Button>

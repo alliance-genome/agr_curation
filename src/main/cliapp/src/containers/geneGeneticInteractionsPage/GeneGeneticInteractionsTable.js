@@ -12,6 +12,7 @@ import { StringListTemplate } from '../../components/Templates/StringListTemplat
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 
 export const GeneGeneticInteractionsTable = () => {
 
@@ -145,7 +146,7 @@ export const GeneGeneticInteractionsTable = () => {
 	{
 		field: "evidence.curie",
 		header: "Evidence",
-		body: (rowData) => evidenceTemplate(rowData),
+		body: (rowData) => <TruncatedReferencesTemplate references={rowData.evidence}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.evidenceFilterConfig
 	},
