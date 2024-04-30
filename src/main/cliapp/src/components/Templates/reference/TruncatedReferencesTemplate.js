@@ -18,7 +18,7 @@ export const TruncatedReferencesTemplate = ({ references, identifier, detailPage
 
   return (
     <>
-      <div className={`-my-4 p-1 ${targetClass}`}>
+      <div className={`-m-1 p-0 ${targetClass}`}>
         <ListTableCell template={listTemplate} listData={truncatedReferences} />
       </div>
       <div className="mt-1">

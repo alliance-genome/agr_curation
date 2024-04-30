@@ -19,7 +19,7 @@ export const StringListTemplate = ({ list }) => {
 
   return (
     <>
-      <div className={`-my-4 p-1 ${targetClass}`}>
+      <div className={`-my-2 p-1 ${targetClass}`}>
         <ListTableCell template={listTemplate} listData={sortedList} />
       </div>
       <Tooltip target={`.${targetClass}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
