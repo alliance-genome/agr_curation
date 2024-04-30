@@ -2,7 +2,6 @@ import { Button } from "primereact/button";
 
 export const TextDialogTemplate = ({ entity, handleOpen, text, underline=true }) => {
   if (!entity || !handleOpen || !text) return null;
-
   return (
     <>
       <Button className="-my-2 p-0 p-button-text"
