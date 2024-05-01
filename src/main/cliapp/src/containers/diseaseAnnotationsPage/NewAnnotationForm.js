@@ -134,7 +134,7 @@ export const NewAnnotationForm = ({
 						setUiErrorMessages({});
 					}
 
-					setNewDiseaseAnnotation(data.data.entity);
+					setNewDiseaseAnnotation(data.data.entity, queryClient);
 				}
 			},
 			onError: (error) => {

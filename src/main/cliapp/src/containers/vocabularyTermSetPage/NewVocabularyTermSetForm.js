@@ -4,7 +4,7 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
 import { Toast } from "primereact/toast";
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
@@ -24,6 +24,7 @@ export const NewVocabularyTermSetForm = ({
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newVocabularyTermSet, errorMessages, submitted, newVocabularyTermSetDialog } = newVocabularyTermSetState;
+	const queryClient = useQueryClient();
 
 
 	const hideDialog = () => {
@@ -42,7 +43,7 @@ export const NewVocabularyTermSetForm = ({
 		newVocabularyTermSetDispatch({ type: "SUBMIT" });
 		mutation.mutate(newVocabularyTermSet, {
 			onSuccess: (data) => {
-				setNewVocabularyTermSet(data.data.entity);
+				setNewVocabularyTermSet(data.data.entity, queryClient);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Vocabulary Term Set Added' });
 				newVocabularyTermSetDispatch({ type: "RESET" });
 			},

@@ -295,7 +295,7 @@ export const ConditionRelationTable = () => {
 				searchService={searchService}
 				conditionRelationService={conditionRelationService}
 				conditionRelationTypeTerms={conditionRelationTypeTerms}
-				setNewConditionRelation={(newConditionRelation) => setNewEntity(tableState, setConditionRelations, newConditionRelation)}
+				setNewConditionRelation={(newConditionRelation, queryClient) => setNewEntity(tableState, setConditionRelations, newConditionRelation, queryClient)}
 			/>
 		</div>
 	);
