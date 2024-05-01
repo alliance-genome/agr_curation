@@ -6,10 +6,10 @@ import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -138,7 +138,7 @@ export const GeneMolecularInteractionsTable = () => {
 	{
 		field: "evidence.curie",
 		header: "Evidence",
-		body: (rowData) => evidenceTemplate(rowData),
+		body: (rowData) => <TruncatedReferencesTemplate references={rowData.evidence}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.evidenceFilterConfig
 	},

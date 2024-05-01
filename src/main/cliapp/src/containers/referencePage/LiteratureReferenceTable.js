@@ -1,16 +1,13 @@
 import React, { useState, useRef } from 'react';
-
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-
 import { Card } from 'primereact/card';
-import { Tooltip } from "primereact/tooltip";
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { NameTemplate } from '../../components/Templates/NameTemplate';
 import { SearchService } from '../../service/SearchService';
 
 
@@ -27,56 +24,6 @@ export const LiteratureReferenceTable = () => {
 		const toast_topleft = useRef(null);
 		const toast_topright = useRef(null);
 
-		const crossReferenceTemplate = (rowData) => {
-				if (rowData && rowData.cross_references) {
-						const sortedCross_References= rowData.cross_references.sort((a, b) => (a.curie > b.curie) ? 1 : -1);
-						return (<div>
-								<ul stype={{ listStypeType: 'none' }}>
-										{sortedCross_References.map((a, index) =>
-												<li key={index}>
-														<EllipsisTableCell>
-																{a.curie}
-														</EllipsisTableCell>
-												</li>
-										)}
-								</ul>
-						</div>);
-				}
-		};
-
-		const titleTemplate = (rowData) => {
-				return (
-						<>
-								<EllipsisTableCell otherClasses={`${"TITLE_"}${rowData.curie.replace(':', '')}`}>
-										{rowData.title}
-								</EllipsisTableCell>
-								<Tooltip target={`.${"TITLE_"}${rowData.curie.replace(':', '')}`} content={rowData.title} style={{ width: '450px', maxWidth: '450px' }}/>
-						</>
-				);
-		};
-
-		const abstractTemplate = (rowData) => {
-				return (
-						<>
-								<EllipsisTableCell otherClasses={`${"ABSTRACT_"}${rowData.curie.replace(':', '')}`}>
-										{rowData.abstract}
-								</EllipsisTableCell>
-								<Tooltip target={`.${"ABSTRACT_"}${rowData.curie.replace(':', '')}`} content={rowData.abstract} style={{ width: '450px', maxWidth: '450px' }}/>
-						</>
-				);
-		};
-
-		const citationTemplate = (rowData) => {
-				return (
-						<>
-								<EllipsisTableCell otherClasses={`${"CITATION_"}${rowData.curie.replace(':', '')}`}>
-										{rowData.citation}
-								</EllipsisTableCell>
-								<Tooltip target={`.${"CITATION_"}${rowData.curie.replace(':', '')}`} content={rowData.citation} style={{ width: '450px', maxWidth: '450px' }}/>
-						</>
-				);
-		};
-
 		const columns = [{
 						field: "curie",
 						header: "Curie",
@@ -87,7 +34,9 @@ export const LiteratureReferenceTable = () => {
 						field: "cross_references.curie",
 						header: "Cross References",
 						sortable: true,
-						body: crossReferenceTemplate,
+						body: (rowData) => <StringListTemplate 
+						list = {rowData.cross_references.map(reference=>reference.curie)}
+						/>,
 						filter: true,
 						filterConfig: FILTER_CONFIGS.literatureCrossReferenceFilterConfig, 
 				}, {
@@ -95,21 +44,21 @@ export const LiteratureReferenceTable = () => {
 						header: "Title",
 						sortable: true,
 						filter: true,
-						body : titleTemplate,
+						body: (rowData) => <NameTemplate name = {rowData.title}/>,
 						filterConfig: FILTER_CONFIGS.titleFilterConfig, 
 				}, {
 						field: "abstract",
 						header: "Abstract",
 						sortable: true,
 						filter: true,
-						body : abstractTemplate,
+						body: (rowData) => <NameTemplate name = {rowData.abstract}/>,
 						filterConfig: FILTER_CONFIGS.abstractFilterConfig, 
 				}, {
 						field: "citation",
 						header: "Citation",
 						sortable: true,
 						filter: true,
-						body : citationTemplate,
+						body: (rowData) => <NameTemplate name = {rowData.citation}/>,
 						filterConfig: FILTER_CONFIGS.citationFilterConfig, 
 				}, {
 						field: "short_citation",

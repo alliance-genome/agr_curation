@@ -5,7 +5,7 @@ export const ListTableCell = ({ template, listData, showBullets }) => {
 	if(showBullets)
 		suppress = ''
 	return (
-		<ul className={`pl-0 ${suppress}`}>
+		<ul className={`m-1 pl-0 ${suppress}`}>
 			{listData?.map((item, index) =>
 				<li key={index}>
 					{template(item)}

@@ -1,21 +1,21 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
-import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 import { ComponentsDialog } from './ComponentsDialog';
 import { GenomicComponentsDialog } from './GenomicComponentsDialog';
 import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
 import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
-import { Button } from 'primereact/button';
-import { getRefStrings } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -60,302 +60,113 @@ export const ConstructsTable = () => {
 		mainRowProps: {},
 	});
 
-
-	const uniqueIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`c${rowData.id}`}>
-					{rowData.uniqueId}
-				</EllipsisTableCell>
-				<Tooltip target={`.c${rowData.id}`} content={rowData.uniqueId} />
-			</>
-		)
-	};
-	
-	const modEntityIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>
-					{rowData.modEntityId}
-				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.modEntityId} />
-			</>
-		)
-	};
-
-	const modInternalIdBodyTemplate = (rowData) => {
-		return (
-			//the 'a' at the start is a hack since css selectors can't start with a number
-			<>
-				<EllipsisTableCell otherClasses={`b${rowData.id}`}>
-					{rowData.modInternalId}
-				</EllipsisTableCell>
-				<Tooltip target={`.b${rowData.id}`} content={rowData.modInternalId} />
-			</>
-		)
-	};
-
-	const fullNameTemplate = (rowData) => {
-		if (rowData?.constructFullName) {
-			return (
-				<>
-					<Button className="p-button-text" onClick={(event) => { handleFullNameOpen(event, rowData, false) }} >
-						<EllipsisTableCell otherClasses={`fn_${rowData.id}`}>
-							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.displayText}}></div>
-						</EllipsisTableCell>
-						<Tooltip target={`.fn_${rowData.id}`}>
-							<div dangerouslySetInnerHTML={{__html: rowData.constructFullName.displayText}}/>
-						</Tooltip>
-					</Button>	
-				</>
-			)
-		}
-	};
-
-	const handleFullNameOpen = (event, rowData) => {
+	const handleFullNameOpen = (constructFullName) => {
 		let _fullNameData = {};
-		_fullNameData["originalFullNames"] = [rowData.constructFullName];
+		_fullNameData["originalFullNames"] = [constructFullName];
 		_fullNameData["dialog"] = true;
 		setFullNameData(() => ({
 			..._fullNameData
 		}));
 	};
 
-	const synonymsTemplate = (rowData) => {
-		if (rowData?.constructSynonyms) {
-			const synonymSet = new Set();
-			for(var i = 0; i < rowData.constructSynonyms.length; i++){
-				if (rowData.constructSynonyms[i].displayText) {
-					synonymSet.add(rowData.constructSynonyms[i].displayText);
-				}
-			}
-			if (synonymSet.size > 0) {
-				const sortedSynonyms = Array.from(synonymSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<div className='overflow-hidden text-overflow-ellipsis text-left' dangerouslySetInnerHTML={{ __html: item }} />	
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleSynonymsOpen(event, rowData, false) }} >
-							<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
-	
-	const handleSynonymsOpen = (event, rowData) => {
+	const handleSynonymsOpen = (constructSynonyms) => {
 		let _synonymsData = {};
-		_synonymsData["originalSynonyms"] = rowData.constructSynonyms;
+		_synonymsData["originalSynonyms"] = constructSynonyms;
 		_synonymsData["dialog"] = true;
 		setSynonymsData(() => ({
 			..._synonymsData
 		}));
 	};
-	
-	const symbolTemplate = (rowData) => {
-		if (rowData?.constructSymbol) {
-			return (
-				<>
-					<Button className="p-button-text" 
-						onClick={(event) => { handleSymbolOpen(event, rowData, false) }} >
-							<EllipsisTableCell otherClasses={`sym_${rowData.id}`}>
-								<div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.constructSymbol.displayText }} />
-							</EllipsisTableCell>
-							<Tooltip target={`.sym_${rowData.id}`}>
-								<div dangerouslySetInnerHTML={{__html: rowData.constructSymbol.displayText}}/>
-							</Tooltip>
-					</Button>
-				</>
-			)
-		}
-	};
 
-	const handleSymbolOpen = (event, rowData) => {
+	const handleSymbolOpen = (constructSymbol) => {
 		let _symbolData = {};
-		_symbolData["originalSymbols"] = [rowData.constructSymbol];
+		_symbolData["originalSymbols"] = [constructSymbol];
 		_symbolData["dialog"] = true;
 		setSymbolData(() => ({
 			..._symbolData
 		}));
 	};
 	
-	const secondaryIdsBodyTemplate = (rowData) => {
-		if (rowData?.secondaryIdentifiers && rowData.secondaryIdentifiers.length > 0) {
-			const sortedSecondaryIdentifiers = rowData.secondaryIdentifiers.sort();
-			const listTemplate = (secondaryIdentifier) => {
-				return (
-					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{__html: secondaryIdentifier}}/>
-					</EllipsisTableCell>
-				)
-			};
-			return (
-				<>
-					<div className={`sid_${rowData.id}`}>
-						<ListTableCell template={listTemplate} listData={sortedSecondaryIdentifiers}/>
-					</div>
-					<Tooltip target={`.sid_${rowData.id}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedSecondaryIdentifiers}/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
-	
-	const referencesTemplate = (rowData) => {
-		if (rowData && rowData.references && rowData.references.length > 0) {
-			const refStrings = getRefStrings(rowData.references);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item}
-					</EllipsisTableCell>
-				);
-			};
-			return (
-				<>
-					<div className={`ref_${rowData.id}${rowData.references[0].curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={refStrings}/>
-					</div>
-					<Tooltip target={`.ref_${rowData.id}${rowData.references[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={refStrings}/>
-					</Tooltip>
-				</>
-			);
-
-		}
-	};
-
-	const componentsTemplate = (rowData) => {
-		if (rowData?.constructComponents) {
-			const componentSet = new Set();
-			for(var i = 0; i < rowData.constructComponents.length; i++){
-				if (rowData.constructComponents[i].componentSymbol && rowData.constructComponents[i].relation) {
-					let relationName = "";
-					if (rowData.constructComponents[i]?.relation?.name) {
-						relationName = rowData.constructComponents[i].relation.name;
-						if (relationName.indexOf(' (RO:') !== -1) {
-							relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
-						}
-					}	
-					componentSet.add(relationName + ': ' + rowData.constructComponents[i].componentSymbol);
-				}
-			}
-			if (componentSet.size > 0) {
-				const sortedComponents = Array.from(componentSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleComponentsOpen(event, rowData) }} >
-							<ListTableCell template={listTemplate} listData={sortedComponents}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
-	
-	const handleComponentsOpen = (event, rowData) => {
+	const handleComponentsOpen = (constructComponents) => {
 		let _componentsData = {};
-		_componentsData["originalComponents"] = rowData.constructComponents;
+		_componentsData["originalComponents"] = constructComponents;
 		_componentsData["dialog"] = true;
 		setComponentsData(() => ({
 			..._componentsData
 		}));
 	};
-
-	const genomicComponentsTemplate = (rowData) => {
-		if (rowData?.constructGenomicEntityAssociations) {
-			const componentSet = new Set();
-			for(var i = 0; i < rowData.constructGenomicEntityAssociations.length; i++){
-				let symbolValue = "";
-				if (rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.geneSymbol || rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.alleleSymbol) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.geneSymbol ? rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.geneSymbol.displayText : rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.alleleSymbol.displayText;
-				} else if (rowData.constructGenomicEntityAssociations[i]?.constructGenomicEntityAssociationObject?.name) {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.name;
-				} else {
-					symbolValue = rowData.constructGenomicEntityAssociations[i].constructGenomicEntityAssociationObject.curie;
-				}
-				let relationName = "";
-				if (rowData.constructGenomicEntityAssociations[i]?.relation?.name) {
-					relationName = rowData.constructGenomicEntityAssociations[i].relation.name;
-					if (relationName.indexOf(' (RO:') !== -1) {
-						relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
-					}
-				}	
-				componentSet.add(relationName + ': ' + symbolValue);
-			}
-			if (componentSet.size > 0) {
-				const sortedComponents = Array.from(componentSet).sort();
-				const listTemplate = (item) => {
-					return (
-						<span style={{ textDecoration: 'underline' }}>
-							{item && item}
-						</span>
-					);
-				};
-				return (
-					<>
-						<Button className="p-button-text"
-							onClick={(event) => { handleGenomicComponentsOpen(event, rowData) }} >
-							<ListTableCell template={listTemplate} listData={sortedComponents}/>
-						</Button>
-					</>
-				);
-			}
-		}
-	};
 	
-	const handleGenomicComponentsOpen = (event, rowData) => {
+	const handleGenomicComponentsOpen = (constructGenomicEntityAssociations) => {
 		let _componentsData = {};
-		_componentsData["originalComponents"] = rowData.constructGenomicEntityAssociations;
+		_componentsData["originalComponents"] = constructGenomicEntityAssociations;
 		_componentsData["dialog"] = true;
 		setGenomicComponentsData(() => ({
 			..._componentsData
 		}));
 	};
 
+	const getComponentsTextString = (item) => {
+		let relationName = "";
+		if (item?.relation?.name) {
+			relationName = item.relation.name;
+			if (relationName.indexOf(' (RO:') !== -1) {
+				relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+			}
+		}	
+		return relationName + ': ' + item.componentSymbol;
+	};
+
+	const getComponentsAssociationTextString = (item) => {
+		let symbolValue = "";
+		if (item?.constructGenomicEntityAssociationObject?.geneSymbol || item?.constructGenomicEntityAssociationObject?.alleleSymbol) {
+			symbolValue = item.constructGenomicEntityAssociationObject.geneSymbol ? item.constructGenomicEntityAssociationObject.geneSymbol.displayText : item.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
+		} else if (item?.constructGenomicEntityAssociationObject?.name) {
+			symbolValue = item.constructGenomicEntityAssociationObject.name;
+		} else {
+			symbolValue = item.constructGenomicEntityAssociationObject.curie;
+		}
+		let relationName = "";
+		if (item?.relation?.name) {
+			relationName = item.relation.name;
+			if (relationName.indexOf(' (RO:') !== -1) {
+				relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+			}
+		}
+		return relationName + ': ' + symbolValue;
+	}
+
 	const columns = [
 		{
 			field: "uniqueId",
 			header: "Unique ID",
 			sortable: { isInEditMode },
-			body: uniqueIdBodyTemplate,
+			body: (rowData) => <IdTemplate id={rowData.uniqueId}/>,
 			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
 			field: "modEntityId",
 			header: "MOD Entity ID",
 			sortable: { isInEditMode },
-			body: modEntityIdBodyTemplate,
+			body: (rowData) => <IdTemplate id={rowData.modEntityId}/>,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
 			field: "modInternalId",
 			header: "MOD Internal ID",
 			sortable: { isInEditMode },
-			body: modInternalIdBodyTemplate,
+			body: (rowData) => <IdTemplate id={rowData.modInternalId}/>,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
 			field: "constructSymbol.displayText",
 			header: "Symbol",
 			sortable: true,
-			body: symbolTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.constructSymbol}
+				handleOpen={handleSymbolOpen}
+				text={rowData.constructSymbol?.displayText}
+				underline={false}
+			/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig
 		},
@@ -364,13 +175,23 @@ export const ConstructsTable = () => {
 			header: "Name",
 			sortable: true,
 			filter: true,
-			body: fullNameTemplate,
+			body: (rowData) => <TextDialogTemplate
+				entity={rowData.constructFullName}
+				handleOpen={handleFullNameOpen}
+				text={rowData.constructFullName?.displayText}
+				underline={false}
+			/>,
 			filterConfig: FILTER_CONFIGS.constructNameFilterConfig
 		},
 		{
 			field: "constructSynonyms.displayText",
 			header: "Synonyms",
-			body: synonymsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.constructSynonyms}
+				handleOpen={handleSynonymsOpen}
+				getTextField={(entity) => entity?.displayText}
+				underline={false}
+			/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig
 		},
@@ -379,26 +200,40 @@ export const ConstructsTable = () => {
 			header: "Secondary IDs",
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
-			body: secondaryIdsBodyTemplate
+			body: (rowData) => <StringListTemplate 
+				list = {rowData.secondaryIdentifiers}
+			/>
 		},
 		{
 			field: "constructComponents.componentSymbol",
 			header: "Free Text Components",
-			body: componentsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.constructComponents}
+				handleOpen={handleComponentsOpen}
+				getTextField={getComponentsTextString}
+				underline={true}
+			/>,	
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
 		},
 		{
 			field: "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol",
 			header: "Component Associations",
-			body: genomicComponentsTemplate,
+			body: (rowData) => <ListDialogTemplate
+				entities={rowData.constructGenomicEntityAssociations}
+				handleOpen={handleGenomicComponentsOpen}
+				getTextField={getComponentsAssociationTextString}
+				underline={true}
+			/>,
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
 		},
 		{
 			field: "references.primaryCrossReferenceCurie",
 			header: "References",
-			body: referencesTemplate,
+			body: (rowData) => <TruncatedReferencesTemplate 
+				references={rowData.references} 
+			/>,
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 		},
@@ -438,7 +273,7 @@ export const ConstructsTable = () => {
 		{
 			field: "internal",
 			header: "Internal",
-			body: internalTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: { isInEditMode }
@@ -446,7 +281,7 @@ export const ConstructsTable = () => {
 		{
 			field: "obsolete",
 			header: "Obsolete",
-			body: obsoleteTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: { isInEditMode }
