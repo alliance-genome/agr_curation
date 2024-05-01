@@ -6,7 +6,6 @@ import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
