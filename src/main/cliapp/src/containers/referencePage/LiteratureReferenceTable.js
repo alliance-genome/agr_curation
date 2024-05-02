@@ -103,6 +103,7 @@ export const LiteratureReferenceTable = () => {
 									isEditable={false}
 									isInEditMode={isInEditMode}
 									setIsInEditMode={setIsInEditMode}
+									defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 									toasts={{toast_topleft, toast_topright }}
 									errorObject = {{errorMessages, setErrorMessages}}
 									fetching={isFetching || isLoading}
