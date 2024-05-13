@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { useMutation } from 'react-query';
+import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
@@ -14,16 +14,19 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { NewConditionForm } from './NewConditionForm';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useNewConditionReducer } from './useNewConditionReducer';
-import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
+import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, setNewEntity } from "../../utils/utils";
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 export const ExperimentalConditionsTable = () => {
 
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isInEditMode, setIsInEditMode] = useState(false);
-	const [newExperimentalCondition, setNewExperimentalCondition] = useState(null);
+	const [totalRecords, setTotalRecords] = useState(0);
 	const { newConditionState, newConditionDispatch } = useNewConditionReducer();
+	const [experimentalConditions, setExperimentalConditions] = useState([]);
 
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const searchService = new SearchService();
@@ -38,7 +41,7 @@ export const ExperimentalConditionsTable = () => {
 
 	const sortMapping = {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace']
-	}
+	};
 
 	const mutation = useMutation(updatedCondition => {
 		if (!experimentalConditionService) {
@@ -48,7 +51,7 @@ export const ExperimentalConditionsTable = () => {
 	});
 
 	const handleNewConditionOpen = () => {
-		newConditionDispatch({type: "OPEN_DIALOG"})
+		newConditionDispatch({ type: "OPEN_DIALOG" });
 	};
 
 	const freeTextEditor = (props, fieldname) => {
@@ -70,7 +73,7 @@ export const ExperimentalConditionsTable = () => {
 					<EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.uniqueId}</EllipsisTableCell>
 					<Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
 				</>
-			)
+			);
 		}
 	};
 
@@ -81,7 +84,7 @@ export const ExperimentalConditionsTable = () => {
 					<EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
 					<Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
 				</>
-			)
+			);
 		}
 	};
 
@@ -92,7 +95,7 @@ export const ExperimentalConditionsTable = () => {
 					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
 					<Tooltip target={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`} content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`} />
 				</>
-			)
+			);
 		}
 	};
 
@@ -103,7 +106,7 @@ export const ExperimentalConditionsTable = () => {
 					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
 					<Tooltip target={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`} content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`} />
 				</>
-			)
+			);
 		}
 	};
 
@@ -128,12 +131,12 @@ export const ExperimentalConditionsTable = () => {
 	const conditionTaxonBodyTemplate = (rowData) => {
 		if (rowData?.conditionTaxon) {
 			return (
-					<>
+				<>
 					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`}>
-							{rowData.conditionTaxon.name} ({rowData.conditionTaxon.curie})
+						{rowData.conditionTaxon.name} ({rowData.conditionTaxon.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`} content= {`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-					</>
+					<Tooltip target={`.${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`} content={`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }} />
+				</>
 			);
 		}
 	};
@@ -179,23 +182,23 @@ export const ExperimentalConditionsTable = () => {
 					queryString: 'ZECO_0000267'
 				}
 			}
-		}
+		};
 
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	}
+	};
 
 	const conditionClassEditorTemplate = (props) => {
 		return (
 			<>
-			<AutocompleteEditor
-				search={conditionClassSearch}
-				initialValue={props.rowData.conditionClass?.curie}
-				rowProps={props}
-				fieldName="conditionClass"
-				onValueChangeHandler={onConditionClassValueChange}
-			/>
-			<ErrorMessageComponent
+				<AutocompleteEditor
+					search={conditionClassSearch}
+					initialValue={props.rowData.conditionClass?.curie}
+					rowProps={props}
+					fieldName="conditionClass"
+					onValueChangeHandler={onConditionClassValueChange}
+				/>
+				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField='conditionClass'
 				/>
@@ -213,7 +216,7 @@ export const ExperimentalConditionsTable = () => {
 
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
 		return (
@@ -320,23 +323,28 @@ export const ExperimentalConditionsTable = () => {
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true,
 			editor: (props) => internalEditor(props)
-	},
+		},
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = "experimental-condition";
+
+	const initialTableState = getDefaultTableState("ExperimentalConditions", columns, DEFAULT_COLUMN_WIDTH);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isLoading, isFetching } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		sortMapping,
+		setIsInEditMode,
+		setEntities: setExperimentalConditions,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
 
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 10;
-	});
-
-	const initialTableState = getDefaultTableState("ExperimentalConditions", defaultColumnNames, undefined, widthsObject);
-
-
-	const headerButtons = (disabled=false) => {
+	const headerButtons = (disabled = false) => {
 		return (
 			<>
 				<Button label="New Condition" icon="pi pi-plus" onClick={handleNewConditionOpen} disabled={disabled} />&nbsp;&nbsp;
@@ -345,37 +353,41 @@ export const ExperimentalConditionsTable = () => {
 	};
 
 	return (
-			<div className="card">
-				<Toast ref={toast_topleft} position="top-left" />
-				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable
-					endpoint="experimental-condition"
-					tableName="Experimental Conditions"
-					columns={columns}
-					defaultColumnNames={defaultColumnNames}
-					initialTableState={initialTableState}
-					isEditable={true}
-					curieFields={["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntology", "conditionChemical"]}
-					sortMapping={sortMapping}
-					mutation={mutation}
-					isInEditMode={isInEditMode}
-					setIsInEditMode={setIsInEditMode}
-					headerButtons={headerButtons}
-					toasts={{toast_topleft, toast_topright }}
-					errorObject = {{errorMessages, setErrorMessages}}
-					newEntity={newExperimentalCondition}
-					deletionEnabled={true}
-					deletionMethod={experimentalConditionService.deleteExperimentalCondition}
-					widthsObject={widthsObject}
-				/>
-				<NewConditionForm
-					newConditionState={newConditionState}
-					newConditionDispatch={newConditionDispatch}
-					searchService={searchService}
-					mutation={mutation}
-					setNewExperimentalCondition={setNewExperimentalCondition}
-					curieAutocompleteFields={curieAutocompleteFields}
-				/>
-			</div>
-	)
-}
+		<div className="card">
+			<Toast ref={toast_topleft} position="top-left" />
+			<Toast ref={toast_topright} position="top-right" />
+			<GenericDataTable
+				endpoint={SEARCH_ENDPOINT}
+				tableName="Experimental Conditions"
+				entities={experimentalConditions}
+				setEntities={setExperimentalConditions}
+				totalRecords={totalRecords}
+				setTotalRecords={setTotalRecords}
+				tableState={tableState}
+				setTableState={setTableState}
+				columns={columns}
+				isEditable={true}
+				curieFields={["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntology", "conditionChemical"]}
+				sortMapping={sortMapping}
+				mutation={mutation}
+				isInEditMode={isInEditMode}
+				setIsInEditMode={setIsInEditMode}
+				headerButtons={headerButtons}
+				toasts={{ toast_topleft, toast_topright }}
+				errorObject={{ errorMessages, setErrorMessages }}
+				deletionEnabled={true}
+				deletionMethod={experimentalConditionService.deleteExperimentalCondition}
+				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+				fetching={isFetching || isLoading}
+			/>
+			<NewConditionForm
+				newConditionState={newConditionState}
+				newConditionDispatch={newConditionDispatch}
+				searchService={searchService}
+				mutation={mutation}
+				setNewExperimentalCondition={(newExCon, queryClient) => setNewEntity(tableState, setExperimentalConditions, newExCon, queryClient)}
+				curieAutocompleteFields={curieAutocompleteFields}
+			/>
+		</div>
+	);
+};

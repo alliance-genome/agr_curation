@@ -3,20 +3,31 @@ import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {classNames} from "primereact/utils";
 import {Button} from "primereact/button";
-import {useMutation,useQueryClient} from "react-query";
+import {useMutation,useQueryClient} from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
+import { Dropdown } from "primereact/dropdown";
 import {VocabularyService} from "../../service/VocabularyService";
 import ErrorBoundary from "../../components/Error/ErrorBoundary";
+import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 
-export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog }) => {
+export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog, setNewVocabulary }) => {
 		const queryClient = useQueryClient();
-		const [vocabulary, setVocabulary] = useState({});
+		const [vocabulary, setVocabulary] = useState(
+			{
+				obsolete: false,
+				name: "",
+				vocabularyLabel: "",
+				vocabularyDescription: ""
+			}
+		);
 		const [submitted, setSubmitted] = useState(false);
 		const toast_success = useRef(null);
 		const toast_error = useRef(null);
 
 		let emptyVocabulary = {};
 		let vocabularyService = null;
+
+		const booleanTerms = useControlledVocabularyService("generic_boolean_terms");
 
 		const mutation = useMutation(newVocabularyName => {
 				return getService().createVocabulary(newVocabularyName);
@@ -26,6 +37,12 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
 				const val = (event.target && event.target.value) || '';
 				let _vocabulary = { ...vocabulary };
 				_vocabulary[field] = val;
+				setVocabulary(_vocabulary);
+		};
+		const onObsoleteChange = (value) => {
+				if(value === undefined || value === undefined) return;
+				let _vocabulary = { ...vocabulary };
+				_vocabulary.obsolete = value;
 				setVocabulary(_vocabulary);
 		};
 
@@ -48,9 +65,13 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
 				if (vocabulary.name && vocabulary.name.trim()) {
 						console.log(event);
 						mutation.mutate(vocabulary, {
-								onSuccess: () => {
+								onSuccess: (data) => {
+									if(setNewVocabulary) {
+										setNewVocabulary(data.data.entity, queryClient);
+									} else {
+											queryClient.invalidateQueries(['vocabularies']);
+										};
 										toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Vocabulary Added' });
-										queryClient.invalidateQueries('vocabularies');
 										setSubmitted(false);
 										setNewVocabularyDialog(false);
 										setVocabulary(emptyVocabulary);
@@ -90,6 +111,26 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
 										<InputText id="vocabularyLabel" value={vocabulary.vocabularyLabel} onChange={(e) => onChange(e, 'vocabularyLabel')} required autoFocus className={classNames({ 'p-invalid': submitted && !vocabulary.vocabularyLabel })} />
 										{submitted && !vocabulary.vocabularyLabel && <small className="p-error">Vocabulary label is required.</small>}
 								</div>
+								<div className="field">
+										<label htmlFor="vocabularyDescription">Vocabulary Description</label>
+
+										<InputText id="vocabularyDescription" value={vocabulary.vocabularyDescription} onChange={(e) => onChange(e, 'vocabularyDescription')} required autoFocus className={classNames({ 'p-invalid': submitted && !vocabulary.vocabularyDescription })} />
+										{submitted && !vocabulary.vocabularyDescription && <small className="p-error">Vocabulary description is required.</small>}
+								</div>
+								<div className="field">
+										<label htmlFor="obsolete">Obsolete</label>
+										<Dropdown
+											id="obsolete"
+											value={vocabulary.obsolete}
+											options={booleanTerms}
+											optionLabel='text'
+											optionValue='name'
+											onChange={(e) => onObsoleteChange(e.target?.value)}
+											className={classNames({ 'p-invalid': submitted && (vocabulary.obsolete === null || vocabulary.obsolete === undefined) })}
+										/>
+										{submitted && (vocabulary.obsolete === null || vocabulary.obsolete === undefined) && <small className="p-error">Obsolete is required.</small>}
+								</div>
+
 							</ErrorBoundary>
 						</Dialog>
 				</div>

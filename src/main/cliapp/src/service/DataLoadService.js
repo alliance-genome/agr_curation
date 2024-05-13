@@ -102,7 +102,7 @@ export class DataLoadService extends BaseAuthService {
 
 		getDataProviders() {
 				return [
-					"FB", "MGI", "HUMAN", "RGD", "SGD", "WB", "XB", "ZFIN"
+					"FB", "MGI", "HUMAN", "RGD", "SGD", "WB", "XB", "ZFIN", "SARSCoV2"
 				];
 		}
 

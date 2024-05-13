@@ -74,12 +74,10 @@ export const GenericDataTree = (props) => {
 		ontologyService.getRootNodes().then((res) => {
 			var _nodes = [];
 			var count = 0;
-			var obsoleteNode = [];
-			obsoleteNode.key = "obsolete";
-			obsoleteNode.label = "Obsoletes";
-			obsoleteNode.leaf = false;
-			obsoleteNode.children = [];
 			for(var node of res.data.entities) {
+				if(node.obsolete === true) {
+					continue;
+				}
 				node.key = node.curie;
 				node.label = node.name + " (" + node.curie + ")";
 				if(node?.childCount && node.childCount > 0) {
@@ -88,17 +86,10 @@ export const GenericDataTree = (props) => {
 				else{
 					node.leaf = true;
 				}
-				if(node.obsolete === true) {
-					obsoleteNode.children.push(node);
-				} else {
-					_nodes.push(node);
-				}
-
+				_nodes.push(node);
 				count = count + 1;
 			}
-			obsoleteNode.children.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : -1);
 			_nodes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase()) ? 1 : -1);
-			_nodes.push(obsoleteNode);
 			setNodes(_nodes);
 			setLoading(false);
 		});

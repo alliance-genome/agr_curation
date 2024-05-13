@@ -4,6 +4,8 @@
 		"interactorBIdentifier": "wormbase:GITestGene0002",
 		"interactionTypes": ["psi-mi:\"MI:Test0002\"(Test MITerm 2)"],
 		"sourceDatabaseIds": ["psi-mi:\"MI:Test0001\"(Test MITerm 1)"],
+		"interactorATaxonId": "taxid:6239(caeel)|taxid:6239(Caenorhabditis elegans",
+		"interactorBTaxonId": "taxid:6239(caeel)|taxid:6239(Caenorhabditis elegans",
 		"interactionIds": ["wormbase:WBInteraction0001"],
 		"interactorAType": "psi-mi:\"MI:Test0005\"(Test MITerm 5)",
 		"interactorBType": "psi-mi:\"MI:Test0006\"(Test MITerm 6)"

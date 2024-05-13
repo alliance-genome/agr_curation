@@ -1,39 +1,36 @@
-import { useRef, useState, useEffect } from 'react';
-import { useQuery } from 'react-query';
-import { SearchService } from '../../service/SearchService';
+import { useRef, useState } from 'react';
 
-import { trimWhitespace, returnSorted, validateBioEntityFields } from '../../utils/utils';
-import { useGetUserSettings } from "../../service/useGetUserSettings";
+import { trimWhitespace, returnSorted, validateBioEntityFields, restoreTableState } from '../../utils/utils';
 import { getDefaultTableState, getModTableState } from '../../service/TableStateService';
 
 export const useGenericDataTable = ({
+	entities,
+	setEntities,
 	endpoint,
+	tableState,
+	setTableState,
 	tableName,
-	defaultColumnNames,
-	initialTableState,
  	curieFields,
 	idFields,
-	sortMapping,
-	nonNullFieldsTable,
 	mutation,
 	setIsInEditMode,
 	toasts,
 	errorObject,
-	newEntity,
 	deletionMethod,
-	widthsObject
+	setTotalRecords,
+	totalRecords,
+	columns,
+	defaultColumnWidth,
+	isEditable, 
+	deletionEnabled, 
+	duplicationEnabled, 
+	hasDetails,
+	defaultFilters
 }) => {
 
-
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
-
-	const [entities, setEntities] = useState(null);
-	const [totalRecords, setTotalRecords] = useState(0);
 	const [originalRows, setOriginalRows] = useState([]);
 	const [columnList, setColumnList] = useState([]);
 	const [editingRows, setEditingRows] = useState({});
-
-	const searchService = new SearchService();
 
 	const { errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages } = errorObject;
 	const closeRowRef = useRef([]);
@@ -44,42 +41,6 @@ export const useGenericDataTable = ({
 	const { toast_topleft, toast_topright } = toasts;
 	const [exceptionDialog, setExceptionDialog] = useState(false);
 	const [exceptionMessage,setExceptionMessage] = useState("");
-
-	useQuery([tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
-		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), 
-		{
-			onSuccess: (data) => {
-				setIsInEditMode(false);
-				setEntities(data.results);
-				setTotalRecords(data.totalResults);
-			},
-			onError: (error) => {
-				toast_topleft.current.show([
-					{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
-				])
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
-			enabled: !!(tableState.rows)
-		}
-	);
-
-	useEffect(() => {
-		if (
-			(tableState.filters && Object.keys(tableState.filters).length > 0)
-			|| (tableState.multiSortMeta && tableState.multiSortMeta.length > 0)
-			|| tableState.page > 0
-			|| !newEntity
-		) return;
-
-		//adds new entity to the top of the table when there are no filters or sorting
-		setEntities((previousEntities) => {
-			const newEntities = global.structuredClone(previousEntities);
-			newEntities.unshift(newEntity);
-			return newEntities;
-		})
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [newEntity])
 
 	const onLazyLoad = (event) => {
 		let _tableState = {
@@ -168,7 +129,6 @@ export const useGenericDataTable = ({
 			uiErrorMessagesCopy[index] = {};
 			setUiErrorMessages({ ...uiErrorMessagesCopy });
 		}
-
 	};
 	
 	//Todo: at some point it may make sense to refactor this function into a set of smaller utility functions and pass them down from the calling components
@@ -370,20 +330,45 @@ export const useGenericDataTable = ({
 	};
 
 	const setToModDefault = () => {
-		const modTableState = getModTableState(tableState.tableKeyName, widthsObject, defaultColumnNames);
-		setTableState(modTableState);
+		const modTableState = getModTableState(tableState.tableKeyName, tableState.defaultColumnWidths, tableState.defaultColumnNames);
+		restoreTableState(
+			columns, 
+			dataTable, 
+			modTableState.orderedColumnNames, 
+			isEditable, 
+			deletionEnabled, 
+			duplicationEnabled, 
+			hasDetails, 
+			modTableState
+		);
 		dataTable.current.resetScroll();
+		setTableState(modTableState);
 	}
 	
 	const resetTableState = () => {
-		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames, undefined, widthsObject);
-		
-		setTableState(defaultTableState);
+		let defaultTableState = getDefaultTableState(tableState.tableKeyName, columns, defaultColumnWidth, defaultFilters);
+		restoreTableState(
+			columns, 
+			dataTable, 
+			defaultTableState.orderedColumnNames, 
+			isEditable, 
+			deletionEnabled, 
+			duplicationEnabled, 
+			hasDetails, 
+			defaultTableState
+		);
 		dataTable.current.resetScroll();
+		setTableState(defaultTableState);
 	}
 
 	const colReorderHandler = (event) => {
-		const columnNames = event.columns.filter(column => column.props.field !== 'rowEditor' && column.props.field !== 'delete').map(column => column.props.header);
+		const columnNames = event.columns.filter((column) => {
+			return column.props.field !== 'rowEditor' 
+			&& column.props.field !== 'delete' 
+			&& column.props.field !== 'duplicate'
+			&& column.props.field !== 'details';
+		})
+		.map(column => column.props.header);
 
 		for(let i = 0; i < tableState.orderedColumnNames.length; i++) {
 			if(!columnNames.includes(tableState.orderedColumnNames[i])) {
@@ -408,7 +393,6 @@ export const useGenericDataTable = ({
 	return {
 		setSelectedColumnNames,
 		setOrderedColumnNames,
-		defaultColumnNames,
 		tableState,
 		onFilter,
 		setColumnList,

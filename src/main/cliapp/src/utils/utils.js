@@ -59,6 +59,23 @@ export function orderColumns(columns, orderedColumnNames) {
 	});
 	return orderedColumns;
 };
+export function orderColumnFields(columns, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails) {
+	if (!orderedColumnNames) return columns;
+	let orderedColumnFields = [];
+	orderedColumnNames.forEach((columnName) => {
+		let column = columns.find(col => col.header === columnName); 
+		if (column) {
+			orderedColumnFields.push(column.field);
+		}
+	});
+
+	if (hasDetails) orderedColumnFields.unshift('details');
+	if (duplicationEnabled) orderedColumnFields.unshift('duplicate');
+	if (deletionEnabled) orderedColumnFields.unshift('delete');
+	if (isEditable) orderedColumnFields.unshift('rowEditor');
+
+	return orderedColumnFields;
+};
 
 export function reorderArray(array, from, to) {
 	const item = array.splice(from, 1);
@@ -66,23 +83,8 @@ export function reorderArray(array, from, to) {
 	return array;
 };
 
-export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false, tableState) {
-	let initalColumnOrderObjects = [];
-	let initalColumnOrderFields = [];
-
-	defaultColumnOptions.forEach((option) => {
-		initalColumnOrderObjects.push(
-			columns.find((column) => {
-				return column.header === option;
-			})
-		);
-	});
-
-	initalColumnOrderFields = initalColumnOrderObjects.map(column => column.field);
-
-	if (deletionEnabled) initalColumnOrderFields.unshift('delete');
-
-	initalColumnOrderFields.unshift('rowEditor');
+export function restoreTableState(columns, dataTable, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails, tableState) {
+	let initalColumnOrderFields = orderColumnFields(columns, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails);
 
 	const newState = {
 		first: tableState.first,
@@ -527,3 +529,24 @@ export const processOptionalField = (eventValue) => {
 	if (!eventValue.curie) return { curie: eventValue };
 	return eventValue;
 }
+
+export const setNewEntity = (tableState, setEntities, newEntity, queryClient) => {
+	if(!tableState || !setEntities || !newEntity) return;
+
+	if (
+			(tableState.filters && Object.keys(tableState.filters).length > 0) ||
+			(tableState.multiSortMeta && tableState.multiSortMeta.length > 0) ||
+			tableState.page > 0 
+	) {
+		//Invalidating the query immediately after success leads to api results that don't always include the new entity
+		setTimeout(() => {
+			queryClient.invalidateQueries([tableState.tableKeyName]);
+		}, 1000);
+		return;
+	};
+
+	// Adds new entity to the top of the entities array when there are no filters, sorting, or pagination applied.
+	setEntities((previousEntities) => {
+		return [newEntity, ...previousEntities]
+	});
+};
