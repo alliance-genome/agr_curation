@@ -25,9 +25,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,6 +40,14 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "bulkLoad" })
 @AGRCurationSchemaVersion(min = "1.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(
+	indexes = {
+		@Index(name = "bulkloadfile_bulkLoad_index", columnList = "bulkLoad_id"),
+		@Index(name = "bulkloadfile_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "bulkloadfile_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "bulkloadfile_bulkloadStatus_index", columnList = "bulkloadStatus"),
+	}
+)
 public class BulkLoadFile extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))

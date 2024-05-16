@@ -14,8 +14,10 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +32,13 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "bulkLoadFile", "exceptions" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(
+	indexes = {
+		@Index(name = "bulkloadfilehistory_bulkLoadFile_index", columnList = "bulkLoadFile_id"),
+		@Index(name = "bulkloadfilehistory_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "bulkloadfilehistory_updatedby_index", columnList = "updatedBy_id"),
+	}
+)
 public class BulkLoadFileHistory extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
