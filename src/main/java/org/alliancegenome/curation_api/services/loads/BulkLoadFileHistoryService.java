@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.loads;
 
-import java.util.HashMap;
-
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
@@ -33,9 +31,6 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	public Response download(Long id) {
 		JsonArray jsonArray = new JsonArray();
 
-		HashMap<String, Object> params = new HashMap<>();
-		params.put("bulkLoadFileHistory.id", id);
-
 		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(id);
 		for(BulkLoadFileException exception : bulkLoadFileHistory.getExceptions()){
 			JsonObject object = new JsonObject();
@@ -47,6 +42,8 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	
 //		TODO Pulling the history grabs all the exceptions causing the server to crash
 //		TODO May need to revisit this
+//		HashMap<String, Object> params = new HashMap<>();
+//		params.put("bulkLoadFileHistory.id", id);
 //		SearchResponse<BulkLoadFileException> countsResp = bulkLoadFileExceptionDAO.findByParams(new Pagination(0, 0), params);
 //		
 //		Pagination page = new Pagination(0, 10000);
