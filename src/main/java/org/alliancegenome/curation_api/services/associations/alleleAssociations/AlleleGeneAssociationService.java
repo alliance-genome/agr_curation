@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.dao.associations.alleleAssociations.Allel
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
@@ -36,7 +37,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<AlleleGeneAssociation, AlleleGeneAssociationDTO, AlleleGeneAssociationDAO> {
+public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<AlleleGeneAssociation, AlleleGeneAssociationDTO, AlleleGeneAssociationDAO> implements BaseUpsertServiceInterface<AlleleGeneAssociation, AlleleGeneAssociationDTO>{
 
 	@Inject
 	AlleleGeneAssociationDAO alleleGeneAssociationDAO;

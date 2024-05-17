@@ -32,7 +32,7 @@ public class AlleleDiseaseAnnotationCrudController extends BaseAnnotationDTOCrud
 	}
 
 	public APIResponse updateAlleleDiseaseAnnotations(String dataProvider, List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
+		return alleleDiseaseAnnotationExecutor.runLoadApi(alleleDiseaseAnnotationService, dataProvider, annotations);
 	}
 	
 	public ObjectResponse<AlleleDiseaseAnnotation> getByIdentifier(String identifierString) {

@@ -60,9 +60,9 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 	}
 	
 	public ObjectResponse<E> getByIdentifier(String identifier) {
-		List<String> identifierFields = List.of("curie", "modEntityId", "modInternalId", "uniqueId");
-		E annotation = findByAlternativeFields(identifierFields, identifier);
-		return new ObjectResponse<E>(annotation);
+		E object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		return ret;
 	}
 	
 	public E findByCurie(String curie) {
@@ -81,6 +81,21 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		}
 	}
 	
+	public E findByAlternativeFields(List<String> fields, String value) {
+		if (value != null) {
+			SearchResponse<E> response = dao.findByFields(fields, value);
+			if (response == null || response.getSingleResult() == null) {
+				Log.debug("Entity Not Found: " + value);
+				return null;
+			}
+			E entity = response.getSingleResult();
+			Log.debug("Entity Found: " + entity);
+			return entity;
+		} else {
+			Log.debug("Input Param is null: " + value);
+			return null;
+		}
+	}
 	
 	@Transactional
 	public ObjectResponse<E> update(E entity) {
@@ -117,17 +132,6 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 		return dao.searchByParams(pagination, params);
-	}
-	
-	public E findByAlternativeFields(List<String> fields, String value) {
-		if (value == null)
-			return null;
-		for (String field : fields) {
-			SearchResponse<E> result = findByField(field, value);
-			if (result != null && result.getSingleResult() != null)
-				return result.getSingleResult();
-		}
-		return null;
 	}
 
 	public void reindex() {

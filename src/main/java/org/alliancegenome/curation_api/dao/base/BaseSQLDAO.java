@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.processing.IndexProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.elasticsearch.index.query.Operator;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.sqm.internal.QuerySqmImpl;
 import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
@@ -556,12 +557,28 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	}
 
+	public SearchResponse<E> findByFields(List<String> fields, String value) {
+		Log.debug("SqlDAO: findByFields: " + fields + " " + value);
+		HashMap<String, Object> params = new HashMap<>();
+		for(String field: fields) {
+			params.put(field, value);
+		}
+		params.put("query_operator", "or");
+		SearchResponse<E> results = findByParams(params);
+		//Log.debug("Result List: " + results);
+		if (results.getResults().size() > 0) {
+			return results;
+		} else {
+			return null;
+		}
+	}
+	
 	public SearchResponse<E> findByField(String field, Object value) {
 		Log.debug("SqlDAO: findByField: " + field + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
 		params.put(field, value);
 		SearchResponse<E> results = findByParams(params);
-		Log.debug("Result List: " + results);
+		//Log.debug("Result List: " + results);
 		if (results.getResults().size() > 0) {
 			return results;
 		} else {
@@ -591,22 +608,32 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		Root<E> root = query.from(myClass);
 		Root<E> countRoot = countQuery.from(myClass);
 
+		Operator queryOperator = Operator.AND;
+		if(params.containsKey("query_operator")) {
+			queryOperator = params.remove("query_operator").equals("or") ? Operator.OR : Operator.AND;
+		}
+		
 		// System.out.println("Root: " + root);
 		List<Predicate> restrictions = buildRestrictions(root, params, level);
 		List<Predicate> countRestrictions = buildRestrictions(countRoot, params, level);
+		
+		countQuery.select(builder.count(countRoot));
 
 		if (orderByField != null) {
 			query.orderBy(builder.asc(root.get(orderByField)));
 		} else {
-			Metamodel metaModel = entityManager.getMetamodel();
-			IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
-			query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));
+			//Metamodel metaModel = entityManager.getMetamodel();
+			//IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
+			//query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));
 		}
 
-		query.where(builder.and(restrictions.toArray(new Predicate[0])));
-
-		countQuery.select(builder.count(countRoot));
-		countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
+		if(queryOperator == Operator.AND) {
+			query.where(builder.and(restrictions.toArray(new Predicate[0])));
+			countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
+		} else {
+			query.where(builder.or(restrictions.toArray(new Predicate[0])));
+			countQuery.where(builder.or(countRestrictions.toArray(new Predicate[0])));
+		}
 
 		TypedQuery<E> allQuery = entityManager.createQuery(query);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {

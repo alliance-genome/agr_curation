@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -14,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
@@ -24,6 +26,8 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.PersonService;
+import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
+import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.CrossReferenceDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
@@ -50,6 +54,44 @@ public class BaseDTOValidator {
 	CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject
 	CrossReferenceService crossReferenceService;
+	@Inject
+	MiTermService miTermService;
+	
+	protected HashMap<String, String> miCurieCache = new HashMap<>();
+	protected HashMap<String, MITerm> miTermCache = new HashMap<>();
+	
+	protected String getCurieFromCache(String psiMiFormat) {
+		if(miCurieCache.containsKey(psiMiFormat)) {
+			return miCurieCache.get(psiMiFormat);
+		} else {
+			String curie = InteractionStringHelper.extractCurieFromPsiMiFormat(psiMiFormat);
+			if(curie != null) {
+				miCurieCache.put(psiMiFormat, curie);
+				return curie;
+			}
+		}
+		return null;
+	}
+	
+	protected MITerm getTermFromCache(String psiMiFormat) {
+		if(miTermCache.containsKey(psiMiFormat)) {
+			return miTermCache.get(psiMiFormat);
+		}
+		
+		String curie = getCurieFromCache(psiMiFormat);
+		if(miTermCache.containsKey(curie)) {
+			return miTermCache.get(curie);
+		} else {
+			if(curie != null) {
+				MITerm miTerm = miTermService.findByCurie(curie);
+				if(miTerm != null) {
+					miTermCache.put(curie, miTerm);
+					return miTerm;
+				}
+			}
+		}
+		return null;
+	}
 
 	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO(E entity, D dto) {
 

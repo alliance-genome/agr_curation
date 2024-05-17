@@ -64,6 +64,9 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
 	private Long deleteFailedRecords = 0l;
+	
+	@JsonView({ View.FieldsOnly.class })
+	private Double errorRate = 0.0;
 
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -80,11 +83,15 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	@Transient
 	public void incrementCompleted() {
+		if(errorRate > 0) {
+			errorRate -= 1d / 1000d;
+		}
 		completedRecords++;
 	}
 
 	@Transient
 	public void incrementFailed() {
+		errorRate += 1d / 1000d;
 		failedRecords++;
 	}
 

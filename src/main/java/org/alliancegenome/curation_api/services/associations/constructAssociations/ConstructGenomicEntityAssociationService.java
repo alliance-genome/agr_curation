@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.associations.constructAssociations.Co
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
@@ -35,7 +36,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class ConstructGenomicEntityAssociationService extends BaseAssociationDTOCrudService<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO, ConstructGenomicEntityAssociationDAO> {
+public class ConstructGenomicEntityAssociationService extends BaseAssociationDTOCrudService<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO, ConstructGenomicEntityAssociationDAO> implements BaseUpsertServiceInterface<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO>{
 
 	@Inject
 	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;

@@ -58,6 +58,23 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 		}
 	);
 
+	const messageTemplate = (row) => {
+		let messages;
+		if(row.exception.messages) {
+			messages = <div>{ row.exception.messages.map(line => ( <div>{line}</div> )) }</div>
+		}
+		let message;
+		if(row.exception.message) {
+			message = <div>{ row.exception.message }</div>
+		}
+		return (
+			<div>
+				{message}
+				{messages}
+			</div>
+		);
+	};
+
 	const hideDialog = () => {
 		setHistoryDialog(false);
 	};
@@ -128,7 +145,7 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 							currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
 							rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}>
 							<Column expander style={{ width: '3em' }} />
-							<Column field="exception.message" header={`Exception Messages (${totalRecords})`} />
+							<Column body={ messageTemplate } header={`Exception Messages (${totalRecords})`} />
 						</DataTable>
 					</div>
 

@@ -12,15 +12,22 @@ import java.util.zip.GZIPInputStream;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.GeneInteractionService;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
@@ -53,16 +60,26 @@ public class LoadFileExecutor {
 	@Inject
 	SlackNotifier slackNotifier;
 
-	protected void trackHistory(BulkLoadFileHistory history, BulkLoadFile bulkLoadFile) {
-		history.setBulkLoadFile(bulkLoadFile);
+	protected void createHistory(BulkLoadFileHistory history, BulkLoadFile bulkLoadFile) {
+		if(bulkLoadFile != null) {
+			history.setBulkLoadFile(bulkLoadFile);
+		}
 		bulkLoadFileHistoryDAO.persist(history);
-
-		for (BulkLoadFileException e : history.getExceptions()) {
+		if(bulkLoadFile != null) {
+			bulkLoadFile.getHistory().add(history);
+			bulkLoadFileDAO.merge(bulkLoadFile);
+		}
+	}
+	
+	protected void updateHistory(BulkLoadFileHistory history) {
+		bulkLoadFileHistoryDAO.merge(history);
+	}
+	
+	protected void finalSaveHistory(BulkLoadFileHistory history) {
+		bulkLoadFileHistoryDAO.merge(history);
+		for (BulkLoadFileException e: history.getExceptions()) {
 			bulkLoadFileExceptionDAO.persist(e);
 		}
-
-		bulkLoadFile.getHistory().add(history);
-		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
 
 	protected void addException(BulkLoadFileHistory history, ObjectUpdateExceptionData objectUpdateExceptionData) {
@@ -163,6 +180,48 @@ public class LoadFileExecutor {
 		return true;
 	}
 	
+	
+	public <E extends AuditedObject, T extends BaseDTO> APIResponse runLoadApi(BaseUpsertServiceInterface<E, T> service, String dataProviderName, List<T> objectList) {
+		List<Long> idsLoaded = new ArrayList<>();
+		BulkLoadFileHistory history = new BulkLoadFileHistory(objectList.size());
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		runLoad(service, history, dataProvider, objectList, idsLoaded);
+		history.finishLoad();
+		return new LoadHistoryResponce(history);
+	}
+	
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.addDisplayHandler(loadProcessDisplayService);
+		ph.startProcess(service.getClass().getSimpleName() + " updating " + objectList.get(0).getClass().getSimpleName(), objectList.size());
+		
+		for(T dtoObject: objectList) {
+			try {
+				E dbObject = service.upsert(dtoObject, dataProvider);
+				history.incrementCompleted();
+				if (idsAdded != null) {
+					idsAdded.add(dbObject.getId());
+				}
+			} catch (ObjectUpdateException e) {
+				e.printStackTrace();
+				history.incrementFailed();
+				addException(history, e.getData());
+			} catch (Exception e) {
+				e.printStackTrace();
+				history.incrementFailed();
+				addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
+			}
+			if(history.getErrorRate() > 0.25) {
+				Log.error("Failure Rate > 25% aborting load");
+				finalSaveHistory(history);
+				return false;
+			}
+			updateHistory(history);
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		return true;
+	}
 
 	// The following methods are for bulk validation
 	protected <S extends BaseAnnotationCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, String md5sum) {
@@ -187,6 +246,7 @@ public class LoadFileExecutor {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
 			}
+			updateHistory(history);
 			ph.progressProcess();
 		}
 		ph.finishProcess();
@@ -216,6 +276,7 @@ public class LoadFileExecutor {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
 			}
+			updateHistory(history);
 			ph.progressProcess();
 		}
 		ph.finishProcess();
@@ -244,6 +305,7 @@ public class LoadFileExecutor {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
 			}
+			updateHistory(history);
 			ph.progressProcess();
 		}
 		ph.finishProcess();
@@ -272,6 +334,7 @@ public class LoadFileExecutor {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
 			}
+			updateHistory(history);
 			ph.progressProcess();
 		}
 		ph.finishProcess();

@@ -32,7 +32,7 @@ import jakarta.ws.rs.core.MediaType;
 public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<PhenotypeAnnotation> {
 
 	@GET
-	@Path("/findBy/{modEntityId|modInternalId|uniqueId}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<PhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 

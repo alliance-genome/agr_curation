@@ -14,3 +14,6 @@ CREATE INDEX bulkloadfileexception_updatedby_index ON public.bulkloadfileexcepti
 CREATE INDEX bulkloadfilehistory_bulkloadfile_index ON public.bulkloadfilehistory USING btree (bulkloadfile_id);
 CREATE INDEX bulkloadfilehistory_createdby_index ON public.bulkloadfilehistory USING btree (createdby_id);
 CREATE INDEX bulkloadfilehistory_updatedby_index ON public.bulkloadfilehistory USING btree (updatedby_id);
+
+ALTER TABLE bulkloadfilehistory
+	ADD COLUMN errorrate double precision;

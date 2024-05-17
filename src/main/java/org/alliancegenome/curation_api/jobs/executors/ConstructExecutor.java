@@ -6,16 +6,12 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -37,7 +33,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
@@ -61,56 +57,18 @@ public class ConstructExecutor extends LoadFileExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(constructs.size());
-
-		runLoad(history, constructs, dataProvider, constructIdsLoaded);
+		createHistory(history, bulkLoadFile);
+		
+		runLoad(constructService, history, dataProvider, constructs, constructIdsLoaded);
 		
 		if(cleanUp) runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, bulkLoadFile.getMd5Sum());
 		
 		history.finishLoad();
 		
-		trackHistory(history, bulkLoadFile);
+		finalSaveHistory(history);
 	}
 
-	// Gets called from the API directly
-	public APIResponse runLoad(String dataProviderName, List<ConstructDTO> constructs) {
-
-		List<Long> idsLoaded = new ArrayList<>();
-		
-		BulkLoadFileHistory history = new BulkLoadFileHistory(constructs.size());
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		runLoad(history, constructs, dataProvider, idsLoaded);
-		
-		history.finishLoad();
-		
-		return new LoadHistoryResponce(history);
-	}
-
-	private void runLoad(BulkLoadFileHistory history, List<ConstructDTO> constructs, BackendBulkDataProvider dataProvider, List<Long> idsAdded) {
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Construct Update for: " + dataProvider.name(), constructs.size());
-		constructs.forEach(constructDTO -> {
-			try {
-				Construct construct = constructService.upsert(constructDTO, dataProvider);
-				history.incrementCompleted();
-				if (idsAdded != null) {
-					idsAdded.add(construct.getId());
-				}
-			} catch (ObjectUpdateException e) {
-				history.incrementFailed();
-				addException(history, e.getData());
-			} catch (Exception e) {
-				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(constructDTO, e.getMessage(), e.getStackTrace()));
-			}
-
-			ph.progressProcess();
-		});
-		ph.finishProcess();
-
-	}
-	
+	// TODO Remove this method
 	private void runCleanup(ConstructService service, BulkLoadFileHistory history, String dataProviderName, List<Long> constructIdsBefore, List<Long> constructIdsAfter, String md5sum) {
 		Log.debug("runLoad: After: " + dataProviderName + " " + constructIdsAfter.size());
 
@@ -129,6 +87,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 				String loadDescription = dataProviderName + " construct bulk load (" + md5sum + ")";
 				service.removeOrDeprecateNonUpdated(id, false, loadDescription);
 				history.incrementDeleted();
+				updateHistory(history);
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
@@ -136,6 +95,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		}
 		ph.finishProcess();
+
 	}
 
 }

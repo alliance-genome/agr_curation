@@ -33,8 +33,7 @@ public class GeneInteractionService extends BaseEntityCrudService<GeneInteractio
 	}
 	
 	public ObjectResponse<GeneInteraction> getByIdentifer(String identifier) {
-		List<String> identifierFields = List.of("interactionId", "uniqueId");
-		GeneInteraction interaction = findByAlternativeFields(identifierFields, identifier);
+		GeneInteraction interaction = findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier);
 		return new ObjectResponse<GeneInteraction>(interaction);
 	}
 
