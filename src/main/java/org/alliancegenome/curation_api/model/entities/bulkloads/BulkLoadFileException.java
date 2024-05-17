@@ -36,9 +36,8 @@ import lombok.ToString;
 		@Index(name = "bulkloadfileexception_updatedby_index", columnList = "updatedBy_id"),
 	}
 )
+//TODO: define this class in LinkML once class definition matured
 public class BulkLoadFileException extends AuditedObject {
-
-	// TODO: define in LinkML once class definition matured
 
 	@JsonView({ View.FieldsOnly.class })
 	@JdbcTypeCode(SqlTypes.JSON)

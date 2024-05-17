@@ -319,73 +319,45 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(10)
 	public void phenotypeAnnotationBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_01_no_object_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_02_no_date_assigned.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_03_no_phenotype_statement.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_04_no_evidence.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_05_no_condition_relation_type.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_06_no_conditions.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_07_no_condition_statement.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "MR_08_no_condition_class_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_01_no_object_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_02_no_date_assigned.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_03_no_phenotype_statement.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_04_no_evidence.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_05_no_condition_relation_type.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_06_no_conditions.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_07_no_condition_statement.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "MR_08_no_condition_class_id.json");
 	}
 
 	@Test
 	@Order(11)
 	public void phenotypeAnnotationBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_01_empty_object_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_02_empty_date_assigned.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_03_empty_phenotype_statement.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_04_empty_evidence.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_05_empty_condition_relation_type.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_06_empty_conditions.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_07_empty_condition_statement.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "ER_08_empty_condition_class_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_01_empty_object_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_02_empty_date_assigned.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_03_empty_phenotype_statement.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_04_empty_evidence.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_05_empty_condition_relation_type.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_06_empty_conditions.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_07_empty_condition_statement.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "ER_08_empty_condition_class_id.json");
 	}
 
 	@Test
 	@Order(12)
 	public void phenotypeAnnotationBulkUploadInvalidFields() throws Exception {
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_01_invalid_object_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_02_invalid_primary_genetic_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_01_invalid_object_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_02_invalid_primary_genetic_id.json");
 		// TODO: Re-enable test if we stop ignoring invalid terms for this field
-		//checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-		//		phenotypeAnnotationTestFilePath + "IV_03_invalid_phenotype_term_identifier.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_04_invalid_evidence.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_05_invalid_date_assigned.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_06_invalid_condition_relation_type.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_07_invalid_condition_class_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_08_invalid_condition_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_09_invalid_anatomical_ontology_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_10_invalid_gene_ontology_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_11_invalid_ncbi_taxon_id.json");
-		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint,
-				phenotypeAnnotationTestFilePath + "IV_12_invalid_chemical_ontology_id.json");
+		//checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_03_invalid_phenotype_term_identifier.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_04_invalid_evidence.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_05_invalid_date_assigned.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_06_invalid_condition_relation_type.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_07_invalid_condition_class_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_08_invalid_condition_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_09_invalid_anatomical_ontology_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_10_invalid_gene_ontology_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_11_invalid_ncbi_taxon_id.json");
+		checkFailedBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath + "IV_12_invalid_chemical_ontology_id.json");
 
 	}
 

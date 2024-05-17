@@ -100,8 +100,6 @@ public class BulkLoadFile extends AuditedObject {
 	@Transient
 	@JsonView({ View.FieldsOnly.class })
 	public String getS3Url() {
-		// TODO craft proper URL based on system
-		// Get system and craft s3URL based on md5Sum
 		return "https://agr-curation-files.s3.amazonaws.com/" + s3Path;
 	}
 
