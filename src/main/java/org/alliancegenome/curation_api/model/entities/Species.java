@@ -70,7 +70,7 @@ public class Species extends AuditedObject {
 	private String displayName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "commonNames_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES,  normalizer = "sortNormalizer")
+	@KeywordField(name = "commonNames_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES,	normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class})
 	@JoinTable(indexes = @Index(name ="species_commonnames_species_id_index",columnList = "species_id"))

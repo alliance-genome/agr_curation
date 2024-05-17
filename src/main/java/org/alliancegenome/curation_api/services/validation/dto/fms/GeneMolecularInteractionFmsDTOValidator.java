@@ -93,7 +93,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 			for (String detectionMethodString : dto.getInteractionDetectionMethods()) {
 				String detectionMethodCurie = getCurieFromCache(detectionMethodString);
 				if (detectionMethodCurie != null) {
-					detectionMethod = getTermFromCache(detectionMethodString);
+					detectionMethod = getTermFromCache(detectionMethodCurie);
 					if (detectionMethod == null)
 						gmiResponse.addErrorMessage("interactionDetectionMethods", ValidationConstants.INVALID_MESSAGE + " (" + detectionMethodCurie + ")");
 					break;

@@ -73,12 +73,7 @@ public class BaseDTOValidator {
 		return null;
 	}
 	
-	protected MITerm getTermFromCache(String psiMiFormat) {
-		if(miTermCache.containsKey(psiMiFormat)) {
-			return miTermCache.get(psiMiFormat);
-		}
-		
-		String curie = getCurieFromCache(psiMiFormat);
+	protected MITerm getTermFromCache(String curie) {
 		if(miTermCache.containsKey(curie)) {
 			return miTermCache.get(curie);
 		} else {

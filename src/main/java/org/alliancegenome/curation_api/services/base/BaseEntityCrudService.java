@@ -89,7 +89,7 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 				return null;
 			}
 			E entity = response.getSingleResult();
-			Log.debug("Entity Found: " + entity);
+			//Log.debug("Entity Found: " + entity);
 			return entity;
 		} else {
 			Log.debug("Input Param is null: " + value);

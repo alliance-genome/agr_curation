@@ -47,6 +47,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -149,7 +150,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 						Log.log(level, "Looking up via column: " + s);
 						Path<Object> pathColumn = column.get(s);
 						if (pathColumn.getJavaType().equals(List.class)) {
-							column = ((Join) column).join(s);
+							column = ((Join) column).joinList(s, JoinType.LEFT);
 						} else {
 							column = pathColumn;
 						}
@@ -157,7 +158,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 						Log.log(level, "Looking up via root: " + s);
 						column = root.get(s);
 						if (column.getJavaType().equals(List.class))
-							column = root.join(s);
+							column = root.joinList(s, JoinType.LEFT);
 					}
 
 					Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
@@ -169,7 +170,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 				Object value = params.get(key);
 				if(value != null) {
 					if (column instanceof SqmPluralValuedSimplePath)
-						column = root.join(key);
+						column = root.joinList(key, JoinType.LEFT);
 				}
 			}
 

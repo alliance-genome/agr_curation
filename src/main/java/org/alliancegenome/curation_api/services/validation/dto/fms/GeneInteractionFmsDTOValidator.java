@@ -70,7 +70,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		
 		MITerm interactorARole = null;
 		if (StringUtils.isNotBlank(dto.getExperimentalRoleA())) {
-			interactorARole = getTermFromCache(dto.getExperimentalRoleA());
+			interactorARole = getTermFromCache(getCurieFromCache(dto.getExperimentalRoleA()));
 			if (interactorARole == null) {
 				giResponse.addErrorMessage("experimentalRoleA", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleA() + ")");
 			}
@@ -79,7 +79,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		
 		MITerm interactorBRole = null;
 		if (StringUtils.isNotBlank(dto.getExperimentalRoleB())) {
-			interactorBRole = getTermFromCache(dto.getExperimentalRoleB());
+			interactorBRole = getTermFromCache(getCurieFromCache(dto.getExperimentalRoleB()));
 			if (interactorBRole == null) {
 				giResponse.addErrorMessage("experimentalRoleB", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleB() + ")");
 			}
@@ -88,7 +88,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		
 		MITerm interactorAType = null;
 		if (StringUtils.isNotBlank(dto.getInteractorAType())) {
-			interactorAType = getTermFromCache(dto.getInteractorAType());
+			interactorAType = getTermFromCache(getCurieFromCache(dto.getInteractorAType()));
 			if (interactorAType == null) {
 				giResponse.addErrorMessage("interactorAType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorAType() + ")");
 			}
@@ -99,7 +99,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		
 		MITerm interactorBType = null;
 		if (StringUtils.isNotBlank(dto.getInteractorBType())) {
-			interactorBType = getTermFromCache(dto.getInteractorBType());
+			interactorBType = getTermFromCache(getCurieFromCache(dto.getInteractorBType()));
 			if (interactorBType == null) {
 				giResponse.addErrorMessage("interactorBType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorBType() + ")");
 			}
@@ -113,7 +113,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 			for (String interactionTypeString : dto.getInteractionTypes()) {
 				String interactionTypeCurie = getCurieFromCache(interactionTypeString);
 				if (interactionTypeCurie != null) {
-					interactionType = getTermFromCache(interactionTypeString);
+					interactionType = getTermFromCache(interactionTypeCurie);
 					if(interactionType == null) {
 						giResponse.addErrorMessage("interactionTypes", ValidationConstants.INVALID_MESSAGE + " (" + interactionTypeString + ")");
 					}
@@ -131,7 +131,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 			for (String interactionSourceString : dto.getSourceDatabaseIds()) {
 				String interactionSourceCurie = getCurieFromCache(interactionSourceString);
 				if (interactionSourceCurie != null) {
-					interactionSource = getTermFromCache(interactionSourceString);
+					interactionSource = getTermFromCache(interactionSourceCurie);
 					if (interactionSource == null) {
 						giResponse.addErrorMessage("sourceDatabaseIds", ValidationConstants.INVALID_MESSAGE + " (" + interactionSourceCurie + ")");
 					}
