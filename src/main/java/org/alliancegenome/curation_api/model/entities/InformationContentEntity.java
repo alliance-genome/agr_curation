@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.model.entities;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
