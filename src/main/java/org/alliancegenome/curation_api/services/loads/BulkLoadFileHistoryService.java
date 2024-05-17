@@ -30,7 +30,6 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	@Transactional
 	public Response download(Long id) {
 		JsonArray jsonArray = new JsonArray();
-
 		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(id);
 		for(BulkLoadFileException exception : bulkLoadFileHistory.getExceptions()){
 			JsonObject object = new JsonObject();
