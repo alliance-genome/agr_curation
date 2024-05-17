@@ -416,6 +416,7 @@ export const DataLoadsComponent = () => {
 					<Column field="loadFinished" header="Load Finished" />
 					<Column field="completedRecords" header="Records Completed" />
 					<Column field="failedRecords" header="Records Failed" />
+					<Column field="errorRate" header="Error Rate / 1000" />
 					<Column field="totalRecords" header="Total Records" />
 					<Column field="deletedRecords" header="Deletes Completed" />
 					<Column field="deleteFailedRecords" header="Deletes Failed" />

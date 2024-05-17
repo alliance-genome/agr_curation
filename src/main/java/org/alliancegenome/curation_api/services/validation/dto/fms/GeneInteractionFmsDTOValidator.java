@@ -41,8 +41,6 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	ReferenceService referenceService;
 	@Inject
 	GeneService geneService;
-	//@Inject
-	//MiTermService miTermService;
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject

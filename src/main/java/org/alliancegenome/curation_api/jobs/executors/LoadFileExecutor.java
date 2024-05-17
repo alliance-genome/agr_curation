@@ -203,11 +203,11 @@ public class LoadFileExecutor {
 					idsAdded.add(dbObject.getId());
 				}
 			} catch (ObjectUpdateException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
 			}
