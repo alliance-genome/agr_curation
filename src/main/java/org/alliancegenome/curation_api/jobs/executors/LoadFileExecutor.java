@@ -78,7 +78,7 @@ public class LoadFileExecutor {
 	protected void finalSaveHistory(BulkLoadFileHistory history) {
 		bulkLoadFileHistoryDAO.merge(history);
 		for (BulkLoadFileException e: history.getExceptions()) {
-			bulkLoadFileExceptionDAO.persist(e);
+			bulkLoadFileExceptionDAO.merge(e);
 		}
 	}
 
