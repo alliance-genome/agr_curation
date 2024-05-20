@@ -33,7 +33,7 @@ public class AlleleCrudController extends SubmittedObjectCrudController<AlleleSe
 
 	@Override
 	public APIResponse updateAlleles(String dataProvider, List<AlleleDTO> alleleData) {
-		return alleleExecutor.runLoad(dataProvider, alleleData);
+		return alleleExecutor.runLoadApi(alleleService, dataProvider, alleleData);
 	}
 
 	public ObjectResponse<Allele> updateDetail(Allele entity) {

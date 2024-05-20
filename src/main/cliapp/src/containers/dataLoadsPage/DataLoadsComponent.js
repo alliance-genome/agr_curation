@@ -407,6 +407,10 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
+	const percentage = (row) => {
+		return Math.round(row.errorRate * 100).toFixed(1) + "%";
+	};
+
 	const historyTable = (file) => {
 		return (
 			<div className="card">
@@ -416,6 +420,7 @@ export const DataLoadsComponent = () => {
 					<Column field="loadFinished" header="Load Finished" />
 					<Column field="completedRecords" header="Records Completed" />
 					<Column field="failedRecords" header="Records Failed" />
+					<Column body={percentage} header="Error Rate / 1000" />
 					<Column field="totalRecords" header="Total Records" />
 					<Column field="deletedRecords" header="Deletes Completed" />
 					<Column field="deleteFailedRecords" header="Deletes Failed" />

@@ -41,7 +41,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 
 		VocabularyTerm term = null;
 		
-		if(termRequestMap.get(vocabularyLabel) != null) {
+		if(termRequestMap.containsKey(vocabularyLabel)) {
 			HashMap<String, VocabularyTerm> termMap = vocabTermCacheMap.get(vocabularyLabel);
 			
 			if(termMap == null) {
@@ -74,7 +74,7 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 
 		VocabularyTerm term = null;
 		
-		if(termSetRequestMap.get(vocabularyTermSetLabel) != null) {
+		if(termSetRequestMap.containsKey(vocabularyTermSetLabel)) {
 			HashMap<String, VocabularyTerm> termMap = vocabTermSetCacheMap.get(vocabularyTermSetLabel);
 			
 			if(termMap == null) {

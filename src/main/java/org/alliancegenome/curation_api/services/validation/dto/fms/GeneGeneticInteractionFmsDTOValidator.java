@@ -101,7 +101,7 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 		interaction.setInteractorBGeneticPerturbation(interactorBGeneticPerturbation);
 		
 		if (ggiResponse.hasErrors())
-			throw new ObjectValidationException(dto, ggiResponse.errorMessagesString());
+			throw new ObjectValidationException(dto, ggiResponse.getErrorMessages().values());
 
 		return interaction;
 

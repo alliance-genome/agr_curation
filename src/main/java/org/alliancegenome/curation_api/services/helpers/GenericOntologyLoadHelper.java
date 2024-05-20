@@ -34,9 +34,7 @@ import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 import io.quarkus.logging.Log;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObjectVisitor {
 
 	private OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();

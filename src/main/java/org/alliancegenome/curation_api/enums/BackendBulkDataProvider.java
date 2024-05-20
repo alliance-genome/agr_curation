@@ -6,14 +6,14 @@ public enum BackendBulkDataProvider {
 
 	RGD("NCBITaxon:10116", "RGD:", 10116, "RGD", "RGD", "Rattus", false, false, false, false),
 	MGI("NCBITaxon:10090", "MGI:", 10090, "MGI", "MGI", "Mus", true, false, true, false),
-	SGD("NCBITaxon:4932", "SGD:", 4932, "SGD", "SGD", "Saccharomyces", true, false, false, false ), //TODO: needs checking
+	SGD("NCBITaxon:4932", "SGD:", 4932, "SGD", "SGD", "Saccharomyces", true, false, false, false ),
 	HUMAN("NCBITaxon:9606", "HGNC:", 9606, "RGD", "RGD", "Rattus", false, false, false, false),
 	ZFIN("NCBITaxon:7955", "ZFIN:", 7955, "ZFIN", "ZFIN", "Danio", true, false, true, false),
 	FB("NCBITaxon:7227", "FB:", 7227, "FB", "FB", "Drosophila", true, false, false, false),
 	WB("NCBITaxon:6239", "WB:", 6239, "WB", "WB", "Caenorhabditis", true, false, false, true),
-	XB("NCBITaxon:8355", "XB:", 8355, "XB", "Xenbase", "Xenopus", true, false, false, false), //TODO: needs checking
-	XBXL("NCBITaxon:8355", "XB:", 8355, "XB", "Xenbase", "Xenopus", true, false, false, false), //TODO: needs checking
-	XBXT("NCBITaxon:8364", "XB:", 8364, "XB", "Xenbase", "Xenopus", true, false, false, false), //TODO: needs checking
+	XB("NCBITaxon:8355", "XB:", 8355, "XB", "Xenbase", "Xenopus", true, false, false, false),
+	XBXL("NCBITaxon:8355", "XB:", 8355, "XB", "Xenbase", "Xenopus", true, false, false, false),
+	XBXT("NCBITaxon:8364", "XB:", 8364, "XB", "Xenbase", "Xenopus", true, false, false, false),
 	SARSCoV2("NCBITaxon:2697049", "RefSeq", 2697049, "Alliance", "Alliance of Genome Resources", "Severe acute respiratory syndrome", false, false, false, false);
 	
 	public String canonicalTaxonCurie;

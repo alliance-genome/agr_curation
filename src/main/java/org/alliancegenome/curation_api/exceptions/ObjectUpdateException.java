@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.exceptions;
 
+import java.util.Collection;
+
 import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 import org.alliancegenome.curation_api.view.View;
 
@@ -18,7 +20,11 @@ public class ObjectUpdateException extends Exception {
 	public ObjectUpdateException(Object updateObject, String message) {
 		data = new ObjectUpdateExceptionData(updateObject, message, null);
 	}
-
+	
+	public ObjectUpdateException(Object updateObject, Collection<String> messages) {
+		data = new ObjectUpdateExceptionData(updateObject, messages, null);
+	}
+	
 	public ObjectUpdateException(Object updateObject, String message, StackTraceElement[] stackTraceElements) {
 		data = new ObjectUpdateExceptionData(updateObject, message, stackTraceElements);
 	}
@@ -34,8 +40,21 @@ public class ObjectUpdateException extends Exception {
 		@JsonView({ View.FieldsOnly.class })
 		private String message = null;
 		@JsonView({ View.FieldsOnly.class })
+		private Collection<String> messages = null;
+		@JsonView({ View.FieldsOnly.class })
 		private StackTraceElement[] stackTraceElements = null;
 
+		public ObjectUpdateExceptionData(Object updateObject, Collection<String> messages, StackTraceElement[] stackTraceElements) {
+			try {
+				this.messages = messages;
+				this.stackTraceElements = stackTraceElements;
+				this.jsonObject = mapper.writeValueAsString(updateObject);
+			} catch (JsonProcessingException e) {
+				this.message = e.getMessage();
+				this.jsonObject = "{}";
+			}
+		}
+		
 		public ObjectUpdateExceptionData(Object updateObject, String message, StackTraceElement[] stackTraceElements) {
 			try {
 				this.message = message;

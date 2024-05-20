@@ -63,7 +63,6 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 				resourceDescriptorDAO.remove(rdResponse.getSingleResult().getId());
 			}
 		}
-		
 	}
 
 	

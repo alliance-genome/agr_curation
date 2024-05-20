@@ -48,7 +48,7 @@ public class ConstructGenomicEntityAssociationCrudController extends
 	@Override
 	public APIResponse updateConstructGenomicEntityAssociations(String dataProvider,
 			List<ConstructGenomicEntityAssociationDTO> associations) {
-		return constructGenomicEntityAssociationExecutor.runLoad(dataProvider, associations);
+		return constructGenomicEntityAssociationExecutor.runLoadApi(constructGenomicEntityAssociationService, dataProvider, associations);
 	}
 
 	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(Long constructId, String relationName,

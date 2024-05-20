@@ -29,7 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<DiseaseAnnotation> {
 
 	@GET
-	@Path("/findBy/{modEntityId|modInternalId|uniqueId}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<DiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 

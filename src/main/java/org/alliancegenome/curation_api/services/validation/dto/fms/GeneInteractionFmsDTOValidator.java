@@ -26,7 +26,6 @@ import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionCrossReferenceHelper;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
-import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -42,8 +41,6 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	ReferenceService referenceService;
 	@Inject
 	GeneService geneService;
-	@Inject
-	MiTermService miTermService;
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject
@@ -73,25 +70,28 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		
 		MITerm interactorARole = null;
 		if (StringUtils.isNotBlank(dto.getExperimentalRoleA())) {
-			interactorARole = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getExperimentalRoleA()));
-			if (interactorARole == null)
+			interactorARole = getTermFromCache(getCurieFromCache(dto.getExperimentalRoleA()));
+			if (interactorARole == null) {
 				giResponse.addErrorMessage("experimentalRoleA", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleA() + ")");
+			}
 		}
 		interaction.setInteractorARole(interactorARole);
 		
 		MITerm interactorBRole = null;
 		if (StringUtils.isNotBlank(dto.getExperimentalRoleB())) {
-			interactorBRole = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getExperimentalRoleB()));
-			if (interactorBRole == null)
+			interactorBRole = getTermFromCache(getCurieFromCache(dto.getExperimentalRoleB()));
+			if (interactorBRole == null) {
 				giResponse.addErrorMessage("experimentalRoleB", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleB() + ")");
+			}
 		}
 		interaction.setInteractorBRole(interactorBRole);
 		
 		MITerm interactorAType = null;
 		if (StringUtils.isNotBlank(dto.getInteractorAType())) {
-			interactorAType = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getInteractorAType()));
-			if (interactorAType == null)
+			interactorAType = getTermFromCache(getCurieFromCache(dto.getInteractorAType()));
+			if (interactorAType == null) {
 				giResponse.addErrorMessage("interactorAType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorAType() + ")");
+			}
 		} else {
 			giResponse.addErrorMessage("interactorAType", ValidationConstants.REQUIRED_MESSAGE);
 		}
@@ -99,9 +99,10 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		
 		MITerm interactorBType = null;
 		if (StringUtils.isNotBlank(dto.getInteractorBType())) {
-			interactorBType = miTermService.findByCurie(InteractionStringHelper.extractCurieFromPsiMiFormat(dto.getInteractorBType()));
-			if (interactorBType == null)
+			interactorBType = getTermFromCache(getCurieFromCache(dto.getInteractorBType()));
+			if (interactorBType == null) {
 				giResponse.addErrorMessage("interactorBType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInteractorBType() + ")");
+			}
 		} else {
 			giResponse.addErrorMessage("interactorBType", ValidationConstants.REQUIRED_MESSAGE);
 		}
@@ -110,11 +111,12 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		MITerm interactionType = null;
 		if (CollectionUtils.isNotEmpty(dto.getInteractionTypes())) {
 			for (String interactionTypeString : dto.getInteractionTypes()) {
-				String interactionTypeCurie = InteractionStringHelper.extractCurieFromPsiMiFormat(interactionTypeString);
+				String interactionTypeCurie = getCurieFromCache(interactionTypeString);
 				if (interactionTypeCurie != null) {
-					interactionType = miTermService.findByCurie(interactionTypeCurie);
-					if (interactionType == null)
-						giResponse.addErrorMessage("interactionTypes", ValidationConstants.INVALID_MESSAGE + " (" + interactionTypeCurie + ")");
+					interactionType = getTermFromCache(interactionTypeCurie);
+					if(interactionType == null) {
+						giResponse.addErrorMessage("interactionTypes", ValidationConstants.INVALID_MESSAGE + " (" + interactionTypeString + ")");
+					}
 					break;
 				}
 			}
@@ -127,11 +129,12 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		MITerm interactionSource = null;
 		if (CollectionUtils.isNotEmpty(dto.getSourceDatabaseIds())) {
 			for (String interactionSourceString : dto.getSourceDatabaseIds()) {
-				String interactionSourceCurie = InteractionStringHelper.extractCurieFromPsiMiFormat(interactionSourceString);
+				String interactionSourceCurie = getCurieFromCache(interactionSourceString);
 				if (interactionSourceCurie != null) {
-					interactionSource = miTermService.findByCurie(interactionSourceCurie);
-					if (interactionSource == null)
+					interactionSource = getTermFromCache(interactionSourceCurie);
+					if (interactionSource == null) {
 						giResponse.addErrorMessage("sourceDatabaseIds", ValidationConstants.INVALID_MESSAGE + " (" + interactionSourceCurie + ")");
+					}
 					break;
 				}
 			}

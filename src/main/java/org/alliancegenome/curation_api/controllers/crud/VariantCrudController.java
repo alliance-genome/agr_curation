@@ -32,7 +32,7 @@ public class VariantCrudController extends SubmittedObjectCrudController<Variant
 
 	@Override
 	public APIResponse updateVariants(String dataProvider, List<VariantDTO> variantData) {
-		return variantExecutor.runLoad(dataProvider, variantData);
+		return variantExecutor.runLoadApi(variantService, dataProvider, variantData);
 	}
 
 }

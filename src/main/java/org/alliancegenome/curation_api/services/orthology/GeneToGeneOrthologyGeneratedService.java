@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -20,7 +22,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<GeneToGeneOrthologyGenerated, GeneToGeneOrthologyGeneratedDAO> {
+public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<GeneToGeneOrthologyGenerated, GeneToGeneOrthologyGeneratedDAO> implements BaseUpsertServiceInterface<GeneToGeneOrthologyGenerated, OrthologyFmsDTO> {
 
 	@Inject
 	GeneToGeneOrthologyGeneratedDAO geneToGeneOrthologyGeneratedDAO;
@@ -33,7 +35,7 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		setSQLDao(geneToGeneOrthologyGeneratedDAO);
 	}
 
-	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair) throws ObjectUpdateException {
+	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
 		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);		
 	}
 

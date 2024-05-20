@@ -36,8 +36,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	Person authenticatedPerson;
 
 	public E findByCurieOrSecondaryId(String id) {		
-		List<String> identifierFields = List.of("curie", "secondaryIdentifiers");
-		return findByAlternativeFields(identifierFields, id);
+		return findByAlternativeFields(List.of("curie", "secondaryIdentifiers"), id);
 	}
 	
 	@Transactional
