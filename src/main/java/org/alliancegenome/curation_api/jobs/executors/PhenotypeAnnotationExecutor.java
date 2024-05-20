@@ -22,7 +22,6 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -32,7 +31,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 	@Inject
 	PhenotypeAnnotationService phenotypeAnnotationService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
 			
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
@@ -49,7 +48,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(phenotypeData.getData().size());
-			
+			createHistory(history, bulkLoadFile);
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
 			
@@ -59,7 +58,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 
 			history.finishLoad();
 			
-			trackHistory(history, bulkLoadFile);
+			finalSaveHistory(history);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -107,7 +106,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
-
+			updateHistory(history);
 			ph.progressProcess();
 		}
 		
@@ -134,7 +133,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
-
+			updateHistory(history);
 			ph.progressProcess();
 		}
 	}

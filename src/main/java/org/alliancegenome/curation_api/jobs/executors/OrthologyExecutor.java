@@ -35,7 +35,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 	@Inject
 	GeneToGeneOrthologyGeneratedService generatedOrthologyService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
 			
@@ -62,7 +62,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 			history.finishLoad();
 			
-			trackHistory(history, bulkLoadFile);
+			updateHistory(history);
 
 		} catch (Exception e) {
 			failLoad(bulkLoadFile, e);

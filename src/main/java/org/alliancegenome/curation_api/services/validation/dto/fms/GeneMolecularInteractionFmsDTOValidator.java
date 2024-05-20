@@ -33,7 +33,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 	VocabularyTermService vocabularyTermService;
 	
 	private ObjectResponse<GeneMolecularInteraction> gmiResponse;
-	
+
 	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ObjectValidationException {
 
 		GeneMolecularInteraction interaction = null;
@@ -91,9 +91,9 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		MITerm detectionMethod = null;
 		if (CollectionUtils.isNotEmpty(dto.getInteractionDetectionMethods())) {
 			for (String detectionMethodString : dto.getInteractionDetectionMethods()) {
-				String detectionMethodCurie = InteractionStringHelper.extractCurieFromPsiMiFormat(detectionMethodString);
+				String detectionMethodCurie = getCurieFromCache(detectionMethodString);
 				if (detectionMethodCurie != null) {
-					detectionMethod = miTermService.findByCurie(detectionMethodCurie);
+					detectionMethod = getTermFromCache(detectionMethodCurie);
 					if (detectionMethod == null)
 						gmiResponse.addErrorMessage("interactionDetectionMethods", ValidationConstants.INVALID_MESSAGE + " (" + detectionMethodCurie + ")");
 					break;
@@ -105,14 +105,15 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		MITerm aggregationDatabase = null;
 		String aggregationDatabaseCurie = InteractionStringHelper.getAggregationDatabaseMITermCurie(dto);
 		if (aggregationDatabaseCurie != null) {
-			aggregationDatabase = miTermService.findByCurie(aggregationDatabaseCurie);
-			if (aggregationDatabase == null)
+			aggregationDatabase = getTermFromCache(aggregationDatabaseCurie);
+			if (aggregationDatabase == null) {
 				gmiResponse.addErrorMessage("aggregationDatabase (inferred from sourceDatabaseIds)", ValidationConstants.INVALID_MESSAGE + " (" + aggregationDatabaseCurie + ")");
+			}
 		}
 		interaction.setAggregationDatabase(aggregationDatabase);		
 		
 		if (gmiResponse.hasErrors())
-			throw new ObjectValidationException(dto, gmiResponse.errorMessagesString());
+			throw new ObjectValidationException(dto, gmiResponse.getErrorMessages().values());
 		
 		return interaction;
 

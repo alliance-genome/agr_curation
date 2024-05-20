@@ -36,6 +36,6 @@ public class GeneMolecularInteractionCrudController extends BaseEntityCrudContro
 	}
 
 	public APIResponse updateInteractions(List<PsiMiTabDTO> interactionData) {
-		return geneMolecularInteractionExecutor.runLoad(interactionData);
+		return geneMolecularInteractionExecutor.runLoadApi(geneMolecularInteractionService, null, interactionData);
 	}
 }

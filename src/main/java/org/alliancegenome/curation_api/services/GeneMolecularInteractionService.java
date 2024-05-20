@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.services;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -16,7 +18,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneMolecularInteraction, GeneMolecularInteractionDAO> {
+public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneMolecularInteraction, GeneMolecularInteractionDAO> implements BaseUpsertServiceInterface<GeneMolecularInteraction, PsiMiTabDTO> {
 
 	@Inject
 	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
@@ -30,13 +32,11 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 	}
 	
 	public ObjectResponse<GeneMolecularInteraction> getByIdentifier(String identifier) {
-		List<String> identifierFields = List.of("interactionId", "uniqueId");
-		GeneMolecularInteraction interaction = findByAlternativeFields(identifierFields, identifier);
-		return new ObjectResponse<GeneMolecularInteraction>(interaction);
+		return new ObjectResponse<>(findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier));
 	}
 
 	@Transactional
-	public GeneMolecularInteraction upsert(PsiMiTabDTO dto) throws ObjectUpdateException {
+	public GeneMolecularInteraction upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
 		GeneMolecularInteraction interaction = geneMolInteractionValidator.validateGeneMolecularInteractionFmsDTO(dto);
 		return geneMolecularInteractionDAO.persist(interaction);
 	}

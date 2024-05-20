@@ -32,9 +32,9 @@ import jakarta.ws.rs.core.MediaType;
 public interface GeneGeneticInteractionCrudInterface extends BaseIdCrudInterface<GeneGeneticInteraction> {
 
 	@GET
-	@Path("/findBy/{identifierString}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.GeneInteractionView.class)
-	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(@PathParam("identifierString") String identifierString);
+	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(@PathParam("identifier") String identifier);
 	
 	@Override
 	@POST

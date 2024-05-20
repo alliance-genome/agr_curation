@@ -44,9 +44,13 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 
 		if (uiEntity.getCreatedBy() != null) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
+			createdBy.getEmails().size();
+			createdBy.getOldEmails().size();
 			dbEntity.setCreatedBy(createdBy);
 		} else if (newEntity) {
 			Person createdBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+			createdBy.getEmails().size();
+			createdBy.getOldEmails().size();
 			dbEntity.setCreatedBy(createdBy);
 		}
 

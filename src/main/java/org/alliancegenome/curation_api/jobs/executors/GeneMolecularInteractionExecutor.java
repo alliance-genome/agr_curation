@@ -6,18 +6,12 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneInteractionService;
 import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -37,7 +31,7 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 	@Inject
 	GeneInteractionService geneInteractionService;
 	
-	public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
 			
 			CsvSchema psiMiTabSchema = CsvSchemaBuilder.psiMiTabSchema();
@@ -48,60 +42,20 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 			List<PsiMiTabDTO> interactionData = it.readAll();
 			
 			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
-			
+			createHistory(history, bulkLoadFile);
 			List<Long> interactionIdsLoaded = new ArrayList<>();
 			List<Long> interactionIdsBefore = geneMolecularInteractionDAO.findAllIds().getResults();
 			
-			runLoad(history, interactionData, interactionIdsLoaded);
+			boolean success = runLoad(geneMolecularInteractionService, history, null, interactionData, interactionIdsLoaded);
 			
-			runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
+			if(success) runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
 
 			history.finishLoad();
-			
-			trackHistory(history, bulkLoadFile);
+			finalSaveHistory(history);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	// Gets called from the API directly
-	public APIResponse runLoad(List<PsiMiTabDTO> interactions) {
-		List<Long> interactionIdsLoaded = new ArrayList<>();
-		
-		BulkLoadFileHistory history = new BulkLoadFileHistory(interactions.size());
-		runLoad(history, interactions, interactionIdsLoaded);
-		history.finishLoad();
-		
-		return new LoadHistoryResponce(history);
-	}
-
-	
-	private void runLoad(BulkLoadFileHistory history, List<PsiMiTabDTO> interactions, List<Long> idsAdded) {
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Gene Molecular Interaction DTO Update", interactions.size());
-		for (PsiMiTabDTO dto : interactions) {
-			try {
-				GeneMolecularInteraction interaction = geneMolecularInteractionService.upsert(dto);
-				if (interaction != null) {
-					history.incrementCompleted();
-					if (idsAdded != null)
-						idsAdded.add(interaction.getId());
-				} 
-			} catch (ObjectUpdateException e) {
-				history.incrementFailed();
-				addException(history, e.getData());
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
-			}
-	
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-
 	}
 
 }

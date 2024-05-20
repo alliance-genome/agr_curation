@@ -112,7 +112,7 @@ public class OntologyExecutor {
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject LoadProcessDisplayService loadProcessDisplayService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) throws Exception {
+	public void execLoad(BulkLoadFile bulkLoadFile) throws Exception {
 		bulkLoadFile.setRecordCount(0);
 
 		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
