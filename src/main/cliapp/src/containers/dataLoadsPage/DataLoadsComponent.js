@@ -1,4 +1,5 @@
 import React, { useReducer, useRef, useState, useContext } from 'react';
+import useWebSocket from 'react-use-websocket';
 import { useQuery } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -87,6 +88,33 @@ export const DataLoadsComponent = () => {
 		["CONSTRUCT_ASSOCIATION", ["ConstructGenomicEntityAssociationDTO"]]
 		]);
 
+	var loc = window.location, new_uri;
+	if (loc.protocol === "https:") {
+		new_uri = "wss:";
+	} else {
+		new_uri = "ws:";
+	}
+	if(process.env.NODE_ENV === 'production') {
+		new_uri += "//" + loc.host;
+	} else {
+		new_uri += "//localhost:8080";
+	}
+
+	new_uri += loc.pathname + "load_processing_events";
+	useWebSocket(new_uri, {
+		onOpen: () => {
+			//console.log("WS Connection Open");
+		},
+		onMessage: (event) => {
+			let localEvent = JSON.parse(event.data);
+			setRunningLoads((prevState) => {
+				const newState = {...prevState};
+				newState[localEvent.message] = localEvent;
+				return newState;
+			});
+		}
+	});
+
 	useQuery(['bulkloadtable'],
 		() => searchService.find('bulkloadgroup', 100, 0, {}), {
 		onSuccess: (data) => {
@@ -107,36 +135,6 @@ export const DataLoadsComponent = () => {
 				}
 				setGroups(data.results.sort((a,b) => a.name > b.name ? 1 : -1));
 				setErrorLoads(_errorLoads.sort((a, b) => (a.name > b.name) ? 1: -1));
-			}
-
-			var loc = window.location, new_uri;
-			if (loc.protocol === "https:") {
-				new_uri = "wss:";
-			} else {
-				new_uri = "ws:";
-			}
-			if(process.env.NODE_ENV === 'production') {
-				new_uri += "//" + loc.host;
-			} else {
-				new_uri += "//localhost:8080";
-			}
-
-			new_uri += loc.pathname + "load_processing_events";
-			//console.log(new_uri);
-			let ws = new WebSocket(new_uri);
-
-			ws.onopen = () => console.log('ws opened');
-			ws.onclose = () => console.log('ws closed');
-
-			ws.onmessage = (e, runningLoads) => {
-				let processingMessage = JSON.parse(e.data);
-				setRunningLoads((prevState) => {
-					//console.log(prevState);
-					const newState = {...prevState};
-					newState[processingMessage.message] = processingMessage;
-					//console.log(newState);
-					return newState;
-				});
 			}
 
 		},
