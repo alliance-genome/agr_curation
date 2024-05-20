@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -46,13 +47,13 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 	
 		String interactionId = null;
 		if (CollectionUtils.isNotEmpty(dto.getInteractionIds()))
-			interactionId = InteractionStringHelper.getAllianceCurie(dto.getInteractionIds().get(0));
+			interactionId = PsiMiTabPrefixEnum.getAllianceIdentifier(dto.getInteractionIds().get(0));
 		
 		Gene interactorA = null;
 		if (StringUtils.isBlank(dto.getInteractorAIdentifier())) {
 			ggiResponse.addErrorMessage("interactorAIdentifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<Gene> interactorAResponse = findAllianceGene(dto.getInteractorAIdentifier());
+			ObjectResponse<Gene> interactorAResponse = findAllianceGene(dto.getInteractorAIdentifier(), dto.getInteractorATaxonId());
 			if (interactorAResponse.hasErrors())
 				ggiResponse.addErrorMessage("interactorAIdentifier", interactorAResponse.errorMessagesString());
 			interactorA = interactorAResponse.getEntity();
@@ -62,7 +63,7 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 		if (StringUtils.isBlank(dto.getInteractorBIdentifier())) {
 			ggiResponse.addErrorMessage("interactorBIdentifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<Gene> interactorBResponse = findAllianceGene(dto.getInteractorBIdentifier());
+			ObjectResponse<Gene> interactorBResponse = findAllianceGene(dto.getInteractorBIdentifier(), dto.getInteractorBTaxonId());
 			if (interactorBResponse.hasErrors())
 				ggiResponse.addErrorMessage("interactorBIdentifier", interactorBResponse.errorMessagesString());
 			interactorB = interactorBResponse.getEntity();

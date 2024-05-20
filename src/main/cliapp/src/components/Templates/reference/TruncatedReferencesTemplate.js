@@ -3,13 +3,13 @@ import { DetailMessage } from "../../DetailMessage";
 import { SingleReferenceTemplate } from "./SingleReferenceTemplate";
 
 export const TruncatedReferencesTemplate = ({ references, identifier, detailPage }) => {
-  if (!references || references.length === 0 || !detailPage) return null;
+  if (!references || references.length === 0) return null;
   let truncatedReferences = references;
   let displayDetailMessage = false;
 
   const targetClass = `a${global.crypto.randomUUID()}`;
 
-  if (truncatedReferences.length > 5) {
+  if (truncatedReferences.length > 5 && detailPage) {
     truncatedReferences = references.slice(0, 5);
     displayDetailMessage = true;
   }
@@ -18,7 +18,7 @@ export const TruncatedReferencesTemplate = ({ references, identifier, detailPage
 
   return (
     <>
-      <div className={`-my-4 p-1 ${targetClass}`}>
+      <div className={`-m-1 p-0 ${targetClass}`}>
         <ListTableCell template={listTemplate} listData={truncatedReferences} />
       </div>
       <div className="mt-1">

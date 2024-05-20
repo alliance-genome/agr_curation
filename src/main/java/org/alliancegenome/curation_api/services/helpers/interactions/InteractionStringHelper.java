@@ -18,6 +18,7 @@ public abstract class InteractionStringHelper {
 	
 	private static final Pattern PSI_MI_FORMAT = Pattern.compile("^[^:]+:\"([^\"]*)\"");
 	private static final Pattern WB_VAR_ANNOTATION = Pattern.compile("wormbase:(WBVar\\d+)\\D*");
+	private static final Pattern PSI_MI_FORMAT_TAXON = Pattern.compile("^taxid:(\\d+)");
 
 	public static String getGeneMolecularInteractionUniqueId(PsiMiTabDTO dto, Gene interactorA, Gene interactorB, String interactionId, List<Reference> references) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
@@ -70,6 +71,19 @@ public abstract class InteractionStringHelper {
 		return matcher.group(1);
 	}
 	
+	public static String getAllianceTaxonCurie(String psiMiTaxonString) {
+		// For retrieving Alliance taxon curie from PSI-MI taxon fields
+		if (StringUtils.isBlank(psiMiTaxonString))
+			return null;
+		
+		Matcher matcher = PSI_MI_FORMAT_TAXON.matcher(psiMiTaxonString);
+		
+		if (!matcher.find())
+			return null;
+		
+		return "NCBITaxon:" + matcher.group(1);
+	}
+	
 	public static String extractWBVarCurieFromAnnotations(String annotationsString) {
 		if (StringUtils.isBlank(annotationsString))
 			return null;
@@ -92,34 +106,5 @@ public abstract class InteractionStringHelper {
 			return sourceDatabaseCurie;
 		}
 		return "MI:0670";
-	}
-	
-	public static String getAllianceCurie(String psiMiTabIdentifier) {
-		// For converting curies with prefixes that differ from those used at AGR, e.g. wormbase:WBGene000001
-		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
-		if (psiMiTabIdParts.length != 2)
-			return null;
-		
-		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
-		if (prefix == null)
-			return null;
-		
-		return prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
-	}
-	
-	// TODO: Can remove this method once loading interactions where interactors are referenced by xref
-	public static Boolean isAllianceInteractor(String psiMiTabIdentifier) {
-		if (StringUtils.isBlank(psiMiTabIdentifier))
-			return false;
-		
-		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
-		if (psiMiTabIdParts.length != 2)
-			return false;
-		
-		PsiMiTabPrefixEnum prefix = PsiMiTabPrefixEnum.findByPsiMiTabPrefix(psiMiTabIdParts[0]);
-		if (prefix == null)
-			return false;
-		
-		return prefix.isModPrefix;
 	}
 }

@@ -169,7 +169,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				traversedNodes.add(currentTerm.getCurie());
 			}
 
-			if (isNodeInOntology && config.getLoadAncestors()) {
+			if (isNodeInOntology) {
 				HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
 				traverseToRoot(currentTreeNode, depth, requiredNamespaces, ancestors);
 				ancestors.remove(currentTerm);
@@ -365,7 +365,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		
 		traversedNodes.add(currentTerm.getCurie());
 
-		if (isPropertyInOntology && config.getLoadAncestors()) {
+		if (isPropertyInOntology) {
 			HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
 			traverseToRootProperty(currentTreeProperty, depth, ancestors);
 			ancestors.remove(currentTerm);

@@ -154,7 +154,7 @@ const modTableSettings = {
 				"Date Created", "Obsolete"
 			],
 			selectedFormFields: [
-				"Subject","Disease Relation", "Disease", "Reference","Evidence Code",
+				"Subject", "Disease Relation", "Disease", "Reference", "Evidence Code",
 				"Experimental Conditions"
 			],
 			filters: {
@@ -219,37 +219,48 @@ const modTableSettings = {
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	}
-}
+};
 
-export function getModTableState(table, widthsObject, defaultColumnNames) {
+export function getModTableState(table, defaultColumnWidths, defaultColumnNames) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
 	const modTableState = global.structuredClone(modTableSettings[mod] ? modTableSettings[mod][table] : modTableSettings['Default'][table]);
-	modTableState.columnWidths = widthsObject;
+	modTableState.columnWidths = defaultColumnWidths;
+	modTableState.defaultColumnWidths = defaultColumnWidths;
 	modTableState.orderedColumnNames = defaultColumnNames;
+	modTableState.defaultColumnNames = defaultColumnNames;
 	return modTableState;
 };
 
 export function getModFormFields(table) {
 	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
 	const mod = oktaToken?.accessToken?.claims?.Groups?.filter(group => group.includes("Staff"));
-	const modFormFields = modTableSettings[mod]?modTableSettings[mod][table]['selectedFormFields']:modTableSettings['Default'][table]['selectedFormFields'];
+	const modFormFields = modTableSettings[mod] ? modTableSettings[mod][table]['selectedFormFields'] : modTableSettings['Default'][table]['selectedFormFields'];
 	return modFormFields;
 };
 
-export function getDefaultTableState(table, defaultColumnNames, defaultVisibleColumns, widthsObject) {
-	return {
-		page: 0,
-		first: 0,
-		rows: 10,
-		multiSortMeta: [],
-		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
-		orderedColumnNames: defaultColumnNames,
-		columnWidths: widthsObject,
-		filters: {},
-		tableKeyName: table,
-		tableSettingsKeyName: `${table}TableSettings`
-	}
+export function getDefaultTableState(tableName, columns, defaultColumnWidth, defaultFilters = {}, defaultVisibleColumns) {
+
+	const { defaultColumnNames, defaultColumnWidths } = columns.reduce((acc, col) => {
+    acc.defaultColumnNames.push(col.header);
+    acc.defaultColumnWidths[col.field] = defaultColumnWidth;
+    return acc;
+  }, { defaultColumnNames: [], defaultColumnWidths: {} });
+
+  return {
+    page: 0,
+    first: 0,
+    rows: 10,
+    multiSortMeta: [],
+    selectedColumnNames: defaultVisibleColumns || defaultColumnNames,
+    orderedColumnNames: defaultColumnNames,
+    defaultColumnNames,
+    columnWidths: defaultColumnWidths,
+    defaultColumnWidths,
+    filters: defaultFilters,
+    tableKeyName: tableName,
+    tableSettingsKeyName: `${tableName}TableSettings`
+  };
 }
 
 export function getDefaultFormState(form, defaultFieldNames, defaultVisibleFields) {
@@ -257,5 +268,5 @@ export function getDefaultFormState(form, defaultFieldNames, defaultVisibleField
 		selectedFormFields: defaultVisibleFields ? defaultVisibleFields : defaultFieldNames,
 		orderedFormFields: defaultFieldNames,
 		formSettingsKeyName: `${form}FormSettings`
-	}
+	};
 }

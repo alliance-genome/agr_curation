@@ -1,16 +1,21 @@
 import 'react-app-polyfill/ie11';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools} from 'react-query/devtools'
+import { createRoot } from 'react-dom/client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import App from './App';
-//import * as serviceWorker from './serviceWorker';
-import { HashRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom';
 import ScrollToTop from './ScrollToTop';
 
 const queryClient = new QueryClient();
 
-ReactDOM.render(
+const container = document.getElementById("root");
+
+if (!container) throw new Error("container not found!");
+
+const root = createRoot(container);
+
+root.render(
 	<HashRouter>
 		<ScrollToTop>
 			<QueryClientProvider client={queryClient}>
@@ -18,8 +23,7 @@ ReactDOM.render(
 				<ReactQueryDevtools />
 			</QueryClientProvider>
 		</ScrollToTop>
-	</HashRouter>,
-	document.getElementById('root')
+	</HashRouter>
 );
 
 // If you want your app to work offline and load faster, you can change

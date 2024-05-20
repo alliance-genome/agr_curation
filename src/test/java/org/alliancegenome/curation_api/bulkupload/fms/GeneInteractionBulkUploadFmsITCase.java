@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.bulkupload.fms;
 
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -223,6 +222,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_04_no_source_database_ids.json");
 		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_05_no_interactor_a_type.json");
 		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_06_no_interactor_b_type.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_07_no_interactor_a_taxon.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "MR_08_no_interactor_b_taxon.json");
 	}
 	
 	@Test
@@ -234,6 +235,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_04_empty_source_database_ids.json");
 		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_05_empty_interactor_a_type.json");
 		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_06_empty_interactor_b_type.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_07_empty_interactor_a_taxon.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "ER_08_empty_interactor_b_taxon.json");
 	}
 	
 	@Test
@@ -292,6 +295,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_09_invalid_interactor_b_type.json");
 		checkFailedBulkLoad(geneGeneticInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_10_invalid_interactor_a_annotation_string.json");
 		checkFailedBulkLoad(geneGeneticInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_11_invalid_interactor_b_annotation_string.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_12_invalid_interactor_a_taxon.json");
+		checkFailedBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "IV_13_invalid_interactor_b_taxon.json");
 	}
 	
 	@Test

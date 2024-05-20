@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.enums;
 
+import org.apache.commons.lang3.StringUtils;
+
 public enum PsiMiTabPrefixEnum {
 	wormbase("WB", true),
 	flybase("FB", true),
@@ -33,13 +35,16 @@ public enum PsiMiTabPrefixEnum {
 	}
 	
 	public static String getAllianceIdentifier(String psiMiTabIdentifier) {
+		if (StringUtils.isBlank(psiMiTabIdentifier))
+			return null;
+		
 		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
 		if (psiMiTabIdParts.length != 2)
-			return null;
+			return psiMiTabIdentifier;
 		
 		PsiMiTabPrefixEnum prefix = findByPsiMiTabPrefix(psiMiTabIdParts[0]);
 		if (prefix == null)
-			return null;
+			return psiMiTabIdentifier;
 		
 		return prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
 	}

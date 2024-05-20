@@ -11,12 +11,20 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { Tooltip } from 'primereact/tooltip';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+
+import { SearchService } from '../../service/SearchService';
 
 export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbbreviation, hideDefinition}) => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [ontologies, setOntologies] = useState([]);
 
 	const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+	const searchService = new SearchService();
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -144,17 +152,22 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		}
 	);
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
+	const DEFAULT_COLUMN_WIDTH = 17;
+	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false", tokenOperator: "OR"}}};
+
+	const initialTableState = getDefaultTableState(name, columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: endpoint,
+		setIsInEditMode,
+		setEntities: setOntologies,
+		setTotalRecords,
+		toast_topleft,
+		searchService
 	});
-
-	const widthsObject = {};
-
-	columns.forEach((col) => {
-		widthsObject[col.field] = 17;
-	});
-
-	const initialTableState = getDefaultTableState(name, defaultColumnNames, undefined, widthsObject);
 
 	return (
 		<>
@@ -165,16 +178,22 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 					<GenericDataTable
 						endpoint={endpoint}
 						tableName={name}
-						dataKey="curie"
+						entities={ontologies}
+						setEntities={setOntologies}
+						totalRecords={totalRecords}
+						setTotalRecords={setTotalRecords}
+						tableState={tableState}
+						setTableState={setTableState}
 						columns={columns}
-						defaultColumnNames={defaultColumnNames}
-						initialTableState={initialTableState}
+						dataKey="curie"
 						isEditable={false}
 						isInEditMode={isInEditMode}
 						setIsInEditMode={setIsInEditMode}
 						toasts={{toast_topleft, toast_topright }}
 						errorObject = {{errorMessages, setErrorMessages}}
-						widthsObject={widthsObject}
+						defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+						fetching={isFetching || isLoading}
+						defaultFilters = {defaultFilters}
 					/>
 			    </TabPanel>
 			    <TabPanel header="Tree View">

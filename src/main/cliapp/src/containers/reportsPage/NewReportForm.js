@@ -3,7 +3,7 @@ import { CronFields } from '../../components/CronFields';
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReportService } from '../../service/ReportService';
 import { InputText } from 'primereact/inputtext';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
@@ -44,7 +44,7 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 
 		mutation.mutate(newReport, {
 			onSuccess: () => {
-				queryClient.invalidateQueries('reporttable');
+				queryClient.invalidateQueries(['reporttable']);
 				reportDispatch({ type: "RESET" });
 				setNewReportDialog(false);
 			},

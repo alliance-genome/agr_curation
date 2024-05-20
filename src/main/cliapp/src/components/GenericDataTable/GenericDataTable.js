@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
@@ -33,7 +33,9 @@ export const GenericDataTable = (props) => {
 		dataKey = 'id',
 		deprecateOption = false,
 		modReset = false,
-		highlightObsolete = true
+		highlightObsolete = true,
+		fetching,
+		isEditable
 	} = props;
 
 	const {
@@ -57,7 +59,6 @@ export const GenericDataTable = (props) => {
 		handleDeletion,
 		handleDeprecation,
 		tableState,
-		defaultColumnNames,
 		exceptionDialog,
 		setExceptionDialog,
 		setToModDefault,
@@ -75,11 +76,11 @@ export const GenericDataTable = (props) => {
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 	const [allowDelete, setAllowDelete] = useState(false);
 
-	const createMultiselectComponent = (tableState,defaultColumnNames,isInEditMode) => {
+	const createMultiselectComponent = () => {
 		return (<MultiSelect
 				aria-label='columnToggle'
 				value={tableState.selectedColumnNames}
-				options={defaultColumnNames}
+				options={tableState.defaultColumnNames}
 				filter
 				resetFilterOnHide
 				onChange={e => {
@@ -100,8 +101,7 @@ export const GenericDataTable = (props) => {
 		<DataTableHeaderFooterTemplate
 				title = {tableName + " Table"}
 				tableState = {tableState}
-				defaultColumnNames = {defaultColumnNames}
-				multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isInEditMode)}
+				multiselectComponent = {createMultiselectComponent()}
 				buttons = {headerButtons ? headerButtons(isInEditMode) : undefined}
 				tableStateConfirm = {tableStateConfirm}
 				setToModDefault = {setToModDefault}
@@ -123,8 +123,6 @@ export const GenericDataTable = (props) => {
 			/>
 		);
 	};
-	//This is needed so column order is tracked properly
-	useEffect(() => dataTable.current.resetColumnOrder() );
 
 	useEffect(() => {
 		const orderedColumns = orderColumns(columns, tableState.orderedColumnNames);
@@ -267,8 +265,8 @@ export const GenericDataTable = (props) => {
 					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-					rowClassName = {(props) => getRowClass(props)}>
-					{props.isEditable &&
+					rowClassName = {(props) => getRowClass(props)} loading={fetching} loadingIcon="pi pi-spin pi-spinner">
+					{isEditable &&
 						<Column field='rowEditor' rowEditor className={"p-text-center p-0 min-w-3rem max-w-3rem text-base"} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
 								bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0 w-3rem sticky'
 						/>
@@ -277,21 +275,21 @@ export const GenericDataTable = (props) => {
 						<Column field="delete"
 						editor={(props) => deleteAction(props, true)}
 						body={(props) => deleteAction(props, isInEditMode)} filterElement={rowEditorFilterNameHeader}
-						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{duplicationEnabled &&
 						<Column field="duplicate"
 						editor={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true}/>}
 						body={(props) => <DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode}/>}
-						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{hasDetails &&
 						<Column field="details"
 						editor={(props) => <EntityDetailsAction identifier={getIdentifier(props.rowData)} disabled={true}/>} 
 						body={(props) => <EntityDetailsAction identifier={getIdentifier(props)} disabled={isInEditMode}/>} 
-						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${props.isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
+						showFilterMenu={false} className={`p-text-center p-0 min-w-3rem max-w-3rem ${isEditable ? 'visible' : 'hidden'}`} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0 w-3rem sticky'/>
 					}
 					{columnList}

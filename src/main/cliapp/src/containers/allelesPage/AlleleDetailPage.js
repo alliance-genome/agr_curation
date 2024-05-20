@@ -5,7 +5,7 @@ import { Divider } from 'primereact/divider';
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';

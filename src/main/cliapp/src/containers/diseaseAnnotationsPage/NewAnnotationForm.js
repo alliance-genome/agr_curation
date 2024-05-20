@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { MultiSelect } from 'primereact/multiselect';
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
 import { NotEditor } from "../../components/Editors/NotEditor";
 import { classNames } from "primereact/utils";
@@ -125,7 +125,7 @@ export const NewAnnotationForm = ({
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
 				if (!(isRelatedNotesErrors || isExConErrors)) {
-					queryClient.invalidateQueries('DiseaseAnnotationsHandles');
+					queryClient.invalidateQueries(['DiseaseAnnotationsHandles']);
 					toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Annotation Added' });
 					if (closeAfterSubmit) {
 						newAnnotationDispatch({ type: "RESET" });
@@ -133,13 +133,8 @@ export const NewAnnotationForm = ({
 					else {
 						setUiErrorMessages({});
 					}
-					//Invalidating the query immediately after success leads to api results that don't always include the new annotation
-					setTimeout(() => {
-						queryClient.invalidateQueries("DiseaseAnnotations").then(() => {
-							//needs to be set after api call otherwise the newly appended DA would be removed when there are no filters
-							setNewDiseaseAnnotation(data.data.entity);
-						});
-					}, 1000);
+
+					setNewDiseaseAnnotation(data.data.entity, queryClient);
 				}
 			},
 			onError: (error) => {
@@ -151,7 +146,7 @@ export const NewAnnotationForm = ({
 					message = error.response.data.errorMessage;
 				} else {
 					//toast will still display even if 500 error and no errorMessages
-					message = `${error.response.status} ${error.response.statusText}`
+					message = `${error.response.status} ${error.response.statusText}`;
 				}
 
 				toast_error.current.show({ severity: 'error', summary: 'Page error: ', detail: message });
@@ -177,11 +172,11 @@ export const NewAnnotationForm = ({
 		newAnnotationDispatch({ type: "SET_IS_ASSERTED_ALLELE_ENABLED", value: false });
 
 		setUiErrorMessages({});
-	}
+	};
 
 	const handleSubmitAndAdd = (event) => {
 		handleSubmit(event, false);
-	}
+	};
 
 	const onSingleReferenceChange = (event) => {
 		setUiErrorMessages({});
@@ -190,7 +185,7 @@ export const NewAnnotationForm = ({
 			field: event.target.name,
 			value: event.target.value
 		});
-	}
+	};
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["curie", "cross_references.curie"];
@@ -199,7 +194,7 @@ export const NewAnnotationForm = ({
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["name", "curie", "modEntityId", "modInternalId", "crossReferences.referencedCurie"];
@@ -212,10 +207,10 @@ export const NewAnnotationForm = ({
 					queryString: "Saccharomyces cerevisiae"
 				}
 			},
-		}
+		};
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	}
+	};
 
 	const geneticModifiersSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "modEntityId", "modInternalId", "name", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
@@ -224,7 +219,7 @@ export const NewAnnotationForm = ({
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const onSubjectChange = (event) => {
 		setUiErrorMessages({});
@@ -248,7 +243,7 @@ export const NewAnnotationForm = ({
 			field: event.target.name,
 			value: event.target.value
 		});
-	}
+	};
 
 	const subjectSearch = (event, setFiltered, setQuery) => {
 		//The order of the below fields are as per the Autocomplete search result
@@ -271,7 +266,7 @@ export const NewAnnotationForm = ({
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const onDiseaseChange = (event) => {
 		/*const curie = event.value.curie;
@@ -283,7 +278,7 @@ export const NewAnnotationForm = ({
 			field: event.target.name,
 			value: event.value
 		});
-	}
+	};
 
 	const diseaseSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["curie", "name", "crossReferences.referencedCurie", "secondaryIdentifiers", "synonyms.name"];
@@ -292,7 +287,7 @@ export const NewAnnotationForm = ({
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const onDropdownFieldChange = (event) => {
 		newAnnotationDispatch({
@@ -316,7 +311,7 @@ export const NewAnnotationForm = ({
 			field: event.target.name,
 			value: event.target.value
 		});
-	}
+	};
 
 	const onControlledVocabChange = (event) => {
 		newAnnotationDispatch({
@@ -324,22 +319,22 @@ export const NewAnnotationForm = ({
 			field: event.target.name,
 			value: event.target.value
 		});
-	}
+	};
 	const isExperimentEnabled = () => {
 		return (
 			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
 			typeof newAnnotation.singleReference === "object"
 			&& newAnnotation.singleReference.curie !== ""
 			&& !showConditionRelations
-		)
-	}
+		);
+	};
 
 	const isConditionRelationButtonEnabled = () => {
 		return (
 			newAnnotation.conditionRelations?.[0]
 			&& newAnnotation.conditionRelations?.[0].handle
-		)
-	}
+		);
+	};
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ["curie", "name", "abbreviation"];
 		const endpoint = "ecoterm";
@@ -351,11 +346,11 @@ export const NewAnnotationForm = ({
 					queryString: "agr_eco_terms"
 				}
 			}
-		}
+		};
 
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	}
+	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "modEntityId", "modInternalId", "curie", "crossReferences.referencedCurie", "geneSynonyms.displayText"];
@@ -368,11 +363,11 @@ export const NewAnnotationForm = ({
 					queryString: "NCBITaxon:9606"
 				}
 			},
-		}
+		};
 
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	}
+	};
 
 	const dialogFooter = (
 		<>
@@ -398,7 +393,7 @@ export const NewAnnotationForm = ({
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const assertedAlleleSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "modEntityId", "modInternalId", "curie", "crossReferences.referencedCurie", "alleleSecondaryIds.secondaryId", "alleleSynonyms.displayText"];
@@ -407,7 +402,7 @@ export const NewAnnotationForm = ({
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const updateFormFields = (updatedFields) => {
 		let updatedSettings = { ...defaultUserSettings, selectedFormFields: updatedFields };
@@ -416,12 +411,12 @@ export const NewAnnotationForm = ({
 
 	const handleShowAllFields = () => {
 		updateFormFields(newAnnotationOptionalFields);
-	}
+	};
 
 	const setToModDefault = () => {
 		const modFormFields = getModFormFields("DiseaseAnnotations");
 		updateFormFields(modFormFields);
-	}
+	};
 
 	const dialogHeader = (
 		<>
@@ -938,4 +933,4 @@ export const NewAnnotationForm = ({
 			</Dialog>
 		</div>
 	);
-}
+};
