@@ -35,7 +35,7 @@ export const LiteratureReferenceTable = () => {
 						header: "Cross References",
 						sortable: true,
 						body: (rowData) => <StringListTemplate 
-						list = {rowData.cross_references.map(reference=>reference.curie)}
+						list = {rowData?.cross_references?.map(reference=>reference.curie)}
 						/>,
 						filter: true,
 						filterConfig: FILTER_CONFIGS.literatureCrossReferenceFilterConfig, 
