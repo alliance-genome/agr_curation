@@ -198,8 +198,8 @@ public class LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
 		if (dataProvider != null)
-			loadMessage = loadMessage + " for " + dataProvider.name() + objectList.size();
-		ph.startProcess(loadMessage);
+			loadMessage = loadMessage + " for " + dataProvider.name();
+		ph.startProcess(loadMessage, objectList.size());
 		
 		for(T dtoObject: objectList) {
 			try {
