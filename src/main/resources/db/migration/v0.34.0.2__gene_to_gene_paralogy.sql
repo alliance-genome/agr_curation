@@ -1,3 +1,4 @@
+CREATE SEQUENCE public.genetogeneparalogy_seq         START WITH 200000000 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 CREATE TABLE genetogeneparalogy (
  	id bigint CONSTRAINT genetogeneparalogy_pkey PRIMARY KEY,
  	subjectgene_id bigint,
