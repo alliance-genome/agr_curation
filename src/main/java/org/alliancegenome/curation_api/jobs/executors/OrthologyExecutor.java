@@ -56,13 +56,15 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(orthologyData.getData().size());
 			
+			createHistory(history, bulkLoadFile);
+			
 			runLoad(history, fms.getFmsDataSubType(), orthologyData, orthoPairsLoaded);
 			
 			runCleanup(history, fms.getFmsDataSubType(), orthoPairsBefore, orthoPairsLoaded);
 
 			history.finishLoad();
 			
-			updateHistory(history);
+			finalSaveHistory(history);
 
 		} catch (Exception e) {
 			failLoad(bulkLoadFile, e);
@@ -120,6 +122,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(orthoPairDTO, e.getMessage(), e.getStackTrace()));
 			}
+			updateHistory(history);
 			ph.progressProcess();
 		}
 		ph.finishProcess();

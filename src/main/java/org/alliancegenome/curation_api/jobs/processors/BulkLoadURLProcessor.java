@@ -20,11 +20,11 @@ public class BulkLoadURLProcessor extends BulkLoadProcessor {
 	BulkLoadDAO bulkLoadDAO;
 	
 	public void processBulkURLLoad(@Observes StartedBulkLoadJobEvent load) {
-		Log.info("processBulkURLLoad: " + load.getId());
-		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		
+		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		if(bulkLoad instanceof BulkURLLoad bulkURLLoad) {
 
+			Log.info("processBulkURLLoad: " + load.getId());
 			startLoad(bulkURLLoad);
 	
 			if (bulkURLLoad.getBulkloadUrl() != null && bulkURLLoad.getBulkloadUrl().length() > 0) {
