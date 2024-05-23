@@ -196,7 +196,10 @@ public class LoadFileExecutor {
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess(service.getClass().getSimpleName() + " updating " + objectList.get(0).getClass().getSimpleName(), objectList.size());
+		String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
+		if (dataProvider != null)
+			loadMessage = loadMessage + " for " + dataProvider.name();
+		ph.startProcess(loadMessage, objectList.size());
 		
 		for(T dtoObject: objectList) {
 			try {
