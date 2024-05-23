@@ -64,8 +64,6 @@ CREATE INDEX g2gparalogypmm_paralogyid_index ON genetogeneparalogy_predictionmet
 CREATE INDEX g2gparalogypmm_pmmid_index ON genetogeneparalogy_predictionmethodsmatched USING btree (predictionmethodsmatched_id);
 
 
-
-
 CREATE TABLE genetogeneparalogy_predictionmethodsnotmatched (
 															 genetogeneparalogy_id bigint NOT NULL,
 															 predictionmethodsnotmatched_id bigint NOT NULL
