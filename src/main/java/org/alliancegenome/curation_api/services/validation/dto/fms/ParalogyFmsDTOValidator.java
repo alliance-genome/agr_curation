@@ -1,17 +1,12 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
-import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.GeneToGeneParalogyDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyFmsDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneService;
-import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,68 +17,79 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ParalogyFmsDTOValidator {
 
-    @Inject
+	@Inject
 	GeneToGeneParalogyDAO genetoGeneParalogyDAO;
 	@Inject
 	GeneService geneService;
-    @Inject
+	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
-
-    @Transactional
+	@Transactional
 	public GeneToGeneParalogy validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ObjectValidationException {
 
-        // ObjectResponse<GeneToGeneParalogy> paralogyResponse = new ObjectResponse<GeneToGeneParalogy>();
+		// ObjectResponse<GeneToGeneParalogy> paralogyResponse = new
+		// ObjectResponse<GeneToGeneParalogy>();
 
 		// String subjectGeneIdentifier = null;
 		// String objectGeneIdentifier = null;
-		
+
 		// GeneToGeneParalogy paralogyData = null;
 
-        // if (StringUtils.isBlank(dto.getGene1())) {
-		// 	paralogyResponse.addErrorMessage("gene1", ValidationConstants.REQUIRED_MESSAGE);
+		// if (StringUtils.isBlank(dto.getGene1())) {
+		// paralogyResponse.addErrorMessage("gene1",
+		// ValidationConstants.REQUIRED_MESSAGE);
 		// } else {
-		// 	subjectGeneIdentifier = convertToModCurie(dto.getGene1(), dto.getSpecies());
+		// subjectGeneIdentifier = convertToModCurie(dto.getGene1(), dto.getSpecies());
 		// }
 		// if (StringUtils.isBlank(dto.getGene2())) {
-		// 	paralogyResponse.addErrorMessage("gene2", ValidationConstants.REQUIRED_MESSAGE);
+		// paralogyResponse.addErrorMessage("gene2",
+		// ValidationConstants.REQUIRED_MESSAGE);
 		// } else {
-		// 	objectGeneIdentifier = convertToModCurie(dto.getGene2(), dto.getSpecies());
+		// objectGeneIdentifier = convertToModCurie(dto.getGene2(), dto.getSpecies());
 		// }
 
-        // Gene subjectGene = null;
+		// Gene subjectGene = null;
 		// if (StringUtils.isNotBlank(dto.getGene1())) {
-		// 	subjectGene = geneService.findByIdentifierString(subjectGeneIdentifier);
-		// 	if (subjectGene == null) {
-		// 		paralogyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE + " (" + subjectGeneIdentifier + ")");
-		// 	} else {
-		// 		if (dto.getSpecies() == null) {
-		// 			paralogyResponse.addErrorMessage("Species", ValidationConstants.REQUIRED_MESSAGE);
-		// 		} else {
-        //             ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie("NCBITaxon:" + dto.getSpecies());
-		// 			NCBITaxonTerm subjectTaxon = taxonResponse.getEntity();
-		// 			if (subjectTaxon == null) {
-		// 				paralogyResponse.addErrorMessage("Species", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSpecies() + ")");
-		// 			} else if (!sameGenus(subjectTaxon, subjectGene.getTaxon())) {
-		// 				paralogyResponse.addErrorMessage("Species", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSpecies() + ") for gene " + subjectGene.getCurie());
-		// 			}
-		// 		}
-		// 	}
+		// subjectGene = geneService.findByIdentifierString(subjectGeneIdentifier);
+		// if (subjectGene == null) {
+		// paralogyResponse.addErrorMessage("gene1", ValidationConstants.INVALID_MESSAGE
+		// + " (" + subjectGeneIdentifier + ")");
+		// } else {
+		// if (dto.getSpecies() == null) {
+		// paralogyResponse.addErrorMessage("Species",
+		// ValidationConstants.REQUIRED_MESSAGE);
+		// } else {
+		// ObjectResponse<NCBITaxonTerm> taxonResponse =
+		// ncbiTaxonTermService.getByCurie("NCBITaxon:" + dto.getSpecies());
+		// NCBITaxonTerm subjectTaxon = taxonResponse.getEntity();
+		// if (subjectTaxon == null) {
+		// paralogyResponse.addErrorMessage("Species",
+		// ValidationConstants.INVALID_MESSAGE + " (" + dto.getSpecies() + ")");
+		// } else if (!sameGenus(subjectTaxon, subjectGene.getTaxon())) {
+		// paralogyResponse.addErrorMessage("Species",
+		// ValidationConstants.INVALID_MESSAGE + " (" + dto.getSpecies() + ") for gene "
+		// + subjectGene.getCurie());
 		// }
-        return null;
-    }
-    private String convertToModCurie(String curie, Integer taxonId) {
-        curie = curie.replaceFirst("^DRSC:", "");
-        if (curie.indexOf(":") == -1) {
-            String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonId(taxonId);
-            if (prefix != null)
-                curie = prefix + curie;
-        }
-			
-    return curie;
+		// }
+		// }
+		// }
+		return null;
 	}
-    private boolean sameGenus(NCBITaxonTerm taxon, NCBITaxonTerm geneTaxon) {
-		if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:8355") || StringUtils.equals(taxon.getCurie(), "NCBITaxon:8364")) {
+
+	private String convertToModCurie(String curie, Integer taxonId) {
+		curie = curie.replaceFirst("^DRSC:", "");
+		if (curie.indexOf(":") == -1) {
+			String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonId(taxonId);
+			if (prefix != null)
+				curie = prefix + curie;
+		}
+
+		return curie;
+	}
+
+	private boolean sameGenus(NCBITaxonTerm taxon, NCBITaxonTerm geneTaxon) {
+		if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:8355")
+				|| StringUtils.equals(taxon.getCurie(), "NCBITaxon:8364")) {
 			// Must be same species for Xenopus as cleanup uses taxon curie
 			if (StringUtils.equals(taxon.getCurie(), geneTaxon.getCurie()))
 				return true;
@@ -95,5 +101,5 @@ public class ParalogyFmsDTOValidator {
 			return true;
 		return false;
 	}
-    
+
 }
