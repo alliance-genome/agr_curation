@@ -116,6 +116,9 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		}
 		annotation.setDateCreated(creationDate);
 		
+		annotation.setObsolete(false);
+		annotation.setInternal(false);
+		
 		paResponse.setEntity(annotation);
 
 		return paResponse;
