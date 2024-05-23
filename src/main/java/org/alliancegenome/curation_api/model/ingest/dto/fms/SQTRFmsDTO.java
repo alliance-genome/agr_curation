@@ -13,8 +13,8 @@ public class SQTRFmsDTO extends BaseDTO {
 	private String id;
 	private String name;
 	private String taxonId;
-	private String[] synonyms;
-	private String[] secondaryIds;
-	private String[] targetGeneIds;
+	private List<String> synonyms;
+	private List<String> secondaryIds;
+	private List<String> targetGeneIds;
 	private List<CrossReferenceFmsDTO> modCrossReference;
 }
