@@ -20,8 +20,8 @@ public enum BackendBulkLoadType {
 	VARIANT("json"),
 	INTERACTION_MOL("tsv"),
 	INTERACTION_GEN("tsv"),
-
-	PARALOGY("json");
+	PARALOGY("json"),
+	EXPRESSION("json");
 
 	public String fileExtension;
 

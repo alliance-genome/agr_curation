@@ -1,0 +1,44 @@
+{
+	"metaData" : {
+		"dateProduced" : "2024-01-17T07:31:35-08:00",
+		"dataProvider" : {
+			"crossReference" : {
+				"id" : "ZFIN",
+				"pages" : [ "homepage" ]
+			},
+			"type" : "curated"
+		}
+	},
+	"data" : [
+		{
+			"dateAssigned" : "2024-01-17T07:31:34-08:00",
+			"geneId" : "ZFIN:ZDB-GENE-041014-73",
+			"evidence" : {
+				"crossReference" : {
+					"id" : "ZFIN:ZDB-PUB-170214-329",
+					"pages" : [ "reference" ]
+				},
+				"publicationId" : "PMID:24871948"
+			},
+			"crossReference" : {
+				"id" : "ZFIN:ZDB-FIG-170413-34",
+				"pages" : [ "gene/expression/annotation/detail" ]
+			},
+			"assay" : "MMO:0000658",
+			"whenExpressed" : {
+				"stageName" : "Pharyngula:Prim-5",
+				"stageTermId" : "ZFS:0000029",
+				"stageUberonSlimTerm" : {
+					"uberonTerm" : "UBERON:0000068"
+				}
+			},
+			"whereExpressed" : {
+				"whereExpressedStatement" : "trunk",
+				"anatomicalStructureTermId" : "ZFA:0001115",
+				"anatomicalStructureUberonSlimTermIds" : [ {
+					"uberonTerm" : "Other"
+				} ]
+			}
+		}
+	]
+}

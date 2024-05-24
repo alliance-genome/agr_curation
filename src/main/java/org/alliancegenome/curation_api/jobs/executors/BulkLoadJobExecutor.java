@@ -28,7 +28,7 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 @ApplicationScoped
 public class BulkLoadJobExecutor {
-	
+
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 
 	@Inject AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
@@ -49,6 +49,7 @@ public class BulkLoadJobExecutor {
 	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 	@Inject GeneGeneticInteractionExecutor geneGeneticInteractionExecutor;
 	@Inject ParalogyExecutor paralogyExecutor;
+	@Inject ExpressionExecutor expressionExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
@@ -108,7 +109,10 @@ public class BulkLoadJobExecutor {
 			ontologyExecutor.execLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
 			resourceDescriptorExecutor.execLoad(bulkLoadFile);
-		} else {
+		} else if  (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
+			expressionExecutor.execLoad(bulkLoadFile);
+		}
+		else {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 		}
