@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.SQTR;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -27,7 +28,7 @@ public class SQTRFmsDTOValidator {
 	@Inject
 	DataProviderService dataProviderService;
 
-	public ObjectResponse<SQTR> validateSQTRFmsDTO (SQTRFmsDTO dto, BackendBulkDataProvider beDataProvider) {
+	public SQTR validateSQTRFmsDTO (SQTRFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
 		ObjectResponse<SQTR> sqtrResponse = new ObjectResponse<>();
 		
 		SQTR sqtr = new SQTR();
@@ -83,6 +84,10 @@ public class SQTRFmsDTOValidator {
 
 		sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
 
-		return sqtrResponse;
+			if (sqtrResponse.hasErrors()){
+				throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());
+			}
+
+		return sqtr;
 	}
 }
