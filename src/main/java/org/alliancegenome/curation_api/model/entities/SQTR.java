@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -39,14 +40,14 @@ public class SQTR extends GenomicEntity {
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
-	private String name;
+	private String name; 
 
     @IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
-		@Index(name = "sqtr_reference_sqtr_index", columnList = "construct_id"),
+		@Index(name = "sqtr_reference_sqtr_index", columnList = "sqtr_id"),
 		@Index(name = "sqtr_reference_references_index", columnList = "references_id")
 	})
     private List<Reference> references;
@@ -63,6 +64,6 @@ public class SQTR extends GenomicEntity {
 	@ElementCollection
 	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
 	@JoinTable(indexes = @Index(name = "sqtr_secondaryidentifiers_sqtr_index", columnList = "sqtr_id"))
-	private List<String> secondaryIdentifiers;
+	private List<SecondaryIdSlotAnnotation> secondaryIdentifiers;
 
 }
