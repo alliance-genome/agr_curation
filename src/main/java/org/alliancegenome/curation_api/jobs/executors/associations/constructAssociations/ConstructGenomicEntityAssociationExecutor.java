@@ -53,11 +53,8 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(associations.size());
 		createHistory(history, bulkLoadFile);
 		runLoad(constructGenomicEntityAssociationService, history, dataProvider, associations, associationIdsLoaded);
-		
 		if(cleanUp) runCleanup(constructGenomicEntityAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
-
 		history.finishLoad();
-		
 		finalSaveHistory(history);
 	}
 
