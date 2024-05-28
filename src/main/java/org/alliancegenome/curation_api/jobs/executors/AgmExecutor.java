@@ -54,11 +54,8 @@ public class AgmExecutor extends LoadFileExecutor {
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 		createHistory(history, bulkLoadFile);
-		
-		runLoad(affectedGenomicModelService, history, dataProvider, agms, agmIdsLoaded);
-			
-		if(cleanUp) runCleanup(affectedGenomicModelService, history, bulkLoadFile, agmIdsBefore, agmIdsLoaded);
-			
+		boolean success = runLoad(affectedGenomicModelService, history, dataProvider, agms, agmIdsLoaded);
+		if(success && cleanUp) runCleanup(affectedGenomicModelService, history, bulkLoadFile, agmIdsBefore, agmIdsLoaded);
 		history.finishLoad();
 		finalSaveHistory(history);
 

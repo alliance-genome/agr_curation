@@ -49,13 +49,9 @@ public class VariantExecutor extends LoadFileExecutor {
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
 		createHistory(history, bulkLoadFile);
-		
-		runLoad(variantService, history, dataProvider, variants, variantIdsLoaded);
-			
-		if(cleanUp) runCleanup(variantService, history, bulkLoadFile, variantIdsBefore, variantIdsLoaded);
-			
+		boolean success = runLoad(variantService, history, dataProvider, variants, variantIdsLoaded);
+		if(success && cleanUp) runCleanup(variantService, history, bulkLoadFile, variantIdsBefore, variantIdsLoaded);
 		history.finishLoad();
-			
 		finalSaveHistory(history);
 
 	}

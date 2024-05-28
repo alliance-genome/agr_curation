@@ -53,13 +53,10 @@ public class GeneExecutor extends LoadFileExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-			
-		runLoad(geneService, history, dataProvider, genes, geneIdsLoaded);
-
-		if(cleanUp) runCleanup(geneService, history, bulkLoadFile, geneIdsBefore, geneIdsLoaded);
-			
+		createHistory(history, bulkLoadFile);
+		boolean success = runLoad(geneService, history, dataProvider, genes, geneIdsLoaded);
+		if(success && cleanUp) runCleanup(geneService, history, bulkLoadFile, geneIdsBefore, geneIdsLoaded);
 		history.finishLoad();
-			
 		finalSaveHistory(history);
 
 	}

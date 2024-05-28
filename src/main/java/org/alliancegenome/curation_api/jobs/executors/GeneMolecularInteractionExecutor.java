@@ -40,16 +40,14 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 					.readerFor(PsiMiTabDTO.class).with(psiMiTabSchema)
 					.readValues(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 			List<PsiMiTabDTO> interactionData = it.readAll();
-			
-			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
-			createHistory(history, bulkLoadFile);
+
 			List<Long> interactionIdsLoaded = new ArrayList<>();
 			List<Long> interactionIdsBefore = geneMolecularInteractionDAO.findAllIds().getResults();
 			
+			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
+			createHistory(history, bulkLoadFile);
 			boolean success = runLoad(geneMolecularInteractionService, history, null, interactionData, interactionIdsLoaded);
-			
 			if(success) runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
-
 			history.finishLoad();
 			finalSaveHistory(history);
 

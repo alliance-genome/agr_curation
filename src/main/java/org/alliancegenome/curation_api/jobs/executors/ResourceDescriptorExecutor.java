@@ -42,6 +42,7 @@ public class ResourceDescriptorExecutor extends LoadFileExecutor {
 		List<String> rdNamesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(dtos.size());
 		createHistory(history, bulkLoadFile);
+		
 		dtos.forEach(dto -> {
 			try {
 				ResourceDescriptor rd = resourceDescriptorService.upsert(dto);
