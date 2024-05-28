@@ -55,17 +55,11 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(orthologyData.getData().size());
-			
 			createHistory(history, bulkLoadFile);
-			
 			runLoad(history, fms.getFmsDataSubType(), orthologyData, orthoPairsLoaded);
-			
 			runCleanup(history, fms.getFmsDataSubType(), orthoPairsBefore, orthoPairsLoaded);
-
 			history.finishLoad();
-			
 			finalSaveHistory(history);
-
 		} catch (Exception e) {
 			failLoad(bulkLoadFile, e);
 			e.printStackTrace();

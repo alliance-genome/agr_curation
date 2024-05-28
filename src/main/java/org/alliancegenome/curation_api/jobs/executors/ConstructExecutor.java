@@ -58,13 +58,9 @@ public class ConstructExecutor extends LoadFileExecutor {
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(constructs.size());
 		createHistory(history, bulkLoadFile);
-		
-		runLoad(constructService, history, dataProvider, constructs, constructIdsLoaded);
-		
-		if(cleanUp) runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, bulkLoadFile.getMd5Sum());
-		
+		boolean success = runLoad(constructService, history, dataProvider, constructs, constructIdsLoaded);
+		if(success && cleanUp) runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, bulkLoadFile.getMd5Sum());
 		history.finishLoad();
-		
 		finalSaveHistory(history);
 	}
 

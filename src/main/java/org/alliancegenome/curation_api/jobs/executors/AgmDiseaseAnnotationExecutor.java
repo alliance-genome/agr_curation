@@ -52,12 +52,9 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		
 		createHistory(history, bulkLoadFile);
-		
-		runLoad(agmDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
-		
-		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation", bulkLoadFile.getMd5Sum());
+		boolean success = runLoad(agmDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
+		if(success && cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation", bulkLoadFile.getMd5Sum());
 		history.finishLoad();
 		finalSaveHistory(history);
 	}

@@ -47,19 +47,15 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 				bulkLoadFile.setAllianceMemberReleaseVersion(phenotypeData.getMetaData().getRelease());
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(phenotypeData.getData().size());
-			createHistory(history, bulkLoadFile);
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
 			
+			BulkLoadFileHistory history = new BulkLoadFileHistory(phenotypeData.getData().size());
+			createHistory(history, bulkLoadFile);
 			runLoad(history, phenotypeData.getData(), annotationIdsLoaded, dataProvider);
-			
 			runCleanup(phenotypeAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "phenotype annotation", bulkLoadFile.getMd5Sum());
-
 			history.finishLoad();
-			
 			finalSaveHistory(history);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

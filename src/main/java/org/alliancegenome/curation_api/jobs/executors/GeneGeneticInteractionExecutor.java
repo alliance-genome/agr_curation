@@ -36,17 +36,15 @@ public class GeneGeneticInteractionExecutor extends LoadFileExecutor {
 			MappingIterator<PsiMiTabDTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(PsiMiTabDTO.class).with(psiMiTabSchema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 			List<PsiMiTabDTO> interactionData = it.readAll();
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
-
 			List<Long> interactionIdsLoaded = new ArrayList<>();
 			List<Long> interactionIdsBefore = geneGeneticInteractionDAO.findAllIds().getResults();
 
+
+			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
+			createHistory(history, bulkLoadFile);
 			boolean success = runLoad(geneGeneticInteractionService, history, null, interactionData, interactionIdsLoaded);
-
 			if(success) runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
-
 			history.finishLoad();
-
 			finalSaveHistory(history);
 
 		} catch (Exception e) {

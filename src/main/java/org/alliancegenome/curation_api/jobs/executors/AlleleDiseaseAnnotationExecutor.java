@@ -53,12 +53,9 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		createHistory(history, bulkLoadFile);
-		runLoad(alleleDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
-		
-		if(cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "allele disease annotation", bulkLoadFile.getMd5Sum());
-
+		boolean success = runLoad(alleleDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
+		if(success && cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "allele disease annotation", bulkLoadFile.getMd5Sum());
 		history.finishLoad();
-		
 		finalSaveHistory(history);
 	}
 
