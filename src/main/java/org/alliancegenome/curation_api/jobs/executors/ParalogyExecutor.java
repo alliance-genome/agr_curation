@@ -21,6 +21,8 @@ import org.alliancegenome.curation_api.services.GeneToGeneParalogyService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 
 @ApplicationScoped
 public class ParalogyExecutor extends LoadFileExecutor {
@@ -32,9 +34,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 		try {
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
 
-			ParalogyIngestFmsDTO paralogyData = mapper.readValue(
-					new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())),
-					ParalogyIngestFmsDTO.class);
+			ParalogyIngestFmsDTO paralogyData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), ParalogyIngestFmsDTO.class);
 			bulkLoadFile.setRecordCount(paralogyData.getData().size());
 
 			AGRCurationSchemaVersion version = GeneToGeneParalogy.class.getAnnotation(AGRCurationSchemaVersion.class);
@@ -67,8 +67,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private void runLoad(BulkLoadFileHistory history, String dataProvider, ParalogyIngestFmsDTO paralogyData,
-			List<Pair<String, String>> paralogyPairsAdded) {
+	private void runLoad(BulkLoadFileHistory history, String dataProvider, ParalogyIngestFmsDTO paralogyData, List<Pair<String, String>> paralogyPairsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(dataProvider + " Paralogy DTO Update", paralogyData.getData().size());
@@ -93,6 +92,16 @@ public class ParalogyExecutor extends LoadFileExecutor {
 		}
 		ph.finishProcess();
 
+	}
+	
+	public APIResponse runLoad(String dataProvider, ParalogyIngestFmsDTO paralogyData) {
+		List<Pair<String, String>> paralogyPairsAdded = new ArrayList<>();
+
+		BulkLoadFileHistory history = new BulkLoadFileHistory(paralogyData.getData().size());
+		runLoad(history, dataProvider, paralogyData, paralogyPairsAdded);
+		history.finishLoad();
+
+		return new LoadHistoryResponce(history);
 	}
 
 }

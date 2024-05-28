@@ -158,7 +158,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		interaction.setDateCreated(dateCreated);
 		interaction.setDateUpdated(dateUpdated);
 		
-		interaction.setObsolete(false);	
+		interaction.setObsolete(false);
 		interaction.setInternal(false);
 		
 		giResponse.setEntity(interaction);
