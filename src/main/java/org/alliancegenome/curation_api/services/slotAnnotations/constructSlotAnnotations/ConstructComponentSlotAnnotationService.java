@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ConstructComponentSlotAnnotationService extends BaseEntityCrudService<ConstructComponentSlotAnnotation, ConstructComponentSlotAnnotationDAO> {
 
-	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject
-	ConstructComponentSlotAnnotationValidator constructComponentValidator;
+	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
+	@Inject ConstructComponentSlotAnnotationValidator constructComponentValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class ConstructComponentSlotAnnotationService extends BaseEntityCrudServi
 	@Transactional
 	public ObjectResponse<ConstructComponentSlotAnnotation> upsert(ConstructComponentSlotAnnotation uiEntity) {
 		ConstructComponentSlotAnnotation dbEntity = constructComponentValidator.validateConstructComponentSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<ConstructComponentSlotAnnotation>(constructComponentDAO.persist(dbEntity));
 	}
 

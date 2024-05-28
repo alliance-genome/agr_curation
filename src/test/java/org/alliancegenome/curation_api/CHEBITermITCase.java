@@ -29,10 +29,10 @@ import io.restassured.config.RestAssuredConfig;
 @DisplayName("501 - CHEBITermITCase")
 @Order(501)
 public class CHEBITermITCase {
-	private String CHEBITERMCURIE = "CH:0001";
+	private static final String CHEBITERMCURIE = "CH:0001";
 
 	private TypeRef<ObjectResponse<CHEBITerm>> getObjectResponseTypeRef() {
-		return new TypeRef<ObjectResponse <CHEBITerm>>() { };
+		return new TypeRef<ObjectResponse<CHEBITerm>>() { };
 	}
 
 	@BeforeEach
@@ -90,7 +90,7 @@ public class CHEBITermITCase {
 			get("/api/chebiterm/" + CHEBITERMCURIE).
 			then().
 			statusCode(200).
-			body("entity.definition",is("Changed definition"));
+			body("entity.definition", is("Changed definition"));
 	}
 
 	@Test

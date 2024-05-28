@@ -128,7 +128,8 @@ public class OntologyExecutor {
 				processTerms(bulkLoadFile, emapaTermService, config);
 			}
 			case GO -> {
-				config.setLoadOnlyIRIPrefix("GO"); // GO has to have both prefix and namespaces as obsolete terms do not show up in the namespace's
+				config.setLoadOnlyIRIPrefix("GO"); // GO has to have both prefix and namespaces as obsolete terms do not show up in
+													// the namespace's
 				config.getAltNameSpaces().add("biological_process");
 				config.getAltNameSpaces().add("molecular_function");
 				config.getAltNameSpaces().add("cellular_component");
@@ -274,17 +275,17 @@ public class OntologyExecutor {
 		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
-			//Thread.sleep(5000);
+			// Thread.sleep(5000);
 			ph1.progressProcess();
 		}
 		ph1.finishProcess();
-		
+
 		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph2.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processCounts(entry.getValue());
-			//Thread.sleep(5000);
+			// Thread.sleep(5000);
 			ph2.progressProcess();
 		}
 		ph2.finishProcess();

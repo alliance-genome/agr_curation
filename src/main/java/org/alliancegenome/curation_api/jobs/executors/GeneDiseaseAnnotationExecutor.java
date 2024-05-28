@@ -22,12 +22,9 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
-	@Inject
-	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject
-	GeneDiseaseAnnotationService geneDiseaseAnnotationService;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -36,10 +33,14 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, GeneDiseaseAnnotationDTO.class);
-		if (ingestDto == null) return;
-		
+		if (ingestDto == null) {
+			return;
+		}
+
 		List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();
-		if (annotations == null) annotations = new ArrayList<>();
+		if (annotations == null) {
+			annotations = new ArrayList<>();
+		}
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
@@ -47,14 +48,16 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 			annotationIdsBefore.addAll(geneDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
 			annotationIdsBefore.removeIf(Objects::isNull);
 		}
-		
-		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());		
+
+		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(geneDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
-		if(success && cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene disease annotation", bulkLoadFile.getMd5Sum());
+		if (success && cleanUp) {
+			runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene disease annotation", bulkLoadFile.getMd5Sum());
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 

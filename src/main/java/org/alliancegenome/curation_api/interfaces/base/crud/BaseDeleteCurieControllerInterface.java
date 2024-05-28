@@ -34,6 +34,6 @@ public interface BaseDeleteCurieControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public ObjectResponse<E> deleteByCurie(@PathParam("curie") String curie);
+	ObjectResponse<E> deleteByCurie(@PathParam("curie") String curie);
 
 }

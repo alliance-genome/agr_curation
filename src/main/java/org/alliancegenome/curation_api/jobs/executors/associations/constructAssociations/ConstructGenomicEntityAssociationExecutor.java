@@ -22,10 +22,8 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor {
 
-	@Inject
-	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
-	@Inject
-	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
+	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -34,26 +32,31 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, ConstructGenomicEntityAssociationDTO.class);
-		if (ingestDto == null) return;
-		
-		List<ConstructGenomicEntityAssociationDTO> associations = ingestDto.getConstructGenomicEntityAssociationIngestSet();
-		if (associations == null) associations = new ArrayList<>();
+		if (ingestDto == null) {
+			return;
+		}
 
-		
+		List<ConstructGenomicEntityAssociationDTO> associations = ingestDto.getConstructGenomicEntityAssociationIngestSet();
+		if (associations == null) {
+			associations = new ArrayList<>();
+		}
+
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
 			associationIdsBefore.addAll(constructGenomicEntityAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
-		
+
 		bulkLoadFile.setRecordCount(associations.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(associations.size());
 		createHistory(history, bulkLoadFile);
 		runLoad(constructGenomicEntityAssociationService, history, dataProvider, associations, associationIdsLoaded);
-		if(cleanUp) runCleanup(constructGenomicEntityAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
+		if (cleanUp) {
+			runCleanup(constructGenomicEntityAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 	}

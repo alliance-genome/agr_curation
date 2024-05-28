@@ -30,51 +30,43 @@ import jakarta.inject.Inject;
 
 public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 
-	@Inject
-	ReferenceValidator referenceValidator;
-	@Inject
-	NoteValidator noteValidator;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	ConditionRelationValidator conditionRelationValidator;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	AnnotationDAO annotationDAO;
-	@Inject
-	DataProviderService dataProviderService;
-	@Inject
-	DataProviderValidator dataProviderValidator;
+	@Inject ReferenceValidator referenceValidator;
+	@Inject NoteValidator noteValidator;
+	@Inject NoteDAO noteDAO;
+	@Inject ConditionRelationValidator conditionRelationValidator;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject AnnotationDAO annotationDAO;
+	@Inject DataProviderService dataProviderService;
+	@Inject DataProviderValidator dataProviderValidator;
 
-		
 	public DataProvider validateDataProvider(Annotation uiEntity, Annotation dbEntity) {
 		String field = "dataProvider";
-		
+
 		if (uiEntity.getDataProvider() == null) {
-			if (dbEntity.getId() == null)
+			if (dbEntity.getId() == null) {
 				uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
+			}
 			if (uiEntity.getDataProvider() == null) {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 				return null;
 			}
-		} 
+		}
 
 		DataProvider uiDataProvider = uiEntity.getDataProvider();
 		DataProvider dbDataProvider = dbEntity.getDataProvider();
-		
+
 		ObjectResponse<DataProvider> dpResponse = dataProviderValidator.validateDataProvider(uiDataProvider, dbDataProvider, false);
 		if (dpResponse.hasErrors()) {
 			addMessageResponse(field, dpResponse.errorMessagesString());
 			return null;
 		}
-		
+
 		DataProvider validatedDataProvider = dpResponse.getEntity();
 		if (validatedDataProvider.getObsolete() && (dbDataProvider == null || !validatedDataProvider.getId().equals(dbDataProvider.getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
+
 		return validatedDataProvider;
 	}
 
@@ -93,7 +85,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
 				} else {
 					note = noteResponse.getEntity();
-				
+
 					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
 					if (validatedNoteIdentities.contains(noteIdentity)) {
 						allValid = false;
@@ -126,24 +118,27 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedNotes))
+		if (CollectionUtils.isEmpty(validatedNotes)) {
 			return null;
+		}
 
 		return validatedNotes;
 	}
 
 	public List<ConditionRelation> validateConditionRelations(Annotation uiEntity, Annotation dbEntity) {
-		if (CollectionUtils.isEmpty(uiEntity.getConditionRelations()))
+		if (CollectionUtils.isEmpty(uiEntity.getConditionRelations())) {
 			return null;
+		}
 
 		List<ConditionRelation> validatedConditionRelations = new ArrayList<>();
 		List<Long> previousConditionRelationIds = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
 			previousConditionRelationIds = dbEntity.getConditionRelations().stream().map(ConditionRelation::getId).collect(Collectors.toList());
+		}
 
 		for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
-			if (uiEntity.getSingleReference() != null && !StringUtils.isBlank(uiEntity.getSingleReference().getCurie()) && conditionRelation.getSingleReference() != null
-				&& !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie()) && !conditionRelation.getSingleReference().getCurie().equals(uiEntity.getSingleReference().getCurie())) {
+			if (uiEntity.getSingleReference() != null && !StringUtils.isBlank(uiEntity.getSingleReference().getCurie()) && conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie())
+				&& !conditionRelation.getSingleReference().getCurie().equals(uiEntity.getSingleReference().getCurie())) {
 				addMessageResponse("conditionRelations", "singleReference - " + ValidationConstants.INVALID_MESSAGE);
 			}
 
@@ -194,13 +189,14 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 
 	public Annotation validateCommonAnnotationFields(Annotation uiEntity, Annotation dbEntity, String noteTypeSet) {
 		Boolean newEntity = false;
-		if (dbEntity.getId() == null)
+		if (dbEntity.getId() == null) {
 			newEntity = true;
+		}
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
 		String modEntityId = StringUtils.isNotBlank(uiEntity.getModEntityId()) ? uiEntity.getModEntityId() : null;
 		dbEntity.setModEntityId(modEntityId);
-		
+
 		String modInternalId = StringUtils.isNotBlank(uiEntity.getModInternalId()) ? uiEntity.getModInternalId() : null;
 		dbEntity.setModInternalId(modInternalId);
 
@@ -214,11 +210,13 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		dbEntity.setConditionRelations(conditionRelations);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity, noteTypeSet);
-		if (dbEntity.getRelatedNotes() != null)
+		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
+		}
 		if (relatedNotes != null) {
-			if (dbEntity.getRelatedNotes() == null)
+			if (dbEntity.getRelatedNotes() == null) {
 				dbEntity.setRelatedNotes(new ArrayList<>());
+			}
 			dbEntity.getRelatedNotes().addAll(relatedNotes);
 		}
 

@@ -17,21 +17,20 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class CrossReferenceDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	ResourceDescriptorService resourceDescriptorService;
-	@Inject
-	ResourceDescriptorPageService resourceDescriptorPageService;
+	@Inject ResourceDescriptorService resourceDescriptorService;
+	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	public ObjectResponse<CrossReference> validateCrossReferenceDTO(CrossReferenceDTO dto, CrossReference xref) {
-		if (xref == null)
+		if (xref == null) {
 			xref = new CrossReference();
+		}
 
 		ObjectResponse<CrossReference> crResponse = validateAuditedObjectDTO(xref, dto);
 
 		xref = crResponse.getEntity();
 
 		if (StringUtils.isBlank(dto.getPrefix())) {
-			crResponse.addErrorMessage("prefix", ValidationConstants.REQUIRED_MESSAGE); 
+			crResponse.addErrorMessage("prefix", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			ObjectResponse<ResourceDescriptor> rdResponse = resourceDescriptorService.getByPrefixOrSynonym(dto.getPrefix());
 			if (rdResponse == null || rdResponse.getEntity() == null) {
@@ -40,13 +39,12 @@ public class CrossReferenceDTOValidator extends BaseDTOValidator {
 		}
 
 		if (StringUtils.isBlank(dto.getReferencedCurie())) {
-			crResponse.addErrorMessage("reference_curie", ValidationConstants.REQUIRED_MESSAGE); 
+			crResponse.addErrorMessage("reference_curie", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		xref.setReferencedCurie(dto.getReferencedCurie());
 
-
 		if (StringUtils.isBlank(dto.getDisplayName())) {
-			crResponse.addErrorMessage("display_name", ValidationConstants.REQUIRED_MESSAGE); 
+			crResponse.addErrorMessage("display_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		xref.setDisplayName(dto.getDisplayName());
 

@@ -34,6 +34,6 @@ public interface BaseReadIdentifierControllerInterface<E extends AuditedObject> 
 			)
 		)
 	)
-	public ObjectResponse<E> getByIdentifier(@PathParam("identifierString") String identifierString);
+	ObjectResponse<E> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 }

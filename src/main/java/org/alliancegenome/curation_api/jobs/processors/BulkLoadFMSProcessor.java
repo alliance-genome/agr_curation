@@ -19,14 +19,14 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 
 	public void processBulkFMSLoad(@Observes StartedBulkLoadJobEvent load) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
-		if(bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
-		
+		if (bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
+
 			Log.info("processBulkFMSLoad: " + load.getId());
 			startLoad(bulkFMSLoad);
-	
+
 			if (bulkFMSLoad.getFmsDataType() != null && bulkFMSLoad.getFmsDataSubType() != null) {
 				List<DataFile> files = fmsDataFileService.getDataFiles(bulkFMSLoad.getFmsDataType(), bulkFMSLoad.getFmsDataSubType());
-	
+
 				if (files.size() == 1) {
 					DataFile df = files.get(0);
 					String s3Url = df.getS3Url();
@@ -39,7 +39,7 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 					log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getFmsDataType() + " " + bulkFMSLoad.getFmsDataSubType());
 					endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getFmsDataType() + " " + bulkFMSLoad.getFmsDataSubType(), JobStatus.FAILED);
 				}
-	
+
 			} else {
 				log.error("Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing");
 				endLoad(bulkFMSLoad, "Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing", JobStatus.FAILED);

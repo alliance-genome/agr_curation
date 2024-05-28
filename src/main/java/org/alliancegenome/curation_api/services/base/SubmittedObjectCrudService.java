@@ -21,8 +21,9 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 	@Transactional
 	public ObjectResponse<E> deleteByIdentifier(String identifierString) {
 		E object = findByIdentifierString(identifierString);
-		if (object != null)
+		if (object != null) {
 			dao.remove(object.getId());
+		}
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
 	}
@@ -30,9 +31,10 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 	public abstract void removeOrDeprecateNonUpdated(Long id, String loadDescription);
 
 	public E findByIdentifierString(String id) {
-		if (id != null && id.startsWith("AGRKB:"))
+		if (id != null && id.startsWith("AGRKB:")) {
 			return findByCurie(id);
-		
+		}
+
 		return findByAlternativeFields(List.of("modEntityId", "modInternalId"), id);
 	}
 }

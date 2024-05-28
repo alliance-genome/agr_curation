@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.constants;
 
 public final class ValidationConstants {
-
+	private ValidationConstants() {
+		// Hidden from view, as it is a utility class
+	}
 	public static final String INVALID_MESSAGE = "Not a valid entry";
 	public static final String INVALID_TYPE_MESSAGE = INVALID_MESSAGE + " - unexpected object type found";
 	public static final String OBSOLETE_MESSAGE = "Obsolete term specified";

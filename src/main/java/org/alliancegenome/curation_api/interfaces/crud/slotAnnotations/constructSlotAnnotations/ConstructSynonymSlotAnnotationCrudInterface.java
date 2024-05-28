@@ -23,5 +23,5 @@ public interface ConstructSynonymSlotAnnotationCrudInterface extends BaseIdCrudI
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<ConstructSynonymSlotAnnotation> validate(ConstructSynonymSlotAnnotation entity);
+	ObjectResponse<ConstructSynonymSlotAnnotation> validate(ConstructSynonymSlotAnnotation entity);
 }

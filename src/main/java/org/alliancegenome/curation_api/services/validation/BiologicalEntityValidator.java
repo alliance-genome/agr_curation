@@ -12,16 +12,15 @@ import jakarta.inject.Inject;
 
 public class BiologicalEntityValidator<E extends BiologicalEntity> extends SubmittedObjectValidator<E> {
 
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+
 	public E validateBiologicalEntityFields(E uiEntity, E dbEntity) {
-		
+
 		dbEntity = validateSubmittedObjectFields(uiEntity, dbEntity);
-		
+
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
-		
+
 		return dbEntity;
 	}
 
@@ -39,13 +38,13 @@ public class BiologicalEntityValidator<E extends BiologicalEntity> extends Submi
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
-		
+
 			if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
 				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 				return null;
 			}
 		}
-		
+
 		return taxon;
 	}
 }

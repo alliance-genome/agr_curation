@@ -23,5 +23,5 @@ public interface AlleleGermlineTransmissionStatusSlotAnnotationCrudInterface ext
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> validate(AlleleGermlineTransmissionStatusSlotAnnotation entity);
+	ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> validate(AlleleGermlineTransmissionStatusSlotAnnotation entity);
 }

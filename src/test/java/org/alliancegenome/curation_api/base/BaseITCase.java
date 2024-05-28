@@ -259,8 +259,9 @@ public class BaseITCase {
 	public DataProvider createDataProvider(String organizationAbbreviation, Boolean obsolete) {
 		DataProvider dataProvider = new DataProvider();
 		Organization sourceOrganization = getOrganization(organizationAbbreviation);
-		if (sourceOrganization == null)
+		if (sourceOrganization == null) {
 			sourceOrganization = createOrganization(organizationAbbreviation, false);
+		}
 		dataProvider.setSourceOrganization(sourceOrganization);
 		dataProvider.setObsolete(obsolete);
 		
@@ -299,8 +300,9 @@ public class BaseITCase {
 		ecoTerm.setName(name);
 		ecoTerm.setObsolete(obsolete);
 		ecoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-		if (inAgrSubset)
+		if (inAgrSubset) {
 			ecoTerm.setSubsets(List.of(OntologyConstants.AGR_ECO_TERM_SUBSET));
+		}
 		
 		ObjectResponse<ECOTerm> response = given().
 				contentType("application/json").
@@ -451,7 +453,7 @@ public class BaseITCase {
 				body().as(getObjectResponseTypeRefLoggedInPerson());
 		
 		person = response.getEntity();
-		return (Person) person;
+		return person;
 	}
 	
 	public Reference createReference(String curie, Boolean obsolete) {
@@ -799,39 +801,42 @@ public class BaseITCase {
 	}
 	
 	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
+		return new TypeRef<ObjectListResponse<VocabularyTerm>>() {
+		};
 	}
-	
+
 	private TypeRef<ObjectResponse<AffectedGenomicModel>> getObjectResponseTypeRefAffectedGenomicModel() {
-		return new TypeRef<ObjectResponse <AffectedGenomicModel>>() { };
+		return new TypeRef<ObjectResponse<AffectedGenomicModel>>() {
+		};
 	}
 
 	private TypeRef<ObjectResponse<AGMDiseaseAnnotation>> getObjectResponseTypeRefAGMDiseaseAnnotation() {
-		return new TypeRef<ObjectResponse <AGMDiseaseAnnotation>>() {
+		return new TypeRef<ObjectResponse<AGMDiseaseAnnotation>>() {
 		};
 	}
-	
+
 	private TypeRef<ObjectResponse<Allele>> getObjectResponseTypeRefAllele() {
-		return new TypeRef<ObjectResponse <Allele>>() { };
+		return new TypeRef<ObjectResponse<Allele>>() {
+		};
 	}
 
 	private TypeRef<ObjectResponse<AlleleDiseaseAnnotation>> getObjectResponseTypeRefAlleleDiseaseAnnotation() {
-		return new TypeRef<ObjectResponse <AlleleDiseaseAnnotation>>() {
+		return new TypeRef<ObjectResponse<AlleleDiseaseAnnotation>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<AlleleGeneAssociation>> getObjectResponseTypeRefAlleleGeneAssociation() {
-		return new TypeRef<ObjectResponse <AlleleGeneAssociation>>() {
+		return new TypeRef<ObjectResponse<AlleleGeneAssociation>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<BiologicalEntity>> getObjectResponseTypeRefBiologicalEntity() {
-		return new TypeRef<ObjectResponse <BiologicalEntity>>() {
+		return new TypeRef<ObjectResponse<BiologicalEntity>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<CHEBITerm>> getObjectResponseTypeRefCHEBITerm() {
-		return new TypeRef<ObjectResponse <CHEBITerm>>() {
+		return new TypeRef<ObjectResponse<CHEBITerm>>() {
 		};
 	}
 
@@ -841,17 +846,18 @@ public class BaseITCase {
 	}
 
 	public TypeRef<ObjectResponse<Construct>> getObjectResponseTypeRefConstruct() {
-		return new TypeRef<ObjectResponse <Construct>>() {
+		return new TypeRef<ObjectResponse<Construct>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<ConstructGenomicEntityAssociation>> getObjectResponseTypeRefConstructGenomicEntityAssociation() {
-		return new TypeRef<ObjectResponse <ConstructGenomicEntityAssociation>>() {
+		return new TypeRef<ObjectResponse<ConstructGenomicEntityAssociation>>() {
 		};
 	}
-	
+
 	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
-		return new TypeRef<ObjectResponse <CrossReference>>() { };
+		return new TypeRef<ObjectResponse<CrossReference>>() {
+		};
 	}
 
 	private TypeRef<ObjectResponse<DataProvider>> getObjectResponseTypeRefDataProvider() {
@@ -860,12 +866,12 @@ public class BaseITCase {
 	}
 
 	private TypeRef<ObjectResponse<DOTerm>> getObjectResponseTypeRefDOTerm() {
-		return new TypeRef<ObjectResponse <DOTerm>>() {
+		return new TypeRef<ObjectResponse<DOTerm>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<ECOTerm>> getObjectResponseTypeRefECOTerm() {
-		return new TypeRef<ObjectResponse <ECOTerm>>() {
+		return new TypeRef<ObjectResponse<ECOTerm>>() {
 		};
 	}
 
@@ -875,81 +881,87 @@ public class BaseITCase {
 	}
 
 	private TypeRef<ObjectResponse<Gene>> getObjectResponseTypeRefGene() {
-		return new TypeRef<ObjectResponse <Gene>>() { };
+		return new TypeRef<ObjectResponse<Gene>>() {
+		};
 	}
 
 	private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRefGeneDiseaseAnnotation() {
-		return new TypeRef<ObjectResponse <GeneDiseaseAnnotation>>() {
+		return new TypeRef<ObjectResponse<GeneDiseaseAnnotation>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<GOTerm>> getObjectResponseTypeRefGOTerm() {
-		return new TypeRef<ObjectResponse <GOTerm>>() {
+		return new TypeRef<ObjectResponse<GOTerm>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<Person>> getObjectResponseTypeRefLoggedInPerson() {
-		return new TypeRef<ObjectResponse <Person>>() {
+		return new TypeRef<ObjectResponse<Person>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<MPTerm>> getObjectResponseTypeRefMPTerm() {
-		return new TypeRef<ObjectResponse <MPTerm>>() {
+		return new TypeRef<ObjectResponse<MPTerm>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefNCBITaxonTerm() {
-		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+		return new TypeRef<ObjectResponse<NCBITaxonTerm>>() {
+		};
 	}
-	
+
 	public TypeRef<ObjectResponse<Note>> getObjectResponseTypeRefNote() {
-		return new TypeRef<ObjectResponse <Note>>() { };
+		return new TypeRef<ObjectResponse<Note>>() {
+		};
 	}
 
 	private TypeRef<ObjectResponse<Organization>> getObjectResponseTypeRefOrganization() {
-		return new TypeRef<ObjectResponse <Organization>>() {
+		return new TypeRef<ObjectResponse<Organization>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
-		return new TypeRef<ObjectResponse <Reference>>() {
+		return new TypeRef<ObjectResponse<Reference>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<ResourceDescriptor>> getObjectResponseTypeRefResourceDescriptor() {
-		return new TypeRef<ObjectResponse <ResourceDescriptor>>() {
+		return new TypeRef<ObjectResponse<ResourceDescriptor>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<ResourceDescriptorPage>> getObjectResponseTypeRefResourceDescriptorPage() {
-		return new TypeRef<ObjectResponse <ResourceDescriptorPage>>() {
+		return new TypeRef<ObjectResponse<ResourceDescriptorPage>>() {
 		};
 	}
 
 	private TypeRef<ObjectResponse<SOTerm>> getObjectResponseTypeRefSOTerm() {
-		return new TypeRef<ObjectResponse <SOTerm>>() {
+		return new TypeRef<ObjectResponse<SOTerm>>() {
 		};
 	}
-	
+
 	private TypeRef<ObjectResponse<Variant>> getObjectResponseTypeRefVariant() {
-		return new TypeRef<ObjectResponse <Variant>>() { };
+		return new TypeRef<ObjectResponse<Variant>>() {
+		};
 	}
-	
+
 	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
+		return new TypeRef<ObjectResponse<Vocabulary>>() {
+		};
 	}
-	
+
 	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
+		return new TypeRef<ObjectResponse<VocabularyTerm>>() {
+		};
 	}
 
 	private TypeRef<ObjectResponse<ZECOTerm>> getObjectResponseTypeRefZecoTerm() {
 		return new TypeRef<>() {
 		};
 	}
-	
+
 	private TypeRef<ObjectResponse<ZFATerm>> getObjectResponseTypeRefZFATerm() {
-		return new TypeRef<ObjectResponse <ZFATerm>>() {
+		return new TypeRef<ObjectResponse<ZFATerm>>() {
 		};
 	}
 
@@ -980,24 +992,28 @@ public class BaseITCase {
 	}
 
 	protected TypeRef<SearchResponse<AGMPhenotypeAnnotation>> getSearchResponseTypeRefAGMPhenotypeAnnotation() {
-		return new TypeRef<SearchResponse <AGMPhenotypeAnnotation>>() {
+		return new TypeRef<SearchResponse<AGMPhenotypeAnnotation>>() {
 		};
 	}
+
 	protected TypeRef<SearchResponse<AllelePhenotypeAnnotation>> getSearchResponseTypeRefAllelePhenotypeAnnotation() {
-		return new TypeRef<SearchResponse <AllelePhenotypeAnnotation>>() {
+		return new TypeRef<SearchResponse<AllelePhenotypeAnnotation>>() {
 		};
 	}
+
 	private TypeRef<SearchResponse<Organization>> getSearchResponseTypeRefOrganization() {
-		return new TypeRef<SearchResponse <Organization>>() {
+		return new TypeRef<SearchResponse<Organization>>() {
 		};
 	}
-	
+
 	private TypeRef<SearchResponse<Vocabulary>> getSearchResponseTypeRefVocabulary() {
-		return new TypeRef<SearchResponse <Vocabulary>>() { };
+		return new TypeRef<SearchResponse<Vocabulary>>() {
+		};
 	}
-	
+
 	private TypeRef<SearchResponse<VocabularyTermSet>> getSearchResponseTypeRefVocabularyTermSet() {
-		return new TypeRef<SearchResponse <VocabularyTermSet>>() { };
+		return new TypeRef<SearchResponse<VocabularyTermSet>>() {
+		};
 	}
 	
 	public SOTerm getSoTerm(String curie) {

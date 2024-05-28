@@ -18,38 +18,39 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleInheritanceModeSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	PhenotypeTermService phenotypeTermService;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject PhenotypeTermService phenotypeTermService;
 
 	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotationDTO(AlleleInheritanceModeSlotAnnotation annotation, AlleleInheritanceModeSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleInheritanceModeSlotAnnotation> aisaResponse = new ObjectResponse<AlleleInheritanceModeSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleInheritanceModeSlotAnnotation();
+		}
 
 		VocabularyTerm inheritanceMode = null;
 		if (StringUtils.isBlank(dto.getInheritanceModeName())) {
 			aisaResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			inheritanceMode = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceModeName()).getEntity();
-			if (inheritanceMode == null)
+			if (inheritanceMode == null) {
 				aisaResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.INVALID_MESSAGE);
+			}
 		}
 		annotation.setInheritanceMode(inheritanceMode);
-	
+
 		PhenotypeTerm phenotypeTerm = null;
 		if (StringUtils.isNotBlank(dto.getPhenotypeTermCurie())) {
 			phenotypeTerm = phenotypeTermService.findByCurieOrSecondaryId(dto.getPhenotypeTermCurie());
-			if (phenotypeTerm == null)
+			if (phenotypeTerm == null) {
 				aisaResponse.addErrorMessage("phenotype_term_curie", ValidationConstants.INVALID_MESSAGE);
+			}
 		}
 		annotation.setPhenotypeTerm(phenotypeTerm);
-		
+
 		String phenotypeStatement = StringUtils.isBlank(dto.getPhenotypeStatement()) ? null : dto.getPhenotypeStatement();
 		annotation.setPhenotypeStatement(phenotypeStatement);
-		
+
 		ObjectResponse<AlleleInheritanceModeSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		aisaResponse.addErrorMessages(saResponse.getErrorMessages());

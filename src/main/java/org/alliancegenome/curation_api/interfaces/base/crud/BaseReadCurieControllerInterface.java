@@ -34,6 +34,6 @@ public interface BaseReadCurieControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public ObjectResponse<E> getByCurie(@PathParam("curie") String curie);
+	ObjectResponse<E> getByCurie(@PathParam("curie") String curie);
 
 }

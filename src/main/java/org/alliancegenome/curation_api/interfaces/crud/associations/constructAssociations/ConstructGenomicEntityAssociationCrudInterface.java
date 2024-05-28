@@ -30,15 +30,15 @@ public interface ConstructGenomicEntityAssociationCrudInterface extends BaseIdCr
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateConstructGenomicEntityAssociations(@PathParam("dataProvider") String dataProvider, List<ConstructGenomicEntityAssociationDTO> associationData);
+	APIResponse updateConstructGenomicEntityAssociations(@PathParam("dataProvider") String dataProvider, List<ConstructGenomicEntityAssociationDTO> associationData);
 	
 	@GET
 	@Path("/findBy")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(@QueryParam("constructId") Long constructId, @QueryParam("relationName") String relationName, @QueryParam("genomicEntityId") Long genomicEntityId);
+	ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(@QueryParam("constructId") Long constructId, @QueryParam("relationName") String relationName, @QueryParam("genomicEntityId") Long genomicEntityId);
 	
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<ConstructGenomicEntityAssociation> validate(ConstructGenomicEntityAssociation entity);
+	ObjectResponse<ConstructGenomicEntityAssociation> validate(ConstructGenomicEntityAssociation entity);
 }

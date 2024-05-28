@@ -15,5 +15,5 @@ public interface BaseUpsertControllerInterface<E extends AuditedObject, T extend
 	@POST
 	@Path("/upsert")
 	@JsonView(View.FieldsOnly.class)
-	public E upsert(T dto) throws ObjectUpdateException;
+	E upsert(T dto) throws ObjectUpdateException;
 }

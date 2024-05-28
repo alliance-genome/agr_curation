@@ -24,11 +24,9 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<GeneToGeneOrthologyGenerated, GeneToGeneOrthologyGeneratedDAO> implements BaseUpsertServiceInterface<GeneToGeneOrthologyGenerated, OrthologyFmsDTO> {
 
-	@Inject
-	GeneToGeneOrthologyGeneratedDAO geneToGeneOrthologyGeneratedDAO;
-	@Inject
-	OrthologyFmsDTOValidator orthologyFmsDtoValidator;
-	
+	@Inject GeneToGeneOrthologyGeneratedDAO geneToGeneOrthologyGeneratedDAO;
+	@Inject OrthologyFmsDTOValidator orthologyFmsDtoValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -36,11 +34,11 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 	}
 
 	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
-		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);		
+		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);
 	}
 
 	public List<Object[]> getAllOrthologyPairsBySubjectGeneDataProvider(String dataProvider) {
-		switch(dataProvider) {
+		switch (dataProvider) {
 			case "XBXL":
 				return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8355");
 			case "XBXT":

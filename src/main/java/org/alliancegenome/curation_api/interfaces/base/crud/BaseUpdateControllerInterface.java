@@ -25,7 +25,7 @@ public interface BaseUpdateControllerInterface<E extends AuditedObject> {
 	@PUT
 	@Path("/")
 	@JsonView(View.FieldsOnly.class)
-	@RequestBody( 
+	@RequestBody(
 		description = "Put Request",
 		content = @Content(
 			mediaType = "application/json",
@@ -41,6 +41,6 @@ public interface BaseUpdateControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public ObjectResponse<E> update(E entity);
+	ObjectResponse<E> update(E entity);
 	
 }

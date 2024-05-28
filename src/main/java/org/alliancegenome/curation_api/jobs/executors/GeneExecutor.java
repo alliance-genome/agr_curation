@@ -21,14 +21,11 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class GeneExecutor extends LoadFileExecutor {
 
-	@Inject
-	GeneDAO geneDAO;
+	@Inject GeneDAO geneDAO;
 
-	@Inject
-	GeneService geneService;
+	@Inject GeneService geneService;
 
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -37,10 +34,14 @@ public class GeneExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider : " + dataProvider.name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, GeneDTO.class);
-		if (ingestDto == null) return;
-		
+		if (ingestDto == null) {
+			return;
+		}
+
 		List<GeneDTO> genes = ingestDto.getGeneIngestSet();
-		if (genes == null) genes = new ArrayList<>();
+		if (genes == null) {
+			genes = new ArrayList<>();
+		}
 
 		List<Long> geneIdsLoaded = new ArrayList<>();
 		List<Long> geneIdsBefore = new ArrayList<>();
@@ -48,14 +49,16 @@ public class GeneExecutor extends LoadFileExecutor {
 			geneIdsBefore.addAll(geneService.getIdsByDataProvider(dataProvider));
 			log.debug("runLoad: Before: total " + geneIdsBefore.size());
 		}
-		
+
 		bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(geneService, history, dataProvider, genes, geneIdsLoaded);
-		if(success && cleanUp) runCleanup(geneService, history, bulkLoadFile, geneIdsBefore, geneIdsLoaded);
+		if (success && cleanUp) {
+			runCleanup(geneService, history, bulkLoadFile, geneIdsBefore, geneIdsLoaded);
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 

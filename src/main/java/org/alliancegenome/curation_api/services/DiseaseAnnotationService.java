@@ -28,21 +28,17 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
-	@Inject
-	DiseaseAnnotationDAO diseaseAnnotationDAO;
-	@Inject
-	PersonService personService;
-	@Inject
-	DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
-	@Inject
-	PersonDAO personDAO;
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject PersonService personService;
+	@Inject DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
+	@Inject PersonDAO personDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(diseaseAnnotationDAO);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<DiseaseAnnotation> deleteById(Long id) {
@@ -94,17 +90,18 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 	public List<Long> getAllReferencedConditionRelationIds() {
 		return getAllReferencedConditionRelationIds(diseaseAnnotationDAO);
 	}
-	
+
 	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		
-		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
+
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
 			params.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-		
+		}
+
 		List<Long> annotationIds = dao.findFilteredIds(params);
 		annotationIds.removeIf(Objects::isNull);
-		
+
 		if (StringUtils.equals(dataProvider.toString(), "HUMAN")) {
 			Map<String, Object> newParams = new HashMap<>();
 			newParams.put(EntityFieldConstants.SECONDARY_DATA_PROVIDER, dataProvider.sourceOrganization);
@@ -112,7 +109,7 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 			List<Long> additionalIds = dao.findFilteredIds(newParams);
 			annotationIds.addAll(additionalIds);
 		}
-		
+
 		return annotationIds;
 	}
 

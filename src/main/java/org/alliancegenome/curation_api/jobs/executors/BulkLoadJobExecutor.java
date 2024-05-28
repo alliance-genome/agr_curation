@@ -28,7 +28,7 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 @ApplicationScoped
 public class BulkLoadJobExecutor {
-	
+
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 
 	@Inject AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;

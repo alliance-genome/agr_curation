@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +14,20 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyIngestFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneToGeneParalogyService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ParalogyExecutor extends LoadFileExecutor {
 
-	@Inject
-	GeneToGeneParalogyService geneToGeneParalogyService;
+	@Inject GeneToGeneParalogyService geneToGeneParalogyService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
@@ -39,8 +38,9 @@ public class ParalogyExecutor extends LoadFileExecutor {
 
 			AGRCurationSchemaVersion version = GeneToGeneParalogy.class.getAnnotation(AGRCurationSchemaVersion.class);
 			bulkLoadFile.setLinkMLSchemaVersion(version.max());
-			if (paralogyData.getMetaData() != null && StringUtils.isNotBlank(paralogyData.getMetaData().getRelease()))
+			if (paralogyData.getMetaData() != null && StringUtils.isNotBlank(paralogyData.getMetaData().getRelease())) {
 				bulkLoadFile.setAllianceMemberReleaseVersion(paralogyData.getMetaData().getRelease());
+			}
 
 			List<Pair<String, String>> paralogyPairsLoaded = new ArrayList<>();
 			// String dataProviderAbbreviation = fms.getFmsDataSubType();
@@ -84,8 +84,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 				addException(history, e.getData());
 			} catch (Exception e) {
 				history.incrementFailed();
-				addException(history,
-						new ObjectUpdateExceptionData(paralogyPairDTO, e.getMessage(), e.getStackTrace()));
+				addException(history, new ObjectUpdateExceptionData(paralogyPairDTO, e.getMessage(), e.getStackTrace()));
 			}
 			updateHistory(history);
 			ph.progressProcess();
@@ -93,7 +92,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 		ph.finishProcess();
 
 	}
-	
+
 	public APIResponse runLoad(String dataProvider, ParalogyIngestFmsDTO paralogyData) {
 		List<Pair<String, String>> paralogyPairsAdded = new ArrayList<>();
 

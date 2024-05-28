@@ -48,7 +48,7 @@ import io.restassured.RestAssured;
 @Order(307)
 public class ConstructITCase extends BaseITCase {
 
-	private final String CONSTRUCT = "Construct:0001";
+	private static final String CONSTRUCT = "Construct:0001";
 	
 	private Vocabulary noteTypeVocabulary;
 	private VocabularyTerm noteType;
@@ -563,7 +563,7 @@ public class ConstructITCase extends BaseITCase {
 			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.constructComponents", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"relatedNotes - " + String.join( " | ", List.of(
+					"relatedNotes - " + String.join(" | ", List.of(
 							"noteType - " + ValidationConstants.INVALID_MESSAGE,
 							"references - " + ValidationConstants.INVALID_MESSAGE
 							)),
@@ -637,7 +637,7 @@ public class ConstructITCase extends BaseITCase {
 		body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
 		body("errorMessages.constructComponents", is(String.join(" | ", List.of(
 				"evidence - " + ValidationConstants.INVALID_MESSAGE,
-				"relatedNotes - " + String.join( " | ", List.of(
+				"relatedNotes - " + String.join(" | ", List.of(
 						"noteType - " + ValidationConstants.INVALID_MESSAGE,
 						"references - " + ValidationConstants.INVALID_MESSAGE
 						)),
@@ -1001,7 +1001,7 @@ public class ConstructITCase extends BaseITCase {
 			body("errorMessages.constructGenomicEntityAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
-	private ConstructComponentSlotAnnotation createConstructComponentSlotAnnotation (VocabularyTerm relation, List<InformationContentEntity> evidence, String symbol, NCBITaxonTerm taxon, String taxonText, List<Note> notes) {
+	private ConstructComponentSlotAnnotation createConstructComponentSlotAnnotation(VocabularyTerm relation, List<InformationContentEntity> evidence, String symbol, NCBITaxonTerm taxon, String taxonText, List<Note> notes) {
 		ConstructComponentSlotAnnotation cc = new ConstructComponentSlotAnnotation();
 		cc.setComponentSymbol(symbol);
 		cc.setRelation(relation);

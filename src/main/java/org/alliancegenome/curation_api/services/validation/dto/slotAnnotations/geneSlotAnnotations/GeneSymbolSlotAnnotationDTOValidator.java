@@ -12,8 +12,9 @@ import jakarta.enterprise.context.RequestScoped;
 public class GeneSymbolSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
 	public ObjectResponse<GeneSymbolSlotAnnotation> validateGeneSymbolSlotAnnotationDTO(GeneSymbolSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new GeneSymbolSlotAnnotation();
+		}
 
 		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET);
 	}

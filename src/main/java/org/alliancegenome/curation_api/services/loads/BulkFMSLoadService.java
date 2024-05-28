@@ -16,12 +16,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class BulkFMSLoadService extends BaseEntityCrudService<BulkFMSLoad, BulkFMSLoadDAO> {
 
-	@Inject
-	BulkFMSLoadDAO bulkFMSLoadDAO;
-	
-	@Inject
-	Event<PendingBulkLoadJobEvent> pendingJobEvents;
-	
+	@Inject BulkFMSLoadDAO bulkFMSLoadDAO;
+
+	@Inject Event<PendingBulkLoadJobEvent> pendingJobEvents;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -30,17 +28,17 @@ public class BulkFMSLoadService extends BaseEntityCrudService<BulkFMSLoad, BulkF
 
 	public ObjectResponse<BulkFMSLoad> restartLoad(Long id) {
 		ObjectResponse<BulkFMSLoad> resp = updateLoad(id);
-		if(resp != null) {
+		if (resp != null) {
 			pendingJobEvents.fire(new PendingBulkLoadJobEvent(id));
 			return resp;
 		}
 		return null;
 	}
-	
+
 	@Transactional
 	protected ObjectResponse<BulkFMSLoad> updateLoad(Long id) {
 		BulkFMSLoad load = bulkFMSLoadDAO.find(id);
-		if(load != null && load.getBulkloadStatus().isNotRunning()) {
+		if (load != null && load.getBulkloadStatus().isNotRunning()) {
 			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			return new ObjectResponse<BulkFMSLoad>(load);
 		}

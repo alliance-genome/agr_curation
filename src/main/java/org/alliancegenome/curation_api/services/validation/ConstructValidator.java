@@ -30,21 +30,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructValidator extends ReagentValidator {
 
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	ConstructComponentSlotAnnotationValidator constructComponentValidator;
-	@Inject
-	ReferenceValidator referenceValidator;
-	@Inject
-	ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
-	@Inject
-	ConstructFullNameSlotAnnotationValidator constructFullNameValidator;
-	@Inject
-	ConstructSynonymSlotAnnotationValidator constructSynonymValidator;
-	@Inject
-	ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
-	
+	@Inject ConstructDAO constructDAO;
+	@Inject ConstructComponentSlotAnnotationValidator constructComponentValidator;
+	@Inject ReferenceValidator referenceValidator;
+	@Inject ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
+	@Inject ConstructFullNameSlotAnnotationValidator constructFullNameValidator;
+	@Inject ConstructSynonymSlotAnnotationValidator constructSynonymValidator;
+	@Inject ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
+
 	private String errorMessage;
 
 	public Construct validateConstructUpdate(Construct uiEntity) {
@@ -79,8 +72,9 @@ public class ConstructValidator extends ReagentValidator {
 	public Construct validateConstruct(Construct uiEntity, Construct dbEntity) {
 
 		List<String> previousReferenceCuries = new ArrayList<String>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
 			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
+		}
 		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
 			List<Reference> references = new ArrayList<Reference>();
 			for (Reference uiReference : uiEntity.getReferences()) {
@@ -93,63 +87,71 @@ public class ConstructValidator extends ReagentValidator {
 		} else {
 			dbEntity.setReferences(null);
 		}
-		
+
 		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity);
-		
+
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(uiEntity, dbEntity);
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(uiEntity, dbEntity);
 		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(uiEntity, dbEntity);
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(uiEntity, dbEntity);
-		
+
 		List<ConstructGenomicEntityAssociation> geAssociations = validateConstructGenomicEntityAssociations(uiEntity, dbEntity);
-		
+
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
 
 		response.convertErrorMessagesToMap();
-		
+
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
-		
+
 		dbEntity = constructDAO.persist(dbEntity);
-		
-		if (symbol != null)
+
+		if (symbol != null) {
 			symbol.setSingleConstruct(dbEntity);
+		}
 		dbEntity.setConstructSymbol(symbol);
 
-		if (fullName != null)
+		if (fullName != null) {
 			fullName.setSingleConstruct(dbEntity);
+		}
 		dbEntity.setConstructFullName(fullName);
 
-		if (dbEntity.getConstructSynonyms() != null)
+		if (dbEntity.getConstructSynonyms() != null) {
 			dbEntity.getConstructSynonyms().clear();
+		}
 		if (synonyms != null) {
-			if (dbEntity.getConstructSynonyms() == null)
+			if (dbEntity.getConstructSynonyms() == null) {
 				dbEntity.setConstructSynonyms(new ArrayList<>());
+			}
 			dbEntity.getConstructSynonyms().addAll(synonyms);
 		}
-		
-		if (dbEntity.getConstructComponents() != null)
+
+		if (dbEntity.getConstructComponents() != null) {
 			dbEntity.getConstructComponents().clear();
+		}
 		if (components != null) {
-			if (dbEntity.getConstructComponents() == null)
+			if (dbEntity.getConstructComponents() == null) {
 				dbEntity.setConstructComponents(new ArrayList<>());
+			}
 			dbEntity.getConstructComponents().addAll(components);
 		}
-		
-		if (dbEntity.getConstructGenomicEntityAssociations() != null)
+
+		if (dbEntity.getConstructGenomicEntityAssociations() != null) {
 			dbEntity.getConstructGenomicEntityAssociations().clear();
+		}
 		if (geAssociations != null) {
-			if (dbEntity.getConstructGenomicEntityAssociations() == null)
+			if (dbEntity.getConstructGenomicEntityAssociations() == null) {
 				dbEntity.setConstructGenomicEntityAssociations(new ArrayList<>());
+			}
 			dbEntity.getConstructGenomicEntityAssociations().addAll(geAssociations);
 		}
 
 		return dbEntity;
 	}
-	
+
 	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
 		if (singleRefResponse.getEntity() == null) {
@@ -166,10 +168,11 @@ public class ConstructValidator extends ReagentValidator {
 	}
 
 	public String validateUniqueId(Construct uiEntity, Construct dbEntity) {
-		
-		if (dbEntity.getDataProvider() == null)
+
+		if (dbEntity.getDataProvider() == null) {
 			return null;
-		
+		}
+
 		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(uiEntity);
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
@@ -182,7 +185,7 @@ public class ConstructValidator extends ReagentValidator {
 
 		return uniqueId;
 	}
-	
+
 	private ConstructSymbolSlotAnnotation validateConstructSymbol(Construct uiEntity, Construct dbEntity) {
 		String field = "constructSymbol";
 
@@ -202,8 +205,9 @@ public class ConstructValidator extends ReagentValidator {
 	}
 
 	private ConstructFullNameSlotAnnotation validateConstructFullName(Construct uiEntity, Construct dbEntity) {
-		if (uiEntity.getConstructFullName() == null)
+		if (uiEntity.getConstructFullName() == null) {
 			return null;
+		}
 
 		String field = "constructFullName";
 
@@ -223,7 +227,7 @@ public class ConstructValidator extends ReagentValidator {
 		List<ConstructSynonymSlotAnnotation> validatedSynonyms = new ArrayList<ConstructSynonymSlotAnnotation>();
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getConstructSynonyms())) {
-			for (int ix = 0; ix < uiEntity.getConstructSynonyms().size(); ix++) { 
+			for (int ix = 0; ix < uiEntity.getConstructSynonyms().size(); ix++) {
 				ConstructSynonymSlotAnnotation syn = uiEntity.getConstructSynonyms().get(ix);
 				ObjectResponse<ConstructSynonymSlotAnnotation> synResponse = constructSynonymValidator.validateConstructSynonymSlotAnnotation(syn);
 				if (synResponse.getEntity() == null) {
@@ -242,19 +246,20 @@ public class ConstructValidator extends ReagentValidator {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedSynonyms))
+		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
+		}
 
 		return validatedSynonyms;
 	}
-	
+
 	private List<ConstructComponentSlotAnnotation> validateConstructComponents(Construct uiEntity, Construct dbEntity) {
 		String field = "constructComponents";
 
 		List<ConstructComponentSlotAnnotation> validatedComponents = new ArrayList<ConstructComponentSlotAnnotation>();
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getConstructComponents())) {
-			for (int ix = 0; ix < uiEntity.getConstructComponents().size(); ix++) { 
+			for (int ix = 0; ix < uiEntity.getConstructComponents().size(); ix++) {
 				ConstructComponentSlotAnnotation comp = uiEntity.getConstructComponents().get(ix);
 				ObjectResponse<ConstructComponentSlotAnnotation> synResponse = constructComponentValidator.validateConstructComponentSlotAnnotation(comp);
 				if (synResponse.getEntity() == null) {
@@ -273,12 +278,13 @@ public class ConstructValidator extends ReagentValidator {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedComponents))
+		if (CollectionUtils.isEmpty(validatedComponents)) {
 			return null;
+		}
 
 		return validatedComponents;
 	}
-	
+
 	private List<ConstructGenomicEntityAssociation> validateConstructGenomicEntityAssociations(Construct uiEntity, Construct dbEntity) {
 		String field = "constructGenomicEntityAssociations";
 
@@ -298,16 +304,17 @@ public class ConstructValidator extends ReagentValidator {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedAssociations))
+		if (CollectionUtils.isEmpty(validatedAssociations)) {
 			return null;
+		}
 
 		return validatedAssociations;
 	}
-	
+
 }

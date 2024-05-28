@@ -46,7 +46,7 @@ public class NoteITCase extends BaseITCase {
 		testVocabulary = createVocabulary("Note test vocabulary", false);
 		testVocabularyTerm = createVocabularyTerm(testVocabulary, "Note test vocabulary term", false);
 		testVocabularyTerm2 = createVocabularyTerm(testVocabulary, "Note test vocabulary term 2", false);
-		testObsoleteVocabularyTerm = createVocabularyTerm( testVocabulary, "Obsolete Note test vocabularyTerm", true);
+		testObsoleteVocabularyTerm = createVocabularyTerm(testVocabulary, "Obsolete Note test vocabularyTerm", true);
 		Reference testReference = createReference("AGRKB:000000007", false);
 		testReferences.add(testReference);
 		Reference testReference2 = createReference("AGRKB:000000008", false);

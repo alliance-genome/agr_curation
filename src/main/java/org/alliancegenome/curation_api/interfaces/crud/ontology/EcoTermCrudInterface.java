@@ -18,6 +18,6 @@ public interface EcoTermCrudInterface extends BaseOntologyTermCrudInterface<ECOT
 
 	@GET
 	@Path("/updateAbbreviations")
-	public void updateAbbreviations();
+	void updateAbbreviations();
 
 }

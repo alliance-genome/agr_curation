@@ -21,9 +21,8 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 
-	@Inject
-	AlleleGeneAssociationService alleleGeneAssociationService;
-	
+	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
+
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
@@ -31,26 +30,31 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AlleleGeneAssociationDTO.class);
-		if (ingestDto == null) return;
-		
-		List<AlleleGeneAssociationDTO> associations = ingestDto.getAlleleGeneAssociationIngestSet();
-		if (associations == null) associations = new ArrayList<>();
+		if (ingestDto == null) {
+			return;
+		}
 
-		
+		List<AlleleGeneAssociationDTO> associations = ingestDto.getAlleleGeneAssociationIngestSet();
+		if (associations == null) {
+			associations = new ArrayList<>();
+		}
+
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
 			associationIdsBefore.addAll(alleleGeneAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
-		
+
 		bulkLoadFile.setRecordCount(associations.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(associations.size());
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(alleleGeneAssociationService, history, dataProvider, associations, associationIdsLoaded);
-		if(success && cleanUp) runCleanup(alleleGeneAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
+		if(success && cleanUp) {
+			runCleanup(alleleGeneAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 	}

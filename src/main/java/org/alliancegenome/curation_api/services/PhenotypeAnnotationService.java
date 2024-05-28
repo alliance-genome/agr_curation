@@ -41,37 +41,26 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class PhenotypeAnnotationService extends BaseAnnotationCrudService<PhenotypeAnnotation, PhenotypeAnnotationDAO> {
 
-	@Inject
-	PhenotypeAnnotationDAO phenotypeAnnotationDAO;
-	@Inject
-	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
-	@Inject
-	GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
-	@Inject
-	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
-	@Inject
-	PersonService personService;
-	@Inject
-	PersonDAO personDAO;
-	@Inject
-	GenomicEntityService genomicEntityService;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	AGMPhenotypeAnnotationService agmPhenotypeAnnotationService;
-	@Inject
-	GenePhenotypeAnnotationService genePhenotypeAnnotationService;
-	@Inject
-	AllelePhenotypeAnnotationService allelePhenotypeAnnotationService;
+	@Inject PhenotypeAnnotationDAO phenotypeAnnotationDAO;
+	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
+	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject PersonService personService;
+	@Inject PersonDAO personDAO;
+	@Inject GenomicEntityService genomicEntityService;
+	@Inject ReferenceService referenceService;
+	@Inject AGMPhenotypeAnnotationService agmPhenotypeAnnotationService;
+	@Inject GenePhenotypeAnnotationService genePhenotypeAnnotationService;
+	@Inject AllelePhenotypeAnnotationService allelePhenotypeAnnotationService;
 
 	HashMap<String, List<PhenotypeFmsDTO>> unprocessedAnnotationsMap = new HashMap<>();
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(phenotypeAnnotationDAO);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<PhenotypeAnnotation> deleteById(Long id) {
@@ -118,7 +107,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	public List<Long> getAllReferencedConditionRelationIds() {
 		return getAllReferencedConditionRelationIds(phenotypeAnnotationDAO);
 	}
-	
+
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		List<Long> existingPhenotypeAnnotationIds = new ArrayList<>();
 		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider));
@@ -126,27 +115,29 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, dataProvider));
 		return existingPhenotypeAnnotationIds;
 	}
-	
+
 	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		
-		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB"))
+
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
 			params.put(EntityFieldConstants.PA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-		
+		}
+
 		List<Long> annotationIds = dao.findFilteredIds(params);
-		
+
 		return annotationIds;
 	}
-	
+
 	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		if (StringUtils.isBlank(dto.getObjectId()))
+		if (StringUtils.isBlank(dto.getObjectId())) {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.REQUIRED_MESSAGE);
+		}
 		GenomicEntity phenotypeAnnotationSubject = genomicEntityService.findByIdentifierString(dto.getObjectId());
-		if (phenotypeAnnotationSubject == null)
+		if (phenotypeAnnotationSubject == null) {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
-		
-		
+		}
+
 		if (phenotypeAnnotationSubject instanceof AffectedGenomicModel) {
 			AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationService.upsertPrimaryAnnotation((AffectedGenomicModel) phenotypeAnnotationSubject, dto, dataProvider);
 			return annotation.getId();
@@ -159,15 +150,16 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		} else {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + dto.getObjectId() + ")");
 		}
-		
+
 	}
 
 	public void addInferredOrAssertedEntities(PhenotypeFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		for (String primaryGeneticEntityCurie : dto.getPrimaryGeneticEntityIds()) {
 			GenomicEntity primaryAnnotationSubject = genomicEntityService.findByIdentifierString(primaryGeneticEntityCurie);
-			if (primaryAnnotationSubject == null)
+			if (primaryAnnotationSubject == null) {
 				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
-		
+			}
+
 			if (primaryAnnotationSubject instanceof AffectedGenomicModel) {
 				agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, idsAdded, dataProvider);
 			} else if (primaryAnnotationSubject instanceof Allele) {
@@ -176,6 +168,6 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
 			}
 		}
-	} 
-	
+	}
+
 }

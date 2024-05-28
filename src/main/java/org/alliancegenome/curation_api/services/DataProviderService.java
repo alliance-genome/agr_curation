@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
@@ -24,19 +23,13 @@ import jakarta.transaction.Transactional;
 public class DataProviderService extends BaseEntityCrudService<DataProvider, DataProviderDAO> {
 
 	@Inject
-	@AuthenticatedUser
-	protected Person authenticatedPerson;
-	@Inject
-	PersonService personService;
-	@Inject
-	DataProviderDAO dataProviderDAO;
-	@Inject
-	OrganizationDAO organizationDAO;
-	@Inject
-	DataProviderValidator dataProviderValidator;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
-	
+	@AuthenticatedUser protected Person authenticatedPerson;
+	@Inject PersonService personService;
+	@Inject DataProviderDAO dataProviderDAO;
+	@Inject OrganizationDAO organizationDAO;
+	@Inject DataProviderValidator dataProviderValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -48,30 +41,31 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		AllianceMember member = authenticatedPerson.getAllianceMember();
 		if (member == null) {
 			return createAllianceDataProvider();
-		} 
-		
+		}
+
 		return createDataProvider(member);
 	}
-	
+
 	@Transactional
 	public DataProvider createOrganizationDataProvider(String organizationAbbreviation) {
 		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", organizationAbbreviation);
-		if (orgResponse == null || orgResponse.getSingleResult() == null)
+		if (orgResponse == null || orgResponse.getSingleResult() == null) {
 			return null;
+		}
 		Organization member = orgResponse.getSingleResult();
-		
+
 		return createDataProvider(member);
 	}
-	
+
 	public DataProvider createAllianceDataProvider() {
 		return createOrganizationDataProvider("Alliance");
 	}
-	
+
 	private DataProvider createDataProvider(Organization member) {
 		DataProvider dataProvider = new DataProvider();
-		
+
 		dataProvider.setSourceOrganization(member);
-	
+
 		CrossReference xref = new CrossReference();
 		xref.setDisplayName(member.getAbbreviation());
 		xref.setReferencedCurie(member.getAbbreviation());
@@ -80,12 +74,13 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 
 		return dataProviderDAO.persist(dataProvider);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<DataProvider> upsert(DataProvider uiEntity) {
 		ObjectResponse<DataProvider> response = dataProviderValidator.validateDataProvider(uiEntity, null, true);
-		if (response.getEntity() == null)
+		if (response.getEntity() == null) {
 			return response;
+		}
 		return new ObjectResponse<DataProvider>(response.getEntity());
 	}
 

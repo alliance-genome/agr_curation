@@ -19,10 +19,8 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class AlleleExecutor extends LoadFileExecutor {
 
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	AlleleService alleleService;
+	@Inject AlleleDAO alleleDAO;
+	@Inject AlleleService alleleService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -30,27 +28,33 @@ public class AlleleExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AlleleDTO.class);
-		if (ingestDto == null) return;
-		
+		if (ingestDto == null) {
+			return;
+		}
+
 		List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
-		if (alleles == null) alleles = new ArrayList<>();
-		
+		if (alleles == null) {
+			alleles = new ArrayList<>();
+		}
+
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		
+
 		List<Long> alleleIdsLoaded = new ArrayList<>();
 		List<Long> alleleIdsBefore = new ArrayList<>();
 		if (cleanUp) {
 			alleleIdsBefore.addAll(alleleService.getIdsByDataProvider(dataProvider.name()));
 			Log.debug("runLoad: Before: total " + alleleIdsBefore.size());
 		}
-		
+
 		bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(alleleService, history, dataProvider, alleles, alleleIdsLoaded);
-		if(success && cleanUp) runCleanup(alleleService, history, bulkLoadFile, alleleIdsBefore, alleleIdsLoaded);
+		if (success && cleanUp) {
+			runCleanup(alleleService, history, bulkLoadFile, alleleIdsBefore, alleleIdsLoaded);
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 	}

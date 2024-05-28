@@ -28,7 +28,7 @@ public interface BaseCreateControllerInterface<E extends AuditedObject> {
 	@POST
 	@Path("/")
 	@JsonView(View.FieldsOnly.class)
-	@RequestBody( 
+	@RequestBody(
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
@@ -44,12 +44,12 @@ public interface BaseCreateControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public ObjectResponse<E> create(E entity);
+	ObjectResponse<E> create(E entity);
 
 	@POST
 	@Path("/multiple")
 	@JsonView(View.FieldsOnly.class)
-	@RequestBody( 
+	@RequestBody(
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
@@ -65,6 +65,6 @@ public interface BaseCreateControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public ObjectListResponse<E> create(List<E> entities);
+	ObjectListResponse<E> create(List<E> entities);
 	
 }

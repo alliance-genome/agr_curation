@@ -48,7 +48,7 @@ import lombok.ToString;
 	indexes = {
 		@Index(name = "ontologyterm_curie_index", columnList = "curie"),
 		@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "ontologyterm_curie_uk", columnNames = "curie")
@@ -148,29 +148,33 @@ public class OntologyTerm extends CurieObject {
 
 	@Transient
 	public void addIsaChild(OntologyTerm term) {
-		if (isaChildren == null)
+		if (isaChildren == null) {
 			isaChildren = new HashSet<OntologyTerm>();
+		}
 		isaChildren.add(term);
 	}
 
 	@Transient
 	public void addIsaParent(OntologyTerm term) {
-		if (isaParents == null)
+		if (isaParents == null) {
 			isaParents = new HashSet<OntologyTerm>();
+		}
 		isaParents.add(term);
 	}
 
 	@Transient
 	public void addIsaDescendant(OntologyTerm term) {
-		if (isaDescendants == null)
+		if (isaDescendants == null) {
 			isaDescendants = new HashSet<OntologyTerm>();
+		}
 		isaDescendants.add(term);
 	}
 
 	@Transient
 	public void addIsaAncestor(OntologyTerm term) {
-		if (isaAncestors == null)
+		if (isaAncestors == null) {
 			isaAncestors = new HashSet<OntologyTerm>();
+		}
 		isaAncestors.add(term);
 	}
 

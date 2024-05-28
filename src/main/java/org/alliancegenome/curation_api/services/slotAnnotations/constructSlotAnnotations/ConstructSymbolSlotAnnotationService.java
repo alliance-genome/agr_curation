@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ConstructSymbolSlotAnnotationService extends BaseEntityCrudService<ConstructSymbolSlotAnnotation, ConstructSymbolSlotAnnotationDAO> {
 
-	@Inject
-	ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
-	@Inject
-	ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
+	@Inject ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
+	@Inject ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class ConstructSymbolSlotAnnotationService extends BaseEntityCrudService<
 	@Transactional
 	public ObjectResponse<ConstructSymbolSlotAnnotation> upsert(ConstructSymbolSlotAnnotation uiEntity) {
 		ConstructSymbolSlotAnnotation dbEntity = constructSymbolValidator.validateConstructSymbolSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<ConstructSymbolSlotAnnotation>(constructSymbolDAO.persist(dbEntity));
 	}
 

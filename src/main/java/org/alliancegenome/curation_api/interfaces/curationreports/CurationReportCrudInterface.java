@@ -24,11 +24,11 @@ public interface CurationReportCrudInterface extends BaseIdCrudInterface<Curatio
 	@GET
 	@Path("/{id}")
 	@JsonView(View.ReportHistory.class)
-	public ObjectResponse<CurationReport> getById(@PathParam("id") Long id);
+	ObjectResponse<CurationReport> getById(@PathParam("id") Long id);
 
 	@GET
 	@Path("/restart/{id}")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectResponse<CurationReport> restartReport(@PathParam("id") Long id);
+	ObjectResponse<CurationReport> restartReport(@PathParam("id") Long id);
 
 }

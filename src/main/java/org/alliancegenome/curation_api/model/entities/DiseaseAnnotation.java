@@ -53,7 +53,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
 	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
 	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
-	@Index(name = "DiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
+	@Index(name = "DiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id")
 })
 
 public abstract class DiseaseAnnotation extends Annotation {

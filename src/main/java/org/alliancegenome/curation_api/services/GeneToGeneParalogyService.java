@@ -16,10 +16,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneToGeneParalogyService extends BaseEntityCrudService<GeneToGeneParalogy, GeneToGeneParalogyDAO> implements BaseUpsertServiceInterface<GeneToGeneParalogy, ParalogyFmsDTO> {
 
-	@Inject
-	GeneToGeneParalogyDAO geneToGeneParalogyDAO;
-	@Inject
-	ParalogyFmsDTOValidator paralogyFmsDtoValidator;
+	@Inject GeneToGeneParalogyDAO geneToGeneParalogyDAO;
+	@Inject ParalogyFmsDTOValidator paralogyFmsDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -27,8 +25,7 @@ public class GeneToGeneParalogyService extends BaseEntityCrudService<GeneToGeneP
 		setSQLDao(geneToGeneParalogyDAO);
 	}
 
-	public GeneToGeneParalogy upsert(ParalogyFmsDTO paralogyData, BackendBulkDataProvider backendBulkDataProvider)
-			throws ObjectUpdateException {
+	public GeneToGeneParalogy upsert(ParalogyFmsDTO paralogyData, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
 		return paralogyFmsDtoValidator.validateParalogyFmsDTO(paralogyData);
 	}
 

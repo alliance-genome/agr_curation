@@ -37,20 +37,13 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	GeneSymbolSlotAnnotationDTOValidator geneSymbolDtoValidator;
-	@Inject
-	GeneFullNameSlotAnnotationDTOValidator geneFullNameDtoValidator;
-	@Inject
-	GeneSystematicNameSlotAnnotationDTOValidator geneSystematicNameDtoValidator;
-	@Inject
-	GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
-	@Inject
-	GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
-	@Inject
-	SlotAnnotationIdentityHelper identityHelper;
+	@Inject GeneDAO geneDAO;
+	@Inject GeneSymbolSlotAnnotationDTOValidator geneSymbolDtoValidator;
+	@Inject GeneFullNameSlotAnnotationDTOValidator geneFullNameDtoValidator;
+	@Inject GeneSystematicNameSlotAnnotationDTOValidator geneSystematicNameDtoValidator;
+	@Inject GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
+	@Inject GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
+	@Inject SlotAnnotationIdentityHelper identityHelper;
 
 	private ObjectResponse<Gene> geneResponse;
 
@@ -58,18 +51,20 @@ public class GeneDTOValidator extends BaseDTOValidator {
 	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		geneResponse = new ObjectResponse<Gene>();
-		
+
 		Gene gene = null;
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			SearchResponse<Gene> response = geneDAO.findByField("modEntityId", dto.getModEntityId());
-			if (response != null && response.getSingleResult() != null)
+			if (response != null && response.getSingleResult() != null) {
 				gene = response.getSingleResult();
+			}
 		} else {
 			geneResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
-		if (gene == null)
+		if (gene == null) {
 			gene = new Gene();
+		}
 
 		gene.setModEntityId(dto.getModEntityId());
 		gene.setModInternalId(handleStringField(dto.getModInternalId()));
@@ -80,39 +75,44 @@ public class GeneDTOValidator extends BaseDTOValidator {
 
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(gene, dto);
 		gene.setGeneSymbol(symbol);
-		
+
 		GeneFullNameSlotAnnotation fullName = validateGeneFullName(gene, dto);
 		gene.setGeneFullName(fullName);
-		
+
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(gene, dto);
 		gene.setGeneSystematicName(systematicName);
-		
+
 		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(gene, dto);
-		if (gene.getGeneSynonyms() != null)
+		if (gene.getGeneSynonyms() != null) {
 			gene.getGeneSynonyms().clear();
+		}
 		if (synonyms != null) {
-			if (gene.getGeneSynonyms() == null)
+			if (gene.getGeneSynonyms() == null) {
 				gene.setGeneSynonyms(new ArrayList<>());
+			}
 			gene.getGeneSynonyms().addAll(synonyms);
 		}
-		
+
 		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(gene, dto);
-		if (gene.getGeneSecondaryIds() != null)
+		if (gene.getGeneSecondaryIds() != null) {
 			gene.getGeneSecondaryIds().clear();
+		}
 		if (secondaryIds != null) {
-			if (gene.getGeneSecondaryIds() == null)
+			if (gene.getGeneSecondaryIds() == null) {
 				gene.setGeneSecondaryIds(new ArrayList<>());
+			}
 			gene.getGeneSecondaryIds().addAll(secondaryIds);
 		}
-		
+
 		geneResponse.convertErrorMessagesToMap();
-		
-		if (geneResponse.hasErrors())
+
+		if (geneResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, geneResponse.errorMessagesString());
+		}
 
 		return geneDAO.persist(gene);
 	}
-	
+
 	private GeneSymbolSlotAnnotation validateGeneSymbol(Gene gene, GeneDTO dto) {
 		String field = "gene_symbol_dto";
 
@@ -130,13 +130,14 @@ public class GeneDTOValidator extends BaseDTOValidator {
 
 		GeneSymbolSlotAnnotation symbol = symbolResponse.getEntity();
 		symbol.setSingleGene(gene);
-		
+
 		return symbol;
 	}
 
 	private GeneFullNameSlotAnnotation validateGeneFullName(Gene gene, GeneDTO dto) {
-		if (dto.getGeneFullNameDto() == null)
+		if (dto.getGeneFullNameDto() == null) {
 			return null;
+		}
 
 		String field = "gene_full_name_dto";
 
@@ -149,13 +150,14 @@ public class GeneDTOValidator extends BaseDTOValidator {
 
 		GeneFullNameSlotAnnotation fullName = nameResponse.getEntity();
 		fullName.setSingleGene(gene);
-		
+
 		return fullName;
 	}
 
 	private GeneSystematicNameSlotAnnotation validateGeneSystematicName(Gene gene, GeneDTO dto) {
-		if (dto.getGeneSystematicNameDto() == null)
+		if (dto.getGeneSystematicNameDto() == null) {
 			return null;
+		}
 
 		String field = "gene_systematic_name_dto";
 
@@ -168,13 +170,13 @@ public class GeneDTOValidator extends BaseDTOValidator {
 
 		GeneSystematicNameSlotAnnotation systematicName = nameResponse.getEntity();
 		systematicName.setSingleGene(gene);
-		
+
 		return systematicName;
 	}
-	
+
 	private List<GeneSynonymSlotAnnotation> validateGeneSynonyms(Gene gene, GeneDTO dto) {
 		String field = "gene_synonym_dtos";
-		
+
 		Map<String, GeneSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
 			for (GeneSynonymSlotAnnotation existingSynonym : gene.getGeneSynonyms()) {
@@ -199,21 +201,22 @@ public class GeneDTOValidator extends BaseDTOValidator {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			geneResponse.convertMapToErrorMessages(field);
 			return null;
 		}
-		
-		if (CollectionUtils.isEmpty(validatedSynonyms))
+
+		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
+		}
 
 		return validatedSynonyms;
 	}
 
 	private List<GeneSecondaryIdSlotAnnotation> validateGeneSecondaryIds(Gene gene, GeneDTO dto) {
 		String field = "gene_secondary_id_dtos";
-		
+
 		Map<String, GeneSecondaryIdSlotAnnotation> existingSecondaryIds = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(gene.getGeneSecondaryIds())) {
 			for (GeneSecondaryIdSlotAnnotation existingSecondaryId : gene.getGeneSecondaryIds()) {
@@ -238,14 +241,15 @@ public class GeneDTOValidator extends BaseDTOValidator {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			geneResponse.convertMapToErrorMessages(field);
 			return null;
 		}
-		
-		if (CollectionUtils.isEmpty(validatedSecondaryIds))
+
+		if (CollectionUtils.isEmpty(validatedSecondaryIds)) {
 			return null;
+		}
 
 		return validatedSecondaryIds;
 	}

@@ -57,7 +57,7 @@ import io.restassured.RestAssured;
 @Order(302)
 public class AlleleITCase extends BaseITCase {
 
-	private final String ALLELE = "Allele:0001";
+	private static final String ALLELE = "Allele:0001";
 	
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary germlineTransmissionStatusVocabulary;
@@ -1003,7 +1003,7 @@ public class AlleleITCase extends BaseITCase {
 					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.dataProvider", is("sourceOrganization - " + ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is(String.join( " | ", List.of(
+			body("errorMessages.alleleFunctionalImpacts", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"functionalImpacts - " + ValidationConstants.INVALID_MESSAGE,
 					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
@@ -1091,7 +1091,7 @@ public class AlleleITCase extends BaseITCase {
 					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is(String.join( " | ", List.of(
+			body("errorMessages.alleleFunctionalImpacts", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"functionalImpacts - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
@@ -1197,7 +1197,7 @@ public class AlleleITCase extends BaseITCase {
 					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is(String.join( " | ", List.of(
+			body("errorMessages.alleleFunctionalImpacts", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"functionalImpacts - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
@@ -1593,7 +1593,7 @@ public class AlleleITCase extends BaseITCase {
 				statusCode(200);
 	}
 	
-	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation (List<InformationContentEntity> evidence, List<SOTerm> mutationTypes) {
+	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation(List<InformationContentEntity> evidence, List<SOTerm> mutationTypes) {
 		AlleleMutationTypeSlotAnnotation amt = new AlleleMutationTypeSlotAnnotation();
 		amt.setEvidence(evidence);
 		amt.setMutationTypes(mutationTypes);
@@ -1601,7 +1601,7 @@ public class AlleleITCase extends BaseITCase {
 		return amt;
 	}
 	
-	private AlleleGermlineTransmissionStatusSlotAnnotation createAlleleGermlineTransmissionStatusSlotAnnotation (List<InformationContentEntity> evidence, VocabularyTerm status) {
+	private AlleleGermlineTransmissionStatusSlotAnnotation createAlleleGermlineTransmissionStatusSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm status) {
 		AlleleGermlineTransmissionStatusSlotAnnotation agts = new AlleleGermlineTransmissionStatusSlotAnnotation();
 		agts.setEvidence(evidence);
 		agts.setGermlineTransmissionStatus(status);
@@ -1609,7 +1609,7 @@ public class AlleleITCase extends BaseITCase {
 		return agts;
 	}
 	
-	private AlleleDatabaseStatusSlotAnnotation createAlleleDatabaseStatusSlotAnnotation (List<InformationContentEntity> evidence, VocabularyTerm status) {
+	private AlleleDatabaseStatusSlotAnnotation createAlleleDatabaseStatusSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm status) {
 		AlleleDatabaseStatusSlotAnnotation ads = new AlleleDatabaseStatusSlotAnnotation();
 		ads.setEvidence(evidence);
 		ads.setDatabaseStatus(status);
@@ -1681,7 +1681,7 @@ public class AlleleITCase extends BaseITCase {
 		return functionalImpact;
 	}
 	
-	private AlleleNomenclatureEventSlotAnnotation createAlleleNomenclatureEventSlotAnnotation (List<InformationContentEntity> evidence, VocabularyTerm event) {
+	private AlleleNomenclatureEventSlotAnnotation createAlleleNomenclatureEventSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm event) {
 		AlleleNomenclatureEventSlotAnnotation ane = new AlleleNomenclatureEventSlotAnnotation();
 		ane.setEvidence(evidence);
 		ane.setNomenclatureEvent(event);

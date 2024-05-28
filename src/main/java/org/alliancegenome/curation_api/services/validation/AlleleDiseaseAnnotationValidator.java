@@ -24,14 +24,11 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
-	@Inject
-	AlleleDAO alleleDAO;
+	@Inject AlleleDAO alleleDAO;
 
-	@Inject
-	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	private String errorMessage;
 
@@ -96,8 +93,9 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		}
 
 		Allele subjectEntity = null;
-		if (uiEntity.getDiseaseAnnotationSubject().getId() != null)
+		if (uiEntity.getDiseaseAnnotationSubject().getId() != null) {
 			subjectEntity = alleleDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
+		}
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -112,12 +110,14 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	}
 
 	private Gene validateInferredGene(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
-		if (uiEntity.getInferredGene() == null)
+		if (uiEntity.getInferredGene() == null) {
 			return null;
+		}
 
 		Gene inferredGene = null;
-		if (uiEntity.getInferredGene().getId() != null)
+		if (uiEntity.getInferredGene().getId() != null) {
 			inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
+		}
 		if (inferredGene == null) {
 			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -132,17 +132,20 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	}
 
 	private List<Gene> validateAssertedGenes(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
-		if (CollectionUtils.isEmpty(uiEntity.getAssertedGenes()))
+		if (CollectionUtils.isEmpty(uiEntity.getAssertedGenes())) {
 			return null;
+		}
 
 		List<Gene> assertedGenes = new ArrayList<Gene>();
 		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes())) {
 			previousIds = dbEntity.getAssertedGenes().stream().map(Gene::getId).collect(Collectors.toList());
+		}
 		for (Gene gene : uiEntity.getAssertedGenes()) {
 			Gene assertedGene = null;
-			if (gene.getId() != null)
+			if (gene.getId() != null) {
 				assertedGene = geneDAO.find(gene.getId());
+			}
 			if (assertedGene == null) {
 				addMessageResponse("assertedGenes", ValidationConstants.INVALID_MESSAGE);
 				return null;

@@ -36,31 +36,25 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ConstructDTOValidator extends ReagentDTOValidator {
 
-	@Inject
-	ConstructSymbolSlotAnnotationDTOValidator constructSymbolDtoValidator;
-	@Inject
-	ConstructFullNameSlotAnnotationDTOValidator constructFullNameDtoValidator;
-	@Inject
-	ConstructSynonymSlotAnnotationDTOValidator constructSynonymDtoValidator;
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
-	@Inject
-	SlotAnnotationIdentityHelper identityHelper;
+	@Inject ConstructSymbolSlotAnnotationDTOValidator constructSymbolDtoValidator;
+	@Inject ConstructFullNameSlotAnnotationDTOValidator constructFullNameDtoValidator;
+	@Inject ConstructSynonymSlotAnnotationDTOValidator constructSynonymDtoValidator;
+	@Inject ConstructDAO constructDAO;
+	@Inject ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
+	@Inject SlotAnnotationIdentityHelper identityHelper;
 
 	private ObjectResponse<Construct> constructResponse;
-	
+
 	@Transactional
 	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		constructResponse = new ObjectResponse<Construct>();
-				
+
 		Construct construct = new Construct();
 		String constructId;
 		String identifyingField;
 		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
-		
+
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			constructId = dto.getModEntityId();
 			construct.setModEntityId(constructId);
@@ -79,7 +73,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 			construct = constructList.getResults().get(0);
 		}
 		construct.setUniqueId(uniqueId);
-		
+
 		ObjectResponse<Construct> reagentResponse = validateReagentDTO(construct, dto);
 		constructResponse.addErrorMessages(reagentResponse.getErrorMessages());
 		construct = reagentResponse.getEntity();
@@ -98,39 +92,44 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 		} else {
 			construct.setReferences(null);
 		}
-		
+
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(construct, dto);
 		construct.setConstructSymbol(symbol);
-		
+
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(construct, dto);
 		construct.setConstructFullName(fullName);
-		
+
 		List<ConstructSynonymSlotAnnotation> synonyms = validateConstructSynonyms(construct, dto);
-		if (construct.getConstructSynonyms() != null)
+		if (construct.getConstructSynonyms() != null) {
 			construct.getConstructSynonyms().clear();
+		}
 		if (synonyms != null) {
-			if (construct.getConstructSynonyms() == null)
+			if (construct.getConstructSynonyms() == null) {
 				construct.setConstructSynonyms(new ArrayList<>());
+			}
 			construct.getConstructSynonyms().addAll(synonyms);
 		}
-		
+
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(construct, dto);
-		if (construct.getConstructComponents() != null)
+		if (construct.getConstructComponents() != null) {
 			construct.getConstructComponents().clear();
+		}
 		if (components != null) {
-			if (construct.getConstructComponents() == null)
+			if (construct.getConstructComponents() == null) {
 				construct.setConstructComponents(new ArrayList<>());
+			}
 			construct.getConstructComponents().addAll(components);
 		}
-		
+
 		constructResponse.convertErrorMessagesToMap();
 
-		if (constructResponse.hasErrors())
+		if (constructResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, constructResponse.errorMessagesString());
+		}
 
 		return constructDAO.persist(construct);
 	}
-	
+
 	private ConstructSymbolSlotAnnotation validateConstructSymbol(Construct construct, ConstructDTO dto) {
 		String field = "construct_symbol_dto";
 
@@ -148,13 +147,14 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 
 		ConstructSymbolSlotAnnotation symbol = symbolResponse.getEntity();
 		symbol.setSingleConstruct(construct);
-		
+
 		return symbol;
 	}
 
 	private ConstructFullNameSlotAnnotation validateConstructFullName(Construct construct, ConstructDTO dto) {
-		if (dto.getConstructFullNameDto() == null)
+		if (dto.getConstructFullNameDto() == null) {
 			return null;
+		}
 
 		String field = "construct_full_name_dto";
 
@@ -167,13 +167,13 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 
 		ConstructFullNameSlotAnnotation fullName = nameResponse.getEntity();
 		fullName.setSingleConstruct(construct);
-		
+
 		return fullName;
 	}
 
 	private List<ConstructSynonymSlotAnnotation> validateConstructSynonyms(Construct construct, ConstructDTO dto) {
 		String field = "construct_synonym_dtos";
-		
+
 		Map<String, ConstructSynonymSlotAnnotation> existingSynonyms = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(construct.getConstructSynonyms())) {
 			for (ConstructSynonymSlotAnnotation existingSynonym : construct.getConstructSynonyms()) {
@@ -198,21 +198,22 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			constructResponse.convertMapToErrorMessages(field);
 			return null;
 		}
-		
-		if (CollectionUtils.isEmpty(validatedSynonyms))
+
+		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
+		}
 
 		return validatedSynonyms;
 	}
-	
+
 	private List<ConstructComponentSlotAnnotation> validateConstructComponents(Construct construct, ConstructDTO dto) {
 		String field = "construct_component_dtos";
-		
+
 		Map<String, ConstructComponentSlotAnnotation> existingComponents = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(construct.getConstructComponents())) {
 			for (ConstructComponentSlotAnnotation existingComponent : construct.getConstructComponents()) {
@@ -237,14 +238,15 @@ public class ConstructDTOValidator extends ReagentDTOValidator {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			constructResponse.convertMapToErrorMessages(field);
 			return null;
 		}
-		
-		if (CollectionUtils.isEmpty(validatedComponents))
+
+		if (CollectionUtils.isEmpty(validatedComponents)) {
 			return null;
+		}
 
 		return validatedComponents;
 	}

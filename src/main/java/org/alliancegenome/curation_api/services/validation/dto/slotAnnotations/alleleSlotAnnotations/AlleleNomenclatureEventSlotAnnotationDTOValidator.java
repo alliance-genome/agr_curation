@@ -16,25 +16,26 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleNomenclatureEventSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validateAlleleNomenclatureEventSlotAnnotationDTO(AlleleNomenclatureEventSlotAnnotation annotation, AlleleNomenclatureEventSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleNomenclatureEventSlotAnnotation> adsResponse = new ObjectResponse<AlleleNomenclatureEventSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleNomenclatureEventSlotAnnotation();
+		}
 
 		VocabularyTerm nomenclatureEvent = null;
 		if (StringUtils.isBlank(dto.getNomenclatureEventName())) {
 			adsResponse.addErrorMessage("nomenclature_event_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			nomenclatureEvent = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_NOMENCLATURE_EVENT_VOCABULARY, dto.getNomenclatureEventName()).getEntity();
-			if (nomenclatureEvent == null)
+			if (nomenclatureEvent == null) {
 				adsResponse.addErrorMessage("nomenclature_event_name", ValidationConstants.INVALID_MESSAGE);
+			}
 		}
 		annotation.setNomenclatureEvent(nomenclatureEvent);
-	
+
 		ObjectResponse<AlleleNomenclatureEventSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		adsResponse.addErrorMessages(saResponse.getErrorMessages());

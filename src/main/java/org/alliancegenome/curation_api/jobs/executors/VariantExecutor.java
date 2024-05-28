@@ -19,10 +19,8 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class VariantExecutor extends LoadFileExecutor {
 
-	@Inject
-	VariantDAO variantDAO;
-	@Inject
-	VariantService variantService;
+	@Inject VariantDAO variantDAO;
+	@Inject VariantService variantService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -30,31 +28,36 @@ public class VariantExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, VariantDTO.class);
-		if (ingestDto == null) return;
-		
+		if (ingestDto == null) {
+			return;
+		}
+
 		List<VariantDTO> variants = ingestDto.getVariantIngestSet();
-		if (variants == null) variants = new ArrayList<>();
-		
+		if (variants == null) {
+			variants = new ArrayList<>();
+		}
+
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		
+
 		List<Long> variantIdsLoaded = new ArrayList<>();
 		List<Long> variantIdsBefore = new ArrayList<>();
 		if (cleanUp) {
 			variantIdsBefore.addAll(variantService.getIdsByDataProvider(dataProvider.name()));
 			Log.debug("runLoad: Before: total " + variantIdsBefore.size());
 		}
-		
+
 		bulkLoadFile.setRecordCount(variants.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(variants.size());
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(variantService, history, dataProvider, variants, variantIdsLoaded);
-		if(success && cleanUp) runCleanup(variantService, history, bulkLoadFile, variantIdsBefore, variantIdsLoaded);
+		if (success && cleanUp) {
+			runCleanup(variantService, history, bulkLoadFile, variantIdsBefore, variantIdsLoaded);
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 
 	}
-
 
 }

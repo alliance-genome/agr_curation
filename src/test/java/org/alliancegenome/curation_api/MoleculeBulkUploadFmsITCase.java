@@ -91,7 +91,7 @@ public class MoleculeBulkUploadFmsITCase {
 				statusCode(200);
 		
 		RestAssured.given().
-				when(). 
+				when().
 				header("Content-Type", "application/json").
 				body("{}").
 				post("/api/molecule/find?limit=20&page=0").
@@ -115,7 +115,7 @@ public class MoleculeBulkUploadFmsITCase {
 				statusCode(200);
 		
 		RestAssured.given().
-				when(). 
+				when().
 				header("Content-Type", "application/json").
 				body("{}").
 				post("/api/molecule/find?limit=20&page=0").

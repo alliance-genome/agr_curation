@@ -23,10 +23,11 @@ public class NCBITaxonTerm extends OntologyTerm {
 	@Transient
 	@JsonIgnore
 	public String getGenusSpecies() {
-		if (name == null)
+		if (name == null) {
 			return null;
+		}
 		String[] nameParts = name.split(" ");
 		return nameParts[0] + " " + nameParts[1];
 	}
-	
+
 }

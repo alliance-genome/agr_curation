@@ -30,14 +30,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class OrthologyFmsDTOValidator {
 
-	@Inject
-	GeneToGeneOrthologyGeneratedDAO generatedOrthologyDAO;
-	@Inject
-	GeneService geneService;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject GeneToGeneOrthologyGeneratedDAO generatedOrthologyDAO;
+	@Inject GeneService geneService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
 	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ObjectValidationException {
@@ -46,7 +42,7 @@ public class OrthologyFmsDTOValidator {
 
 		String subjectGeneIdentifier = null;
 		String objectGeneIdentifier = null;
-		
+
 		GeneToGeneOrthologyGenerated orthoPair = null;
 
 		if (StringUtils.isBlank(dto.getGene1())) {
@@ -59,7 +55,7 @@ public class OrthologyFmsDTOValidator {
 		} else {
 			objectGeneIdentifier = convertToModCurie(dto.getGene2(), dto.getGene2Species());
 		}
-		
+
 		Gene subjectGene = null;
 		if (StringUtils.isNotBlank(dto.getGene1())) {
 			subjectGene = geneService.findByIdentifierString(subjectGeneIdentifier);
@@ -79,7 +75,7 @@ public class OrthologyFmsDTOValidator {
 				}
 			}
 		}
-		
+
 		Gene objectGene = null;
 		if (StringUtils.isNotBlank(dto.getGene2())) {
 			objectGene = geneService.findByIdentifierString(objectGeneIdentifier);
@@ -99,20 +95,22 @@ public class OrthologyFmsDTOValidator {
 				}
 			}
 		}
-		
+
 		if (subjectGene != null && objectGene != null) {
 			Map<String, Object> params = new HashMap<>();
 			params.put("subjectGene.id", subjectGene.getId());
 			params.put("objectGene.id", objectGene.getId());
 			SearchResponse<GeneToGeneOrthologyGenerated> searchResponse = generatedOrthologyDAO.findByParams(params);
-			if (searchResponse != null && searchResponse.getSingleResult() != null)
+			if (searchResponse != null && searchResponse.getSingleResult() != null) {
 				orthoPair = searchResponse.getSingleResult();
+			}
 		}
 
-		if (orthoPair == null)
+		if (orthoPair == null) {
 			orthoPair = new GeneToGeneOrthologyGenerated();
+		}
 
-		orthoPair.setSubjectGene(subjectGene);	
+		orthoPair.setSubjectGene(subjectGene);
 		orthoPair.setObjectGene(objectGene);
 
 		VocabularyTerm isBestScore = null;
@@ -120,8 +118,9 @@ public class OrthologyFmsDTOValidator {
 			orthologyResponse.addErrorMessage("isBestScore", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			isBestScore = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY, dto.getIsBestScore()).getEntity();
-			if (isBestScore == null)
+			if (isBestScore == null) {
 				orthologyResponse.addErrorMessage("isBestScore", ValidationConstants.INVALID_MESSAGE + " (" + dto.getIsBestScore() + ")");
+			}
 		}
 		orthoPair.setIsBestScore(isBestScore);
 
@@ -130,8 +129,9 @@ public class OrthologyFmsDTOValidator {
 			orthologyResponse.addErrorMessage("isBestRevScore", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			isBestScoreReverse = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET, dto.getIsBestRevScore()).getEntity();
-			if (isBestScoreReverse == null)
+			if (isBestScoreReverse == null) {
 				orthologyResponse.addErrorMessage("isBestRevScore", ValidationConstants.INVALID_MESSAGE + " (" + dto.getIsBestRevScore() + ")");
+			}
 		}
 		orthoPair.setIsBestScoreReverse(isBestScoreReverse);
 
@@ -182,21 +182,23 @@ public class OrthologyFmsDTOValidator {
 			orthologyResponse.addErrorMessage("confidence", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			confidence = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_CONFIDENCE_VOCABULARY, dto.getConfidence()).getEntity();
-			if (confidence == null)
+			if (confidence == null) {
 				orthologyResponse.addErrorMessage("confidence", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConfidence() + ")");
+			}
 		}
 		orthoPair.setConfidence(confidence);
 
 		orthoPair.setModerateFilter(dto.getModerateFilter());
-		
+
 		orthoPair.setStrictFilter(dto.getStrictFilter());
-		
+
 		orthoPair.setObsolete(false);
 		orthoPair.setInternal(false);
 
-		if (orthologyResponse.hasErrors())
+		if (orthologyResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, orthologyResponse.errorMessagesString());
-		
+		}
+
 		return generatedOrthologyDAO.persist(orthoPair);
 
 	}
@@ -204,14 +206,16 @@ public class OrthologyFmsDTOValidator {
 	private boolean sameGenus(NCBITaxonTerm taxon, NCBITaxonTerm geneTaxon) {
 		if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:8355") || StringUtils.equals(taxon.getCurie(), "NCBITaxon:8364")) {
 			// Must be same species for Xenopus as cleanup uses taxon curie
-			if (StringUtils.equals(taxon.getCurie(), geneTaxon.getCurie()))
+			if (StringUtils.equals(taxon.getCurie(), geneTaxon.getCurie())) {
 				return true;
+			}
 			return false;
 		}
 		String genus = taxon.getName().substring(0, taxon.getName().indexOf(" "));
 		String geneGenus = geneTaxon.getName().substring(0, geneTaxon.getName().indexOf(" "));
-		if (StringUtils.equals(genus, geneGenus))
+		if (StringUtils.equals(genus, geneGenus)) {
 			return true;
+		}
 		return false;
 	}
 
@@ -219,10 +223,11 @@ public class OrthologyFmsDTOValidator {
 		curie = curie.replaceFirst("^DRSC:", "");
 		if (curie.indexOf(":") == -1) {
 			String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonId(taxonId);
-			if (prefix != null)
+			if (prefix != null) {
 				curie = prefix + curie;
+			}
 		}
-			
+
 		return curie;
 	}
 

@@ -32,22 +32,14 @@ import jakarta.inject.Inject;
 
 public class DiseaseAnnotationValidator extends AnnotationValidator {
 
-	@Inject
-	EcoTermDAO ecoTermDAO;
-	@Inject
-	DoTermService doTermService;
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	BiologicalEntityDAO biologicalEntityDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	DiseaseAnnotationDAO diseaseAnnotationDAO;
-	@Inject
-	DataProviderService dataProviderService;
-	@Inject
-	DataProviderValidator dataProviderValidator;
+	@Inject EcoTermDAO ecoTermDAO;
+	@Inject DoTermService doTermService;
+	@Inject GeneDAO geneDAO;
+	@Inject BiologicalEntityDAO biologicalEntityDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject DataProviderService dataProviderService;
+	@Inject DataProviderValidator dataProviderValidator;
 
 	public DOTerm validateObjectOntologyTerm(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "diseaseAnnotationObject";
@@ -55,7 +47,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		DOTerm diseaseTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getDiseaseAnnotationObject().getCurie())) {
 			diseaseTerm = doTermService.findByCurie(uiEntity.getDiseaseAnnotationObject().getCurie());
@@ -100,12 +92,14 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		}
 		List<ECOTerm> validEvidenceCodes = new ArrayList<>();
 		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getEvidenceCodes()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getEvidenceCodes())) {
 			previousIds = dbEntity.getEvidenceCodes().stream().map(ECOTerm::getId).collect(Collectors.toList());
+		}
 		for (ECOTerm ec : uiEntity.getEvidenceCodes()) {
 			ECOTerm evidenceCode = null;
-			if (ec.getId() != null)
+			if (ec.getId() != null) {
 				evidenceCode = ecoTermDAO.find(ec.getId());
+			}
 			if (evidenceCode == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -124,17 +118,20 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	}
 
 	public List<Gene> validateWith(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		if (CollectionUtils.isEmpty(uiEntity.getWith()))
+		if (CollectionUtils.isEmpty(uiEntity.getWith())) {
 			return null;
+		}
 
 		List<Gene> validWithGenes = new ArrayList<Gene>();
 		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getWith()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getWith())) {
 			previousIds = dbEntity.getWith().stream().map(Gene::getId).collect(Collectors.toList());
+		}
 		for (Gene wg : uiEntity.getWith()) {
 			Gene withGene = null;
-			if (wg.getId() != null)
+			if (wg.getId() != null) {
 				withGene = geneDAO.find(wg.getId());
+			}
 			if (withGene == null || withGene.getModEntityId() == null || !withGene.getModEntityId().startsWith("HGNC:")) {
 				addMessageResponse("with", ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -148,35 +145,35 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		return validWithGenes;
 	}
 
-	
 	public DataProvider validateSecondaryDataProvider(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "secondaryDataProvider";
-		
+
 		if (uiEntity.getSecondaryDataProvider() == null) {
 			if (dbEntity.getId() == null) {
 				uiEntity.setSecondaryDataProvider(dataProviderService.createAllianceDataProvider());
-				if (uiEntity.getSecondaryDataProvider() == null)
+				if (uiEntity.getSecondaryDataProvider() == null) {
 					return null;
+				}
 			} else {
 				return null;
 			}
 		}
-		
+
 		DataProvider uiDataProvider = uiEntity.getSecondaryDataProvider();
 		DataProvider dbDataProvider = dbEntity.getSecondaryDataProvider();
-		
+
 		ObjectResponse<DataProvider> dpResponse = dataProviderValidator.validateDataProvider(uiDataProvider, dbDataProvider, false);
 		if (dpResponse.hasErrors()) {
 			addMessageResponse(field, dpResponse.errorMessagesString());
 			return null;
 		}
-		
+
 		DataProvider validatedDataProvider = dpResponse.getEntity();
 		if (validatedDataProvider.getObsolete() && (dbDataProvider == null || !validatedDataProvider.getId().equals(dbDataProvider.getId()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
+
 		return validatedDataProvider;
 	}
 
@@ -192,12 +189,14 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 		List<BiologicalEntity> validModifiers = new ArrayList<>();
 		List<Long> previousIds = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getDiseaseGeneticModifiers()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getDiseaseGeneticModifiers())) {
 			previousIds = dbEntity.getDiseaseGeneticModifiers().stream().map(BiologicalEntity::getId).collect(Collectors.toList());
+		}
 		for (BiologicalEntity modifier : uiEntity.getDiseaseGeneticModifiers()) {
 			BiologicalEntity diseaseGeneticModifier = null;
-			if (modifier.getId() != null)
+			if (modifier.getId() != null) {
 				diseaseGeneticModifier = biologicalEntityDAO.find(modifier.getId());
+			}
 			if (diseaseGeneticModifier == null) {
 				addMessageResponse("diseaseGeneticModifiers", ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -282,10 +281,11 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	}
 
 	public String validateUniqueId(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		
-		if (dbEntity.getDataProvider() == null)
+
+		if (dbEntity.getDataProvider() == null) {
 			return null;
-		
+		}
+
 		String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(uiEntity);
 
 		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
@@ -300,7 +300,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 	}
 
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		
+
 		DOTerm term = validateObjectOntologyTerm(uiEntity, dbEntity);
 		dbEntity.setDiseaseAnnotationObject(term);
 
@@ -331,7 +331,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		dbEntity.setDiseaseQualifiers(diseaseQualifiers);
 
 		dbEntity = (DiseaseAnnotation) validateCommonAnnotationFields(uiEntity, dbEntity, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
-		
+
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
 

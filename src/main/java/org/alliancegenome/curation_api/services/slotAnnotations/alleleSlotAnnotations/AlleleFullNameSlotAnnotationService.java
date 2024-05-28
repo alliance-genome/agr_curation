@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleFullNameSlotAnnotationService extends BaseEntityCrudService<AlleleFullNameSlotAnnotation, AlleleFullNameSlotAnnotationDAO> {
 
-	@Inject
-	AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
-	@Inject
-	AlleleFullNameSlotAnnotationValidator alleleFullNameValidator;
+	@Inject AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
+	@Inject AlleleFullNameSlotAnnotationValidator alleleFullNameValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleFullNameSlotAnnotationService extends BaseEntityCrudService<A
 	@Transactional
 	public ObjectResponse<AlleleFullNameSlotAnnotation> upsert(AlleleFullNameSlotAnnotation uiEntity) {
 		AlleleFullNameSlotAnnotation dbEntity = alleleFullNameValidator.validateAlleleFullNameSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleFullNameSlotAnnotation>(alleleFullNameDAO.persist(dbEntity));
 	}
 

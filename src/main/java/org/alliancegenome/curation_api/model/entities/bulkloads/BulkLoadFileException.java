@@ -33,7 +33,7 @@ import lombok.ToString;
 	indexes = {
 		@Index(name = "bulkloadfileexception_bulkLoadFileHistory_index", columnList = "bulkLoadFileHistory_id"),
 		@Index(name = "bulkloadfileexception_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "bulkloadfileexception_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "bulkloadfileexception_updatedby_index", columnList = "updatedBy_id")
 	}
 )
 //TODO: define this class in LinkML once class definition matured

@@ -32,23 +32,23 @@ public interface ConstructCrudInterface extends BaseSubmittedObjectCrudInterface
 	@GET
 	@Path("/{identifierString}")
 	@JsonView(View.ConstructView.class)
-	public ObjectResponse<Construct> getByIdentifier(@PathParam("identifierString") String identifierString);
+	ObjectResponse<Construct> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.ConstructView.class)
-	public ObjectResponse<Construct> update(Construct entity);
+	ObjectResponse<Construct> update(Construct entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.ConstructView.class)
-	public ObjectResponse<Construct> create(Construct entity);
+	ObjectResponse<Construct> create(Construct entity);
 
 	@POST
 	@Path("/bulk/{dataProvider}/constructs")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateConstructs(@PathParam("dataProvider") String dataProvider, List<ConstructDTO> constructData);
+	APIResponse updateConstructs(@PathParam("dataProvider") String dataProvider, List<ConstructDTO> constructData);
 
 }

@@ -7,14 +7,16 @@ import org.apache.commons.collections.CollectionUtils;
 public abstract class AnnotationRetrievalHelper {
 
 	public static <E extends Annotation> E getCurrentAnnotation(E annotation, SearchResponse<E> annotationList) {
-		if (annotationList == null || CollectionUtils.isEmpty(annotationList.getResults()))
+		if (annotationList == null || CollectionUtils.isEmpty(annotationList.getResults())) {
 			return annotation;
-		
-		for (E annotationInList : annotationList.getResults()) {
-			if (!annotationInList.getObsolete())
-				return annotationInList;
 		}
-		
+
+		for (E annotationInList : annotationList.getResults()) {
+			if (!annotationInList.getObsolete()) {
+				return annotationInList;
+			}
+		}
+
 		return annotationList.getResults().get(0);
 	}
 

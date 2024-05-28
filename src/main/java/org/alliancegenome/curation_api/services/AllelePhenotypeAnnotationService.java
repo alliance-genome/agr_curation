@@ -20,15 +20,11 @@ import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO> {
-	
-	@Inject
-	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject
-	AllelePhenotypeAnnotationFmsDTOValidator allelePhenotypeAnnotationFmsDtoValidator;
+
+	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject AllelePhenotypeAnnotationFmsDTOValidator allelePhenotypeAnnotationFmsDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -53,7 +49,7 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return allelePhenotypeAnnotationDAO.persist(annotation);
 	}
-	
+
 	@Transactional
 	public void addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, idsAdded, dataProvider);
@@ -73,8 +69,7 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 	}
 
 	@Override
-	public AllelePhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
+	public AllelePhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		return (AllelePhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

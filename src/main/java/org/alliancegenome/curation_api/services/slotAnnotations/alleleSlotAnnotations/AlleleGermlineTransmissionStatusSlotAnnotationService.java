@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleGermlineTransmissionStatusSlotAnnotationService extends BaseEntityCrudService<AlleleGermlineTransmissionStatusSlotAnnotation, AlleleGermlineTransmissionStatusSlotAnnotationDAO> {
 
-	@Inject
-	AlleleGermlineTransmissionStatusSlotAnnotationDAO alleleGermlineTransmissionStatusDAO;
-	@Inject
-	AlleleGermlineTransmissionStatusSlotAnnotationValidator alleleGermlineTransmissionStatusValidator;
+	@Inject AlleleGermlineTransmissionStatusSlotAnnotationDAO alleleGermlineTransmissionStatusDAO;
+	@Inject AlleleGermlineTransmissionStatusSlotAnnotationValidator alleleGermlineTransmissionStatusValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationService extends BaseE
 	@Transactional
 	public ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> upsert(AlleleGermlineTransmissionStatusSlotAnnotation uiEntity) {
 		AlleleGermlineTransmissionStatusSlotAnnotation dbEntity = alleleGermlineTransmissionStatusValidator.validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation>(alleleGermlineTransmissionStatusDAO.persist(dbEntity));
 	}
 

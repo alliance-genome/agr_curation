@@ -34,5 +34,5 @@ public interface BaseDeleteIdentifierControllerInterface<E extends AuditedObject
 			)
 		)
 	)
-	public ObjectResponse<E> deleteByIdentifier(@PathParam("identifierString") String identifierString);
+	ObjectResponse<E> deleteByIdentifier(@PathParam("identifierString") String identifierString);
 }
