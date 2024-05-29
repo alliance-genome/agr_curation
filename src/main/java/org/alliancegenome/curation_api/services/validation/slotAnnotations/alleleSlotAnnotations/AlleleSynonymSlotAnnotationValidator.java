@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleSynonymSlotAnnotationValidator extends NameSlotAnnotationValidator<AlleleSynonymSlotAnnotation> {
 
-	@Inject
-	AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
-	@Inject
-	AlleleDAO alleleDAO;
+	@Inject AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleSynonymSlotAnnotation> validateAlleleSynonymSlotAnnotation(AlleleSynonymSlotAnnotation uiEntity) {
 		AlleleSynonymSlotAnnotation synonym = validateAlleleSynonymSlotAnnotation(uiEntity, false, false);

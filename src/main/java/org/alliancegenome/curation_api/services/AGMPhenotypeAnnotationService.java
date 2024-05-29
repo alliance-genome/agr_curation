@@ -21,14 +21,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGMPhenotypeAnnotation, AGMPhenotypeAnnotationDAO> {
 
-	@Inject
-	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject
-	AGMPhenotypeAnnotationFmsDTOValidator agmPhenotypeAnnotationFmsDtoValidator;
+	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject AGMPhenotypeAnnotationFmsDTOValidator agmPhenotypeAnnotationFmsDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -53,7 +49,7 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return agmPhenotypeAnnotationDAO.persist(annotation);
 	}
-	
+
 	@Transactional
 	public void addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, idsAdded, dataProvider);
@@ -73,8 +69,7 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 	}
 
 	@Override
-	public AGMPhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
+	public AGMPhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		return (AGMPhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

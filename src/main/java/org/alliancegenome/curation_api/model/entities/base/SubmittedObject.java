@@ -45,34 +45,40 @@ public class SubmittedObject extends CurieObject {
 	@JsonView({ View.FieldsOnly.class })
 	private String modInternalId;
 
-	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
-			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
+	@IndexedEmbedded(includePaths = {
+		"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
+		"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class })
 	private DataProvider dataProvider;
 
-	
 	@Transient
 	@JsonIgnore
 	public String getIdentifier() {
-		if (StringUtils.isNotBlank(curie))
+		if (StringUtils.isNotBlank(curie)) {
 			return curie;
-		if (StringUtils.isNotBlank(modEntityId))
+		}
+		if (StringUtils.isNotBlank(modEntityId)) {
 			return modEntityId;
-		if (StringUtils.isNotBlank(modInternalId))
+		}
+		if (StringUtils.isNotBlank(modInternalId)) {
 			return modInternalId;
+		}
 		return null;
 	}
 	
 	@Transient
 	@JsonIgnore
 	public String getSubmittedIdentifier() {
-		if (StringUtils.isNotBlank(modEntityId))
+		if (StringUtils.isNotBlank(modEntityId)) {
 			return modEntityId;
-		if (StringUtils.isNotBlank(modInternalId))
+		}
+		if (StringUtils.isNotBlank(modInternalId)) {
 			return modInternalId;
+		}
 		return null;
 	}
 	

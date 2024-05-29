@@ -25,15 +25,15 @@ public interface PersonInterface {
 	@Path("/")
 	@Operation(hidden = true)
 	@JsonView(View.FieldsOnly.class)
-	public ObjectResponse<Person> create(Person entity);
+	ObjectResponse<Person> create(Person entity);
 
 	@GET
 	@Path("/")
 	@JsonView(View.PersonSettingView.class)
-	public Person getLoggedInPerson();
+	Person getLoggedInPerson();
 
 	@GET
 	@Path("/regenapitoken")
-	public Person regenApiToken();
+	Person regenApiToken();
 
 }

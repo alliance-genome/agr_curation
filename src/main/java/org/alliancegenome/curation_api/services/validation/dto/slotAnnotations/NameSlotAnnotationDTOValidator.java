@@ -15,8 +15,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public <E extends NameSlotAnnotation> ObjectResponse<E> validateNameSlotAnnotationDTO(E annotation, NameSlotAnnotationDTO dto, String nameTypeVocabularyOrSet) {
 		ObjectResponse<E> nsaResponse = validateSlotAnnotationDTO(annotation, dto);
@@ -33,7 +32,7 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 		} else {
 			annotation.setFormatText(dto.getFormatText());
 		}
-		
+
 		if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
 			VocabularyTerm nameType;
 			if (nameTypeVocabularyOrSet.equals(VocabularyConstants.NAME_TYPE_VOCABULARY)) {
@@ -41,8 +40,9 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 			} else {
 				nameType = vocabularyTermService.getTermInVocabularyTermSet(nameTypeVocabularyOrSet, dto.getNameTypeName()).getEntity();
 			}
-			if (nameType == null)
+			if (nameType == null) {
 				nsaResponse.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
+			}
 			annotation.setNameType(nameType);
 		} else {
 			nsaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
@@ -56,8 +56,9 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
 		if (StringUtils.isNotBlank(dto.getSynonymScopeName())) {
 			VocabularyTerm synonymScope = vocabularyTermService.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, dto.getSynonymScopeName()).getEntity();
-			if (synonymScope == null)
+			if (synonymScope == null) {
 				nsaResponse.addErrorMessage("synonym_scope", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSynonymScopeName() + ")");
+			}
 			annotation.setSynonymScope(synonymScope);
 		} else {
 			annotation.setSynonymScope(null);

@@ -24,17 +24,14 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
-	
-	@Inject
-	ResourceDescriptorDAO resourceDescriptorDAO;
-	@Inject
-	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
-	@Inject
-	ResourceDescriptorPageDTOValidator resourceDescriptorPageDtoValidator;
+
+	@Inject ResourceDescriptorDAO resourceDescriptorDAO;
+	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
+	@Inject ResourceDescriptorPageDTOValidator resourceDescriptorPageDtoValidator;
 
 	public ResourceDescriptor validateResourceDescriptorDTO(ResourceDescriptorDTO dto) throws ObjectValidationException {
 		ObjectResponse<ResourceDescriptor> rdResponse = new ObjectResponse<ResourceDescriptor>();
-		
+
 		ResourceDescriptor rd = null;
 		if (StringUtils.isBlank(dto.getDbPrefix())) {
 			rdResponse.addErrorMessage("db_prefix", ValidationConstants.REQUIRED_MESSAGE);
@@ -47,24 +44,24 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 				rd = rdSearchResponse.getSingleResult();
 			}
 		}
-		
 
-		if (StringUtils.isBlank(dto.getName()))
+		if (StringUtils.isBlank(dto.getName())) {
 			rdResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
+		}
 		rd.setName(dto.getName());
 
-		
 		if (CollectionUtils.isNotEmpty(dto.getAliases())) {
 			rd.setSynonyms(dto.getAliases());
 		} else {
 			rd.setSynonyms(null);
 		}
-		
+
 		String idPattern = null;
-		if (StringUtils.isNotBlank(dto.getGidPattern()))
+		if (StringUtils.isNotBlank(dto.getGidPattern())) {
 			idPattern = StringEscapeUtils.escapeJava(dto.getGidPattern());
+		}
 		rd.setIdPattern(idPattern);
-		
+
 		String idExample = null;
 		if (StringUtils.isNotBlank(dto.getExampleGid())) {
 			idExample = dto.getExampleGid();
@@ -72,9 +69,9 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 			idExample = dto.getExampleId();
 		}
 		rd.setIdExample(idExample);
-		
+
 		List<ResourceDescriptorPage> rdPages = new ArrayList<>();
-		
+
 		String defaultUrlTemplate = null;
 		ResourceDescriptorPageDTO defaultPageDTO = null;
 		if (StringUtils.isNotBlank(dto.getDefaultUrl())) {
@@ -83,15 +80,17 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 			defaultPageDTO.setName("default");
 			defaultPageDTO.setUrl(defaultUrlTemplate);
 			ObjectResponse<ResourceDescriptorPage> defaultRdPageResponse = resourceDescriptorPageDtoValidator.validateResourceDescriptorPageDTO(defaultPageDTO, dto.getDbPrefix());
-			if (defaultRdPageResponse.hasErrors())
+			if (defaultRdPageResponse.hasErrors()) {
 				rdResponse.addErrorMessage("default_url_template", "Error during default page construction: " + defaultRdPageResponse.errorMessagesString());
+			}
 			rdPages.add(defaultRdPageResponse.getEntity());
 		}
 		rd.setDefaultUrlTemplate(defaultUrlTemplate);
-		
+
 		List<Long> previousPageIds = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(rd.getResourcePages()))
+		if (CollectionUtils.isNotEmpty(rd.getResourcePages())) {
 			previousPageIds = rd.getResourcePages().stream().map(ResourceDescriptorPage::getId).collect(Collectors.toList());
+		}
 		if (CollectionUtils.isNotEmpty(dto.getPages())) {
 			for (ResourceDescriptorPageDTO rdPageDTO : dto.getPages()) {
 				ObjectResponse<ResourceDescriptorPage> rdPageResponse = resourceDescriptorPageDtoValidator.validateResourceDescriptorPageDTO(rdPageDTO, dto.getDbPrefix());
@@ -104,7 +103,7 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 		} else {
 			rd.setResourcePages(null);
 		}
-		
+
 		rdResponse.setEntity(rd);
 
 		if (rdResponse.hasErrors()) {
@@ -125,11 +124,12 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 		// Remove unused ResourceDescriptorPage objects
 		if (CollectionUtils.isNotEmpty(previousPageIds)) {
 			for (Long previousPageId : previousPageIds) {
-				if (!newPageIds.contains(previousPageId))
+				if (!newPageIds.contains(previousPageId)) {
 					resourceDescriptorPageDAO.remove(previousPageId);
+				}
 			}
 		}
-		
+
 		return rd;
 	}
 }

@@ -30,30 +30,28 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "AlleleGenomicEntityAssociation", description = "POJO representing an association between an allele and a genomic entity")
-@Table(indexes = {
-	@Index(name = "allelegenomicentityassociation_relation_index", columnList = "relation_id")
-})
+@Table(
+	indexes = {
+		@Index(name = "allelegenomicentityassociation_relation_index", columnList = "relation_id")
+	}
+)
 public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexedEmbedded(includePaths = { "name", "name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class, View.AlleleView.class })
 	private VocabularyTerm relation;
 
-	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
-			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
+	@IndexedEmbedded(includePaths = { "curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation", "curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private ECOTerm evidenceCode;
-	
-	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
-			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
-			"references.primaryCrossReferenceCurie_keyword"
-	})
+
+	@IndexedEmbedded(includePaths = { "freeText", "noteType.name", "references.curie", "references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", "references.primaryCrossReferenceCurie_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsOnly.class })
 	private Note relatedNote;
 }

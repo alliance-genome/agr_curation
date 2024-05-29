@@ -12,12 +12,11 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class DiseaseAnnotationUniqueIdUpdateHelper {
 
-	@Inject 
-	DiseaseAnnotationDAO diseaseAnnotationDAO;
-	
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+
 	public void updateDiseaseAnnotationUniqueIds() {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		
+
 		SearchResponse<Long> response = diseaseAnnotationDAO.findAllIds();
 		pdh.startProcess("DiseaseAnnotation uniqueId update", response.getTotalResults());
 		for (Long daId : response.getResults()) {
@@ -30,11 +29,12 @@ public class DiseaseAnnotationUniqueIdUpdateHelper {
 	@Transactional
 	public void updateDiseaseAnnotationUniqueId(Long id) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
-		if (annotation == null)
+		if (annotation == null) {
 			return;
-		
+		}
+
 		annotation.setUniqueId(AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(annotation));
 		diseaseAnnotationDAO.merge(annotation);
 	}
-	
+
 }

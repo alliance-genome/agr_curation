@@ -14,16 +14,12 @@ import jakarta.inject.Inject;
 
 public class ReportProcessor {
 
-	@Inject
-	EventBus bus;
+	@Inject EventBus bus;
 
-	@Inject
-	CurationReportGroupDAO curationReportGroupDAO;
-	@Inject
-	CurationReportDAO curationReportDAO;
+	@Inject CurationReportGroupDAO curationReportGroupDAO;
+	@Inject CurationReportDAO curationReportDAO;
 
-	@Inject
-	ReportJobExecutor reportJobExecutor;
+	@Inject ReportJobExecutor reportJobExecutor;
 
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 

@@ -21,10 +21,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationValidator<AlleleMutationTypeSlotAnnotation> {
 
-	@Inject
-	AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
-	@Inject
-	SoTermDAO soTermDAO;
+	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
+	@Inject SoTermDAO soTermDAO;
 
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotation(AlleleMutationTypeSlotAnnotation uiEntity) {
 		AlleleMutationTypeSlotAnnotation mutationType = validateAlleleMutationTypeSlotAnnotation(uiEntity, false, false);
@@ -82,12 +80,14 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 		}
 		List<SOTerm> validMutationTypes = new ArrayList<>();
 		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getMutationTypes()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getMutationTypes())) {
 			previousIds = dbEntity.getMutationTypes().stream().map(SOTerm::getId).collect(Collectors.toList());
+		}
 		for (SOTerm mt : uiEntity.getMutationTypes()) {
 			SOTerm mutationType = null;
-			if (mt.getId() != null)
+			if (mt.getId() != null) {
 				mutationType = soTermDAO.find(mt.getId());
+			}
 			if (mutationType == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;

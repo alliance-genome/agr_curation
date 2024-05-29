@@ -11,8 +11,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class PersonSettingService extends BaseEntityCrudService<PersonSetting, PersonSettingDAO> {
 
-	@Inject
-	PersonSettingDAO personSettingDAO;
+	@Inject PersonSettingDAO personSettingDAO;
 
 	@Override
 	@PostConstruct

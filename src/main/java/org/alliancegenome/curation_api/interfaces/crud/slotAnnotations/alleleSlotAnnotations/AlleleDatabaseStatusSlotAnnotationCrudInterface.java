@@ -23,5 +23,5 @@ public interface AlleleDatabaseStatusSlotAnnotationCrudInterface extends BaseIdC
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validate(AlleleDatabaseStatusSlotAnnotation entity);
+	ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validate(AlleleDatabaseStatusSlotAnnotation entity);
 }

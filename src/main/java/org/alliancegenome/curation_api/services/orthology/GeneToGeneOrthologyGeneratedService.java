@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -20,25 +22,23 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<GeneToGeneOrthologyGenerated, GeneToGeneOrthologyGeneratedDAO> {
+public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<GeneToGeneOrthologyGenerated, GeneToGeneOrthologyGeneratedDAO> implements BaseUpsertServiceInterface<GeneToGeneOrthologyGenerated, OrthologyFmsDTO> {
 
-	@Inject
-	GeneToGeneOrthologyGeneratedDAO geneToGeneOrthologyGeneratedDAO;
-	@Inject
-	OrthologyFmsDTOValidator orthologyFmsDtoValidator;
-	
+	@Inject GeneToGeneOrthologyGeneratedDAO geneToGeneOrthologyGeneratedDAO;
+	@Inject OrthologyFmsDTOValidator orthologyFmsDtoValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneToGeneOrthologyGeneratedDAO);
 	}
 
-	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair) throws ObjectUpdateException {
-		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);		
+	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
+		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);
 	}
 
 	public List<Object[]> getAllOrthologyPairsBySubjectGeneDataProvider(String dataProvider) {
-		switch(dataProvider) {
+		switch (dataProvider) {
 			case "XBXL":
 				return geneToGeneOrthologyGeneratedDAO.findAllOrthologyPairsBySubjectGeneDataProviderAndTaxon("XB", "NCBITaxon:8355");
 			case "XBXT":

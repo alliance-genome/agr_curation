@@ -19,9 +19,11 @@ public abstract class BaseDocumentController<S extends BaseDocumentService<E, D>
 
 	protected abstract void init();
 
+	@Override
 	public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
-		if (params == null)
+		if (params == null) {
 			params = new HashMap<String, Object>();
+		}
 		Pagination pagination = new Pagination(page, limit);
 		return service.searchByParams(pagination, params);
 	}

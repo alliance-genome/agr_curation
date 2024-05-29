@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.services;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -16,27 +18,24 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGeneticInteraction, GeneGeneticInteractionDAO> {
+public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGeneticInteraction, GeneGeneticInteractionDAO> implements BaseUpsertServiceInterface<GeneGeneticInteraction, PsiMiTabDTO> {
 
-	@Inject
-	GeneGeneticInteractionDAO geneGeneticInteractionDAO;
-	@Inject
-	GeneGeneticInteractionFmsDTOValidator geneGeneticInteractionValidator;
-	
+	@Inject GeneGeneticInteractionDAO geneGeneticInteractionDAO;
+	@Inject GeneGeneticInteractionFmsDTOValidator geneGeneticInteractionValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneGeneticInteractionDAO);
 	}
-	
+
 	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(String identifier) {
-		List<String> identifierFields = List.of("interactionId", "uniqueId");
-		GeneGeneticInteraction interaction = findByAlternativeFields(identifierFields, identifier);
+		GeneGeneticInteraction interaction = findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier);
 		return new ObjectResponse<GeneGeneticInteraction>(interaction);
 	}
 
 	@Transactional
-	public GeneGeneticInteraction upsert(PsiMiTabDTO dto) throws ObjectUpdateException {
+	public GeneGeneticInteraction upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
 		GeneGeneticInteraction interaction = geneGeneticInteractionValidator.validateGeneGeneticInteractionFmsDTO(dto);
 		return geneGeneticInteractionDAO.persist(interaction);
 	}

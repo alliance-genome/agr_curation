@@ -31,12 +31,12 @@ public class GeneGeneticInteractionCrudController extends BaseEntityCrudControll
 		setService(geneGeneticInteractionService);
 	}
 
-	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(String identifierString) {
-		return geneGeneticInteractionService.getByIdentifier(identifierString);
+	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(String identifier) {
+		return geneGeneticInteractionService.getByIdentifier(identifier);
 	}
 
 	public APIResponse updateInteractions(List<PsiMiTabDTO> interactionData) {
-		return geneGeneticInteractionExecutor.runLoad(interactionData);
+		return geneGeneticInteractionExecutor.runLoadApi(geneGeneticInteractionService, null, interactionData);
 	}
 	
 }

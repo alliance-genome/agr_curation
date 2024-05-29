@@ -20,47 +20,48 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	private ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<AffectedGenomicModel>();
 
 	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
-		
+
 		AffectedGenomicModel agm = null;
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			SearchResponse<AffectedGenomicModel> response = affectedGenomicModelDAO.findByField("modEntityId", dto.getModEntityId());
-			if (response != null && response.getSingleResult() != null)
+			if (response != null && response.getSingleResult() != null) {
 				agm = response.getSingleResult();
+			}
 		} else {
 			agmResponse.addErrorMessage("modEntityId", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
-		if (agm == null)
+		if (agm == null) {
 			agm = new AffectedGenomicModel();
+		}
 
 		agm.setModEntityId(dto.getModEntityId());
 		agm.setModInternalId(handleStringField(dto.getModInternalId()));
 		agm.setName(handleStringField(dto.getName()));
-		
+
 		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto, dataProvider);
 		agmResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		agm = geResponse.getEntity();
-		
+
 		VocabularyTerm subtype = null;
 		if (StringUtils.isBlank(dto.getSubtypeName())) {
 			agmResponse.addErrorMessage("subtype_name", ValidationConstants.REQUIRED_MESSAGE);
-		
+
 		} else {
 			subtype = vocabularyTermService.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, dto.getSubtypeName()).getEntity();
-			if (subtype == null)
+			if (subtype == null) {
 				agmResponse.addErrorMessage("subtype_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSubtypeName() + ")");
+			}
 		}
 		agm.setSubtype(subtype);
-		
+
 		agmResponse.convertErrorMessagesToMap();
 
 		if (agmResponse.hasErrors()) {

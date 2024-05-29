@@ -44,7 +44,7 @@ import lombok.ToString;
 		@Index(name = "vocabularytermset_updatedby_id_index", columnList = "updatedby_id"),
 		@Index(name = "vocabularytermset_vocabularytermsetvocabulary_id_index", columnList = "vocabularytermsetvocabulary_id")
 	}, uniqueConstraints = {
-		@UniqueConstraint(name = "vocabularytermset_vocabularyLabel_uk", columnNames = "vocabularyLabel"),
+		@UniqueConstraint(name = "vocabularytermset_vocabularyLabel_uk", columnNames = "vocabularyLabel")
 	}
 )
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })

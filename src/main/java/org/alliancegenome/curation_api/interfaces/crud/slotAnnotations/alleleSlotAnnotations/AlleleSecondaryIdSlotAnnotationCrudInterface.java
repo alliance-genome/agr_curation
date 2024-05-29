@@ -23,5 +23,5 @@ public interface AlleleSecondaryIdSlotAnnotationCrudInterface extends BaseIdCrud
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validate(AlleleSecondaryIdSlotAnnotation entity);
+	ObjectResponse<AlleleSecondaryIdSlotAnnotation> validate(AlleleSecondaryIdSlotAnnotation entity);
 }

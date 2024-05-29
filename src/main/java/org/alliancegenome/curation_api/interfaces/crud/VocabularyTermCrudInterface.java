@@ -35,32 +35,31 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@Path("/search")
 	@JsonView(View.VocabularyTermView.class)
 	@Tag(name = "Elastic Search Browsing Endpoints")
-	public SearchResponse<VocabularyTerm> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit,
-		@RequestBody HashMap<String, Object> params);
+	SearchResponse<VocabularyTerm> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@GET
 	@Path("/{id}")
 	@JsonView(View.VocabularyTermView.class)
-	public ObjectResponse<VocabularyTerm> getById(@PathParam("id") Long id);
+	ObjectResponse<VocabularyTerm> getById(@PathParam("id") Long id);
 
 	@GET
 	@Path("/findBy")
 	@JsonView(View.VocabularyTermView.class)
-	public ObjectResponse<VocabularyTerm> getTermInVocabulary(@QueryParam("vocabularyName") String vocabularyName, @QueryParam("termName") String termName);
+	ObjectResponse<VocabularyTerm> getTermInVocabulary(@QueryParam("vocabularyName") String vocabularyName, @QueryParam("termName") String termName);
 
 	@GET
 	@Path("/findInSet")
 	@JsonView(View.VocabularyTermView.class)
-	public ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(@QueryParam("vocabularyTermSetName") String vocabularyTermSetName, @QueryParam("termName") String termName);
+	ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(@QueryParam("vocabularyTermSetName") String vocabularyTermSetName, @QueryParam("termName") String termName);
 
 	@PUT
 	@Path("/")
 	@JsonView(View.VocabularyTermUpdate.class)
-	public ObjectResponse<VocabularyTerm> update(VocabularyTerm entity);
+	ObjectResponse<VocabularyTerm> update(VocabularyTerm entity);
 
 	@POST
 	@Path("/")
 	@JsonView(VocabularyTermView.class)
-	public ObjectResponse<VocabularyTerm> create(VocabularyTerm entity);
+	ObjectResponse<VocabularyTerm> create(VocabularyTerm entity);
 }

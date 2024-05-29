@@ -23,5 +23,5 @@ public interface AlleleInheritanceModeSlotAnnotationCrudInterface extends BaseId
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validate(AlleleInheritanceModeSlotAnnotation entity);
+	ObjectResponse<AlleleInheritanceModeSlotAnnotation> validate(AlleleInheritanceModeSlotAnnotation entity);
 }

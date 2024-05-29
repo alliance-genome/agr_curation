@@ -22,63 +22,57 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
-			
+
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
-			
+
 			PhenotypeIngestFmsDTO phenotypeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), PhenotypeIngestFmsDTO.class);
 			bulkLoadFile.setRecordCount(phenotypeData.getData().size());
 			if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
 				AGRCurationSchemaVersion version = Molecule.class.getAnnotation(AGRCurationSchemaVersion.class);
 				bulkLoadFile.setLinkMLSchemaVersion(version.max());
 			}
-			if (phenotypeData.getMetaData() != null && StringUtils.isNotBlank(phenotypeData.getMetaData().getRelease()))
+			if (phenotypeData.getMetaData() != null && StringUtils.isNotBlank(phenotypeData.getMetaData().getRelease())) {
 				bulkLoadFile.setAllianceMemberReleaseVersion(phenotypeData.getMetaData().getRelease());
+			}
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(phenotypeData.getData().size());
-			
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
 			
+			BulkLoadFileHistory history = new BulkLoadFileHistory(phenotypeData.getData().size());
+			createHistory(history, bulkLoadFile);
 			runLoad(history, phenotypeData.getData(), annotationIdsLoaded, dataProvider);
-			
 			runCleanup(phenotypeAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "phenotype annotation", bulkLoadFile.getMd5Sum());
-
 			history.finishLoad();
-			
-			trackHistory(history, bulkLoadFile);
-
+			finalSaveHistory(history);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	// Gets called from the API directly
 	public APIResponse runLoad(String dataProviderName, List<PhenotypeFmsDTO> annotations) {
 		List<Long> annotationIdsLoaded = new ArrayList<>();
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, annotations, annotationIdsLoaded, dataProvider);
 		history.finishLoad();
-		
+
 		return new LoadHistoryResponce(history);
 	}
 
-	
 	private void runLoad(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, List<Long> idsAdded, BackendBulkDataProvider dataProvider) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -86,15 +80,16 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 
 		loadPrimaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
 		loadSecondaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
-		
+
 		ph.finishProcess();
 
 	}
-	
+
 	private void loadSecondaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
 		for (PhenotypeFmsDTO dto : annotations) {
-			if (CollectionUtils.isEmpty(dto.getPrimaryGeneticEntityIds()))
+			if (CollectionUtils.isEmpty(dto.getPrimaryGeneticEntityIds())) {
 				continue;
+			}
 
 			try {
 				phenotypeAnnotationService.addInferredOrAssertedEntities(dto, idsAdded, dataProvider);
@@ -107,25 +102,26 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
-
+			updateHistory(history);
 			ph.progressProcess();
 		}
-		
-	}
 
+	}
 
 	private void loadPrimaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
 		for (PhenotypeFmsDTO dto : annotations) {
-			if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIds()))
+			if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIds())) {
 				continue;
+			}
 
 			try {
 				Long primaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(dto, dataProvider);
 				if (primaryAnnotationId != null) {
 					history.incrementCompleted();
-					if (idsAdded != null)
+					if (idsAdded != null) {
 						idsAdded.add(primaryAnnotationId);
-				} 
+					}
+				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
 				addException(history, e.getData());
@@ -134,7 +130,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
-
+			updateHistory(history);
 			ph.progressProcess();
 		}
 	}

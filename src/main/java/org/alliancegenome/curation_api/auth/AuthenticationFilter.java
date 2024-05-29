@@ -41,38 +41,27 @@ import lombok.extern.jbosslog.JBossLog;
 public class AuthenticationFilter implements ContainerRequestFilter {
 
 	@Inject
-	@AuthenticatedUser
-	Event<Person> userAuthenticatedEvent;
+	@AuthenticatedUser Event<Person> userAuthenticatedEvent;
 
-	@Inject
-	AuthenticationService authenticationService;
+	@Inject AuthenticationService authenticationService;
 
-	@Inject
-	PersonDAO personDAO;
+	@Inject PersonDAO personDAO;
 
-	@Inject
-	AllianceMemberDAO allianceMemberDAO;
+	@Inject AllianceMemberDAO allianceMemberDAO;
 
-	@Inject
-	PersonService personService;
+	@Inject PersonService personService;
 
-	@Inject
-	PersonUniqueIdHelper loggedInPersonUniqueId;
+	@Inject PersonUniqueIdHelper loggedInPersonUniqueId;
 
-	@ConfigProperty(name = "okta.authentication")
-	Instance<Boolean> okta_auth;
+	@ConfigProperty(name = "okta.authentication") Instance<Boolean> oktaAuth;
 
-	@ConfigProperty(name = "okta.url")
-	Instance<String> okta_url;
+	@ConfigProperty(name = "okta.url") Instance<String> oktaUrl;
 
-	@ConfigProperty(name = "okta.client.id")
-	Instance<String> client_id;
+	@ConfigProperty(name = "okta.client.id") Instance<String> clientId;
 
-	@ConfigProperty(name = "okta.client.secret")
-	Instance<String> client_secret;
+	@ConfigProperty(name = "okta.client.secret") Instance<String> clientSecret;
 
-	@ConfigProperty(name = "okta.api.token")
-	Instance<String> api_token;
+	@ConfigProperty(name = "okta.api.token") Instance<String> apiToken;
 
 	// private static final String REALM = "AGR";
 	private static final String AUTHENTICATION_SCHEME = "Bearer";
@@ -86,8 +75,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		// Testing)
 		// if okta_auth is on and we have okta_creds validate(token), else fail
 
-		if (okta_auth.get()) {
-			if (!okta_url.get().equals("\"\"") && !client_id.get().equals("\"\"") && !client_secret.get().equals("\"\"") && !api_token.get().equals("\"\"")) {
+		if (oktaAuth.get()) {
+			if (!oktaUrl.get().equals("\"\"") && !clientId.get().equals("\"\"") && !clientSecret.get().equals("\"\"") && !apiToken.get().equals("\"\"")) {
 
 				String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
@@ -97,20 +86,20 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 					String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
 
 					Person person = null;
-					
+
 					try {
 						Jwt jsonWebToken = authenticationService.verifyToken(token);
 
-						if(person == null) {
+						if (person == null) {
 							person = validateUserToken(jsonWebToken);
 						}
-						if(person == null) {
+						if (person == null) {
 							person = validateAdminToken(jsonWebToken);
 						}
 					} catch (JwtVerificationException e) {
 						person = personService.findPersonByApiToken(token);
 					}
-					
+
 					if (person != null) {
 						userAuthenticatedEvent.fire(person);
 					} else {
@@ -152,12 +141,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	// Check Okta(token), Check DB ApiToken(token), else return null
 	private Person validateUserToken(Jwt jsonWebToken) {
-		
+
 		String oktaUserId = (String) jsonWebToken.getClaims().get("uid"); // User Id
-		
-		if(oktaUserId != null && oktaUserId.length() > 0) {
+
+		if (oktaUserId != null && oktaUserId.length() > 0) {
 			String oktaEmail = (String) jsonWebToken.getClaims().get("sub"); // Subject Id
-			
+
 			Person authenticatedUser = personService.findPersonByOktaEmail(oktaEmail);
 
 			if (authenticatedUser != null) {
@@ -186,27 +175,27 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 				return person;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private Person validateAdminToken(Jwt jsonWebToken) {
-		
+
 		String oktaClientId = (String) jsonWebToken.getClaims().get("cid"); // Client Id
-		
-		if(oktaClientId != null && oktaClientId.length() > 0) {
-			
+
+		if (oktaClientId != null && oktaClientId.length() > 0) {
+
 			Person authenticatedUser = personService.findPersonByOktaId(oktaClientId);
-			
+
 			if (authenticatedUser != null) {
 				return authenticatedUser;
 			}
-			
+
 			Log.info("Making OKTA call to get app info: ");
-			
+
 			Application app = getOktaClient(oktaClientId);
-			
-			if(app != null) {
+
+			if (app != null) {
 				log.debug("OKTA Authentication for Admin user via token");
 				String adminEmail = "admin@alliancegenome.org";
 				Person person = new Person();
@@ -224,14 +213,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		return null;
 	}
 
-	
 	private User getOktaUser(String oktaId) {
-		Client client = Clients.builder().setOrgUrl(okta_url.get()).setClientId(client_id.get()).setClientCredentials(new TokenClientCredentials(api_token.get())).build();
+		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
 		return client.getUser(oktaId);
 	}
-	
+
 	private Application getOktaClient(String applicationId) {
-		Client client = Clients.builder().setOrgUrl(okta_url.get()).setClientId(client_id.get()).setClientCredentials(new TokenClientCredentials(api_token.get())).build();
+		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
 		return client.getApplication(applicationId);
 	}
 

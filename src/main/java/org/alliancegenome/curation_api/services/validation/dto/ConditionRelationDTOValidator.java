@@ -29,18 +29,12 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConditionRelationDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
-	@Inject
-	ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject
-	ReferenceDAO referenceDAO;
-	@Inject
-	ReferenceService referenceService;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
 
 	public ObjectResponse<ConditionRelation> validateConditionRelationDTO(ConditionRelationDTO dto) {
 		ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<ConditionRelation>();
@@ -50,8 +44,9 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		Reference reference = null;
 		if (StringUtils.isNotBlank(dto.getReferenceCurie())) {
 			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
-			if (reference == null)
+			if (reference == null) {
 				crResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getReferenceCurie() + ")");
+			}
 		}
 		String refCurie = reference == null ? null : reference.getCurie();
 
@@ -75,8 +70,9 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 			crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			VocabularyTerm conditionRelationTypeTerm = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType).getEntity();
-			if (conditionRelationTypeTerm == null)
+			if (conditionRelationTypeTerm == null) {
 				crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.INVALID_MESSAGE + " (" + relationType + ")");
+			}
 			relation.setConditionRelationType(conditionRelationTypeTerm);
 		}
 

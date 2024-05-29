@@ -71,7 +71,7 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private CrossReference crossReference;
 	

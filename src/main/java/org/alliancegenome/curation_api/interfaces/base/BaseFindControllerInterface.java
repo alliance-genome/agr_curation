@@ -31,7 +31,7 @@ public interface BaseFindControllerInterface<E extends AuditedObject> {
 	@Path("/findForPublic")
 	@Tag(name = "Public Web API Database Searching Endpoints")
 	@JsonView(View.ForPublic.class)
-	@RequestBody( 
+	@RequestBody(
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
@@ -47,13 +47,13 @@ public interface BaseFindControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public SearchResponse<E> findForPublic(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<E> findForPublic(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 	
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.FieldsAndLists.class)
-	@RequestBody( 
+	@RequestBody(
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
@@ -69,6 +69,6 @@ public interface BaseFindControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public SearchResponse<E> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<E> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

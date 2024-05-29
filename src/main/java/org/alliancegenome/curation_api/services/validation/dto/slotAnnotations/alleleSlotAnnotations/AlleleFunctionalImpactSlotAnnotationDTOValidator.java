@@ -22,16 +22,15 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleFunctionalImpactSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	PhenotypeTermService phenotypeTermService;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject PhenotypeTermService phenotypeTermService;
 
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpactSlotAnnotationDTO(AlleleFunctionalImpactSlotAnnotation annotation, AlleleFunctionalImpactSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleFunctionalImpactSlotAnnotation> afisaResponse = new ObjectResponse<AlleleFunctionalImpactSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleFunctionalImpactSlotAnnotation();
+		}
 
 		if (CollectionUtils.isEmpty(dto.getFunctionalImpactNames())) {
 			afisaResponse.addErrorMessage("functional_impact_names", ValidationConstants.REQUIRED_MESSAGE);
@@ -42,23 +41,24 @@ public class AlleleFunctionalImpactSlotAnnotationDTOValidator extends SlotAnnota
 				if (functionalImpact == null) {
 					afisaResponse.addErrorMessage("functional_impact_names", ValidationConstants.INVALID_MESSAGE);
 					break;
-				}	
+				}
 				functionalImpacts.add(functionalImpact);
 			}
 			annotation.setFunctionalImpacts(functionalImpacts);
 		}
-	
+
 		PhenotypeTerm phenotypeTerm = null;
 		if (StringUtils.isNotBlank(dto.getPhenotypeTermCurie())) {
 			phenotypeTerm = phenotypeTermService.findByCurieOrSecondaryId(dto.getPhenotypeTermCurie());
-			if (phenotypeTerm == null)
+			if (phenotypeTerm == null) {
 				afisaResponse.addErrorMessage("phenotype_term_curie", ValidationConstants.INVALID_MESSAGE);
+			}
 		}
 		annotation.setPhenotypeTerm(phenotypeTerm);
-		
+
 		String phenotypeStatement = StringUtils.isBlank(dto.getPhenotypeStatement()) ? null : dto.getPhenotypeStatement();
 		annotation.setPhenotypeStatement(phenotypeStatement);
-		
+
 		ObjectResponse<AlleleFunctionalImpactSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		afisaResponse.addErrorMessages(saResponse.getErrorMessages());

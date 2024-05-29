@@ -13,10 +13,11 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 
 	@Override
 	public void startProcess(String message, long startTime, long totalSize) {
-		if (totalSize > 0)
+		if (totalSize > 0) {
 			logInfoMessage(message + "Starting Process [total = " + ProcessDisplayHandler.getBigNumber(totalSize) + "] " + new Date(startTime));
-		else
+		} else {
 			logInfoMessage(message + "Starting Process... (" + new Date(startTime) + ")");
+		}
 	}
 
 	@Override
@@ -24,17 +25,17 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 
 		double percent = 0;
 		if (totalSize > 0) {
-			percent = ((double) (currentCount) / totalSize);
+			percent = (double) currentCount / totalSize;
 		}
-		long processedAmount = (currentCount - lastCount);
+		long processedAmount = currentCount - lastCount;
 
 		StringBuffer sb = new StringBuffer(message == null ? "" : message);
 		sb.append(ProcessDisplayHandler.getBigNumber(currentCount));
 		if (totalSize > 0) {
 			sb.append(" of [" + ProcessDisplayHandler.getBigNumber(totalSize) + "] " + (int) (percent * 100L) + "%");
 		}
-		long time = (nowTime - lastTime);
-		long diff = (nowTime - startTime);
+		long time = nowTime - lastTime;
+		long diff = nowTime - startTime;
 		sb.append(", " + (time / 1000) + "s to process " + ProcessDisplayHandler.getBigNumber(processedAmount) + " records at " + ProcessDisplayHandler.getBigNumber((processedAmount * 1000L) / time) + "r/s");
 		if (data != null) {
 			sb.append(" " + data);
@@ -83,7 +84,7 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 	}
 
 	private double memoryPercent() {
-		return ((double) runtime.totalMemory() - (double) runtime.freeMemory()) / (double) runtime.maxMemory();
+		return ((double) runtime.totalMemory() - (double) runtime.freeMemory()) / runtime.maxMemory();
 	}
 
 	private void logWarnMessage(String message) {

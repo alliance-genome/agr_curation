@@ -19,8 +19,6 @@ public interface DQMSubmissionInterface {
 	@POST
 	@Path("/submit")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public String update(MultipartFormDataInput input, 
-		@DefaultValue("true")
-		@QueryParam("cleanUp") Boolean cleanUp);
+	String update(MultipartFormDataInput input, @DefaultValue("true") @QueryParam("cleanUp") Boolean cleanUp);
 
 }

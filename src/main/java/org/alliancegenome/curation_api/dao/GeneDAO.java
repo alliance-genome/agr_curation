@@ -20,6 +20,8 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
 	@Inject GeneInteractionDAO geneInteractionDAO;
+	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
 
 	protected GeneDAO() {
@@ -86,6 +88,22 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		Map<String, Object> params = new HashMap<>();
 		params.put("phenotypeAnnotationSubject.id", geneId);
 		List<Long> results = genePhenotypeAnnotationDAO.findFilteredIds(params);
+		
+		Map<String, Object> agmAgParams = new HashMap<>();
+		agmAgParams.put("assertedGenes.id", geneId);
+		results.addAll(agmPhenotypeAnnotationDAO.findFilteredIds(agmAgParams));
+		
+		Map<String, Object> agmIgParams = new HashMap<>();
+		agmIgParams.put("inferredGene.id", geneId);
+		results.addAll(agmPhenotypeAnnotationDAO.findFilteredIds(agmIgParams));
+		
+		Map<String, Object> alleleAgParams = new HashMap<>();
+		alleleAgParams.put("assertedGenes.id", geneId);
+		results.addAll(allelePhenotypeAnnotationDAO.findFilteredIds(alleleAgParams));
+		
+		Map<String, Object> alleleIgParams = new HashMap<>();
+		alleleIgParams.put("inferredGene.id", geneId);
+		results.addAll(allelePhenotypeAnnotationDAO.findFilteredIds(alleleIgParams));
 
 		return results;
 	}

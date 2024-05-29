@@ -26,18 +26,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssociationDTOValidator {
 
-	@Inject
-	AlleleGeneAssociationDAO alleleGeneAssociationDAO;
-	@Inject
-	AlleleService alleleService;
-	@Inject
-	GeneService geneService;
-	@Inject
-	VocabularyTermService  vocabularyTermService;
+	@Inject AlleleGeneAssociationDAO alleleGeneAssociationDAO;
+	@Inject AlleleService alleleService;
+	@Inject GeneService geneService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
 		ObjectResponse<AlleleGeneAssociation> agaResponse = new ObjectResponse<AlleleGeneAssociation>();
-			
+
 		Allele subject = null;
 		if (StringUtils.isBlank(dto.getAlleleIdentifier())) {
 			agaResponse.addErrorMessage("allele_identifier", ValidationConstants.REQUIRED_MESSAGE);
@@ -49,7 +45,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 				agaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
 			}
 		}
-		
+
 		Gene object = null;
 		if (StringUtils.isBlank(dto.getGeneIdentifier())) {
 			agaResponse.addErrorMessage("gene_identifier", ValidationConstants.REQUIRED_MESSAGE);
@@ -61,43 +57,46 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 				agaResponse.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getGeneIdentifier() + ")");
 			}
 		}
-		
+
 		AlleleGeneAssociation association = null;
 		if (subject != null && object != null && StringUtils.isNotBlank(dto.getRelationName())) {
 			HashMap<String, Object> params = new HashMap<>();
 			params.put("alleleAssociationSubject.id", subject.getId());
 			params.put("relation.name", dto.getRelationName());
 			params.put("alleleGeneAssociationObject.id", object.getId());
-			
+
 			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			}
 		}
-		if (association == null)
+		if (association == null) {
 			association = new AlleleGeneAssociation();
-			
+		}
+
 		association.setAlleleAssociationSubject(subject);
 		association.setAlleleGeneAssociationObject(object);
-		
+
 		ObjectResponse<AlleleGenomicEntityAssociation> ageaResponse = validateAlleleGenomicEntityAssociationDTO(association, dto);
 		agaResponse.addErrorMessages(ageaResponse.getErrorMessages());
 		association = (AlleleGeneAssociation) ageaResponse.getEntity();
 
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {
 			VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
-			if (relation == null)
+			if (relation == null) {
 				agaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
+			}
 			association.setRelation(relation);
 		} else {
 			agaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-		
-		if (agaResponse.hasErrors())
+
+		if (agaResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, agaResponse.errorMessagesString());
-			
+		}
+
 		association = alleleGeneAssociationDAO.persist(association);
-		
-		return association; 
+
+		return association;
 	}
 }

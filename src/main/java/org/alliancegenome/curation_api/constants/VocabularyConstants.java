@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.constants;
 
 public final class VocabularyConstants {
-
+	private VocabularyConstants() {
+		// Hidden from view, as it is a utility class
+	}
 	public static final String ANNOTATION_TYPE_VOCABULARY = "annotation_type";
 	public static final String DISEASE_QUALIFIER_VOCABULARY = "disease_qualifier";
 	public static final String DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY = "disease_genetic_modifier_relation";

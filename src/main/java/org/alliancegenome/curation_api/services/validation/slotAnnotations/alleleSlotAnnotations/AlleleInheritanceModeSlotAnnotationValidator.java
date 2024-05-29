@@ -21,12 +21,9 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotationValidator<AlleleInheritanceModeSlotAnnotation> {
 
-	@Inject
-	AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
-	@Inject
-	PhenotypeTermService phenotypeTermService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
+	@Inject PhenotypeTermService phenotypeTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModeSlotAnnotation(AlleleInheritanceModeSlotAnnotation uiEntity) {
 		AlleleInheritanceModeSlotAnnotation mutationType = validateAlleleInheritanceModeSlotAnnotation(uiEntity, false, false);
@@ -63,10 +60,10 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 
 		VocabularyTerm inheritanceMode = validateInheritanceMode(uiEntity, dbEntity);
 		dbEntity.setInheritanceMode(inheritanceMode);
-		
+
 		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);
 		dbEntity.setPhenotypeTerm(phenotypeTerm);
-		
+
 		String phenotypeStatement = handleStringField(uiEntity.getPhenotypeStatement());
 		dbEntity.setPhenotypeStatement(phenotypeStatement);
 
@@ -105,9 +102,10 @@ public class AlleleInheritanceModeSlotAnnotationValidator extends SlotAnnotation
 
 	public PhenotypeTerm validatePhenotypeTerm(AlleleInheritanceModeSlotAnnotation uiEntity, AlleleInheritanceModeSlotAnnotation dbEntity) {
 		String field = "phenotypeTerm";
-		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm()))
+		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm())) {
 			return null;
-		
+		}
+
 		PhenotypeTerm phenotypeTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getPhenotypeTerm().getCurie())) {
 			phenotypeTerm = phenotypeTermService.findByCurie(uiEntity.getPhenotypeTerm().getCurie());

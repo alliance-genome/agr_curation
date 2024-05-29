@@ -31,7 +31,7 @@ public class AGMDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudCon
 	}
 
 	public APIResponse updateAgmDiseaseAnnotations(String dataProvider, List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
+		return agmDiseaseAnnotationExecutor.runLoadApi(agmDiseaseAnnotationService, dataProvider, annotations);
 	}
 	
 	public ObjectResponse<AGMDiseaseAnnotation> getByIdentifier(String identifierString) {

@@ -34,6 +34,6 @@ public interface BaseReadIdControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public ObjectResponse<E> getById(@PathParam("id") Long id);
+	ObjectResponse<E> getById(@PathParam("id") Long id);
 	
 }

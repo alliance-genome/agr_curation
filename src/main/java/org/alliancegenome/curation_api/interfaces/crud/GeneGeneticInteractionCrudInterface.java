@@ -32,20 +32,20 @@ import jakarta.ws.rs.core.MediaType;
 public interface GeneGeneticInteractionCrudInterface extends BaseIdCrudInterface<GeneGeneticInteraction> {
 
 	@GET
-	@Path("/findBy/{identifierString}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.GeneInteractionView.class)
-	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(@PathParam("identifierString") String identifierString);
+	ObjectResponse<GeneGeneticInteraction> getByIdentifier(@PathParam("identifier") String identifier);
 	
 	@Override
 	@POST
 	@Path("/search")
 	@JsonView(View.GeneInteractionView.class)
 	@Tag(name = "Elastic Search Gene Genetic Interactions")
-	public SearchResponse<GeneGeneticInteraction> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<GeneGeneticInteraction> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
 	@Path("/bulk/interactionFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateInteractions(List<PsiMiTabDTO> interactionData);
+	APIResponse updateInteractions(List<PsiMiTabDTO> interactionData);
 
 }

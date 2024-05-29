@@ -12,16 +12,17 @@ import org.apache.commons.collections.CollectionUtils;
 
 public abstract class BaseAnnotationCrudService<E extends Annotation, D extends BaseSQLDAO<E>> extends BaseEntityCrudService<E, D> {
 
+	@Override
 	protected abstract void init();
 
 	public abstract E deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate);
 
 	protected List<Long> getAllReferencedConditionRelationIds(D dao) {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		
+
 		List<Long> daIds = dao.findAllIds().getResults();
 		pdh.startProcess("Checking DAs for referenced Conditions ", daIds.size());
-		
+
 		List<Long> conditionRelationIds = new ArrayList<>();
 		daIds.forEach(daId -> {
 			E annotation = dao.find(daId);
@@ -32,7 +33,7 @@ public abstract class BaseAnnotationCrudService<E extends Annotation, D extends 
 			pdh.progressProcess();
 		});
 		pdh.finishProcess();
-		
+
 		return conditionRelationIds;
 	}
 }

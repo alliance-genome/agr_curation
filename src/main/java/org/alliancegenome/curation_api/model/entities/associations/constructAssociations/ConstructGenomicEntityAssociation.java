@@ -45,10 +45,11 @@ import lombok.ToString;
 })
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
-	@IndexedEmbedded(includePaths = {"curie", "constructSymbol.displayText", "constructSymbol.formatText",
-			"constructFullName.displayText", "constructFullName.formatText", "modEntityId", "modInternalId",
-			"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
-			"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword", "modInternalId_keyword"})
+	@IndexedEmbedded(includePaths = {
+		"curie", "constructSymbol.displayText", "constructSymbol.formatText",
+		"constructFullName.displayText", "constructFullName.formatText", "modEntityId", "modInternalId",
+		"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
+		"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "modEntityId_keyword", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
@@ -73,7 +74,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 			"references.primaryCrossReferenceCurie_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
 			@Index(name = "cgeassociation_note_cgeassociation_index", columnList = "constructgenomicentityassociation_id"),

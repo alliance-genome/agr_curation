@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleSymbolSlotAnnotationService extends BaseEntityCrudService<AlleleSymbolSlotAnnotation, AlleleSymbolSlotAnnotationDAO> {
 
-	@Inject
-	AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
-	@Inject
-	AlleleSymbolSlotAnnotationValidator alleleSymbolValidator;
+	@Inject AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
+	@Inject AlleleSymbolSlotAnnotationValidator alleleSymbolValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleSymbolSlotAnnotationService extends BaseEntityCrudService<All
 	@Transactional
 	public ObjectResponse<AlleleSymbolSlotAnnotation> upsert(AlleleSymbolSlotAnnotation uiEntity) {
 		AlleleSymbolSlotAnnotation dbEntity = alleleSymbolValidator.validateAlleleSymbolSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleSymbolSlotAnnotation>(alleleSymbolDAO.persist(dbEntity));
 	}
 

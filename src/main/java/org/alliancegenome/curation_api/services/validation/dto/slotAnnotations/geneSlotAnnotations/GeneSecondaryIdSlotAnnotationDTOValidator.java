@@ -13,8 +13,9 @@ public class GeneSecondaryIdSlotAnnotationDTOValidator extends SecondaryIdSlotAn
 	public ObjectResponse<GeneSecondaryIdSlotAnnotation> validateGeneSecondaryIdSlotAnnotationDTO(GeneSecondaryIdSlotAnnotation annotation, SecondaryIdSlotAnnotationDTO dto) {
 		ObjectResponse<GeneSecondaryIdSlotAnnotation> gsidResponse = new ObjectResponse<GeneSecondaryIdSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new GeneSecondaryIdSlotAnnotation();
+		}
 
 		ObjectResponse<GeneSecondaryIdSlotAnnotation> saResponse = validateSecondaryIdSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();

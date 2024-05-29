@@ -16,35 +16,33 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class BulkLoadFileService extends BaseEntityCrudService<BulkLoadFile, BulkLoadFileDAO> {
 
-	@Inject
-	BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 
-	@Inject
-	Event<PendingBulkLoadFileJobEvent> pendingFileJobEvents;
-	
+	@Inject Event<PendingBulkLoadFileJobEvent> pendingFileJobEvents;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(bulkLoadFileDAO);
 	}
-	
+
 	public ObjectResponse<BulkLoadFile> restartLoad(Long id) {
 		ObjectResponse<BulkLoadFile> resp = updateLoad(id);
-		if(resp != null) {
+		if (resp != null) {
 			pendingFileJobEvents.fire(new PendingBulkLoadFileJobEvent(id));
 			return resp;
 		}
 		return null;
 	}
-	
+
 	@Transactional
 	protected ObjectResponse<BulkLoadFile> updateLoad(Long id) {
 		BulkLoadFile load = bulkLoadFileDAO.find(id);
-		if(load != null && load.getBulkloadStatus().isNotRunning()) {
+		if (load != null && load.getBulkloadStatus().isNotRunning()) {
 			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			return new ObjectResponse<BulkLoadFile>(load);
 		}
 		return null;
 	}
-	
+
 }

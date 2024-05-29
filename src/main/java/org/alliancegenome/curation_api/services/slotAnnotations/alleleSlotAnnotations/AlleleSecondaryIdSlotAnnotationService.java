@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleSecondaryIdSlotAnnotationService extends BaseEntityCrudService<AlleleSecondaryIdSlotAnnotation, AlleleSecondaryIdSlotAnnotationDAO> {
 
-	@Inject
-	AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
-	@Inject
-	AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
+	@Inject AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
+	@Inject AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleSecondaryIdSlotAnnotationService extends BaseEntityCrudServic
 	@Transactional
 	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> upsert(AlleleSecondaryIdSlotAnnotation uiEntity) {
 		AlleleSecondaryIdSlotAnnotation dbEntity = alleleSecondaryIdValidator.validateAlleleSecondaryIdSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleSecondaryIdSlotAnnotation>(alleleSecondaryIdDAO.persist(dbEntity));
 	}
 

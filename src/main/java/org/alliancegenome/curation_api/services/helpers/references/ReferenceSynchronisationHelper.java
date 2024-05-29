@@ -25,14 +25,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ReferenceSynchronisationHelper {
 
-	@Inject
-	ReferenceDAO referenceDAO;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	LiteratureReferenceDAO literatureReferenceDAO;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
+	@Inject LiteratureReferenceDAO literatureReferenceDAO;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	public Reference retrieveFromLiteratureService(String curie) {
 
@@ -40,8 +36,9 @@ public class ReferenceSynchronisationHelper {
 
 		if (litRef != null) {
 			Reference ref = referenceService.findByCurie(curie);
-			if (ref == null)
+			if (ref == null) {
 				ref = new Reference();
+			}
 			ref = copyLiteratureReferenceFields(litRef, ref);
 
 			return ref;
@@ -66,16 +63,17 @@ public class ReferenceSynchronisationHelper {
 
 		Pagination pagination = new Pagination(0, 50);
 		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-		if (response != null && response.getTotalResults() != null && response.getTotalResults() == 1)
+		if (response != null && response.getTotalResults() != null && response.getTotalResults() == 1) {
 			return response.getSingleResult();
-		
+		}
+
 		return null;
 	}
 
 	public void synchroniseReferences() {
 
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		
+
 		SearchResponse<Long> response = referenceDAO.findAllIds();
 		pdh.startProcess("Reference Sync", response.getTotalResults());
 		for (Long refId : response.getResults()) {
@@ -86,13 +84,13 @@ public class ReferenceSynchronisationHelper {
 	}
 
 	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {
-		
+
 		ref.setCurie(litRef.getCurie());
 		ref.setObsolete(false);
 
 		List<CrossReference> xrefs = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(litRef.getCross_references())) {
-			for (LiteratureCrossReference litXref : litRef.getCross_references()) {
+		if (CollectionUtils.isNotEmpty(litRef.getCrossReferences())) {
+			for (LiteratureCrossReference litXref : litRef.getCrossReferences()) {
 				SearchResponse<CrossReference> xrefResponse = crossReferenceDAO.findByField("referencedCurie", litXref.getCurie());
 				CrossReference xref;
 				if (xrefResponse == null || xrefResponse.getSingleResult() == null) {
@@ -108,8 +106,9 @@ public class ReferenceSynchronisationHelper {
 				xrefs.add(xref);
 			}
 		}
-		if (CollectionUtils.isNotEmpty(xrefs))
+		if (CollectionUtils.isNotEmpty(xrefs)) {
 			ref.setCrossReferences(xrefs);
+		}
 
 		ref.setShortCitation(litRef.citationShort);
 
@@ -120,9 +119,9 @@ public class ReferenceSynchronisationHelper {
 	public ObjectResponse<Reference> synchroniseReference(Long id) {
 		Reference ref = referenceDAO.find(id);
 		ObjectResponse<Reference> response = new ObjectResponse<>();
-		if (ref == null)
+		if (ref == null) {
 			return response;
-
+		}
 
 		LiteratureReference litRef = fetchLiteratureServiceReference(ref.getCurie());
 		if (litRef == null) {
@@ -130,7 +129,7 @@ public class ReferenceSynchronisationHelper {
 		} else {
 			ref = copyLiteratureReferenceFields(litRef, ref);
 		}
-		
+
 		response.setEntity(referenceDAO.persist(ref));
 
 		return response;

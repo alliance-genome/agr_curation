@@ -23,5 +23,5 @@ public interface AlleleNomenclatureEventSlotAnnotationCrudInterface extends Base
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validate(AlleleNomenclatureEventSlotAnnotation entity);
+	ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validate(AlleleNomenclatureEventSlotAnnotation entity);
 }

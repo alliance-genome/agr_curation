@@ -25,28 +25,25 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class ConditionRelationFmsDTOValidator {
-	
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	ExperimentalConditionFmsDTOValidator experimentalConditionFmsDtoValidator;
 
-	public ObjectResponse<ConditionRelation> validateConditionRelationFmsDTO (ConditionRelationFmsDTO dto) {
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject ExperimentalConditionFmsDTOValidator experimentalConditionFmsDtoValidator;
+
+	public ObjectResponse<ConditionRelation> validateConditionRelationFmsDTO(ConditionRelationFmsDTO dto) {
 		ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<>();
-		
+
 		ConditionRelation relation;
 		ConditionRelationFmsEnum fmsConditionRelation = null;
-		
+
 		if (StringUtils.isBlank(dto.getConditionRelationType())) {
 			crResponse.addErrorMessage("conditionRelationType", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			fmsConditionRelation = ConditionRelationFmsEnum.findByName(dto.getConditionRelationType());
-			if (fmsConditionRelation == null)
+			if (fmsConditionRelation == null) {
 				crResponse.addErrorMessage("conditionRelationType", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionRelationType() + ")");
+			}
 		}
 
 		String relationTypeString = fmsConditionRelation == null ? null : fmsConditionRelation.agrRelation;
@@ -59,14 +56,15 @@ public class ConditionRelationFmsDTOValidator {
 		} else {
 			relation = searchResponseRel.getSingleResult();
 		}
-		
+
 		if (relationTypeString != null) {
 			VocabularyTerm conditionRelationTypeTerm = vocabularyTermService.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationTypeString).getEntity();
-			if (conditionRelationTypeTerm == null)
+			if (conditionRelationTypeTerm == null) {
 				crResponse.addErrorMessage("conditionRelationType", ValidationConstants.INVALID_MESSAGE + " (" + relationTypeString + ")");
+			}
 			relation.setConditionRelationType(conditionRelationTypeTerm);
 		}
-		
+
 		List<ExperimentalCondition> conditions = new ArrayList<>();
 		if (CollectionUtils.isEmpty(dto.getConditions())) {
 			crResponse.addErrorMessage("conditions", ValidationConstants.REQUIRED_MESSAGE);
@@ -81,9 +79,9 @@ public class ConditionRelationFmsDTOValidator {
 			}
 		}
 		relation.setConditions(conditions);
-		
+
 		crResponse.setEntity(relation);
-		
+
 		return crResponse;
 	}
 }

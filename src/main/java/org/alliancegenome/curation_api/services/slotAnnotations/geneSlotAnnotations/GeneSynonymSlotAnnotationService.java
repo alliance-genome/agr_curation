@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneSynonymSlotAnnotationService extends BaseEntityCrudService<GeneSynonymSlotAnnotation, GeneSynonymSlotAnnotationDAO> {
 
-	@Inject
-	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
-	@Inject
-	GeneSynonymSlotAnnotationValidator geneSynonymValidator;
+	@Inject GeneSynonymSlotAnnotationDAO geneSynonymDAO;
+	@Inject GeneSynonymSlotAnnotationValidator geneSynonymValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class GeneSynonymSlotAnnotationService extends BaseEntityCrudService<Gene
 	@Transactional
 	public ObjectResponse<GeneSynonymSlotAnnotation> upsert(GeneSynonymSlotAnnotation uiEntity) {
 		GeneSynonymSlotAnnotation dbEntity = geneSynonymValidator.validateGeneSynonymSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<GeneSynonymSlotAnnotation>(geneSynonymDAO.persist(dbEntity));
 	}
 

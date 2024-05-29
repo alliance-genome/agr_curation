@@ -26,8 +26,7 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 	}
 
 	@Inject
-	@AuthenticatedUser
-	protected Person authenticatedPerson;
+	@AuthenticatedUser protected Person authenticatedPerson;
 
 	protected abstract void init();
 
@@ -58,13 +57,13 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		ObjectResponse<E> ret = new ObjectResponse<E>(object);
 		return ret;
 	}
-	
+
 	public ObjectResponse<E> getByIdentifier(String identifier) {
-		List<String> identifierFields = List.of("curie", "modEntityId", "modInternalId", "uniqueId");
-		E annotation = findByAlternativeFields(identifierFields, identifier);
-		return new ObjectResponse<E>(annotation);
+		E object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		return ret;
 	}
-	
+
 	public E findByCurie(String curie) {
 		if (curie != null) {
 			SearchResponse<E> response = findByField("curie", curie);
@@ -80,8 +79,23 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 			return null;
 		}
 	}
-	
-	
+
+	public E findByAlternativeFields(List<String> fields, String value) {
+		if (value != null) {
+			SearchResponse<E> response = dao.findByFields(fields, value);
+			if (response == null || response.getSingleResult() == null) {
+				Log.debug("Entity Not Found: " + value);
+				return null;
+			}
+			E entity = response.getSingleResult();
+			// Log.debug("Entity Found: " + entity);
+			return entity;
+		} else {
+			Log.debug("Input Param is null: " + value);
+			return null;
+		}
+	}
+
 	@Transactional
 	public ObjectResponse<E> update(E entity) {
 		// log.info("Authed Person: " + authenticatedPerson);
@@ -90,23 +104,23 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		return ret;
 	}
 
-
 	@Transactional
 	public ObjectResponse<E> deleteByCurie(String curie) {
 		E object = findByCurie(curie);
-		if (object != null)
+		if (object != null) {
 			dao.remove(object.getId());
+		}
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
 	}
-	
+
 	@Transactional
 	public ObjectResponse<E> deleteById(Long id) {
 		E object = dao.remove(id);
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
 	}
-	
+
 	public SearchResponse<E> findByField(String field, String value) {
 		return dao.findByField(field, value);
 	}
@@ -118,17 +132,6 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 		return dao.searchByParams(pagination, params);
 	}
-	
-	public E findByAlternativeFields(List<String> fields, String value) {
-		if (value == null)
-			return null;
-		for (String field : fields) {
-			SearchResponse<E> result = findByField(field, value);
-			if (result != null && result.getSingleResult() != null)
-				return result.getSingleResult();
-		}
-		return null;
-	}
 
 	public void reindex() {
 		dao.reindex();
@@ -138,8 +141,7 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		dao.reindex(batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
-	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
-		Integer typesToIndexInParallel) {
+	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 		dao.reindexEverything(batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 

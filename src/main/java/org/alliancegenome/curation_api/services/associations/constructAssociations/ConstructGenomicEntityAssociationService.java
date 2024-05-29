@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.associations.constructAssociations.Co
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
@@ -27,30 +28,23 @@ import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudServi
 import org.alliancegenome.curation_api.services.validation.associations.constructAssociations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTOValidator;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
-public class ConstructGenomicEntityAssociationService extends BaseAssociationDTOCrudService<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO, ConstructGenomicEntityAssociationDAO> {
+public class ConstructGenomicEntityAssociationService extends BaseAssociationDTOCrudService<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO, ConstructGenomicEntityAssociationDAO>
+	implements BaseUpsertServiceInterface<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO> {
 
-	@Inject
-	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
-	@Inject
-	ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
-	@Inject
-	ConstructGenomicEntityAssociationDTOValidator constructGenomicEntityAssociationDtoValidator;
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	GenomicEntityDAO genomicEntityDAO;
-	@Inject
-	PersonService personService;
-	@Inject
-	PersonDAO personDAO;
+	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
+	@Inject ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
+	@Inject ConstructGenomicEntityAssociationDTOValidator constructGenomicEntityAssociationDtoValidator;
+	@Inject ConstructDAO constructDAO;
+	@Inject GenomicEntityDAO genomicEntityDAO;
+	@Inject PersonService personService;
+	@Inject PersonDAO personDAO;
 
 	@Override
 	@PostConstruct
@@ -61,8 +55,9 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	@Transactional
 	public ObjectResponse<ConstructGenomicEntityAssociation> upsert(ConstructGenomicEntityAssociation uiEntity) {
 		ConstructGenomicEntityAssociation dbEntity = constructGenomicEntityAssociationValidator.validateConstructGenomicEntityAssociation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		dbEntity = constructGenomicEntityAssociationDAO.persist(dbEntity);
 		addAssociationToConstruct(dbEntity);
 		addAssociationToGenomicEntity(dbEntity);
@@ -81,7 +76,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 			addAssociationToConstruct(association);
 			addAssociationToGenomicEntity(association);
 		}
-			
+
 		return association;
 	}
 
@@ -90,14 +85,14 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		params.put(EntityFieldConstants.CONSTRUCT_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<Long> associationIds = constructGenomicEntityAssociationDAO.findFilteredIds(params);
 		associationIds.removeIf(Objects::isNull);
-		
+
 		return associationIds;
 	}
 
 	@Transactional
 	public ConstructGenomicEntityAssociation deprecateOrDeleteAssociation(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		ConstructGenomicEntityAssociation association = constructGenomicEntityAssociationDAO.find(id);
-		
+
 		if (association == null) {
 			String errorMessage = "Could not find ConstructGenomicEntityAssociation with id: " + id;
 			if (throwApiError) {
@@ -105,7 +100,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 				response.addErrorMessage("id", errorMessage);
 				throw new ApiErrorException(response);
 			}
-			log.error(errorMessage);
+			Log.error(errorMessage);
 			return null;
 		}
 		if (deprecate) {
@@ -120,50 +115,57 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 				return constructGenomicEntityAssociationDAO.persist(association);
 			}
 		}
-		
+
 		constructGenomicEntityAssociationDAO.remove(association.getId());
-	
+
 		return null;
 	}
-	
+
 	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(Long constructId, String relationName, Long genomicEntityId) {
 		ConstructGenomicEntityAssociation association = null;
-		
+
 		Map<String, Object> params = new HashMap<>();
 		params.put("constructAssociationSubject.id", constructId);
 		params.put("relation.name", relationName);
 		params.put("constructGenomicEntityAssociationObject.id", genomicEntityId);
 
 		SearchResponse<ConstructGenomicEntityAssociation> resp = constructGenomicEntityAssociationDAO.findByParams(params);
-		if (resp != null && resp.getSingleResult() != null)
+		if (resp != null && resp.getSingleResult() != null) {
 			association = resp.getSingleResult();
-		
+		}
+
 		ObjectResponse<ConstructGenomicEntityAssociation> response = new ObjectResponse<>();
 		response.setEntity(association);
-		
+
 		return response;
 	}
-	
+
 	private void addAssociationToConstruct(ConstructGenomicEntityAssociation association) {
 		Construct construct = association.getConstructAssociationSubject();
 		List<ConstructGenomicEntityAssociation> currentAssociations = construct.getConstructGenomicEntityAssociations();
-		if (currentAssociations == null)
+		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
+		}
 		List<Long> currentAssociationIds = currentAssociations.stream().map(ConstructGenomicEntityAssociation::getId).collect(Collectors.toList());
-		if (!currentAssociationIds.contains(association.getId()));
-			currentAssociations.add(association);
+		if (!currentAssociationIds.contains(association.getId())) {
+			//
+		}
+		currentAssociations.add(association);
 		construct.setConstructGenomicEntityAssociations(currentAssociations);
 		constructDAO.persist(construct);
 	}
-	
+
 	private void addAssociationToGenomicEntity(ConstructGenomicEntityAssociation association) {
 		GenomicEntity genomicEntity = association.getConstructGenomicEntityAssociationObject();
 		List<ConstructGenomicEntityAssociation> currentAssociations = genomicEntity.getConstructGenomicEntityAssociations();
-		if (currentAssociations == null)
+		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
+		}
 		List<Long> currentAssociationIds = currentAssociations.stream().map(ConstructGenomicEntityAssociation::getId).collect(Collectors.toList());
-		if (!currentAssociationIds.contains(association.getId()));
-			currentAssociations.add(association);
+		if (!currentAssociationIds.contains(association.getId())) {
+			//
+		}
+		currentAssociations.add(association);
 		genomicEntity.setConstructGenomicEntityAssociations(currentAssociations);
 		genomicEntityDAO.persist(genomicEntity);
 	}

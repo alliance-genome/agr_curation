@@ -27,16 +27,11 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {
 
-	@Inject
-	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject
-	AffectedGenomicModelService affectedGenomicModelService;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject AffectedGenomicModelService affectedGenomicModelService;
+	@Inject NoteDAO noteDAO;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
@@ -59,7 +54,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				String annotationId;
 				String identifyingField;
 				String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getGeneIdentifier(), refCurie);
-				
+
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
 					annotation.setModEntityId(annotationId);
@@ -77,9 +72,9 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
 				annotation.setDiseaseAnnotationSubject(gene);
-				
-				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !gene.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
-						!dataProvider.sourceOrganization.equals(gene.getDataProvider().getSourceOrganization().getAbbreviation())) {
+
+				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !gene.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie)
+					|| !dataProvider.sourceOrganization.equals(gene.getDataProvider().getSourceOrganization().getAbbreviation())) {
 					gdaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ") for " + dataProvider.name() + " load");
 				}
 			}
@@ -102,16 +97,18 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelationName())) {
 			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName()).getEntity();
-			if (diseaseRelation == null)
+			if (diseaseRelation == null) {
 				gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseRelationName() + ")");
+			}
 			annotation.setRelation(diseaseRelation);
 		} else {
 			gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-		
-		if (gdaResponse.hasErrors())
+
+		if (gdaResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, gdaResponse.errorMessagesString());
-		
+		}
+
 		return annotation;
 	}
 }

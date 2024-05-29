@@ -44,7 +44,7 @@ import lombok.ToString;
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "vocabulary_name_uk", columnNames = "name"),
-		@UniqueConstraint(name = "vocabulary_vocabularyLabel_uk", columnNames = "vocabularyLabel"),
+		@UniqueConstraint(name = "vocabulary_vocabularyLabel_uk", columnNames = "vocabularyLabel")
 	}
 )
 public class Vocabulary extends AuditedObject {

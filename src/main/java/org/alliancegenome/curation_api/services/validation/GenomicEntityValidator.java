@@ -13,24 +13,24 @@ import jakarta.inject.Inject;
 
 public class GenomicEntityValidator<E extends GenomicEntity> extends BiologicalEntityValidator<E> {
 
-	@Inject
-	CrossReferenceValidator crossReferenceValidator;
-	@Inject
-	CrossReferenceService crossReferenceService;
-	
+	@Inject CrossReferenceValidator crossReferenceValidator;
+	@Inject CrossReferenceService crossReferenceService;
+
 	public E validateGenomicEntityFields(E uiEntity, E dbEntity) {
 
 		dbEntity = validateBiologicalEntityFields(uiEntity, dbEntity);
-		
+
 		List<CrossReference> xrefs = validateCrossReferences(uiEntity, dbEntity);
-		if (dbEntity.getCrossReferences() != null)
+		if (dbEntity.getCrossReferences() != null) {
 			dbEntity.getCrossReferences().clear();
+		}
 		if (xrefs != null) {
-			if (dbEntity.getCrossReferences() == null)
+			if (dbEntity.getCrossReferences() == null) {
 				dbEntity.setCrossReferences(new ArrayList<>());
+			}
 			dbEntity.getCrossReferences().addAll(xrefs);
 		}
-		
+
 		return dbEntity;
 	}
 
@@ -51,14 +51,15 @@ public class GenomicEntityValidator<E extends GenomicEntity> extends BiologicalE
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedXrefs))
+		if (CollectionUtils.isEmpty(validatedXrefs)) {
 			return null;
+		}
 
 		return validatedXrefs;
 	}

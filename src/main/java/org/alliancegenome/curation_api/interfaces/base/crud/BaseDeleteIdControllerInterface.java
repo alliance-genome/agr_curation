@@ -34,6 +34,6 @@ public interface BaseDeleteIdControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	public ObjectResponse<E> deleteById(@PathParam("id") Long id);
+	ObjectResponse<E> deleteById(@PathParam("id") Long id);
 	
 }

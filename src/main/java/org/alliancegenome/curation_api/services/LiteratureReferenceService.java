@@ -11,8 +11,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class LiteratureReferenceService extends BaseDocumentService<LiteratureReference, LiteratureReferenceDAO> {
 
-	@Inject
-	LiteratureReferenceDAO literatureReferenceDAO;
+	@Inject LiteratureReferenceDAO literatureReferenceDAO;
 
 	@Override
 	@PostConstruct

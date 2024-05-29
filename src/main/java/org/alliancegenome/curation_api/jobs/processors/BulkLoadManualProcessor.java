@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import lombok.extern.jbosslog.JBossLog;
@@ -24,8 +25,10 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 	public void processBulkManualLoad(@Observes StartedBulkLoadJobEvent load) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
-		if(bulkLoad instanceof BulkManualLoad bulkURLLoad) {
-			// We do nothing because at the load level we don't try to figure out what the next file to run is
+		if (bulkLoad instanceof BulkManualLoad bulkURLLoad) {
+			Log.info("processBulkManualLoad: " + load.getId());
+			// We do nothing because at the load level we don't try to figure out what the
+			// next file to run is
 		}
 	}
 

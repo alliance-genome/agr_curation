@@ -17,13 +17,13 @@ import jakarta.enterprise.inject.Instance;
 public class AuthenticationService {
 
 	@ConfigProperty(name = "okta.url")
-	Instance<String> okta_url;
+	Instance<String> oktaUrl;
 
 	private AccessTokenVerifier jwtVerifier;
 
 	@PostConstruct
 	public void init() {
-		jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder().setIssuer(okta_url.get() + "/oauth2/default").setAudience("api://default").setConnectionTimeout(Duration.ofSeconds(1))
+		jwtVerifier = JwtVerifiers.accessTokenVerifierBuilder().setIssuer(oktaUrl.get() + "/oauth2/default").setAudience("api://default").setConnectionTimeout(Duration.ofSeconds(1))
 			// .setReadTimeout(Duration.ofSeconds(1))
 			.build();
 	}

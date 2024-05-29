@@ -24,7 +24,7 @@ public interface MoleculeCrudInterface extends BaseIdCrudInterface<Molecule> {
 	@POST
 	@Path("/bulk/moleculefile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateMolecules(MoleculeIngestFmsDTO moleculeData);
+	APIResponse updateMolecules(MoleculeIngestFmsDTO moleculeData);
 
 }
 
