@@ -16,7 +16,8 @@ These instructions will get you a copy of the project and the API up and running
    *  [OpenSearch](#opensearch-elastic-search-alternative)
    *  [Cerebro](#cerebro)
 -  [Code Style](#codestyle)
-   *  [Check Style](checkstyle)
+   *  [Running Checkstyle](#running-checkstyle)
+   *  [Checkstyle Links](#checkstyle-links)
 -  [Building](#building)
    *  [Building Docker Image](#building-docker-image)
 -  [Running](#running)
@@ -293,6 +294,12 @@ make: *** [checkstyle] Error 1
 ```
 
 Checkstyle can be configured via the checkstyle.xml file in the root of the project, this file can also be used by IDE's to keep code in line with the ruleset.
+
+### Checkstyle Links
+
+* Checkstyle for vscode: [https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle)
+* Checkstyle for Intellij: [https://stackoverflow.com/questions/26955766/intellij-idea-checkstyle](https://stackoverflow.com/questions/26955766/intellij-idea-checkstyle)
+* Checkstyle for Eclipse: [https://www.youtube.com/watch?v=H90QoBp2NSQ](https://www.youtube.com/watch?v=H90QoBp2NSQ) or [https://checkstyle.org/eclipse-cs/#!/](https://checkstyle.org/eclipse-cs/#!/)
 
 ## Building
 
