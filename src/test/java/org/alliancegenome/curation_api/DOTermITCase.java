@@ -30,10 +30,10 @@ import io.restassured.config.RestAssuredConfig;
 @DisplayName("502 - DOTermITCase")
 @Order(502)
 public class DOTermITCase {
-	private String DOTERMCURIE = "DOID:10001";
+	private static final String DOTERMCURIE = "DOID:10001";
 
 	private TypeRef<ObjectResponse<DOTerm>> getObjectResponseTypeRef() {
-		return new TypeRef<ObjectResponse <DOTerm>>() { };
+		return new TypeRef<ObjectResponse<DOTerm>>() { };
 	}
 
 	@BeforeEach
@@ -69,7 +69,7 @@ public class DOTermITCase {
 			get("/api/doterm/" + DOTERMCURIE).
 			then().
 			statusCode(200).
-			body("entity.definition",is("DO term definition")).
+			body("entity.definition", is("DO term definition")).
 			body("entity.name", is("DO Term 1")).
 			body("entity.namespace", is("disease_ontology")).
 			body("entity.obsolete", is(false));
@@ -104,7 +104,7 @@ public class DOTermITCase {
 			get("/api/doterm/" + DOTERMCURIE).
 			then().
 			statusCode(200).
-			body("entity.definition",is("changed definition")).
+			body("entity.definition", is("changed definition")).
 			body("entity.name", is("changed name")).
 			body("entity.namespace", is("changed_namespace")).
 			body("entity.obsolete", is(true));

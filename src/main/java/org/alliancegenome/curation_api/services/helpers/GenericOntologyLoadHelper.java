@@ -44,7 +44,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private OWLOntology ontology;
 
 	private GenericOntologyLoadConfig config;
-	private String defaultNamespace = null;
+	private String defaultNamespace;
 	private Class<T> clazz;
 
 	private HashMap<String, T> allNodes = new HashMap<>();
@@ -109,7 +109,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			Log.info("Finished Traversing Object Properties: " + allNodes.size());
 			return allNodes;
 		}
-		
+
 		OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
 		Log.info("Traversing Ontology");
@@ -237,7 +237,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
 		boolean condition6 = !hasChebiXref(currentTerm);
 
+		//CHECKSTYLE:OFF: UnnecessaryParentheses
 		return ((condition1 && condition2 && !condition3) || (condition3 && condition4)) && (condition5 || condition6);
+		//CHECKSTYLE:ON: UnnecessaryParentheses
 	}
 
 	public void printDepthMessage(int depth, String message) {
@@ -250,16 +252,19 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	}
 
 	public String getIRIShortForm(OWLAnnotationValue owlAnnotationValue) {
-		if (owlAnnotationValue.isIRI())
+		if (owlAnnotationValue.isIRI()) {
 			return ((IRI) owlAnnotationValue).getShortForm();
+		}
 		return "";
 	}
 
 	public String getString(OWLAnnotationValue owlAnnotationValue) {
-		if (owlAnnotationValue.isLiteral())
+		if (owlAnnotationValue.isLiteral()) {
 			return ((OWLLiteral) owlAnnotationValue).getLiteral();
-		if (owlAnnotationValue.isIRI())
+		}
+		if (owlAnnotationValue.isIRI()) {
 			return ((IRI) owlAnnotationValue).getIRIString();
+		}
 		return "";
 	}
 
@@ -284,7 +289,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		return term;
 
 	}
-	
+
 	private T parseAnnotation(OWLAnnotation annotation, OWLClass node, T term, String key) {
 		if (key.equals("id")) {
 			term.setCurie(getString(annotation.getValue()));
@@ -300,8 +305,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 							// System.out.println(inkey);
 							if (inkey.equals("hasDbXref")) {
 								// System.out.println("Adding: " + an.getValue().toString());
-								if (term.getDefinitionUrls() == null)
+								if (term.getDefinitionUrls() == null) {
 									term.setDefinitionUrls(new ArrayList<>());
+								}
 								term.getDefinitionUrls().add(getString(an.getValue()));
 							}
 						});
@@ -314,33 +320,37 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		} else if (key.equals("hasOBONamespace")) {
 			term.setNamespace(getString(annotation.getValue()));
 		} else if (key.equals("hasExactSynonym") || key.equals("hasRelatedSynonym")) {
-			if (term.getSynonyms() == null)
+			if (term.getSynonyms() == null) {
 				term.setSynonyms(new ArrayList<>());
+			}
 			Synonym synonym = new Synonym();
 			synonym.setName(getString(annotation.getValue()));
 			term.getSynonyms().add(synonym);
 		} else if (key.equals("hasAlternativeId")) {
-			if (term.getSecondaryIdentifiers() == null)
+			if (term.getSecondaryIdentifiers() == null) {
 				term.setSecondaryIdentifiers(new ArrayList<>());
+			}
 			term.getSecondaryIdentifiers().add(getString(annotation.getValue()));
 		} else if (key.equals("hasDbXref") || key.equals("database_cross_reference")) {
-			if (term.getCrossReferences() == null)
+			if (term.getCrossReferences() == null) {
 				term.setCrossReferences(new ArrayList<>());
+			}
 			CrossReference ref = new CrossReference();
 			ref.setReferencedCurie(getString(annotation.getValue()));
 			ref.setDisplayName(getString(annotation.getValue()));
 			term.getCrossReferences().add(ref);
 		} else if (key.equals("inSubset")) {
-			if (term.getSubsets() == null)
+			if (term.getSubsets() == null) {
 				term.setSubsets(new ArrayList<>());
+			}
 			term.getSubsets().add(getIRIShortForm(annotation.getValue()));
 		} else {
 			// log.info(key + " -> " + getString(annotation.getValue()));
 		}
-		
+
 		return term;
 	}
-	
+
 	public T traverseProperties(OWLObjectProperty currentTreeProperty, int depth) throws Exception {
 
 		T currentTerm = null;
@@ -349,18 +359,19 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		currentTerm = getOntologyTermFromProperty(currentTreeProperty);
 
 		boolean isPropertyInOntology = isPropertyInOntology(currentTreeProperty);
-		
+
 		if (isPropertyInOntology && currentTerm.getCurie() != null) {
 			if (!allNodes.containsKey(currentTerm.getCurie())) {
 				allNodes.put(currentTerm.getCurie(), currentTerm);
-			} else {	
+			} else {
 				currentTerm = allNodes.get(currentTerm.getCurie());
 			}
 		}
 
-		if (traversedNodes.contains(currentTerm.getCurie()))
+		if (traversedNodes.contains(currentTerm.getCurie())) {
 			return currentTerm;
-		
+		}
+
 		traversedNodes.add(currentTerm.getCurie());
 
 		if (isPropertyInOntology) {
@@ -375,8 +386,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				try {
 					T childTerm = traverseProperties(childTermPropertyExpression.getNamedProperty(), depth + 1);
 
-					if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology)
-							childTerm.addIsaParent(currentTerm);
+					if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology) {
+						childTerm.addIsaParent(currentTerm);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -386,22 +398,22 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		return currentTerm;
 
 	}
-	
+
 	public T getOntologyTermFromProperty(OWLObjectProperty property) throws Exception {
 
 		T term = clazz.getDeclaredConstructor().newInstance();
 		term.setObsolete(false);
 		term.setCurie(property.getIRI().getFragment().replaceFirst("_", ":"));
-		
+
 		EntitySearcher.getAnnotationObjects(property, ontology).forEach(annotation -> {
 			String key = annotation.getProperty().getIRI().getShortForm();
 			parseAnnotation(annotation, null, term, key);
 		});
-		
+
 		return term;
 
 	}
-	
+
 	private void traverseToRootProperty(OWLObjectProperty currentTreeProperty, int depth, HashSet<OntologyTerm> ancestors) throws Exception {
 		List<OWLObjectPropertyExpression> parents = reasoner.getSuperObjectProperties(currentTreeProperty, true).entities().collect(Collectors.toList());
 
@@ -418,19 +430,21 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				existingNode = currentTerm;
 			}
 
-			if (!ancestors.contains(existingNode))
+			if (!ancestors.contains(existingNode)) {
 				ancestors.add(existingNode);
+			}
 		}
 
 		for (OWLObjectPropertyExpression parent : parents) {
 			traverseToRootProperty(parent.getNamedProperty(), depth + 1, ancestors);
 		}
 	}
-	
+
 	private boolean isPropertyInOntology(OWLObjectProperty property) {
-		if (config.getLoadOnlyIRIPrefix() == null)
+		if (config.getLoadOnlyIRIPrefix() == null) {
 			return true;
-		
+		}
+
 		return property.getIRI().getFragment().startsWith(config.getLoadOnlyIRIPrefix() + "_");
 	}
 

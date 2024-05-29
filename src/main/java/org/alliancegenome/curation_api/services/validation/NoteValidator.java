@@ -24,14 +24,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class NoteValidator extends AuditedObjectValidator<Note> {
 
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	ReferenceValidator referenceValidator;
+	@Inject NoteDAO noteDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject ReferenceService referenceService;
+	@Inject ReferenceValidator referenceValidator;
 
 	public ObjectResponse<Note> validateNote(Note uiEntity, String noteVocabularySetName) {
 		Note note = validateNote(uiEntity, noteVocabularySetName, false);
@@ -66,8 +62,9 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		dbEntity.setFreeText(freeText);
 
 		List<String> previousReferenceCuries = new ArrayList<String>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
 			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
+		}
 		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
 			List<Reference> references = new ArrayList<Reference>();
 			for (Reference uiReference : uiEntity.getReferences()) {

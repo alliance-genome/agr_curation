@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ConstructSynonymSlotAnnotationService extends BaseEntityCrudService<ConstructSynonymSlotAnnotation, ConstructSynonymSlotAnnotationDAO> {
 
-	@Inject
-	ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
-	@Inject
-	ConstructSynonymSlotAnnotationValidator constructSynonymValidator;
+	@Inject ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
+	@Inject ConstructSynonymSlotAnnotationValidator constructSynonymValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class ConstructSynonymSlotAnnotationService extends BaseEntityCrudService
 	@Transactional
 	public ObjectResponse<ConstructSynonymSlotAnnotation> upsert(ConstructSynonymSlotAnnotation uiEntity) {
 		ConstructSynonymSlotAnnotation dbEntity = constructSynonymValidator.validateConstructSynonymSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<ConstructSynonymSlotAnnotation>(constructSynonymDAO.persist(dbEntity));
 	}
 

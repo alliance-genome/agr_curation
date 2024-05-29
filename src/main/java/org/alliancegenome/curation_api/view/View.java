@@ -3,13 +3,13 @@ package org.alliancegenome.curation_api.view;
 public class View {
 
 	// Curation Views
-	
+
 	public static class FieldsOnly {
 	}
 
 	public static class FieldsAndLists extends FieldsOnly {
 	}
-	
+
 	public static class ConditionRelationView extends FieldsOnly {
 	}
 
@@ -45,7 +45,7 @@ public class View {
 
 	public static class ConstructView extends FieldsOnly {
 	}
-	
+
 	public static class DiseaseAnnotation extends FieldsOnly {
 	}
 
@@ -54,7 +54,7 @@ public class View {
 
 	public static class DiseaseAnnotationCreate extends DiseaseAnnotation {
 	}
-	
+
 	public static class PhenotypeAnnotationView extends FieldsOnly {
 	}
 
@@ -63,7 +63,7 @@ public class View {
 
 	public static class PhenotypeAnnotationCreate extends PhenotypeAnnotationView {
 	}
-	
+
 	public static class AffectedGenomicModelView extends FieldsOnly {
 	}
 
@@ -99,7 +99,7 @@ public class View {
 
 	public static class VariantCreate extends GeneView {
 	}
-	
+
 	public static class GeneInteractionView extends FieldsOnly {
 	}
 
@@ -108,13 +108,15 @@ public class View {
 
 	public static class PrivateOnlyView {
 	}
-  
+
 	// Public only views
-	
+
 	public static class ForPublic {
 	}
+
 	public static class DiseaseAnnotationForPublic extends ForPublic {
 	}
+
 	public static class BulkLoadFileHistoryView extends FieldsOnly {
 	}
 }

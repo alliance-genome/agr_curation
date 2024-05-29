@@ -45,7 +45,7 @@ import lombok.ToString;
 		@Index(name = "bulkloadfile_bulkLoad_index", columnList = "bulkLoad_id"),
 		@Index(name = "bulkloadfile_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "bulkloadfile_updatedby_index", columnList = "updatedBy_id"),
-		@Index(name = "bulkloadfile_bulkloadStatus_index", columnList = "bulkloadStatus"),
+		@Index(name = "bulkloadfile_bulkloadStatus_index", columnList = "bulkloadStatus")
 	}
 )
 public class BulkLoadFile extends AuditedObject {

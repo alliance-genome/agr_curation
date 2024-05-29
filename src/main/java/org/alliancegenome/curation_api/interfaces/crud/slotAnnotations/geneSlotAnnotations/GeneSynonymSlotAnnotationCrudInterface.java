@@ -23,5 +23,5 @@ public interface GeneSynonymSlotAnnotationCrudInterface extends BaseIdCrudInterf
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<GeneSynonymSlotAnnotation> validate(GeneSynonymSlotAnnotation entity);
+	ObjectResponse<GeneSynonymSlotAnnotation> validate(GeneSynonymSlotAnnotation entity);
 }

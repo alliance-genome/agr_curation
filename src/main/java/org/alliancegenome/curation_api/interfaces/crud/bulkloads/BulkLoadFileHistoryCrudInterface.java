@@ -24,5 +24,5 @@ public interface BulkLoadFileHistoryCrudInterface extends BaseIdCrudInterface<Bu
 	@Path("/{id}/download")
 	@JsonView(View.BulkLoadFileHistoryView.class)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response download(@PathParam("id") Long id);
+	Response download(@PathParam("id") Long id);
 }

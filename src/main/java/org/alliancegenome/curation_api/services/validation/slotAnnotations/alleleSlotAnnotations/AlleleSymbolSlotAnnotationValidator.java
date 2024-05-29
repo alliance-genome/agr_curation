@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleSymbolSlotAnnotationValidator extends NameSlotAnnotationValidator<AlleleSymbolSlotAnnotation> {
 
-	@Inject
-	AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
-	@Inject
-	AlleleDAO alleleDAO;
+	@Inject AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleSymbolSlotAnnotation> validateAlleleSymbolSlotAnnotation(AlleleSymbolSlotAnnotation uiEntity) {
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbolSlotAnnotation(uiEntity, false, false);

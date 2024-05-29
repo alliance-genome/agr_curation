@@ -45,7 +45,7 @@ import lombok.ToString;
 		@Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
 		@Index(name = "biologicalentity_modentityid_index", columnList = "modentityid"),
 		@Index(name = "biologicalentity_modinternalid_index", columnList = "modinternalid"),
-		@Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id"),
+		@Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "biologicalentity_curie_uk", columnNames = "curie"),

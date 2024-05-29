@@ -25,5 +25,5 @@ public interface GeneToGeneOrthologyGeneratedCrudInterface extends BaseIdCrudInt
 	@POST
 	@Path("/bulk/{dataProvider}/orthologyfile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateOrthology(@PathParam("dataProvider") String dataProvider, OrthologyIngestFmsDTO orthologyData);
+	APIResponse updateOrthology(@PathParam("dataProvider") String dataProvider, OrthologyIngestFmsDTO orthologyData);
 }

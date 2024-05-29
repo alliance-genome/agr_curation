@@ -24,20 +24,18 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDescriptor, ResourceDescriptorDAO> {
 
-	@Inject
-	ResourceDescriptorDAO resourceDescriptorDAO;
-	@Inject
-	ResourceDescriptorDTOValidator resourceDescriptorDtoValidator;
-	
-	Date prefixRequest = null;
+	@Inject ResourceDescriptorDAO resourceDescriptorDAO;
+	@Inject ResourceDescriptorDTOValidator resourceDescriptorDtoValidator;
+
+	Date prefixRequest;
 	HashMap<String, ResourceDescriptor> prefixCacheMap = new HashMap<>();
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(resourceDescriptorDAO);
 	}
-	
+
 	public List<String> getAllNames() {
 		List<String> names = resourceDescriptorDAO.findAllNames();
 		names.removeIf(Objects::isNull);
@@ -47,10 +45,11 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 	@Transactional
 	public ResourceDescriptor upsert(ResourceDescriptorDTO dto) throws ObjectUpdateException {
 		ResourceDescriptor rd = resourceDescriptorDtoValidator.validateResourceDescriptorDTO(dto);
-		
-		if (rd == null)
+
+		if (rd == null) {
 			return null;
-		
+		}
+
 		return resourceDescriptorDAO.persist(rd);
 	}
 
@@ -65,20 +64,20 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 		}
 	}
 
-	
 	public ObjectResponse<ResourceDescriptor> getByPrefixOrSynonym(String prefix) {
-		
+
 		List<String> lookupFields = List.of("prefix", "synonyms");
-		
+
 		ResourceDescriptor rd = null;
-		if(prefixRequest != null) {
-			if(prefixCacheMap.containsKey(prefix)) {
+		if (prefixRequest != null) {
+			if (prefixCacheMap.containsKey(prefix)) {
 				rd = prefixCacheMap.get(prefix);
 			} else {
 				Log.debug("RD not cached, caching rd: (" + prefix + ")");
 				rd = findByAlternativeFields(lookupFields, prefix);
-				if (rd != null)
+				if (rd != null) {
 					prefixCacheMap.put(prefix, rd);
+				}
 			}
 		} else {
 			rd = findByAlternativeFields(lookupFields, prefix);

@@ -16,25 +16,24 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class BulkLoadURLProcessor extends BulkLoadProcessor {
 
-	@Inject
-	BulkLoadDAO bulkLoadDAO;
-	
+	@Inject BulkLoadDAO bulkLoadDAO;
+
 	public void processBulkURLLoad(@Observes StartedBulkLoadJobEvent load) {
-		
+
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
-		if(bulkLoad instanceof BulkURLLoad bulkURLLoad) {
+		if (bulkLoad instanceof BulkURLLoad bulkURLLoad) {
 
 			Log.info("processBulkURLLoad: " + load.getId());
 			startLoad(bulkURLLoad);
-	
+
 			if (bulkURLLoad.getBulkloadUrl() != null && bulkURLLoad.getBulkloadUrl().length() > 0) {
 				String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getBulkloadUrl());
 				String localFilePath = fileHelper.compressInputFile(filePath);
-				
-				if(filePath == null) {
+
+				if (filePath == null) {
 					log.info("Load: " + bulkURLLoad.getName() + " failed");
 					endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: to download URL: " + bulkURLLoad.getBulkloadUrl(), JobStatus.FAILED);
-				} else if(localFilePath == null) {
+				} else if (localFilePath == null) {
 					log.info("Load: " + bulkURLLoad.getName() + " failed");
 					endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: to save local file: " + filePath, JobStatus.FAILED);
 				} else {

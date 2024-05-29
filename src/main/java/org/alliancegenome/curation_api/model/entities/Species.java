@@ -44,7 +44,7 @@ import lombok.ToString;
 		@Index(name = "species_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "species_updatedby_index", columnList = "updatedBy_id")
 })
-@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE,dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Species extends AuditedObject {
 
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
@@ -73,7 +73,7 @@ public class Species extends AuditedObject {
 	@KeywordField(name = "commonNames_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView({ View.FieldsAndLists.class})
-	@JoinTable(indexes = @Index(name ="species_commonnames_species_id_index",columnList = "species_id"))
+	@JoinTable(indexes = @Index(name = "species_commonnames_species_id_index", columnList = "species_id"))
 	private List<String> commonNames;
 
 	@IndexedEmbedded(includeDepth = 2)
@@ -89,5 +89,7 @@ public class Species extends AuditedObject {
 	//@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	//@KeywordField(name = "assembly_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class })
+	//CHECKSTYLE:OFF: MemberName
 	private String assembly_curie;
+	//CHECKSTYLE:ON: MemberName
 }

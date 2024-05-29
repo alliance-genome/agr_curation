@@ -65,8 +65,8 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 	@Inject protected SearchSession searchSession;
 	@Inject protected IndexProcessDisplayService indexProcessDisplayService;
 
-	private int outerBoost = 0;
-	private int innerBoost = 0;
+	private int outerBoost;
+	private int innerBoost;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
@@ -134,7 +134,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			return null;
 		}
 	}
-	
+
 	private List<Predicate> buildRestrictions(Root<E> root, Map<String, Object> params, Logger.Level level) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		List<Predicate> restrictions = new ArrayList<>();
@@ -157,8 +157,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 					} else {
 						Log.log(level, "Looking up via root: " + s);
 						column = root.get(s);
-						if (column.getJavaType().equals(List.class))
+						if (column.getJavaType().equals(List.class)) {
 							column = root.joinList(s, JoinType.LEFT);
+						}
 					}
 
 					Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
@@ -166,19 +167,21 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			} else {
 				Log.log(level, "Looking up via root: " + key);
 				column = root.get(key);
-				// Don't need to join to these tables if value is null, the isEmpty will catch the condition later
+				// Don't need to join to these tables if value is null, the isEmpty will catch
+				// the condition later
 				Object value = params.get(key);
-				if(value != null) {
-					if (column instanceof SqmPluralValuedSimplePath)
+				if (value != null) {
+					if (column instanceof SqmPluralValuedSimplePath) {
 						column = root.joinList(key, JoinType.LEFT);
+					}
 				}
 			}
 
 			Log.log(level, "Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
-			
+
 			Object value = params.get(key);
-			
-			if(value == null) {
+
+			if (value == null) {
 				restrictions.add(builder.isEmpty(root.get(key)));
 			} else if (value instanceof Integer) {
 				Log.log(level, "Integer Type: " + value);
@@ -204,28 +207,28 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 				Log.info("Unsupprted Value: " + value);
 			}
 		}
-		
+
 		return restrictions;
 	}
-	
+
 	public List<Long> findFilteredIds(Map<String, Object> params) {
 		Logger.Level level = Level.DEBUG;
-		if(params.containsKey("debug")) {
+		if (params.containsKey("debug")) {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
-		
+
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> query = builder.createQuery(Long.class);
 		Root<E> root = query.from(myClass);
-		
+
 		List<Predicate> restrictions = buildRestrictions(root, params, level);
 
 		query.orderBy(builder.asc(root.get("id")));
 		query.where(builder.and(restrictions.toArray(new Predicate[0])));
 		query.select(root.get("id"));
-		
+
 		List<Long> filteredIds = entityManager.createQuery(query).getResultList();
-			
+
 		return filteredIds;
 	}
 
@@ -247,15 +250,16 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		for (E entity : allQuery.getResultList()) {
 			Long pk = returnId(entity);
-			if (pk != null)
+			if (pk != null) {
 				primaryKeys.add(pk);
+			}
 		}
 
 		results.setResults(primaryKeys);
 		results.setTotalResults(totalResults);
 		return results;
 	}
-	
+
 	private Long returnId(E entity) {
 		Long pk = null;
 		try {
@@ -265,7 +269,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		}
 		return pk;
 	}
-	
+
 	public SearchResponse<E> findAll() {
 		return findAll(null);
 	}
@@ -288,8 +292,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
 			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0)
+			if (first < 0) {
 				first = 0;
+			}
 			allQuery.setFirstResult(first);
 			allQuery.setMaxResults(pagination.getLimit());
 		}
@@ -302,8 +307,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 	private void handlePersistenceException(E entity, Exception e) {
 		ObjectResponse<E> response = new ObjectResponse<E>(entity);
 		Throwable rootCause = e.getCause();
-		while (rootCause.getCause() != null)
+		while (rootCause.getCause() != null) {
 			rootCause = rootCause.getCause();
+		}
 		if (rootCause instanceof ConstraintViolationException) {
 			ConstraintViolationException cve = (ConstraintViolationException) rootCause;
 			response.setErrorMessage("Violates database constraint " + cve.getConstraintName());
@@ -349,20 +355,32 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(indexProcessDisplayService);
 		ph.startProcess("Mass Index Everything");
-		MassIndexer indexer = searchSession.massIndexer(annotatedClasses).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
+		MassIndexer indexer = searchSession.massIndexer(annotatedClasses)
+			.batchSizeToLoadObjects(batchSizeToLoadObjects)
+			.idFetchSize(idFetchSize)
+			.dropAndCreateSchemaOnStart(true)
+			.mergeSegmentsOnFinish(false)
+			.typesToIndexInParallel(typesToIndexInParallel)
+			.threadsToLoadObjects(threadsToLoadObjects)
+			.monitor(new MassIndexingMonitor() {
+				@Override
 				public void documentsAdded(long increment) {
 				}
 
+				@Override
 				public void entitiesLoaded(long increment) {
 				}
 
+				@Override
 				public void addToTotalCount(long increment) {
 				}
 
+				@Override
 				public void documentsBuilt(long increment) {
 					ph.progressProcess();
 				}
 
+				@Override
 				public void indexingCompleted() {
 					ph.finishProcess();
 				}
@@ -378,13 +396,16 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 
 		Log.debug("Starting Indexing for: " + objectClass);
-		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
+		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects)
+			.monitor(new MassIndexingMonitor() {
 
 				ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 
+				@Override
 				public void documentsAdded(long increment) {
 				}
 
+				@Override
 				public void entitiesLoaded(long increment) {
 				}
 
@@ -425,10 +446,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 		Logger.Level level = Level.DEBUG;
-		if(params.containsKey("debug")) {
+		if (params.containsKey("debug")) {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
-		
+
 		Log.log(level, "Search: " + pagination + " Params: " + params);
 
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
@@ -442,8 +463,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 							s.must(f -> f.bool().with(q -> {
 								innerBoost = searchFilters.get(filterName).keySet().size();
 								for (String field : searchFilters.get(filterName).keySet()) {
-									if (field.equals("nonNullFields") || field.equals("nullFields"))
+									if (field.equals("nonNullFields") || field.equals("nullFields")) {
 										continue;
+									}
 									float boost = (outerBoost * 10000) + (innerBoost * 1000);
 
 									String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
@@ -483,14 +505,14 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 								}));
 							}
 						});
-						if(filterOperator != null && filterOperator.equals("OR")) {
+						if (filterOperator != null && filterOperator.equals("OR")) {
 							b.should(bpStep);
 						} else {
 							b.must(bpStep);
 						}
 						outerBoost--;
 					}
-					if(searchFilters.keySet().size() == 0) {
+					if (searchFilters.keySet().size() == 0) {
 						b.must(p.matchAll());
 					}
 				} else {
@@ -542,8 +564,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			results.setEsQuery(query.queryString());
 		}
 		Log.log(level, query);
-		
-		
+
 		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
 		if (aggKeys.size() > 0) {
@@ -561,25 +582,25 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 	public SearchResponse<E> findByFields(List<String> fields, String value) {
 		Log.debug("SqlDAO: findByFields: " + fields + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
-		for(String field: fields) {
+		for (String field : fields) {
 			params.put(field, value);
 		}
 		params.put("query_operator", "or");
 		SearchResponse<E> results = findByParams(params);
-		//Log.debug("Result List: " + results);
+		// Log.debug("Result List: " + results);
 		if (results.getResults().size() > 0) {
 			return results;
 		} else {
 			return null;
 		}
 	}
-	
+
 	public SearchResponse<E> findByField(String field, Object value) {
 		Log.debug("SqlDAO: findByField: " + field + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
 		params.put(field, value);
 		SearchResponse<E> results = findByParams(params);
-		//Log.debug("Result List: " + results);
+		// Log.debug("Result List: " + results);
 		if (results.getResults().size() > 0) {
 			return results;
 		} else {
@@ -597,10 +618,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
 		Logger.Level level = Level.DEBUG;
-		if(params.containsKey("debug")) {
+		if (params.containsKey("debug")) {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
 		}
-		
+
 		Log.log(level, "Pagination: " + pagination + " Params: " + params + " Order by: " + orderByField + " Class: " + myClass);
 
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -610,25 +631,26 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		Root<E> countRoot = countQuery.from(myClass);
 
 		Operator queryOperator = Operator.AND;
-		if(params.containsKey("query_operator")) {
+		if (params.containsKey("query_operator")) {
 			queryOperator = params.remove("query_operator").equals("or") ? Operator.OR : Operator.AND;
 		}
-		
+
 		// System.out.println("Root: " + root);
 		List<Predicate> restrictions = buildRestrictions(root, params, level);
 		List<Predicate> countRestrictions = buildRestrictions(countRoot, params, level);
-		
+
 		countQuery.select(builder.count(countRoot));
 
 		if (orderByField != null) {
 			query.orderBy(builder.asc(root.get(orderByField)));
 		} else {
-			//Metamodel metaModel = entityManager.getMetamodel();
-			//IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
-			//query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));
+			// Metamodel metaModel = entityManager.getMetamodel();
+			// IdentifiableType<E> of = (IdentifiableType<E>)
+			// metaModel.managedType(myClass);
+			// query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));
 		}
 
-		if(queryOperator == Operator.AND) {
+		if (queryOperator == Operator.AND) {
 			query.where(builder.and(restrictions.toArray(new Predicate[0])));
 			countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
 		} else {
@@ -639,29 +661,30 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		TypedQuery<E> allQuery = entityManager.createQuery(query);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
 			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0)
+			if (first < 0) {
 				first = 0;
+			}
 			allQuery.setFirstResult(first);
 			allQuery.setMaxResults(pagination.getLimit());
 		}
-		
+
 		Log.log(level, query);
 		Log.log(level, allQuery);
 		Log.log(level, countQuery);
-		
+
 		List<E> dbResults = allQuery.getResultList();
 		SearchResponse<E> results = new SearchResponse<E>();
 		results.setResults(dbResults);
-		
+
 		if (level == Level.INFO) {
 			results.setDebug("true");
-			results.setEsQuery(((QuerySqmImpl)allQuery).getQueryString());
-			results.setDbQuery(((SqmSelectStatement)query).toHqlString());
+			results.setEsQuery(((QuerySqmImpl) allQuery).getQueryString());
+			results.setDbQuery(((SqmSelectStatement) query).toHqlString());
 		}
-	
+
 		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 		results.setTotalResults(totalResults);
-		
+
 		return results;
 
 	}

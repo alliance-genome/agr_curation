@@ -23,10 +23,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class VocabularyTermSetValidator extends AuditedObjectValidator<VocabularyTermSet> {
 
-	@Inject
-	VocabularyTermSetDAO vocabularyTermSetDAO;
-	@Inject
-	VocabularyDAO vocabularyDAO;
+	@Inject VocabularyTermSetDAO vocabularyTermSetDAO;
+	@Inject VocabularyDAO vocabularyDAO;
 
 	private String errorMessage;
 
@@ -68,7 +66,7 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 
 		String label = validateVocabularyLabel(uiEntity, dbEntity);
 		dbEntity.setVocabularyLabel(label);
-		
+
 		Vocabulary vocabularyTermSetVocabulary = validateVocabularyTermSetVocabulary(uiEntity, dbEntity);
 		dbEntity.setVocabularyTermSetVocabulary(vocabularyTermSetVocabulary);
 
@@ -105,8 +103,7 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		if (StringUtils.isNotBlank(dbEntity.getVocabularyLabel()) && 
-				!StringUtils.equals(uiEntity.getVocabularyLabel(), dbEntity.getVocabularyLabel())) {
+		if (StringUtils.isNotBlank(dbEntity.getVocabularyLabel()) && !StringUtils.equals(uiEntity.getVocabularyLabel(), dbEntity.getVocabularyLabel())) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
@@ -142,15 +139,18 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 	private List<VocabularyTerm> validateMemberTerms(VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
 		String field = "memberTerms";
 
-		if (dbEntity.getVocabularyTermSetVocabulary() == null)
+		if (dbEntity.getVocabularyTermSetVocabulary() == null) {
 			return null;
+		}
 
-		if (CollectionUtils.isEmpty(uiEntity.getMemberTerms()))
+		if (CollectionUtils.isEmpty(uiEntity.getMemberTerms())) {
 			return null;
+		}
 
 		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getMemberTerms()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getMemberTerms())) {
 			dbEntity.getMemberTerms().stream().map(VocabularyTerm::getId).collect(Collectors.toList());
+		}
 
 		for (VocabularyTerm memberTerm : uiEntity.getMemberTerms()) {
 			if (!memberTerm.getVocabulary().getId().equals(dbEntity.getVocabularyTermSetVocabulary().getId())) {
@@ -166,15 +166,18 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 
 		return uiEntity.getMemberTerms();
 	}
-	
+
 	private Boolean isUniqueValue(String uiEntityValue, String field, Long uiEntityId) {
 		SearchResponse<VocabularyTermSet> response = vocabularyTermSetDAO.findByField(field, uiEntityValue);
-		if (response == null || response.getSingleResult() == null)
+		if (response == null || response.getSingleResult() == null) {
 			return true;
-		if (uiEntityId == null)
+		}
+		if (uiEntityId == null) {
 			return false;
-		if (uiEntityId.equals(response.getSingleResult().getId()))
+		}
+		if (uiEntityId.equals(response.getSingleResult().getId())) {
 			return true;
+		}
 		return false;
 	}
 }

@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleDatabaseStatusSlotAnnotationService extends BaseEntityCrudService<AlleleDatabaseStatusSlotAnnotation, AlleleDatabaseStatusSlotAnnotationDAO> {
 
-	@Inject
-	AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
-	@Inject
-	AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
+	@Inject AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
+	@Inject AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleDatabaseStatusSlotAnnotationService extends BaseEntityCrudSer
 	@Transactional
 	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> upsert(AlleleDatabaseStatusSlotAnnotation uiEntity) {
 		AlleleDatabaseStatusSlotAnnotation dbEntity = alleleDatabaseStatusValidator.validateAlleleDatabaseStatusSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleDatabaseStatusSlotAnnotation>(alleleDatabaseStatusDAO.persist(dbEntity));
 	}
 

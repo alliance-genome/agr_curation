@@ -295,7 +295,7 @@ public class ConstructBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_03_invalid_reference.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_04_invalid_construct_component_evidence.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_05_invalid_construct_component_taxon.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_06_invalid_construct_component_note_note_type.json");;
+		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_06_invalid_construct_component_note_note_type.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_07_invalid_data_provider_source_organization_abbreviation.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_08_invalid_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_09_invalid_data_provider_cross_reference_page_area.json");

@@ -24,21 +24,16 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 
-	@Inject
-	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
-	@Inject
-	GeneMolecularInteractionService geneMolecularInteractionService;
-	@Inject
-	GeneInteractionService geneInteractionService;
-	
+	@Inject GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	@Inject GeneMolecularInteractionService geneMolecularInteractionService;
+	@Inject GeneInteractionService geneInteractionService;
+
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
-			
+
 			CsvSchema psiMiTabSchema = CsvSchemaBuilder.psiMiTabSchema();
 			CsvMapper csvMapper = new CsvMapper();
-			MappingIterator<PsiMiTabDTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS)
-					.readerFor(PsiMiTabDTO.class).with(psiMiTabSchema)
-					.readValues(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
+			MappingIterator<PsiMiTabDTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(PsiMiTabDTO.class).with(psiMiTabSchema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 			List<PsiMiTabDTO> interactionData = it.readAll();
 
 			List<Long> interactionIdsLoaded = new ArrayList<>();
@@ -47,7 +42,9 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
 			createHistory(history, bulkLoadFile);
 			boolean success = runLoad(geneMolecularInteractionService, history, null, interactionData, interactionIdsLoaded);
-			if(success) runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
+			if (success) {
+				runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
+			}
 			history.finishLoad();
 			finalSaveHistory(history);
 

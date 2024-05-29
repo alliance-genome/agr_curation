@@ -30,15 +30,15 @@ public interface AlleleGeneAssociationCrudInterface extends BaseIdCrudInterface<
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAlleleGeneAssociations(@PathParam("dataProvider") String dataProvider, List<AlleleGeneAssociationDTO> associationData);
+	APIResponse updateAlleleGeneAssociations(@PathParam("dataProvider") String dataProvider, List<AlleleGeneAssociationDTO> associationData);
 	
 	@GET
 	@Path("/findBy")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleGeneAssociation> getAssociation(@QueryParam("alleleId") Long alleleId, @QueryParam("relationName") String relationName, @QueryParam("geneId") Long geneId);
+	ObjectResponse<AlleleGeneAssociation> getAssociation(@QueryParam("alleleId") Long alleleId, @QueryParam("relationName") String relationName, @QueryParam("geneId") Long geneId);
 	
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleGeneAssociation> validate(AlleleGeneAssociation entity);
+	ObjectResponse<AlleleGeneAssociation> validate(AlleleGeneAssociation entity);
 }

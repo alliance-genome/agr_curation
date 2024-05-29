@@ -22,12 +22,9 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
-	@Inject
-	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
-	@Inject
-	AGMDiseaseAnnotationService agmDiseaseAnnotationService;
+	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject AGMDiseaseAnnotationService agmDiseaseAnnotationService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -36,10 +33,14 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AGMDiseaseAnnotationDTO.class);
-		if (ingestDto == null) return;
-		
+		if (ingestDto == null) {
+			return;
+		}
+
 		List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
-		if (annotations == null) annotations = new ArrayList<>();
+		if (annotations == null) {
+			annotations = new ArrayList<>();
+		}
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
@@ -47,17 +48,18 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
 			annotationIdsBefore.removeIf(Objects::isNull);
 		}
-		
+
 		bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(agmDiseaseAnnotationService, history, dataProvider, annotations, annotationIdsLoaded);
-		if(success && cleanUp) runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation", bulkLoadFile.getMd5Sum());
+		if (success && cleanUp) {
+			runCleanup(diseaseAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation", bulkLoadFile.getMd5Sum());
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 	}
-
 
 }

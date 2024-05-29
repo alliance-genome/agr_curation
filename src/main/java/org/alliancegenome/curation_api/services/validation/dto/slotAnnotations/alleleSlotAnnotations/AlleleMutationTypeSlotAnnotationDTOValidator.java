@@ -18,14 +18,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	@Inject
-	SoTermService soTermService;
+	@Inject SoTermService soTermService;
 
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotationDTO(AlleleMutationTypeSlotAnnotation annotation, AlleleMutationTypeSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleMutationTypeSlotAnnotation> amsaResponse = new ObjectResponse<AlleleMutationTypeSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleMutationTypeSlotAnnotation();
+		}
 
 		if (CollectionUtils.isEmpty(dto.getMutationTypeCuries())) {
 			amsaResponse.addErrorMessage("mutation_type_curies", ValidationConstants.REQUIRED_MESSAGE);

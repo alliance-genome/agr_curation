@@ -27,29 +27,15 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class ReportJobExecutor {
 
-	@Inject
-	CurationReportHistoryService curationReportHistoryService;
+	@Inject CurationReportHistoryService curationReportHistoryService;
 
-	@ConfigProperty(name = "reports.s3Bucket")
-	String s3Bucket = null;
-
-	@ConfigProperty(name = "reports.s3PathPrefix")
-	String s3PathPrefix = null;
-
-	@ConfigProperty(name = "reports.s3AccessKey")
-	String s3AccessKey = null;
-
-	@ConfigProperty(name = "reports.s3SecretKey")
-	String s3SecretKey = null;
-
-	@ConfigProperty(name = "quarkus.datasource.jdbc.url")
-	String db_jdbc_url = null;
-
-	@ConfigProperty(name = "quarkus.datasource.username")
-	String db_username = null;
-
-	@ConfigProperty(name = "quarkus.datasource.password")
-	String db_password = null;
+	@ConfigProperty(name = "reports.s3Bucket") String s3Bucket;
+	@ConfigProperty(name = "reports.s3PathPrefix") String s3PathPrefix;
+	@ConfigProperty(name = "reports.s3AccessKey") String s3AccessKey;
+	@ConfigProperty(name = "reports.s3SecretKey") String s3SecretKey;
+	@ConfigProperty(name = "quarkus.datasource.jdbc.url") String dbJdbcUrl;
+	@ConfigProperty(name = "quarkus.datasource.username") String dbUsername;
+	@ConfigProperty(name = "quarkus.datasource.password") String dbPassword;
 
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 
@@ -73,9 +59,9 @@ public class ReportJobExecutor {
 
 		// Set parameter values and validate
 		task.setParameterValue("db_driver", "org.postgresql.Driver");
-		task.setParameterValue("db_jdbc_url", db_jdbc_url);
-		task.setParameterValue("db_username", db_username);
-		task.setParameterValue("db_password", db_password);
+		task.setParameterValue("db_jdbc_url", dbJdbcUrl);
+		task.setParameterValue("db_username", dbUsername);
+		task.setParameterValue("db_password", dbPassword);
 		task.validateParameters();
 
 		CurationReportHistory history = new CurationReportHistory();

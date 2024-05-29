@@ -30,22 +30,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AnnotationDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	AnnotationDAO annotationDAO;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	ConditionRelationDTOValidator conditionRelationDtoValidator;
-	@Inject
-	NoteDTOValidator noteDtoValidator;
-	@Inject
-	DataProviderDTOValidator dataProviderDtoValidator;
-	@Inject
-	DataProviderDAO dataProviderDAO;
+	@Inject ReferenceService referenceService;
+	@Inject NoteDAO noteDAO;
+	@Inject AnnotationDAO annotationDAO;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;
+	@Inject NoteDTOValidator noteDtoValidator;
+	@Inject DataProviderDTOValidator dataProviderDtoValidator;
+	@Inject DataProviderDAO dataProviderDAO;
 
 	public <E extends Annotation, D extends AnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto, String noteTypeSet) {
 		ObjectResponse<E> annotResponse = validateAuditedObjectDTO(annotation, dto);
@@ -53,7 +45,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 
 		annotation.setModEntityId(handleStringField(dto.getModEntityId()));
 		annotation.setModInternalId(handleStringField(dto.getModInternalId()));
-		
+
 		if (dto.getDataProviderDto() == null) {
 			annotResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -64,10 +56,11 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 				annotation.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
-		
-		if (annotation.getRelatedNotes() != null)
+
+		if (annotation.getRelatedNotes() != null) {
 			annotation.getRelatedNotes().clear();
-		
+		}
+
 		List<Note> validatedNotes = new ArrayList<Note>();
 		List<String> noteIdentities = new ArrayList<String>();
 		Boolean allNotesValid = true;
@@ -96,11 +89,13 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 				}
 			}
 		}
-		if (!allNotesValid)
+		if (!allNotesValid) {
 			annotResponse.convertMapToErrorMessages("relatedNotes");
+		}
 		if (CollectionUtils.isNotEmpty(validatedNotes) && allNotesValid) {
-			if (annotation.getRelatedNotes() == null)
+			if (annotation.getRelatedNotes() == null) {
 				annotation.setRelatedNotes(new ArrayList<>());
+			}
 			annotation.getRelatedNotes().addAll(validatedNotes);
 		}
 
@@ -125,7 +120,7 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 		}
 
 		annotResponse.setEntity(annotation);
-		
+
 		return annotResponse;
 	}
 
@@ -137,8 +132,9 @@ public class AnnotationDTOValidator extends BaseDTOValidator {
 			aResponse.addErrorMessage("reference_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
-			if (reference == null)
+			if (reference == null) {
 				aResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getReferenceCurie() + ")");
+			}
 		}
 		annotation.setSingleReference(reference);
 

@@ -63,7 +63,7 @@ public class Variant extends GenomicEntity {
 			"references.primaryCrossReferenceCurie_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
 	@JoinTable(indexes = {
 			@Index(name = "variant_note_variant_index", columnList = "variant_id"),

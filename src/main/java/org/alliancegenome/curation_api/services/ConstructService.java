@@ -33,20 +33,13 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class ConstructService extends SubmittedObjectCrudService<Construct, ConstructDTO, ConstructDAO> {
 
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	ConstructValidator constructValidator;
-	@Inject
-	ConstructDTOValidator constructDtoValidator;
-	@Inject
-	ConstructService constructService;
-	@Inject
-	PersonService personService;
-	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject
-	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject ConstructDAO constructDAO;
+	@Inject ConstructValidator constructValidator;
+	@Inject ConstructDTOValidator constructDtoValidator;
+	@Inject ConstructService constructService;
+	@Inject PersonService personService;
+	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
+	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
 	@PostConstruct
@@ -59,8 +52,9 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		Construct construct = findByIdentifierString(identifier);
 		if (construct == null) {
 			SearchResponse<Construct> response = findByField("uniqueId", identifier);
-			if (response != null)
+			if (response != null) {
 				construct = response.getSingleResult();
+			}
 		}
 		return new ObjectResponse<Construct>(construct);
 	}
@@ -93,7 +87,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		ObjectResponse<Construct> ret = new ObjectResponse<>();
 		return ret;
 	}
-	
+
 	@Transactional
 	public Construct removeOrDeprecateNonUpdated(Long id, Boolean throwApiError, String loadDescription) {
 		Construct construct = constructDAO.find(id);
@@ -108,13 +102,14 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 			log.error(errorMessage);
 			return null;
 		}
-		
+
 		Boolean anyReferencingEntities = false;
 		if (CollectionUtils.isNotEmpty(construct.getConstructGenomicEntityAssociations())) {
 			for (ConstructGenomicEntityAssociation association : construct.getConstructGenomicEntityAssociations()) {
 				association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-				if (association != null)
+				if (association != null) {
 					anyReferencingEntities = true;
+				}
 			}
 		}
 
@@ -139,14 +134,15 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) { }
+	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+	}
 
 	public List<Long> getConstructIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<Long> constructIds = constructDAO.findFilteredIds(params);
 		constructIds.removeIf(Objects::isNull);
-		
+
 		return constructIds;
 	}
 }

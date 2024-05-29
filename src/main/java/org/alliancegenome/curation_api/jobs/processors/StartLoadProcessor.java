@@ -14,10 +14,10 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class StartLoadProcessor extends BulkLoadProcessor {
 
-	@Inject
-	BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 
-	public void bulkLoadFile(@Observes StartedBulkLoadFileJobEvent event) { // An @Observes method should not be in a super class as then it gets run for every child class
+	public void bulkLoadFile(@Observes StartedBulkLoadFileJobEvent event) { // An @Observes method should not be in a super class as then it gets run for
+																			// every child class
 		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(event.getId());
 		if (!bulkLoadFile.getBulkloadStatus().isStarted()) {
 			Log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());

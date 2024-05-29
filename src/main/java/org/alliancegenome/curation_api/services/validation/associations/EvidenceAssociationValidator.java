@@ -13,15 +13,15 @@ import org.apache.commons.collections.CollectionUtils;
 import jakarta.inject.Inject;
 
 public class EvidenceAssociationValidator<E extends EvidenceAssociation> extends AuditedObjectValidator<E> {
-	
-	@Inject
-	InformationContentEntityService informationContentEntityService;
-	
+
+	@Inject InformationContentEntityService informationContentEntityService;
+
 	public List<InformationContentEntity> validateEvidence(E uiEntity, E dbEntity) {
 		String field = "evidence";
-		if (CollectionUtils.isEmpty(uiEntity.getEvidence()))
+		if (CollectionUtils.isEmpty(uiEntity.getEvidence())) {
 			return null;
-		
+		}
+
 		List<InformationContentEntity> validatedEntities = new ArrayList<>();
 		for (InformationContentEntity evidenceEntity : uiEntity.getEvidence()) {
 			evidenceEntity = informationContentEntityService.retrieveFromDbOrLiteratureService(evidenceEntity.getCurie());
@@ -41,8 +41,9 @@ public class EvidenceAssociationValidator<E extends EvidenceAssociation> extends
 
 	public E validateEvidenceAssociationFields(E uiEntity, E dbEntity) {
 		Boolean newEntity = false;
-		if (dbEntity.getId() == null)
+		if (dbEntity.getId() == null) {
 			newEntity = true;
+		}
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
 		List<InformationContentEntity> evidence = validateEvidence(uiEntity, dbEntity);

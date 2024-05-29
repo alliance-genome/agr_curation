@@ -18,9 +18,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class EvidenceAssociationDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	InformationContentEntityService informationContentEntityService;
-	
+	@Inject InformationContentEntityService informationContentEntityService;
 
 	public <E extends EvidenceAssociation, D extends EvidenceAssociationDTO> ObjectResponse<E> validateEvidenceAssociationDTO(E association, D dto) {
 		ObjectResponse<E> assocResponse = validateAuditedObjectDTO(association, dto);
@@ -42,7 +40,7 @@ public class EvidenceAssociationDTOValidator extends BaseDTOValidator {
 		}
 
 		assocResponse.setEntity(association);
-		
+
 		return assocResponse;
 	}
 }

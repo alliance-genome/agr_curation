@@ -55,13 +55,13 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false);
 		return new ObjectResponse<Allele>(dbEntity);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
 		return new ObjectResponse<Allele>(dbEntity);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> create(Allele uiEntity) {
@@ -72,7 +72,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> deleteById(Long id) {
@@ -80,7 +80,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		ObjectResponse<Allele> ret = new ObjectResponse<>();
 		return ret;
 	}
-	
+
 	@Transactional
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		Allele allele = alleleDAO.find(id);
@@ -89,28 +89,32 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null)
+				if (referencingDA != null) {
 					anyReferencingEntities = true;
+				}
 			}
 
 			List<Long> referencingPAIds = alleleDAO.findReferencingPhenotypeAnnotations(id);
 			for (Long paId : referencingPAIds) {
 				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
-				if (referencingPA != null)
+				if (referencingPA != null) {
 					anyReferencingEntities = true;
+				}
 			}
 			if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
 				for (AlleleGeneAssociation association : allele.getAlleleGeneAssociations()) {
 					association = alleleGeneAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null)
+					if (association != null) {
 						anyReferencingEntities = true;
+					}
 				}
 			}
 			if (CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
 				for (ConstructGenomicEntityAssociation association : allele.getConstructGenomicEntityAssociations()) {
 					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null)
+					if (association != null) {
 						anyReferencingEntities = true;
+					}
 				}
 			}
 			if (anyReferencingEntities) {
@@ -127,7 +131,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			log.error("Failed getting allele: " + id);
 		}
 	}
-	
+
 	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);

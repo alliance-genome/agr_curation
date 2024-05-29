@@ -76,7 +76,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		loadGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadGeneWithXref(gene3, "NCBITaxon:6239", symbolTerm, dataProvider, gene3xref);
 		loadAllele(allele1, "GGITestVar1", "NCBITaxon:6239", symbolTerm, dataProvider);
-		loadAllele(allele2, "GGITestVar2","NCBITaxon:6239", symbolTerm, dataProvider);
+		loadAllele(allele2, "GGITestVar2", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadMITerm(miTerm1, "Test MITerm 1");
 		loadMITerm(miTerm2, "Test MITerm 2");
 		loadMITerm(miTerm3, "Test MITerm 3");

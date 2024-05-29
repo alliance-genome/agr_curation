@@ -20,14 +20,11 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class AgmExecutor extends LoadFileExecutor {
 
-	@Inject
-	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
 
-	@Inject
-	AffectedGenomicModelService affectedGenomicModelService;
-	
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject AffectedGenomicModelService affectedGenomicModelService;
+
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -35,11 +32,15 @@ public class AgmExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, AffectedGenomicModelDTO.class);
-		if (ingestDto == null) return;
-		
+		if (ingestDto == null) {
+			return;
+		}
+
 		List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
-		if (agms == null) agms = new ArrayList<>();
-		
+		if (agms == null) {
+			agms = new ArrayList<>();
+		}
+
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
 		List<Long> agmIdsLoaded = new ArrayList<>();
@@ -48,18 +49,19 @@ public class AgmExecutor extends LoadFileExecutor {
 			agmIdsBefore.addAll(affectedGenomicModelService.getIdsByDataProvider(dataProvider.name()));
 			Log.debug("runLoad: Before: total " + agmIdsBefore.size());
 		}
-		
+
 		bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(affectedGenomicModelService, history, dataProvider, agms, agmIdsLoaded);
-		if(success && cleanUp) runCleanup(affectedGenomicModelService, history, bulkLoadFile, agmIdsBefore, agmIdsLoaded);
+		if (success && cleanUp) {
+			runCleanup(affectedGenomicModelService, history, bulkLoadFile, agmIdsBefore, agmIdsLoaded);
+		}
 		history.finishLoad();
 		finalSaveHistory(history);
 
 	}
-
 
 }

@@ -63,7 +63,7 @@ public class JobScheduler {
 
 	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false") Boolean reindexSchedulingEnabled;
 
-	private ZonedDateTime lastCheck = null;
+	private ZonedDateTime lastCheck;
 	private Semaphore sem = new Semaphore(1);
 
 	@PostConstruct
@@ -79,13 +79,16 @@ public class JobScheduler {
 						if (bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
 							if (bf.getLocalFilePath() != null) {
 								File file = new File(bf.getLocalFilePath());
-								if (file.exists())
+								if (file.exists()) {
 									file.delete();
+								}
 							}
 							bf.setLocalFilePath(null);
 							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
 							bf.setBulkloadStatus(JobStatus.FAILED);
-							if(isFirst) slackNotifier.slackalert(bf); // Only notify on the first failed file not all the failed files under a load
+							if (isFirst) {
+								slackNotifier.slackalert(bf); // Only notify on the first failed file not all the failed files under a load
+							}
 							bulkLoadFileDAO.merge(bf);
 						}
 						isFirst = false;
@@ -108,26 +111,26 @@ public class JobScheduler {
 	@Scheduled(every = "1s")
 	public void scheduleCronGroupJobs() {
 		if (loadSchedulingEnabled) {
-			if(sem.tryAcquire()) {
+			if (sem.tryAcquire()) {
 				ZonedDateTime start = ZonedDateTime.now();
-				//Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
+				// Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
 				SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
 				for (BulkLoadGroup g : groups.getResults()) {
 					if (g.getLoads().size() > 0) {
 						for (BulkLoad b : g.getLoads()) {
 							if (b instanceof BulkScheduledLoad bsl) {
 								if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null && !bsl.getBulkloadStatus().isRunning()) {
-	
+
 									CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
 									CronParser parser = new CronParser(cronDefinition);
 									try {
 										Cron unixCron = parser.parse(bsl.getCronSchedule());
 										unixCron.validate();
-	
+
 										if (lastCheck != null) {
 											ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
 											ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
-	
+
 											if (lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
 												Log.info("Need to run Cron: " + bsl.getName());
 												bsl.setSchedulingErrorMessage(null);
@@ -186,21 +189,28 @@ public class JobScheduler {
 	@Scheduled(cron = "0 0 0 ? * SAT")
 	public void cleanUpFileExceptions() {
 		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
-		
+
 		Comparator<BulkLoadFile> c = new Comparator<BulkLoadFile>() {
+			@Override
 			public int compare(BulkLoadFile blf1, BulkLoadFile blf2) {
-				if (blf1.getDateLastLoaded() == null && blf2.getDateLastLoaded() == null) { return 0; }
-				if (blf1.getDateLastLoaded() == null) { return 1; }
-				if (blf2.getDateLastLoaded() == null) { return -1; }
+				if (blf1.getDateLastLoaded() == null && blf2.getDateLastLoaded() == null) {
+					return 0;
+				}
+				if (blf1.getDateLastLoaded() == null) {
+					return 1;
+				}
+				if (blf2.getDateLastLoaded() == null) {
+					return -1;
+				}
 				return blf2.getDateLastLoaded().compareTo(blf1.getDateLastLoaded());
 			}
 		};
-		
+
 		int historyExceptionsToKeep = 3;
-		
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("Bulk Load File History Exception Cleanup");
-		
+
 		for (BulkLoadGroup g : groups.getResults()) {
 			Log.debug("Group Clean Up: " + g.getName());
 			if (g.getLoads().size() > 0) {
@@ -210,8 +220,8 @@ public class JobScheduler {
 					if (b.getLoadFiles().size() > historyExceptionsToKeep) {
 						for (int i = historyExceptionsToKeep; i < b.getLoadFiles().size(); i++) {
 							Log.debug("File Clean Up: " + b.getLoadFiles().get(i).getDateLastLoaded());
-							for(BulkLoadFileHistory h: b.getLoadFiles().get(i).getHistory()) {
-								for(BulkLoadFileException e: h.getExceptions()) {
+							for (BulkLoadFileHistory h : b.getLoadFiles().get(i).getHistory()) {
+								for (BulkLoadFileException e : h.getExceptions()) {
 									bulkLoadFileExceptionDAO.remove(e.getId());
 									ph.progressProcess();
 								}

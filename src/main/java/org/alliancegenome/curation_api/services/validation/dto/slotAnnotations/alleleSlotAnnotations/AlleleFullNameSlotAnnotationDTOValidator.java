@@ -12,8 +12,9 @@ import jakarta.enterprise.context.RequestScoped;
 public class AlleleFullNameSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
 	public ObjectResponse<AlleleFullNameSlotAnnotation> validateAlleleFullNameSlotAnnotationDTO(AlleleFullNameSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleFullNameSlotAnnotation();
+		}
 
 		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.FULL_NAME_TYPE_TERM_SET);
 	}

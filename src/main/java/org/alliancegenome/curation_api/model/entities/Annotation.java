@@ -46,10 +46,10 @@ import lombok.ToString;
 		@Index(name = "annotation_uniqueId_index", columnList = "uniqueId"),
 		@Index(name = "annotation_modEntityId_index", columnList = "modEntityId"),
 		@Index(name = "annotation_modInternalId_index", columnList = "modInternalId"),
-		@Index(name = "annotation_dataprovider_index", columnList = "dataProvider_id"),
+		@Index(name = "annotation_dataprovider_index", columnList = "dataProvider_id")
 	}, uniqueConstraints = {
 		@UniqueConstraint(name = "annotation_modentityid_uk", columnNames = "modEntityId"),
-		@UniqueConstraint(name = "annotation_modinternalid_uk", columnNames = "modInternalId"),
+		@UniqueConstraint(name = "annotation_modinternalid_uk", columnNames = "modInternalId")
 	}
 )
 public class Annotation extends SingleReferenceAssociation {
@@ -94,9 +94,9 @@ public class Annotation extends SingleReferenceAssociation {
 			"references.primaryCrossReferenceCurie_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_index",columnList = "relatednotes_id")})
+	@JoinTable(indexes = { @Index(name = "annotation_note_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_note_relatednotes_index", columnList = "relatednotes_id")})
 	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",

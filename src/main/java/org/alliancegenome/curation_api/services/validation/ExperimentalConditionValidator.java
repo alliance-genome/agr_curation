@@ -31,20 +31,13 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ExperimentalConditionValidator extends AuditedObjectValidator<ExperimentalCondition> {
 
-	@Inject
-	ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject
-	GoTermService goTermService;
-	@Inject
-	ZecoTermService zecoTermService;
-	@Inject
-	AnatomicalTermService anatomicalTermService;
-	@Inject
-	ChemicalTermService chemicalTermService;
-	@Inject
-	ExperimentalConditionOntologyTermService ecOntologyTermService;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject GoTermService goTermService;
+	@Inject ZecoTermService zecoTermService;
+	@Inject AnatomicalTermService anatomicalTermService;
+	@Inject ChemicalTermService chemicalTermService;
+	@Inject ExperimentalConditionOntologyTermService ecOntologyTermService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	private String errorMessage;
 
@@ -143,8 +136,9 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ExperimentalConditionOntologyTerm validateConditionId(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionId";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionId()))
+		if (ObjectUtils.isEmpty(uiEntity.getConditionId())) {
 			return null;
+		}
 		ExperimentalConditionOntologyTerm ecOntologyTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getConditionId().getCurie())) {
 			ecOntologyTerm = ecOntologyTermService.findByCurie(uiEntity.getConditionId().getCurie());
@@ -161,8 +155,9 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public GOTerm validateConditionGeneOntology(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionGeneOntology";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionGeneOntology()))
+		if (ObjectUtils.isEmpty(uiEntity.getConditionGeneOntology())) {
 			return null;
+		}
 		GOTerm goTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getConditionGeneOntology().getCurie())) {
 			goTerm = goTermService.findByCurie(uiEntity.getConditionGeneOntology().getCurie());
@@ -179,8 +174,9 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public AnatomicalTerm validateConditionAnatomy(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionAnatomy";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionAnatomy()))
+		if (ObjectUtils.isEmpty(uiEntity.getConditionAnatomy())) {
 			return null;
+		}
 		AnatomicalTerm anatomicalTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getConditionAnatomy().getCurie())) {
 			anatomicalTerm = anatomicalTermService.findByCurie(uiEntity.getConditionAnatomy().getCurie());
@@ -197,8 +193,9 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public ChemicalTerm validateConditionChemical(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionChemical";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionChemical()))
+		if (ObjectUtils.isEmpty(uiEntity.getConditionChemical())) {
 			return null;
+		}
 		ChemicalTerm chemicalTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getConditionChemical().getCurie())) {
 			chemicalTerm = chemicalTermService.findByCurie(uiEntity.getConditionChemical().getCurie());
@@ -215,13 +212,15 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 
 	public NCBITaxonTerm validateConditionTaxon(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionTaxon";
-		if (ObjectUtils.isEmpty(uiEntity.getConditionTaxon()))
+		if (ObjectUtils.isEmpty(uiEntity.getConditionTaxon())) {
 			return null;
+		}
 		NCBITaxonTerm taxonTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getConditionTaxon().getCurie())) {
 			taxonTerm = ncbiTaxonTermService.findByCurie(uiEntity.getConditionTaxon().getCurie());
-			if (taxonTerm == null)
+			if (taxonTerm == null) {
 				taxonTerm = ncbiTaxonTermService.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
+			}
 			if (taxonTerm == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;

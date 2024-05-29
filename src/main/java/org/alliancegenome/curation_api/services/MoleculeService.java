@@ -99,28 +99,33 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			molecule.setName(dto.getName());
 
 			String inchi = null;
-			if (StringUtils.isNotBlank(dto.getInchi()))
+			if (StringUtils.isNotBlank(dto.getInchi())) {
 				inchi = dto.getInchi();
+			}
 			molecule.setInchi(inchi);
 
 			String inchikey = null;
-			if (StringUtils.isNotBlank(dto.getInchikey()))
+			if (StringUtils.isNotBlank(dto.getInchikey())) {
 				inchikey = dto.getInchikey();
+			}
 			molecule.setInchiKey(inchikey);
 
 			String iupac = null;
-			if (StringUtils.isNotBlank(dto.getIupac()))
+			if (StringUtils.isNotBlank(dto.getIupac())) {
 				iupac = dto.getIupac();
+			}
 			molecule.setIupac(iupac);
 
 			String formula = null;
-			if (StringUtils.isNotBlank(dto.getFormula()))
+			if (StringUtils.isNotBlank(dto.getFormula())) {
 				formula = dto.getFormula();
+			}
 			molecule.setFormula(formula);
 
 			String smiles = null;
-			if (StringUtils.isNotBlank(dto.getSmiles()))
+			if (StringUtils.isNotBlank(dto.getSmiles())) {
 				smiles = dto.getSmiles();
+			}
 			molecule.setSmiles(smiles);
 
 			if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
@@ -176,6 +181,5 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 		}
 
 	}
-
 
 }

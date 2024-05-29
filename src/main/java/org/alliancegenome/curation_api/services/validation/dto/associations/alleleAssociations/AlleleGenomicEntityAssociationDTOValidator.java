@@ -19,10 +19,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
 
-	@Inject
-	NoteDTOValidator noteDtoValidator;
-	@Inject
-	EcoTermService ecoTermService;
+	@Inject NoteDTOValidator noteDtoValidator;
+	@Inject EcoTermService ecoTermService;
 
 	public <E extends AlleleGenomicEntityAssociation, D extends AlleleGenomicEntityAssociationDTO> ObjectResponse<E> validateAlleleGenomicEntityAssociationDTO(E association, D dto) {
 		ObjectResponse<E> assocResponse = validateEvidenceAssociationDTO(association, dto);
@@ -40,7 +38,7 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 		} else {
 			association.setEvidenceCode(null);
 		}
-		
+
 		if (dto.getNoteDto() != null) {
 			ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDto(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 			if (noteResponse.hasErrors()) {
@@ -51,9 +49,9 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 		} else {
 			association.setRelatedNote(null);
 		}
-		
+
 		assocResponse.setEntity(association);
-		
+
 		return assocResponse;
 	}
 }

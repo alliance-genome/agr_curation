@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleInheritanceModeSlotAnnotationService extends BaseEntityCrudService<AlleleInheritanceModeSlotAnnotation, AlleleInheritanceModeSlotAnnotationDAO> {
 
-	@Inject
-	AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
-	@Inject
-	AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
+	@Inject AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
+	@Inject AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleInheritanceModeSlotAnnotationService extends BaseEntityCrudSe
 	@Transactional
 	public ObjectResponse<AlleleInheritanceModeSlotAnnotation> upsert(AlleleInheritanceModeSlotAnnotation uiEntity) {
 		AlleleInheritanceModeSlotAnnotation dbEntity = alleleInheritanceModeValidator.validateAlleleInheritanceModeSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleInheritanceModeSlotAnnotation>(alleleInheritanceModeDAO.persist(dbEntity));
 	}
 

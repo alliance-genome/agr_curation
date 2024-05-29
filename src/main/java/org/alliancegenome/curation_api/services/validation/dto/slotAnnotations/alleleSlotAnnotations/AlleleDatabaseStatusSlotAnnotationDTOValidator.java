@@ -16,25 +16,26 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleDatabaseStatusSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validateAlleleDatabaseStatusSlotAnnotationDTO(AlleleDatabaseStatusSlotAnnotation annotation, AlleleDatabaseStatusSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> adsResponse = new ObjectResponse<AlleleDatabaseStatusSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleDatabaseStatusSlotAnnotation();
+		}
 
 		VocabularyTerm databaseStatus = null;
 		if (StringUtils.isBlank(dto.getDatabaseStatusName())) {
 			adsResponse.addErrorMessage("database_status_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			databaseStatus = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_DATABASE_STATUS_VOCABULARY, dto.getDatabaseStatusName()).getEntity();
-			if (databaseStatus == null)
+			if (databaseStatus == null) {
 				adsResponse.addErrorMessage("database_status_name", ValidationConstants.INVALID_MESSAGE);
+			}
 		}
 		annotation.setDatabaseStatus(databaseStatus);
-	
+
 		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		adsResponse.addErrorMessages(saResponse.getErrorMessages());

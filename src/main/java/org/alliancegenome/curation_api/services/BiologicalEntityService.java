@@ -14,8 +14,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class BiologicalEntityService extends SubmittedObjectCrudService<BiologicalEntity, BiologicalEntityDTO, BiologicalEntityDAO> {
 
-	@Inject
-	BiologicalEntityDAO biologicalEntityDAO;
+	@Inject BiologicalEntityDAO biologicalEntityDAO;
 
 	@Override
 	@PostConstruct
@@ -24,11 +23,11 @@ public class BiologicalEntityService extends SubmittedObjectCrudService<Biologic
 	}
 
 	@Override
-	public BiologicalEntity upsert(BiologicalEntityDTO dto, BackendBulkDataProvider dataProvider)
-			throws ObjectUpdateException {
+	public BiologicalEntity upsert(BiologicalEntityDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		return null;
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {}
+	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+	}
 }

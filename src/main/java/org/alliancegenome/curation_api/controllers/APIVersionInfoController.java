@@ -28,7 +28,7 @@ public class APIVersionInfoController implements APIVersionInterface {
 	String name;
 
 	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
-	String es_host;
+	String esHost;
 
 	@ConfigProperty(name = "NET")
 	String env;
@@ -45,11 +45,13 @@ public class APIVersionInfoController implements APIVersionInterface {
 			String minVersion = apiVersionInfoService.getVersionRange(version).get(0);
 			String maxVersion = apiVersionInfoService.getVersionRange(version).get(1);
 			String versionRange = minVersion.equals(maxVersion) ? minVersion : minVersion + " - " + maxVersion;
-			if (apiVersionInfoService.isPartiallyImplemented(clazz, version))
+			if (apiVersionInfoService.isPartiallyImplemented(clazz, version)) {
 				versionRange = versionRange + " (partial)";
+			}
 			linkMLClassVersions.put(clazz.getSimpleName(), versionRange);
-			if (version.submitted())
+			if (version.submitted()) {
 				submittedClassVersions.put(clazz.getSimpleName(), versionRange);
+			}
 		}
 
 		APIVersionInfo info = new APIVersionInfo();
@@ -57,7 +59,7 @@ public class APIVersionInfoController implements APIVersionInterface {
 		info.setName(name);
 		info.setAgrCurationSchemaVersions(linkMLClassVersions);
 		info.setSubmittedClassSchemaVersions(submittedClassVersions);
-		info.setEsHost(es_host);
+		info.setEsHost(esHost);
 		info.setEnv(env);
 		return info;
 	}

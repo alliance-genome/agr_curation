@@ -30,43 +30,42 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class VariantDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	VariantDAO variantDAO;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	NoteDTOValidator noteDtoValidator;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	SoTermService soTermService;
+	@Inject VariantDAO variantDAO;
+	@Inject NoteDAO noteDAO;
+	@Inject NoteDTOValidator noteDtoValidator;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject SoTermService soTermService;
 
 	private ObjectResponse<Variant> variantResponse;
-	
+
 	@Transactional
 	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		variantResponse = new ObjectResponse<Variant>();
-		
+
 		Variant variant = null;
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			SearchResponse<Variant> response = variantDAO.findByField("modEntityId", dto.getModEntityId());
-			if (response != null && response.getSingleResult() != null)
+			if (response != null && response.getSingleResult() != null) {
 				variant = response.getSingleResult();
+			}
 		}
 		if (variant == null) {
 			if (StringUtils.isBlank(dto.getModInternalId())) {
-				if (StringUtils.isBlank(dto.getModEntityId()))
+				if (StringUtils.isBlank(dto.getModEntityId())) {
 					variantResponse.addErrorMessage("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "modEntityId");
+				}
 			} else {
 				SearchResponse<Variant> response = variantDAO.findByField("modInternalId", dto.getModInternalId());
-				if (response != null && response.getSingleResult() != null)
+				if (response != null && response.getSingleResult() != null) {
 					variant = response.getSingleResult();
+				}
 			}
 		}
 
-		if (variant == null)
+		if (variant == null) {
 			variant = new Variant();
+		}
 
 		variant.setModEntityId(dto.getModEntityId());
 		variant.setModInternalId(dto.getModInternalId());
@@ -75,14 +74,15 @@ public class VariantDTOValidator extends BaseDTOValidator {
 		variantResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		variant = geResponse.getEntity();
-		
+
 		SOTerm variantType = null;
 		if (StringUtils.isBlank(dto.getVariantTypeCurie())) {
 			variantResponse.addErrorMessage("variant_type_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			variantType = soTermService.findByCurieOrSecondaryId(dto.getVariantTypeCurie());
-			if (variantType == null)
+			if (variantType == null) {
 				variantResponse.addErrorMessage("variant_type_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getVariantTypeCurie() + ")");
+			}
 		}
 		variant.setVariantType(variantType);
 
@@ -94,38 +94,42 @@ public class VariantDTOValidator extends BaseDTOValidator {
 			}
 		}
 		variant.setVariantStatus(variantStatus);
-		
+
 		SOTerm sourceGeneralConsequence = null;
 		if (!StringUtils.isBlank(dto.getSourceGeneralConsequenceCurie())) {
 			sourceGeneralConsequence = soTermService.findByCurieOrSecondaryId(dto.getSourceGeneralConsequenceCurie());
-			if (sourceGeneralConsequence == null)
+			if (sourceGeneralConsequence == null) {
 				variantResponse.addErrorMessage("source_general_consequence_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSourceGeneralConsequenceCurie() + ")");
+			}
 		}
 		variant.setSourceGeneralConsequence(sourceGeneralConsequence);
 
 		List<Note> relatedNotes = validateRelatedNotes(variant, dto);
 		if (relatedNotes != null) {
-			if (variant.getRelatedNotes() == null)
+			if (variant.getRelatedNotes() == null) {
 				variant.setRelatedNotes(new ArrayList<>());
+			}
 			variant.getRelatedNotes().addAll(relatedNotes);
 		}
-		
+
 		variantResponse.convertErrorMessagesToMap();
 
-		if (variantResponse.hasErrors())
+		if (variantResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, variantResponse.errorMessagesString());
-		
+		}
+
 		variant = variantDAO.persist(variant);
 
 		return variant;
 	}
-	
+
 	private List<Note> validateRelatedNotes(Variant variant, VariantDTO dto) {
 		String field = "relatedNotes";
-	
-		if (variant.getRelatedNotes() != null)
+
+		if (variant.getRelatedNotes() != null) {
 			variant.getRelatedNotes().clear();
-		
+		}
+
 		List<Note> validatedNotes = new ArrayList<Note>();
 		List<String> noteIdentities = new ArrayList<String>();
 		Boolean allValid = true;
@@ -144,15 +148,16 @@ public class VariantDTOValidator extends BaseDTOValidator {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			variantResponse.convertMapToErrorMessages(field);
 			return null;
 		}
-		
-		if (CollectionUtils.isEmpty(validatedNotes))
+
+		if (CollectionUtils.isEmpty(validatedNotes)) {
 			return null;
-		
+		}
+
 		return validatedNotes;
 	}
 

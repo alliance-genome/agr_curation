@@ -20,14 +20,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
 
-	@Inject
-	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject
-	GeneDiseaseAnnotationValidator geneDiseaseValidator;
-	@Inject
-	GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject GeneDiseaseAnnotationValidator geneDiseaseValidator;
+	@Inject GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -69,8 +65,7 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	}
 
 	@Override
-	public GeneDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
+	public GeneDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		return (GeneDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

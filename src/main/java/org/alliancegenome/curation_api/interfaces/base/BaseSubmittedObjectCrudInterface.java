@@ -19,7 +19,6 @@ public interface BaseSubmittedObjectCrudInterface<E extends SubmittedObject> ext
 	BaseDeleteIdentifierControllerInterface<E>,
 	BaseSearchControllerInterface<E>,
 	BaseFindControllerInterface<E>,
-	BaseReindexControllerInterface
-{
+	BaseReindexControllerInterface {
 
 }

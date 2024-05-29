@@ -30,14 +30,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {
 
-	@Inject
-	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject
-	AlleleService alleleService;
-	@Inject
-	GeneService geneService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AlleleService alleleService;
+	@Inject GeneService geneService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
@@ -60,7 +56,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				String annotationId;
 				String identifyingField;
 				String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAlleleIdentifier(), refCurie);
-				
+
 				if (StringUtils.isNotBlank(dto.getModEntityId())) {
 					annotationId = dto.getModEntityId();
 					annotation.setModEntityId(annotationId);
@@ -78,9 +74,10 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
 				annotation.setUniqueId(uniqueId);
 				annotation.setDiseaseAnnotationSubject(allele);
-				
-				if (dataProvider != null && (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN")) && !allele.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) ||
-						!dataProvider.sourceOrganization.equals(allele.getDataProvider().getSourceOrganization().getAbbreviation())) {
+
+				if (dataProvider != null
+					&& (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN"))
+					&& (!allele.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) || !dataProvider.sourceOrganization.equals(allele.getDataProvider().getSourceOrganization().getAbbreviation()))) {
 					adaResponse.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ") for " + dataProvider.name() + " load");
 				}
 			}
@@ -93,8 +90,9 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelationName())) {
 			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName()).getEntity();
-			if (diseaseRelation == null)
+			if (diseaseRelation == null) {
 				adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseRelationName() + ")");
+			}
 			annotation.setRelation(diseaseRelation);
 		} else {
 			adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
@@ -102,8 +100,9 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 
 		if (StringUtils.isNotBlank(dto.getInferredGeneIdentifier())) {
 			Gene inferredGene = geneService.findByIdentifierString(dto.getInferredGeneIdentifier());
-			if (inferredGene == null)
+			if (inferredGene == null) {
 				adaResponse.addErrorMessage("inferred_gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredGeneIdentifier() + ")");
+			}
 			annotation.setInferredGene(inferredGene);
 		} else {
 			annotation.setInferredGene(null);
@@ -124,9 +123,10 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			annotation.setAssertedGenes(null);
 		}
 
-		if (adaResponse.hasErrors())
+		if (adaResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, adaResponse.errorMessagesString());
-		
+		}
+
 		return annotation;
 	}
 

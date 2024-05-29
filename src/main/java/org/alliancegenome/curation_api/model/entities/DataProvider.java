@@ -42,7 +42,7 @@ public class DataProvider extends AuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private CrossReference crossReference;
 

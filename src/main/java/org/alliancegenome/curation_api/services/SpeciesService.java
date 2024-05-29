@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -12,8 +11,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class SpeciesService extends BaseEntityCrudService<Species, SpeciesDAO> {
 
-	@Inject
-	SpeciesDAO speciesDAO;
+	@Inject SpeciesDAO speciesDAO;
 
 	@Override
 	@PostConstruct

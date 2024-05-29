@@ -23,5 +23,5 @@ public interface AlleleSynonymSlotAnnotationCrudInterface extends BaseIdCrudInte
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleSynonymSlotAnnotation> validate(AlleleSynonymSlotAnnotation entity);
+	ObjectResponse<AlleleSynonymSlotAnnotation> validate(AlleleSynonymSlotAnnotation entity);
 }

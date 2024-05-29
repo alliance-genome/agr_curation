@@ -20,14 +20,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	AffectedGenomicModelDAO agmDAO;
-	@Inject
-	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject GeneDAO geneDAO;
+	@Inject AffectedGenomicModelDAO agmDAO;
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	private String errorMessage;
 
@@ -89,8 +85,9 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		}
 
 		Gene subjectEntity = null;
-		if (uiEntity.getDiseaseAnnotationSubject().getId() != null)
+		if (uiEntity.getDiseaseAnnotationSubject().getId() != null) {
 			subjectEntity = geneDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
+		}
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -129,12 +126,14 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
 	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 		String field = "sgdStrainBackground";
-		if (ObjectUtils.isEmpty(uiEntity.getSgdStrainBackground()))
+		if (ObjectUtils.isEmpty(uiEntity.getSgdStrainBackground())) {
 			return null;
+		}
 
 		AffectedGenomicModel sgdStrainBackground = null;
-		if (uiEntity.getSgdStrainBackground().getId() != null)
+		if (uiEntity.getSgdStrainBackground().getId() != null) {
 			sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getId());
+		}
 		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

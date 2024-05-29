@@ -19,7 +19,6 @@ public interface BaseCurieObjectCrudInterface<E extends CurieObject> extends
 	BaseDeleteCurieControllerInterface<E>,
 	BaseSearchControllerInterface<E>,
 	BaseFindControllerInterface<E>,
-	BaseReindexControllerInterface
-{
+	BaseReindexControllerInterface {
 
 }

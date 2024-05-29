@@ -28,16 +28,16 @@ public interface PersonSettingInterface {
 	@GET
 	@Path("/{settingsKey}")
 	@JsonView(View.PersonSettingView.class)
-	public ObjectResponse<PersonSetting> getUserSetting(@PathParam("settingsKey") String settingsKey);
+	ObjectResponse<PersonSetting> getUserSetting(@PathParam("settingsKey") String settingsKey);
 
 	@PUT
 	@Path("/{settingsKey}")
 	@JsonView(View.PersonSettingView.class)
-	public ObjectResponse<PersonSetting> saveUserSetting(@PathParam("settingsKey") String settingsKey, @RequestBody Map<String, Object> settingsMap);
+	ObjectResponse<PersonSetting> saveUserSetting(@PathParam("settingsKey") String settingsKey, @RequestBody Map<String, Object> settingsMap);
 
 	@DELETE
 	@Path("/{settingsKey}")
 	@JsonView(View.PersonSettingView.class)
-	public ObjectResponse<PersonSetting> deleteUserSetting(@PathParam("settingsKey") String settingsKey);
+	ObjectResponse<PersonSetting> deleteUserSetting(@PathParam("settingsKey") String settingsKey);
 
 }

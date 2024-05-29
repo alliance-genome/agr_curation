@@ -30,42 +30,39 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject
-	NoteDTOValidator noteDtoValidator;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
+	@Inject NoteDTOValidator noteDtoValidator;
+	@Inject NoteDAO noteDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+
 	public ObjectResponse<ConstructComponentSlotAnnotation> validateConstructComponentSlotAnnotationDTO(ConstructComponentSlotAnnotation annotation, ConstructComponentSlotAnnotationDTO dto) {
 		ObjectResponse<ConstructComponentSlotAnnotation> ccsaResponse = new ObjectResponse<ConstructComponentSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new ConstructComponentSlotAnnotation();
-		
+		}
+
 		ObjectResponse<ConstructComponentSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		ccsaResponse.addErrorMessages(saResponse.getErrorMessages());
 
 		if (StringUtils.isAllBlank(dto.getComponentSymbol())) {
-			ccsaResponse.addErrorMessage("component_symbol", ValidationConstants.REQUIRED_MESSAGE);;
+			ccsaResponse.addErrorMessage("component_symbol", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			annotation.setComponentSymbol(dto.getComponentSymbol());
 		}
-		
+
 		if (StringUtils.isNotEmpty(dto.getRelationName())) {
 			VocabularyTerm diseaseRelation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, dto.getRelationName()).getEntity();
-			if (diseaseRelation == null)
+			if (diseaseRelation == null) {
 				ccsaResponse.addErrorMessage("relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getRelationName() + ")");
+			}
 			annotation.setRelation(diseaseRelation);
 		} else {
 			ccsaResponse.addErrorMessage("relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-		
+
 		if (StringUtils.isNotBlank(dto.getTaxonCurie())) {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
@@ -75,13 +72,13 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 		} else {
 			annotation.setTaxon(null);
 		}
-		
+
 		if (StringUtils.isNotBlank(dto.getTaxonText())) {
 			annotation.setTaxonText(dto.getTaxonText());
 		} else {
 			annotation.setTaxonText(null);
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(annotation.getRelatedNotes())) {
 			annotation.getRelatedNotes().forEach(note -> {
 				constructComponentDAO.deleteAttachedNote(note.getId());
@@ -106,7 +103,7 @@ public class ConstructComponentSlotAnnotationDTOValidator extends SlotAnnotation
 		} else {
 			annotation.setRelatedNotes(null);
 		}
-		
+
 		ccsaResponse.setEntity(annotation);
 
 		return ccsaResponse;

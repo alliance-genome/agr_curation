@@ -16,5 +16,5 @@ public interface NCBIRESTInterface {
 
 	@GET
 	@Path("/esummary.fcgi")
-	public NCBITaxonResponseDTO getTaxonFromNCBI(@QueryParam("db") String db, @QueryParam("retmode") String retmode, @QueryParam("id") String id);
+	NCBITaxonResponseDTO getTaxonFromNCBI(@QueryParam("db") String db, @QueryParam("retmode") String retmode, @QueryParam("id") String id);
 }

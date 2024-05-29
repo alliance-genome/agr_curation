@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.jobs.util;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class CsvSchemaBuilder {
-
+	private CsvSchemaBuilder() {
+		// Hidden from view, as it is a utility class
+	}
 	public static CsvSchema psiMiTabSchema() {
 		CsvSchema schema = CsvSchema.builder()
 				.setColumnSeparator('\t')

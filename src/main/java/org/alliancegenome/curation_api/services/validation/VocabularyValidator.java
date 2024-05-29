@@ -16,8 +16,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class VocabularyValidator extends AuditedObjectValidator<Vocabulary> {
 
-	@Inject
-	VocabularyDAO vocabularyDAO;
+	@Inject VocabularyDAO vocabularyDAO;
 
 	private String errorMessage;
 
@@ -56,7 +55,7 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary> {
 
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
-		
+
 		String label = validateVocabularyLabel(uiEntity, dbEntity);
 		dbEntity.setVocabularyLabel(label);
 
@@ -96,8 +95,7 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary> {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		if (StringUtils.isNotBlank(dbEntity.getVocabularyLabel()) && 
-				!StringUtils.equals(uiEntity.getVocabularyLabel(), dbEntity.getVocabularyLabel())) {
+		if (StringUtils.isNotBlank(dbEntity.getVocabularyLabel()) && !StringUtils.equals(uiEntity.getVocabularyLabel(), dbEntity.getVocabularyLabel())) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
@@ -108,15 +106,18 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary> {
 
 		return uiEntity.getVocabularyLabel();
 	}
-	
+
 	private Boolean isUniqueValue(String uiEntityValue, String field, Long uiEntityId) {
 		SearchResponse<Vocabulary> response = vocabularyDAO.findByField(field, uiEntityValue);
-		if (response == null || response.getSingleResult() == null)
+		if (response == null || response.getSingleResult() == null) {
 			return true;
-		if (uiEntityId == null)
+		}
+		if (uiEntityId == null) {
 			return false;
-		if (uiEntityId.equals(response.getSingleResult().getId()))
+		}
+		if (uiEntityId.equals(response.getSingleResult().getId())) {
 			return true;
+		}
 		return false;
 	}
 }

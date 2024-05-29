@@ -22,22 +22,26 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 
 	protected abstract void init();
 
+	@Override
 	public ObjectResponse<E> create(E entity) {
 		return service.create(entity);
 	}
 
+	@Override
 	public ObjectListResponse<E> create(List<E> entities) {
 		return service.create(entities);
 	}
 
+	@Override
 	public ObjectResponse<E> getById(Long id) {
 		return service.getById(id);
 	}
-	
+
 	public ObjectResponse<E> getByCurie(String curie) {
 		return service.getByCurie(curie);
 	}
 
+	@Override
 	public ObjectResponse<E> update(E entity) {
 		return service.update(entity);
 	}
@@ -45,7 +49,8 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 	public ObjectResponse<E> deleteByCurie(String curie) {
 		return service.deleteByCurie(curie);
 	}
-	
+
+	@Override
 	public ObjectResponse<E> deleteById(Long id) {
 		return service.deleteById(id);
 	}
@@ -54,30 +59,35 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 		return service.findByField(field, value);
 	}
 
+	@Override
 	public SearchResponse<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
-		if (params == null)
+		if (params == null) {
 			params = new HashMap<>();
+		}
 		Pagination pagination = new Pagination(page, limit);
 		return service.findByParams(pagination, params);
 	}
-	
+
+	@Override
 	public SearchResponse<E> findForPublic(Integer page, Integer limit, HashMap<String, Object> params) {
 		return find(page, limit, params);
 	}
 
+	@Override
 	public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
-		if (params == null)
+		if (params == null) {
 			params = new HashMap<>();
+		}
 		Pagination pagination = new Pagination(page, limit);
 		return service.searchByParams(pagination, params);
 	}
 
+	@Override
 	public void reindex(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 		service.reindex(batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
-	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
-		Integer typesToIndexInParallel) {
+	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 		service.reindexEverything(batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 

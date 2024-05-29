@@ -17,13 +17,12 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class OrganizationService extends BaseEntityCrudService<Organization, OrganizationDAO> {
 
-	@Inject
-	OrganizationDAO organizationDAO;
+	@Inject OrganizationDAO organizationDAO;
 
-	Date orgRequest = null;
+	Date orgRequest;
 	HashMap<Long, Organization> orgIdCacheMap = new HashMap<>();
 	HashMap<String, Organization> orgAbbrCacheMap = new HashMap<>();
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -31,11 +30,11 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 	}
 
 	public ObjectResponse<Organization> getById(Long id) {
-		
+
 		Organization org = null;
-		
-		if(orgRequest != null) {
-			if(orgIdCacheMap.containsKey(id)) {
+
+		if (orgRequest != null) {
+			if (orgIdCacheMap.containsKey(id)) {
 				org = orgIdCacheMap.get(id);
 			} else {
 				Log.debug("Org not cached, caching org: (" + id + ")");
@@ -51,26 +50,28 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		response.setEntity(org);
 		return response;
 	}
-	
+
 	public ObjectResponse<Organization> getByAbbr(String abbr) {
-		
+
 		Organization org = null;
 		SearchResponse<Organization> orgResponse = null;
-		
-		if(orgRequest != null) {
-			if(orgAbbrCacheMap.containsKey(abbr)) {
+
+		if (orgRequest != null) {
+			if (orgAbbrCacheMap.containsKey(abbr)) {
 				org = orgAbbrCacheMap.get(abbr);
 			} else {
 				Log.debug("Org not cached, caching org: (" + abbr + ")");
 				orgResponse = organizationDAO.findByField("abbreviation", abbr);
-				if (orgResponse != null)
+				if (orgResponse != null) {
 					org = orgResponse.getSingleResult();
+				}
 				orgAbbrCacheMap.put(abbr, org);
 			}
 		} else {
 			orgResponse = organizationDAO.findByField("abbreviation", abbr);
-			if (orgResponse != null)
+			if (orgResponse != null) {
 				org = orgResponse.getSingleResult();
+			}
 			orgRequest = new Date();
 		}
 
@@ -78,5 +79,5 @@ public class OrganizationService extends BaseEntityCrudService<Organization, Org
 		response.setEntity(org);
 		return response;
 	}
-	
+
 }

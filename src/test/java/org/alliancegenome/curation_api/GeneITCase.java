@@ -47,7 +47,7 @@ import io.restassured.RestAssured;
 @Order(301)
 public class GeneITCase extends BaseITCase {
 
-	private final String GENE = "GENE:0001";
+	private static final String GENE = "GENE:0001";
 	private Vocabulary nameType;
 	private Vocabulary synonymScope;
 	private VocabularyTerm exactSynonymScope;

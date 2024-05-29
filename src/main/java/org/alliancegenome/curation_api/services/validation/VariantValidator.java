@@ -30,16 +30,11 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class VariantValidator extends GenomicEntityValidator<Variant> {
 
-	@Inject
-	VariantDAO variantDAO;
-	@Inject
-	NoteValidator noteValidator;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
-	@Inject
-	SoTermService soTermService;
+	@Inject VariantDAO variantDAO;
+	@Inject NoteValidator noteValidator;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject SoTermService soTermService;
 
 	private String errorMessage;
 
@@ -67,7 +62,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 	public Variant validateVariantCreate(Variant uiEntity) {
 		response = new ObjectResponse<>();
 		errorMessage = "Could not create Variant";
-		
+
 		Variant dbEntity = new Variant();
 
 		dbEntity = (Variant) validateAuditedObjectFields(uiEntity, dbEntity, true);
@@ -78,22 +73,24 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 	public Variant validateVariant(Variant uiEntity, Variant dbEntity) {
 
 		dbEntity = (Variant) validateGenomicEntityFields(uiEntity, dbEntity);
-		
+
 		SOTerm variantType = validateVariantType(uiEntity, dbEntity);
 		dbEntity.setVariantType(variantType);
 
 		VocabularyTerm variantStatus = validateVariantStatus(uiEntity, dbEntity);
 		dbEntity.setVariantStatus(variantStatus);
-		
+
 		SOTerm sourceGeneralConsequence = validateSourceGeneralConsequence(uiEntity, dbEntity);
 		dbEntity.setSourceGeneralConsequence(sourceGeneralConsequence);
-		
+
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		if (dbEntity.getRelatedNotes() != null)
+		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
+		}
 		if (relatedNotes != null) {
-			if (dbEntity.getRelatedNotes() == null)
+			if (dbEntity.getRelatedNotes() == null) {
 				dbEntity.setRelatedNotes(new ArrayList<>());
+			}
 			dbEntity.getRelatedNotes().addAll(relatedNotes);
 		}
 
@@ -106,7 +103,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 		return dbEntity;
 	}
-	
+
 	public SOTerm validateVariantType(Variant uiEntity, Variant dbEntity) {
 		String field = "variantType";
 		if (ObjectUtils.isEmpty(uiEntity.getVariantType())) {
@@ -130,8 +127,9 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 	private VocabularyTerm validateVariantStatus(Variant uiEntity, Variant dbEntity) {
 		String field = "variantStatus";
 
-		if (uiEntity.getVariantStatus() == null)
+		if (uiEntity.getVariantStatus() == null) {
 			return null;
+		}
 
 		VocabularyTerm variantStatus = vocabularyTermService.getTermInVocabulary(VocabularyConstants.VARIANT_STATUS_VOCABULARY, uiEntity.getVariantStatus().getName()).getEntity();
 		if (variantStatus == null) {
@@ -145,12 +143,13 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		}
 		return variantStatus;
 	}
-	
+
 	public SOTerm validateSourceGeneralConsequence(Variant uiEntity, Variant dbEntity) {
 		String field = "sourceGeneralConsequence";
-		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence()))
+		if (ObjectUtils.isEmpty(uiEntity.getSourceGeneralConsequence())) {
 			return null;
-		
+		}
+
 		SOTerm sourceGeneralConsequence = null;
 		if (StringUtils.isNotBlank(uiEntity.getSourceGeneralConsequence().getCurie())) {
 			sourceGeneralConsequence = soTermService.findByCurie(uiEntity.getSourceGeneralConsequence().getCurie());
@@ -180,7 +179,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
 				} else {
 					note = noteResponse.getEntity();
-				
+
 					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
 					if (validatedNoteIdentities.contains(noteIdentity)) {
 						allValid = false;
@@ -199,8 +198,9 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedNotes))
+		if (CollectionUtils.isEmpty(validatedNotes)) {
 			return null;
+		}
 
 		return validatedNotes;
 	}

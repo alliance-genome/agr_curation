@@ -9,11 +9,9 @@ import org.alliancegenome.curation_api.services.ontology.GenoTermService;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
-
 public class GenoTermCrudController extends BaseOntologyTermController<GenoTermService, GENOTerm, GenoTermDAO> implements GenoTermCrudInterface {
- 
-	@Inject
-	GenoTermService genoTermService;
+
+	@Inject GenoTermService genoTermService;
 
 	@Override
 	@PostConstruct

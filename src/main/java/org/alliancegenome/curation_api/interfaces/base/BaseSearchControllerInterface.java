@@ -30,7 +30,7 @@ public interface BaseSearchControllerInterface<E> {
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.FieldsAndLists.class })
-	@RequestBody( 
+	@RequestBody(
 		description = "Post Request",
 		content = @Content(
 			mediaType = "application/json",
@@ -46,6 +46,6 @@ public interface BaseSearchControllerInterface<E> {
 			)
 		)
 	)
-	public SearchResponse<E> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<E> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

@@ -31,23 +31,23 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AGMDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
+	ObjectResponse<AGMDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
-	public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation entity);
+	ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
-	public ObjectResponse<AGMDiseaseAnnotation> create(AGMDiseaseAnnotation entity);
+	ObjectResponse<AGMDiseaseAnnotation> create(AGMDiseaseAnnotation entity);
 
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAgmDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<AGMDiseaseAnnotationDTO> annotationData);
+	APIResponse updateAgmDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<AGMDiseaseAnnotationDTO> annotationData);
 
 }
