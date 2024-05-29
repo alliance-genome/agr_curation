@@ -17,6 +17,4 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - SQTR")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface SQTRCrudInterface extends BaseSubmittedObjectCrudInterface<SQTR>, BaseUpsertControllerInterface<SQTR, SQTRFmsDTO> {
-
-}
+public interface SQTRCrudInterface extends BaseSubmittedObjectCrudInterface<SQTR>, BaseUpsertControllerInterface<SQTR, SQTRFmsDTO> {}
