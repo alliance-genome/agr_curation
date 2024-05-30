@@ -89,6 +89,10 @@ jobs:
           npm ci
           npm test -- --watchAll=false
           npm run build
+      - name: Check Formatting
+        working-directory: src/main/cliapp
+        run: |
+        npx prettier --check .
   test-build-docker-image:
       runs-on: ubuntu-20.04
       steps:
