@@ -160,7 +160,7 @@ export const GeneMolecularInteractionsTable = () => {
 
 	const DEFAULT_COLUMN_WIDTH = 10; 
 	const SEARCH_ENDPOINT = "gene-molecular-interaction";
-	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false", tokenOperator: "OR"}}};
+	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false"}}};
 
 	const initialTableState = getDefaultTableState("GeneMolecularInteractions", columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
 
