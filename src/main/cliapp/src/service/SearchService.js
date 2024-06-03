@@ -9,19 +9,20 @@ export class SearchService extends BaseAuthService {
 		}
 
 		if (!aggregationFields) {
-		 aggregationFields = [];
+			aggregationFields = [];
 		}
 
 		if (!nonNullFieldsTable) {
-		 nonNullFieldsTable = [];
+			nonNullFieldsTable = [];
 		}
 
 		searchOptions["searchFilters"] = filters;
 		searchOptions["sortOrders"] = includeSecondarySorts(sorts, sortMapping);
 		searchOptions["aggregations"] = aggregationFields;
 		searchOptions["nonNullFieldsTable"] = nonNullFieldsTable;
-		//searchOptions["debug"] = "true";
-		// console.log(searchOptions);
+
+		const siteSettings = JSON.parse(localStorage.getItem('siteSettings'));
+		searchOptions["debug"] = siteSettings?.debug === "true" ? "true" : "false";
 		return this.api.post(`/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then(res => res.data);
 	}
 
@@ -29,7 +30,6 @@ export class SearchService extends BaseAuthService {
 		//console.log(findOptions);
 		return this.api.post(`/${endpoint}/find?limit=${rows}&page=${page}`, findOptions).then(res => res.data);
 	}
-
 
 }
 
