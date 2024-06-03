@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
+import { Dropdown } from 'primereact/dropdown';
 import { Column } from 'primereact/column';
 import { PersonService } from '../../service/PersonService';
 import { useOktaAuth } from '@okta/okta-react';
@@ -14,6 +15,7 @@ import JsonView from 'react18-json-view'
 import 'react18-json-view/src/style.css'
 import 'react18-json-view/src/dark.css'
 import { PersonSettingsService } from "../../service/PersonSettingsService";
+import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
 import { Toast } from 'primereact/toast';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 
@@ -26,9 +28,14 @@ const initialThemeState = {
 	theme: "vela-blue",
 };
 
+const initialSiteState = {
+	debug: "false"
+};
+
 export const ProfileComponent = () => {
 
 	const { settings: themeState, mutate: setThemeState } = useGetUserSettings("themeSettings", initialThemeState, false);
+	const { settings: siteState, mutate: setSiteState } = useGetUserSettings( "siteSettings", initialSiteState, false);
 	const queryClient = useQueryClient();
 
 	const [localUserInfo, setLocalUserInfo] = useState({});
@@ -39,6 +46,7 @@ export const ProfileComponent = () => {
 
 	const personService = new PersonService();
 	const personSettingsService = new PersonSettingsService();
+	const booleanTerms = useControlledVocabularyService("generic_boolean_terms");
 
 	let deleteLocalStorage = (result, success, key) => {
 		if(result.status !== 200) success = false;
@@ -163,21 +171,39 @@ export const ProfileComponent = () => {
 		);
 	};
 
+	const debugChange = (event) => {
+		let _siteState = {
+			...siteState,
+			debug: event.value
+		};
+		setSiteState(_siteState);
+	};
+
+	const siteTemplate = (settings) => {
+		return (
+			<div>
+				<div>Debug: <Dropdown name={"Debug"} value={siteState.debug} options={booleanTerms} optionLabel='text' optionValue='text' onChange={debugChange} /></div>
+			</div>
+		);
+	};
+
 	const userInfos = [
-		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate	 },
-		{ name: "Alliance Member", value: localUserInfo?.allianceMember?.fullName + " (" + localUserInfo?.allianceMember?.abbreviation + ")", template: textTemplate	},
-		{ name: "Okta Email", value: localUserInfo.oktaEmail, template: textTemplate	},
-		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate	 },
-		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate	 },
+		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate },
+		{ name: "Alliance Member", value: localUserInfo?.allianceMember?.fullName + " (" + localUserInfo?.allianceMember?.abbreviation + ")", template: textTemplate },
+		{ name: "Okta Email", value: localUserInfo.oktaEmail, template: textTemplate },
+		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate },
+		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate },
 		{ name: "Curation API Token", value: localUserInfo.apiToken, template: textTemplate },
-		{ name: "Okta Access Token Content", value: jose.decodeJwt(oktaToken.accessToken.accessToken), template: jsonTemplate	 },
-		{ name: "Okta Id Token Content", value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate	 },
+		{ name: "Okta Access Token Content", value: jose.decodeJwt(oktaToken.accessToken.accessToken), template: jsonTemplate },
+		{ name: "Okta Id Token Content", value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate },
 		{ name: "User Settings", value: localUserInfo.settings, template: jsonTemplate },
+		{ name: "Site Settings", value: localUserInfo.settings, template: siteTemplate },
 	];
 
 	if(localUserInfo && localUserInfo.settings) {
 		for (let setting of localUserInfo.settings) {
 			if(setting.settingsKey === "themeSettings") continue;
+			if(setting.settingsKey === "siteSettings") continue;
 			userInfos.push({ name: setting.settingsKey, value: setting.settingsMap, template: tableResetTemplate });
 		}
 	}
