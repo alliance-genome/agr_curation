@@ -153,7 +153,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 17;
-	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false", tokenOperator: "OR"}}};
+	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false"}}};
 
 	const initialTableState = getDefaultTableState(name, columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
 
