@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -64,9 +65,6 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 	@Inject protected EntityManager entityManager;
 	@Inject protected SearchSession searchSession;
 	@Inject protected IndexProcessDisplayService indexProcessDisplayService;
-
-	private int outerBoost;
-	private int innerBoost;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
@@ -452,21 +450,27 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		Log.log(level, "Search: " + pagination + " Params: " + params);
 
+		
+		
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
+			AtomicInteger outerBoost = new AtomicInteger();
 			return p.bool().with(b -> {
 				if (params.containsKey("searchFilters")) {
 					HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>) params.get("searchFilters");
-					outerBoost = searchFilters.keySet().size();
+					outerBoost.set(searchFilters.keySet().size());
 					String filterOperator = (String) params.get("searchFilterOperator");
 					for (String filterName : searchFilters.keySet()) {
 						BooleanPredicateClausesStep<?> bpStep = p.bool().with(s -> {
 							s.must(f -> f.bool().with(q -> {
-								innerBoost = searchFilters.get(filterName).keySet().size();
+								int innerBoost = searchFilters.get(filterName).keySet().size();
 								for (String field : searchFilters.get(filterName).keySet()) {
 									if (field.equals("nonNullFields") || field.equals("nullFields")) {
 										continue;
 									}
-									float boost = (outerBoost * 10000) + (innerBoost * 1000);
+									float boost = (outerBoost.get() * 10000) + (innerBoost * 1000);
+									if (boost <= 0) {
+										boost = 0;
+									}
 
 									String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
 									BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
@@ -510,7 +514,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 						} else {
 							b.must(bpStep);
 						}
-						outerBoost--;
+						outerBoost.decrementAndGet();
 					}
 					if (searchFilters.keySet().size() == 0) {
 						b.must(p.matchAll());
