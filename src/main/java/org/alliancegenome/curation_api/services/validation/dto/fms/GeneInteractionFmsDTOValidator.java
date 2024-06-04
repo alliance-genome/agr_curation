@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,6 +43,8 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject InteractionCrossReferenceHelper interactionXrefHelper;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+
+	private HashMap<String, Gene> geneCache = new HashMap<String, Gene>();
 
 	public <E extends GeneInteraction> ObjectResponse<E> validateGeneInteraction(E interaction, PsiMiTabDTO dto, List<Reference> references) {
 
@@ -181,7 +184,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		Gene allianceGene = null;
 		String convertedCurie = prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
 		if (prefix.isModPrefix) {
-			allianceGene = geneService.findByIdentifierString(convertedCurie);
+			allianceGene = getGeneFromCache(convertedCurie);
 		} else {
 			String taxonCurie = InteractionStringHelper.getAllianceTaxonCurie(psiMiTabTaxonCurie);
 			if (taxonCurie == null) {
@@ -212,6 +215,18 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		response.setEntity(allianceGene);
 
 		return response;
+	}
+
+	private Gene getGeneFromCache(String curie) {
+		if (geneCache.containsKey(curie)) {
+			return geneCache.get(curie);
+		} else {
+			Gene gene = geneService.findByIdentifierString(curie);
+			if (gene != null) {
+				geneCache.put(curie, gene);
+			}
+			return gene;
+		}
 	}
 
 	protected ObjectResponse<List<Reference>> validateReferences(PsiMiTabDTO dto) {

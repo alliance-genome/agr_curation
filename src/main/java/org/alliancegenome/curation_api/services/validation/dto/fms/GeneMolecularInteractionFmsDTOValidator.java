@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
-import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,7 +25,6 @@ import jakarta.inject.Inject;
 public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsDTOValidator {
 
 	@Inject GeneMolecularInteractionService geneMolecularInteractionService;
-	@Inject GenomicEntityService genomicEntityService;
 	@Inject VocabularyTermService vocabularyTermService;
 
 	private ObjectResponse<GeneMolecularInteraction> gmiResponse;
