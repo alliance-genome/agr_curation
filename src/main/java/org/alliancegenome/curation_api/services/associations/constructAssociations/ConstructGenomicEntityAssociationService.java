@@ -83,7 +83,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.CONSTRUCT_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<Long> associationIds = constructGenomicEntityAssociationDAO.findFilteredIds(params);
+		List<Long> associationIds = constructGenomicEntityAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -35,5 +36,11 @@ public abstract class BaseAnnotationCrudService<E extends Annotation, D extends 
 		pdh.finishProcess();
 
 		return conditionRelationIds;
+	}
+	
+	public ObjectResponse<E> getByIdentifier(String identifier) {
+		E object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		return ret;
 	}
 }

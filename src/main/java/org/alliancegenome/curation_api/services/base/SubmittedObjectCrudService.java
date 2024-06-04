@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.base;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
@@ -16,6 +17,10 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 		E object = findByIdentifierString(identifier);
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
+	}
+	
+	public List<Long> getIdsByIdentifier(String identifier) {
+		return findIdsByIdentifierString(identifier);
 	}
 
 	@Transactional
@@ -37,4 +42,18 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 
 		return findByAlternativeFields(List.of("modEntityId", "modInternalId"), id);
 	}
+	
+	public List<Long> findIdsByIdentifierString(String id) {
+		if (id != null && id.startsWith("AGRKB:")) {
+			E object = findByCurie(id);
+			ArrayList<Long> ids = new ArrayList<>();
+			ids.add(object.getId());
+			return ids;
+		}
+
+		return findIdsByAlternativeFields(List.of("modEntityId", "modInternalId"), id);
+	}
+	
+	
 }
+
