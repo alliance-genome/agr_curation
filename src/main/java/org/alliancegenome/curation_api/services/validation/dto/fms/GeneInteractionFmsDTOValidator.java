@@ -232,6 +232,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	protected ObjectResponse<List<Reference>> validateReferences(PsiMiTabDTO dto) {
 		ObjectResponse<List<Reference>> refResponse = new ObjectResponse<>();
 		List<Reference> validatedReferences = new ArrayList<>();
+		List<Long> validatedReferenceIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getPublicationIds())) {
 			for (String publicationId : dto.getPublicationIds()) {
 				Reference reference = null;
@@ -243,7 +244,10 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 					refResponse.addErrorMessage("publicationIds", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
 					return refResponse;
 				}
-				validatedReferences.add(reference);
+				if (!validatedReferenceIds.contains(reference.getId())) {
+					validatedReferences.add(reference);
+					validatedReferenceIds.add(reference.getId());
+				}
 			}
 		}
 		if (CollectionUtils.isNotEmpty(validatedReferences)) {
