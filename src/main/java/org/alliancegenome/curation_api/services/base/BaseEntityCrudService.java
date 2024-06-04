@@ -83,13 +83,26 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 	public E findByAlternativeFields(List<String> fields, String value) {
 		if (value != null) {
 			SearchResponse<E> response = dao.findByFields(fields, value);
-			if (response == null || response.getSingleResult() == null) {
+			if (response == null) {
 				Log.debug("Entity Not Found: " + value);
 				return null;
 			}
 			E entity = response.getSingleResult();
-			// Log.debug("Entity Found: " + entity);
 			return entity;
+		} else {
+			Log.debug("Input Param is null: " + value);
+			return null;
+		}
+	}
+
+	public List<Long> findIdsByAlternativeFields(List<String> fields, String value) {
+		if (value != null) {
+			List<Long> response = dao.findIdsByFields(fields, value);
+			if (response == null) {
+				Log.debug("Entity Not Found: " + value);
+				return null;
+			}
+			return response;
 		} else {
 			Log.debug("Input Param is null: " + value);
 			return null;

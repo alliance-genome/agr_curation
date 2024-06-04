@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto.associations.alleleAssociations;
 
+import java.util.HashMap;
+
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -22,12 +24,14 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 	@Inject NoteDTOValidator noteDtoValidator;
 	@Inject EcoTermService ecoTermService;
 
+	private HashMap<String, ECOTerm> ecoTermCache = new HashMap<>();
+
 	public <E extends AlleleGenomicEntityAssociation, D extends AlleleGenomicEntityAssociationDTO> ObjectResponse<E> validateAlleleGenomicEntityAssociationDTO(E association, D dto) {
 		ObjectResponse<E> assocResponse = validateEvidenceAssociationDTO(association, dto);
 		association = assocResponse.getEntity();
 
 		if (StringUtils.isNotBlank(dto.getEvidenceCodeCurie())) {
-			ECOTerm ecoTerm = ecoTermService.findByCurieOrSecondaryId(dto.getEvidenceCodeCurie());
+			ECOTerm ecoTerm = getFromCache(dto.getEvidenceCodeCurie());
 			if (ecoTerm == null) {
 				assocResponse.addErrorMessage("evidence_code_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getEvidenceCodeCurie() + ")");
 			} else if (!ecoTerm.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET)) {
@@ -53,5 +57,17 @@ public class AlleleGenomicEntityAssociationDTOValidator extends EvidenceAssociat
 		assocResponse.setEntity(association);
 
 		return assocResponse;
+	}
+
+	private ECOTerm getFromCache(String evidenceCodeCurie) {
+		if (ecoTermCache.containsKey(evidenceCodeCurie)) {
+			return ecoTermCache.get(evidenceCodeCurie);
+		} else {
+			ECOTerm ecoTerm = ecoTermService.findByCurieOrSecondaryId(evidenceCodeCurie);
+			if (ecoTerm != null) {
+				ecoTermCache.put(evidenceCodeCurie, ecoTerm);
+			}
+			return ecoTerm;
+		}
 	}
 }
