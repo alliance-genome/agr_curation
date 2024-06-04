@@ -54,7 +54,7 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 
 		boolean success = runLoad(alleleGeneAssociationService, history, dataProvider, associations, associationIdsLoaded);
 		if (success && cleanUp) {
-			// runCleanup(alleleGeneAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
+			runCleanup(alleleGeneAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
 		}
 
 		history.finishLoad();
