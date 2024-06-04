@@ -60,8 +60,9 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
-		if (diseaseAnnotationSubject == null)
+		if (diseaseAnnotationSubject == null) {
 			return null;
+		}
 		return diseaseAnnotationSubject.getCurie();
 	}
 
@@ -69,10 +70,12 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectTaxonCurie() {
-		if (diseaseAnnotationSubject == null)
+		if (diseaseAnnotationSubject == null) {
 			return null;
-		if (diseaseAnnotationSubject.getTaxon() == null)
+		}
+		if (diseaseAnnotationSubject.getTaxon() == null) {
 			return null;
+		}
 		return diseaseAnnotationSubject.getTaxon().getCurie();
 	}
 	
@@ -80,8 +83,9 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectIdentifier() {
-		if (diseaseAnnotationSubject == null)
+		if (diseaseAnnotationSubject == null) {
 			return null;
+		}
 		return diseaseAnnotationSubject.getIdentifier();
 	}
 
@@ -89,10 +93,12 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectSpeciesName() {
-		if (diseaseAnnotationSubject == null)
+		if (diseaseAnnotationSubject == null) {
 			return null;
-		if (diseaseAnnotationSubject.getTaxon() == null)
+		}
+		if (diseaseAnnotationSubject.getTaxon() == null) {
 			return null;
+		}
 		return diseaseAnnotationSubject.getTaxon().getGenusSpecies();
 	}
 }

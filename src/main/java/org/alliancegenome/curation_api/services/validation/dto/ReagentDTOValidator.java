@@ -13,10 +13,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ReagentDTOValidator extends AnnotationDTOValidator {
 
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	DataProviderDTOValidator dataProviderDtoValidator;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject DataProviderDTOValidator dataProviderDtoValidator;
 
 	public <E extends Reagent, D extends ReagentDTO> ObjectResponse<E> validateReagentDTO(E reagent, D dto) {
 		ObjectResponse<E> reagentResponse = validateAuditedObjectDTO(reagent, dto);
@@ -24,9 +22,9 @@ public class ReagentDTOValidator extends AnnotationDTOValidator {
 
 		reagent.setModEntityId(handleStringField(dto.getModEntityId()));
 		reagent.setModInternalId(handleStringField(dto.getModInternalId()));
-		
+
 		reagent.setSecondaryIdentifiers(handleStringListField(dto.getSecondaryIdentifiers()));
-		
+
 		if (dto.getDataProviderDto() == null) {
 			reagentResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -39,7 +37,7 @@ public class ReagentDTOValidator extends AnnotationDTOValidator {
 		}
 
 		reagentResponse.setEntity(reagent);
-		
+
 		return reagentResponse;
 	}
 }

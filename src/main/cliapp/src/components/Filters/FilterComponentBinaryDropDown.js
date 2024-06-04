@@ -17,8 +17,7 @@ export function FilterComponentBinaryDropDown({ isInEditMode, filterConfig, curr
 				let filter = {};
 				if(e.target.value && e.target.value.length !== 0) {
 					filter[fieldSet.fields[0]] = {
-						queryString : e.target.value,
-						tokenOperator : "OR"
+						queryString : e.target.value
 					};
 				} else {
 					filter = null;

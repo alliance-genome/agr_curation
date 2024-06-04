@@ -17,8 +17,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class MoleculeExecutor extends LoadFileExecutor {
 
-	@Inject
-	MoleculeService moleculeService;
+	@Inject MoleculeService moleculeService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
@@ -28,13 +27,15 @@ public class MoleculeExecutor extends LoadFileExecutor {
 				AGRCurationSchemaVersion version = Molecule.class.getAnnotation(AGRCurationSchemaVersion.class);
 				bulkLoadFile.setLinkMLSchemaVersion(version.max());
 			}
-			if (moleculeData.getMetaData() != null && StringUtils.isNotBlank(moleculeData.getMetaData().getRelease()))
+			if (moleculeData.getMetaData() != null && StringUtils.isNotBlank(moleculeData.getMetaData().getRelease())) {
 				bulkLoadFile.setAllianceMemberReleaseVersion(moleculeData.getMetaData().getRelease());
+			}
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
 			createHistory(history, bulkLoadFile);
 			runLoad(moleculeService, history, null, moleculeData.getData(), null);
+			history.finishLoad();
 			finalSaveHistory(history);
 		} catch (Exception e) {
 			e.printStackTrace();

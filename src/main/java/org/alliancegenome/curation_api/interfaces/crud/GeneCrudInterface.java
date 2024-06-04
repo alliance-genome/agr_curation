@@ -41,37 +41,37 @@ public interface GeneCrudInterface extends BaseSubmittedObjectCrudInterface<Gene
 	@Query("api_gene_get")
 	@Path("/{identifierString}")
 	@JsonView(View.GeneDetailView.class)
-	public ObjectResponse<Gene> getByIdentifier(@PathParam("identifierString") String identifierString);
+	ObjectResponse<Gene> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@POST
 	@Path("/bulk/{dataProvider}/genes")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateGenes(@PathParam("dataProvider") String dataProvider, List<GeneDTO> geneData);
+	APIResponse updateGenes(@PathParam("dataProvider") String dataProvider, List<GeneDTO> geneData);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.GeneView.class)
-	public ObjectResponse<Gene> update(Gene entity);
+	ObjectResponse<Gene> update(Gene entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.GeneView.class)
-	public ObjectResponse<Gene> create(Gene entity);
+	ObjectResponse<Gene> create(Gene entity);
 
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.GeneView.class)
-	public SearchResponse<Gene> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<Gene> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.GeneView.class })
-	public SearchResponse<Gene> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<Gene> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

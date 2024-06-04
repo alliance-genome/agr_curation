@@ -26,17 +26,13 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
-	@Inject
-	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
 
-	@Inject
-	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
-	@Inject
-	AlleleDAO alleleDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	private String errorMessage;
 
@@ -107,8 +103,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		}
 
 		AffectedGenomicModel subjectEntity = null;
-		if (uiEntity.getDiseaseAnnotationSubject().getId() != null)
+		if (uiEntity.getDiseaseAnnotationSubject().getId() != null) {
 			subjectEntity = affectedGenomicModelDAO.find(uiEntity.getDiseaseAnnotationSubject().getId());
+		}
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -124,12 +121,14 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private Gene validateInferredGene(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		if (uiEntity.getInferredGene() == null)
+		if (uiEntity.getInferredGene() == null) {
 			return null;
+		}
 
 		Gene inferredGene = null;
-		if (uiEntity.getInferredGene().getId() != null)
+		if (uiEntity.getInferredGene().getId() != null) {
 			inferredGene = geneDAO.find(uiEntity.getInferredGene().getId());
+		}
 		if (inferredGene == null) {
 			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -144,17 +143,20 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private List<Gene> validateAssertedGenes(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		if (CollectionUtils.isEmpty(uiEntity.getAssertedGenes()))
+		if (CollectionUtils.isEmpty(uiEntity.getAssertedGenes())) {
 			return null;
+		}
 
 		List<Gene> assertedGenes = new ArrayList<Gene>();
 		List<Long> previousIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes())) {
 			previousIds = dbEntity.getAssertedGenes().stream().map(Gene::getId).collect(Collectors.toList());
+		}
 		for (Gene gene : uiEntity.getAssertedGenes()) {
 			Gene assertedGene = null;
-			if (gene.getId() != null)
+			if (gene.getId() != null) {
 				assertedGene = geneDAO.find(gene.getId());
+			}
 			if (assertedGene == null) {
 				addMessageResponse("assertedGenes", ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -170,12 +172,14 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private Allele validateInferredAllele(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		if (uiEntity.getInferredAllele() == null)
+		if (uiEntity.getInferredAllele() == null) {
 			return null;
+		}
 
 		Allele inferredAllele = null;
-		if (uiEntity.getInferredAllele().getId() != null)
+		if (uiEntity.getInferredAllele().getId() != null) {
 			inferredAllele = alleleDAO.find(uiEntity.getInferredAllele().getId());
+		}
 		if (inferredAllele == null) {
 			addMessageResponse("inferredAllele", ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -190,12 +194,14 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private Allele validateAssertedAllele(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		if (uiEntity.getAssertedAllele() == null)
+		if (uiEntity.getAssertedAllele() == null) {
 			return null;
+		}
 
 		Allele assertedAllele = null;
-		if (uiEntity.getAssertedAllele().getId() != null)
+		if (uiEntity.getAssertedAllele().getId() != null) {
 			assertedAllele = alleleDAO.find(uiEntity.getAssertedAllele().getId());
+		}
 		if (assertedAllele == null) {
 			addMessageResponse("assertedAllele", ValidationConstants.INVALID_MESSAGE);
 			return null;

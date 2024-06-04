@@ -13,7 +13,7 @@ public class GenericOntologyLoadConfig {
 	private HashSet<String> altNameSpaces = new HashSet<>();
 
 	// must be set and will only load that Prefix of terms
-	private String loadOnlyIRIPrefix = null;
+	private String loadOnlyIRIPrefix;
 
 	// do not load entities that have ChEBI equivalents
 	private Boolean ignoreEntitiesWithChebiXref = false;

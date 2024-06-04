@@ -12,8 +12,7 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class GeneSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnnotationValidator<GeneSecondaryIdSlotAnnotation> {
-	@Inject
-	GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
+	@Inject GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
 
 	public ObjectResponse<GeneSecondaryIdSlotAnnotation> validateGeneSecondaryIdSlotAnnotation(GeneSecondaryIdSlotAnnotation uiEntity) {
 		GeneSecondaryIdSlotAnnotation secondaryId = validateGeneSecondaryIdSlotAnnotation(uiEntity, false, false);

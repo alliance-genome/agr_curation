@@ -31,22 +31,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 
-	@Inject
-	DoTermService doTermService;
-	@Inject
-	EcoTermService ecoTermService;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	GeneService geneService;
-	@Inject
-	BiologicalEntityService biologicalEntityService;
-	@Inject
-	DataProviderDTOValidator dataProviderDtoValidator;
-	@Inject
-	DataProviderDAO dataProviderDAO;
+	@Inject DoTermService doTermService;
+	@Inject EcoTermService ecoTermService;
+	@Inject ReferenceService referenceService;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject GeneService geneService;
+	@Inject BiologicalEntityService biologicalEntityService;
+	@Inject DataProviderDTOValidator dataProviderDtoValidator;
+	@Inject DataProviderDAO dataProviderDAO;
 
 	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateDiseaseAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> daResponse = validateAnnotationDTO(annotation, dto, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET);
@@ -56,8 +48,9 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			daResponse.addErrorMessage("do_term_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			DOTerm disease = doTermService.findByCurieOrSecondaryId(dto.getDoTermCurie());
-			if (disease == null)
+			if (disease == null) {
 				daResponse.addErrorMessage("do_term_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDoTermCurie() + ")");
+			}
 			annotation.setDiseaseAnnotationObject(disease);
 		}
 
@@ -135,10 +128,10 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 			} else if (StringUtils.isBlank(dto.getDiseaseGeneticModifierRelationName())) {
 				daResponse.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_relation_name");
 			} else {
-				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY,
-					dto.getDiseaseGeneticModifierRelationName()).getEntity();
-				if (diseaseGeneticModifierRelation == null)
+				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermService.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, dto.getDiseaseGeneticModifierRelationName()).getEntity();
+				if (diseaseGeneticModifierRelation == null) {
 					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
+				}
 				List<BiologicalEntity> diseaseGeneticModifiers = new ArrayList<>();
 				for (String modifierIdentifier : dto.getDiseaseGeneticModifierIdentifiers()) {
 					BiologicalEntity diseaseGeneticModifier = biologicalEntityService.findByIdentifierString(modifierIdentifier);
@@ -159,21 +152,23 @@ public class DiseaseAnnotationDTOValidator extends AnnotationDTOValidator {
 		VocabularyTerm annotationType = null;
 		if (StringUtils.isNotBlank(dto.getAnnotationTypeName())) {
 			annotationType = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, dto.getAnnotationTypeName()).getEntity();
-			if (annotationType == null)
+			if (annotationType == null) {
 				daResponse.addErrorMessage("annotation_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAnnotationTypeName() + ")");
+			}
 		}
 		annotation.setAnnotationType(annotationType);
 
 		VocabularyTerm geneticSex = null;
 		if (StringUtils.isNotBlank(dto.getGeneticSexName())) {
 			geneticSex = vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, dto.getGeneticSexName()).getEntity();
-			if (geneticSex == null)
+			if (geneticSex == null) {
 				daResponse.addErrorMessage("genetic_sex_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneticSexName() + ")");
+			}
 		}
 		annotation.setGeneticSex(geneticSex);
 
 		daResponse.setEntity(annotation);
-		
+
 		return daResponse;
 	}
 }

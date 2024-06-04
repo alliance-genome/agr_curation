@@ -16,14 +16,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> validateAlleleGermlineTransmissionStatusSlotAnnotationDTO(AlleleGermlineTransmissionStatusSlotAnnotation annotation, AlleleGermlineTransmissionStatusSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> agtsResponse = new ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleGermlineTransmissionStatusSlotAnnotation();
+		}
 
 		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
@@ -31,8 +31,9 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator extends 
 
 		if (StringUtils.isNotEmpty(dto.getGermlineTransmissionStatusName())) {
 			VocabularyTerm gts = vocabularyTermService.getTermInVocabulary(VocabularyConstants.GERMLINE_TRANSMISSION_STATUS_VOCABULARY, dto.getGermlineTransmissionStatusName()).getEntity();
-			if (gts == null)
+			if (gts == null) {
 				agtsResponse.addErrorMessage("germline_transmission_status_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGermlineTransmissionStatusName() + ")");
+			}
 			annotation.setGermlineTransmissionStatus(gts);
 		} else {
 			agtsResponse.addErrorMessage("germline_transmission_status_name", ValidationConstants.REQUIRED_MESSAGE);

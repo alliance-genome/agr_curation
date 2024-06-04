@@ -38,26 +38,16 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> {
 
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	GeneValidator geneValidator;
-	@Inject
-	GeneDTOValidator geneDtoValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
-	@Inject
-	PersonService personService;
-	@Inject
-	GeneToGeneOrthologyService orthologyService;
-	@Inject
-	AlleleGeneAssociationService alleleGeneAssociationService;
-	@Inject
-	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
-	@Inject
-	GeneInteractionService geneInteractionService;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject GeneDAO geneDAO;
+	@Inject GeneValidator geneValidator;
+	@Inject GeneDTOValidator geneDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject PersonService personService;
+	@Inject GeneToGeneOrthologyService orthologyService;
+	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
+	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject GeneInteractionService geneInteractionService;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -83,7 +73,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
 		return upsert(dto, null);
 	}
-	
+
 	@Override
 	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
@@ -96,7 +86,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		ObjectResponse<Gene> ret = new ObjectResponse<>();
 		return ret;
 	}
-	
+
 	@Transactional
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		Gene gene = geneDAO.find(id);
@@ -105,44 +95,50 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null)
+				if (referencingDA != null) {
 					anyReferencingEntities = true;
+				}
 			}
 
 			List<Long> referencingPAIds = geneDAO.findReferencingPhenotypeAnnotations(id);
 			for (Long paId : referencingPAIds) {
 				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
-				if (referencingPA != null)
+				if (referencingPA != null) {
 					anyReferencingEntities = true;
+				}
 			}
 
 			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(id);
 			for (Long orthId : referencingOrthologyPairs) {
 				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
-				if (referencingOrthoPair != null)
+				if (referencingOrthoPair != null) {
 					anyReferencingEntities = true;
+				}
 			}
 			List<Long> referencingInteractions = geneDAO.findReferencingInteractions(id);
 			for (Long interactionId : referencingInteractions) {
 				GeneInteraction referencingInteraction = geneInteractionService.deprecateOrDeleteInteraction(interactionId, false, loadDescription, true);
-				if (referencingInteraction != null)
+				if (referencingInteraction != null) {
 					anyReferencingEntities = true;
+				}
 			}
 			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
 				for (AlleleGeneAssociation association : gene.getAlleleGeneAssociations()) {
 					association = alleleGeneAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null)
+					if (association != null) {
 						anyReferencingEntities = true;
+					}
 				}
 			}
 			if (CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
 				for (ConstructGenomicEntityAssociation association : gene.getConstructGenomicEntityAssociations()) {
 					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null)
+					if (association != null) {
 						anyReferencingEntities = true;
+					}
 				}
 			}
-			
+
 			if (anyReferencingEntities) {
 				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				gene.setDateUpdated(OffsetDateTime.now());
@@ -153,14 +149,15 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			}
 		} else {
 			log.error("Failed getting gene: " + id);
-		}	
+		}
 	}
 
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+		}
 		List<Long> ids = geneDAO.findFilteredIds(params);
 		ids.removeIf(Objects::isNull);
 

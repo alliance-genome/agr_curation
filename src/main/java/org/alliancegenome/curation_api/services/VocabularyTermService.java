@@ -20,17 +20,15 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm, VocabularyTermDAO> {
 
-	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
-	@Inject
-	VocabularyTermValidator vocabularyTermValidator;
+	@Inject VocabularyTermDAO vocabularyTermDAO;
+	@Inject VocabularyTermValidator vocabularyTermValidator;
 
 	HashMap<String, Date> termRequestMap = new HashMap<>();
 	HashMap<String, HashMap<String, VocabularyTerm>> vocabTermCacheMap = new HashMap<>();
-	
+
 	HashMap<String, Date> termSetRequestMap = new HashMap<>();
 	HashMap<String, HashMap<String, VocabularyTerm>> vocabTermSetCacheMap = new HashMap<>();
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -40,23 +38,24 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 	public ObjectResponse<VocabularyTerm> getTermInVocabulary(String vocabularyLabel, String termName) {
 
 		VocabularyTerm term = null;
-		
-		if(termRequestMap.containsKey(vocabularyLabel)) {
+
+		if (termRequestMap.containsKey(vocabularyLabel)) {
 			HashMap<String, VocabularyTerm> termMap = vocabTermCacheMap.get(vocabularyLabel);
-			
-			if(termMap == null) {
+
+			if (termMap == null) {
 				Log.debug("Vocab not cached, caching vocab: " + vocabularyLabel);
 				termMap = new HashMap<>();
 				vocabTermCacheMap.put(vocabularyLabel, termMap);
 			}
 
-			if(termMap.containsKey(termName)) {
+			if (termMap.containsKey(termName)) {
 				term = termMap.get(termName);
 			} else {
 				Log.debug("Term not cached, caching term: " + vocabularyLabel + "(" + termName + ")");
 				term = getTermInVocabularyFromDB(vocabularyLabel, termName);
-				if (term != null)
+				if (term != null) {
 					term.getSynonyms().size();
+				}
 				termMap.put(termName, term);
 			}
 		} else {
@@ -67,29 +66,30 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		ObjectResponse<VocabularyTerm> response = new ObjectResponse<>();
 		response.setEntity(term);
 		return response;
-		
+
 	}
 
 	public ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(String vocabularyTermSetLabel, String termName) {
 
 		VocabularyTerm term = null;
-		
-		if(termSetRequestMap.containsKey(vocabularyTermSetLabel)) {
+
+		if (termSetRequestMap.containsKey(vocabularyTermSetLabel)) {
 			HashMap<String, VocabularyTerm> termMap = vocabTermSetCacheMap.get(vocabularyTermSetLabel);
-			
-			if(termMap == null) {
+
+			if (termMap == null) {
 				Log.debug("Vocab not cached, caching vocab: " + vocabularyTermSetLabel);
 				termMap = new HashMap<>();
 				vocabTermSetCacheMap.put(vocabularyTermSetLabel, termMap);
 			}
 
-			if(termMap.containsKey(termName)) {
+			if (termMap.containsKey(termName)) {
 				term = termMap.get(termName);
 			} else {
 				Log.debug("Term not cached, caching term: " + vocabularyTermSetLabel + "(" + termName + ")");
 				term = getTermInVocabularyTermSetFromDB(vocabularyTermSetLabel, termName);
-				if (term != null)
+				if (term != null) {
 					term.getSynonyms().size();
+				}
 				termMap.put(termName, term);
 			}
 		} else {
@@ -100,21 +100,25 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		ObjectResponse<VocabularyTerm> response = new ObjectResponse<VocabularyTerm>();
 		response.setEntity(term);
 		return response;
-		
+
 	}
-	
+
 	private VocabularyTerm getTermInVocabularyFromDB(String vocabularyLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		if(vocabularyLabel != null) params.put("vocabulary.vocabularyLabel", vocabularyLabel);
+		if (vocabularyLabel != null) {
+			params.put("vocabulary.vocabularyLabel", vocabularyLabel);
+		}
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();
 	}
-	
+
 	private VocabularyTerm getTermInVocabularyTermSetFromDB(String vocabularyTermSetLabel, String termName) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
-		if(vocabularyTermSetLabel != null) params.put("vocabularyTermSets.vocabularyLabel", vocabularyTermSetLabel);
+		if (vocabularyTermSetLabel != null) {
+			params.put("vocabularyTermSets.vocabularyLabel", vocabularyTermSetLabel);
+		}
 		SearchResponse<VocabularyTerm> resp = vocabularyTermDAO.findByParams(params);
 		return resp.getSingleResult();
 	}
@@ -132,6 +136,5 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		VocabularyTerm dbEntity = vocabularyTermValidator.validateVocabularyTermUpdate(uiEntity);
 		return new ObjectResponse<>(vocabularyTermDAO.persist(dbEntity));
 	}
-
 
 }

@@ -18,19 +18,16 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class DataProviderDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	OrganizationService organizationService;
-	@Inject
-	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
-	@Inject
-	CrossReferenceService crossReferenceService;
-	@Inject
-	CrossReferenceDTOValidator crossReferenceDtoValidator;
-	
+	@Inject OrganizationService organizationService;
+	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
+	@Inject CrossReferenceService crossReferenceService;
+	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+
 	public ObjectResponse<DataProvider> validateDataProviderDTO(DataProviderDTO dto, DataProvider dbEntity) {
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			dbEntity = new DataProvider();
-		
+		}
+
 		ObjectResponse<DataProvider> dpResponse = validateAuditedObjectDTO(dbEntity, dto);
 
 		dbEntity = dpResponse.getEntity();

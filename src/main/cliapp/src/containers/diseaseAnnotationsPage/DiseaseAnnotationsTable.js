@@ -1108,7 +1108,7 @@ export const DiseaseAnnotationsTable = () => {
 
 const DEFAULT_COLUMN_WIDTH = 10;
 const SEARCH_ENDPOINT = "disease-annotation";
-const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false", tokenOperator: "OR"}}};
+const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false"}}};
 
 const initialTableState = getDefaultTableState("DiseaseAnnotations", columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
 

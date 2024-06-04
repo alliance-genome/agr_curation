@@ -70,8 +70,9 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 	private List<ExperimentalCondition> conditions;
 
 	public void addExperimentCondition(ExperimentalCondition experimentalCondition) {
-		if (conditions == null)
+		if (conditions == null) {
 			conditions = new ArrayList<>();
+		}
 		conditions.add(experimentalCondition);
 	}
 

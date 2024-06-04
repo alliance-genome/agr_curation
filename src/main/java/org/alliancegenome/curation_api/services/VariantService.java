@@ -47,7 +47,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		Variant dbEntity = variantValidator.validateVariantUpdate(uiEntity);
 		return new ObjectResponse<Variant>(dbEntity);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Variant> create(Variant uiEntity) {
@@ -58,7 +58,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
 	}
-	
+
 	@Transactional
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		Variant variant = variantDAO.find(id);
@@ -67,8 +67,9 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null)
+				if (referencingDA != null) {
 					anyReferencingEntities = true;
+				}
 			}
 			if (anyReferencingEntities) {
 				if (!variant.getObsolete()) {
@@ -84,7 +85,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 			log.error("Failed getting variant: " + id);
 		}
 	}
-	
+
 	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);

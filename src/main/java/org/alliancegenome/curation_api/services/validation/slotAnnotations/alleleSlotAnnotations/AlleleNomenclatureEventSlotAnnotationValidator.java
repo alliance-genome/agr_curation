@@ -17,10 +17,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleNomenclatureEventSlotAnnotationValidator extends SlotAnnotationValidator<AlleleNomenclatureEventSlotAnnotation> {
 
-	@Inject
-	AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> validateAlleleNomenclatureEventSlotAnnotation(AlleleNomenclatureEventSlotAnnotation uiEntity) {
 		AlleleNomenclatureEventSlotAnnotation nomenclatureEvent = validateAlleleNomenclatureEventSlotAnnotation(uiEntity, false, false);
@@ -57,7 +55,7 @@ public class AlleleNomenclatureEventSlotAnnotationValidator extends SlotAnnotati
 
 		VocabularyTerm nomenclatureEvent = validateNomenclatureEvent(uiEntity, dbEntity);
 		dbEntity.setNomenclatureEvent(nomenclatureEvent);
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);

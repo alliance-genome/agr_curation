@@ -13,8 +13,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleSecondaryIdSlotAnnotationValidator extends SecondaryIdSlotAnnotationValidator<AlleleSecondaryIdSlotAnnotation> {
 
-	@Inject
-	AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
+	@Inject AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
 
 	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIdSlotAnnotation(AlleleSecondaryIdSlotAnnotation uiEntity) {
 		AlleleSecondaryIdSlotAnnotation secondaryId = validateAlleleSecondaryIdSlotAnnotation(uiEntity, false, false);

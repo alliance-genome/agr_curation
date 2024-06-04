@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleFunctionalImpactSlotAnnotationService extends BaseEntityCrudService<AlleleFunctionalImpactSlotAnnotation, AlleleFunctionalImpactSlotAnnotationDAO> {
 
-	@Inject
-	AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
-	@Inject
-	AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
+	@Inject AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
+	@Inject AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleFunctionalImpactSlotAnnotationService extends BaseEntityCrudS
 	@Transactional
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> upsert(AlleleFunctionalImpactSlotAnnotation uiEntity) {
 		AlleleFunctionalImpactSlotAnnotation dbEntity = alleleFunctionalImpactValidator.validateAlleleFunctionalImpactSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleFunctionalImpactSlotAnnotation>(alleleFunctionalImpactDAO.persist(dbEntity));
 	}
 

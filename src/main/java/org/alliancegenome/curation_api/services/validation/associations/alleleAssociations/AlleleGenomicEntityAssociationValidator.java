@@ -18,23 +18,21 @@ import jakarta.inject.Inject;
 
 public class AlleleGenomicEntityAssociationValidator<E extends AlleleGenomicEntityAssociation> extends EvidenceAssociationValidator<E> {
 
-	@Inject
-	NoteValidator noteValidator;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	EcoTermDAO ecoTermDAO;
-	@Inject
-	AlleleDAO alleleDAO;
-	
+	@Inject NoteValidator noteValidator;
+	@Inject NoteDAO noteDAO;
+	@Inject EcoTermDAO ecoTermDAO;
+	@Inject AlleleDAO alleleDAO;
+
 	public ECOTerm validateEvidenceCode(E uiEntity, E dbEntity) {
 		String field = "evidenceCode";
-		if (ObjectUtils.isEmpty(uiEntity.getEvidenceCode()))
+		if (ObjectUtils.isEmpty(uiEntity.getEvidenceCode())) {
 			return null;
-		
+		}
+
 		ECOTerm evidenceCode = null;
-		if (uiEntity.getEvidenceCode().getId() != null)
+		if (uiEntity.getEvidenceCode().getId() != null) {
 			evidenceCode = ecoTermDAO.find(uiEntity.getEvidenceCode().getId());
+		}
 		if (evidenceCode == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -47,16 +45,17 @@ public class AlleleGenomicEntityAssociationValidator<E extends AlleleGenomicEnti
 			addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
 			return null;
 		}
-		
+
 		return evidenceCode;
 	}
-		
+
 	public Note validateRelatedNote(E uiEntity, E dbEntity) {
 		String field = "relatedNote";
 
-		if (uiEntity.getRelatedNote() == null)
+		if (uiEntity.getRelatedNote() == null) {
 			return null;
-			
+		}
+
 		ObjectResponse<Note> noteResponse = noteValidator.validateNote(uiEntity.getRelatedNote(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 		if (noteResponse.getEntity() == null) {
 			addMessageResponse(field, noteResponse.errorMessagesString());
@@ -66,7 +65,7 @@ public class AlleleGenomicEntityAssociationValidator<E extends AlleleGenomicEnti
 	}
 
 	public E validateAlleleGenomicEntityAssociationFields(E uiEntity, E dbEntity) {
-		
+
 		dbEntity = validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		ECOTerm evidenceCode = validateEvidenceCode(uiEntity, dbEntity);

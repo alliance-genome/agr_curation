@@ -23,7 +23,7 @@ public interface DataProviderCrudInterface extends BaseIdCrudInterface<DataProvi
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectResponse<DataProvider> validate(DataProvider entity);
+	ObjectResponse<DataProvider> validate(DataProvider entity);
 
 }
 

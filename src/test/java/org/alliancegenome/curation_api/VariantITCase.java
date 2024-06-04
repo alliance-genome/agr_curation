@@ -42,7 +42,7 @@ import io.restassured.RestAssured;
 @Order(309)
 public class VariantITCase extends BaseITCase {
 
-	private final String VARIANT = "Variant:0001";
+	private static final String VARIANT = "Variant:0001";
 	
 	private Vocabulary variantStatusVocabulary;
 	private Vocabulary noteTypeVocabulary;

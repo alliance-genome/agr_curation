@@ -29,7 +29,7 @@ import lombok.ToString;
 	indexes = {
 		@Index(name = "informationcontententity_curie_index", columnList = "curie"),
 		@Index(name = "informationcontententity_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "informationcontententity_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "informationcontententity_updatedby_index", columnList = "updatedBy_id")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "informationcontententity_curie_uk", columnNames = "curie")

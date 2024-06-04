@@ -93,8 +93,7 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 							}
 							filter[fieldSet.fields[0]] = {
 									useKeywordFields: fieldSet.useKeywordFields,
-									queryString: queryString,
-									tokenOperator: "OR"
+									queryString: queryString
 							};
 					} else {
 							filter = null;

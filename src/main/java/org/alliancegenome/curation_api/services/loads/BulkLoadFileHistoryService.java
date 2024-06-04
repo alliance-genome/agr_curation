@@ -31,14 +31,14 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	public Response download(Long id) {
 		JsonArray jsonArray = new JsonArray();
 		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(id);
-		for(BulkLoadFileException exception : bulkLoadFileHistory.getExceptions()){
+		for (BulkLoadFileException exception : bulkLoadFileHistory.getExceptions()) {
 			JsonObject object = new JsonObject();
 			object.put("message", exception.getException().getMessage());
 			JsonObject data = new JsonObject(exception.getException().getJsonObject());
 			object.put("jsonObject", data);
 			jsonArray.add(object);
 		}
-	
+
 //		TODO Pulling the history grabs all the exceptions causing the server to crash
 //		TODO May need to revisit this
 //		HashMap<String, Object> params = new HashMap<>();
@@ -64,9 +64,9 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 //
 //		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(id);
 //		response.header("Content-Disposition", "attachment; filename=\"" + id + "_file_exceptions.json\"");
-		
+
 		Response.ResponseBuilder response = Response.ok(jsonArray.toString());
-		response.header("Content-Disposition", "attachment; filename=\"" + bulkLoadFileHistory.getBulkLoadFile().getBulkLoad().getName().replace( " ", "_") + "_exceptions.json\"");
+		response.header("Content-Disposition", "attachment; filename=\"" + bulkLoadFileHistory.getBulkLoadFile().getBulkLoad().getName().replace(" ", "_") + "_exceptions.json\"");
 		response.type(MediaType.APPLICATION_OCTET_STREAM);
 		return response.build();
 	}

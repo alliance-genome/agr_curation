@@ -15,13 +15,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
+	@Inject ReferenceDAO referenceDAO;
 
-	@Inject
-	PersonService personService;
+	@Inject PersonService personService;
 
 	public ObjectResponse<Reference> validateReference(Reference uiEntity) {
 		Reference reference = validateReference(uiEntity, false);

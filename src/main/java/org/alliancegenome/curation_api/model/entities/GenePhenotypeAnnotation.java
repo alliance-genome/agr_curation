@@ -58,8 +58,9 @@ public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
-		if (phenotypeAnnotationSubject == null)
+		if (phenotypeAnnotationSubject == null) {
 			return null;
+		}
 		return phenotypeAnnotationSubject.getCurie();
 	}
 
@@ -67,10 +68,12 @@ public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectTaxonCurie() {
-		if (phenotypeAnnotationSubject == null)
+		if (phenotypeAnnotationSubject == null) {
 			return null;
-		if (phenotypeAnnotationSubject.getTaxon() == null)
+		}
+		if (phenotypeAnnotationSubject.getTaxon() == null) {
 			return null;
+		}
 		return phenotypeAnnotationSubject.getTaxon().getCurie();
 	}
 	
@@ -78,8 +81,9 @@ public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectIdentifier() {
-		if (phenotypeAnnotationSubject == null)
+		if (phenotypeAnnotationSubject == null) {
 			return null;
+		}
 		return phenotypeAnnotationSubject.getIdentifier();
 	}
 
@@ -87,10 +91,12 @@ public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectSpeciesName() {
-		if (phenotypeAnnotationSubject == null)
+		if (phenotypeAnnotationSubject == null) {
 			return null;
-		if (phenotypeAnnotationSubject.getTaxon() == null)
+		}
+		if (phenotypeAnnotationSubject.getTaxon() == null) {
 			return null;
+		}
 		return phenotypeAnnotationSubject.getTaxon().getGenusSpecies();
 	}
 }

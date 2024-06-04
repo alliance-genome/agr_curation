@@ -26,19 +26,19 @@ public interface GenePhenotypeAnnotationCrudInterface extends BaseIdCrudInterfac
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<GenePhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
+	ObjectResponse<GenePhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.PhenotypeAnnotationView.class)
-	public ObjectResponse<GenePhenotypeAnnotation> update(GenePhenotypeAnnotation entity);
+	ObjectResponse<GenePhenotypeAnnotation> update(GenePhenotypeAnnotation entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.PhenotypeAnnotationView.class)
-	public ObjectResponse<GenePhenotypeAnnotation> create(GenePhenotypeAnnotation entity);
+	ObjectResponse<GenePhenotypeAnnotation> create(GenePhenotypeAnnotation entity);
 
 	
 }

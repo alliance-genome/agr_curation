@@ -33,36 +33,28 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class AffectedGenomicModelService extends SubmittedObjectCrudService<AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> {
 
-	@Inject
-	AffectedGenomicModelDAO agmDAO;
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	AffectedGenomicModelValidator agmValidator;
-	@Inject
-	AffectedGenomicModelDTOValidator agmDtoValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject
-	PersonService personService;
-	@Inject
-	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject AffectedGenomicModelDAO agmDAO;
+	@Inject AlleleDAO alleleDAO;
+	@Inject AffectedGenomicModelValidator agmValidator;
+	@Inject AffectedGenomicModelDTOValidator agmDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject PersonService personService;
+	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(agmDAO);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
 		AffectedGenomicModel dbEntity = agmDAO.persist(agmValidator.validateAffectedGenomicModelUpdate(uiEntity));
 		return new ObjectResponse<AffectedGenomicModel>(dbEntity);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel uiEntity) {
@@ -74,8 +66,9 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		AffectedGenomicModel agm = agmDtoValidator.validateAffectedGenomicModelDTO(dto, dataProvider);
 
-		if (agm == null)
+		if (agm == null) {
 			return null;
+		}
 
 		return agmDAO.persist(agm);
 	}
@@ -88,20 +81,23 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 			Boolean anyReferencingEntities = false;
 			for (Long daId : referencingDAIds) {
 				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null)
+				if (referencingDA != null) {
 					anyReferencingEntities = true;
+				}
 			}
 			List<Long> referencingPAIds = agmDAO.findReferencingPhenotypeAnnotations(id);
 			for (Long paId : referencingPAIds) {
 				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
-				if (referencingPA != null)
+				if (referencingPA != null) {
 					anyReferencingEntities = true;
+				}
 			}
 			if (CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
 				for (ConstructGenomicEntityAssociation association : agm.getConstructGenomicEntityAssociations()) {
 					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null)
+					if (association != null) {
 						anyReferencingEntities = true;
+					}
 				}
 			}
 
@@ -119,7 +115,7 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 			log.error("Failed getting AGM: " + id);
 		}
 	}
-	
+
 	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);

@@ -19,7 +19,6 @@ public interface BaseIdCrudInterface<E extends AuditedObject> extends
 	BaseDeleteIdControllerInterface<E>,
 	BaseSearchControllerInterface<E>,
 	BaseFindControllerInterface<E>,
-	BaseReindexControllerInterface
-{
+	BaseReindexControllerInterface {
 	
 }

@@ -24,14 +24,11 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class ConstructExecutor extends LoadFileExecutor {
 
-	@Inject
-	ConstructDAO constructDAO;
+	@Inject ConstructDAO constructDAO;
 
-	@Inject
-	ConstructService constructService;
-	
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject ConstructService constructService;
+
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
 
@@ -39,32 +36,34 @@ public class ConstructExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFile, ConstructDTO.class);
-		if (ingestDto == null) return;
-		
+		if (ingestDto == null) {
+			return;
+		}
+
 		List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
-		if (constructs == null) constructs = new ArrayList<>();
-		
+		if (constructs == null) {
+			constructs = new ArrayList<>();
+		}
+
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		
+
 		List<Long> constructIdsLoaded = new ArrayList<>();
 		List<Long> constructIdsBefore = new ArrayList<>();
 		if (cleanUp) {
 			constructIdsBefore.addAll(constructService.getConstructIdsByDataProvider(dataProvider));
 			Log.debug("runLoad: Before: total " + constructIdsBefore.size());
 		}
-		
+
 		bulkLoadFile.setRecordCount(constructs.size() + bulkLoadFile.getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFile);
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(constructs.size());
 		createHistory(history, bulkLoadFile);
-		
-		runLoad(constructService, history, dataProvider, constructs, constructIdsLoaded);
-		
-		if(cleanUp) runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, bulkLoadFile.getMd5Sum());
-		
+		boolean success = runLoad(constructService, history, dataProvider, constructs, constructIdsLoaded);
+		if (success && cleanUp) {
+			runCleanup(constructService, history, dataProvider.name(), constructIdsBefore, constructIdsLoaded, bulkLoadFile.getMd5Sum());
+		}
 		history.finishLoad();
-		
 		finalSaveHistory(history);
 	}
 
@@ -78,8 +77,8 @@ public class ConstructExecutor extends LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(constructIdsBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
-		history.setTotalDeleteRecords((long)idsToRemove.size());
-		
+		history.setTotalDeleteRecords((long) idsToRemove.size());
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 		ph.startProcess("Deletion/deprecation of constructs linked to unloaded " + dataProviderName, idsToRemove.size());
 		for (Long id : idsToRemove) {

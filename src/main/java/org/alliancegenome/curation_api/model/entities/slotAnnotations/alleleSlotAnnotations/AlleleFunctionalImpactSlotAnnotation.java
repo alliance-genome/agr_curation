@@ -54,7 +54,7 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
 	@JoinTable(indexes = { @Index(name = "allelefunctionalimpactsa_vocabterm_afisa_index", columnList = "allelefunctionalimpactslotannotation_id"),
-		@Index(name = "allelefunctionalimpactsa_vocabterm_functionalimpacts_index", columnList = "functionalimpacts_id"), })
+		@Index(name = "allelefunctionalimpactsa_vocabterm_functionalimpacts_index", columnList = "functionalimpacts_id") })
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<VocabularyTerm> functionalImpacts;
 

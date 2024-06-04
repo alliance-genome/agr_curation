@@ -19,15 +19,12 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociationValidator<AlleleGeneAssociation> {
 
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	AlleleGeneAssociationDAO alleleGeneAssociationDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject GeneDAO geneDAO;
+	@Inject AlleleGeneAssociationDAO alleleGeneAssociationDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	private String errorMessage;
-	
+
 	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociation(AlleleGeneAssociation uiEntity) {
 		AlleleGeneAssociation geneAssociation = validateAlleleGeneAssociation(uiEntity, false, false);
 		response.setEntity(geneAssociation);
@@ -49,14 +46,14 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 		} else {
 			dbEntity = new AlleleGeneAssociation();
 		}
-		
+
 		dbEntity = (AlleleGeneAssociation) validateAlleleGenomicEntityAssociationFields(uiEntity, dbEntity);
 
 		if (validateAllele) {
 			Allele subject = validateSubject(uiEntity, dbEntity);
 			dbEntity.setAlleleAssociationSubject(subject);
 		}
-		
+
 		Gene object = validateObject(uiEntity, dbEntity);
 		dbEntity.setAlleleGeneAssociationObject(object);
 
@@ -74,7 +71,7 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 
 		return dbEntity;
 	}
-	
+
 	private Allele validateSubject(AlleleGeneAssociation uiEntity, AlleleGeneAssociation dbEntity) {
 		String field = "alleleAssociationSubject";
 		if (ObjectUtils.isEmpty(uiEntity.getAlleleAssociationSubject())) {
@@ -83,8 +80,9 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 		}
 
 		Allele subjectEntity = null;
-		if (uiEntity.getAlleleAssociationSubject().getId() != null)
+		if (uiEntity.getAlleleAssociationSubject().getId() != null) {
 			subjectEntity = alleleDAO.find(uiEntity.getAlleleAssociationSubject().getId());
+		}
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -107,17 +105,17 @@ public class AlleleGeneAssociationValidator extends AlleleGenomicEntityAssociati
 		}
 
 		Gene objectEntity = null;
-		if (uiEntity.getAlleleGeneAssociationObject().getId() != null)
+		if (uiEntity.getAlleleGeneAssociationObject().getId() != null) {
 			objectEntity = geneDAO.find(uiEntity.getAlleleGeneAssociationObject().getId());
+		}
 		if (objectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
-		}
-		else {
+		} else {
 			// fix for SCRUM-3738
-			if (objectEntity.getGeneSymbol() != null){
-				if(objectEntity.getGeneSymbol().getEvidence() != null) {
-					objectEntity.getGeneSymbol().getEvidence().size(); 
+			if (objectEntity.getGeneSymbol() != null) {
+				if (objectEntity.getGeneSymbol().getEvidence() != null) {
+					objectEntity.getGeneSymbol().getEvidence().size();
 				}
 			}
 		}

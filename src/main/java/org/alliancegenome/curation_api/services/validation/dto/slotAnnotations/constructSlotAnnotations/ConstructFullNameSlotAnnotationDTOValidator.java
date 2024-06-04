@@ -12,8 +12,9 @@ import jakarta.enterprise.context.RequestScoped;
 public class ConstructFullNameSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
 	public ObjectResponse<ConstructFullNameSlotAnnotation> validateConstructFullNameSlotAnnotationDTO(ConstructFullNameSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new ConstructFullNameSlotAnnotation();
+		}
 
 		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.FULL_NAME_TYPE_TERM_SET);
 	}

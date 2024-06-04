@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleFullNameSlotAnnotationValidator extends NameSlotAnnotationValidator<AlleleFullNameSlotAnnotation> {
 
-	@Inject
-	AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
-	@Inject
-	AlleleDAO alleleDAO;
+	@Inject AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleFullNameSlotAnnotation> validateAlleleFullNameSlotAnnotation(AlleleFullNameSlotAnnotation uiEntity) {
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullNameSlotAnnotation(uiEntity, false, false);

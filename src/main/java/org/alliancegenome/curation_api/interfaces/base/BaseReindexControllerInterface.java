@@ -17,7 +17,7 @@ public interface BaseReindexControllerInterface {
 	@GET
 	@Path("/reindex")
 	@Tag(name = "Reindex Endpoints")
-	public void reindex(
+	void reindex(
 		@DefaultValue("1000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
 		@DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
 		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,

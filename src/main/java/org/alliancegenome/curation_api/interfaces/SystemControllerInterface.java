@@ -22,7 +22,7 @@ public interface SystemControllerInterface {
 
 	@GET
 	@Path("/reindexeverything")
-	public void reindexEverything(
+	void reindexEverything(
 		@DefaultValue("1000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
 		@DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
 		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
@@ -32,14 +32,14 @@ public interface SystemControllerInterface {
 
 	@GET
 	@Path("/sitesummary")
-	public ObjectResponse<Map<String, Object>> getSiteSummary();
+	ObjectResponse<Map<String, Object>> getSiteSummary();
 	
 	@GET
 	@Path("/updatedauniqueids")
-	public void updateDiseaseAnnotationUniqueIds();
+	void updateDiseaseAnnotationUniqueIds();
 
 	@DELETE
 	@Path("/deletedUnusedConditionsAndExperiments")
-	public void deleteUnusedConditionsAndExperiments();
+	void deleteUnusedConditionsAndExperiments();
 
 }

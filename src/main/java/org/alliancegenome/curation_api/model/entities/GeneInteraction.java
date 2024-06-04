@@ -47,7 +47,7 @@ import lombok.ToString;
 	@Index(name = "geneinteraction_interactorarole_index", columnList = "interactorarole_id"),
 	@Index(name = "geneinteraction_interactorbrole_index", columnList = "interactorbrole_id"),
 	@Index(name = "geneinteraction_interactoratype_index", columnList = "interactoratype_id"),
-	@Index(name = "geneinteraction_interactorbtype_index", columnList = "interactorbtype_id"),
+	@Index(name = "geneinteraction_interactorbtype_index", columnList = "interactorbtype_id")
 })
 
 public abstract class GeneInteraction extends GeneGeneAssociation {
@@ -66,7 +66,7 @@ public abstract class GeneInteraction extends GeneGeneAssociation {
 	
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval=true)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinTable(indexes = { 
 		@Index(columnList = "geneinteraction_id, crossreferences_id", name = "geneinteraction_crossreference_gi_xref_index"),
 		@Index(columnList = "geneinteraction_id", name = "geneinteraction_crossreference_geneinteraction_index"),

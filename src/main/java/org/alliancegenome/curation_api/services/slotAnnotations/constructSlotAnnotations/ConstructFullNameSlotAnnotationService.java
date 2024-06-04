@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ConstructFullNameSlotAnnotationService extends BaseEntityCrudService<ConstructFullNameSlotAnnotation, ConstructFullNameSlotAnnotationDAO> {
 
-	@Inject
-	ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
-	@Inject
-	ConstructFullNameSlotAnnotationValidator constructFullNameValidator;
+	@Inject ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
+	@Inject ConstructFullNameSlotAnnotationValidator constructFullNameValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class ConstructFullNameSlotAnnotationService extends BaseEntityCrudServic
 	@Transactional
 	public ObjectResponse<ConstructFullNameSlotAnnotation> upsert(ConstructFullNameSlotAnnotation uiEntity) {
 		ConstructFullNameSlotAnnotation dbEntity = constructFullNameValidator.validateConstructFullNameSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<ConstructFullNameSlotAnnotation>(constructFullNameDAO.persist(dbEntity));
 	}
 

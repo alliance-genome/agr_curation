@@ -20,14 +20,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
 
-	@Inject
-	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject
-	AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
-	@Inject
-	AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
+	@Inject AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -67,10 +63,9 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(alleleDiseaseAnnotationDAO, dataProvider);
 	}
-	
+
 	@Override
-	public AlleleDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
+	public AlleleDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		return (AlleleDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

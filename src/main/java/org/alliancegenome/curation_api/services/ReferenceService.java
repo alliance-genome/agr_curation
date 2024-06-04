@@ -18,10 +18,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ReferenceService extends BaseEntityCrudService<Reference, ReferenceDAO> {
 
-	@Inject
-	ReferenceDAO referenceDAO;
-	@Inject
-	ReferenceSynchronisationHelper refSyncHelper;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceSynchronisationHelper refSyncHelper;
 
 	@Override
 	@PostConstruct
@@ -36,14 +34,14 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	public void synchroniseReferences() {
 		refSyncHelper.synchroniseReferences();
 	}
-	
+
 	@Override
 	public ObjectResponse<Reference> getByCurie(String curie) {
 		Reference reference = retrieveFromDbOrLiteratureService(curie);
 		ObjectResponse<Reference> ret = new ObjectResponse<Reference>(reference);
 		return ret;
 	}
-	
+
 	@Transactional
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
@@ -55,21 +53,25 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 			List<Reference> nonObsoleteRefs = new ArrayList<>();
 			if (response != null && response.getReturnedRecords() > 0) {
 				response.getResults().forEach(ref -> {
-					if (!ref.getObsolete())
+					if (!ref.getObsolete()) {
 						nonObsoleteRefs.add(ref);
+					}
 				});
 			}
-			if (nonObsoleteRefs.size() == 1)
+			if (nonObsoleteRefs.size() == 1) {
 				reference = nonObsoleteRefs.get(0);
+			}
 		}
 
-		if (reference != null && (!reference.getObsolete() || curieOrXref.startsWith("AGRKB:")))
+		if (reference != null && (!reference.getObsolete() || curieOrXref.startsWith("AGRKB:"))) {
 			return reference;
+		}
 
 		reference = refSyncHelper.retrieveFromLiteratureService(curieOrXref);
 
-		if (reference == null)
+		if (reference == null) {
 			return null;
+		}
 
 		return referenceDAO.persist(reference);
 	}

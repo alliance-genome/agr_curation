@@ -26,18 +26,18 @@ public interface AllelePhenotypeAnnotationCrudInterface extends BaseIdCrudInterf
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AllelePhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
+	ObjectResponse<AllelePhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.PhenotypeAnnotationView.class)
-	public ObjectResponse<AllelePhenotypeAnnotation> update(AllelePhenotypeAnnotation entity);
+	ObjectResponse<AllelePhenotypeAnnotation> update(AllelePhenotypeAnnotation entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.PhenotypeAnnotationView.class)
-	public ObjectResponse<AllelePhenotypeAnnotation> create(AllelePhenotypeAnnotation entity);
+	ObjectResponse<AllelePhenotypeAnnotation> create(AllelePhenotypeAnnotation entity);
 
 }

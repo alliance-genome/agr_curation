@@ -17,12 +17,9 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ParalogyFmsDTOValidator {
 
-	@Inject
-	GeneToGeneParalogyDAO genetoGeneParalogyDAO;
-	@Inject
-	GeneService geneService;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject GeneToGeneParalogyDAO genetoGeneParalogyDAO;
+	@Inject GeneService geneService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Transactional
 	public GeneToGeneParalogy validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ObjectValidationException {
@@ -80,25 +77,27 @@ public class ParalogyFmsDTOValidator {
 		curie = curie.replaceFirst("^DRSC:", "");
 		if (curie.indexOf(":") == -1) {
 			String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonId(taxonId);
-			if (prefix != null)
+			if (prefix != null) {
 				curie = prefix + curie;
+			}
 		}
 
 		return curie;
 	}
 
 	private boolean sameGenus(NCBITaxonTerm taxon, NCBITaxonTerm geneTaxon) {
-		if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:8355")
-				|| StringUtils.equals(taxon.getCurie(), "NCBITaxon:8364")) {
+		if (StringUtils.equals(taxon.getCurie(), "NCBITaxon:8355") || StringUtils.equals(taxon.getCurie(), "NCBITaxon:8364")) {
 			// Must be same species for Xenopus as cleanup uses taxon curie
-			if (StringUtils.equals(taxon.getCurie(), geneTaxon.getCurie()))
+			if (StringUtils.equals(taxon.getCurie(), geneTaxon.getCurie())) {
 				return true;
+			}
 			return false;
 		}
 		String genus = taxon.getName().substring(0, taxon.getName().indexOf(" "));
 		String geneGenus = geneTaxon.getName().substring(0, geneTaxon.getName().indexOf(" "));
-		if (StringUtils.equals(genus, geneGenus))
+		if (StringUtils.equals(genus, geneGenus)) {
 			return true;
+		}
 		return false;
 	}
 

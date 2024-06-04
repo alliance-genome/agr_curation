@@ -12,8 +12,9 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class VariantDAO extends BaseSQLDAO<Variant> {
-	
+
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+
 	protected VariantDAO() {
 		super(Variant.class);
 	}
@@ -21,7 +22,7 @@ public class VariantDAO extends BaseSQLDAO<Variant> {
 	public List<Long> findReferencingDiseaseAnnotationIds(Long variantId) {
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put("diseaseGeneticModifiers.id", variantId);
-		List<Long >results = diseaseAnnotationDAO.findFilteredIds(dgmParams);
+		List<Long> results = diseaseAnnotationDAO.findFilteredIds(dgmParams);
 
 		return results;
 	}

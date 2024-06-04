@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.jobs.processors;
 
 import java.io.File;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 import org.alliancegenome.curation_api.dao.loads.BulkFMSLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
@@ -16,7 +15,6 @@ import org.alliancegenome.curation_api.jobs.executors.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
-import org.alliancegenome.curation_api.model.fms.DataFile;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
@@ -28,55 +26,39 @@ import jakarta.inject.Inject;
 
 public class BulkLoadProcessor {
 
-	@ConfigProperty(name = "bulk.data.loads.s3Bucket")
-	String s3Bucket = null;
+	@ConfigProperty(name = "bulk.data.loads.s3Bucket") String s3Bucket;
+	@ConfigProperty(name = "bulk.data.loads.s3PathPrefix") String s3PathPrefix;
+	@ConfigProperty(name = "bulk.data.loads.s3AccessKey") String s3AccessKey;
+	@ConfigProperty(name = "bulk.data.loads.s3SecretKey") String s3SecretKey;
 
-	@ConfigProperty(name = "bulk.data.loads.s3PathPrefix")
-	String s3PathPrefix = null;
+	@Inject DataFileService fmsDataFileService;
 
-	@ConfigProperty(name = "bulk.data.loads.s3AccessKey")
-	String s3AccessKey = null;
+	@Inject BulkLoadDAO bulkLoadDAO;
+	@Inject BulkManualLoadDAO bulkManualLoadDAO;
+	@Inject BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject BulkFMSLoadDAO bulkFMSLoadDAO;
+	@Inject BulkURLLoadDAO bulkURLLoadDAO;
 
-	@ConfigProperty(name = "bulk.data.loads.s3SecretKey")
-	String s3SecretKey = null;
+	@Inject BulkLoadJobExecutor bulkLoadJobExecutor;
 
-	@Inject
-	DataFileService fmsDataFileService;
+	@Inject SlackNotifier slackNotifier;
 
-	@Inject
-	BulkLoadDAO bulkLoadDAO;
-	@Inject
-	BulkManualLoadDAO bulkManualLoadDAO;
-	@Inject
-	BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject
-	BulkFMSLoadDAO bulkFMSLoadDAO;
-	@Inject
-	BulkURLLoadDAO bulkURLLoadDAO;
-	
-	@Inject
-	BulkLoadJobExecutor bulkLoadJobExecutor;
-	
-	@Inject
-	SlackNotifier slackNotifier;
+	@Inject Event<PendingBulkLoadFileJobEvent> pendingFileJobEvents;
 
-	@Inject
-	Event<PendingBulkLoadFileJobEvent> pendingFileJobEvents;
-	
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 
-	private String processFMS(String dataType, String dataSubType) {
-		List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
-
-		if (files.size() == 1) {
-			DataFile df = files.get(0);
-			return df.getS3Url();
-		} else {
-			Log.warn("Files: " + files);
-			Log.warn("Issue pulling files from the FMS: " + dataType + " " + dataSubType);
-		}
-		return null;
-	}
+//	private String processFMS(String dataType, String dataSubType) {
+//		List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
+//
+//		if (files.size() == 1) {
+//			DataFile df = files.get(0);
+//			return df.getS3Url();
+//		} else {
+//			Log.warn("Files: " + files);
+//			Log.warn("Issue pulling files from the FMS: " + dataType + " " + dataSubType);
+//		}
+//		return null;
+//	}
 
 	public void syncWithS3(BulkLoadFile bulkLoadFile) {
 		Log.info("Syncing with S3");
@@ -111,7 +93,7 @@ public class BulkLoadProcessor {
 		}
 		Log.info("Syncing with S3 Finished");
 	}
-	
+
 	protected void processFilePath(BulkLoad bulkLoad, String localFilePath) {
 		processFilePath(bulkLoad, localFilePath, false);
 	}
@@ -146,7 +128,9 @@ public class BulkLoadProcessor {
 			Log.info(load.getBulkloadStatus());
 
 			bulkLoadFile.setLocalFilePath(localFilePath);
-			if(cleanUp) bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
+			if (cleanUp) {
+				bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
+			}
 			bulkLoadFileDAO.persist(bulkLoadFile);
 		} else if (load.getBulkloadStatus().isForced()) {
 			bulkLoadFile = bulkLoadFiles.getResults().get(0);
@@ -169,7 +153,9 @@ public class BulkLoadProcessor {
 		if (!load.getLoadFiles().contains(bulkLoadFile)) {
 			load.getLoadFiles().add(bulkLoadFile);
 		}
-		if(cleanUp) bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
+		if (cleanUp) {
+			bulkLoadFile.setBulkloadCleanUp(BulkLoadCleanUp.YES);
+		}
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		bulkLoadDAO.merge(load);
 		Log.info("Firing Pending Bulk File Event: " + bulkLoadFile.getId());
@@ -193,7 +179,7 @@ public class BulkLoadProcessor {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);
-		if(status != JobStatus.FINISHED) {
+		if (status != JobStatus.FINISHED) {
 			slackNotifier.slackalert(bulkLoad);
 		}
 		bulkLoadDAO.merge(bulkLoad);
@@ -215,7 +201,7 @@ public class BulkLoadProcessor {
 		bulkLoadFile.setErrorMessage(message);
 		bulkLoadFile.setBulkloadStatus(status);
 		bulkLoadFile.setDateLastLoaded(OffsetDateTime.now());
-		if(status != JobStatus.FINISHED) {
+		if (status != JobStatus.FINISHED) {
 			slackNotifier.slackalert(bulkLoadFile);
 		}
 		bulkLoadFileDAO.merge(bulkLoadFile);

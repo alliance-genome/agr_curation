@@ -12,9 +12,10 @@ import jakarta.enterprise.context.RequestScoped;
 public class AlleleSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
 	public ObjectResponse<AlleleSynonymSlotAnnotation> validateAlleleSynonymSlotAnnotationDTO(AlleleSynonymSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleSynonymSlotAnnotation();
+		}
 
-		return validateNameSlotAnnotationDTO(annotation, dto,VocabularyConstants.NAME_TYPE_VOCABULARY);
+		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.NAME_TYPE_VOCABULARY);
 	}
 }

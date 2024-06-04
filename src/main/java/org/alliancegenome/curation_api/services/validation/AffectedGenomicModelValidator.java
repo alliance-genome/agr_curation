@@ -16,13 +16,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator<AffectedGenomicModel> {
 
-	@Inject
-	AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
-	
+	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject CrossReferenceDAO crossReferenceDAO;
+
 	private String errorMessage;
 
 	public AffectedGenomicModel validateAffectedGenomicModelUpdate(AffectedGenomicModel uiEntity) {
@@ -40,27 +37,27 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 			addMessageResponse("id", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
-		
+
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, false);
-		
+
 		return validateAffectedGenomicModel(uiEntity, dbEntity);
 	}
-	
+
 	public AffectedGenomicModel validateAffectedGenomicModelCreate(AffectedGenomicModel uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not create AGM";
 
 		AffectedGenomicModel dbEntity = new AffectedGenomicModel();
-		
+
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, true);
-		
+
 		return validateAffectedGenomicModel(uiEntity, dbEntity);
 	}
-	
+
 	private AffectedGenomicModel validateAffectedGenomicModel(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
 
 		dbEntity = (AffectedGenomicModel) validateGenomicEntityFields(uiEntity, dbEntity);
-		
+
 		String name = handleStringField(uiEntity.getName());
 		dbEntity.setName(name);
 
@@ -74,7 +71,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 
 		return dbEntity;
 	}
-	
+
 	public VocabularyTerm validateSubtype(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
 		String field = "subtype";
 		if (uiEntity.getSubtype() == null) {

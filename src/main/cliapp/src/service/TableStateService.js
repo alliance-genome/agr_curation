@@ -102,7 +102,7 @@ const modTableSettings = {
 			],
 			filters: {
 				obsoleteFilter: {
-					obsolete: { queryString: "false", tokenOperator: "OR" }
+					obsolete: { queryString: "false" }
 				},
 				dataProviderFilter: {
 					"dataProvider.sourceOrganization.abbreviation": { queryString: "FB", tokenOperator: "AND" },
@@ -191,7 +191,7 @@ const modTableSettings = {
 					"dataProvider.sourceOrganization.shortName": { queryString: "MGI", tokenOperator: "AND" }
 				},
 				obsoleteFilter: {
-					obsolete: { queryString: "false", tokenOperator: "OR" }
+					obsolete: { queryString: "false" }
 				}
 			},
 			tableKeyName: "DiseaseAnnotations",

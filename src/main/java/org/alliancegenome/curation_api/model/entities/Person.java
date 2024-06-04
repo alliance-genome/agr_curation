@@ -36,7 +36,7 @@ import lombok.ToString;
 		@Index(name = "person_createdby_index", columnList = "createdBy_id"), 
 		@Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
 		@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
-		@Index(name = "person_allianceMember_index", columnList = "allianceMember_id"),
+		@Index(name = "person_allianceMember_index", columnList = "allianceMember_id")
 })
 public class Person extends Agent {
 

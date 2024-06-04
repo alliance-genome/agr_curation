@@ -26,9 +26,9 @@ import io.restassured.config.RestAssuredConfig;
 @DisplayName("503 - NCBITaxonTermITCase")
 @Order(503)
 public class NCBITaxonTermITCase {
-	private String VALID_TAXON_CURIE = "NCBITaxon:1";
-	private String INVALID_TAXON_PREFIX = "NCBI:1";
-	private String INVALID_TAXON_SUFFIX = "NCBITaxon:0";
+	private static final String VALID_TAXON_CURIE = "NCBITaxon:1";
+	private static final String INVALID_TAXON_PREFIX = "NCBI:1";
+	private static final String INVALID_TAXON_SUFFIX = "NCBITaxon:0";
 	
 	@BeforeEach
 	public void init() {

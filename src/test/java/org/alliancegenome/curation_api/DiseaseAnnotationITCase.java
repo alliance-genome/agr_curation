@@ -49,9 +49,9 @@ import io.restassured.RestAssured;
 @Order(304)
 public class DiseaseAnnotationITCase extends BaseITCase {
 
-	private final String GENE_DISEASE_ANNOTATION = "GeneDisease:0001";
-	private final String ALLELE_DISEASE_ANNOTATION = "AlleleDisease:0001";
-	private final String AGM_DISEASE_ANNOTATION = "AgmDisease:0001";
+	private static final String GENE_DISEASE_ANNOTATION = "GeneDisease:0001";
+	private static final String ALLELE_DISEASE_ANNOTATION = "AlleleDisease:0001";
+	private static final String AGM_DISEASE_ANNOTATION = "AgmDisease:0001";
 	
 	private DOTerm doTerm;
 	private DOTerm doTerm2;
@@ -175,14 +175,14 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseQualifier = getVocabularyTerm(diseaseQualifierVocabulary, "severity");
 		diseaseQualifier2 = createVocabularyTerm(diseaseQualifierVocabulary, "onset", false);
 		obsoleteDiseaseQualifier = createVocabularyTerm(diseaseQualifierVocabulary, "obsolete_qualifier", true);
-		geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite", false);
-		geneticSex2 = getVocabularyTerm(geneticSexVocabulary,"female");
+		geneticSex = createVocabularyTerm(geneticSexVocabulary, "hermaphrodite", false);
+		geneticSex2 = getVocabularyTerm(geneticSexVocabulary, "female");
 		obsoleteGeneticSex = createVocabularyTerm(geneticSexVocabulary, "obsolete_sex", true);
 		diseaseGeneticModifierRelation = getVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "ameliorated_by");
 		diseaseGeneticModifierRelation2 = getVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "exacerbated_by");
 		obsoleteDiseaseGeneticModifierRelation = createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "obsolete_modifier_relation", true);
-		annotationType = getVocabularyTerm(annotationTypeVocabulary,"computational");
-		annotationType2 = getVocabularyTerm(annotationTypeVocabulary,"manually_curated");
+		annotationType = getVocabularyTerm(annotationTypeVocabulary, "computational");
+		annotationType2 = getVocabularyTerm(annotationTypeVocabulary, "manually_curated");
 		obsoleteAnnotationType = createVocabularyTerm(annotationTypeVocabulary, "obsolete_annotation_type", true);
 		person = createPerson("TEST:Person0001");
 		noteType = getVocabularyTerm(noteTypeVocabulary, "disease_note");

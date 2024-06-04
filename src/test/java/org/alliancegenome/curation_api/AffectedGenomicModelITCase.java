@@ -37,7 +37,7 @@ import io.restassured.RestAssured;
 @Order(303)
 public class AffectedGenomicModelITCase extends BaseITCase {
 
-	private final String AGM = "AGM:0001";
+	private static final String AGM = "AGM:0001";
 	
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
@@ -113,7 +113,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	@Order(2)
 	public void editAGM() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
-		agm.setName("AGM edited");;
+		agm.setName("AGM edited");
 		agm.setTaxon(taxon2);
 		agm.setInternal(true);
 		agm.setObsolete(true);

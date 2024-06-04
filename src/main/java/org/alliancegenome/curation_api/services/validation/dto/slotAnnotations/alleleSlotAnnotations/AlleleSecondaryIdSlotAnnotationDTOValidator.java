@@ -13,8 +13,9 @@ public class AlleleSecondaryIdSlotAnnotationDTOValidator extends SecondaryIdSlot
 	public ObjectResponse<AlleleSecondaryIdSlotAnnotation> validateAlleleSecondaryIdSlotAnnotationDTO(AlleleSecondaryIdSlotAnnotation annotation, SecondaryIdSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleSecondaryIdSlotAnnotation> asidResponse = new ObjectResponse<AlleleSecondaryIdSlotAnnotation>();
 
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new AlleleSecondaryIdSlotAnnotation();
+		}
 
 		ObjectResponse<AlleleSecondaryIdSlotAnnotation> saResponse = validateSecondaryIdSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();

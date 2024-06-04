@@ -36,7 +36,7 @@ import lombok.ToString;
 	indexes = {
 		@Index(name = "bulkloadfilehistory_bulkLoadFile_index", columnList = "bulkLoadFile_id"),
 		@Index(name = "bulkloadfilehistory_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "bulkloadfilehistory_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "bulkloadfilehistory_updatedby_index", columnList = "updatedBy_id")
 	}
 )
 public class BulkLoadFileHistory extends AuditedObject {
@@ -48,22 +48,22 @@ public class BulkLoadFileHistory extends AuditedObject {
 	private LocalDateTime loadFinished;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long totalRecords = 0l;
+	private Long totalRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long failedRecords = 0l;
+	private Long failedRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long completedRecords = 0l;
+	private Long completedRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long totalDeleteRecords = 0l;
+	private Long totalDeleteRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long deletedRecords = 0l;
+	private Long deletedRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long deleteFailedRecords = 0l;
+	private Long deleteFailedRecords = 0L;
 	
 	@JsonView({ View.FieldsOnly.class })
 	private Double errorRate = 0.0;
@@ -83,7 +83,7 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	@Transient
 	public void incrementCompleted() {
-		if(errorRate > 0) {
+		if (errorRate > 0) {
 			errorRate -= 1d / 1000d;
 		}
 		completedRecords++;

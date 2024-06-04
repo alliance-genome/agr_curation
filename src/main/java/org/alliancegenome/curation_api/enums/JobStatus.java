@@ -29,20 +29,26 @@ public enum JobStatus {
 	}
 
 	public JobStatus getNextStatus() {
-		if (this == JobStatus.FORCED_PENDING)
+		if (this == JobStatus.FORCED_PENDING) {
 			return JobStatus.FORCED_STARTED;
-		if (this == JobStatus.FORCED_STARTED)
+		}
+		if (this == JobStatus.FORCED_STARTED) {
 			return JobStatus.FORCED_RUNNING;
+		}
 
-		if (this == JobStatus.SCHEDULED_PENDING)
+		if (this == JobStatus.SCHEDULED_PENDING) {
 			return JobStatus.SCHEDULED_STARTED;
-		if (this == JobStatus.SCHEDULED_STARTED)
+		}
+		if (this == JobStatus.SCHEDULED_STARTED) {
 			return JobStatus.SCHEDULED_RUNNING;
+		}
 
-		if (this == JobStatus.MANUAL_PENDING)
+		if (this == JobStatus.MANUAL_PENDING) {
 			return JobStatus.MANUAL_STARTED;
-		if (this == JobStatus.MANUAL_STARTED)
+		}
+		if (this == JobStatus.MANUAL_STARTED) {
 			return JobStatus.MANUAL_RUNNING;
+		}
 
 		return FAILED;
 	}

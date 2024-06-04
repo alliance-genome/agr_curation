@@ -26,18 +26,14 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class ReportScheduler {
 
-	@Inject
-	EventBus bus;
+	@Inject EventBus bus;
 
-	@Inject
-	CurationReportGroupDAO curationReportGroupDAO;
-	@Inject
-	CurationReportDAO curationReportDAO;
+	@Inject CurationReportGroupDAO curationReportGroupDAO;
+	@Inject CurationReportDAO curationReportDAO;
 
-	@ConfigProperty(name = "reports.schedulingEnabled")
-	Boolean schedulingEnabled;
+	@ConfigProperty(name = "reports.schedulingEnabled") Boolean schedulingEnabled;
 
-	private ZonedDateTime lastCheck = null;
+	private ZonedDateTime lastCheck;
 
 	@PostConstruct
 	public void init() {
@@ -63,7 +59,7 @@ public class ReportScheduler {
 		}
 	}
 
-	//@Scheduled(every = "1s")
+	// @Scheduled(every = "1s")
 	public void scheduleGroupJobs() {
 		if (schedulingEnabled) {
 			ZonedDateTime start = ZonedDateTime.now();
@@ -105,13 +101,14 @@ public class ReportScheduler {
 		}
 	}
 
-	//@Scheduled(every = "1s")
+	// @Scheduled(every = "1s")
 	public void runGroupJobs() {
 		SearchResponse<CurationReportGroup> reportGroups = curationReportGroupDAO.findAll();
 		for (CurationReportGroup group : reportGroups.getResults()) {
 			for (CurationReport cr : group.getCurationReports()) {
-				if (cr.getCurationReportStatus() == null)
+				if (cr.getCurationReportStatus() == null) {
 					cr.setCurationReportStatus(JobStatus.FINISHED);
+				}
 				if (cr.getCurationReportStatus().isPending()) {
 					cr.setCurationReportStatus(cr.getCurationReportStatus().getNextStatus());
 					curationReportDAO.merge(cr);

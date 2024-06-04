@@ -11,8 +11,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class BulkLoadFileExceptionService extends BaseEntityCrudService<BulkLoadFileException, BulkLoadFileExceptionDAO> {
 
-	@Inject
-	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
+	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 
 	@Override
 	@PostConstruct

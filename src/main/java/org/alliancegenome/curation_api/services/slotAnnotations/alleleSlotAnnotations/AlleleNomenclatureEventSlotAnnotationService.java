@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleNomenclatureEventSlotAnnotationService extends BaseEntityCrudService<AlleleNomenclatureEventSlotAnnotation, AlleleNomenclatureEventSlotAnnotationDAO> {
 
-	@Inject
-	AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
-	@Inject
-	AlleleNomenclatureEventSlotAnnotationValidator alleleNomenclatureEventValidator;
+	@Inject AlleleNomenclatureEventSlotAnnotationDAO alleleNomenclatureEventDAO;
+	@Inject AlleleNomenclatureEventSlotAnnotationValidator alleleNomenclatureEventValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleNomenclatureEventSlotAnnotationService extends BaseEntityCrud
 	@Transactional
 	public ObjectResponse<AlleleNomenclatureEventSlotAnnotation> upsert(AlleleNomenclatureEventSlotAnnotation uiEntity) {
 		AlleleNomenclatureEventSlotAnnotation dbEntity = alleleNomenclatureEventValidator.validateAlleleNomenclatureEventSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleNomenclatureEventSlotAnnotation>(alleleNomenclatureEventDAO.persist(dbEntity));
 	}
 

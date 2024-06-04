@@ -11,8 +11,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneToGeneOrthologyCuratedService extends BaseEntityCrudService<GeneToGeneOrthologyCurated, GeneToGeneOrthologyCuratedDAO> {
 
-	@Inject
-	GeneToGeneOrthologyCuratedDAO geneToGeneOrthologyCuratedDAO;
+	@Inject GeneToGeneOrthologyCuratedDAO geneToGeneOrthologyCuratedDAO;
 
 	@Override
 	@PostConstruct

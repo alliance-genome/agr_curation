@@ -32,17 +32,11 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationValidator<ConstructComponentSlotAnnotation> {
 
-	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	NoteValidator noteValidator;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	
+	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject NoteValidator noteValidator;
+	@Inject NoteDAO noteDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<ConstructComponentSlotAnnotation> validateConstructComponentSlotAnnotation(ConstructComponentSlotAnnotation uiEntity) {
 		ConstructComponentSlotAnnotation component = validateConstructComponentSlotAnnotation(uiEntity, false, false);
@@ -76,22 +70,22 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 			Construct singleConstruct = validateSingleConstruct(uiEntity.getSingleConstruct(), dbEntity.getSingleConstruct());
 			dbEntity.setSingleConstruct(singleConstruct);
 		}
-		
+
 		String componentSymbol = validateComponentSymbol(uiEntity);
 		dbEntity.setComponentSymbol(componentSymbol);
-		
+
 		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
-		
+
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
-		
+
 		if (StringUtils.isNotBlank(uiEntity.getTaxonText())) {
 			dbEntity.setTaxonText(uiEntity.getTaxonText());
 		} else {
 			dbEntity.setTaxonText(null);
 		}
-		
+
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
 		dbEntity.setRelatedNotes(relatedNotes);
 
@@ -106,17 +100,17 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 
 		return dbEntity;
 	}
-	
+
 	public String validateComponentSymbol(ConstructComponentSlotAnnotation uiEntity) {
 		String field = "componentSymbol";
 		if (StringUtils.isBlank(uiEntity.getComponentSymbol())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		return uiEntity.getComponentSymbol();
 	}
-	
+
 	private VocabularyTerm validateRelation(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
 		String field = "relation";
 		if (uiEntity.getRelation() == null) {
@@ -138,26 +132,27 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 
 		return relation;
 	}
-	
+
 	public NCBITaxonTerm validateTaxon(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
 		String field = "taxon";
-		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie()))
+		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie())) {
 			return null;
-		
+		}
+
 		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(uiEntity.getTaxon().getCurie()).getEntity();
 		if (taxon == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		
+
 		if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
+
 		return taxon;
 	}
-	
+
 	public List<Note> validateRelatedNotes(ConstructComponentSlotAnnotation uiEntity, ConstructComponentSlotAnnotation dbEntity) {
 		String field = "relatedNotes";
 
@@ -171,7 +166,7 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 					return null;
 				}
 				note = noteResponse.getEntity();
-				
+
 				String noteIdentity = NoteIdentityHelper.noteIdentity(note);
 				if (validatedNoteIdentities.contains(noteIdentity)) {
 					addMessageResponse(field, ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")");
@@ -183,11 +178,13 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 		}
 
 		List<Long> previousNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
 			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
+		}
 		List<Long> validatedNoteIds = new ArrayList<Long>();
-		if (CollectionUtils.isNotEmpty(validatedNotes))
+		if (CollectionUtils.isNotEmpty(validatedNotes)) {
 			validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
+		}
 		for (Note validatedNote : validatedNotes) {
 			if (!previousNoteIds.contains(validatedNote.getId())) {
 				noteDAO.persist(validatedNote);
@@ -198,8 +195,9 @@ public class ConstructComponentSlotAnnotationValidator extends SlotAnnotationVal
 			constructComponentDAO.deleteAttachedNote(id);
 		}
 
-		if (CollectionUtils.isEmpty(validatedNotes))
+		if (CollectionUtils.isEmpty(validatedNotes)) {
 			return null;
+		}
 
 		return validatedNotes;
 	}

@@ -43,7 +43,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "Reference", description = "POJO that represents the Reference")
-@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {InformationContentEntity.class}, partial = true)
+@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { InformationContentEntity.class }, partial = true)
 public class Reference extends InformationContentEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -51,17 +51,17 @@ public class Reference extends InformationContentEntity {
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
-		@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")
-	})
-	@EqualsAndHashCode.Include
-	private List<CrossReference> crossReferences;
+	@JoinTable(
+		indexes = {
+			@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
+			@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")
+		}
+	)
+	@EqualsAndHashCode.Include private List<CrossReference> crossReferences;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	private String shortCitation;
+	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer") private String shortCitation;
 
 	/**
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
@@ -69,18 +69,20 @@ public class Reference extends InformationContentEntity {
 	@Transient
 	@JsonIgnore
 	public String getReferenceID() {
-		if (CollectionUtils.isEmpty(getCrossReferences()))
+		if (CollectionUtils.isEmpty(getCrossReferences())) {
 			return null;
-		
+		}
+
 		for (String prefix : ReferenceConstants.primaryXrefOrder) {
 			Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith(prefix + ":")).findFirst();
-			if (opt.isPresent())
+			if (opt.isPresent()) {
 				return opt.map(CrossReference::getReferencedCurie).orElse(null);
+			}
 		}
-		
+
 		List<String> referencedCuries = getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toList());
 		Collections.sort(referencedCuries);
-		
+
 		return referencedCuries.get(0);
 	}
 }

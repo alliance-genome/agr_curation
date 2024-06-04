@@ -20,17 +20,15 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneMolecularInteraction, GeneMolecularInteractionDAO> implements BaseUpsertServiceInterface<GeneMolecularInteraction, PsiMiTabDTO> {
 
-	@Inject
-	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
-	@Inject
-	GeneMolecularInteractionFmsDTOValidator geneMolInteractionValidator;
-	
+	@Inject GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	@Inject GeneMolecularInteractionFmsDTOValidator geneMolInteractionValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneMolecularInteractionDAO);
 	}
-	
+
 	public ObjectResponse<GeneMolecularInteraction> getByIdentifier(String identifier) {
 		return new ObjectResponse<>(findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier));
 	}
