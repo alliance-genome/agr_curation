@@ -7,12 +7,12 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.SQTR;
+import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.sqtrSlotAnnotations.SQTRSecondaryIdSlotAnnotation;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.SQTRFmsDTO;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.sqtrSlotAnnotations.SequenceTargetingReagentSecondaryIdSlotAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,16 +24,16 @@ import jakarta.inject.Inject;
 
 
 @RequestScoped
-public class SQTRFmsDTOValidator {
+public class SequenceTargetingReagentFmsDTOValidator {
 	@Inject
 	DataProviderService dataProviderService;
 
-	public SQTR validateSQTRFmsDTO (SQTRFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
-		ObjectResponse<SQTR> sqtrResponse = new ObjectResponse<>();
+	public SequenceTargetingReagent validateSQTRFmsDTO (SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
+		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 		
-		SQTR sqtr = new SQTR();
+		SequenceTargetingReagent sqtr = new SequenceTargetingReagent();
 
-		//TODO: does this need to look up the name in order to update or ensure uniqueness?
+		//TODO: does this need to look up the id in order to update or ensure uniqueness?
 		if (StringUtils.isBlank(dto.getPrimaryId())) {
 			sqtrResponse.addErrorMessage("primaryId", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -45,7 +45,7 @@ public class SQTRFmsDTOValidator {
 		if (StringUtils.isBlank(dto.getName())) {
 			sqtrResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			sqtr.setName(dto.getName());
+			// sqtr.setName(dto.getName());
 		}
 
 		if (StringUtils.isNotBlank(dto.getTaxonId())) {
@@ -63,23 +63,23 @@ public class SQTRFmsDTOValidator {
 					synonyms.add(synonym);
 				}
 			}
-			sqtr.setSynonyms(synonyms);	
+			// sqtr.setSynonyms(synonyms);	
 		} else {
-			sqtr.setSynonyms(null);	
+			// sqtr.setSynonyms(null);	
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getSecondaryIds())) {
 			List<SecondaryIdSlotAnnotation> secondaryIds = new ArrayList<>();
 			for (String secondaryId : dto.getSecondaryIds()) {
 				if (StringUtils.isNotBlank(secondaryId)) {
-					SecondaryIdSlotAnnotation secondaryIdSlotAnnotation = new SQTRSecondaryIdSlotAnnotation();
+					SecondaryIdSlotAnnotation secondaryIdSlotAnnotation = new SequenceTargetingReagentSecondaryIdSlotAnnotation();
 					secondaryIdSlotAnnotation.setSecondaryId(secondaryId);
 					secondaryIds.add(secondaryIdSlotAnnotation);
 				}
 			}
-			sqtr.setSecondaryIdentifiers(secondaryIds);	
+			// sqtr.setSecondaryIdentifiers(secondaryIds);	
 		} else {
-			sqtr.setSecondaryIdentifiers(null);	
+			// sqtr.setSecondaryIdentifiers(null);	
 		}
 
 		sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));

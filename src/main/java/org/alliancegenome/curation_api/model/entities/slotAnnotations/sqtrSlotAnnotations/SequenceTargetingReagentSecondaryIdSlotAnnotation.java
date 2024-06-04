@@ -21,9 +21,8 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.7.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
-@Schema(name = "SQTRSecondaryIdSlotAnnotation", description = "POJO representing a SQTR secondary ID slot annotation")
-@Table(indexes = { @Index(name = "sqtrsecondaryid_singlesqtr_index", columnList = "singlesqtr_id"), })
-public class SQTRSecondaryIdSlotAnnotation extends SecondaryIdSlotAnnotation {
+@Schema(name = "SequenceTargetingReagentSecondaryIdSlotAnnotation", description = "POJO representing a SQTR secondary ID slot annotation")
+public class SequenceTargetingReagentSecondaryIdSlotAnnotation extends SecondaryIdSlotAnnotation {
 
 	@ManyToOne
 	@JsonBackReference

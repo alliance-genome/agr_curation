@@ -10,58 +10,58 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.SQTR;
+import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.SQTRFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.SQTRIngestFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.SQTRService;
+import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+@ApplicationScoped
+public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
+	@Inject SequenceTargetingReagentService sqtrService;
 
-public class SQTRExecutor extends LoadFileExecutor {
-	@Inject
-	SQTRService sqtrService;
-
-	public void execLoad(BulkLoadFile bulkLoadFile, Boolean cleanUp) {
+	public void execLoad(BulkLoadFile bulkLoadFile) {
 
 		try {
 
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
 
-			SQTRIngestFmsDTO sqtrData = mapper.readValue(
-					new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), SQTRIngestFmsDTO.class);
-			bulkLoadFile.setRecordCount(sqtrData.getData().size());
+			SequenceTargetingReagentIngestFmsDTO sqtrIngestFmsDTO = mapper.readValue(
+					new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), SequenceTargetingReagentIngestFmsDTO.class);
+			bulkLoadFile.setRecordCount(sqtrIngestFmsDTO.getData().size());
 
-			AGRCurationSchemaVersion version = SQTR.class.getAnnotation(AGRCurationSchemaVersion.class);
+			AGRCurationSchemaVersion version = SequenceTargetingReagent.class.getAnnotation(AGRCurationSchemaVersion.class);
 			bulkLoadFile.setLinkMLSchemaVersion(version.max());
-			if (sqtrData.getMetaData() != null && StringUtils.isNotBlank(sqtrData.getMetaData().getRelease()))
-				bulkLoadFile.setAllianceMemberReleaseVersion(sqtrData.getMetaData().getRelease());
+			if (sqtrIngestFmsDTO.getMetaData() != null && StringUtils.isNotBlank(sqtrIngestFmsDTO.getMetaData().getRelease()))
+				bulkLoadFile.setAllianceMemberReleaseVersion(sqtrIngestFmsDTO.getMetaData().getRelease());
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
 			List<Long> sqtrIdsLoaded = new ArrayList<>();
 			List<Long> sqtrIdsBefore = new ArrayList<>();
-			if (cleanUp) {
-				sqtrIdsBefore.addAll(sqtrService.getIdsByDataProvider(dataProvider.name()));
-				Log.debug("runLoad: Before: total " + sqtrIdsBefore.size());
-			}
+			// if (cleanUp) {
+			// 	sqtrIdsBefore.addAll(sqtrService.getIdsByDataProvider(dataProvider.name()));
+			// 	Log.debug("runLoad: Before: total " + sqtrIdsBefore.size());
+			// }
 
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrData.getData().size());
+			BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrIngestFmsDTO.getData().size());
 
-			runLoad(sqtrService, history, dataProvider, sqtrData.getData(), sqtrIdsLoaded);
+			runLoad(sqtrService, history, dataProvider, sqtrIngestFmsDTO.getData(), sqtrIdsLoaded);
 			
 			//TODO: no idea if this is the write overload
-			runCleanup(sqtrService, history, bulkLoadFile, sqtrIdsBefore, sqtrIdsLoaded);
+			// runCleanup(sqtrService, history, bulkLoadFile, sqtrIdsBefore, sqtrIdsLoaded);
 			
 			history.finishLoad();
 			

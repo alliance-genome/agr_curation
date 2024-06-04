@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SQTRFmsDTO extends BaseDTO {
+public class SequenceTargetingReagentFmsDTO extends BaseDTO {
 	private String primaryId;
 	private String name;
 	private String taxonId;

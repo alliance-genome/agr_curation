@@ -9,8 +9,8 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SQTRIngestFmsDTO extends BaseDTO {
+public class SequenceTargetingReagentIngestFmsDTO extends BaseDTO {
 
 	private MetaDataFmsDTO metaData;
-	private List<SQTRFmsDTO> data;
+	private List<SequenceTargetingReagentFmsDTO> data;
 }
