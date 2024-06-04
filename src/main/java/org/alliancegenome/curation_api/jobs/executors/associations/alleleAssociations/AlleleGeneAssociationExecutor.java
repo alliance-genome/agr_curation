@@ -51,12 +51,10 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(associations.size());
 		createHistory(history, bulkLoadFile);
-
 		boolean success = runLoad(alleleGeneAssociationService, history, dataProvider, associations, associationIdsLoaded);
 		if (success && cleanUp) {
 			runCleanup(alleleGeneAssociationService, history, dataProvider.name(), associationIdsBefore, associationIdsLoaded, bulkLoadFile.getMd5Sum());
 		}
-
 		history.finishLoad();
 		finalSaveHistory(history);
 	}
