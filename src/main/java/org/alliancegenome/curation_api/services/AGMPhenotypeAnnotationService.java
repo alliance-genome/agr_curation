@@ -55,9 +55,12 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 	}
 	
 	@Transactional
-	public void addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, idsAdded, dataProvider);
-		agmPhenotypeAnnotationDAO.persist(annotation);
+	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider);
+		for (AGMPhenotypeAnnotation annotation : annotations) {
+			agmPhenotypeAnnotationDAO.persist(annotation);
+		}
+		return annotations;
 	}
 
 	@Override

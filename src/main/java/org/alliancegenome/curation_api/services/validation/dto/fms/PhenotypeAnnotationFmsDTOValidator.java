@@ -3,13 +3,17 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -21,6 +25,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFms
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
@@ -163,6 +168,57 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		xref.setResourceDescriptorPage(page);
 		
 		return xref;
+	}
+	
+	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectIdentifier, String refString) {
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("phenotypeAnnotationSubject.modEntityId", primaryAnnotationSubjectIdentifier);
+		if (StringUtils.isNotBlank(dto.getPhenotypeStatement())) {
+			params.put("phenotypeAnnotationObject", dto.getPhenotypeStatement());
+		} else {
+			return null;
+		}
+		if (StringUtils.isNotBlank(refString)) {
+			params.put("singleReference.curie", refString);
+		} else {
+			return null;
+		}
+		
+		SearchResponse<E> searchResponse = dao.findByParams(params);
+		if (searchResponse == null || CollectionUtils.isEmpty(searchResponse.getResults())) {
+			return null;
+		}
+		
+		String secondaryPhenotypeTermIdString = "";
+		if (CollectionUtils.isNotEmpty(dto.getPhenotypeTermIdentifiers())) {
+			secondaryPhenotypeTermIdString = getPhenotypeTermIdString(dto.getPhenotypeTermIdentifiers().stream().map(PhenotypeTermIdentifierFmsDTO::getTermId).collect(Collectors.toList()));
+		}
+		
+		List<E> primaryAnnotations = new ArrayList<>();
+		for (E possiblePrimaryAnnotation : searchResponse.getResults()) {
+			String primaryPhenotypeTermIdString = "";
+			if (CollectionUtils.isNotEmpty(possiblePrimaryAnnotation.getPhenotypeTerms())) {
+				primaryPhenotypeTermIdString = getPhenotypeTermIdString(possiblePrimaryAnnotation.getPhenotypeTerms().stream().map(PhenotypeTerm::getCurie).collect(Collectors.toList()));
+			}
+			if (primaryPhenotypeTermIdString.equals(secondaryPhenotypeTermIdString)) {
+				primaryAnnotations.add(possiblePrimaryAnnotation);
+			}
+		}
+		if (CollectionUtils.isEmpty(primaryAnnotations)) {
+			return null;
+		}
+		
+		return primaryAnnotations;
+	}
+	
+	private String getPhenotypeTermIdString(List<String> identifiers) {
+		if (CollectionUtils.isNotEmpty(identifiers)) {
+			Collections.sort(identifiers);
+		} else {
+			return "";
+		}
+		
+		return String.join("|", identifiers);
 	}
 
 }

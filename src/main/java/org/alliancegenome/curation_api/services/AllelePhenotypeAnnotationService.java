@@ -55,9 +55,12 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 	}
 	
 	@Transactional
-	public void addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, idsAdded, dataProvider);
-		allelePhenotypeAnnotationDAO.persist(annotation);
+	public List<AllelePhenotypeAnnotation> addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		List<AllelePhenotypeAnnotation> annotations = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider);
+		for (AllelePhenotypeAnnotation annotation : annotations) {
+			allelePhenotypeAnnotationDAO.persist(annotation);
+		}
+		return annotations;
 	}
 
 	@Override
