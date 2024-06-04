@@ -69,6 +69,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return ret;
 	}
 
+	@Override
 	@Transactional
 	public PhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecateAnnotation) {
 		PhenotypeAnnotation annotation = phenotypeAnnotationDAO.find(id);
@@ -124,8 +125,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			params.put(EntityFieldConstants.PA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		}
 
-		List<Long> annotationIds = dao.findFilteredIds(params);
-
+		List<Long> annotationIds = dao.findIdsByParams(params);
 		return annotationIds;
 	}
 

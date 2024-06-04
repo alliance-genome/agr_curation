@@ -87,6 +87,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		return ret;
 	}
 
+	@Override
 	@Transactional
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		Gene gene = geneDAO.find(id);
@@ -158,7 +159,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 		}
-		List<Long> ids = geneDAO.findFilteredIds(params);
+		List<Long> ids = geneDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 
 		return ids;

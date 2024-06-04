@@ -99,14 +99,14 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 			params.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		}
 
-		List<Long> annotationIds = dao.findFilteredIds(params);
+		List<Long> annotationIds = dao.findIdsByParams(params);
 		annotationIds.removeIf(Objects::isNull);
 
 		if (StringUtils.equals(dataProvider.toString(), "HUMAN")) {
 			Map<String, Object> newParams = new HashMap<>();
 			newParams.put(EntityFieldConstants.SECONDARY_DATA_PROVIDER, dataProvider.sourceOrganization);
 			newParams.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-			List<Long> additionalIds = dao.findFilteredIds(newParams);
+			List<Long> additionalIds = dao.findIdsByParams(newParams);
 			annotationIds.addAll(additionalIds);
 		}
 

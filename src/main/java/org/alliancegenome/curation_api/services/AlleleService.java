@@ -135,7 +135,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
-		List<Long> ids = alleleDAO.findFilteredIds(params);
+		List<Long> ids = alleleDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
 	}

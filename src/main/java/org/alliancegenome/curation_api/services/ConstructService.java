@@ -140,7 +140,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	public List<Long> getConstructIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<Long> constructIds = constructDAO.findFilteredIds(params);
+		List<Long> constructIds = constructDAO.findIdsByParams(params);
 		constructIds.removeIf(Objects::isNull);
 
 		return constructIds;
