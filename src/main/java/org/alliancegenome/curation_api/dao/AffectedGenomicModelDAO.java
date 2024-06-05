@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -21,24 +22,33 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		super(AffectedGenomicModel.class);
 	}
 	
-	public List<Long> findReferencingDiseaseAnnotations(Long agmId) {
+	public Boolean hasReferencingDiseaseAnnotations(Long agmId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("diseaseAnnotationSubject.id", agmId);
 		List<Long> results = agmDiseaseAnnotationDAO.findIdsByParams(params);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
 		
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put("diseaseGeneticModifiers.id", agmId);
-		results.addAll(diseaseAnnotationDAO.findIdsByParams(dgmParams));
+		results = diseaseAnnotationDAO.findIdsByParams(dgmParams);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
 
-		return results;
+		return false;
 	}
 	
-	public List<Long> findReferencingPhenotypeAnnotations(Long agmId) {
+	public Boolean hasReferencingPhenotypeAnnotations(Long agmId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("phenotypeAnnotationSubject.id", agmId);
 		List<Long> results = agmPhenotypeAnnotationDAO.findIdsByParams(params);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
 
-		return results;
+		return false;
 	}
 
 }

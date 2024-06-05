@@ -77,31 +77,8 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		AffectedGenomicModel agm = agmDAO.find(id);
 		if (agm != null) {
-			List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(id);
-			Boolean anyReferencingEntities = false;
-			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null) {
-					anyReferencingEntities = true;
-				}
-			}
-			List<Long> referencingPAIds = agmDAO.findReferencingPhenotypeAnnotations(id);
-			for (Long paId : referencingPAIds) {
-				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
-				if (referencingPA != null) {
-					anyReferencingEntities = true;
-				}
-			}
-			if (CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
-				for (ConstructGenomicEntityAssociation association : agm.getConstructGenomicEntityAssociations()) {
-					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null) {
-						anyReferencingEntities = true;
-					}
-				}
-			}
-
-			if (anyReferencingEntities) {
+			if (agmDAO.hasReferencingDiseaseAnnotations(id) || agmDAO.hasReferencingPhenotypeAnnotations(id) ||
+					CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
 				if (!agm.getObsolete()) {
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 					agm.setDateUpdated(OffsetDateTime.now());

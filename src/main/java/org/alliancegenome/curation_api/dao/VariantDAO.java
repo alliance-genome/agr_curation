@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Variant;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -19,10 +20,14 @@ public class VariantDAO extends BaseSQLDAO<Variant> {
 		super(Variant.class);
 	}
 
-	public List<Long> findReferencingDiseaseAnnotationIds(Long variantId) {
+	public Boolean hasReferencingDiseaseAnnotationIds(Long variantId) {
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put("diseaseGeneticModifiers.id", variantId);
 		List<Long> results = diseaseAnnotationDAO.findIdsByParams(dgmParams);
-		return results;
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
+		
+		return false;
 	}
 }

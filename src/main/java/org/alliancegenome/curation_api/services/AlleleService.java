@@ -85,39 +85,9 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		Allele allele = alleleDAO.find(id);
 		if (allele != null) {
-			List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(id);
-			Boolean anyReferencingEntities = false;
-			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null) {
-					anyReferencingEntities = true;
-				}
-			}
-
-			List<Long> referencingPAIds = alleleDAO.findReferencingPhenotypeAnnotations(id);
-			for (Long paId : referencingPAIds) {
-				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
-				if (referencingPA != null) {
-					anyReferencingEntities = true;
-				}
-			}
-			if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
-				for (AlleleGeneAssociation association : allele.getAlleleGeneAssociations()) {
-					association = alleleGeneAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null) {
-						anyReferencingEntities = true;
-					}
-				}
-			}
-			if (CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
-				for (ConstructGenomicEntityAssociation association : allele.getConstructGenomicEntityAssociations()) {
-					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null) {
-						anyReferencingEntities = true;
-					}
-				}
-			}
-			if (anyReferencingEntities) {
+			if (alleleDAO.hasReferencingDiseaseAnnotationIds(id) || alleleDAO.hasReferencingPhenotypeAnnotations(id) ||
+					CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations()) ||
+					CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
 				if (!allele.getObsolete()) {
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 					allele.setDateUpdated(OffsetDateTime.now());

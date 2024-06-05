@@ -92,59 +92,16 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		Gene gene = geneDAO.find(id);
 		if (gene != null) {
-			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(id);
-			Boolean anyReferencingEntities = false;
-			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null) {
-					anyReferencingEntities = true;
+			if (geneDAO.hasReferencingDiseaseAnnotations(id) || geneDAO.hasReferencingPhenotypeAnnotations(id) ||
+					geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id) ||
+					CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations()) ||
+					CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
+				if (!gene.getObsolete()) {
+					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+					gene.setDateUpdated(OffsetDateTime.now());
+					gene.setObsolete(true);
+					geneDAO.persist(gene);
 				}
-			}
-
-			List<Long> referencingPAIds = geneDAO.findReferencingPhenotypeAnnotations(id);
-			for (Long paId : referencingPAIds) {
-				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
-				if (referencingPA != null) {
-					anyReferencingEntities = true;
-				}
-			}
-
-			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(id);
-			for (Long orthId : referencingOrthologyPairs) {
-				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
-				if (referencingOrthoPair != null) {
-					anyReferencingEntities = true;
-				}
-			}
-			List<Long> referencingInteractions = geneDAO.findReferencingInteractions(id);
-			for (Long interactionId : referencingInteractions) {
-				GeneInteraction referencingInteraction = geneInteractionService.deprecateOrDeleteInteraction(interactionId, false, loadDescription, true);
-				if (referencingInteraction != null) {
-					anyReferencingEntities = true;
-				}
-			}
-			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
-				for (AlleleGeneAssociation association : gene.getAlleleGeneAssociations()) {
-					association = alleleGeneAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null) {
-						anyReferencingEntities = true;
-					}
-				}
-			}
-			if (CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
-				for (ConstructGenomicEntityAssociation association : gene.getConstructGenomicEntityAssociations()) {
-					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null) {
-						anyReferencingEntities = true;
-					}
-				}
-			}
-
-			if (anyReferencingEntities) {
-				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-				gene.setDateUpdated(OffsetDateTime.now());
-				gene.setObsolete(true);
-				geneDAO.persist(gene);
 			} else {
 				geneDAO.remove(id);
 			}

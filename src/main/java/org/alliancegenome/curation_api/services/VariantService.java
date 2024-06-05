@@ -63,15 +63,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
 		Variant variant = variantDAO.find(id);
 		if (variant != null) {
-			List<Long> referencingDAIds = variantDAO.findReferencingDiseaseAnnotationIds(id);
-			Boolean anyReferencingEntities = false;
-			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null) {
-					anyReferencingEntities = true;
-				}
-			}
-			if (anyReferencingEntities) {
+			if (variantDAO.hasReferencingDiseaseAnnotationIds(id)) {
 				if (!variant.getObsolete()) {
 					variant.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 					variant.setDateUpdated(OffsetDateTime.now());
