@@ -209,7 +209,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		return restrictions;
 	}
 
-	public List<Long> findFilteredIds(Map<String, Object> params) {
+	public List<Long> findIdsByParams(Map<String, Object> params) {
 		Logger.Level level = Level.DEBUG;
 		if (params.containsKey("debug")) {
 			level = params.remove("debug").equals("true") ? Level.INFO : Level.DEBUG;
@@ -219,10 +219,21 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		CriteriaQuery<Long> query = builder.createQuery(Long.class);
 		Root<E> root = query.from(myClass);
 
+		Operator queryOperator = Operator.AND;
+		if (params.containsKey("query_operator")) {
+			queryOperator = params.remove("query_operator").equals("or") ? Operator.OR : Operator.AND;
+		}
+
 		List<Predicate> restrictions = buildRestrictions(root, params, level);
 
 		query.orderBy(builder.asc(root.get("id")));
-		query.where(builder.and(restrictions.toArray(new Predicate[0])));
+
+		if (queryOperator == Operator.AND) {
+			query.where(builder.and(restrictions.toArray(new Predicate[0])));
+		} else {
+			query.where(builder.or(restrictions.toArray(new Predicate[0])));
+		}
+
 		query.select(root.get("id"));
 
 		List<Long> filteredIds = entityManager.createQuery(query).getResultList();
@@ -353,13 +364,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(indexProcessDisplayService);
 		ph.startProcess("Mass Index Everything");
-		MassIndexer indexer = searchSession.massIndexer(annotatedClasses)
-			.batchSizeToLoadObjects(batchSizeToLoadObjects)
-			.idFetchSize(idFetchSize)
-			.dropAndCreateSchemaOnStart(true)
-			.mergeSegmentsOnFinish(false)
-			.typesToIndexInParallel(typesToIndexInParallel)
-			.threadsToLoadObjects(threadsToLoadObjects)
+		MassIndexer indexer = searchSession.massIndexer(annotatedClasses).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects)
 			.monitor(new MassIndexingMonitor() {
 				@Override
 				public void documentsAdded(long increment) {
@@ -450,8 +455,6 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		Log.log(level, "Search: " + pagination + " Params: " + params);
 
-		
-		
 		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
 			AtomicInteger outerBoost = new AtomicInteger();
 			return p.bool().with(b -> {
@@ -593,6 +596,22 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		SearchResponse<E> results = findByParams(params);
 		// Log.debug("Result List: " + results);
 		if (results.getResults().size() > 0) {
+			return results;
+		} else {
+			return null;
+		}
+	}
+
+	public List<Long> findIdsByFields(List<String> fields, String value) {
+		Log.debug("SqlDAO: findByFields: " + fields + " " + value);
+		HashMap<String, Object> params = new HashMap<>();
+		for (String field : fields) {
+			params.put(field, value);
+		}
+		params.put("query_operator", "or");
+		List<Long> results = findIdsByParams(params);
+		// Log.debug("Result List: " + results);
+		if (results.size() > 0) {
 			return results;
 		} else {
 			return null;

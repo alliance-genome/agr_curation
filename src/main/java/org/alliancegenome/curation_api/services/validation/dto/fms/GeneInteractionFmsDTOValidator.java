@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -42,6 +43,8 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject InteractionCrossReferenceHelper interactionXrefHelper;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+
+	private HashMap<String, Gene> geneCache = new HashMap<String, Gene>();
 
 	public <E extends GeneInteraction> ObjectResponse<E> validateGeneInteraction(E interaction, PsiMiTabDTO dto, List<Reference> references) {
 
@@ -181,7 +184,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		Gene allianceGene = null;
 		String convertedCurie = prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
 		if (prefix.isModPrefix) {
-			allianceGene = geneService.findByIdentifierString(convertedCurie);
+			allianceGene = getGeneFromCache(convertedCurie);
 		} else {
 			String taxonCurie = InteractionStringHelper.getAllianceTaxonCurie(psiMiTabTaxonCurie);
 			if (taxonCurie == null) {
@@ -214,9 +217,22 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		return response;
 	}
 
+	private Gene getGeneFromCache(String curie) {
+		if (geneCache.containsKey(curie)) {
+			return geneCache.get(curie);
+		} else {
+			Gene gene = geneService.findByIdentifierString(curie);
+			if (gene != null) {
+				geneCache.put(curie, gene);
+			}
+			return gene;
+		}
+	}
+
 	protected ObjectResponse<List<Reference>> validateReferences(PsiMiTabDTO dto) {
 		ObjectResponse<List<Reference>> refResponse = new ObjectResponse<>();
 		List<Reference> validatedReferences = new ArrayList<>();
+		List<Long> validatedReferenceIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getPublicationIds())) {
 			for (String publicationId : dto.getPublicationIds()) {
 				Reference reference = null;
@@ -228,7 +244,10 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 					refResponse.addErrorMessage("publicationIds", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
 					return refResponse;
 				}
-				validatedReferences.add(reference);
+				if (!validatedReferenceIds.contains(reference.getId())) {
+					validatedReferences.add(reference);
+					validatedReferenceIds.add(reference.getId());
+				}
 			}
 		}
 		if (CollectionUtils.isNotEmpty(validatedReferences)) {

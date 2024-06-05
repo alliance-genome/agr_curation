@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -311,5 +312,18 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.geneAssociationSubject.modEntityId", is(gene3));
 			
+	}
+	
+	@Test
+	@Order(11)
+	public void geneInteractionHandleDuplicateReferences() throws Exception {
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "DR_01_duplicate_references.json");
+		
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + geneMolecularInteractionId).
+			then().
+			statusCode(200).
+			body("entity.evidence", hasSize(1));
 	}
 }
