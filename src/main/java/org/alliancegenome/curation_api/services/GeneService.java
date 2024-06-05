@@ -10,10 +10,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneInteraction;
-import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
@@ -48,6 +45,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 	@Inject GeneInteractionService geneInteractionService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject	GeneExpressionAnnotationService geneExpressionAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -120,6 +118,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			for (Long interactionId : referencingInteractions) {
 				GeneInteraction referencingInteraction = geneInteractionService.deprecateOrDeleteInteraction(interactionId, false, loadDescription, true);
 				if (referencingInteraction != null) {
+					anyReferencingEntities = true;
+				}
+			}
+			List<Long> referencingGeneExpressionAnnotations = geneDAO.findReferencingGeneExpressionAnnotations(id);
+			if (referencingGeneExpressionAnnotations != null) {
+				if (referencingGeneExpressionAnnotations.size() > 0) {
 					anyReferencingEntities = true;
 				}
 			}

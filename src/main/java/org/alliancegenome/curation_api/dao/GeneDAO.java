@@ -23,6 +23,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
+	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
 
 	protected GeneDAO() {
 		super(Gene.class);
@@ -107,5 +108,11 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		results.addAll(allelePhenotypeAnnotationDAO.findIdsByParams(alleleIgParams));
 
 		return results;
+	}
+
+	public List<Long> findReferencingGeneExpressionAnnotations(Long geneId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("expressionAnnotationSubject.id", geneId);
+		return geneExpressionAnnotationDAO.findIdsByParams(params);
 	}
 }
