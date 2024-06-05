@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -71,7 +72,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 
 	}
 
-	public AGMPhenotypeAnnotation validateInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public List<AGMPhenotypeAnnotation> validateInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		ObjectResponse<AGMPhenotypeAnnotation> apaResponse = new ObjectResponse<AGMPhenotypeAnnotation>();
 
 		ObjectResponse<Reference> refResponse = validateReference(dto);
@@ -79,23 +80,20 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 
 		Reference reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
-
-		String primaryAnnotationUniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getIdentifier(), refString);
-		AGMPhenotypeAnnotation primaryAnnotation = null;
-
-		SearchResponse<AGMPhenotypeAnnotation> annotationSearch = agmPhenotypeAnnotationDAO.findByField("uniqueId", primaryAnnotationUniqueId);
-		if (annotationSearch == null || annotationSearch.getSingleResult() == null) {
+		
+		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getIdentifier(), refString);
+		
+		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
 			try {
 				Long primaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(inferredPrimaryDTO, dataProvider);
-				primaryAnnotation = agmPhenotypeAnnotationDAO.find(primaryAnnotationId);
+				AGMPhenotypeAnnotation primaryAnnotation = agmPhenotypeAnnotationDAO.find(primaryAnnotationId);
+				primaryAnnotations = List.of(primaryAnnotation);
 			} catch (ObjectUpdateException e) {
 				throw new ObjectValidationException(dto, "Could not construct primary annotation for " + inferredPrimaryDTO.getObjectId() + ": " + e.getData().getMessage());
 			} catch (Exception e) {
 				throw new ObjectValidationException(dto, e.getMessage());
 			}
-		} else {
-			primaryAnnotation = annotationSearch.getSingleResult();
 		}
 
 		if (StringUtils.isBlank(dto.getObjectId())) {
@@ -105,25 +103,29 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 			if (inferredOrAssertedEntity == null) {
 				apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 			} else if (inferredOrAssertedEntity instanceof Gene) {
-				if (dataProvider.hasInferredGenePhenotypeAnnotations) {
-					primaryAnnotation.setInferredGene((Gene) inferredOrAssertedEntity);
-				} else if (dataProvider.hasAssertedGenePhenotypeAnnotations) {
-					List<Gene> assertedGenes = primaryAnnotation.getAssertedGenes();
-					if (assertedGenes == null) {
-						assertedGenes = new ArrayList<>();
+				for (AGMPhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
+					if (dataProvider.hasInferredGenePhenotypeAnnotations) {
+						primaryAnnotation.setInferredGene((Gene) inferredOrAssertedEntity);
+					} else if (dataProvider.hasAssertedGenePhenotypeAnnotations) {
+						List<Gene> assertedGenes = primaryAnnotation.getAssertedGenes();
+						if (assertedGenes == null) {
+							assertedGenes = new ArrayList<>();
+						}
+						assertedGenes.add((Gene) inferredOrAssertedEntity);
+						primaryAnnotation.setAssertedGenes(assertedGenes);
+					} else {
+						apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 					}
-					assertedGenes.add((Gene) inferredOrAssertedEntity);
-					primaryAnnotation.setAssertedGenes(assertedGenes);
-				} else {
-					apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 				}
 			} else if (inferredOrAssertedEntity instanceof Allele) {
-				if (dataProvider.hasInferredAllelePhenotypeAnnotations) {
-					primaryAnnotation.setInferredAllele((Allele) inferredOrAssertedEntity);
-				} else if (dataProvider.hasAssertedAllelePhenotypeAnnotations) {
-					primaryAnnotation.setAssertedAllele((Allele) inferredOrAssertedEntity);
-				} else {
-					apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
+				for (AGMPhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
+					if (dataProvider.hasInferredAllelePhenotypeAnnotations) {
+						primaryAnnotation.setInferredAllele((Allele) inferredOrAssertedEntity);
+					} else if (dataProvider.hasAssertedAllelePhenotypeAnnotations) {
+						primaryAnnotation.setAssertedAllele((Allele) inferredOrAssertedEntity);
+					} else {
+						apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
+					}
 				}
 			} else {
 				apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
@@ -133,8 +135,8 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		if (apaResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, apaResponse.errorMessagesString());
 		}
-
-		return primaryAnnotation;
+		
+		return primaryAnnotations;
 	}
 
 	private PhenotypeFmsDTO createPrimaryAnnotationDTO(PhenotypeFmsDTO dto, String primarySubjectId) {
