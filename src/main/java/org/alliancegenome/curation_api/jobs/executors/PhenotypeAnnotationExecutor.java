@@ -68,7 +68,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad(String dataProviderName, List<PhenotypeFmsDTO> annotations) {
 		Set<Long> annotationIdsLoaded = new HashSet<>();
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, annotations, annotationIdsLoaded, dataProvider);

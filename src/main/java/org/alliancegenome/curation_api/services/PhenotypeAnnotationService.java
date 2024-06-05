@@ -165,12 +165,14 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 
 			if (primaryAnnotationSubject instanceof AffectedGenomicModel) {
 				List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, dataProvider);
-				if (CollectionUtils.isNotEmpty(annotations))
+				if (CollectionUtils.isNotEmpty(annotations)) {
 					primaryAnnotationIds.addAll(annotations.stream().map(AGMPhenotypeAnnotation::getId).collect(Collectors.toList()));
+				}
 			} else if (primaryAnnotationSubject instanceof Allele) {
 				List<AllelePhenotypeAnnotation> annotations = allelePhenotypeAnnotationService.addInferredOrAssertedEntities((Allele) primaryAnnotationSubject, dto, dataProvider);
-				if (CollectionUtils.isNotEmpty(annotations))
+				if (CollectionUtils.isNotEmpty(annotations)) {
 					primaryAnnotationIds.addAll(annotations.stream().map(AllelePhenotypeAnnotation::getId).collect(Collectors.toList()));
+				}
 			} else {
 				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
 			}
