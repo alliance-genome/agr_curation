@@ -8,17 +8,13 @@ import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDTO;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.ListUtils;
