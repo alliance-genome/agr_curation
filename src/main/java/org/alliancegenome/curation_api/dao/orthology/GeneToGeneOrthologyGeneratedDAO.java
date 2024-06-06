@@ -7,7 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class GeneToGeneOrthologyGeneratedDAO extends BaseSQLDAO<GeneToGeneOrthologyGenerated> {
-	
+
 	protected GeneToGeneOrthologyGeneratedDAO() {
 		super(GeneToGeneOrthologyGenerated.class);
 	}
