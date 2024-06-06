@@ -15,5 +15,6 @@ public final class EntityFieldConstants {
 	public static final String PA_SUBJECT_TAXON = PA_SUBJECT + "." + TAXON;
 	public static final String ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER = "alleleAssociationSubject." + DATA_PROVIDER;
 	public static final String CONSTRUCT_ASSOCIATION_SUBJECT_DATA_PROVIDER = "constructAssociationSubject." + DATA_PROVIDER;
-
+	public static final String SUBJECT_GENE_DATA_PROVIDER = "subjectGene." + DATA_PROVIDER;
+	public static final String SUBJECT_GENE_TAXON = "subjectGene." + TAXON;
 }
