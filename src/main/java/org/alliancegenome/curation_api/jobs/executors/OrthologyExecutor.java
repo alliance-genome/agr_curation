@@ -49,7 +49,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 				bulkLoadFile.setAllianceMemberReleaseVersion(orthologyData.getMetaData().getRelease());
 			}
 
-			List<Long> orthoPairsLoaded = new ArrayList<>();
+			List<Long> orthoPairIdsLoaded = new ArrayList<>();
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 			List<Long> orthoPairIdsBefore = generatedOrthologyService.getAllOrthologyPairIdsBySubjectGeneDataProvider(dataProvider);
 			log.debug("runLoad: Before: total " + orthoPairIdsBefore.size());
@@ -58,8 +58,10 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(orthologyData.getData().size());
 			createHistory(history, bulkLoadFile);
-			runLoad(history, fms.getFmsDataSubType(), orthologyData, orthoPairsLoaded);
-			runCleanup(history, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairsLoaded);
+			boolean success = runLoad(generatedOrthologyService, history, dataProvider, orthologyData.getData(), orthoPairIdsLoaded);
+			if (success) {
+				runCleanup(history, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded);
+			}
 			history.finishLoad();
 			finalSaveHistory(history);
 		} catch (Exception e) {
@@ -92,43 +94,6 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		}
 		ph.finishProcess();
-	}
-
-	private void runLoad(BulkLoadFileHistory history, String dataProvider, OrthologyIngestFmsDTO orthologyData, List<Long> orthoPairIdsAdded) {
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess(dataProvider + " Orthology DTO Update", orthologyData.getData().size());
-
-		for (OrthologyFmsDTO orthoPairDTO : orthologyData.getData()) {
-			try {
-				GeneToGeneOrthologyGenerated orthoPair = generatedOrthologyService.upsert(orthoPairDTO);
-				history.incrementCompleted();
-				if (orthoPairIdsAdded != null) {
-					orthoPairIdsAdded.add(orthoPair.getId());
-				}
-			} catch (ObjectUpdateException e) {
-				history.incrementFailed();
-				addException(history, e.getData());
-			} catch (Exception e) {
-				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(orthoPairDTO, e.getMessage(), e.getStackTrace()));
-			}
-			updateHistory(history);
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-
-	}
-
-	// Gets called from the API directly
-	public APIResponse runLoad(String dataProvider, OrthologyIngestFmsDTO dto) {
-		List<Long> orthoPairIdsAdded = new ArrayList<>();
-
-		BulkLoadFileHistory history = new BulkLoadFileHistory(dto.getData().size());
-		runLoad(history, dataProvider, dto, orthoPairIdsAdded);
-		history.finishLoad();
-
-		return new LoadHistoryResponce(history);
 	}
 
 }
