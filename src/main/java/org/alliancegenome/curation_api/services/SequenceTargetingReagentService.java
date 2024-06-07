@@ -33,8 +33,10 @@ public class SequenceTargetingReagentService extends BaseEntityCrudService<Seque
 	protected void init() {
 		setSQLDao(sqtrDAO);
 	}
-
+	@Transactional
 	public SequenceTargetingReagent upsert(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		return sqtrDtoValidator.validateSQTRFmsDTO(dto, dataProvider);
+		SequenceTargetingReagent sqtr = sqtrDtoValidator.validateSQTRFmsDTO(dto, dataProvider);
+		return sqtrDAO.persist(sqtr);
+
 	}
 }

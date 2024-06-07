@@ -16,8 +16,6 @@ public class SequenceTargetingReagentFmsDTO extends BaseDTO {
 	private List<String> synonyms;
 	private List<String> secondaryIds;
 	private List<String> targetGeneIds;
-	//is this needed? I don't see it in the fms file
-	//TODO: remove?
-	private List<CrossReferenceFmsDTO> modCrossReference;
+	private List<CrossReferenceFmsDTO> crossReferenceDTO;
 	
 }
