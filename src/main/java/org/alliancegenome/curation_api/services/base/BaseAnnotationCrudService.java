@@ -16,8 +16,6 @@ public abstract class BaseAnnotationCrudService<E extends Annotation, D extends 
 	@Override
 	protected abstract void init();
 
-	public abstract E deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate);
-
 	protected List<Long> getAllReferencedConditionRelationIds(D dao) {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 

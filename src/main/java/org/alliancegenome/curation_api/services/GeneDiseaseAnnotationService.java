@@ -55,17 +55,12 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	@Override
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Gene disease annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Gene disease annotation DELETE API call", false);
 		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(geneDiseaseAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public GeneDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		return (GeneDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

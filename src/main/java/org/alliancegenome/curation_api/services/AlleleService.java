@@ -9,12 +9,9 @@ import java.util.Objects;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
@@ -24,13 +21,12 @@ import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> {
 
@@ -76,30 +72,40 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> deleteById(Long id) {
-		removeOrDeprecateNonUpdated(id, "Allele DELETE API call");
+		deprecateOrDelete(id, true, "Allele DELETE API call", false);
 		ObjectResponse<Allele> ret = new ObjectResponse<>();
 		return ret;
 	}
 
+	@Override
 	@Transactional
-	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+	public Allele deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Allele allele = alleleDAO.find(id);
 		if (allele != null) {
-			if (alleleDAO.hasReferencingDiseaseAnnotationIds(id) || alleleDAO.hasReferencingPhenotypeAnnotations(id) ||
+			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id) || alleleDAO.hasReferencingPhenotypeAnnotations(id) ||
 					CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations()) ||
 					CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
 				if (!allele.getObsolete()) {
-					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					allele.setDateUpdated(OffsetDateTime.now());
 					allele.setObsolete(true);
-					alleleDAO.persist(allele);
+					return alleleDAO.persist(allele);
+				} else {
+					return allele;
 				}
 			} else {
 				alleleDAO.remove(id);
 			}
 		} else {
-			log.error("Failed getting allele: " + id);
+			String errorMessage = "Could not find Allele with id: " + id;
+			if (throwApiError) {
+				ObjectResponse<Allele> response = new ObjectResponse<>();
+				response.addErrorMessage("id", errorMessage);
+				throw new ApiErrorException(response);
+			}
+			Log.error(errorMessage);
 		}
+		return null;
 	}
 
 	public List<Long> getIdsByDataProvider(String dataProvider) {
