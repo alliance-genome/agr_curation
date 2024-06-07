@@ -52,10 +52,13 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 	private final String geneMolecularInteractionId = "WB:WBInteraction0001";
 	private final String geneGeneticInteractionId = "WB:WBInteraction0002";
 	private final String geneInteractionXrefLookupId = "WB:WBInteraction0003";
+	private final String geneInteractionXrefLookupId2 = "WB:WBInteraction0004";
 	private final String gene1 = "WB:GITestGene0001";
 	private final String gene2 = "WB:GITestGene0002";
 	private final String gene3 = "WB:GITestGene0003";
 	private final String gene3xref = "NCBI_Gene:EZL1";
+	private final String gene4 = "WB:GITestGene0004";
+	private final String gene4xref = "NCBI_Gene:EZL2";
 	private final String reference = "AGRKB:000000002";
 	private final String reference2 = "AGRKB:000000021";
 	private final String miTerm1 = "MI:Test0001";
@@ -74,8 +77,10 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
+		DataProvider dataProvider2 = createDataProvider("RGD", false);
 		loadGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadGeneWithXref(gene3, "NCBITaxon:6239", symbolTerm, dataProvider, gene3xref);
+		loadGeneWithXref(gene4, "NCBITaxon:9606", symbolTerm, dataProvider2, gene4xref);
 		loadAllele(allele1, "GGITestVar1", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadAllele(allele2, "GGITestVar2", "NCBITaxon:6239", symbolTerm, dataProvider);
 		loadMITerm(miTerm1, "Test MITerm 1");
@@ -316,6 +321,20 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 	
 	@Test
 	@Order(11)
+	public void geneInteractionHumanGeneBulkUploadXrefLookup() throws Exception {
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "XR_02_RGD_human_gene_cross_reference_lookup.json");
+		
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + geneInteractionXrefLookupId2).
+			then().
+			statusCode(200).
+			body("entity.geneAssociationSubject.modEntityId", is(gene4));
+			
+	}
+	
+	@Test
+	@Order(12)
 	public void geneInteractionHandleDuplicateReferences() throws Exception {
 		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "DR_01_duplicate_references.json");
 		
