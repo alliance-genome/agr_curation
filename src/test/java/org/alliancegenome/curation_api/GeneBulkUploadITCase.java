@@ -455,4 +455,27 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpointRGD, geneTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
 		checkFailedBulkLoad(geneBulkPostEndpointHUMAN, geneTestFilePath + "VT_02_valid_taxon_for_RGD.json");
 	}
+	
+	@Test
+	@Order(12)
+	public void geneBulkUploadDuplicateXref() throws Exception {
+		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "DX_01_duplicate_xref.json");
+		RestAssured.given().
+			when().
+			get(geneGetEndpoint + "GENETEST:DX01").
+			then().
+			statusCode(200).
+			body("entity.modEntityId", is("GENETEST:DX01")).
+			body("entity.crossReferences", hasSize(1));	
+		
+		// Check reload also successful
+		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "DX_01_duplicate_xref.json");
+		RestAssured.given().
+			when().
+			get(geneGetEndpoint + "GENETEST:DX01").
+			then().
+			statusCode(200).
+			body("entity.modEntityId", is("GENETEST:DX01")).
+			body("entity.crossReferences", hasSize(1));	
+	}
 }
