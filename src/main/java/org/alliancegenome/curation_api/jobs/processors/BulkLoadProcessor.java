@@ -109,7 +109,7 @@ public class BulkLoadProcessor {
 		SearchResponse<BulkLoadFile> bulkLoadFiles = bulkLoadFileDAO.findByField("md5Sum", md5Sum);
 		BulkLoadFile bulkLoadFile;
 
-		if (bulkLoadFiles == null || bulkLoadFiles.getTotalResults() == 0) {
+		if (bulkLoadFiles == null || bulkLoadFiles.getResults().size() == 0) {
 			Log.info("Bulk File does not exist creating it");
 			bulkLoadFile = new BulkLoadFile();
 			bulkLoadFile.setBulkLoad(load);
