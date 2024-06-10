@@ -466,7 +466,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is("GENETEST:DX01")).
-			body("entity.crossReferences", hasSize(1));	
+			body("entity.crossReferences", hasSize(1));
 		
 		// Check reload also successful
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "DX_01_duplicate_xref.json");
@@ -476,6 +476,6 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.modEntityId", is("GENETEST:DX01")).
-			body("entity.crossReferences", hasSize(1));	
+			body("entity.crossReferences", hasSize(1));
 	}
 }
