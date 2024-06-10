@@ -168,9 +168,9 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		return xref;
 	}
 	
-	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectIdentifier, String refString) {
+	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectModEntityId, String refString) {
 		HashMap<String, Object> params = new HashMap<>();
-		params.put("phenotypeAnnotationSubject.modEntityId", primaryAnnotationSubjectIdentifier);
+		params.put("phenotypeAnnotationSubject.modEntityId", primaryAnnotationSubjectModEntityId);
 		if (StringUtils.isNotBlank(dto.getPhenotypeStatement())) {
 			params.put("phenotypeAnnotationObject", dto.getPhenotypeStatement());
 		} else {
@@ -189,7 +189,18 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		
 		String secondaryPhenotypeTermIdString = "";
 		if (CollectionUtils.isNotEmpty(dto.getPhenotypeTermIdentifiers())) {
-			secondaryPhenotypeTermIdString = getPhenotypeTermIdString(dto.getPhenotypeTermIdentifiers().stream().map(PhenotypeTermIdentifierFmsDTO::getTermId).collect(Collectors.toList()));
+			List<String> validPhenotypeTermCuries = new ArrayList<>();
+			for (PhenotypeTermIdentifierFmsDTO phenotypeTermIdentifier : dto.getPhenotypeTermIdentifiers()) {
+				if (StringUtils.isNotBlank(phenotypeTermIdentifier.getTermId())) {
+					PhenotypeTerm phenotypeTerm = phenotypeTermService.findByCurieOrSecondaryId(phenotypeTermIdentifier.getTermId());
+					if (phenotypeTerm != null) {
+						validPhenotypeTermCuries.add(phenotypeTerm.getCurie());
+					}
+				}
+			}
+			if (CollectionUtils.isNotEmpty(validPhenotypeTermCuries)) {
+				secondaryPhenotypeTermIdString = getPhenotypeTermIdString(validPhenotypeTermCuries);
+			}
 		}
 		
 		List<E> primaryAnnotations = new ArrayList<>();
