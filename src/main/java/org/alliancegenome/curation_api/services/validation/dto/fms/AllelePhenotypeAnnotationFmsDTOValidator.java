@@ -78,7 +78,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		Reference reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
 		
-		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getIdentifier(), refString);
+		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getModEntityId(), refString);
 		
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 

@@ -65,13 +65,17 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		}
 
 		List<CrossReference> finalXrefs = new ArrayList<>();
+		List<String> addedXrefUniqueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(incomingXrefs)) {
 			for (CrossReference incomingXref : incomingXrefs) {
 				String incomingXrefUniqueId = getCrossReferenceUniqueId(incomingXref);
-				if (existingXrefMap.containsKey(incomingXrefUniqueId)) {
-					finalXrefs.add(updateCrossReference(existingXrefMap.get(incomingXrefUniqueId), incomingXref));
-				} else {
-					finalXrefs.add(crossReferenceDAO.persist(incomingXref));
+				if (!addedXrefUniqueIds.contains(incomingXrefUniqueId)) {
+					if (existingXrefMap.containsKey(incomingXrefUniqueId)) {
+						finalXrefs.add(updateCrossReference(existingXrefMap.get(incomingXrefUniqueId), incomingXref));
+					} else {
+						finalXrefs.add(crossReferenceDAO.persist(incomingXref));
+					}
+					addedXrefUniqueIds.add(incomingXrefUniqueId);
 				}
 			}
 		}
