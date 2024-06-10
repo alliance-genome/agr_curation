@@ -228,7 +228,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			String allianceMember = (String) group.getProfile().get("affiliated_alliance_member");
 			if (allianceMember != null) {
 				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("uniqueId", allianceMember);
-				if (res.getTotalResults() == 1) {
+				if (res.getResults().size() == 1) {
 					AllianceMember member = res.getResults().get(0);
 					return member;
 				} else {

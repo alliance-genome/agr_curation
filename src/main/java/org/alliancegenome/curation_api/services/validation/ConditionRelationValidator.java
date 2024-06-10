@@ -143,7 +143,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			params.put("singleReference.curie", uiEntity.getSingleReference().getCurie());
 
 			SearchResponse<ConditionRelation> response = conditionRelationDAO.findByParams(params);
-			if (response.getTotalResults() > 0) {
+			if (response.getResults().size() > 0) {
 				addMessageResponse("handle", "Handle / Pub combination already exists");
 				return null;
 			}

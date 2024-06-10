@@ -28,7 +28,7 @@ public class ExperimentalConditionController extends BaseEntityCrudController<Ex
 	@Override
 	public ObjectResponse<ExperimentalCondition> get(String conditionSummary) {
 		SearchResponse<ExperimentalCondition> ret = findByField("conditionSummary", conditionSummary);
-		if (ret != null && ret.getTotalResults() == 1) {
+		if (ret != null && ret.getResults().size() == 1) {
 			return new ObjectResponse<ExperimentalCondition>(ret.getResults().get(0));
 		} else {
 			return new ObjectResponse<ExperimentalCondition>();
