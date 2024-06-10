@@ -35,6 +35,7 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -207,37 +208,39 @@ public class LoadFileExecutor {
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
-		if (dataProvider != null) {
-			loadMessage = loadMessage + " for " + dataProvider.name();
-		}
-		ph.startProcess(loadMessage, objectList.size());
-
-		for (T dtoObject : objectList) {
-			try {
-				E dbObject = service.upsert(dtoObject, dataProvider);
-				history.incrementCompleted();
-				if (idsAdded != null) {
-					idsAdded.add(dbObject.getId());
+		if (CollectionUtils.isNotEmpty(objectList)) {
+			String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
+			if (dataProvider != null) {
+				loadMessage = loadMessage + " for " + dataProvider.name();
+			}
+			ph.startProcess(loadMessage, objectList.size());
+	
+			for (T dtoObject : objectList) {
+				try {
+					E dbObject = service.upsert(dtoObject, dataProvider);
+					history.incrementCompleted();
+					if (idsAdded != null) {
+						idsAdded.add(dbObject.getId());
+					}
+				} catch (ObjectUpdateException e) {
+					// e.printStackTrace();
+					history.incrementFailed();
+					addException(history, e.getData());
+				} catch (Exception e) {
+					// e.printStackTrace();
+					history.incrementFailed();
+					addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
 				}
-			} catch (ObjectUpdateException e) {
-				// e.printStackTrace();
-				history.incrementFailed();
-				addException(history, e.getData());
-			} catch (Exception e) {
-				// e.printStackTrace();
-				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
+				if (history.getErrorRate() > 0.25) {
+					Log.error("Failure Rate > 25% aborting load");
+					finalSaveHistory(history);
+					return false;
+				}
+				updateHistory(history);
+				ph.progressProcess();
 			}
-			if (history.getErrorRate() > 0.25) {
-				Log.error("Failure Rate > 25% aborting load");
-				finalSaveHistory(history);
-				return false;
-			}
-			updateHistory(history);
-			ph.progressProcess();
+			ph.finishProcess();
 		}
-		ph.finishProcess();
 		return true;
 	}
 
