@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterfac
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
-public abstract class BaseAssociationDTOCrudService<E extends AuditedObject, T extends BaseDTO, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, D> implements BaseUpsertServiceInterface<E, T>{
+public abstract class BaseAssociationDTOCrudService<E extends AuditedObject, T extends BaseDTO, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, D> implements BaseUpsertServiceInterface<E, T> {
 
 	protected abstract void init();
 

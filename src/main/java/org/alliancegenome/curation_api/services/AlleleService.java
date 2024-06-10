@@ -82,9 +82,10 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	public Allele deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Allele allele = alleleDAO.find(id);
 		if (allele != null) {
-			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id) || alleleDAO.hasReferencingPhenotypeAnnotations(id) ||
-					CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations()) ||
-					CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
+			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id)
+					|| alleleDAO.hasReferencingPhenotypeAnnotations(id)
+					|| CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())
+					|| CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
 				if (!allele.getObsolete()) {
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					allele.setDateUpdated(OffsetDateTime.now());

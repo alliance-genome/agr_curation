@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
@@ -84,8 +83,9 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	public AffectedGenomicModel deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		AffectedGenomicModel agm = agmDAO.find(id);
 		if (agm != null) {
-			if (forceDeprecate || agmDAO.hasReferencingDiseaseAnnotations(id) || agmDAO.hasReferencingPhenotypeAnnotations(id) ||
-					CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
+			if (forceDeprecate || agmDAO.hasReferencingDiseaseAnnotations(id)
+					|| agmDAO.hasReferencingPhenotypeAnnotations(id)
+					|| CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
 				if (!agm.getObsolete()) {
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					agm.setDateUpdated(OffsetDateTime.now());

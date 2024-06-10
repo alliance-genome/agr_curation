@@ -86,10 +86,10 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	public Gene deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Gene gene = geneDAO.find(id);
 		if (gene != null) {
-			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id) || geneDAO.hasReferencingPhenotypeAnnotations(id) ||
-					geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id) ||
-					CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations()) ||
-					CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
+			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id) || geneDAO.hasReferencingPhenotypeAnnotations(id)
+					|| geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id)
+					|| CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())
+					|| CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
 				if (!gene.getObsolete()) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					gene.setDateUpdated(OffsetDateTime.now());
