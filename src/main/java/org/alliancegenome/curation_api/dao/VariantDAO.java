@@ -24,10 +24,6 @@ public class VariantDAO extends BaseSQLDAO<Variant> {
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put("diseaseGeneticModifiers.id", variantId);
 		List<Long> results = diseaseAnnotationDAO.findIdsByParams(dgmParams);
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-		
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 }

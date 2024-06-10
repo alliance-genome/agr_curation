@@ -57,11 +57,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		agmDaParams.put("diseaseGeneticModifiers.id", geneId);
 		agmDaParams.put("with.id", geneId);
 		results = agmDiseaseAnnotationDAO.findIdsByParams(agmDaParams);
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 
 	public Boolean hasReferencingInteractions(Long geneId) {
@@ -70,11 +66,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		interactionParams.put("geneAssociationSubject.id", geneId);
 		interactionParams.put("geneGeneAssociationObject.id", geneId);
 		List<Long> results = geneInteractionDAO.findIdsByParams(interactionParams);
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 
 	public Boolean hasReferencingOrthologyPairs(Long geneId) {
@@ -83,11 +75,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		orthologyParams.put("subjectGene.id", geneId);
 		orthologyParams.put("objectGene.id", geneId);
 		List<Long> results = geneToGeneOrthologyDAO.findIdsByParams(orthologyParams);
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 
 	public Boolean hasReferencingPhenotypeAnnotations(Long geneId) {
@@ -112,10 +100,6 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		allelePaParams.put("assertedGenes.id", geneId);
 		allelePaParams.put("inferredGene.id", geneId);
 		results = allelePhenotypeAnnotationDAO.findIdsByParams(allelePaParams);
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-		
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 }

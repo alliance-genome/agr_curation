@@ -33,22 +33,14 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put("diseaseGeneticModifiers.id", agmId);
 		results = diseaseAnnotationDAO.findIdsByParams(dgmParams);
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 	
 	public Boolean hasReferencingPhenotypeAnnotations(Long agmId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("phenotypeAnnotationSubject.id", agmId);
 		List<Long> results = agmPhenotypeAnnotationDAO.findIdsByParams(params);
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 
 }

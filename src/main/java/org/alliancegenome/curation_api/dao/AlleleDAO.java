@@ -49,7 +49,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		geneDaParams.put("diseaseGeneticModifiers.id", alleleId);
 		results = geneDiseaseAnnotationDAO.findIdsByParams(geneDaParams);
 
-		return false;
+		return CollectionUtils.isNotEmpty(results);
 	}
 
 	public Boolean hasReferencingPhenotypeAnnotations(Long alleleId) {
@@ -65,12 +65,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		agmPaParams.put("query_operator", "or");
 		agmPaParams.put("assertedAllele.id", alleleId);
 		agmPaParams.put("inferredAllele.id", alleleId);
-		results.addAll(agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams));
-		if (CollectionUtils.isNotEmpty(results)) {
-			return true;
-		}
-
-		return false;
+		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
+		return CollectionUtils.isNotEmpty(results);
 	}
-
 }
