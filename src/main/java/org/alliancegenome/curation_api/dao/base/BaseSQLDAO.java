@@ -705,8 +705,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			results.setDbQuery(((SqmSelectStatement) query).toHqlString());
 		}
 
-		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
-		results.setTotalResults(totalResults);
+		if (pagination != null) { // If pagination is null then there is no point in getting the total results
+			Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
+			results.setTotalResults(totalResults);
+		}
 
 		return results;
 
