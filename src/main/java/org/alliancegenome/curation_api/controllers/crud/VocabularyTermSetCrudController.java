@@ -28,7 +28,7 @@ public class VocabularyTermSetCrudController extends BaseEntityCrudController<Vo
 
 	public ObjectResponse<VocabularyTermSet> findByName(String name) {
 		SearchResponse<VocabularyTermSet> ret = findByField("name", name);
-		if (ret != null && ret.getTotalResults() == 1) {
+		if (ret != null && ret.getResults().size() == 1) {
 			return new ObjectResponse<>(ret.getResults().get(0));
 		} else {
 			return new ObjectResponse<>();
