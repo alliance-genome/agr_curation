@@ -62,17 +62,12 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 	@Override
 	@Transactional
 	public ObjectResponse<AGMPhenotypeAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "AGM phenotype annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "AGM phenotype annotation DELETE API call", false);
 		ObjectResponse<AGMPhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public AGMPhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		return (AGMPhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

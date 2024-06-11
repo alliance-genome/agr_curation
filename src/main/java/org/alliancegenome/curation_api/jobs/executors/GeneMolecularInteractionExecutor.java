@@ -43,7 +43,7 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 			createHistory(history, bulkLoadFile);
 			boolean success = runLoad(geneMolecularInteractionService, history, null, interactionData, interactionIdsLoaded);
 			if (success) {
-				runCleanup(geneInteractionService, history, interactionIdsBefore, interactionIdsLoaded, bulkLoadFile.getMd5Sum());
+				runCleanup(geneInteractionService, history, "COMBINED", interactionIdsBefore, interactionIdsLoaded, "gene molecular interaction", bulkLoadFile.getMd5Sum());
 			}
 			history.finishLoad();
 			finalSaveHistory(history);

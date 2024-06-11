@@ -33,7 +33,8 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+	public GenomicEntity deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
+		return null;
 	}
 
 }

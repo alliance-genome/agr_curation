@@ -53,17 +53,12 @@ public class GenePhenotypeAnnotationService extends BaseAnnotationCrudService<Ge
 	@Override
 	@Transactional
 	public ObjectResponse<GenePhenotypeAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Gene phenotype annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Gene phenotype annotation DELETE API call", false);
 		ObjectResponse<GenePhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public GenePhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		return (GenePhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

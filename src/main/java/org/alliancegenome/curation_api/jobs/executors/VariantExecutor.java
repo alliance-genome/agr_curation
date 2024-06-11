@@ -53,7 +53,7 @@ public class VariantExecutor extends LoadFileExecutor {
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(variantService, history, dataProvider, variants, variantIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(variantService, history, bulkLoadFile, variantIdsBefore, variantIdsLoaded);
+			runCleanup(variantService, history, dataProvider.name(), variantIdsBefore, variantIdsLoaded, "variant", bulkLoadFile.getMd5Sum());
 		}
 		history.finishLoad();
 		finalSaveHistory(history);

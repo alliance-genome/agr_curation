@@ -28,6 +28,8 @@ public class BiologicalEntityService extends SubmittedObjectCrudService<Biologic
 	}
 
 	@Override
-	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+	public BiologicalEntity deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
+		return null;
 	}
+
 }
