@@ -8,11 +8,11 @@ CREATE TABLE expressionannotation (
 );
 
 ALTER TABLE expressionannotation
-	ADD CONSTRAINT relation_id_fk
+	ADD CONSTRAINT  expressionannotation_relation_id_fk
 		FOREIGN KEY (relation_id) REFERENCES vocabularyterm (id);
 
-CREATE INDEX expressionannotation_whenexpressedstagename ON expressionannotation USING btree (whenexpressedstagename);
-CREATE INDEX expressionannotation_whereexpressedstatement ON expressionannotation USING btree (whereexpressedstatement);
+CREATE INDEX expressionannotation_whenexpressedstagename_index ON expressionannotation USING btree (whenexpressedstagename);
+CREATE INDEX expressionannotation_whereexpressedstatement_index ON expressionannotation USING btree (whereexpressedstatement);
 
 CREATE SEQUENCE public.geneexpressionannotation_seq         START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
 
@@ -23,11 +23,11 @@ CREATE TABLE geneexpressionannotation (
 );
 
 ALTER TABLE geneexpressionannotation
-	ADD CONSTRAINT expressionannotationsubject_id_fk
+	ADD CONSTRAINT  geneexpressionannotation_expressionannotationsubject_id_fk
 		FOREIGN KEY (expressionannotationsubject_id) REFERENCES gene(id);
 
 ALTER TABLE geneexpressionannotation
-	ADD CONSTRAINT expressionassayused_id_fk
+	ADD CONSTRAINT geneexpressionannotation_expressionassayused_id_fk
 		FOREIGN KEY (expressionassayused_id) REFERENCES ontologyterm(id);
 
 CREATE INDEX geneexpressionannotation_expression_annotation_subject_index ON geneexpressionannotation USING btree (expressionannotationsubject_id);
@@ -37,8 +37,6 @@ CREATE INDEX geneexpressionannotation_expression_assay_used_index ON geneexpress
 INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'Expression Bulk Loads');
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 SELECT nextval('bulkload_seq'), 'EXPRESSION', 'FB Expression Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Expression Bulk Loads';
-INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-SELECT nextval('bulkload_seq'), 'EXPRESSION', 'HUMAN Expression Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Expression Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 SELECT nextval('bulkload_seq'), 'EXPRESSION', 'MGI Expression Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Expression Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
@@ -57,8 +55,6 @@ SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype =
 
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 SELECT id, 'EXPRESSION', 'FB' FROM bulkload WHERE name = 'FB Expression Load';
-INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-SELECT id, 'EXPRESSION', 'HUMAN' FROM bulkload WHERE name = 'HUMAN Expression Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 SELECT id, 'EXPRESSION', 'MGI' FROM bulkload WHERE name = 'MGI Expression Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)

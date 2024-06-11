@@ -41,14 +41,13 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			List<Long> annotationIdsLoaded = new ArrayList<>();
 			List<Long> annotationIdsBefore = geneExpressionAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
 
-			runLoad(geneExpressionAnnotationService, history, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded);
+			boolean success = runLoad(geneExpressionAnnotationService, history, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded);
+			if (success) {
+				runCleanup(geneExpressionAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene expression annotation", bulkLoadFile.getMd5Sum());
+			}
 
-			runCleanup(geneExpressionAnnotationService, history, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "gene expression annotation", bulkLoadFile.getMd5Sum());
 			history.finishLoad();
-
 			finalSaveHistory(history);
-
-
 		} catch (Exception e) {
 			failLoad(bulkLoadFile, e);
 			e.printStackTrace();

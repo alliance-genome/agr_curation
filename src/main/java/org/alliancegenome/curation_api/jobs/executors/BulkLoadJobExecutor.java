@@ -49,8 +49,7 @@ public class BulkLoadJobExecutor {
 	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 	@Inject GeneGeneticInteractionExecutor geneGeneticInteractionExecutor;
 	@Inject ParalogyExecutor paralogyExecutor;
-	@Inject
-	GeneExpressionExecutor geneExpressionExecutor;
+	@Inject GeneExpressionExecutor geneExpressionExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
@@ -110,7 +109,7 @@ public class BulkLoadJobExecutor {
 			ontologyExecutor.execLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
 			resourceDescriptorExecutor.execLoad(bulkLoadFile);
-		} else if  (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
 			geneExpressionExecutor.execLoad(bulkLoadFile);
 		} else {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");

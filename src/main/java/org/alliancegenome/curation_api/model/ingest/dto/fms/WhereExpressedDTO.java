@@ -11,7 +11,12 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class WhereExpressedDTO extends BaseDTO {
 	private String whereExpressedStatement;
-	private String anatomicalStructureTermId;
 	private String cellularComponentTermId;
+	private String cellularComponentQualifierTermId;
+	private String anatomicalStructureTermId;
+	private String anatomicalStructureQualifierTermId;
+	private String anatomicalSubStructureTermId;
+	private String anatomicalSubStructureQualifierTermId;
 	private List<UberonSlimTermDTO> anatomicalStructureUberonSlimTermIds;
+	private List<UberonSlimTermDTO> anatomicalSubStructureUberonSlimTermIds;
 }

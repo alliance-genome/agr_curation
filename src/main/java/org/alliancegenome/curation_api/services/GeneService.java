@@ -30,6 +30,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.jbosslog.JBossLog;
+import org.apache.commons.lang3.ObjectUtils;
 
 @JBossLog
 @RequestScoped
@@ -122,10 +123,8 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 				}
 			}
 			List<Long> referencingGeneExpressionAnnotations = geneDAO.findReferencingGeneExpressionAnnotations(id);
-			if (referencingGeneExpressionAnnotations != null) {
-				if (referencingGeneExpressionAnnotations.size() > 0) {
-					anyReferencingEntities = true;
-				}
+			if (!ObjectUtils.isEmpty(referencingGeneExpressionAnnotations)) {
+				anyReferencingEntities = true;
 			}
 			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
 				for (AlleleGeneAssociation association : gene.getAlleleGeneAssociations()) {

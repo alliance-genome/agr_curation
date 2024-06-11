@@ -12,29 +12,29 @@
 	"data" : [
 		{
 			"dateAssigned" : "2024-01-17T07:31:34-08:00",
-			"geneId" : "ZFIN:ZDB-GENE-041014-73",
+			"geneId" : "GEXPTEST:GENE001",
 			"evidence" : {
 				"crossReference" : {
-					"id" : "ZFIN:ZDB-PUB-170214-329",
+					"id" : "ZFIN:PUB001",
 					"pages" : [ "reference" ]
 				},
-				"publicationId" : "PMID:24871948"
+				"publicationId" : "PMID:009"
 			},
 			"crossReference" : {
 				"id" : "ZFIN:ZDB-FIG-170413-34",
 				"pages" : [ "gene/expression/annotation/detail" ]
 			},
-			"assay" : "MMO:0000658",
+			"assay" : "GEXPTEST:assay001",
 			"whenExpressed" : {
-				"stageName" : "Pharyngula:Prim-5",
-				"stageTermId" : "ZFS:0000029",
+				"stageName" : "stage1",
+				"stageTermId" : "ZFS:001",
 				"stageUberonSlimTerm" : {
-					"uberonTerm" : "UBERON:0000068"
+					"uberonTerm" : "UBERON:001"
 				}
 			},
 			"whereExpressed" : {
 				"whereExpressedStatement" : "trunk",
-				"anatomicalStructureTermId" : "ZFA:0001115",
+				"anatomicalStructureTermId" : "ZFA:001",
 				"anatomicalStructureUberonSlimTermIds" : [ {
 					"uberonTerm" : "Other"
 				} ]
