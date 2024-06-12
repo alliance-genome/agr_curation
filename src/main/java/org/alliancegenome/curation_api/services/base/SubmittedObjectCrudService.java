@@ -33,8 +33,6 @@ public abstract class SubmittedObjectCrudService<E extends SubmittedObject, T ex
 		return ret;
 	}
 
-	public abstract void removeOrDeprecateNonUpdated(Long id, String loadDescription);
-
 	public E findByIdentifierString(String id) {
 		if (id != null && id.startsWith("AGRKB:")) {
 			return findByCurie(id);

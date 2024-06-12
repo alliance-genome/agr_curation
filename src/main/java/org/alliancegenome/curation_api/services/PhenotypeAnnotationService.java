@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
@@ -37,9 +35,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class PhenotypeAnnotationService extends BaseAnnotationCrudService<PhenotypeAnnotation, PhenotypeAnnotationDAO> {
 
@@ -66,45 +62,9 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	@Override
 	@Transactional
 	public ObjectResponse<PhenotypeAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Phenotype annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Phenotype annotation DELETE API call", false);
 		ObjectResponse<PhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
-	}
-
-	@Override
-	@Transactional
-	public PhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecateAnnotation) {
-		PhenotypeAnnotation annotation = phenotypeAnnotationDAO.find(id);
-
-		if (annotation == null) {
-			String errorMessage = "Could not find Phenotype Annotation with id: " + id;
-			if (throwApiError) {
-				ObjectResponse<PhenotypeAnnotation> response = new ObjectResponse<>();
-				response.addErrorMessage("id", errorMessage);
-				throw new ApiErrorException(response);
-			}
-			log.error(errorMessage);
-			return null;
-		}
-
-		if (deprecateAnnotation) {
-			if (!annotation.getObsolete()) {
-				annotation.setObsolete(true);
-				if (authenticatedPerson.getId() != null) {
-					annotation.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
-				} else {
-					annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-				}
-				annotation.setDateUpdated(OffsetDateTime.now());
-				return phenotypeAnnotationDAO.persist(annotation);
-			} else {
-				return annotation;
-			}
-		} else {
-			phenotypeAnnotationDAO.remove(id);
-		}
-
-		return null;
 	}
 
 	public List<Long> getAllReferencedConditionRelationIds() {

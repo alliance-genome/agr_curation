@@ -57,7 +57,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		createHistory(history, bulkLoadFile);
 		boolean success = runLoad(geneService, history, dataProvider, genes, geneIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(geneService, history, bulkLoadFile, geneIdsBefore, geneIdsLoaded);
+			runCleanup(geneService, history, dataProvider.name(), geneIdsBefore, geneIdsLoaded, "gene", bulkLoadFile.getMd5Sum());
 		}
 		history.finishLoad();
 		finalSaveHistory(history);

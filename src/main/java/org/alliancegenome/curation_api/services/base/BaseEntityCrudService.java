@@ -1,17 +1,20 @@
 package org.alliancegenome.curation_api.services.base;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.PersonService;
 
 import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
@@ -27,6 +30,7 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 
 	@Inject
 	@AuthenticatedUser protected Person authenticatedPerson;
+	@Inject PersonService personService;
 
 	protected abstract void init();
 
@@ -132,6 +136,41 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		E object = dao.remove(id);
 		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
+	}
+	
+	@Transactional
+	public E deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
+		E object = dao.find(id);
+		
+		if (object == null) {
+			String errorMessage = "Could not find entity with id: " + id;
+			if (throwApiError) {
+				ObjectResponse<E> response = new ObjectResponse<>();
+				response.addErrorMessage("id", errorMessage);
+				throw new ApiErrorException(response);
+			}
+			Log.error(errorMessage);
+			return null;
+		}
+
+		if (deprecate) {
+			if (!object.getObsolete()) {
+				object.setObsolete(true);
+				if (authenticatedPerson.getId() != null) {
+					object.setUpdatedBy(authenticatedPerson);
+				} else {
+					object.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
+				}
+				object.setDateUpdated(OffsetDateTime.now());
+				return dao.persist(object);
+			} else {
+				return object;
+			}
+		} else {
+			dao.remove(id);
+		}
+
+		return null;
 	}
 
 	public SearchResponse<E> findByField(String field, String value) {

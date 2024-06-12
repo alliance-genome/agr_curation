@@ -30,11 +30,12 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.GeneInteractionService;
-import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -207,42 +208,44 @@ public class LoadFileExecutor {
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
-		if (dataProvider != null) {
-			loadMessage = loadMessage + " for " + dataProvider.name();
-		}
-		ph.startProcess(loadMessage, objectList.size());
-
-		for (T dtoObject : objectList) {
-			try {
-				E dbObject = service.upsert(dtoObject, dataProvider);
-				history.incrementCompleted();
-				if (idsAdded != null) {
-					idsAdded.add(dbObject.getId());
+		if (CollectionUtils.isNotEmpty(objectList)) {
+			String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
+			if (dataProvider != null) {
+				loadMessage = loadMessage + " for " + dataProvider.name();
+			}
+			ph.startProcess(loadMessage, objectList.size());
+	
+			for (T dtoObject : objectList) {
+				try {
+					E dbObject = service.upsert(dtoObject, dataProvider);
+					history.incrementCompleted();
+					if (idsAdded != null) {
+						idsAdded.add(dbObject.getId());
+					}
+				} catch (ObjectUpdateException e) {
+					// e.printStackTrace();
+					history.incrementFailed();
+					addException(history, e.getData());
+				} catch (Exception e) {
+					// e.printStackTrace();
+					history.incrementFailed();
+					addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
 				}
-			} catch (ObjectUpdateException e) {
-				// e.printStackTrace();
-				history.incrementFailed();
-				addException(history, e.getData());
-			} catch (Exception e) {
-				// e.printStackTrace();
-				history.incrementFailed();
-				addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
+				if (history.getErrorRate() > 0.25) {
+					Log.error("Failure Rate > 25% aborting load");
+					finalSaveHistory(history);
+					return false;
+				}
+				updateHistory(history);
+				ph.progressProcess();
 			}
-			if (history.getErrorRate() > 0.25) {
-				Log.error("Failure Rate > 25% aborting load");
-				finalSaveHistory(history);
-				return false;
-			}
-			updateHistory(history);
-			ph.progressProcess();
+			ph.finishProcess();
 		}
-		ph.finishProcess();
 		return true;
 	}
 
 	// The following methods are for bulk validation
-	protected <S extends BaseAnnotationCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, String md5sum) {
+	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, String md5sum) {
 		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
@@ -254,103 +257,15 @@ public class LoadFileExecutor {
 		history.setTotalDeleteRecords((long) idsToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of annotations linked to unloaded " + dataProviderName, idsToRemove.size());
+		ph.startProcess("Deletion/deprecation of entities linked to unloaded " + dataProviderName, idsToRemove.size());
 		for (Long id : idsToRemove) {
 			try {
 				String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + md5sum + ")";
-				service.deprecateOrDeleteAnnotationAndNotes(id, false, loadDescription, true);
+				service.deprecateOrDelete(id, false, loadDescription, true);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
-			}
-			updateHistory(history);
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-	}
-
-	protected <S extends SubmittedObjectCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, BulkLoadFile bulkLoadFile, List<Long> idsBefore, List<Long> idsAfter) {
-		BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-		String dataProviderName = manual.getDataProvider().name();
-		Log.debug("runLoad: After: " + dataProviderName + " " + idsAfter.size());
-
-		List<Long> distinctAfter = idsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(idsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
-
-		history.setTotalDeleteRecords((long) idsToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of primary objects " + dataProviderName, idsToRemove.size());
-		for (Long id : idsToRemove) {
-			try {
-				String loadDescription = dataProviderName + " " + manual.getBackendBulkLoadType() + " bulk load (" + bulkLoadFile.getMd5Sum() + ")";
-				service.removeOrDeprecateNonUpdated(id, loadDescription);
-				history.incrementDeleted();
-			} catch (Exception e) {
-				history.incrementDeleteFailed();
-				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
-			}
-			updateHistory(history);
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-
-	}
-
-	protected <S extends BaseAssociationDTOCrudService<?, ?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> idsBefore, List<Long> idsAfter, String md5sum) {
-		Log.debug("runLoad: After: " + dataProviderName + " " + idsAfter.size());
-
-		List<Long> distinctAfter = idsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(idsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
-
-		history.setTotalDeleteRecords((long) idsToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("Deletion/deprecation of associations " + dataProviderName, idsToRemove.size());
-		for (Long id : idsToRemove) {
-			try {
-				String loadDescription = dataProviderName + " association bulk load (" + md5sum + ")";
-				service.deprecateOrDeleteAssociation(id, false, loadDescription, false);
-				history.incrementDeleted();
-			} catch (Exception e) {
-				history.incrementDeleteFailed();
-				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
-			}
-			updateHistory(history);
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-
-	}
-
-	protected void runCleanup(GeneInteractionService service, BulkLoadFileHistory history, List<Long> idsBefore, List<Long> idsAfter, String md5sum) {
-		Log.debug("runLoad: After: " + idsAfter.size());
-
-		List<Long> distinctAfter = idsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(idsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + idsToRemove.size());
-
-		history.setTotalDeleteRecords((long) idsToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("Deletion/deprecation of interactions", idsToRemove.size());
-		for (Long id : idsToRemove) {
-			try {
-				String loadDescription = " Gene interaction bulk load (" + md5sum + ")";
-				service.deprecateOrDeleteInteraction(id, false, loadDescription, false);
-				history.incrementDeleted();
-			} catch (Exception e) {
-				history.incrementDeleteFailed();
-				addException(history, new ObjectUpdateExceptionData("{ \"id\": \"" + id + "\"}", e.getMessage(), e.getStackTrace()));
 			}
 			updateHistory(history);
 			ph.progressProcess();

@@ -62,17 +62,12 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 	@Override
 	@Transactional
 	public ObjectResponse<AllelePhenotypeAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Allele phenotype annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Allele phenotype annotation DELETE API call", false);
 		ObjectResponse<AllelePhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public AllelePhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		return (AllelePhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }
