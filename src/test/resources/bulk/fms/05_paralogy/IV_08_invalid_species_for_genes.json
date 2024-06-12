@@ -6,12 +6,25 @@
 			"gene2": "DRSC:PARATEST:Gene000200",
 			"identity": 65,
 			"length": 466,
-			"predictionMethodsMatched": [],
-			"predictionMethodsNotCalled": [],
-			"predictionMethodsNotMatched": [],
+			"predictionMethodsMatched": [
+				"OrthoFinder",
+				"OrthoInspector",
+				"InParanoid",
+				"SonicParanoid"
+			],
+			"predictionMethodsNotCalled": [
+				"HGNC",
+				"SGD"
+			],
+			"predictionMethodsNotMatched": [
+				"PhylomeDB",
+				"OMA",
+				"PANTHER",
+				"Ensembl Compara"
+			],
 			"rank": 2,
 			"similarity": 78,
-			"species": 6239
+			"species": 9606
 		}
 	],
 	"metaData": {

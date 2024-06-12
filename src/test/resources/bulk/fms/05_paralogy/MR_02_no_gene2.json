@@ -2,7 +2,7 @@
 	"data": [
 		{
 			"confidence": "moderate",
-			"gene1": "DRSC:Xenbase:XB-GENE-494002",
+			"gene1": "DRSC:PARATEST:Gene000100",
 			"identity": 65,
 			"length": 466,
 			"predictionMethodsMatched": [
@@ -23,7 +23,7 @@
 			],
 			"rank": 2,
 			"similarity": 78,
-			"species": 8364
+			"species": 6239
 		}
 	],
 	"metaData": {

@@ -30,14 +30,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ParalogyFmsDTOValidator {
 
-	@Inject
-	GeneToGeneParalogyDAO genetoGeneParalogyDAO;
-	@Inject
-	GeneService geneService;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject GeneToGeneParalogyDAO genetoGeneParalogyDAO;
+	@Inject GeneService geneService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
 	public GeneToGeneParalogy validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ObjectValidationException {
@@ -96,9 +92,7 @@ public class ParalogyFmsDTOValidator {
 			}
 		}
 
-		if (subjectGene != null && objectGene != null)
-
-		{
+		if (subjectGene != null && objectGene != null) {
 			Map<String, Object> params = new HashMap<>();
 			params.put("subjectGene.id", subjectGene.getId());
 			params.put("objectGene.id", objectGene.getId());
