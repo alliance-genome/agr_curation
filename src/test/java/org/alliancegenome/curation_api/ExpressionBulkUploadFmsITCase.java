@@ -5,9 +5,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
-import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
@@ -16,12 +14,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.*;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 
 
 @QuarkusIntegrationTest
