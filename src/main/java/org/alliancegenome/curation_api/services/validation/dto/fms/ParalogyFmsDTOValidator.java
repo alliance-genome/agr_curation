@@ -162,6 +162,27 @@ public class ParalogyFmsDTOValidator {
 		}
 		paralogyData.setConfidence(confidence);
 
+		if(dto.getSimilarity() == null){
+			paralogyResponse.addErrorMessage("Similarity", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			paralogyData.setSimilarity(dto.getSimilarity());
+		}
+		if(dto.getIdentity() == null){
+			paralogyResponse.addErrorMessage("Identity", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			paralogyData.setIdentity(dto.getIdentity());
+		}
+		if(dto.getLength() == null){
+			paralogyResponse.addErrorMessage("Length", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			paralogyData.setLength(dto.getLength());
+		}
+		if(dto.getRank() == null){
+			paralogyResponse.addErrorMessage("Rank", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			paralogyData.setRank(dto.getRank());
+		}
+		
 		paralogyData.setObsolete(false);
 		paralogyData.setInternal(false);
 
