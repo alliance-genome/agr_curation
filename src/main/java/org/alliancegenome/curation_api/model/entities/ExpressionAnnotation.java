@@ -20,6 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @JsonSubTypes.Type(value = GeneExpressionAnnotation.class, name = "GeneExpressionAnnotation") })
 @Entity
@@ -27,7 +28,10 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Expression_Annotation", description = "Annotation class representing a expression annotation")
-@Table
+@Table(indexes = {
+	@Index(name = "expressionannotation_whenexpressedstagename_index ", columnList = "whenexpressedstagename"),
+	@Index(name = "expressionannotation_whereexpressedstatement_index", columnList = "whereexpressedstatement")
+})
 public abstract class ExpressionAnnotation extends Annotation {
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

@@ -14,13 +14,6 @@
 			"pages" : [ "gene/expression/annotation/detail" ]
 		},
 		"assay" : "GEXPTEST:assay001",
-		"whenExpressed" : {
-			"stageName" : "stage1",
-			"stageTermId" : "ZFS:001",
-			"stageUberonSlimTerm" : {
-				"uberonTerm" : "UBERON:001"
-			}
-		},
 		"whereExpressed" : {
 			"whereExpressedStatement" : "trunk",
 			"anatomicalStructureTermId" : "ZFA:001",

@@ -13,7 +13,6 @@
 			"id" : "ZFIN:ZDB-FIG-170413-34",
 			"pages" : [ "gene/expression/annotation/detail" ]
 		},
-		"assay" : "GEXPTEST:assay001",
 		"whenExpressed" : {
 			"stageName" : "stage1",
 			"stageTermId" : "ZFS:001",

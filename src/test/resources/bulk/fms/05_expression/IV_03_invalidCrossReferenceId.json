@@ -4,7 +4,7 @@
 		"geneId" : "GEXPTEST:GENE001",
 		"evidence" : {
 			"crossReference" : {
-				"id" : "ZFIN:PUB001",
+				"id" : "UNKNOWNPREFIX:PUB001",
 				"pages" : [ "reference" ]
 			},
 			"publicationId" : "PMID:009"

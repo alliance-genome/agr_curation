@@ -30,7 +30,7 @@ public interface GeneExpressionAnnotationCrudInterface extends BaseIdCrudInterfa
 	@Override
 	@POST
 	@Path("/search")
-	@JsonView(View.PhenotypeAnnotationView.class)
+	@JsonView(View.FieldsAndLists.class)
 	@Tag(name = "Elastic Search Gene Expression Annotations")
 	SearchResponse<GeneExpressionAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
@@ -38,5 +38,6 @@ public interface GeneExpressionAnnotationCrudInterface extends BaseIdCrudInterfa
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	APIResponse updateExpressionAnnotations(@PathParam("dataProvider") String dataProvider, List<GeneExpressionFmsDTO> annotationData);
+
 
 }

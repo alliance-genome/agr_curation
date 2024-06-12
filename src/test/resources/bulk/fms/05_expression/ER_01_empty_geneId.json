@@ -1,7 +1,7 @@
 [
 	{
 		"dateAssigned" : "2024-01-17T07:31:34-08:00",
-		"geneId" : "GEXPTEST:GENE001",
+		"geneId" : "",
 		"evidence" : {
 			"crossReference" : {
 				"id" : "ZFIN:PUB001",

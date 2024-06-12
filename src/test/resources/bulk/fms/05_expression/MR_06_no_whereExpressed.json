@@ -20,13 +20,6 @@
 			"stageUberonSlimTerm" : {
 				"uberonTerm" : "UBERON:001"
 			}
-		},
-		"whereExpressed" : {
-			"whereExpressedStatement" : "trunk",
-			"anatomicalStructureTermId" : "ZFA:001",
-			"anatomicalStructureUberonSlimTermIds" : [ {
-				"uberonTerm" : "Other"
-			} ]
 		}
 	}
 ]
