@@ -1,24 +1,20 @@
 package org.alliancegenome.curation_api.services.helpers.annotations;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.alliancegenome.curation_api.enums.ConditionRelationFmsEnum;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.EvidenceFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.ExperimentalConditionFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AnnotationUniqueIdHelper {
 
@@ -125,8 +121,8 @@ public abstract class AnnotationUniqueIdHelper {
 		if (annotation.getDiseaseGeneticModifierRelation() != null) {
 			uniqueId.add(annotation.getDiseaseGeneticModifierRelation().getName());
 		}
-		if(annotation instanceof GeneDiseaseAnnotation gda){
-			if(gda.getSgdStrainBackground() != null){
+		if (annotation instanceof GeneDiseaseAnnotation gda) {
+			if (gda.getSgdStrainBackground() != null) {
 				uniqueId.add(gda.getSgdStrainBackground().getIdentifier());
 			}
 		}
