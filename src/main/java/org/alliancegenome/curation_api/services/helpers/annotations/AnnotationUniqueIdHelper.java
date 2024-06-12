@@ -6,11 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.enums.ConditionRelationFmsEnum;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
@@ -128,6 +124,11 @@ public abstract class AnnotationUniqueIdHelper {
 		}
 		if (annotation.getDiseaseGeneticModifierRelation() != null) {
 			uniqueId.add(annotation.getDiseaseGeneticModifierRelation().getName());
+		}
+		if(annotation instanceof GeneDiseaseAnnotation gda){
+			if(gda.getSgdStrainBackground() != null){
+				uniqueId.add(gda.getSgdStrainBackground().getIdentifier());
+			}
 		}
 		uniqueId.addSubmittedObjectList(annotation.getDiseaseGeneticModifiers());
 		return uniqueId.getUniqueId();
