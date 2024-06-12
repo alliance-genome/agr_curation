@@ -94,10 +94,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		createResourceDescriptorPage("homepage", "https://zfin.org/", rd1);
 		createResourceDescriptorPage("reference", "https://zfin.org/[%s]", rd1);
 		createReference(referenceId, false);
-		// for running with the all the other tests remove the following 2 lines:
-		ResourceDescriptor rd2 = createResourceDescriptor("PMID");
-		createResourceDescriptorPage("default", "https://www.ncbi.nlm.nih.gov/pubmed/[%s]", rd2);
-		// delete above
 		createReference(publicationId, false);
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		VocabularyTerm isExpressed = createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
