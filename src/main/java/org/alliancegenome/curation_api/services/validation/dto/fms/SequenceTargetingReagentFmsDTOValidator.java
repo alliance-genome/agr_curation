@@ -87,7 +87,9 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			sqtr.setSecondaryIdentifiers(null);	
 		}
 		
-		sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
+		if(beDataProvider != null){
+			sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
+		}
 		
 		if (sqtrResponse.hasErrors()){
 			throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());

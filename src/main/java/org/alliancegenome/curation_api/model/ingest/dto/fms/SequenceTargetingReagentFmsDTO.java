@@ -16,6 +16,4 @@ public class SequenceTargetingReagentFmsDTO extends BaseDTO {
 	private List<String> synonyms;
 	private List<String> secondaryIds;
 	private List<String> targetGeneIds;
-	private List<CrossReferenceFmsDTO> crossReferenceDTO;
-	
 }

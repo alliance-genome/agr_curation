@@ -48,20 +48,12 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
 			List<Long> sqtrIdsLoaded = new ArrayList<>();
-			List<Long> sqtrIdsBefore = new ArrayList<>();
-			// if (cleanUp) {
-			// 	sqtrIdsBefore.addAll(sqtrService.getIdsByDataProvider(dataProvider.name()));
-			// 	Log.debug("runLoad: Before: total " + sqtrIdsBefore.size());
-			// }
 
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrIngestFmsDTO.getData().size());
 
 			runLoad(sqtrService, history, dataProvider, sqtrIngestFmsDTO.getData(), sqtrIdsLoaded);
-			
-			//TODO: no idea if this is the write overload
-			// runCleanup(sqtrService, history, bulkLoadFile, sqtrIdsBefore, sqtrIdsLoaded);
 			
 			history.finishLoad();
 			
