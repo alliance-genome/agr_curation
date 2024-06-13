@@ -70,14 +70,14 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 				.body("results[0].objectGene.modEntityId", is("PARATEST:Gene000200"))
 				.body("results[0].identity", is(65))
 				.body("results[0].length", is(466))
-				.body("results[0].predictionMethodsMatched", hasSize(1))
-				.body("results[0].predictionMethodsMatched[0].name", is("SonicParanoid"))
+				.body("results[0].predictionMethodsMatched", hasSize(4))
+				.body("results[0].predictionMethodsMatched[0].name", is("OrthoFinder"))
 				.body("results[0].predictionMethodsNotMatched", hasSize(2))
 				.body("results[0].predictionMethodsNotCalled", hasSize(4))
 				.body("results[0].rank", is(2))
 				.body("results[0].similarity", is(78))
-				.body("results[0].subjectGene.taxon.curie", is("NCBITaxon:8364"))
-				.body("results[0].objectGene.taxon.curie", is("NCBITaxon:8364"));
+				.body("results[0].subjectGene.taxon.curie", is("NCBITaxon:6239"))
+				.body("results[0].objectGene.taxon.curie", is("NCBITaxon:6239"));
 	}
 
 
@@ -89,7 +89,10 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_02_no_gene2.json");
 		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_03_no_species.json");
 		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_04_no_confidence.json");
-
+		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_05_no_identity.json");
+		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_06_no_length.json");
+		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_07_no_rank.json");
+		checkFailedBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "MR_08_no_similarity.json");
 	}
 
 	@Test
