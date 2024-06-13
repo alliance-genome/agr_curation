@@ -86,6 +86,10 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		ResourceDescriptor rd1 = createResourceDescriptor("ZFIN");
 		createResourceDescriptorPage("homepage", "https://zfin.org/", rd1);
 		createResourceDescriptorPage("reference", "https://zfin.org/[%s]", rd1);
+		// delete:
+		ResourceDescriptor rd2 = createResourceDescriptor("PMID");
+		createResourceDescriptorPage("default", "https://www.ncbi.nlm.nih.gov/pubmed/[%s]", rd2);
+		// end delete
 		createReference(referenceId, false);
 		createReference(publicationId, false);
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
