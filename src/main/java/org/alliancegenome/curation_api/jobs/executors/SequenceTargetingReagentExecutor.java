@@ -3,29 +3,21 @@ package org.alliancegenome.curation_api.jobs.executors;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 @ApplicationScoped
 public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 	@Inject SequenceTargetingReagentService sqtrService;
@@ -42,8 +34,10 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 			AGRCurationSchemaVersion version = SequenceTargetingReagent.class.getAnnotation(AGRCurationSchemaVersion.class);
 			bulkLoadFile.setLinkMLSchemaVersion(version.max());
-			if (sqtrIngestFmsDTO.getMetaData() != null && StringUtils.isNotBlank(sqtrIngestFmsDTO.getMetaData().getRelease()))
+
+			if (sqtrIngestFmsDTO.getMetaData() != null && StringUtils.isNotBlank(sqtrIngestFmsDTO.getMetaData().getRelease())) {
 				bulkLoadFile.setAllianceMemberReleaseVersion(sqtrIngestFmsDTO.getMetaData().getRelease());
+			} 
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 

@@ -1,18 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
-import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -23,8 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import io.quarkus.logging.Log;
 
 @RequestScoped
 public class SequenceTargetingReagentFmsDTOValidator {
@@ -36,7 +27,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
-	public SequenceTargetingReagent validateSQTRFmsDTO (SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
+	public SequenceTargetingReagent validateSQTRFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 		
 		SequenceTargetingReagent sqtr;
@@ -61,7 +52,6 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			sqtr.setName(dto.getName());
 		}
 
-		//TODO: should I just use the validateBiologicalEntityDTO here?
 		if (StringUtils.isBlank(dto.getTaxonId())) {
 			sqtrResponse.addErrorMessage("taxonId", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -87,26 +77,14 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			sqtr.setSecondaryIdentifiers(null);	
 		}
 		
-		if(beDataProvider != null){
+		if (beDataProvider != null) {
 			sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
 		}
 		
-		if (sqtrResponse.hasErrors()){
+		if (sqtrResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());
 		}
-			
-		//TODO: remove when appropriate
-		Log.info("inside validation");
-		Log.info("curie");
-		Log.info(sqtr.getCurie());
-		Log.info("name");
-		Log.info(sqtr.getName());
-		Log.info("synonyms");
-		Log.info(sqtr.getSynonyms());
-		Log.info("taxon id");
-		Log.info(sqtr.getTaxon());
-		Log.info("secondary ids");
-		Log.info(sqtr.getSecondaryIdentifiers());
+
 		return sqtr;
 	}
 }
