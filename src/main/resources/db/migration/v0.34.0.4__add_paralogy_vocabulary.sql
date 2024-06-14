@@ -15,10 +15,10 @@ DELETE from vocabulary where vocabularylabel = 'paralogy_prediction_method';
 
 
 INSERT INTO vocabularytermset (id, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
-	SELECT nextval('hibernate_sequence'), 'paralogy_prediction_method', id, 'Prediction methods that are valid for paralogy' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
+	SELECT nextval('vocabularytermset_seq'), 'paralogy_prediction_method', id, 'Prediction methods that are valid for paralogy' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
 
 INSERT INTO vocabularytermset (id, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
-	SELECT nextval('hibernate_sequence'), 'orthology_prediction_method', id, 'Prediction methods that are valid for orthology' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
+	SELECT nextval('vocabularytermset_seq'), 'orthology_prediction_method', id, 'Prediction methods that are valid for orthology' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
 
 
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
