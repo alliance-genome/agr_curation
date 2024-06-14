@@ -7,10 +7,7 @@
 			"identity": 65,
 			"length": 466,
 			"predictionMethodsMatched": [
-				"OrthoFinder",
-				"OrthoInspector",
-				"InParanoid",
-				"SonicParanoid"
+				"OrthoFinder"
 			],
 			"predictionMethodsNotCalled": [
 				"HGNC",
