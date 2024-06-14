@@ -253,7 +253,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
 			then().
 			statusCode(200).
-			body("entity.uniqueId", is("GENE:da0001|is_implicated_in|false|DOID:da0001|AGRKB:100000005|ECO:da00001|HGNC:1|has_condition|ZECO:da001|severity|ameliorated_by|SGD:da0002")).
+			body("entity.uniqueId", is("GENE:da0001|is_implicated_in|false|DOID:da0001|AGRKB:100000005|ECO:da00001|HGNC:1|has_condition|ZECO:da001|severity|ameliorated_by|SGD:da0001|SGD:da0002")).
 			body("entity.modEntityId", is(GENE_DISEASE_ANNOTATION)).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(gene.getModEntityId())).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm.getCurie())).
@@ -487,7 +487,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
 			then().
 			statusCode(200).
-			body("entity.uniqueId", is("GENE:da0002|is_marker_for|true|DOID:da0002|AGRKB:100000006|ECO:da00002|HGNC:2|induced_by|ZECO:da002|onset|exacerbated_by|SGD:da0001")).
+			body("entity.uniqueId", is("GENE:da0002|is_marker_for|true|DOID:da0002|AGRKB:100000006|ECO:da00002|HGNC:2|induced_by|ZECO:da002|onset|exacerbated_by|SGD:da0002|SGD:da0001")).
 			body("entity.modEntityId", is(GENE_DISEASE_ANNOTATION)).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(gene2.getModEntityId())).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm2.getCurie())).
