@@ -139,7 +139,7 @@ public class OrthologyFmsDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsMatched())) {
 			predictionMethodsMatched = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsMatched()) {
-				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.HOMOLOGY_PREDICTION_METHOD_VOCABULARY, methodName).getEntity();
+				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY_TERM_SET, methodName).getEntity();
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsMatched", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -153,7 +153,7 @@ public class OrthologyFmsDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsNotMatched())) {
 			predictionMethodsNotMatched = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsNotMatched()) {
-				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.HOMOLOGY_PREDICTION_METHOD_VOCABULARY, methodName).getEntity();
+				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY_TERM_SET, methodName).getEntity();
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsNotMatched", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {
@@ -167,7 +167,7 @@ public class OrthologyFmsDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getPredictionMethodsNotCalled())) {
 			predictionMethodsNotCalled = new ArrayList<>();
 			for (String methodName : dto.getPredictionMethodsNotCalled()) {
-				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.HOMOLOGY_PREDICTION_METHOD_VOCABULARY, methodName).getEntity();
+				VocabularyTerm method = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ORTHOLOGY_PREDICTION_METHOD_VOCABULARY_TERM_SET, methodName).getEntity();
 				if (method == null) {
 					orthologyResponse.addErrorMessage("predictionMethodsNotCalled", ValidationConstants.INVALID_MESSAGE + " (" + methodName + ")");
 				} else {

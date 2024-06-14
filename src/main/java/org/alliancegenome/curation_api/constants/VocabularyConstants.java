@@ -42,6 +42,9 @@ public final class VocabularyConstants {
 	public static final String HOMOLOGY_CONFIDENCE_VOCABULARY = "homology_confidence";
 	public static final String HOMOLOGY_PREDICTION_METHOD_VOCABULARY = "homology_prediction_method";
 
+	public static final String ORTHOLOGY_PREDICTION_METHOD_VOCABULARY_TERM_SET = "orthology_prediction_method";
+	public static final String PARALOGY_PREDICTION_METHOD_VOCABULARY_TERM_SET = "paralogy_prediction_method";
+
 	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 	
