@@ -14,11 +14,11 @@ DELETE from vocabulary where vocabularylabel = 'paralogy_confidence';
 DELETE from vocabulary where vocabularylabel = 'paralogy_prediction_method';    
 
 
-INSERT INTO vocabularytermset (id, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
-	SELECT nextval('vocabularytermset_seq'), 'paralogy_prediction_method', id, 'Prediction methods that are valid for paralogy' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
+INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
+	SELECT nextval('vocabularytermset_seq'), 'Paralogy prediction method' 'paralogy_prediction_method', id, 'Prediction methods that are valid for paralogy' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
 
-INSERT INTO vocabularytermset (id, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
-	SELECT nextval('vocabularytermset_seq'), 'orthology_prediction_method', id, 'Prediction methods that are valid for orthology' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
+INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
+	SELECT nextval('vocabularytermset_seq'), 'Orthology prediction method', 'orthology_prediction_method', id, 'Prediction methods that are valid for orthology' FROM vocabulary WHERE vocabularylabel = 'homology_prediction_method';
 
 
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
