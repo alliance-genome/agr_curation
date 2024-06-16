@@ -34,7 +34,7 @@ import lombok.ToString;
 	@JsonSubTypes.Type(value = Allele.class, name = "Allele"),
 	@JsonSubTypes.Type(value = Gene.class, name = "Gene"), 
 	@JsonSubTypes.Type(value = Variant.class, name = "Variant"), 
-	@JsonSubTypes.Type(value = SequenceTargetingReagent.class, name = "SQTR") 
+	@JsonSubTypes.Type(value = SequenceTargetingReagent.class, name = "SequenceTargetingReagent") 
 })
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))

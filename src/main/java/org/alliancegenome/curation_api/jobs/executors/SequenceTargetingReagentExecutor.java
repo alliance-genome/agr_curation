@@ -42,12 +42,17 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
 			List<Long> sqtrIdsLoaded = new ArrayList<>();
+			List<Long> sqtrIdsBefore = new ArrayList<>();
 
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrIngestFmsDTO.getData().size());
 
-			runLoad(sqtrService, history, dataProvider, sqtrIngestFmsDTO.getData(), sqtrIdsLoaded);
+			boolean success = runLoad(sqtrService, history, dataProvider, sqtrIngestFmsDTO.getData(), sqtrIdsLoaded);
+
+			if (success) {
+				runCleanup(sqtrService, history, dataProvider.name(), sqtrIdsBefore, sqtrIdsLoaded, "SQTR", bulkLoadFile.getMd5Sum());
+			}
 			
 			history.finishLoad();
 			
