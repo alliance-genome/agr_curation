@@ -49,6 +49,7 @@ public class BulkLoadJobExecutor {
 	@Inject GeneMolecularInteractionExecutor geneMolecularInteractionExecutor;
 	@Inject GeneGeneticInteractionExecutor geneGeneticInteractionExecutor;
 	@Inject ParalogyExecutor paralogyExecutor;
+	@Inject SequenceTargetingReagentExecutor sqtrExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
@@ -94,6 +95,8 @@ public class BulkLoadJobExecutor {
 
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
 			moleculeExecutor.execLoad(bulkLoadFile);
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.SEQUENCE_TARGETING_REAGENT) {
+			sqtrExecutor.execLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.INTERACTION_MOL) {
 			geneMolecularInteractionExecutor.execLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.INTERACTION_GEN) {
