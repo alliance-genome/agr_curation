@@ -4,28 +4,21 @@ CREATE TABLE sequencetargetingreagent (
     id bigint NOT NULL
 );
 
-ALTER TABLE public.sequencetargetingreagent OWNER TO postgres;
-
 CREATE TABLE sequencetargetingreagent_reference (
     sequencetargetingreagent_id bigint NOT NULL,
     references_id bigint NOT NULL
 );
-
-ALTER TABLE public.sequencetargetingreagent_reference OWNER TO postgres;
 
 CREATE TABLE sequencetargetingreagent_secondaryidentifiers (
     sequencetargetingreagent_id bigint NOT NULL,
     secondaryidentifiers character varying(255)
 );
 
-ALTER TABLE public.sequencetargetingreagent_secondaryidentifiers OWNER TO postgres;
-
 CREATE TABLE sequencetargetingreagent_synonyms (
     sequencetargetingreagent_id bigint NOT NULL,
     synonyms character varying(255)
 );
 
-ALTER TABLE public.sequencetargetingreagent_synonyms OWNER TO postgres;
 ALTER TABLE ONLY sequencetargetingreagent ADD CONSTRAINT sequencetargetingreagent_pkey PRIMARY KEY (id);
 
 CREATE INDEX sequencetargetingreagent_reference_references_index ON sequencetargetingreagent_reference USING btree (references_id);
