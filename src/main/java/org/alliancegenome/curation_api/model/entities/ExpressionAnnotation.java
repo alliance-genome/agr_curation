@@ -27,7 +27,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
-@Schema(name = "Expression_Annotation", description = "Annotation class representing a expression annotation")
+@Schema(name = "Expression_Annotation", description = "Annotation class representing an expression annotation")
 @Table(indexes = {
 	@Index(name = "expressionannotation_whenexpressedstagename_index ", columnList = "whenexpressedstagename"),
 	@Index(name = "expressionannotation_whereexpressedstatement_index", columnList = "whereexpressedstatement")
