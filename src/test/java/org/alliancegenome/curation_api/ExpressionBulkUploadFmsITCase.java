@@ -16,6 +16,9 @@ import org.junit.jupiter.api.*;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -47,6 +50,23 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadAllFields() throws Exception {
 		loadRequiredEntities();
 		checkSuccessfulBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "AF_01_all_fields.json");
+
+		RestAssured.given().when()
+			.header("Content-Type", "application/json")
+			.body("{}")
+			.post(expressionFindEndpoint)
+			.then()
+			.statusCode(200)
+			.body("totalResults", is(1))
+			.body("results", hasSize(1))
+			.body("results[0].type", is("GeneExpressionAnnotation"))
+			.body("results[0].dateCreated", is("2024-01-17T15:31:34Z"))
+			.body("results[0].dataProvider.sourceOrganization.abbreviation", is("ZFIN"))
+			.body("results[0].expressionAnnotationSubject.modEntityId", is(gene))
+			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
+			.body("results[0].whereExpressedStatement", is("trunk"))
+			.body("results[0].whenExpressedStageName", is("stage1"))
+			.body("results[0].relation.name", is(VocabularyConstants.GENE_EXPRESSION_RELATION_TERM));
 	}
 
 	@Test

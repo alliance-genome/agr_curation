@@ -104,7 +104,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhenExpressed())) {
-			response.addErrorMessage("whenExpressed - ",  ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed() + ")");
+			response.addErrorMessage("whenExpressed - ",  ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhenExpressed() + ")");
 		} else {
 			String stageName = geneExpressionFmsDTO.getWhenExpressed().getStageName();
 			if (ObjectUtils.isEmpty(stageName)) {
