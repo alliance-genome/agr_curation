@@ -61,6 +61,12 @@ debug:
 checkstyle:
 	mvn checkstyle:check
 
+prettier-check:
+	npx prettier 'src/main/cliapp/**/*.js' --check
+
+prettier-write:
+	npx prettier 'src/main/cliapp/**/*.js' --write
+
 test:
 	mvn test
 
