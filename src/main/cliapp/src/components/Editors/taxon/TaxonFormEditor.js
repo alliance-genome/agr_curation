@@ -6,32 +6,32 @@ import { TaxonAdditionalFieldData } from '../../FieldData/TaxonAdditionalFieldDa
 import { FormFieldWrapper } from '../../FormFieldWrapper';
 
 export const TaxonFormEditor = ({
-  taxon,
-  onTaxonValueChange,
-  widgetColumnSize,
-  labelColumnSize,
-  fieldDetailsColumnSize,
-  errorMessages
+	taxon,
+	onTaxonValueChange,
+	widgetColumnSize,
+	labelColumnSize,
+	fieldDetailsColumnSize,
+	errorMessages,
 }) => {
-  return (
-    <>
-      <FormFieldWrapper
-        labelColumnSize={labelColumnSize}
-        fieldDetailsColumnSize={fieldDetailsColumnSize}
-        widgetColumnSize={widgetColumnSize}
-        fieldName="Taxon"
-        formField={
-          <AutocompleteFormEditor
-            name="taxon-input"
-            search={taxonSearch}
-            initialValue={taxon}
-            fieldName='taxon'
-            onValueChangeHandler={onTaxonValueChange}
-          />
-        }
-        errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"taxon"} />}
-        additionalDataField={<TaxonAdditionalFieldData curie={taxon?.curie} name={taxon?.name} />}
-      />
-    </>
-  );
+	return (
+		<>
+			<FormFieldWrapper
+				labelColumnSize={labelColumnSize}
+				fieldDetailsColumnSize={fieldDetailsColumnSize}
+				widgetColumnSize={widgetColumnSize}
+				fieldName="Taxon"
+				formField={
+					<AutocompleteFormEditor
+						name="taxon-input"
+						search={taxonSearch}
+						initialValue={taxon}
+						fieldName="taxon"
+						onValueChangeHandler={onTaxonValueChange}
+					/>
+				}
+				errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={'taxon'} />}
+				additionalDataField={<TaxonAdditionalFieldData curie={taxon?.curie} name={taxon?.name} />}
+			/>
+		</>
+	);
 };

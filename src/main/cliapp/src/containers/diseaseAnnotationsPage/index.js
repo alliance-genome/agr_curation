@@ -1,3 +1,3 @@
-import { DiseaseAnnotationsPage } from "./DiseaseAnnotationsPage";
+import { DiseaseAnnotationsPage } from './DiseaseAnnotationsPage';
 
 export { DiseaseAnnotationsPage };

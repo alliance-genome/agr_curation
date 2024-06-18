@@ -1,6 +1,6 @@
 import React from 'react';
 import { CronFields } from '../../components/CronFields';
-import { Dropdown } from "primereact/dropdown";
+import { Dropdown } from 'primereact/dropdown';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -8,11 +8,17 @@ import { ReportService } from '../../service/ReportService';
 import { InputText } from 'primereact/inputtext';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
-export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, newReport, reportDispatch, reportService }) => {
-
+export const NewReportForm = ({
+	newReportDialog,
+	setNewReportDialog,
+	groups,
+	newReport,
+	reportDispatch,
+	reportService,
+}) => {
 	const queryClient = useQueryClient();
 
-	const mutation = useMutation(report => {
+	const mutation = useMutation((report) => {
 		if (report.id) {
 			return getService().updateReport(report);
 		} else {
@@ -23,19 +29,19 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 	const onChange = (e) => {
 		reportDispatch({
 			field: e.target.name,
-			value: e.target.value
+			value: e.target.value,
 		});
 	};
 
 	const getService = () => {
-		if(!reportService) {
+		if (!reportService) {
 			reportService = new ReportService();
 		}
 		return reportService;
-	}
+	};
 
 	const hideDialog = () => {
-		reportDispatch({ type: "RESET" });
+		reportDispatch({ type: 'RESET' });
 		setNewReportDialog(false);
 	};
 
@@ -45,12 +51,12 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 		mutation.mutate(newReport, {
 			onSuccess: () => {
 				queryClient.invalidateQueries(['reporttable']);
-				reportDispatch({ type: "RESET" });
+				reportDispatch({ type: 'RESET' });
 				setNewReportDialog(false);
 			},
 			onError: () => {
-				// lookup group and set 
-			}
+				// lookup group and set
+			},
 		});
 	};
 
@@ -61,11 +67,18 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 		</>
 	);
 
-
 	return (
-		<Dialog visible={newReportDialog} style={{ width: '450px' }} header="Add Report" modal className="p-fluid" footer={newReportDialogFooter} onHide={hideDialog}>
+		<Dialog
+			visible={newReportDialog}
+			style={{ width: '450px' }}
+			header="Add Report"
+			modal
+			className="p-fluid"
+			footer={newReportDialogFooter}
+			onHide={hideDialog}
+		>
 			<ErrorBoundary>
-				<div className='p-justify-center'>
+				<div className="p-justify-center">
 					<form>
 						<div className="field">
 							<label htmlFor="group">Group Name</label>
@@ -74,22 +87,16 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 								options={groups}
 								value={newReport.curationReportGroup}
 								onChange={onChange}
-								placeholder={"Select Group"}
-								className='p-col-12'
-								name='curationReportGroup'
-								optionLabel='name'
-								optionValue='id'
+								placeholder={'Select Group'}
+								className="p-col-12"
+								name="curationReportGroup"
+								optionLabel="name"
+								optionValue="id"
 							/>
 						</div>
 						<div className="field">
 							<label htmlFor="name">Name</label>
-							<InputText
-								id="name"
-								name="name"
-								placeholder={"Name"}
-								value={newReport.name}
-								onChange={onChange}
-							/>
+							<InputText id="name" name="name" placeholder={'Name'} value={newReport.name} onChange={onChange} />
 						</div>
 
 						<div className="field">
@@ -97,16 +104,13 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
 							<InputText
 								id="birtReportFilePath"
 								name="birtReportFilePath"
-								placeholder={"BIRT Report File Path (sample_report.rptdesign)"}
+								placeholder={'BIRT Report File Path (sample_report.rptdesign)'}
 								value={newReport.birtReportFilePath}
 								onChange={onChange}
 							/>
 						</div>
 
-						<CronFields
-								newItem={newReport}
-								onChange={onChange}
-						/>
+						<CronFields newItem={newReport} onChange={onChange} />
 					</form>
 				</div>
 			</ErrorBoundary>

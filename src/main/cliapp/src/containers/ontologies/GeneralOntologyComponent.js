@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import { NameTemplate } from './NameTemplate';
 import { TabView, TabPanel } from 'primereact/tabview';
@@ -16,7 +16,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
 
-export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbbreviation, hideDefinition}) => {
+export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAbbreviation, hideDefinition }) => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -36,17 +36,21 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			const listTemplate = (synonym) => {
 				return (
 					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{__html: synonym}}/>
+						<div dangerouslySetInnerHTML={{ __html: synonym }} />
 					</EllipsisTableCell>
-				)
+				);
 			};
 			return (
 				<>
 					<div className={`syn${rowData.curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={rowData.synonyms.map(a => a.name).sort()}/>
+						<ListTableCell template={listTemplate} listData={rowData.synonyms.map((a) => a.name).sort()} />
 					</div>
-					<Tooltip target={`.syn${rowData.curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={rowData.synonyms.map(a => a.name).sort()}/>
+					<Tooltip
+						target={`.syn${rowData.curie.replace(':', '')}`}
+						style={{ width: '450px', maxWidth: '450px' }}
+						position="left"
+					>
+						<ListTableCell template={listTemplate} listData={rowData.synonyms.map((a) => a.name).sort()} />
 					</Tooltip>
 				</>
 			);
@@ -59,105 +63,96 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 			const listTemplate = (secondaryId) => {
 				return (
 					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{__html: secondaryId}}/>
+						<div dangerouslySetInnerHTML={{ __html: secondaryId }} />
 					</EllipsisTableCell>
-				)
+				);
 			};
 			return (
 				<>
 					<div className={`sid${rowData.curie.replace(':', '')}`}>
-						<ListTableCell template={listTemplate} listData={sortedIds}/>
+						<ListTableCell template={listTemplate} listData={sortedIds} />
 					</div>
-					<Tooltip target={`.sid${rowData.curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedIds}/>
+					<Tooltip
+						target={`.sid${rowData.curie.replace(':', '')}`}
+						style={{ width: '450px', maxWidth: '450px' }}
+						position="left"
+					>
+						<ListTableCell template={listTemplate} listData={sortedIds} />
 					</Tooltip>
 				</>
 			);
 		}
 	};
 
-	columns.push(
-		{
-			field: "curie",
-			header: "Curie",
+	columns.push({
+		field: 'curie',
+		header: 'Curie',
+		sortable: true,
+		filterConfig: FILTER_CONFIGS.curieFilterConfig,
+	});
+	columns.push({
+		field: 'name',
+		header: 'Name',
+		sortable: true,
+		body: (rowData) => <NameTemplate rowData={rowData} />,
+		filterConfig: FILTER_CONFIGS.nameFilterConfig,
+	});
+	if (!hideDefinition) {
+		columns.push({
+			field: 'definition',
+			header: 'Definition',
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.curieFilterConfig
-		}
-	);
-	columns.push(
-		{
-			field: "name",
-			header: "Name",
-			sortable: true,
-			body: (rowData) => <NameTemplate rowData={rowData}/>,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig
-		},
-	);
-	if(!hideDefinition) {
-		columns.push(
-			{
-				field: "definition",
-				header: "Definition",
-				sortable: true,
-				body: (rowData) => <DefinitionTemplate rowData={rowData} />,
-				filterConfig: FILTER_CONFIGS.definitionFilterConfig
-			},
-		);
+			body: (rowData) => <DefinitionTemplate rowData={rowData} />,
+			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
+		});
 	}
-	if(showAbbreviation) {
-		columns.push(
-			{
-				field: "abbreviation",
-				header: "Abbreviation",
-				sortable: true,
-				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig
-			}
-		);
+	if (showAbbreviation) {
+		columns.push({
+			field: 'abbreviation',
+			header: 'Abbreviation',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
+		});
 	}
-	if(showNamespace) {
-		columns.push(
-			{
-				field: "namespace",
-				header: "Name Space",
-				sortable: true,
-				filterConfig: FILTER_CONFIGS.namespaceFilterConfig
-			}
-		);
+	if (showNamespace) {
+		columns.push({
+			field: 'namespace',
+			header: 'Name Space',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.namespaceFilterConfig,
+		});
 	}
-	columns.push(
-		{
-			field: "synonyms.name",
-			header: "Synonyms",
-			body: synonymsTemplate,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig
-		}
-	);
-	columns.push(
-		{
-			field: "secondaryIdentifiers",
-			header: "Secondary IDs",
-			sortable: true,
-			body: secondaryIdsTemplate,
-			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig
-		}
-	);
-	columns.push(
-		{
-			field: "obsolete",
-			header: "Obsolete",
-			sortable: true,
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig
-		}
-	);
+	columns.push({
+		field: 'synonyms.name',
+		header: 'Synonyms',
+		body: synonymsTemplate,
+		sortable: true,
+		filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig,
+	});
+	columns.push({
+		field: 'secondaryIdentifiers',
+		header: 'Secondary IDs',
+		sortable: true,
+		body: secondaryIdsTemplate,
+		filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
+	});
+	columns.push({
+		field: 'obsolete',
+		header: 'Obsolete',
+		sortable: true,
+		body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+		filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+	});
 
 	const DEFAULT_COLUMN_WIDTH = 17;
-	const defaultFilters = {obsoleteFilter: {obsolete: {queryString: "false"}}};
+	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = getDefaultTableState(name, columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
@@ -166,7 +161,7 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 		setEntities: setOntologies,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
 	return (
@@ -189,22 +184,22 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 						isEditable={false}
 						isInEditMode={isInEditMode}
 						setIsInEditMode={setIsInEditMode}
-						toasts={{toast_topleft, toast_topright }}
-						errorObject = {{errorMessages, setErrorMessages}}
+						toasts={{ toast_topleft, toast_topright }}
+						errorObject={{ errorMessages, setErrorMessages }}
 						defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 						fetching={isFetching || isLoading}
-						defaultFilters = {defaultFilters}
+						defaultFilters={defaultFilters}
 					/>
-			    </TabPanel>
-			    <TabPanel header="Tree View">
-			        <GenericDataTree
+				</TabPanel>
+				<TabPanel header="Tree View">
+					<GenericDataTree
 						endpoint={endpoint}
 						treeName={name}
-						toasts={{toast_topleft, toast_topright }}
-						errorObject = {{errorMessages, setErrorMessages}}
+						toasts={{ toast_topleft, toast_topright }}
+						errorObject={{ errorMessages, setErrorMessages }}
 					/>
-			    </TabPanel>
+				</TabPanel>
 			</TabView>
 		</>
-	)
-}
+	);
+};

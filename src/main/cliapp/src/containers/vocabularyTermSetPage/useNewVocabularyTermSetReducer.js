@@ -1,10 +1,10 @@
-import { useImmerReducer } from "use-immer";
+import { useImmerReducer } from 'use-immer';
 
 const initialNewVocabularyTermSetState = {
 	newVocabularyTermSet: {
-		name: "",
-		vocabularyLabel: "",
-		vocabularyTermSetDescription: "",
+		name: '',
+		vocabularyLabel: '',
+		vocabularyTermSetDescription: '',
 		vocabularyTermSetVocabulary: null,
 		memberTerms: [],
 	},
@@ -39,6 +39,9 @@ const newVocabularyTermSetReducer = (draft, action) => {
 };
 
 export const useNewVocabularyTermSetReducer = () => {
-	const [newVocabularyTermSetState, newVocabularyTermSetDispatch] = useImmerReducer(newVocabularyTermSetReducer, initialNewVocabularyTermSetState);
-	return {newVocabularyTermSetState, newVocabularyTermSetDispatch};
-}
+	const [newVocabularyTermSetState, newVocabularyTermSetDispatch] = useImmerReducer(
+		newVocabularyTermSetReducer,
+		initialNewVocabularyTermSetState
+	);
+	return { newVocabularyTermSetState, newVocabularyTermSetDispatch };
+};

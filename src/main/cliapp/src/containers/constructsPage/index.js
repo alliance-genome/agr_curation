@@ -1,3 +1,3 @@
-import ConstructsPage from "./ConstructsPage";
+import ConstructsPage from './ConstructsPage';
 
 export { ConstructsPage };

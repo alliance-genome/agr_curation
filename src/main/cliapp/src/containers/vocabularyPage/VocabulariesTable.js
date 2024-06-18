@@ -3,24 +3,23 @@ import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { VocabularyService } from "../../service/VocabularyService";
-import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
+import { VocabularyService } from '../../service/VocabularyService';
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { NewVocabularyForm } from "../../containers/controlledVocabularyPage/NewVocabularyForm";
+import { NewVocabularyForm } from '../../containers/controlledVocabularyPage/NewVocabularyForm';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { Tooltip } from 'primereact/tooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { InputTextEditor } from "../../components/InputTextEditor";
-import { TrueFalseDropdown } from "../../components/TrueFalseDropDownSelector";
+import { InputTextEditor } from '../../components/InputTextEditor';
+import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
 import { setNewEntity } from '../../utils/utils';
 
 export const VocabulariesTable = () => {
-
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [errorMessages, setErrorMessages] = useState({});
@@ -39,7 +38,7 @@ export const VocabulariesTable = () => {
 
 	let vocabularyService = new VocabularyService();
 
-	const mutation = useMutation(updatedVocabulary => {
+	const mutation = useMutation((updatedVocabulary) => {
 		if (!vocabularyService) {
 			vocabularyService = new VocabularyService();
 		}
@@ -50,7 +49,11 @@ export const VocabulariesTable = () => {
 		return (
 			<>
 				<EllipsisTableCell otherClasses={`${field}${rowData.id}`}>{rowData[field]}</EllipsisTableCell>
-				<Tooltip target={`.${field}${rowData.id}`} content={rowData[field]} style={{ width: '450px', maxWidth: '450px' }} />
+				<Tooltip
+					target={`.${field}${rowData.id}`}
+					content={rowData[field]}
+					style={{ width: '450px', maxWidth: '450px' }}
+				/>
 			</>
 		);
 	};
@@ -58,10 +61,7 @@ export const VocabulariesTable = () => {
 	const stringEditor = (props, field) => {
 		return (
 			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={field}
-				/>
+				<InputTextEditor rowProps={props} fieldName={field} />
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
 			</>
 		);
@@ -74,9 +74,9 @@ export const VocabulariesTable = () => {
 					options={obsoleteTerms}
 					editorChange={onObsoleteEditorValueChange}
 					props={props}
-					field={"obsolete"}
+					field={'obsolete'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'obsolete'} />
 			</>
 		);
 	};
@@ -90,44 +90,47 @@ export const VocabulariesTable = () => {
 
 	const columns = [
 		{
-			field: "name",
-			header: "Name",
+			field: 'name',
+			header: 'Name',
 			sortable: true,
-			body: (rowData) => stringBodyTemplate(rowData, "name"),
+			body: (rowData) => stringBodyTemplate(rowData, 'name'),
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-			editor: (props) => stringEditor(props, "name")
+			editor: (props) => stringEditor(props, 'name'),
 		},
 		{
-			field: "vocabularyDescription",
-			header: "Description",
+			field: 'vocabularyDescription',
+			header: 'Description',
 			sortable: true,
-			body: (rowData) => stringBodyTemplate(rowData, "vocabularyDescription"),
+			body: (rowData) => stringBodyTemplate(rowData, 'vocabularyDescription'),
 			filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
-			editor: (props) => stringEditor(props, "vocabularyDescription")
+			editor: (props) => stringEditor(props, 'vocabularyDescription'),
 		},
 		{
-			field: "obsolete",
-			header: "Obsolete",
+			field: 'obsolete',
+			header: 'Obsolete',
 			sortable: true,
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			editor: (props) => obsoleteEditorTemplate(props)
+			editor: (props) => obsoleteEditorTemplate(props),
 		},
 		{
-			field: "vocabularyLabel",
-			header: "Label",
+			field: 'vocabularyLabel',
+			header: 'Label',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
-			body: (rowData) => stringBodyTemplate(rowData, "vocabularyLabel")
-		}
+			body: (rowData) => stringBodyTemplate(rowData, 'vocabularyLabel'),
+		},
 	];
 
 	const DEFAULT_COLUMN_WIDTH = 20;
-	const SEARCH_ENDPOINT = "vocabulary";
+	const SEARCH_ENDPOINT = 'vocabulary';
 
-	const initialTableState = getDefaultTableState("Vocabularies", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState('Vocabularies', columns, DEFAULT_COLUMN_WIDTH);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isLoading, isFetching } = useGetTableData({
 		tableState,
@@ -136,17 +139,18 @@ export const VocabulariesTable = () => {
 		setEntities: setVocabularies,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
 	const handleOpenNewVocabulary = () => {
 		setNewVocabularyDialog(true);
 	};
 
-	const headerButtons = (disabled=false) => {
+	const headerButtons = (disabled = false) => {
 		return (
 			<>
-				<Button label="New Vocabulary" icon="pi pi-plus" onClick={handleOpenNewVocabulary} disabled={disabled} />&nbsp;&nbsp;
+				<Button label="New Vocabulary" icon="pi pi-plus" onClick={handleOpenNewVocabulary} disabled={disabled} />
+				&nbsp;&nbsp;
 			</>
 		);
 	};
@@ -180,9 +184,10 @@ export const VocabulariesTable = () => {
 			<NewVocabularyForm
 				newVocabularyDialog={newVocabularyDialog}
 				setNewVocabularyDialog={setNewVocabularyDialog}
-				setNewVocabulary={(newVocabulary, queryClient) => setNewEntity(tableState, setVocabularies, newVocabulary, queryClient)}
+				setNewVocabulary={(newVocabulary, queryClient) =>
+					setNewEntity(tableState, setVocabularies, newVocabulary, queryClient)
+				}
 			/>
 		</div>
 	);
-
 };

@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { EllipsisTableCell } from './EllipsisTableCell';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
 import { InputTextEditor } from './InputTextEditor';
@@ -18,11 +18,8 @@ export const synonymUrlTemplate = (rowData) => {
 export const synonymUrlEditorTemplate = (props, errorMessages) => {
 	return (
 		<>
-			<InputTextEditor
-				rowProps={props}
-				fieldName={"synonymUrl"}
-			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"synonymUrl"} />
+			<InputTextEditor rowProps={props} fieldName={'synonymUrl'} />
+			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'synonymUrl'} />
 		</>
 	);
 };
@@ -34,11 +31,8 @@ export const displayTextTemplate = (rowData) => {
 export const displayTextEditorTemplate = (props, errorMessages) => {
 	return (
 		<>
-			<InputTextEditor
-				rowProps={props}
-				fieldName={"displayText"}
-			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"displayText"} />
+			<InputTextEditor rowProps={props} fieldName={'displayText'} />
+			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'displayText'} />
 		</>
 	);
 };
@@ -50,11 +44,8 @@ export const formatTextTemplate = (rowData) => {
 export const formatTextEditorTemplate = (props, errorMessages) => {
 	return (
 		<>
-			<InputTextEditor
-				rowProps={props}
-				fieldName={"formatText"}
-			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"formatText"} />
+			<InputTextEditor rowProps={props} fieldName={'formatText'} />
+			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'formatText'} />
 		</>
 	);
 };

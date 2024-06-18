@@ -26,12 +26,11 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
 
 export const VariantsTable = () => {
-
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
-	
+
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [variants, setVariants] = useState([]);
 
@@ -50,7 +49,7 @@ export const VariantsTable = () => {
 
 	let variantService = new VariantService();
 
-	const mutation = useMutation(updatedVariant => {
+	const mutation = useMutation((updatedVariant) => {
 		if (!variantService) {
 			variantService = new VariantService();
 		}
@@ -63,40 +62,54 @@ export const VariantsTable = () => {
 		if (rowData?.taxon) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${'TAXON_NAME_'}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}>
 						{rowData.taxon.name} ({rowData.taxon.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.id}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip
+						target={`.${'TAXON_NAME_'}${rowData.id}${rowData.taxon.curie.replace(':', '')}`}
+						content={`${rowData.taxon.name} (${rowData.taxon.curie})`}
+						style={{ width: '250px', maxWidth: '450px' }}
+					/>
 				</>
 			);
 		}
-	}
+	};
 
 	const sourceGeneralConsequenceTemplate = (rowData) => {
 		if (rowData?.sourceGeneralConsequence) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"SGC_"}${rowData.id}${rowData.sourceGeneralConsequence.curie.replace(':', '')}`}>
+					<EllipsisTableCell
+						otherClasses={`${'SGC_'}${rowData.id}${rowData.sourceGeneralConsequence.curie.replace(':', '')}`}
+					>
 						{rowData.sourceGeneralConsequence?.name} ({rowData.sourceGeneralConsequence?.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"SGC_"}${rowData.id}${rowData.sourceGeneralConsequence?.curie.replace(':', '')}`} content= {`${rowData.sourceGeneralConsequence?.name} (${rowData.sourceGeneralConsequence?.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip
+						target={`.${'SGC_'}${rowData.id}${rowData.sourceGeneralConsequence?.curie.replace(':', '')}`}
+						content={`${rowData.sourceGeneralConsequence?.name} (${rowData.sourceGeneralConsequence?.curie})`}
+						style={{ width: '250px', maxWidth: '450px' }}
+					/>
 				</>
 			);
 		}
-	}
+	};
 
 	const variantTypeTemplate = (rowData) => {
 		if (rowData?.variantType) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`${"SGC_"}${rowData.id}${rowData.variantType.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${'SGC_'}${rowData.id}${rowData.variantType.curie.replace(':', '')}`}>
 						{rowData.variantType?.name} ({rowData.variantType?.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"SGC_"}${rowData.id}${rowData.variantType?.curie.replace(':', '')}`} content= {`${rowData.variantType?.name} (${rowData.variantType?.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip
+						target={`.${'SGC_'}${rowData.id}${rowData.variantType?.curie.replace(':', '')}`}
+						content={`${rowData.variantType?.name} (${rowData.variantType?.curie})`}
+						style={{ width: '250px', maxWidth: '450px' }}
+					/>
 				</>
 			);
 		}
-	}
+	};
 
 	const onVariantStatusEditorValueChange = (props, event) => {
 		let updatedVariants = [...props.props.value];
@@ -113,18 +126,18 @@ export const VariantsTable = () => {
 					props={props}
 					showClear={true}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"geneticSex"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'geneticSex'} />
 			</>
 		);
 	};
 
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
-		_relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
-		_relatedNotesData["dialog"] = true;
-		_relatedNotesData["isInEdit"] = isInEdit;
+		_relatedNotesData['originalRelatedNotes'] = rowData.relatedNotes;
+		_relatedNotesData['dialog'] = true;
+		_relatedNotesData['isInEdit'] = isInEdit;
 		setRelatedNotesData(() => ({
-			..._relatedNotesData
+			..._relatedNotesData,
 		}));
 	};
 
@@ -133,26 +146,28 @@ export const VariantsTable = () => {
 		const { rowIndex } = rowProps;
 		const index = rowIndex % rows;
 		let _relatedNotesData = {};
-		_relatedNotesData["originalRelatedNotes"] = rowProps.rowData.relatedNotes;
-		_relatedNotesData["dialog"] = true;
-		_relatedNotesData["isInEdit"] = isInEdit;
-		_relatedNotesData["rowIndex"] = index;
-		_relatedNotesData["mainRowProps"] = rowProps;
+		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
+		_relatedNotesData['dialog'] = true;
+		_relatedNotesData['isInEdit'] = isInEdit;
+		_relatedNotesData['rowIndex'] = index;
+		_relatedNotesData['mainRowProps'] = rowProps;
 		setRelatedNotesData(() => ({
-			..._relatedNotesData
+			..._relatedNotesData,
 		}));
 	};
 
 	const relatedNotesTemplate = (rowData) => {
 		if (rowData?.relatedNotes) {
 			return (
-				<Button className="p-button-text"
-					onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-					<span style={{ textDecoration: 'underline' }}>
-						{`Notes(${rowData.relatedNotes.length})`}
-					</span>
+				<Button
+					className="p-button-text"
+					onClick={(event) => {
+						handleRelatedNotesOpen(event, rowData, false);
+					}}
+				>
+					<span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span>
 				</Button>
-			)
+			);
 		}
 	};
 
@@ -160,167 +175,187 @@ export const VariantsTable = () => {
 		if (props?.rowData?.relatedNotes) {
 			return (
 				<>
-				<div>
-					<Button className="p-button-text"
-						onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
-						<span style={{ textDecoration: 'underline' }}>
-							{`Notes(${props.rowData.relatedNotes.length}) `}
-							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
-						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-					<EditMessageTooltip object="variant"/>
-					</Button>
-				</div>
-					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
+					<div>
+						<Button
+							className="p-button-text"
+							onClick={(event) => {
+								handleRelatedNotesOpenInEdit(event, props, true);
+							}}
+						>
+							<span style={{ textDecoration: 'underline' }}>
+								{`Notes(${props.rowData.relatedNotes.length}) `}
+								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
+							</span>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<EditMessageTooltip object="variant" />
+						</Button>
+					</div>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={'relatedNotes'}
+						style={{ fontSize: '1em' }}
+					/>
 				</>
-			)
+			);
 		} else {
 			return (
 				<>
 					<div>
-						<Button className="p-button-text"
-							onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+						<Button
+							className="p-button-text"
+							onClick={(event) => {
+								handleRelatedNotesOpenInEdit(event, props, true);
+							}}
+						>
 							<span style={{ textDecoration: 'underline' }}>
 								Add Note
-								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
-							</span>&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip/>
+								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
+							</span>
+							&nbsp;&nbsp;&nbsp;&nbsp;
+							<EditMessageTooltip />
 						</Button>
 					</div>
-					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={'relatedNotes'}
+						style={{ fontSize: '1em' }}
+					/>
 				</>
-			)
+			);
 		}
 	};
 
-	
 	const columns = [
 		{
-			field: "curie",
-			header: "Curie",
+			field: 'curie',
+			header: 'Curie',
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: "modEntityId",
-			header: "MOD Entity ID",
-			sortable:  true,
+			field: 'modEntityId',
+			header: 'MOD Entity ID',
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
-			field: "modInternalId",
-			header: "MOD Internal ID",
-			sortable:  true,
+			field: 'modInternalId',
+			header: 'MOD Internal ID',
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
-			field: "taxon.name",
-			header: "Taxon",
+			field: 'taxon.name',
+			header: 'Taxon',
 			body: taxonTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
+			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
 		{
-			field: "variantType.name",
-			header: "Variant Type",
+			field: 'variantType.name',
+			header: 'Variant Type',
 			body: variantTypeTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
-			editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
+			editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
 		{
-			field: "variantStatus.name",
-			header: "Variant Status",
+			field: 'variantStatus.name',
+			header: 'Variant Status',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantStatusFilterConfig,
-			editor: (props) => variantStatusEditor(props)
+			editor: (props) => variantStatusEditor(props),
 		},
 		{
-			field: "relatedNotes.freeText",
-			header: "Related Notes",
+			field: 'relatedNotes.freeText',
+			header: 'Related Notes',
 			body: relatedNotesTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-			editor: relatedNotesEditor
+			editor: relatedNotesEditor,
 		},
 		{
-			field: "sourceGeneralConsequence.name",
-			header: "Source General Consequence",
+			field: 'sourceGeneralConsequence.name',
+			header: 'Source General Consequence',
 			body: sourceGeneralConsequenceTemplate,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
-			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef}/>
+			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
 		{
-			field: "dataProvider.sourceOrganization.abbreviation",
-			header: "Data Provider",
+			field: 'dataProvider.sourceOrganization.abbreviation',
+			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
 		},
 		{
-			field: "crossReferences.displayName",
-			header: "Cross References",
+			field: 'crossReferences.displayName',
+			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences}/>
+			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences} />,
 		},
 		{
-			field: "updatedBy.uniqueId",
-			header: "Updated By",
+			field: 'updatedBy.uniqueId',
+			header: 'Updated By',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
-			field: "dateUpdated",
-			header: "Date Updated",
+			field: 'dateUpdated',
+			header: 'Date Updated',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
+			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
-			field: "createdBy.uniqueId",
-			header: "Created By",
+			field: 'createdBy.uniqueId',
+			header: 'Created By',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig
+			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
-			field: "dateCreated",
-			header: "Date Created",
+			field: 'dateCreated',
+			header: 'Date Created',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
+			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{
-			field: "internal",
-			header: "Internal",
+			field: 'internal',
+			header: 'Internal',
 			body: internalTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true,
 			editor: (props) => (
-				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"internal"} showClear={false}/>
-			)
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'internal'} showClear={false} />
+			),
 		},
 		{
-			field: "obsolete",
-			header: "Obsolete",
+			field: 'obsolete',
+			header: 'Obsolete',
 			body: obsoleteTemplate,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true,
 			editor: (props) => (
-				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={"obsolete"}  showClear={false}/>
-			)
-		}
+				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'obsolete'} showClear={false} />
+			),
+		},
 	];
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = "variant";
+	const SEARCH_ENDPOINT = 'variant';
 
-	const initialTableState = getDefaultTableState("Variants", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState('Variants', columns, DEFAULT_COLUMN_WIDTH);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
@@ -329,7 +364,7 @@ export const VariantsTable = () => {
 		setEntities: setVariants,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
 	return (
@@ -353,8 +388,8 @@ export const VariantsTable = () => {
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
-					toasts={{toast_topleft, toast_topright }}
-					errorObject = {{errorMessages, setErrorMessages}}
+					toasts={{ toast_topleft, toast_topright }}
+					errorObject={{ errorMessages, setErrorMessages }}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
 				/>
@@ -364,7 +399,7 @@ export const VariantsTable = () => {
 				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
-				noteTypeVocabularyTermSet='variant_note_type'
+				noteTypeVocabularyTermSet="variant_note_type"
 			/>
 		</>
 	);

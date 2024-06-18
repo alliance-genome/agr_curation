@@ -1,14 +1,14 @@
-import { AutocompleteMultiEditor } from "../Autocomplete/AutocompleteMultiEditor";
+import { AutocompleteMultiEditor } from '../Autocomplete/AutocompleteMultiEditor';
 import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { SubjectAutocompleteTemplate } from "../Autocomplete/SubjectAutocompleteTemplate";
-import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
+import { SubjectAutocompleteTemplate } from '../Autocomplete/SubjectAutocompleteTemplate';
+import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
 
 const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
-	const autocompleteFields = ["name", "curie"];
-	const endpoint = "soterm";
-	const filterName = "mutationTypeFilter";
+	const autocompleteFields = ['name', 'curie'];
+	const endpoint = 'soterm';
+	const filterName = 'mutationTypeFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 
 	setInputValue(event.query);
@@ -21,16 +21,19 @@ export const MutationTypesEditor = ({ props, errorMessages, onChange, dataKey })
 				search={mutationTypeSearch}
 				initialValue={props?.rowData?.mutationTypes}
 				rowProps={props}
-				fieldName='mutationTypes'
-				subField='curie'
-				valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-					<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
+				fieldName="mutationTypes"
+				subField="curie"
+				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
+					<SubjectAutocompleteTemplate
+						item={item}
+						setAutocompleteHoverItem={setAutocompleteHoverItem}
+						op={op}
+						query={query}
+					/>
+				)}
 				onValueChangeHandler={onChange}
 			/>
-			<DialogErrorMessageComponent
-				errorMessages={errorMessages[dataKey]}
-				errorField={"mutationTypes"}
-			/>
+			<DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={'mutationTypes'} />
 		</>
 	);
 };

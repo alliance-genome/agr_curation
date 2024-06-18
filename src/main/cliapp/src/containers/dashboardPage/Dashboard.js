@@ -5,46 +5,45 @@ import { Column } from 'primereact/column';
 import { CLASSES } from '../../constants/Classes';
 
 export const Dashboard = () => {
-
 	const [tableData, setTableData] = useState({});
 
 	useEffect(() => {
 		let _tableData = {};
 		const excludedEntities = [
-			"AGMDiseaseAnnotation",
-			"AlleleDiseaseAnnotation",
-			"GeneDiseaseAnnotation",
-			"AGMPhenotypeAnnotation",
-			"AllelePhenotypeAnnotation",
-			"GenePhenotypeAnnotation"
+			'AGMDiseaseAnnotation',
+			'AlleleDiseaseAnnotation',
+			'GeneDiseaseAnnotation',
+			'AGMPhenotypeAnnotation',
+			'AllelePhenotypeAnnotation',
+			'GenePhenotypeAnnotation',
 		];
-		
+
 		for (const key in CLASSES) {
 			const { type } = CLASSES[key];
 
-			if(!_tableData[type]){
+			if (!_tableData[type]) {
 				_tableData[type] = [];
 			}
-			if(!excludedEntities.includes(key)){
+			if (!excludedEntities.includes(key)) {
 				_tableData[type].push({
 					name: CLASSES[key].name,
-					link: CLASSES[key].link
+					link: CLASSES[key].link,
 				});
 			}
 		}
 		setTableData(_tableData);
-	},[]);
+	}, []);
 
 	const nameHyperlinkTemplate = (rowData) => {
-		return <a href={rowData.link}>{rowData.name}</a>
-	}
+		return <a href={rowData.link}>{rowData.name}</a>;
+	};
 
 	return (
 		<>
 			<div className="grid nested dashboard">
 				<div className="col-4">
 					<DataTable header="Entities" value={tableData.entity} sortField="name" sortOrder={1} showHeaders={false}>
-						<Column field="name" body={nameHyperlinkTemplate}/>
+						<Column field="name" body={nameHyperlinkTemplate} />
 					</DataTable>
 				</div>
 				<div className="col-4">

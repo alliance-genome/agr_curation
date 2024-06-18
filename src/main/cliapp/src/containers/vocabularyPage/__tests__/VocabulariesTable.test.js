@@ -1,13 +1,18 @@
-import React from "react";
-import { waitFor } from "@testing-library/react";
+import React from 'react';
+import { waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
-import { VocabulariesPage } from "../index";
-import { setLocalStorage } from "../../../tools/jest/setupTests";
-import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
-import { data } from "../mockData/mockData";
+import { VocabulariesPage } from '../index';
+import { setLocalStorage } from '../../../tools/jest/setupTests';
+import {
+	setupSettingsHandler,
+	setupFindHandler,
+	setupSearchHandler,
+	setupSaveSettingsHandler,
+} from '../../../tools/jest/commonMswhandlers';
+import { data } from '../mockData/mockData';
 import 'core-js/features/structured-clone';
 
-describe("<VocabulariesPage />", () => {
+describe('<VocabulariesPage />', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -15,7 +20,7 @@ describe("<VocabulariesPage />", () => {
 		setupSearchHandler(data);
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<VocabulariesPage />);
 
 		await waitFor(() => {
@@ -23,14 +28,14 @@ describe("<VocabulariesPage />", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<VocabulariesPage />);
 
 		const tableTitle = await result.findByText(/Vocabularies Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it("The table contains correct data", async () => {
+	it('The table contains correct data', async () => {
 		let result = await renderWithClient(<VocabulariesPage />);
 
 		const nameTd = await result.findByText(/Name type/i);

@@ -16,9 +16,9 @@ export class DiseaseAnnotationService extends BaseAuthService {
 	createDiseaseAnnotation(annotation) {
 		let newAnnotation = { ...annotation };
 
-		const { type } = (annotation.diseaseAnnotationSubject) ? newAnnotation.diseaseAnnotationSubject : '';
+		const { type } = annotation.diseaseAnnotationSubject ? newAnnotation.diseaseAnnotationSubject : '';
 
-		newAnnotation["type"] = subectAnnotationLookup[type];
+		newAnnotation['type'] = subectAnnotationLookup[type];
 		let endpoint;
 		if (type in subjectTypeEndpoints) {
 			endpoint = subjectTypeEndpoints[type];
@@ -37,20 +37,19 @@ const findEndpointType = (updatedAnnotation) => {
 };
 
 const typeEndpoints = {
-	"AGMDiseaseAnnotation": "agm",
-	"AlleleDiseaseAnnotation": "allele",
-	"GeneDiseaseAnnotation": "gene"
-}
+	AGMDiseaseAnnotation: 'agm',
+	AlleleDiseaseAnnotation: 'allele',
+	GeneDiseaseAnnotation: 'gene',
+};
 
 const subectAnnotationLookup = {
-	"AffectedGenomicModel": "AGMDiseaseAnnotation",
-	"Allele": "AlleleDiseaseAnnotation",
-	"Gene": "GeneDiseaseAnnotation"
-}
+	AffectedGenomicModel: 'AGMDiseaseAnnotation',
+	Allele: 'AlleleDiseaseAnnotation',
+	Gene: 'GeneDiseaseAnnotation',
+};
 
 const subjectTypeEndpoints = {
-	"AffectedGenomicModel": "agm",
-	"Allele": "allele",
-	"Gene": "gene"
-}
-
+	AffectedGenomicModel: 'agm',
+	Allele: 'allele',
+	Gene: 'gene',
+};

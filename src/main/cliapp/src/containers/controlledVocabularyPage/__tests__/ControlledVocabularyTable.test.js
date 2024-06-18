@@ -1,13 +1,19 @@
-import React from "react";
-import { waitFor } from "@testing-library/react";
+import React from 'react';
+import { waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
-import ControlledVocabularyPage from "../ControlledVocabularyPage";
-import { setLocalStorage } from "../../../tools/jest/setupTests";
-import { setupSettingsHandler, setupFindHandler, setupVocabularyHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
-import { data, termData, vocabularyData } from "../mockData/mockData.js";
+import ControlledVocabularyPage from '../ControlledVocabularyPage';
+import { setLocalStorage } from '../../../tools/jest/setupTests';
+import {
+	setupSettingsHandler,
+	setupFindHandler,
+	setupVocabularyHandler,
+	setupSearchHandler,
+	setupSaveSettingsHandler,
+} from '../../../tools/jest/commonMswhandlers';
+import { data, termData, vocabularyData } from '../mockData/mockData.js';
 import 'core-js/features/structured-clone';
 
-describe("<ControlledVocabularyPage />", () => {
+describe('<ControlledVocabularyPage />', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -17,23 +23,22 @@ describe("<ControlledVocabularyPage />", () => {
 		setupSearchHandler(data);
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<ControlledVocabularyPage />);
-		
+
 		await waitFor(() => {
 			expect(result);
 		});
-
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<ControlledVocabularyPage />);
 
 		const tableTitle = await result.findByText(/Controlled Vocabulary Terms Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it("Contains Correct Table Data", async () => {
+	it('Contains Correct Table Data', async () => {
 		let result = await renderWithClient(<ControlledVocabularyPage />);
 
 		const idTd = await result.findByText(/6363427/i);

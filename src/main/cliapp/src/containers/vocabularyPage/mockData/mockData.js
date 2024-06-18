@@ -1,13 +1,13 @@
 export const data = {
-	"results": [
+	results: [
 		{
-			"internal": false,
-			"obsolete": false,
-			"id": 20308688,
-			"name": "Name type",
-			"vocabularyDescription": "Type of name represented by a name annotation"
-		}
+			internal: false,
+			obsolete: false,
+			id: 20308688,
+			name: 'Name type',
+			vocabularyDescription: 'Type of name represented by a name annotation',
+		},
 	],
-	"returnedRecords": 1,
-	"totalResults": 1
+	returnedRecords: 1,
+	totalResults: 1,
 };

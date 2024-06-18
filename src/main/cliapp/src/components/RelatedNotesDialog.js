@@ -14,22 +14,27 @@ import { useControlledVocabularyService } from '../service/useControlledVocabula
 import { useVocabularyTermSetService } from '../service/useVocabularyTermSetService';
 import { ValidationService } from '../service/ValidationService';
 import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from '../utils/utils';
+import {
+	autocompleteSearch,
+	buildAutocompleteFilter,
+	multipleAutocompleteOnChange,
+	getRefStrings,
+} from '../utils/utils';
 import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocompleteTemplate';
 import { ListTableCell } from './ListTableCell';
 import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
 import { SearchService } from '../service/SearchService';
 
 export const RelatedNotesDialog = ({
-													originalRelatedNotesData,
-													setOriginalRelatedNotesData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow,
-													noteTypeVocabularyTermSet,
-													showReferences=true
-												}) => {
+	originalRelatedNotesData,
+	setOriginalRelatedNotesData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+	noteTypeVocabularyTermSet,
+	showReferences = true,
+}) => {
 	const { originalRelatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = originalRelatedNotesData;
-	const [localRelatedNotes, setLocalRelatedNotes] = useState(null) ;
+	const [localRelatedNotes, setLocalRelatedNotes] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -44,15 +49,15 @@ export const RelatedNotesDialog = ({
 		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
 		setLocalRelatedNotes(_localRelatedNotes);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localRelatedNotes) {
+			if (_localRelatedNotes) {
 				_localRelatedNotes.forEach((note) => {
 					rowsObject[`${note.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -60,14 +65,14 @@ export const RelatedNotesDialog = ({
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localRelatedNotes = [...localRelatedNotes];//add new note support
-		if(originalRelatedNotes && originalRelatedNotes[event.index]){
+		let _localRelatedNotes = [...localRelatedNotes]; //add new note support
+		if (originalRelatedNotes && originalRelatedNotes[event.index]) {
 			let dataKey = _localRelatedNotes[event.index].dataKey;
 			_localRelatedNotes[event.index] = global.structuredClone(originalRelatedNotes[event.index]);
 			_localRelatedNotes[event.index].dataKey = dataKey;
@@ -76,15 +81,16 @@ export const RelatedNotesDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInNotes(event.data,event.index);
+		compareChangesInNotes(event.data, event.index);
 	};
 
-	const compareChangesInNotes = (data,index) => {
-		if(originalRelatedNotes && originalRelatedNotes[index]) {
-			if ((originalRelatedNotes[index].references && !data.references) ||
-					(!originalRelatedNotes[index].references && data.references) ||
-					(data.references && (data.references.length !== originalRelatedNotes[index].references.length))
-				) {
+	const compareChangesInNotes = (data, index) => {
+		if (originalRelatedNotes && originalRelatedNotes[index]) {
+			if (
+				(originalRelatedNotes[index].references && !data.references) ||
+				(!originalRelatedNotes[index].references && data.references) ||
+				(data.references && data.references.length !== originalRelatedNotes[index].references.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.references) {
@@ -105,13 +111,13 @@ export const RelatedNotesDialog = ({
 				rowsEdited.current++;
 			}
 		}
-		
-		if((localRelatedNotes.length > originalRelatedNotes?.length) || !originalRelatedNotes){
+
+		if (localRelatedNotes.length > originalRelatedNotes?.length || !originalRelatedNotes) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateNote(localRelatedNotes[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -120,21 +126,26 @@ export const RelatedNotesDialog = ({
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update note [' + localRelatedNotes[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail: 'Could not update note [' + localRelatedNotes[event.index].id + ']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
 			});
 		} else {
 			delete _editingRows[event.index];
-			compareChangesInNotes(event.data,event.index);
+			compareChangesInNotes(event.data, event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
 		let _localRelatedNotes = [...localRelatedNotes];
@@ -164,25 +175,25 @@ export const RelatedNotesDialog = ({
 
 	const cloneNotes = (clonableNotes) => {
 		let _clonableNotes = global.structuredClone(clonableNotes);
-		if(_clonableNotes) {
-			let counter = 0 ;
+		if (_clonableNotes) {
+			let counter = 0;
 			_clonableNotes.forEach((note) => {
 				note.dataKey = counter++;
 			});
 		} else {
 			_clonableNotes = [];
-		};
+		}
 		return _clonableNotes;
 	};
 
 	const createNewNoteHandler = (event) => {
 		let cnt = localRelatedNotes ? localRelatedNotes.length : 0;
 		localRelatedNotes.push({
-			dataKey : cnt,
+			dataKey: cnt,
 			noteType: {
-				name : ""
+				name: '',
 			},
-			internal : false
+			internal: false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -199,20 +210,19 @@ export const RelatedNotesDialog = ({
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
-		
+		errorMessagesCopy[rowIndex]['relatedNotes'] = messageObject;
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
+
 		setOriginalRelatedNotesData((originalRelatedNotesData) => {
-				return {
-					...originalRelatedNotesData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalRelatedNotesData,
+				dialog: false,
+			};
+		});
 	};
 
 	const noteTypeTemplate = (rowData) => {
@@ -230,7 +240,7 @@ export const RelatedNotesDialog = ({
 	const onInternalEditorValueChange = (props, event) => {
 		let _localRelatedNotes = [...localRelatedNotes];
 		_localRelatedNotes[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const internalEditor = (props) => {
 		return (
@@ -239,9 +249,9 @@ export const RelatedNotesDialog = ({
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
@@ -256,13 +266,13 @@ export const RelatedNotesDialog = ({
 			<>
 				<ControlledVocabularyDropdown
 					field="noteType"
-					options={noteTypeTerms.sort((a, b) => (a.name > b.name) ? 1 : -1)}
+					options={noteTypeTerms.sort((a, b) => (a.name > b.name ? 1 : -1))}
 					editorChange={onNoteTypeEditorValueChange}
 					props={props}
 					showClear={false}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'noteType'} />
 			</>
 		);
 	};
@@ -274,7 +284,7 @@ export const RelatedNotesDialog = ({
 
 	const freeTextEditor = (props, fieldName, errorMessages) => {
 		if (errorMessages) {
-			errorMessages.severity = "error";
+			errorMessages.severity = 'error';
 		}
 		return (
 			<>
@@ -293,16 +303,12 @@ export const RelatedNotesDialog = ({
 		if (rowData && rowData.references) {
 			const refStrings = getRefStrings(rowData.references);
 			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item}
-					</EllipsisTableCell>
-				);
+				return <EllipsisTableCell>{item}</EllipsisTableCell>;
 			};
-			return <ListTableCell template={listTemplate} listData={refStrings} />
+			return <ListTableCell template={listTemplate} listData={refStrings} />;
 		}
 	};
-	
+
 	const evidenceEditorTemplate = (props, errorMessages) => {
 		return (
 			<>
@@ -310,103 +316,160 @@ export const RelatedNotesDialog = ({
 					search={evidenceSearch}
 					initialValue={props.rowData.references}
 					rowProps={props}
-					fieldName='references'
-					subField='curie'
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					fieldName="references"
+					subField="curie"
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
+						<LiteratureAutocompleteTemplate
+							item={item}
+							setAutocompleteHoverItem={setAutocompleteHoverItem}
+							op={op}
+							query={query}
+						/>
+					)}
 					onValueChangeHandler={onEvidenceValueChange}
 				/>
-				<DialogErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"references"}
-				/>
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'references'} />
 			</>
 		);
 	};
-	
+
 	const onEvidenceValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, "references", setFieldValue);
+		multipleAutocompleteOnChange(props, event, 'references', setFieldValue);
 	};
-	
+
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["curie", "cross_references.curie"];
-		const endpoint = "literature-reference";
-		const filterName = "evidenceFilter";
+		const autocompleteFields = ['curie', 'cross_references.curie'];
+		const endpoint = 'literature-reference';
+		const filterName = 'evidenceFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-	
+
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler} />
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const handleDeleteRelatedNote = (event, props) => {
-		let _localRelatedNotes = global.structuredClone(localRelatedNotes); 
-		if(props.dataKey){
+		let _localRelatedNotes = global.structuredClone(localRelatedNotes);
+		if (props.dataKey) {
 			_localRelatedNotes.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localRelatedNotes.splice(props.rowIndex, 1);
 		}
 		setLocalRelatedNotes(_localRelatedNotes);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteRelatedNote(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteRelatedNote(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 	<ColumnGroup>
-						<Row>
-							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-							<Column header="Note Type" />
-							<Column header="Text" />
-							{showReferences &&
-								<Column header="Evidence" />
-							}
-							<Column header="Internal" />
-						</Row>
-						</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Note Type" />
+				<Column header="Text" />
+				{showReferences && <Column header="Evidence" />}
+				<Column header="Internal" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-8' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-8"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Related Notes</h3>
-				<DataTable value={localRelatedNotes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
+				<DataTable
+					value={localRelatedNotes}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
 					<Column
-						editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={noteTypeEditor}
+						field="noteType.name"
+						header="Note Type"
+						headerClassName="surface-0"
+						body={noteTypeTemplate}
+					/>
+					<Column
+						editor={(props) => freeTextEditor(props, 'freeText', errorMessages)}
 						field="freeText"
 						header="Text"
 						body={textTemplate}
-						headerClassName='surface-0'
-						className='wrap-word max-w-35rem'
+						headerClassName="surface-0"
+						className="wrap-word max-w-35rem"
 					/>
-					{showReferences &&
-						<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)} className='wrap-word max-w-25rem'/>
-					}
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
+					{showReferences && (
+						<Column
+							editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+							field="evidence.curie"
+							header="Evidence"
+							headerClassName="surface-0"
+							body={(rowData) => evidenceTemplate(rowData)}
+							className="wrap-word max-w-25rem"
+						/>
+					)}
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
 				</DataTable>
 			</Dialog>
 		</div>
 	);
 };
-

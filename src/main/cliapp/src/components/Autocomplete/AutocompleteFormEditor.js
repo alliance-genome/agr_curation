@@ -1,36 +1,36 @@
 import React, { useRef, useState } from 'react';
-import { AutoComplete } from "primereact/autocomplete";
+import { AutoComplete } from 'primereact/autocomplete';
 import { onSelectionOver } from '../../utils/utils';
-import { EditorTooltip } from "./EditorTooltip";
+import { EditorTooltip } from './EditorTooltip';
 import { getIdentifier } from '../../utils/utils';
 
-export const AutocompleteFormEditor = (
-	{
-		search,
-		initialValue,
-		name,
-		rowProps,
-		classNames,
-		inputClassNames,
-		fieldName,
-		subField = "curie",
-		valueDisplay,
-		onValueChangeHandler,
-		disabled
-	}
-) => {
+export const AutocompleteFormEditor = ({
+	search,
+	initialValue,
+	name,
+	rowProps,
+	classNames,
+	inputClassNames,
+	fieldName,
+	subField = 'curie',
+	valueDisplay,
+	onValueChangeHandler,
+	disabled,
+}) => {
 	const [suggestions, setSuggestions] = useState([]);
 	const [query, setQuery] = useState(initialValue);
 	const [autocompleteHoverItem, setAutocompleteHoverItem] = useState({});
 	const op = useRef(null);
 
 	const itemTemplate = (item) => {
-		if(valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, query);
+		if (valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, query);
 
 		return (
 			<div>
-				<div onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteHoverItem)}
-					dangerouslySetInnerHTML={{__html: item.name + ' (' + getIdentifier(item) + ') '}}/>
+				<div
+					onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteHoverItem)}
+					dangerouslySetInnerHTML={{ __html: item.name + ' (' + getIdentifier(item) + ') ' }}
+				/>
 			</div>
 		);
 	};
@@ -39,7 +39,7 @@ export const AutocompleteFormEditor = (
 		<div>
 			<AutoComplete
 				name={name}
-				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
+				panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
 				field={subField}
 				value={initialValue}
 				disabled={disabled}
@@ -51,7 +51,7 @@ export const AutocompleteFormEditor = (
 				className={classNames}
 				inputClassName={inputClassNames}
 			/>
-			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName}/>
+			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName} />
 		</div>
-	)
-}
+	);
+};

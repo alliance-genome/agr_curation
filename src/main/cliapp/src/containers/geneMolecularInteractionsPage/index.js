@@ -1,3 +1,3 @@
-import { GeneMolecularInteractionsPage } from "./GeneMolecularInteractionsPage";
+import { GeneMolecularInteractionsPage } from './GeneMolecularInteractionsPage';
 
 export { GeneMolecularInteractionsPage };

@@ -6,17 +6,16 @@ export class VariantService extends BaseAuthService {
 		return this.api.put(`/variant`, updatedVariant);
 	}
 
-	createVariant(newVariant) { 
+	createVariant(newVariant) {
 		return this.api.post(`/variant`, newVariant);
 	}
 
-	async deleteVariant(variant) { 
+	async deleteVariant(variant) {
 		const deletionService = new DeletionService();
 		return await deletionService.delete(`variant`, variant.curie);
 	}
 
-	async getVariant(curie) { 
+	async getVariant(curie) {
 		return this.api.get(`/variant/${curie}`);
 	}
 }
-
