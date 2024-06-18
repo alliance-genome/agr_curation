@@ -90,7 +90,7 @@ public class ReferenceSynchronisationHelper {
 		ref.setObsolete(false);
 
 		Map<String, CrossReference> curationSystemXrefMap = new HashMap<>();
-		for (CrossReference xref : ref.getCrossReferences() ) {
+		for (CrossReference xref : ref.getCrossReferences()) {
 			curationSystemXrefMap.put(xref.getReferencedCurie(), xref);
 		}
 		
