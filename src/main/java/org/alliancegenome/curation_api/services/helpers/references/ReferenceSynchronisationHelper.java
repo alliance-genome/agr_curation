@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.references;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
@@ -35,7 +36,7 @@ public class ReferenceSynchronisationHelper {
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
 
 		if (litRef != null) {
-			Reference ref = referenceService.findByCurie(curie);
+			Reference ref = referenceService.findByCurie(litRef.getCurie());
 			if (ref == null) {
 				ref = new Reference();
 			}
@@ -88,26 +89,34 @@ public class ReferenceSynchronisationHelper {
 		ref.setCurie(litRef.getCurie());
 		ref.setObsolete(false);
 
-		List<CrossReference> xrefs = new ArrayList<>();
+		Map<String, CrossReference> curationSystemXrefMap = new HashMap<>();
+		for (CrossReference xref : ref.getCrossReferences()) {
+			curationSystemXrefMap.put(xref.getReferencedCurie(), xref);
+		}
+		
+		List<CrossReference> consolidatedXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(litRef.getCrossReferences())) {
 			for (LiteratureCrossReference litXref : litRef.getCrossReferences()) {
-				SearchResponse<CrossReference> xrefResponse = crossReferenceDAO.findByField("referencedCurie", litXref.getCurie());
-				CrossReference xref;
-				if (xrefResponse == null || xrefResponse.getSingleResult() == null) {
-					xref = new CrossReference();
+				if (curationSystemXrefMap.containsKey(litXref.getCurie())) {
+					consolidatedXrefs.add(curationSystemXrefMap.get(litXref.getCurie()));
+				} else {
+					CrossReference xref = new CrossReference();
 					xref.setReferencedCurie(litXref.getCurie());
 					xref.setDisplayName(litXref.getCurie());
 					xref.setInternal(false);
 					xref.setObsolete(false);
-					xref = crossReferenceDAO.persist(xref);
-				} else {
-					xref = xrefResponse.getSingleResult();
+					consolidatedXrefs.add(crossReferenceDAO.persist(xref));
 				}
-				xrefs.add(xref);
 			}
 		}
-		if (CollectionUtils.isNotEmpty(xrefs)) {
-			ref.setCrossReferences(xrefs);
+		if (CollectionUtils.isNotEmpty(ref.getCrossReferences())) {
+			ref.getCrossReferences().clear();
+		}
+		if (CollectionUtils.isNotEmpty(consolidatedXrefs)) {
+			if (ref.getCrossReferences() == null) {
+				ref.setCrossReferences(new ArrayList<>());
+			}
+			ref.getCrossReferences().addAll(consolidatedXrefs);
 		}
 
 		ref.setShortCitation(litRef.citationShort);
