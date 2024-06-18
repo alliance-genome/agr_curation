@@ -21,13 +21,13 @@ import java.util.List;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("605 - Expression bulk upload - FMS")
-@Order(605)
+@DisplayName("606 - Expression bulk upload - FMS")
+@Order(606)
 public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 
-	private final String expressionBulkPostEndpoint = "/api/expression-annotation/bulk/ZFIN/annotationFile";
-	private final String expressionTestFilePath = "src/test/resources/bulk/fms/05_expression/";
-	private final String expressionFindEndpoint = "/api/expression-annotation/find?limit=100&page=0";
+	private final String expressionBulkPostEndpoint = "/api/gene-expression-annotation/bulk/ZFIN/annotationFile";
+	private final String expressionTestFilePath = "src/test/resources/bulk/fms/07_expression/";
+	private final String expressionFindEndpoint = "/api/gene-expression-annotation/find?limit=100&page=0";
 	private final String taxon = "NCBITaxon:7955";
 	private final String gene = "GEXPTEST:GENE001";
 	private final String mmoTerm = "GEXPTEST:assay001";
@@ -78,7 +78,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 
 	private void loadRequiredEntities() throws Exception {
 		DataProvider dataProvider = createDataProvider("ZFIN", false);
-		createNCBITaxonTerm(taxon, "Taxon", false);
 		Vocabulary vocabulary1 = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm  symbolTerm = getVocabularyTerm(vocabulary1, "nomenclature_symbol");
 		loadGenes(List.of(gene), taxon, symbolTerm, dataProvider);
