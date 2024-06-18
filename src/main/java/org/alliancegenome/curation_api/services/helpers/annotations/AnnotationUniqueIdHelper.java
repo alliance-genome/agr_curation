@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -85,6 +86,11 @@ public abstract class AnnotationUniqueIdHelper {
 		uniqueId.addList(annotationDTO.getDiseaseQualifierNames());
 		uniqueId.add(annotationDTO.getDiseaseGeneticModifierRelationName());
 		uniqueId.addList(annotationDTO.getDiseaseGeneticModifierIdentifiers());
+		if (annotationDTO instanceof GeneDiseaseAnnotationDTO gda) {
+			if (gda.getSgdStrainBackgroundIdentifier() != null) {
+				uniqueId.add(gda.getSgdStrainBackgroundIdentifier());
+			}
+		}
 		return uniqueId.getUniqueId();
 	}
 
