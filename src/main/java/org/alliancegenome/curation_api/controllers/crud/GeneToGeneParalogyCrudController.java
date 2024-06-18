@@ -28,7 +28,7 @@ public class GeneToGeneParalogyCrudController extends BaseEntityCrudController<G
 
 	@Override
 	public APIResponse updateParalogy(String dataProvider, ParalogyIngestFmsDTO paralogyData) {
-		return paralogyExecutor.runLoad(dataProvider, paralogyData);
+		return paralogyExecutor.runLoadApi(geneToGeneParalogyService, dataProvider, paralogyData.getData());
 	}
 	
 }
