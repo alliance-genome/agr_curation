@@ -18,10 +18,8 @@ import java.util.List;
 @RequestScoped
 public class GeneExpressionAnnotationCrudController extends BaseEntityCrudController<GeneExpressionAnnotationService, GeneExpressionAnnotation, GeneExpressionAnnotationDAO> implements GeneExpressionAnnotationCrudInterface {
 
-	@Inject
-	GeneExpressionAnnotationService geneExpressionAnnotationService;
-	@Inject
-	GeneExpressionExecutor geneExpressionExecutor;
+	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
+	@Inject GeneExpressionExecutor geneExpressionExecutor;
 
 	@Override
 	@PostConstruct

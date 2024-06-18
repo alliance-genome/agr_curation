@@ -16,8 +16,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import java.util.HashMap;
 import java.util.List;
 
-@Path("/expression-annotation")
-@Tag(name = "CRUD - Expression Annotations")
+@Path("/gene-expression-annotation")
+@Tag(name = "CRUD - Gene Expression Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneExpressionAnnotationCrudInterface extends BaseIdCrudInterface<GeneExpressionAnnotation> {
