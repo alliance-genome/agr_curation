@@ -31,6 +31,8 @@
 		<module name="EmptyStatement" />
 		<module name="EqualsHashCode" />
 		<module name="InnerAssignment" />
+		<module name="OneStatementPerLine"/>
+		<module name="SingleSpaceSeparator" />
 		<module name="SimplifyBooleanExpression" />
 		<module name="SimplifyBooleanReturn" />
 		<module name="StringLiteralEquality" />
@@ -40,6 +42,11 @@
 		<module name="RegexpSinglelineJava">
 			<property name="format" value="^\t* "/>
 			<property name="message" value="Indent must use tab characters"/>
+			<property name="ignoreComments" value="true"/>
+		</module>
+		<module name="RegexpSinglelineJava">
+			<property name="format" value="[^\s]\s+$"/>
+			<property name="message" value="Line must not have trailing whitespace"/>
 			<property name="ignoreComments" value="true"/>
 		</module>
 		<module name="ExplicitInitialization" />

@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "singleReferenceAssociation", description = "POJO that represents an association supported by a single reference")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 
-@Table(indexes = { 
+@Table(indexes = {
 	@Index(name = "singlereferenceassociation_singlereference_index", columnList = "singleReference_id")
 })
 
