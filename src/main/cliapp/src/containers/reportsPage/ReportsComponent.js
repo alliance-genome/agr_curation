@@ -13,15 +13,13 @@ import { ReportTable } from './ReportTable';
 import { TopButtons } from './TopButtons';
 import { Toast } from 'primereact/toast';
 
-
 export const ReportsComponent = () => {
-
 	const reportReducer = (state, action) => {
 		switch (action.type) {
 			case 'EDIT':
 				return { ...action.editReport };
 			case 'RESET':
-				return { name: "", cronSchedule: "" };
+				return { name: '', cronSchedule: '' };
 			default:
 				return { ...state, [action.field]: action.value };
 		}
@@ -43,8 +41,7 @@ export const ReportsComponent = () => {
 
 	let reportService = null;
 
-	useQuery(['reporttable'],
-		() => searchService.find('curationreportgroup', 100, 0, {}), {
+	useQuery(['reporttable'], () => searchService.find('curationreportgroup', 100, 0, {}), {
 		onSuccess: (data) => {
 			if (data.results) {
 				for (let group of data.results) {
@@ -58,7 +55,7 @@ export const ReportsComponent = () => {
 			}
 		},
 		keepPreviousData: true,
-		refetchOnWindowFocus: false
+		refetchOnWindowFocus: false,
 	});
 
 	const getService = () => {
@@ -66,17 +63,17 @@ export const ReportsComponent = () => {
 			reportService = new ReportService();
 		}
 		return reportService;
-	}
+	};
 
 	const reportTable = (group) => {
 		return (
-			<ReportTable 
-				curationReports={group.curationReports} 
-				getService={getService} 
-				setReport={setReport} 
-				setReportDialog={setReportDialog} 
-				reportDispatch={reportDispatch} 
-				setNewReportDialog={setNewReportDialog} 
+			<ReportTable
+				curationReports={group.curationReports}
+				getService={getService}
+				setReport={setReport}
+				setReportDialog={setReportDialog}
+				reportDispatch={reportDispatch}
+				setNewReportDialog={setNewReportDialog}
 				queryClient={queryClient}
 				toast={toast}
 			/>
@@ -86,7 +83,7 @@ export const ReportsComponent = () => {
 	return (
 		<div className="card">
 			<Toast ref={toast} position="top-right" />
-			<TopButtons 
+			<TopButtons
 				reportDispatch={reportDispatch}
 				setNewReportDialog={setNewReportDialog}
 				setReportGroupDialog={setReportGroupDialog}
@@ -94,7 +91,7 @@ export const ReportsComponent = () => {
 			/>
 			<h3>Reports Table</h3>
 			<Messages ref={errorMessage} />
-			<GroupTable getService={getService} queryClient={queryClient} groups={groups} reportTable={reportTable}/>
+			<GroupTable getService={getService} queryClient={queryClient} groups={groups} reportTable={reportTable} />
 			<NewReportForm
 				newReportDialog={newReportDialog}
 				setNewReportDialog={setNewReportDialog}
@@ -103,16 +100,13 @@ export const ReportsComponent = () => {
 				groups={groups}
 				reportService={reportService}
 			/>
-			<NewReportGroupForm
-				reportGroupDialog={reportGroupDialog}
-				setReportGroupDialog={setReportGroupDialog}
-			/>
-		 <ReportDialog
+			<NewReportGroupForm reportGroupDialog={reportGroupDialog} setReportGroupDialog={setReportGroupDialog} />
+			<ReportDialog
 				reportDialog={reportDialog}
 				setReportDialog={setReportDialog}
 				service={getService}
 				report={report}
-			/> 
+			/>
 		</div>
 	);
 };

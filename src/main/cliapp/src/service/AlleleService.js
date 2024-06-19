@@ -10,17 +10,16 @@ export class AlleleService extends BaseAuthService {
 		return this.api.put(`/allele/updateDetail`, updatedAllele);
 	}
 
-	createAllele(newAllele) { 
+	createAllele(newAllele) {
 		return this.api.post(`/allele`, newAllele);
 	}
 
-	async deleteAllele(allele) { 
+	async deleteAllele(allele) {
 		const deletionService = new DeletionService();
 		return await deletionService.delete(`allele`, allele.id);
 	}
 
-	async getAllele(identifier) { 
+	async getAllele(identifier) {
 		return this.api.get(`/allele/${identifier}`);
 	}
 }
-

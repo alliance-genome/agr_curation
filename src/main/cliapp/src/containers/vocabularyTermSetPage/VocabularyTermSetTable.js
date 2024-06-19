@@ -1,21 +1,27 @@
-import React, {useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Messages } from 'primereact/messages';
-import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
-import { EllipsisTableCell } from "../../components/EllipsisTableCell";
-import { ListTableCell } from "../../components/ListTableCell";
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { ListTableCell } from '../../components/ListTableCell';
 import { Button } from 'primereact/button';
-import { VocabularyTermSetService } from "../../service/VocabularyTermSetService";
+import { VocabularyTermSetService } from '../../service/VocabularyTermSetService';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { NewVocabularyTermSetForm } from './NewVocabularyTermSetForm';
 import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer';
-import { InputTextEditor } from "../../components/InputTextEditor";
+import { InputTextEditor } from '../../components/InputTextEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEditor";
-import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange, setNewEntity} from "../../utils/utils";
-import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import {
+	autocompleteSearch,
+	buildAutocompleteFilter,
+	defaultAutocompleteOnChange,
+	multipleAutocompleteOnChange,
+	setNewEntity,
+} from '../../utils/utils';
+import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { Tooltip } from 'primereact/tooltip';
@@ -23,7 +29,6 @@ import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 export const VocabularyTermSetTable = () => {
-
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [totalRecords, setTotalRecords] = useState(0);
 	const { newVocabularyTermSetState, newVocabularyTermSetDispatch } = useNewVocabularyTermSetReducer();
@@ -40,7 +45,7 @@ export const VocabularyTermSetTable = () => {
 
 	let vocabularyTermSetService = new VocabularyTermSetService();
 
-	const mutation = useMutation(updatedVocabularyTermSet => {
+	const mutation = useMutation((updatedVocabularyTermSet) => {
 		if (!vocabularyTermSetService) {
 			vocabularyTermSetService = new VocabularyTermSetService();
 		}
@@ -48,32 +53,27 @@ export const VocabularyTermSetTable = () => {
 	});
 
 	const handleNewVocabularyTermSetOpen = () => {
-		newVocabularyTermSetDispatch({type: "OPEN_DIALOG"})
+		newVocabularyTermSetDispatch({ type: 'OPEN_DIALOG' });
 	};
-
 
 	const vocabularyTemplate = (rowData) => {
 		if (rowData.vocabularyTermSetVocabulary) {
-			return (
-				<EllipsisTableCell>
-					{rowData.vocabularyTermSetVocabulary.name}
-				</EllipsisTableCell>
-			);
+			return <EllipsisTableCell>{rowData.vocabularyTermSetVocabulary.name}</EllipsisTableCell>;
 		}
 	};
 
 	const onVocabularyChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "vocabularyTermSetVocabulary", setFieldValue, "name");
-	}
+		defaultAutocompleteOnChange(props, event, 'vocabularyTermSetVocabulary', setFieldValue, 'name');
+	};
 	const vocabularySearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields =["name"];
-		const endpoint="vocabulary";
-		const filterName="vocabularyFilter";
+		const autocompleteFields = ['name'];
+		const endpoint = 'vocabulary';
+		const filterName = 'vocabularyFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const vocabularyEditorTemplate = (props) => {
 		return (
@@ -82,15 +82,21 @@ export const VocabularyTermSetTable = () => {
 					search={vocabularySearch}
 					initialValue={props.rowData.vocabularyTermSetVocabulary?.name}
 					rowProps={props}
-					fieldName='vocabularyTermSetVocabulary'
-					subField={"name"}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					fieldName="vocabularyTermSetVocabulary"
+					subField={'name'}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
+						<VocabTermAutocompleteTemplate
+							item={item}
+							setAutocompleteSelectedItem={setAutocompleteSelectedItem}
+							op={op}
+							query={query}
+						/>
+					)}
 					onValueChangeHandler={onVocabularyChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={"vocabularyTermSetVocabulary"}
+					errorField={'vocabularyTermSetVocabulary'}
 				/>
 			</>
 		);
@@ -99,59 +105,58 @@ export const VocabularyTermSetTable = () => {
 	const memberTermsTemplate = (rowData) => {
 		if (rowData.memberTerms) {
 			const listTemplate = (memberTerm) => {
-				return (
-					<EllipsisTableCell>
-						{memberTerm.name}
-					</EllipsisTableCell>
-				);
+				return <EllipsisTableCell>{memberTerm.name}</EllipsisTableCell>;
 			};
 			return (
 				<>
-					<ListTableCell template={listTemplate} listData={rowData.memberTerms} showBullets={true}/>
+					<ListTableCell template={listTemplate} listData={rowData.memberTerms} showBullets={true} />
 				</>
 			);
 		}
 	};
 
 	const onMemberTermsChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, "memberTerms", setFieldValue);
+		multipleAutocompleteOnChange(props, event, 'memberTerms', setFieldValue);
 	};
 
 	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
-		const autocompleteFields =["name"];
-		const endpoint = "vocabularyterm";
-		const filterName = "memberTermsFilter";
+		const autocompleteFields = ['name'];
+		const endpoint = 'vocabularyterm';
+		const filterName = 'memberTermsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
 			vocabularyFilter: {
-				"vocabulary.name": {
-					queryString: props.props.value[props.rowIndex].vocabularyTermSetVocabulary.name
-				}
-			}
-		}
+				'vocabulary.name': {
+					queryString: props.props.value[props.rowIndex].vocabularyTermSetVocabulary.name,
+				},
+			},
+		};
 
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	}
+	};
 
 	const memberTermsEditorTemplate = (props) => {
 		return (
 			<>
 				<AutocompleteMultiEditor
 					name="memberTerms"
-					fieldName='memberTerms'
-					subField='name'
+					fieldName="memberTerms"
+					subField="name"
 					initialValue={props.rowData.memberTerms}
 					rowProps={props}
 					search={memberTermSearch}
 					onValueChangeHandler={onMemberTermsChange}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
+						<VocabTermAutocompleteTemplate
+							item={item}
+							setAutocompleteSelectedItem={setAutocompleteSelectedItem}
+							op={op}
+							query={query}
+						/>
+					)}
 				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField="memberTerms"
-				/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="memberTerms" />
 			</>
 		);
 	};
@@ -159,11 +164,8 @@ export const VocabularyTermSetTable = () => {
 	const nameEditor = (props) => {
 		return (
 			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={'name'}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"name"}/>
+				<InputTextEditor rowProps={props} fieldName={'name'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'name'} />
 			</>
 		);
 	};
@@ -171,11 +173,11 @@ export const VocabularyTermSetTable = () => {
 	const descriptionEditor = (props) => {
 		return (
 			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={'vocabularyTermSetDescription'}
+				<InputTextEditor rowProps={props} fieldName={'vocabularyTermSetDescription'} />
+				<ErrorMessageComponent
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField={'vocabularyTermSetDescription'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"vocabularyTermSetDescription"}/>
 			</>
 		);
 	};
@@ -184,58 +186,65 @@ export const VocabularyTermSetTable = () => {
 		return (
 			<>
 				<EllipsisTableCell otherClasses={`${field}${rowData.id}`}>{rowData[field]}</EllipsisTableCell>
-				<Tooltip target={`.${field}${rowData.id}`} content={rowData[field]} style={{ width: '450px', maxWidth: '450px' }} />
+				<Tooltip
+					target={`.${field}${rowData.id}`}
+					content={rowData[field]}
+					style={{ width: '450px', maxWidth: '450px' }}
+				/>
 			</>
-		)
-	}
+		);
+	};
 
 	const columns = [
 		{
-			field: "name",
-			header: "Name",
-			body: (rowData) => stringBodyTemplate(rowData, "name"),
+			field: 'name',
+			header: 'Name',
+			body: (rowData) => stringBodyTemplate(rowData, 'name'),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-			editor: (props) => nameEditor(props)
+			editor: (props) => nameEditor(props),
 		},
 		{
-			field: "vocabularyTermSetVocabulary.name",
-			header: "Vocabulary",
+			field: 'vocabularyTermSetVocabulary.name',
+			header: 'Vocabulary',
 			sortable: true,
 			body: (rowData) => vocabularyTemplate(rowData),
 			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
-			editor: (props) => vocabularyEditorTemplate(props)
+			editor: (props) => vocabularyEditorTemplate(props),
 		},
 		{
-			field: "memberTerms.name",
-			header: "Member Terms",
+			field: 'memberTerms.name',
+			header: 'Member Terms',
 			sortable: true,
 			body: memberTermsTemplate,
 			filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
-			editor: (props) => memberTermsEditorTemplate(props)
+			editor: (props) => memberTermsEditorTemplate(props),
 		},
 		{
-			field: "vocabularyTermSetDescription",
-			header: "Description",
-			body: (rowData) => stringBodyTemplate(rowData, "vocabularyTermSetDescription"),
+			field: 'vocabularyTermSetDescription',
+			header: 'Description',
+			body: (rowData) => stringBodyTemplate(rowData, 'vocabularyTermSetDescription'),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
-			editor: (props) => descriptionEditor(props)
+			editor: (props) => descriptionEditor(props),
 		},
 		{
-			field: "vocabularyLabel",
-			header: "Label",
+			field: 'vocabularyLabel',
+			header: 'Label',
 			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
-			body: (rowData) => stringBodyTemplate(rowData, "vocabularyLabel")
-		}
+			body: (rowData) => stringBodyTemplate(rowData, 'vocabularyLabel'),
+		},
 	];
 
 	const DEFAULT_COLUMN_WIDTH = 15;
-	const SEARCH_ENDPOINT = "vocabularytermset";
+	const SEARCH_ENDPOINT = 'vocabularytermset';
 
-	const initialTableState = getDefaultTableState("VocabularyTermSets", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState('VocabularyTermSets', columns, DEFAULT_COLUMN_WIDTH);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isLoading, isFetching } = useGetTableData({
 		tableState,
@@ -244,22 +253,28 @@ export const VocabularyTermSetTable = () => {
 		setEntities: setTermSets,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
-	const headerButtons = (disabled=false) => {
+	const headerButtons = (disabled = false) => {
 		return (
 			<>
-				<Button label="New Vocabulary Term Set" icon="pi pi-plus" onClick={handleNewVocabularyTermSetOpen} disabled={disabled} />&nbsp;&nbsp;
+				<Button
+					label="New Vocabulary Term Set"
+					icon="pi pi-plus"
+					onClick={handleNewVocabularyTermSetOpen}
+					disabled={disabled}
+				/>
+				&nbsp;&nbsp;
 			</>
 		);
 	};
 
 	return (
 		<div className="card">
-			<Toast ref={toast_topleft} position="top-left"/>
-			<Toast ref={toast_topright} position="top-right"/>
-			<Messages ref={errorMessage}/>
+			<Toast ref={toast_topleft} position="top-left" />
+			<Toast ref={toast_topright} position="top-right" />
+			<Messages ref={errorMessage} />
 			<GenericDataTable
 				endpoint={SEARCH_ENDPOINT}
 				tableName="Vocabulary Term Sets"
@@ -271,12 +286,12 @@ export const VocabularyTermSetTable = () => {
 				setTableState={setTableState}
 				columns={columns}
 				isEditable={true}
-				idFields={["vocabularyTermSetVocabulary, memberTerms"]}
+				idFields={['vocabularyTermSetVocabulary, memberTerms']}
 				mutation={mutation}
 				isInEditMode={isInEditMode}
 				setIsInEditMode={setIsInEditMode}
-				toasts={{toast_topleft, toast_topright }}
-				errorObject={{errorMessages, setErrorMessages}}
+				toasts={{ toast_topleft, toast_topright }}
+				errorObject={{ errorMessages, setErrorMessages }}
 				headerButtons={headerButtons}
 				deletionEnabled={true}
 				deletionMethod={vocabularyTermSetService.deleteVocabularyTermSet}
@@ -288,8 +303,10 @@ export const VocabularyTermSetTable = () => {
 				newVocabularyTermSetDispatch={newVocabularyTermSetDispatch}
 				searchService={searchService}
 				vocabularyTermSetService={vocabularyTermSetService}
-				setNewVocabularyTermSet={(newTermSet, queryClient) => setNewEntity(tableState, setTermSets, newTermSet, queryClient)}
+				setNewVocabularyTermSet={(newTermSet, queryClient) =>
+					setNewEntity(tableState, setTermSets, newTermSet, queryClient)
+				}
 			/>
 		</div>
-	)
-}
+	);
+};

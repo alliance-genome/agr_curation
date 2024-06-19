@@ -1,36 +1,36 @@
 import React, { useRef, useState } from 'react';
-import { AutoComplete } from "primereact/autocomplete";
+import { AutoComplete } from 'primereact/autocomplete';
 import { onSelectionOver } from '../../utils/utils';
-import { EditorTooltip } from "./EditorTooltip";
+import { EditorTooltip } from './EditorTooltip';
 import { getIdentifier } from '../../utils/utils';
 
-export const AutocompleteFormMultiEditor = (
-	{
-		search,
-		initialValue,
-		name,
-		rowProps,
-		classNames,
-		fieldName,
-		subField = "curie",
-		valueDisplay,
-		onValueChangeHandler,
-		customRef,
-		disabled
-	}
-) => {
+export const AutocompleteFormMultiEditor = ({
+	search,
+	initialValue,
+	name,
+	rowProps,
+	classNames,
+	fieldName,
+	subField = 'curie',
+	valueDisplay,
+	onValueChangeHandler,
+	customRef,
+	disabled,
+}) => {
 	const [suggestions, setSuggestions] = useState([]);
 	const [inputValue, setInputValue] = useState(initialValue);
 	const [autocompleteHoverItem, setAutocompleteHoverItem] = useState({});
 	const op = useRef(null);
 
 	const itemTemplate = (item) => {
-		if(valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, inputValue);
+		if (valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, inputValue);
 
 		return (
 			<div>
-				<div onMouseOver={(event) => onSelectionOver(event, item, inputValue, op, setAutocompleteHoverItem)}
-					dangerouslySetInnerHTML={{__html: item.name + ' (' + getIdentifier(item) + ') '}}/>
+				<div
+					onMouseOver={(event) => onSelectionOver(event, item, inputValue, op, setAutocompleteHoverItem)}
+					dangerouslySetInnerHTML={{ __html: item.name + ' (' + getIdentifier(item) + ') ' }}
+				/>
 			</div>
 		);
 	};
@@ -41,7 +41,7 @@ export const AutocompleteFormMultiEditor = (
 				ref={customRef}
 				name={name}
 				multiple={true}
-				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
+				panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
 				field={subField}
 				value={initialValue}
 				disabled={disabled}
@@ -52,7 +52,7 @@ export const AutocompleteFormMultiEditor = (
 				onChange={(e) => onValueChangeHandler(e)}
 				className={classNames}
 			/>
-			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName}/>
+			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName} />
 		</div>
-	)
-}
+	);
+};

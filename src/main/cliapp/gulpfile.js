@@ -1,17 +1,17 @@
-const gulp = require("gulp");
-const inlinesource = require("gulp-inline-source");
-const replace = require("gulp-replace");
+const gulp = require('gulp');
+const inlinesource = require('gulp-inline-source');
+const replace = require('gulp-replace');
 
-gulp.task("default", () => {
+gulp.task('default', () => {
 	return gulp
-		.src("./build/*.html")
+		.src('./build/*.html')
 		.pipe(replace('.js"></script>', '.js" inline></script>'))
 		.pipe(replace('rel="stylesheet">', 'rel="stylesheet" inline>'))
 		.pipe(
 			inlinesource({
 				compress: false,
-				ignore: ["png"],
+				ignore: ['png'],
 			})
 		)
-		.pipe(gulp.dest("./build"));
-}); 
+		.pipe(gulp.dest('./build'));
+});

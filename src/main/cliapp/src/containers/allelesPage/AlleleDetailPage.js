@@ -40,45 +40,40 @@ export default function AlleleDetailPage() {
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 
-	const labelColumnSize = "col-3";
-	const widgetColumnSize = "col-4";
-	const fieldDetailsColumnSize = "col-5";
+	const labelColumnSize = 'col-3';
+	const widgetColumnSize = 'col-4';
+	const fieldDetailsColumnSize = 'col-5';
 
-	const { isLoading: getRequestIsLoading } = useQuery([identifier],
-		() => alleleService.getAllele(identifier),
-		{
-			onSuccess: (result) => {
-				alleleDispatch({ type: 'SET', value: result?.data?.entity });
-			},
-			onError: (error) => {
-				console.warn(error);
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
-		}
-	);
+	const { isLoading: getRequestIsLoading } = useQuery([identifier], () => alleleService.getAllele(identifier), {
+		onSuccess: (result) => {
+			alleleDispatch({ type: 'SET', value: result?.data?.entity });
+		},
+		onError: (error) => {
+			console.warn(error);
+		},
+		keepPreviousData: true,
+		refetchOnWindowFocus: false,
+	});
 
-	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation(allele => {
+	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation((allele) => {
 		return alleleService.saveAlleleDetail(allele);
 	});
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
 		alleleDispatch({
-			type: "SUBMIT"
+			type: 'SUBMIT',
 		});
-
 
 		const areUiErrors = validateRequiredAutosuggestField(
 			alleleState.allele.alleleGeneAssociations,
 			alleleState.entityStates.alleleGeneAssociations.errorMessages,
 			alleleDispatch,
-			"alleleGeneAssociations",
-			"alleleGeneAssociationObject",
+			'alleleGeneAssociations',
+			'alleleGeneAssociationObject'
 		);
 
-
-		if(areUiErrors) return;
+		if (areUiErrors) return;
 
 		alleleMutate(alleleState.allele, {
 			onSuccess: (result) => {
@@ -96,21 +91,21 @@ export default function AlleleDetailPage() {
 					message = `${error.response.status} ${error.response.statusText}`;
 				}
 				toastError.current.show([
-					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false }
+					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false },
 				]);
 
-				try{
+				try {
 					processErrors(data, alleleDispatch, alleleState.allele);
-				} catch(e){
+				} catch (e) {
 					console.error(e);
 				}
-			}
+			},
 		});
 	};
 
 	const onTaxonValueChange = (event) => {
 		let value = {};
-		if (typeof event.value === "object") {
+		if (typeof event.value === 'object') {
 			value = event.value;
 		} else {
 			value.curie = event.value;
@@ -124,9 +119,9 @@ export default function AlleleDetailPage() {
 
 	const onInCollectionValueChange = (event) => {
 		let value = {};
-		if (typeof event.value === "object") {
+		if (typeof event.value === 'object') {
 			value = event.value;
-		} else if (event.value === "") {
+		} else if (event.value === '') {
 			value = undefined;
 		} else {
 			value.name = event.value;
@@ -162,28 +157,29 @@ export default function AlleleDetailPage() {
 		});
 	};
 
-	if (getRequestIsLoading) return (
-		<div className='flex align-items-center justify-content-center h-screen'>
-			<ProgressSpinner />
-		</div>
-	);
+	if (getRequestIsLoading)
+		return (
+			<div className="flex align-items-center justify-content-center h-screen">
+				<ProgressSpinner />
+			</div>
+		);
 
 	const headerText = () => {
-		let prefix = "Allele: ";
+		let prefix = 'Allele: ';
 		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.modEntityId) {
 			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.modEntityId})`;
 		}
 		if (alleleState.allele?.modEntityId) {
 			return `${prefix} ${alleleState.allele.modEntityId}`;
 		}
-		return "Allele Detail Page";
+		return 'Allele Detail Page';
 	};
 
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!(allelePutRequestIsLoading)} />
+			<LoadingOverlay isLoading={!!allelePutRequestIsLoading} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -191,11 +187,11 @@ export default function AlleleDetailPage() {
 							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex justify-content-start py-3">
-							<Button label="Save" icon="pi pi-check" className="p-button-text" size='large' onClick={handleSubmit} />
+							<Button label="Save" icon="pi pi-check" className="p-button-text" size="large" onClick={handleSubmit} />
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<form className='mt-8'>
+				<form className="mt-8">
 					<IdentifierFormTemplate
 						identifier={alleleState.allele?.curie}
 						label="Curie"
@@ -226,39 +222,23 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<FullNameForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<FullNameForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<SymbolForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-						labelColumnSize={labelColumnSize}
-					/>
+					<SymbolForm state={alleleState} dispatch={alleleDispatch} labelColumnSize={labelColumnSize} />
 
 					<Divider />
 
-					<SynonymsForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<SynonymsForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<SecondaryIdsForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<SecondaryIdsForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<NomenclatureEventsForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<NomenclatureEventsForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
@@ -273,45 +253,27 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<MutationTypesForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<MutationTypesForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<FunctionalImpactsForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<FunctionalImpactsForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<GermilineTransmissionStatusForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<GermilineTransmissionStatusForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<DatabaseStatusForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<DatabaseStatusForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<InheritanceModesForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<InheritanceModesForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<ReferencesForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<ReferencesForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
@@ -328,8 +290,8 @@ export default function AlleleDetailPage() {
 
 					<BooleanFormEditor
 						value={alleleState.allele?.isExtinct}
-						name={"isExtinct"}
-						label={"Is Extinct"}
+						name={'isExtinct'}
+						label={'Is Extinct'}
 						onValueChange={onIsExtinctValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
@@ -340,17 +302,11 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<RelatedNotesForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<RelatedNotesForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
-					<AlleleGeneAssociationsForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-					/>
+					<AlleleGeneAssociationsForm state={alleleState} dispatch={alleleDispatch} />
 
 					<Divider />
 
@@ -405,8 +361,8 @@ export default function AlleleDetailPage() {
 
 					<BooleanFormEditor
 						value={alleleState.allele?.internal}
-						name={"internal"}
-						label={"Internal"}
+						name={'internal'}
+						label={'Internal'}
 						onValueChange={onInternalValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
@@ -418,8 +374,8 @@ export default function AlleleDetailPage() {
 
 					<BooleanFormEditor
 						value={alleleState.allele?.obsolete}
-						name={"obsolete"}
-						label={"Obsolete"}
+						name={'obsolete'}
+						label={'Obsolete'}
 						onValueChange={onObsoleteValueChange}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
@@ -431,5 +387,4 @@ export default function AlleleDetailPage() {
 			</ErrorBoundary>
 		</>
 	);
-
-};
+}

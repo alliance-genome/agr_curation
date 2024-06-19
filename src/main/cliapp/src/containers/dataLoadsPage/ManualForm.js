@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 import { DataLoadService } from '../../service/DataLoadService';
-import { Dropdown } from "primereact/dropdown";
+import { Dropdown } from 'primereact/dropdown';
 
 export const ManualForm = ({ hideManual, newBulkLoad, onChange }) => {
 	const dataLoadService = new DataLoadService();
@@ -16,9 +16,9 @@ export const ManualForm = ({ hideManual, newBulkLoad, onChange }) => {
 						value={newBulkLoad.dataProvider}
 						options={dataProviders}
 						onChange={onChange}
-						placeholder={"Select Data Provider"}
-						className='p-col-12'
-						name='dataProvider'
+						placeholder={'Select Data Provider'}
+						className="p-col-12"
+						name="dataProvider"
 					/>
 				</div>
 			)}

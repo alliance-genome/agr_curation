@@ -1,14 +1,19 @@
-import React from "react";
-import { BrowserRouter } from "react-router-dom/cjs/react-router-dom";
-import { waitFor } from "@testing-library/react";
+import React from 'react';
+import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom';
+import { waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
-import { VariantsTable } from "../VariantsTable";
-import { setLocalStorage } from "../../../tools/jest/setupTests";
-import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
-import { data } from "../mockData/mockData.js";
+import { VariantsTable } from '../VariantsTable';
+import { setLocalStorage } from '../../../tools/jest/setupTests';
+import {
+	setupSettingsHandler,
+	setupFindHandler,
+	setupSearchHandler,
+	setupSaveSettingsHandler,
+} from '../../../tools/jest/commonMswhandlers';
+import { data } from '../mockData/mockData.js';
 import 'core-js/features/structured-clone';
 
-describe("<VariantsTable />", () => {
+describe('<VariantsTable />', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -16,24 +21,35 @@ describe("<VariantsTable />", () => {
 		setupSearchHandler(data);
 	});
 
-	it("Renders without crashing", async () => {
-		let result = await renderWithClient(<BrowserRouter><VariantsTable /></BrowserRouter>);
-		
+	it('Renders without crashing', async () => {
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<VariantsTable />
+			</BrowserRouter>
+		);
+
 		await waitFor(() => {
 			expect(result);
 		});
-
 	});
 
-	it("Contains Correct Table Name", async () => {
-		let result = await renderWithClient(<BrowserRouter><VariantsTable /></BrowserRouter>);
+	it('Contains Correct Table Name', async () => {
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<VariantsTable />
+			</BrowserRouter>
+		);
 
 		const tableTitle = await result.findByText(/Variants Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it("Contains Correct Table Data", async () => {
-		let result = await renderWithClient(<BrowserRouter><VariantsTable /></BrowserRouter>);
+	it('Contains Correct Table Data', async () => {
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<VariantsTable />
+			</BrowserRouter>
+		);
 
 		const curieTd = await result.findByText(/WB:WBVarTest0002/i);
 		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);

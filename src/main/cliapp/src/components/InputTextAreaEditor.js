@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { InputTextarea } from "primereact/inputtextarea";
+import { InputTextarea } from 'primereact/inputtextarea';
 
-export const InputTextAreaEditor = ({ initalValue, editorChange, rows, columns}) => {
+export const InputTextAreaEditor = ({ initalValue, editorChange, rows, columns }) => {
 	const [fieldValue, setFieldValue] = useState(initalValue ? initalValue : '');
 
 	const onChange = (event) => {
 		setFieldValue(event.value);
 		editorChange(event);
-	}
+	};
 
 	return (
 		<>
@@ -19,5 +19,5 @@ export const InputTextAreaEditor = ({ initalValue, editorChange, rows, columns})
 				cols={columns}
 			/>
 		</>
-	)
-}
+	);
+};

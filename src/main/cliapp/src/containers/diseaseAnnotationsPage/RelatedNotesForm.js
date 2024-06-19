@@ -9,7 +9,7 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
+import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 
 export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, errorMessages, editingRows }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -19,18 +19,24 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 
 	const onRowEditChange = (e) => {
 		console.log(e);
-	}
+	};
 
 	const createNewNoteHandler = (event) => {
 		event.preventDefault();
 
 		let count = relatedNotes ? relatedNotes.length : 0;
-		dispatch({type: "ADD_NEW_NOTE", count})
+		dispatch({ type: 'ADD_NEW_NOTE', count });
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		dispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "internal", index: props.rowIndex, value: event.value.name});
-	}
+		dispatch({
+			type: 'EDIT_ROW',
+			tableType: 'relatedNotes',
+			field: 'internal',
+			index: props.rowIndex,
+			value: event.value.name,
+		});
+	};
 
 	const internalEditor = (props) => {
 		return (
@@ -39,15 +45,21 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<FormErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<FormErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
 
 	const onNoteTypeEditorValueChange = (props, event) => {
-		dispatch({type: "EDIT_ROW", tableType: "relatedNotes",  field: "noteType", index: props.rowIndex, value: event.target.value})
+		dispatch({
+			type: 'EDIT_ROW',
+			tableType: 'relatedNotes',
+			field: 'noteType',
+			index: props.rowIndex,
+			value: event.target.value,
+		});
 	};
 
 	const noteTypeEditor = (props) => {
@@ -59,15 +71,21 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 					editorChange={onNoteTypeEditorValueChange}
 					props={props}
 					showClear={false}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'noteType'} />
 			</>
 		);
 	};
 
 	const onFreeTextEditorValueChange = (event, props) => {
-		dispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "freeText", index: props.rowIndex, value: event.target.value})
+		dispatch({
+			type: 'EDIT_ROW',
+			tableType: 'relatedNotes',
+			field: 'freeText',
+			index: props.rowIndex,
+			value: event.target.value,
+		});
 	};
 
 	const freeTextEditor = (props, fieldName, errorMessages) => {
@@ -86,35 +104,54 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 
 	const handleDeleteRelatedNote = (event, props) => {
 		event.preventDefault();
-		dispatch({type: "DELETE_ROW", tableType: "relatedNotes", showType: "showRelatedNotes", index: props.rowIndex})
-	}
+		dispatch({ type: 'DELETE_ROW', tableType: 'relatedNotes', showType: 'showRelatedNotes', index: props.rowIndex });
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteRelatedNote(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteRelatedNote(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			{showRelatedNotes &&
-				<DataTable value={relatedNotes} dataKey="dataKey" showGridlines editMode='row' 
-				onRowEditChange={onRowEditChange} editingRows={editingRows} ref={tableRef}>
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' />
-					<Column editor={internalEditor} field="internal" header="Internal" headerClassName='surface-0'/>
+			{showRelatedNotes && (
+				<DataTable
+					value={relatedNotes}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					onRowEditChange={onRowEditChange}
+					editingRows={editingRows}
+					ref={tableRef}
+				>
 					<Column
-						editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName="surface-0" />
+					<Column editor={internalEditor} field="internal" header="Internal" headerClassName="surface-0" />
+					<Column
+						editor={(props) => freeTextEditor(props, 'freeText', errorMessages)}
 						field="freeText"
 						header="Text"
-						headerClassName='surface-0'
+						headerClassName="surface-0"
 					/>
 				</DataTable>
-			}
-			<div className={`w-2 ${showRelatedNotes ? "pt-3" : ""} p-field p-col`}>
-				<Button label="Add Note" onClick={createNewNoteHandler}/>
+			)}
+			<div className={`w-2 ${showRelatedNotes ? 'pt-3' : ''} p-field p-col`}>
+				<Button label="Add Note" onClick={createNewNoteHandler} />
 			</div>
 		</div>
 	);

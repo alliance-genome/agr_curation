@@ -6,12 +6,18 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
-import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, displayTextTemplate, formatTextTemplate } from '../../components/NameSlotAnnotationComponent';
+import {
+	synonymScopeTemplate,
+	nameTypeTemplate,
+	synonymUrlTemplate,
+	displayTextTemplate,
+	formatTextTemplate,
+} from '../../components/NameSlotAnnotationComponent';
 
-export const SystematicNameDialog = ({originalSystematicNameData, setOriginalSystematicNameData}) => {
+export const SystematicNameDialog = ({ originalSystematicNameData, setOriginalSystematicNameData }) => {
 	const { originalSystematicNames, dialog } = originalSystematicNameData;
 	const tableRef = useRef(null);
-	
+
 	const hideDialog = () => {
 		setOriginalSystematicNameData((originalSystematicNameData) => {
 			return {
@@ -20,38 +26,50 @@ export const SystematicNameDialog = ({originalSystematicNameData, setOriginalSys
 			};
 		});
 	};
-	
+
 	const internalTemplate = (rowData) => {
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
 	};
 
-	let headerGroup = 
-			<ColumnGroup>
-				<Row>
-					<Column header="Display Text" />
-					<Column header="Format Text" />
-					<Column header="Synonym Scope" />
-					<Column header="Name Type" />
-					<Column header="Synonym URL" />
-					<Column header="Internal" />
-					<Column header="Evidence" />
-					<Column header="Updated By" />
-					<Column header="Date Updated" />
-				</Row>
-			</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Display Text" />
+				<Column header="Format Text" />
+				<Column header="Synonym Scope" />
+				<Column header="Name Type" />
+				<Column header="Synonym URL" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+				<Column header="Updated By" />
+				<Column header="Date Updated" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
-			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={true}>
+			<Dialog visible={dialog} className="w-10" modal onHide={hideDialog} closable={true}>
 				<h3>Systematic Name</h3>
-				<DataTable value={originalSystematicNames} dataKey="dataKey" showGridlines headerColumnGroup={headerGroup} ref={tableRef}>
-					<Column field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate}/>
-					<Column field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate}/>
-					<Column field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate}/>
-					<Column field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate}/>
-					<Column field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate}/>
-					<Column field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+				<DataTable
+					value={originalSystematicNames}
+					dataKey="dataKey"
+					showGridlines
+					headerColumnGroup={headerGroup}
+					ref={tableRef}
+				>
+					<Column field="displayText" header="Display Text" headerClassName="surface-0" body={displayTextTemplate} />
+					<Column field="formatText" header="Format Text" headerClassName="surface-0" body={formatTextTemplate} />
+					<Column field="synonymScope" header="Synonym Scope" headerClassName="surface-0" body={synonymScopeTemplate} />
+					<Column field="nameType" header="Name Type" headerClassName="surface-0" body={nameTypeTemplate} />
+					<Column field="synonymUrl" header="Synonym URL" headerClassName="surface-0" body={synonymUrlTemplate} />
+					<Column field="internal" header="Internal" body={internalTemplate} headerClassName="surface-0" />
+					<Column
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 					<Column field="updatedBy.uniqueId" header="Updated By" />
 					<Column field="dateUpdated" header="Date Updated" />
 				</DataTable>

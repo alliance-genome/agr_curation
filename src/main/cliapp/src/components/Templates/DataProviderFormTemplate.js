@@ -1,24 +1,23 @@
-import { FormFieldWrapper } from "../FormFieldWrapper";
+import { FormFieldWrapper } from '../FormFieldWrapper';
 
 export const DataProviderFormTemplate = ({
-  dataProvider,
-  widgetColumnSize,
-  labelColumnSize,
-  fieldDetailsColumnSize,
+	dataProvider,
+	widgetColumnSize,
+	labelColumnSize,
+	fieldDetailsColumnSize,
 }) => {
+	if (!dataProvider) return null;
 
-  if (!dataProvider) return null;
-
-  return (
-    <>
-      <FormFieldWrapper
-        labelColumnSize={labelColumnSize}
-        fieldDetailsColumnSize={fieldDetailsColumnSize}
-        widgetColumnSize={widgetColumnSize}
-        fieldName="Data Provider"
-        formField={dataProvider}
-        additionalDataField={dataProvider}
-      />
-    </>
-  );
+	return (
+		<>
+			<FormFieldWrapper
+				labelColumnSize={labelColumnSize}
+				fieldDetailsColumnSize={fieldDetailsColumnSize}
+				widgetColumnSize={widgetColumnSize}
+				fieldName="Data Provider"
+				formField={dataProvider}
+				additionalDataField={dataProvider}
+			/>
+		</>
+	);
 };

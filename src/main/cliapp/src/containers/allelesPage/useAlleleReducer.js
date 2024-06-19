@@ -1,11 +1,11 @@
-import { useImmerReducer } from "use-immer";
-import { addDataKey, generateCrossRefSearchFields, generateCurieSearchFields } from "./utils";
-import { getUniqueItemsByProperty } from "../../utils/utils";
+import { useImmerReducer } from 'use-immer';
+import { addDataKey, generateCrossRefSearchFields, generateCurieSearchFields } from './utils';
+import { getUniqueItemsByProperty } from '../../utils/utils';
 
 const initialAlleleState = {
 	allele: {
 		taxon: {
-			curie: "",
+			curie: '',
 		},
 		alleleSynonyms: [],
 		alleleFullName: null,
@@ -20,7 +20,7 @@ const initialAlleleState = {
 		alleleGermlineTransmissionStatus: null,
 		references: [],
 		inCollection: {
-			name: "",
+			name: '',
 		},
 		relatedNotes: [],
 		isExtinct: false,
@@ -34,7 +34,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 		alleleFullName: {
 			field: 'alleleFullName',
@@ -42,7 +42,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "object",
+			type: 'object',
 		},
 		alleleSecondaryIds: {
 			field: 'alleleSecondaryIds',
@@ -50,7 +50,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table"
+			type: 'table',
 		},
 		alleleSymbol: {
 			field: 'alleleSymbol',
@@ -58,7 +58,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "object",
+			type: 'object',
 		},
 		alleleNomenclatureEvents: {
 			field: 'alleleNomenclatureEvents',
@@ -66,7 +66,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',
@@ -74,7 +74,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 		alleleInheritanceModes: {
 			field: 'alleleInheritanceModes',
@@ -82,7 +82,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 		alleleFunctionalImpacts: {
 			field: 'alleleFunctionalImpacts',
@@ -90,7 +90,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 		alleleGermlineTransmissionStatus: {
 			field: 'alleleGermlineTransmissionStatus',
@@ -98,7 +98,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "object",
+			type: 'object',
 		},
 		alleleDatabaseStatus: {
 			field: 'alleleDatabaseStatus',
@@ -106,7 +106,7 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "object",
+			type: 'object',
 		},
 		relatedNotes: {
 			field: 'relatedNotes',
@@ -114,21 +114,21 @@ const initialAlleleState = {
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 		references: {
 			field: 'references',
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 		alleleGeneAssociations: {
 			field: 'alleleGeneAssociations',
 			show: false,
 			errorMessages: {},
 			editingRows: {},
-			type: "table",
+			type: 'table',
 		},
 	},
 	errorMessages: {},
@@ -136,11 +136,11 @@ const initialAlleleState = {
 };
 
 const processTable = (field, allele, draft) => {
-	if(!allele) return;
+	if (!allele) return;
 
-	if(!allele[field]) {
+	if (!allele[field]) {
 		allele[field] = [];
-		return; 
+		return;
 	}
 
 	let clonableEntities = global.structuredClone(allele[field]);
@@ -151,28 +151,27 @@ const processTable = (field, allele, draft) => {
 
 	allele[field] = clonableEntities;
 	draft.entityStates[field].show = true;
-}
+};
 
 const processDisplayTable = (field, allele, draft) => {
-	if(!allele) return;
+	if (!allele) return;
 
-	if(!allele[field]) {
+	if (!allele[field]) {
 		allele[field] = [];
-		return; 
+		return;
 	}
 
 	draft.entityStates[field].show = true;
-}
+};
 const processObject = (field, allele, draft) => {
-	if(!allele) return;
+	if (!allele) return;
 
-	if(!allele[field]) return; 
+	if (!allele[field]) return;
 
 	addDataKey(allele[field]);
 	draft.entityStates[field].editingRows[allele[field].dataKey] = true;
 	draft.entityStates[field].show = true;
-}
-
+};
 
 const alleleReducer = (draft, action) => {
 	switch (action.type) {
@@ -184,10 +183,10 @@ const alleleReducer = (draft, action) => {
 			let states = Object.values(draft.entityStates);
 
 			states.forEach((state) => {
-				if(state.type === "table") processTable(state.field, allele, draft); 
-				if(state.type === "object") processObject(state.field, allele, draft); 
-				if(state.type === "display") processDisplayTable(state.field, allele, draft); 
-			})
+				if (state.type === 'table') processTable(state.field, allele, draft);
+				if (state.type === 'object') processObject(state.field, allele, draft);
+				if (state.type === 'display') processDisplayTable(state.field, allele, draft);
+			});
 
 			draft.allele = allele;
 			break;
@@ -199,25 +198,25 @@ const alleleReducer = (draft, action) => {
 		case 'EDIT':
 			draft.allele[action.field] = action.value;
 			break;
-		case 'EDIT_ROW': 
+		case 'EDIT_ROW':
 			draft.allele[action.entityType][action.index][action.field] = action.value;
 			break;
-		case 'EDIT_FILTERABLE_ROW': 
+		case 'EDIT_FILTERABLE_ROW':
 			const row = draft.allele[action.entityType].find((row) => row.dataKey === action.dataKey);
-			if(row) {
+			if (row) {
 				row[action.field] = action.value;
-			};
+			}
 			break;
-		case 'REPLACE_ROW': 
+		case 'REPLACE_ROW':
 			const index = draft.allele[action.entityType].findIndex((row) => row.dataKey === action.dataKey);
-			if(index !== -1){
+			if (index !== -1) {
 				draft.allele[action.entityType][index] = action.newRow;
 			}
 			break;
-		case 'EDIT_OBJECT': 
+		case 'EDIT_OBJECT':
 			draft.allele[action.entityType][action.field] = action.value;
 			break;
-		case 'ADD_ROW': 
+		case 'ADD_ROW':
 			draft.allele[action.entityType].unshift(action.row);
 			if (action.entityType === 'references') {
 				draft.allele[action.entityType] = getUniqueItemsByProperty(draft.allele[action.entityType], 'curie');
@@ -225,26 +224,26 @@ const alleleReducer = (draft, action) => {
 			draft.entityStates[action.entityType].editingRows[`${action.row.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
 			break;
-		case 'ADD_OBJECT': 
-			draft.allele[action.entityType] = action.value
+		case 'ADD_OBJECT':
+			draft.allele[action.entityType] = action.value;
 			draft.entityStates[action.entityType].editingRows[`${action.value.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
 			break;
 		case 'DELETE_ROW':
-			draft.allele[action.entityType] = draft.allele[action.entityType].filter(row => row.dataKey !== action.dataKey);
+			draft.allele[action.entityType] = draft.allele[action.entityType].filter((row) => row.dataKey !== action.dataKey);
 			if (draft.allele[action.entityType].length === 0) {
 				draft.entityStates[action.entityType].show = false;
 			}
 			break;
 
-		case 'DELETE_OBJECT': 
+		case 'DELETE_OBJECT':
 			draft.allele[action.entityType] = null;
 			draft.entityStates[action.entityType].show = false;
 			break;
-		case 'UPDATE_ERROR_MESSAGES': 
+		case 'UPDATE_ERROR_MESSAGES':
 			draft.errorMessages = action.errorMessages;
 			break;
-		case 'UPDATE_TABLE_ERROR_MESSAGES': 
+		case 'UPDATE_TABLE_ERROR_MESSAGES':
 			draft.entityStates[action.entityType].errorMessages = action.errorMessages;
 			break;
 		case 'SUBMIT':
@@ -255,15 +254,14 @@ const alleleReducer = (draft, action) => {
 
 			states.forEach((state) => {
 				state.errorMessages = {};
-
-			})
+			});
 			break;
 		default:
-      throw Error('Unknown action: ' + action.type);
+			throw Error('Unknown action: ' + action.type);
 	}
 };
 
 export const useAlleleReducer = () => {
 	const [alleleState, alleleDispatch] = useImmerReducer(alleleReducer, initialAlleleState);
-	return {alleleState, alleleDispatch};
-}
+	return { alleleState, alleleDispatch };
+};

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
-import { Toast } from "primereact/toast";
+import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import { ProgressBar } from 'primereact/progressbar';
 
@@ -18,10 +18,9 @@ import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { SiteContext } from '../layout/SiteContext';
-import { LoadingOverlay } from "../../components/LoadingOverlay";
+import { LoadingOverlay } from '../../components/LoadingOverlay';
 
 export const DataLoadsComponent = () => {
-
 	const { authState } = useOktaAuth();
 
 	const bulkLoadReducer = (state, action) => {
@@ -29,18 +28,18 @@ export const DataLoadsComponent = () => {
 			case 'EDIT':
 				return { ...action.editBulkLoad };
 			case 'RESET':
-				return { name: "" };
+				return { name: '' };
 			default:
 				return { ...state, [action.field]: action.value };
 		}
 	};
 
 	const { apiVersion } = useContext(SiteContext);
-	const [isLoading,setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
 	const [groups, setGroups] = useState({});
 	const [errorLoads, setErrorLoads] = useState([]);
 	const [runningLoads, setRunningLoads] = useState({});
-	const [history, setHistory] = useState({id: 0});
+	const [history, setHistory] = useState({ id: 0 });
 	const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
 	const [historyDialog, setHistoryDialog] = useState(false);
 	const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
@@ -68,29 +67,39 @@ export const DataLoadsComponent = () => {
 	};
 
 	const handleNewBulkLoadOpen = (event) => {
-		bulkLoadDispatch({ type: "RESET" });
+		bulkLoadDispatch({ type: 'RESET' });
 		setBulkLoadDialog(true);
 	};
 
 	const loadTypeClasses = new Map([
-		["FULL_INGEST", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO", "GeneDTO", "AlleleDTO", "AffectedGenomicModelDTO", "ConstructDTO"]],
-		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO"]],
-		["GENE_DISEASE_ANNOTATION", ["GeneDiseaseAnnotationDTO"]],
-		["ALLELE_DISEASE_ANNOTATION", ["AlleleDiseaseAnnotationDTO"]],
-		["AGM_DISEASE_ANNOTATION", ["AGMDiseaseAnnotationDTO"]],
-		["GENE", ["GeneDTO"]],
-		["ALLELE", ["AlleleDTO"]],
-		["AGM", ["AffectedGenomicModelDTO"]],
-		["VARIANT", ["VariantDTO"]],
-		["CONSTRUCT", ["ConstructDTO"]],
-		["ALLELE_ASSOCIATION", ["AlleleGeneAssociationDTO"]],
-		["CONSTRUCT_ASSOCIATION", ["ConstructGenomicEntityAssociationDTO"]]
-		]);
+		[
+			'FULL_INGEST',
+			[
+				'GeneDiseaseAnnotationDTO',
+				'AlleleDiseaseAnnotationDTO',
+				'AGMDiseaseAnnotationDTO',
+				'GeneDTO',
+				'AlleleDTO',
+				'AffectedGenomicModelDTO',
+				'ConstructDTO',
+			],
+		],
+		['DISEASE_ANNOTATION', ['GeneDiseaseAnnotationDTO', 'AlleleDiseaseAnnotationDTO', 'AGMDiseaseAnnotationDTO']],
+		['GENE_DISEASE_ANNOTATION', ['GeneDiseaseAnnotationDTO']],
+		['ALLELE_DISEASE_ANNOTATION', ['AlleleDiseaseAnnotationDTO']],
+		['AGM_DISEASE_ANNOTATION', ['AGMDiseaseAnnotationDTO']],
+		['GENE', ['GeneDTO']],
+		['ALLELE', ['AlleleDTO']],
+		['AGM', ['AffectedGenomicModelDTO']],
+		['VARIANT', ['VariantDTO']],
+		['CONSTRUCT', ['ConstructDTO']],
+		['ALLELE_ASSOCIATION', ['AlleleGeneAssociationDTO']],
+		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
+	]);
 
-	useQuery(['bulkloadtable'],
-		() => searchService.find('bulkloadgroup', 100, 0, {}), {
+	useQuery(['bulkloadtable'], () => searchService.find('bulkloadgroup', 100, 0, {}), {
 		onSuccess: (data) => {
-			if(data.results) {
+			if (data.results) {
 				let _errorLoads = [];
 				for (let group of data.results) {
 					if (group.loads) {
@@ -98,30 +107,31 @@ export const DataLoadsComponent = () => {
 							load.group = group.id;
 							if (load.loadFiles) {
 								let sortedFiles = sortFilesByDate(load.loadFiles);
-								if (sortedFiles[0].bulkloadStatus === "FAILED") {
+								if (sortedFiles[0].bulkloadStatus === 'FAILED') {
 									_errorLoads.push(load);
 								}
 							}
 						}
 					}
 				}
-				setGroups(data.results.sort((a,b) => a.name > b.name ? 1 : -1));
-				setErrorLoads(_errorLoads.sort((a, b) => (a.name > b.name) ? 1: -1));
+				setGroups(data.results.sort((a, b) => (a.name > b.name ? 1 : -1)));
+				setErrorLoads(_errorLoads.sort((a, b) => (a.name > b.name ? 1 : -1)));
 			}
 
-			var loc = window.location, new_uri;
-			if (loc.protocol === "https:") {
-				new_uri = "wss:";
+			var loc = window.location,
+				new_uri;
+			if (loc.protocol === 'https:') {
+				new_uri = 'wss:';
 			} else {
-				new_uri = "ws:";
+				new_uri = 'ws:';
 			}
-			if(process.env.NODE_ENV === 'production') {
-				new_uri += "//" + loc.host;
+			if (process.env.NODE_ENV === 'production') {
+				new_uri += '//' + loc.host;
 			} else {
-				new_uri += "//localhost:8080";
+				new_uri += '//localhost:8080';
 			}
 
-			new_uri += loc.pathname + "load_processing_events";
+			new_uri += loc.pathname + 'load_processing_events';
 			//console.log(new_uri);
 			let ws = new WebSocket(new_uri);
 
@@ -132,22 +142,19 @@ export const DataLoadsComponent = () => {
 				let processingMessage = JSON.parse(e.data);
 				setRunningLoads((prevState) => {
 					//console.log(prevState);
-					const newState = {...prevState};
+					const newState = { ...prevState };
 					newState[processingMessage.message] = processingMessage;
 					//console.log(newState);
 					return newState;
 				});
-			}
-
+			};
 		},
 		keepPreviousData: true,
-		refetchOnWindowFocus: false
+		refetchOnWindowFocus: false,
 	});
 
-
-
 	const getService = () => {
-		if(!dataLoadService) {
+		if (!dataLoadService) {
 			dataLoadService = new DataLoadService(authState);
 		}
 		return dataLoadService;
@@ -162,39 +169,49 @@ export const DataLoadsComponent = () => {
 	};
 
 	const runLoad = (rowData) => {
-		getService().restartLoad(rowData.type, rowData.id).then(response => {
-			queryClient.invalidateQueries(['bulkloadtable']);
-		});
+		getService()
+			.restartLoad(rowData.type, rowData.id)
+			.then((response) => {
+				queryClient.invalidateQueries(['bulkloadtable']);
+			});
 	};
 
 	const runLoadFile = (rowData) => {
-		getService().restartLoadFile(rowData.id).then(response => {
-			queryClient.invalidateQueries(['bulkloadtable']);
-		});
+		getService()
+			.restartLoadFile(rowData.id)
+			.then((response) => {
+				queryClient.invalidateQueries(['bulkloadtable']);
+			});
 	};
 
 	const editLoad = (rowData) => {
-		bulkLoadDispatch({ type: "EDIT", editBulkLoad: rowData });
+		bulkLoadDispatch({ type: 'EDIT', editBulkLoad: rowData });
 		setBulkLoadDialog(true);
 		setDisableFormFields(true);
 	};
 
 	const deleteLoadFile = (rowData) => {
-		getService().deleteLoadFile(rowData.id).then(response => {
-			queryClient.invalidateQueries(['bulkloadtable']);
-		});
+		getService()
+			.deleteLoadFile(rowData.id)
+			.then((response) => {
+				queryClient.invalidateQueries(['bulkloadtable']);
+			});
 	};
 
 	const deleteLoad = (rowData) => {
-		getService().deleteLoad(rowData.type, rowData.id).then(response => {
-			queryClient.invalidateQueries(['bulkloadtable']);
-		});
+		getService()
+			.deleteLoad(rowData.type, rowData.id)
+			.then((response) => {
+				queryClient.invalidateQueries(['bulkloadtable']);
+			});
 	};
 
 	const deleteGroup = (rowData) => {
-		getService().deleteGroup(rowData.id).then(response => {
-			queryClient.invalidateQueries(['bulkloadtable']);
-		});
+		getService()
+			.deleteGroup(rowData.id)
+			.then((response) => {
+				queryClient.invalidateQueries(['bulkloadtable']);
+			});
 	};
 
 	const showHistory = (rowData) => {
@@ -205,7 +222,11 @@ export const DataLoadsComponent = () => {
 	const historyActionBodyTemplate = (rowData) => {
 		return (
 			<nobr>
-				<Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
+				<Button
+					icon="pi pi-search-plus"
+					className="p-button-rounded p-button-info mr-2"
+					onClick={() => showHistory(rowData)}
+				/>
 
 				{/*{ rowData.failedRecords > 0 &&
 				Have to resort to this code if file is too large (SCRUM-2639)
@@ -215,94 +236,152 @@ export const DataLoadsComponent = () => {
 					</a>
 				}*/}
 
-				{
-					rowData.failedRecords > 0 &&
-						<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
-							<i className="pi pi-exclamation-triangle"></i>
-							<i className="pi pi-download ml-1"></i>
-						</Button>
-				}
+				{rowData.failedRecords > 0 && (
+					<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
+						<i className="pi pi-exclamation-triangle"></i>
+						<i className="pi pi-download ml-1"></i>
+					</Button>
+				)}
 			</nobr>
-		)
-	}
+		);
+	};
 
 	const downloadFileExceptions = (id) => {
 		dataLoadService.downloadExceptions(id, setIsLoading);
-	}
+	};
 
 	const showUploadConfirmDialog = (rowData) => {
 		setUploadLoadType(rowData.backendBulkLoadType);
 		setUploadSubType(rowData.dataProvider);
 		setUploadConfirmDialog(true);
 		//setUploadFile(event.files[0]);
-	}
+	};
 
 	const hideUploadConfirmDialog = () => {
 		setUploadLoadType(null);
 		setUploadSubType(null);
 		setUploadConfirmDialog(false);
-	}
+	};
 
 	const uploadLoadFile = (event) => {
-		let type = uploadLoadType + "_" + uploadSubType;
+		let type = uploadLoadType + '_' + uploadSubType;
 		let formData = new FormData();
-		if(event.files.length > 0) {
+		if (event.files.length > 0) {
 			formData.append(type, event.files[0]);
 		}
 		dataSubmissionService.sendFile(formData);
-		toast.current.show({severity: 'info', summary: 'Success', detail: 'File Uploaded'});
+		toast.current.show({ severity: 'info', summary: 'Success', detail: 'File Uploaded' });
 		setUploadLoadType(null);
 		setUploadSubType(null);
 		setUploadConfirmDialog(false);
-	}
+	};
 
 	const loadFileActionBodyTemplate = (rowData) => {
 		let ret = [];
-		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
+		if (
+			!rowData.bulkloadStatus ||
+			rowData.bulkloadStatus === 'FINISHED' ||
+			rowData.bulkloadStatus === 'FAILED' ||
+			rowData.bulkloadStatus === 'STOPPED'
+		) {
 			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.loadType)) {
-				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
+				ret.push(
+					<Button
+						key="run"
+						icon="pi pi-play"
+						className="p-button-rounded p-button-success mr-2"
+						onClick={() => runLoadFile(rowData)}
+					/>
+				);
 			}
 		}
-		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
-			ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoadFile(rowData)} />);
+		if (
+			!rowData.bulkloadStatus ||
+			rowData.bulkloadStatus === 'FINISHED' ||
+			rowData.bulkloadStatus === 'FAILED' ||
+			rowData.bulkloadStatus === 'STOPPED'
+		) {
+			ret.push(
+				<Button
+					key="delete"
+					icon="pi pi-trash"
+					className="p-button-rounded p-button-danger mr-2"
+					onClick={() => deleteLoadFile(rowData)}
+				/>
+			);
 		}
 
 		return ret;
-
 	};
 
 	const loadActionBodyTemplate = (rowData) => {
 		let ret = [];
 
-		ret.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
+		ret.push(
+			<Button
+				key="edit"
+				icon="pi pi-pencil"
+				className="p-button-rounded p-button-warning mr-2"
+				onClick={() => editLoad(rowData)}
+			/>
+		);
 
 		if (rowData.type !== 'BulkManualLoad') {
-			if (!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
-				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
+			if (
+				!rowData.bulkloadStatus ||
+				rowData.bulkloadStatus === 'FINISHED' ||
+				rowData.bulkloadStatus === 'FAILED' ||
+				rowData.bulkloadStatus === 'STOPPED'
+			) {
+				ret.push(
+					<Button
+						key="run"
+						icon="pi pi-play"
+						className="p-button-rounded p-button-success mr-2"
+						onClick={() => runLoad(rowData)}
+					/>
+				);
 			}
-		}else{
-			ret.push(<Button key = "fileUpload" icon='pi pi-upload' label='Upload' className="p-button-rounded p-button-info mr-2" onClick={() => showUploadConfirmDialog(rowData)} />)
+		} else {
+			ret.push(
+				<Button
+					key="fileUpload"
+					icon="pi pi-upload"
+					label="Upload"
+					className="p-button-rounded p-button-info mr-2"
+					onClick={() => showUploadConfirmDialog(rowData)}
+				/>
+			);
 		}
 
 		if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
-			ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoad(rowData)} />);
+			ret.push(
+				<Button
+					key="delete"
+					icon="pi pi-trash"
+					className="p-button-rounded p-button-danger mr-2"
+					onClick={() => deleteLoad(rowData)}
+				/>
+			);
 		}
 
-		return <div style={{display: 'inline-flex'}}> {ret} </div>;
+		return <div style={{ display: 'inline-flex' }}> {ret} </div>;
 	};
 
 	const groupActionBodyTemplate = (rowData) => {
 		if (!rowData.loads || rowData.loads.length === 0) {
-			return (<Button icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteGroup(rowData)} />);
+			return (
+				<Button
+					icon="pi pi-trash"
+					className="p-button-rounded p-button-danger mr-2"
+					onClick={() => deleteGroup(rowData)}
+				/>
+			);
 		}
 	};
 
 	const nameBodyTemplate = (rowData) => {
-		return (
-			<React.Fragment>
-				{rowData.name}
-			</React.Fragment>
-		);
+		return <React.Fragment>{rowData.name}</React.Fragment>;
 	};
 
 	const bulkloadUrlBodyTemplate = (rowData) => {
@@ -313,18 +392,14 @@ export const DataLoadsComponent = () => {
 
 	const backendBulkLoadTypeTemplate = (rowData) => {
 		if (rowData.backendBulkLoadType === 'ONTOLOGY') {
-			return rowData.backendBulkLoadType + "(" + rowData.ontologyType + ")";
+			return rowData.backendBulkLoadType + '(' + rowData.ontologyType + ')';
 		} else {
 			return rowData.backendBulkLoadType;
 		}
 	};
 
 	const scheduleActiveTemplate = (rowData) => {
-		return (
-			<div>
-				{rowData.scheduleActive ? "true" : "false"}
-			</div>
-		);
+		return <div>{rowData.scheduleActive ? 'true' : 'false'}</div>;
 	};
 
 	const showModRelease = (load) => {
@@ -332,10 +407,9 @@ export const DataLoadsComponent = () => {
 			return null;
 		}
 		return <Column field="allianceMemberReleaseVersion" header="MOD Release" />;
-	}
+	};
 
 	const dynamicColumns = (loads) => {
-
 		let showFMSLoad = false;
 		let showURLLoad = false;
 		let showManualLoad = false;
@@ -344,14 +418,16 @@ export const DataLoadsComponent = () => {
 
 		if (loads) {
 			for (const load of loads) {
-				if (load.type === "BulkFMSLoad") showFMSLoad = true;
-				if (load.type === "BulkURLLoad") showURLLoad = true;
-				if (load.type === "BulkManualLoad") showManualLoad = true;
+				if (load.type === 'BulkFMSLoad') showFMSLoad = true;
+				if (load.type === 'BulkURLLoad') showURLLoad = true;
+				if (load.type === 'BulkManualLoad') showManualLoad = true;
 			}
 		}
 
 		if (showFMSLoad || showURLLoad) {
-			ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />);
+			ret.push(
+				<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />
+			);
 			ret.push(<Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />);
 			ret.push(<Column key="nextRun" field="nextRun" header="Next Run" />);
 			if (showFMSLoad) {
@@ -371,15 +447,24 @@ export const DataLoadsComponent = () => {
 
 	const bulkloadFileStatusTemplate = (rowData) => {
 		let styleClass = 'p-button-text p-button-plain';
-		if (rowData.bulkloadStatus === 'FAILED') { styleClass = "p-button-danger"; }
-		if (rowData.bulkloadStatus && (
-				rowData.bulkloadStatus.endsWith('STARTED') ||
+		if (rowData.bulkloadStatus === 'FAILED') {
+			styleClass = 'p-button-danger';
+		}
+		if (
+			rowData.bulkloadStatus &&
+			(rowData.bulkloadStatus.endsWith('STARTED') ||
 				rowData.bulkloadStatus.endsWith('RUNNING') ||
-				rowData.bulkloadStatus.endsWith('PENDING')
-			)) { styleClass = "p-button-success"; }
+				rowData.bulkloadStatus.endsWith('PENDING'))
+		) {
+			styleClass = 'p-button-success';
+		}
 
 		return (
-			<Button label={rowData.bulkloadStatus} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
+			<Button
+				label={rowData.bulkloadStatus}
+				tooltip={rowData.errorMessage}
+				className={`p-button-rounded ${styleClass}`}
+			/>
 		);
 	};
 
@@ -395,27 +480,27 @@ export const DataLoadsComponent = () => {
 			latestError = sortedFiles[0].errorMessage;
 		}
 		let styleClass = 'p-button-text p-button-plain';
-		if (latestStatus === 'FAILED') { styleClass = "p-button-danger"; }
-		if (latestStatus && (
-			latestStatus.endsWith('STARTED') ||
-			latestStatus.endsWith('RUNNING') ||
-			latestStatus.endsWith('PENDING')
-		)) { styleClass = "p-button-success"; }
+		if (latestStatus === 'FAILED') {
+			styleClass = 'p-button-danger';
+		}
+		if (
+			latestStatus &&
+			(latestStatus.endsWith('STARTED') || latestStatus.endsWith('RUNNING') || latestStatus.endsWith('PENDING'))
+		) {
+			styleClass = 'p-button-success';
+		}
 
-		return (
-			<Button label={latestStatus} tooltip={latestError} className={`p-button-rounded ${styleClass}`} />
-		);
+		return <Button label={latestStatus} tooltip={latestError} className={`p-button-rounded ${styleClass}`} />;
 	};
 
 	const percentage = (row) => {
-		return Math.round(row.errorRate * 100).toFixed(1) + "%";
+		return Math.round(row.errorRate * 100).toFixed(1) + '%';
 	};
 
 	const historyTable = (file) => {
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={file.history} responsiveLayout="scroll">
-
 					<Column field="loadStarted" header="Load Started" />
 					<Column field="loadFinished" header="Load Finished" />
 					<Column field="completedRecords" header="Records Completed" />
@@ -435,8 +520,8 @@ export const DataLoadsComponent = () => {
 		let sortedFiles = [];
 		let lastLoadedDates = new Map();
 		let filesWithoutDates = [];
-		files.forEach(file => {
-			if (file.bulkloadStatus === "FINISHED" || file.bulkloadStatus === "STOPPED" || file.bulkloadStatus === "FAILED") {
+		files.forEach((file) => {
+			if (file.bulkloadStatus === 'FINISHED' || file.bulkloadStatus === 'STOPPED' || file.bulkloadStatus === 'FAILED') {
 				if (file.dateLastLoaded) {
 					lastLoadedDates.set(file.dateLastLoaded, file);
 				} else {
@@ -446,30 +531,42 @@ export const DataLoadsComponent = () => {
 				lastLoadedDates.set(new Date().toISOString(), file);
 			}
 		});
-		Array.from(lastLoadedDates.keys()).sort(function(a,b) {
-			const start1 = new Date(a);
-			const start2 = new Date(b);
-			return start2 - start1;
-		}).forEach(date => sortedFiles.push(lastLoadedDates.get(date)));
+		Array.from(lastLoadedDates.keys())
+			.sort(function (a, b) {
+				const start1 = new Date(a);
+				const start2 = new Date(b);
+				return start2 - start1;
+			})
+			.forEach((date) => sortedFiles.push(lastLoadedDates.get(date)));
 
 		if (filesWithoutDates.length > 0) {
-			filesWithoutDates.forEach(fwd => {sortedFiles.push(fwd)});
+			filesWithoutDates.forEach((fwd) => {
+				sortedFiles.push(fwd);
+			});
 		}
 
 		return sortedFiles;
-	}
+	};
 
 	const fileTable = (load) => {
 		let sortedFiles = [];
 		if (load.loadFiles) {
 			sortedFiles = sortFilesByDate(load.loadFiles);
 		}
-		sortedFiles.forEach(file => {file.loadType = load.backendBulkLoadType});
+		sortedFiles.forEach((file) => {
+			file.loadType = load.backendBulkLoadType;
+		});
 		return (
 			<div className="card">
-				<DataTable key="fileTable" value={sortedFiles} responsiveLayout="scroll"
-					expandedRows={expandedFileRows} onRowToggle={(e) => setExpandedFileRows(e.data)}
-					rowExpansionTemplate={historyTable} dataKey="id">
+				<DataTable
+					key="fileTable"
+					value={sortedFiles}
+					responsiveLayout="scroll"
+					expandedRows={expandedFileRows}
+					onRowToggle={(e) => setExpandedFileRows(e.data)}
+					rowExpansionTemplate={historyTable}
+					dataKey="id"
+				>
 					<Column expander style={{ width: '3em' }} />
 					<Column field="md5Sum" header="MD5 Sum" />
 					<Column field="fileSize" header="Compressed File Size" />
@@ -488,37 +585,48 @@ export const DataLoadsComponent = () => {
 	const loadTable = (group) => {
 		let sortedLoads = [];
 		if (group.loads) {
-			sortedLoads = group.loads.sort((a, b) => (a.name > b.name) ? 1: -1);
+			sortedLoads = group.loads.sort((a, b) => (a.name > b.name ? 1 : -1));
 		}
 
 		return (
 			<div className="card">
-				<DataTable key="loadTable" value={sortedLoads} responsiveLayout="scroll"
-					expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
-					rowExpansionTemplate={fileTable} dataKey="id">
+				<DataTable
+					key="loadTable"
+					value={sortedLoads}
+					responsiveLayout="scroll"
+					expandedRows={expandedLoadRows}
+					onRowToggle={(e) => setExpandedLoadRows(e.data)}
+					rowExpansionTemplate={fileTable}
+					dataKey="id"
+				>
 					<Column expander style={{ width: '3em' }} />
 					<Column body={nameBodyTemplate} header="Load Name" />
 					<Column field="type" header="Bulk Load Type" />
 					<Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
 					{dynamicColumns(sortedLoads)}
 					<Column field="status" body={bulkloadStatusTemplate} header="Status" />
-					<Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+					<Column
+						key="loadAction"
+						body={loadActionBodyTemplate}
+						exportable={false}
+						style={{ minWidth: '8rem' }}
+					></Column>
 				</DataTable>
 			</div>
 		);
 	};
 
 	const getSchemaVersionArray = (map) => {
-		if(map) {
+		if (map) {
 			const array = [];
-			for(let item in map) {
-				array.push({ className: item, schemaVersion: map[item]});
+			for (let item in map) {
+				array.push({ className: item, schemaVersion: map[item] });
 			}
 			return array;
 		} else {
 			return [];
 		}
-	}
+	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
 		if (!fileVersion) return false;
@@ -531,21 +639,29 @@ export const DataLoadsComponent = () => {
 		if (loadTypeClasses.has(loadType)) {
 			loadedClasses = loadTypeClasses.get(loadType);
 		} else {
-			console.error("Unrecognized load type " + loadType);
+			console.error('Unrecognized load type ' + loadType);
 		}
 
 		for (const loadedClass of loadedClasses) {
 			const classVersionRange = classVersions[loadedClass];
 			if (!classVersionRange) return false;
 
-			let minMaxVersions = classVersionRange.includes("-") ? classVersionRange.split(" - ") : [classVersionRange, classVersionRange];
+			let minMaxVersions = classVersionRange.includes('-')
+				? classVersionRange.split(' - ')
+				: [classVersionRange, classVersionRange];
 			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) return false;
 			let minMaxVersionParts = [];
-			minMaxVersions.forEach((version, ix) => {minMaxVersionParts[ix] = parseVersionString(version)});
+			minMaxVersions.forEach((version, ix) => {
+				minMaxVersionParts[ix] = parseVersionString(version);
+			});
 
 			const minVersionParts = minMaxVersionParts[0];
 			if (minMaxVersions.length === 1) {
-				if (minVersionParts[0] !== fileVersionParts[0] || minVersionParts[1] !== fileVersionParts[1] || minVersionParts[2] !== fileVersionParts[2]) {
+				if (
+					minVersionParts[0] !== fileVersionParts[0] ||
+					minVersionParts[1] !== fileVersionParts[1] ||
+					minVersionParts[2] !== fileVersionParts[2]
+				) {
 					return false;
 				}
 			}
@@ -578,7 +694,7 @@ export const DataLoadsComponent = () => {
 		const patchVersion = versionParts.patch ? parseInt(versionParts.patch) : 0;
 
 		return [majorVersion, minorVersion, patchVersion];
-	}
+	};
 
 	const uploadConfirmDialogFooter = () => {
 		return (
@@ -586,8 +702,16 @@ export const DataLoadsComponent = () => {
 				<div className="col-12">
 					<div className="grid">
 						<div className="col-6">
-							<FileUpload key="uploadConfirm" mode="basic" auto chooseOptions={{icon:'pi pi-check', label: 'Confirm', className:"p-button-text"}}
-								accept="*" customUpload uploadHandler={e => uploadLoadFile(e)} maxFileSize={1000000000000000} />
+							<FileUpload
+								key="uploadConfirm"
+								mode="basic"
+								auto
+								chooseOptions={{ icon: 'pi pi-check', label: 'Confirm', className: 'p-button-text' }}
+								accept="*"
+								customUpload
+								uploadHandler={(e) => uploadLoadFile(e)}
+								maxFileSize={1000000000000000}
+							/>
 						</div>
 						<div className="col-3">
 							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideUploadConfirmDialog} />
@@ -596,37 +720,40 @@ export const DataLoadsComponent = () => {
 				</div>
 			</React.Fragment>
 		);
-	}
+	};
 
 	const ProgressIndicator = ({ load }) => {
-        if(load.currentCount && load.totalSize) {
-        	return <ProgressBar value={(parseInt((load.currentCount / load.totalSize) * 10000) / 100)} />
-        } else if(load.currentCount && load.lastCount && load.lastTime && load.nowTime) {
-        	let rate = Math.ceil(((load.currentCount - load.lastCount) / (load.nowTime - load.lastTime)) * 1000);
+		if (load.currentCount && load.totalSize) {
+			return <ProgressBar value={parseInt((load.currentCount / load.totalSize) * 10000) / 100} />;
+		} else if (load.currentCount && load.lastCount && load.lastTime && load.nowTime) {
+			let rate = Math.ceil(((load.currentCount - load.lastCount) / (load.nowTime - load.lastTime)) * 1000);
 			return (
-	            <ProgressBar
-	            	value={rate}
-	            	displayValueTemplate={(value) => {
-	            		return <>{value}r/s -- {load.currentCount}</>
-	            	}}
-	            />
-	        );
-        } else {
-        	return <ProgressBar value={0} />
-        }
-    }
+				<ProgressBar
+					value={rate}
+					displayValueTemplate={(value) => {
+						return (
+							<>
+								{value}r/s -- {load.currentCount}
+							</>
+						);
+					}}
+				/>
+			);
+		} else {
+			return <ProgressBar value={0} />;
+		}
+	};
 
 	const processingLoadsComponents = () => {
-
 		let ret = [];
 		//console.log(runningLoads);
-		for(let key in runningLoads) {
+		for (let key in runningLoads) {
 			//console.log(key);
-			if(runningLoads[key]) {
+			if (runningLoads[key]) {
 				ret.push(
 					<div className="col-2" key={key}>
 						<div className="card">
-							<h3>{ key }</h3>
+							<h3>{key}</h3>
 							<ProgressIndicator load={runningLoads[key]} />
 						</div>
 					</div>
@@ -634,40 +761,65 @@ export const DataLoadsComponent = () => {
 			}
 		}
 		return ret;
-	}
+	};
 
 	return (
 		<>
 			<Toast ref={toast}></Toast>
 			<LoadingOverlay isLoading={isLoading} />
 			<div className="card">
-				<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
-				<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
+				<Button
+					label="New Group"
+					icon="pi pi-plus"
+					className="p-button-success mr-2"
+					onClick={handleNewBulkLoadGroupOpen}
+				/>
+				<Button
+					label="New Bulk Load"
+					icon="pi pi-plus"
+					className="p-button-success mr-2"
+					onClick={handleNewBulkLoadOpen}
+				/>
 				<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
 				<Messages ref={errorMessage} />
-				{
-					errorLoads.length > 0 &&
+				{errorLoads.length > 0 && (
 					<div>
-					<br/>
+						<br />
 						<h3>Failed Loads Table</h3>
-						<DataTable key="errorTable" value={errorLoads} responsiveLayout="scroll"
-							expandedRows={expandedErrorLoadRows} onRowToggle={(e) => setExpandedErrorLoadRows(e.data)}
-							rowExpansionTemplate={fileTable} dataKey="id">
+						<DataTable
+							key="errorTable"
+							value={errorLoads}
+							responsiveLayout="scroll"
+							expandedRows={expandedErrorLoadRows}
+							onRowToggle={(e) => setExpandedErrorLoadRows(e.data)}
+							rowExpansionTemplate={fileTable}
+							dataKey="id"
+						>
 							<Column expander style={{ width: '3em' }} />
 							<Column body={nameBodyTemplate} header="Load Name" />
 							<Column field="type" header="Bulk Load Type" />
 							<Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
 							{dynamicColumns(errorLoads)}
 							<Column field="status" body={bulkloadStatusTemplate} header="Status" />
-							<Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+							<Column
+								key="loadAction"
+								body={loadActionBodyTemplate}
+								exportable={false}
+								style={{ minWidth: '8rem' }}
+							></Column>
 						</DataTable>
 					</div>
-				}
+				)}
 				<h3>Data Loads Table</h3>
-				<DataTable key="groupTable"
-					value={groups} className="p-datatable-sm"
-					expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
-					rowExpansionTemplate={loadTable} dataKey="id">
+				<DataTable
+					key="groupTable"
+					value={groups}
+					className="p-datatable-sm"
+					expandedRows={expandedGroupRows}
+					onRowToggle={(e) => setExpandedGroupRows(e.data)}
+					rowExpansionTemplate={loadTable}
+					dataKey="id"
+				>
 					<Column expander style={{ width: '3em' }} />
 					<Column body={nameBodyTemplate} header="Group Name" />
 					<Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
@@ -692,23 +844,40 @@ export const DataLoadsComponent = () => {
 					dataLoadService={getService()}
 					history={history}
 				/>
-				<Dialog visible={uploadConfirmDialog} style={{ width: '450px' }} header="Confirm Upload" modal footer={uploadConfirmDialogFooter} onHide={hideUploadConfirmDialog}>
+				<Dialog
+					visible={uploadConfirmDialog}
+					style={{ width: '450px' }}
+					header="Confirm Upload"
+					modal
+					footer={uploadConfirmDialogFooter}
+					onHide={hideUploadConfirmDialog}
+				>
 					<div className="upload-confirmation-content">
-						<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-						{<span>Please confirm that you are submitting a file with LoadType “{uploadLoadType}” and SubType “{uploadSubType}”.</span>}
+						<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+						{
+							<span>
+								Please confirm that you are submitting a file with LoadType “{uploadLoadType}” and SubType “
+								{uploadSubType}”.
+							</span>
+						}
 					</div>
 				</Dialog>
 			</div>
 			<div className="card">
 				<h3>Schema Version Table</h3>
-				<DataTable key="schemaTable" value={ getSchemaVersionArray(apiVersion?.submittedClassSchemaVersions) } className="p-datatable-sm" dataKey="id">
+				<DataTable
+					key="schemaTable"
+					value={getSchemaVersionArray(apiVersion?.submittedClassSchemaVersions)}
+					className="p-datatable-sm"
+					dataKey="id"
+				>
 					<Column header="Class Name" field="className" />
 					<Column header="Curation Schema (LinkML) Version" field="schemaVersion"></Column>
 				</DataTable>
 			</div>
 			<div className="card">
 				<h3>Data Processing Info Table</h3>
-				<div className="grid">{ processingLoadsComponents() }</div>
+				<div className="grid">{processingLoadsComponents()}</div>
 			</div>
 		</>
 	);

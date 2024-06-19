@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Dropdown } from "primereact/dropdown";
+import { Dropdown } from 'primereact/dropdown';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -11,8 +11,16 @@ import { ManualForm } from './ManualForm';
 import { useOktaAuth } from '@okta/okta-react';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
-export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, newBulkLoad, bulkLoadDispatch, disableFormFields, setDisableFormFields, dataLoadService }) => {
-
+export const NewBulkLoadForm = ({
+	bulkLoadDialog,
+	setBulkLoadDialog,
+	groups,
+	newBulkLoad,
+	bulkLoadDispatch,
+	disableFormFields,
+	setDisableFormFields,
+	dataLoadService,
+}) => {
 	const { authState } = useOktaAuth();
 
 	const queryClient = useQueryClient();
@@ -23,7 +31,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 
 	const [backendBulkLoadTypes, setBackendLoadTypes] = useState();
 
-	const mutation = useMutation(bulkLoad => {
+	const mutation = useMutation((bulkLoad) => {
 		if (bulkLoad.id) {
 			return getService().updateLoad(bulkLoad);
 		} else {
@@ -60,30 +68,29 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 		}
 	};
 
-
 	const onChange = (e) => {
-		if (e.target.name === "scheduleActive" || e.target.name === "group") {
+		if (e.target.name === 'scheduleActive' || e.target.name === 'group') {
 			bulkLoadDispatch({
 				field: e.target.name,
-				value: e.value
+				value: e.value,
 			});
 		} else {
 			bulkLoadDispatch({
 				field: e.target.name,
-				value: e.target.value
+				value: e.target.value,
 			});
 		}
 	};
 
 	const getService = () => {
-		if(!dataLoadService) {
+		if (!dataLoadService) {
 			dataLoadService = new DataLoadService(authState);
 		}
 		return dataLoadService;
-	}
+	};
 
 	const hideDialog = () => {
-		bulkLoadDispatch({ type: "RESET" });
+		bulkLoadDispatch({ type: 'RESET' });
 		setBulkLoadDialog(false);
 		hideFMS.current = true;
 		hideURL.current = true;
@@ -97,7 +104,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 		mutation.mutate(newBulkLoad, {
 			onSuccess: () => {
 				queryClient.invalidateQueries(['bulkloadtable']);
-				bulkLoadDispatch({ type: "RESET" });
+				bulkLoadDispatch({ type: 'RESET' });
 				hideFMS.current = true;
 				hideURL.current = true;
 				hideManual.current = true;
@@ -105,8 +112,8 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 				setDisableFormFields(false);
 			},
 			onError: () => {
-				// lookup group and set 
-			}
+				// lookup group and set
+			},
 		});
 	};
 
@@ -117,22 +124,22 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 		</>
 	);
 
-
 	return (
-		<Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" footer={newBulkLoadDialogFooter} onHide={hideDialog}>
+		<Dialog
+			visible={bulkLoadDialog}
+			style={{ width: '450px' }}
+			header="Add Bulk Load"
+			modal
+			className="p-fluid"
+			footer={newBulkLoadDialogFooter}
+			onHide={hideDialog}
+		>
 			<ErrorBoundary>
-				<div className='p-justify-center'>
+				<div className="p-justify-center">
 					<form>
-
 						<div className="field">
 							<label htmlFor="name">Name</label>
-							<InputText
-								id="name"
-								name="name"
-								placeholder={"Name"}
-								value={newBulkLoad.name}
-								onChange={onChange}
-							/>
+							<InputText id="name" name="name" placeholder={'Name'} value={newBulkLoad.name} onChange={onChange} />
 						</div>
 
 						<div className="field">
@@ -142,11 +149,11 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 								options={groups}
 								value={newBulkLoad.group}
 								onChange={onChange}
-								placeholder={"Select Group"}
-								className='p-col-12'
-								name='group'
-								optionLabel='name'
-								optionValue='id'
+								placeholder={'Select Group'}
+								className="p-col-12"
+								name="group"
+								optionLabel="name"
+								optionValue="id"
 							/>
 						</div>
 
@@ -157,9 +164,9 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 								value={newBulkLoad.type}
 								options={getService().getLoadTypes()}
 								onChange={onChange}
-								placeholder={"Select Load Type"}
-								className='p-col-12'
-								name='type'
+								placeholder={'Select Load Type'}
+								className="p-col-12"
+								name="type"
 								disabled={disableFormFields}
 							/>
 						</div>
@@ -171,13 +178,13 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 								value={newBulkLoad.backendBulkLoadType}
 								options={backendBulkLoadTypes}
 								onChange={onChange}
-								placeholder={"Select Backend Bulk Load Type"}
-								className='p-col-12'
-								name='backendBulkLoadType'
+								placeholder={'Select Backend Bulk Load Type'}
+								className="p-col-12"
+								name="backendBulkLoadType"
 								disabled={disableFormFields}
 							/>
 						</div>
-				
+
 						<FMSForm
 							hideFMS={hideFMS}
 							newBulkLoad={newBulkLoad}
@@ -193,14 +200,12 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 							disableFormFields={disableFormFields}
 						/>
 
-
 						<ManualForm
 							hideManual={hideManual}
 							newBulkLoad={newBulkLoad}
 							onChange={onChange}
 							disableFormFields={disableFormFields}
 						/>
-
 					</form>
 				</div>
 			</ErrorBoundary>

@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 
 export function FilterComponentInputText({ isInEditMode, filterConfig, currentFilters, onFilter }) {
-	
 	const fieldSet = filterConfig.fieldSets[0];
 
-	const [filterValue, setFilterValue] = useState(currentFilters && currentFilters[fieldSet.filterName] ? currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString : '');
+	const [filterValue, setFilterValue] = useState(
+		currentFilters && currentFilters[fieldSet.filterName]
+			? currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString
+			: ''
+	);
 
 	useEffect(() => {
-		setFilterValue(currentFilters && currentFilters[fieldSet.filterName] ? currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString : '');
+		setFilterValue(
+			currentFilters && currentFilters[fieldSet.filterName]
+				? currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString
+				: ''
+		);
 	}, [filterValue, currentFilters, fieldSet]);
 
 	return (
@@ -21,15 +28,15 @@ export function FilterComponentInputText({ isInEditMode, filterConfig, currentFi
 				if (e.target.value.length !== 0) {
 					fieldSet.fields.forEach((key) => {
 						filter[key] = {
-							queryString : e.target.value,
-							tokenOperator : "AND",
+							queryString: e.target.value,
+							tokenOperator: 'AND',
 							// add filterConfig.useKeywords
-						}
+						};
 					});
-					if(filterConfig.nonNullFields) {
+					if (filterConfig.nonNullFields) {
 						filter['nonNullFields'] = filterConfig.nonNullFields.fields;
 					}
-					if(filterConfig.nullFields) {
+					if (filterConfig.nullFields) {
 						filter['nullFields'] = filterConfig.nullFields.fields;
 					}
 				} else {
@@ -45,6 +52,5 @@ export function FilterComponentInputText({ isInEditMode, filterConfig, currentFi
 				onFilter(filtersCopy);
 			}}
 		/>
-	)
+	);
 }
-

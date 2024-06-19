@@ -246,6 +246,8 @@ CONTAINER ID   IMAGE                                   COMMAND                  
 
 This repository uses checkstyle to validate formatting of code to a coding standard. [Checkstyle](https://checkstyle.sourceforge.io/) is a development tool to help programmers write Java code that adheres to a coding standard. It automates the process of checking Java code to spare humans of this boring (but important) task. This makes it ideal for projects that want to enforce a coding standard.
 
+This repository also uses [Prettier](https://prettier.io/) to validate and update the formatting of code in the frontend codebase.
+
 ### Running Checkstyle
 
 To run checkstyle locally in order to check your code before committing run the following:
@@ -295,11 +297,44 @@ make: *** [checkstyle] Error 1
 
 Checkstyle can be configured via the checkstyle.xml file in the root of the project, this file can also be used by IDE's to keep code in line with the ruleset.
 
+### Running Prettier
+
+To validate formatting on JavaScript files locally with Prettier: 
+
+```bash
+> npx prettier --check **/*.js
+```
+
+Or the make target:
+
+```bash
+> make prettier-check
+```
+
+To update formatting on JavaScript files locally with Prettier: 
+
+```bash
+> npx prettier --write **/*.js
+```
+
+Or the make target:
+
+```bash
+> make prettier-write
+```
+
+Prettier can be configured via the .prettierrc.yaml file in the src/main/cliapp director of this project, this file can also be used by IDE's to keep code in line with the ruleset.
+
 ### Checkstyle Links
 
 * Checkstyle for vscode: [https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle)
 * Checkstyle for Intellij: [https://stackoverflow.com/questions/26955766/intellij-idea-checkstyle](https://stackoverflow.com/questions/26955766/intellij-idea-checkstyle)
 * Checkstyle for Eclipse: [https://www.youtube.com/watch?v=H90QoBp2NSQ](https://www.youtube.com/watch?v=H90QoBp2NSQ) or [https://checkstyle.org/eclipse-cs/#!/](https://checkstyle.org/eclipse-cs/#!/)
+
+### Prettier Links
+
+* Prettier for vscode: [https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+* Prettier for Intellij: [https://www.jetbrains.com/help/idea/prettier.html](https://www.jetbrains.com/help/idea/prettier.html)
 
 ## Building
 

@@ -14,18 +14,28 @@ import { useControlledVocabularyService } from '../../../service/useControlledVo
 import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
 import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
-import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
+import {
+	synonymScopeTemplate,
+	nameTypeTemplate,
+	synonymUrlTemplate,
+	synonymUrlEditorTemplate,
+	displayTextTemplate,
+	displayTextEditorTemplate,
+	formatTextTemplate,
+	formatTextEditorTemplate,
+} from '../../../components/NameSlotAnnotationComponent';
 
-export const FullNameDialog = ({					name,
-													field,
-													endpoint,
-													originalFullNameData,
-													setOriginalFullNameData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow
-												}) => {
+export const FullNameDialog = ({
+	name,
+	field,
+	endpoint,
+	originalFullNameData,
+	setOriginalFullNameData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+}) => {
 	const { originalFullNames, isInEdit, dialog, rowIndex, mainRowProps } = originalFullNameData;
-	const [localFullNames, setLocalFullNames] = useState(null) ;
+	const [localFullNames, setLocalFullNames] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -41,15 +51,15 @@ export const FullNameDialog = ({					name,
 		let _localFullNames = cloneFullNames(originalFullNames);
 		setLocalFullNames(_localFullNames);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localFullNames) {
+			if (_localFullNames) {
 				_localFullNames.forEach((fn) => {
 					rowsObject[`${fn.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -57,14 +67,14 @@ export const FullNameDialog = ({					name,
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localFullNames = [...localFullNames];//add new note support
-		if(originalFullNames && originalFullNames[event.index]){
+		let _localFullNames = [...localFullNames]; //add new note support
+		if (originalFullNames && originalFullNames[event.index]) {
 			let dataKey = _localFullNames[event.index].dataKey;
 			_localFullNames[event.index] = global.structuredClone(originalFullNames[event.index]);
 			_localFullNames[event.index].dataKey = dataKey;
@@ -73,11 +83,11 @@ export const FullNameDialog = ({					name,
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInFullNames(event.data,event.index);
+		compareChangesInFullNames(event.data, event.index);
 	};
 
 	const compareChangesInFullNames = (data, index) => {
-		if(originalFullNames && originalFullNames[index]) {
+		if (originalFullNames && originalFullNames[index]) {
 			if (data.internal !== originalFullNames[index].internal) {
 				rowsEdited.current++;
 			}
@@ -90,10 +100,11 @@ export const FullNameDialog = ({					name,
 			if (data.synonymUrl !== originalFullNames[index].synonymUrl) {
 				rowsEdited.current++;
 			}
-			if ((originalFullNames[index].evidence && !data.evidence) ||
-					(!originalFullNames[index].evidence && data.evidence) ||
-					(data.evidence && (data.evidence.length !== originalFullNames[index].evidence.length))
-				) {
+			if (
+				(originalFullNames[index].evidence && !data.evidence) ||
+				(!originalFullNames[index].evidence && data.evidence) ||
+				(data.evidence && data.evidence.length !== originalFullNames[index].evidence.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
@@ -104,26 +115,28 @@ export const FullNameDialog = ({					name,
 					}
 				}
 			}
-			if ((originalFullNames[index].synonymScope && !data.synonymScope) ||
-					(!originalFullNames[index].synonymScope && data.synonymScope) ||
-					(originalFullNames[index].synonymScope && (originalFullNames[index].synonymScope.name !== data.synonymScope.name))
-				) {
+			if (
+				(originalFullNames[index].synonymScope && !data.synonymScope) ||
+				(!originalFullNames[index].synonymScope && data.synonymScope) ||
+				(originalFullNames[index].synonymScope && originalFullNames[index].synonymScope.name !== data.synonymScope.name)
+			) {
 				rowsEdited.current++;
 			}
-			if ((originalFullNames[index].nameType && !data.nameType) ||
-					(!originalFullNames[index].nameType && data.nameType) ||
-					(originalFullNames[index].nameType && (originalFullNames[index].nameType.name !== data.nameType.name))
-				) {
+			if (
+				(originalFullNames[index].nameType && !data.nameType) ||
+				(!originalFullNames[index].nameType && data.nameType) ||
+				(originalFullNames[index].nameType && originalFullNames[index].nameType.name !== data.nameType.name)
+			) {
 				rowsEdited.current++;
 			}
 		}
-		
+
 		if (localFullNames.length > originalFullNames?.length || !originalFullNames[0]) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateFullName(localFullNames[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -132,14 +145,19 @@ export const FullNameDialog = ({					name,
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update ' + name + ' [' + localFullNames[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail: 'Could not update ' + name + ' [' + localFullNames[event.index].id + ']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
@@ -178,13 +196,13 @@ export const FullNameDialog = ({					name,
 		let _clonableFullNames = [];
 		if (clonableFullNames?.length > 0 && clonableFullNames[0]) {
 			_clonableFullNames = global.structuredClone(clonableFullNames);
-			if(_clonableFullNames) {
-				let counter = 0 ;
+			if (_clonableFullNames) {
+				let counter = 0;
 				_clonableFullNames.forEach((name) => {
 					name.dataKey = counter++;
 				});
 			}
-		} 
+		}
 		return _clonableFullNames;
 	};
 
@@ -199,20 +217,19 @@ export const FullNameDialog = ({					name,
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
 		errorMessagesCopy[rowIndex][field] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalFullNameData((originalFullNameData) => {
-				return {
-					...originalFullNameData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalFullNameData,
+				dialog: false,
+			};
+		});
 	};
 
 	const internalTemplate = (rowData) => {
@@ -222,7 +239,7 @@ export const FullNameDialog = ({					name,
 	const onInternalEditorValueChange = (props, event) => {
 		let _localFullNames = [...localFullNames];
 		_localFullNames[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const internalEditor = (props) => {
 		return (
@@ -231,14 +248,12 @@ export const FullNameDialog = ({					name,
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
-
-	
 
 	const onSynonymScopeEditorValueChange = (props, event) => {
 		let _localFullNames = [...localFullNames];
@@ -254,9 +269,9 @@ export const FullNameDialog = ({					name,
 					editorChange={onSynonymScopeEditorValueChange}
 					props={props}
 					showClear={true}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"synonymScope"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'synonymScope'} />
 			</>
 		);
 	};
@@ -275,9 +290,9 @@ export const FullNameDialog = ({					name,
 					editorChange={onNameTypeEditorValueChange}
 					props={props}
 					showClear={false}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"nameType"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'nameType'} />
 			</>
 		);
 	};
@@ -285,23 +300,28 @@ export const FullNameDialog = ({					name,
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Name" icon="pi pi-plus" onClick={createNewFullNameHandler} disabled={localFullNames?.length > 0}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button
+					label="New Name"
+					icon="pi pi-plus"
+					onClick={createNewFullNameHandler}
+					disabled={localFullNames?.length > 0}
+				/>
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const createNewFullNameHandler = (event) => {
 		let cnt = localFullNames ? localFullNames.length : 0;
 		const _localFullNames = global.structuredClone(localFullNames);
 		_localFullNames.push({
-			dataKey : cnt,
-			internal : false,
-			nameType : fullNameTypeTerms[0]
+			dataKey: cnt,
+			internal: false,
+			nameType: fullNameTypeTerms[0],
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -310,55 +330,134 @@ export const FullNameDialog = ({					name,
 
 	const handleDeleteFullName = (event, props) => {
 		let _localFullNames = global.structuredClone(localFullNames);
-		if(props.dataKey){
+		if (props.dataKey) {
 			_localFullNames.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localFullNames.splice(props.rowIndex, 1);
 		}
 		setLocalFullNames(_localFullNames);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteFullName(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteFullName(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 
-			<ColumnGroup>
-				<Row>
-					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-					<Column header="Display Text" />
-					<Column header="Format Text" />
-					<Column header="Synonym Scope" />
-					<Column header="Name Type" />
-					<Column header="Synonym URL" />
-					<Column header="Internal" />
-					<Column header="Evidence" />
-					<Column header="Updated By" />
-					<Column header="Date Updated" />
-				</Row>
-			</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Display Text" />
+				<Column header="Format Text" />
+				<Column header="Synonym Scope" />
+				<Column header="Name Type" />
+				<Column header="Synonym URL" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+				<Column header="Updated By" />
+				<Column header="Date Updated" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-10"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Full Name</h3>
-				<DataTable value={localFullNames} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={(props) => displayTextEditorTemplate(props, errorMessages)} field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate}/>
-					<Column editor={(props) => formatTextEditorTemplate(props, errorMessages)} field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate}/>
-					<Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate}/>
-					<Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate}/>
-					<Column editor={(props) => synonymUrlEditorTemplate(props, errorMessages)} field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate}/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+				<DataTable
+					value={localFullNames}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
+					<Column
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={(props) => displayTextEditorTemplate(props, errorMessages)}
+						field="displayText"
+						header="Display Text"
+						headerClassName="surface-0"
+						body={displayTextTemplate}
+					/>
+					<Column
+						editor={(props) => formatTextEditorTemplate(props, errorMessages)}
+						field="formatText"
+						header="Format Text"
+						headerClassName="surface-0"
+						body={formatTextTemplate}
+					/>
+					<Column
+						editor={synonymScopeEditor}
+						field="synonymScope"
+						header="Synonym Scope"
+						headerClassName="surface-0"
+						body={synonymScopeTemplate}
+					/>
+					<Column
+						editor={nameTypeEditor}
+						field="nameType"
+						header="Name Type"
+						headerClassName="surface-0"
+						body={nameTypeTemplate}
+					/>
+					<Column
+						editor={(props) => synonymUrlEditorTemplate(props, errorMessages)}
+						field="synonymUrl"
+						header="Synonym URL"
+						headerClassName="surface-0"
+						body={synonymUrlTemplate}
+					/>
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 					<Column field="updatedBy.uniqueId" header="Updated By" />
 					<Column field="dateUpdated" header="Date Updated" />
 				</DataTable>

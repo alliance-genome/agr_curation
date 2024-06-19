@@ -1,14 +1,23 @@
-import { InputTextarea } from "primereact/inputtextarea";
-import { DialogErrorMessageComponent } from "../Error/DialogErrorMessageComponent";
-import { useState } from "react";
+import { InputTextarea } from 'primereact/inputtextarea';
+import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
+import { useState } from 'react';
 
-export const TableInputTextAreaEditor = ({ value, errorMessages, textOnChangeHandler, rowIndex, dataKey, field, rows, columns }) => {
+export const TableInputTextAreaEditor = ({
+	value,
+	errorMessages,
+	textOnChangeHandler,
+	rowIndex,
+	dataKey,
+	field,
+	rows,
+	columns,
+}) => {
 	const [localValue, setLocalValue] = useState(value);
 
 	const onChange = (e) => {
 		setLocalValue(e.target.value);
-		textOnChangeHandler(rowIndex, e, field)
-	}
+		textOnChangeHandler(rowIndex, e, field);
+	};
 
 	return (
 		<>

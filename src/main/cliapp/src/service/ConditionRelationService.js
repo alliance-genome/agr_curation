@@ -6,15 +6,12 @@ export class ConditionRelationService extends BaseAuthService {
 		return this.api.put(`/condition-relation`, updatedConditionRelation);
 	}
 
-	createConditionRelation(newConditionRelation) { 
+	createConditionRelation(newConditionRelation) {
 		return this.api.post(`/condition-relation`, newConditionRelation);
 	}
 
-	async deleteConditionRelation(conditionRelation) { 
+	async deleteConditionRelation(conditionRelation) {
 		const deletionService = new DeletionService();
 		return await deletionService.delete(`condition-relation`, conditionRelation.id);
 	}
 }
-
-
-

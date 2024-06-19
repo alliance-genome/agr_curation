@@ -1,3 +1,3 @@
-import { Dashboard as DashboardPage } from "./Dashboard";
+import { Dashboard as DashboardPage } from './Dashboard';
 
 export { DashboardPage };
