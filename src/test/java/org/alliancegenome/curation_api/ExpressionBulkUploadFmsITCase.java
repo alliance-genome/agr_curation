@@ -35,7 +35,9 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String gene = "GEXPTEST:GENE001";
 	private final String mmoTerm = "GEXPTEST:assay001";
 	private final String referenceId = "ZFIN:PUB001";
+	private final String agrReferenceId = "AGRKB:101000000668377";
 	private final String publicationId = "PMID:009";
+	private final String agrPublicationId = "AGRKB:101000000668376";
 
 	@BeforeEach
 	public void init() {
@@ -50,7 +52,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadAllFields() throws Exception {
 		loadRequiredEntities();
 		checkSuccessfulBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "AF_01_all_fields.json");
-
 		RestAssured.given().when()
 			.header("Content-Type", "application/json")
 			.body("{}")
@@ -66,6 +67,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].whereExpressedStatement", is("trunk"))
 			.body("results[0].whenExpressedStageName", is("stage1"))
+			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
 			.body("results[0].relation.name", is(VocabularyConstants.GENE_EXPRESSION_RELATION_TERM));
 	}
 
@@ -85,6 +87,10 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadEmptyRequiredFields() throws Exception {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_01_empty_geneId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_02_empty_dateAssigned.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_03_empty_crossReferenceId.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_04_empty_assay.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_05_empty_whenExpressed.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_06_empty_whereExpressed.json");
 	}
 
 	@Test
@@ -92,8 +98,9 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadInvalidFields() throws Exception {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_01_invalid_geneId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_02_invalid_dateAssigned.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_03_invalidCrossReferenceId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_04_invalid_assay.json");
-
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_05_invalid_publicationId.json");
 	}
 
 	private void loadRequiredEntities() throws Exception {
@@ -105,8 +112,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		ResourceDescriptor rd1 = createResourceDescriptor("ZFIN");
 		createResourceDescriptorPage("homepage", "https://zfin.org/", rd1);
 		createResourceDescriptorPage("reference", "https://zfin.org/[%s]", rd1);
-		createReference(referenceId, false);
-		createReference(publicationId, false);
+		loadReference(agrPublicationId, publicationId);
+		loadReference(agrReferenceId, referenceId);
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		VocabularyTerm isExpressed = createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
 	}
