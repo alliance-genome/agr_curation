@@ -56,7 +56,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			createHistory(history, bulkLoadFile);
 			boolean success = runLoad(generatedOrthologyService, history, dataProvider, orthologyData.getData(), orthoPairIdsLoaded);
 			if (success) {
-				runCleanup(history, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded);
+				runCleanup(generatedOrthologyService, history, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded, fms.getFmsDataType(), bulkLoadFile.getMd5Sum(), false);
 			}
 			history.finishLoad();
 			finalSaveHistory(history);
@@ -65,31 +65,4 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			e.printStackTrace();
 		}
 	}
-
-	private void runCleanup(BulkLoadFileHistory history, String dataProvider, List<Long> orthoPairIdsBefore, List<Long> orthoPairIdsAfter) {
-		Log.debug("runLoad: After: " + dataProvider + " " + orthoPairIdsAfter.size());
-
-		List<Long> distinctAfter = orthoPairIdsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(orthoPairIdsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProvider + " " + idsToRemove.size());
-
-		history.setTotalDeleteRecords((long) idsToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("Deletion/deprecation of orthology pairs " + dataProvider, idsToRemove.size());
-		for (Long idToRemove : idsToRemove) {
-			try {
-				generatedOrthologyDAO.remove(idToRemove);
-				history.incrementDeleted();
-			} catch (Exception e) {
-				history.incrementDeleteFailed();
-				addException(history, new ObjectUpdateExceptionData("{}", e.getMessage(), e.getStackTrace()));
-			}
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-	}
-
 }
