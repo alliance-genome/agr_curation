@@ -106,7 +106,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		DataProvider dataProvider = createDataProvider("ZFIN", false);
 		Vocabulary vocabulary1 = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
-		VocabularyTerm  symbolTerm = getVocabularyTerm(vocabulary1, "nomenclature_symbol");
+		VocabularyTerm symbolTerm = getVocabularyTerm(vocabulary1,"nomenclature_symbol");
 		loadGenes(List.of(gene), taxon, symbolTerm, dataProvider);
 		loadMMOTerm(mmoTerm, "assay001");
 		ResourceDescriptor rd1 = createResourceDescriptor("ZFIN");
