@@ -69,8 +69,8 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations"})
 	private GenomicEntity constructGenomicEntityAssociationObject;
 
-	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
-			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
+			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword",
 			"references.primaryCrossReferenceCurie_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

@@ -47,7 +47,7 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 
-@Table(indexes = { 
+@Table(indexes = {
 	@Index(name = "DiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseannotationobject_id"),
 	@Index(name = "DiseaseAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),

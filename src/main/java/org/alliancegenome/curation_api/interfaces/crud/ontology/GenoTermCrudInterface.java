@@ -13,6 +13,6 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Ontology")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GenoTermCrudInterface extends BaseOntologyTermCrudInterface<GENOTerm>	{
+public interface GenoTermCrudInterface extends BaseOntologyTermCrudInterface<GENOTerm> {
 	
 }
