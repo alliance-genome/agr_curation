@@ -55,7 +55,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			boolean success = runLoad(geneToGeneParalogyService, history, dataProvider, paralogyData.getData(), paralogyIdsLoaded);
 
 			if (success) {
-				runCleanup(history, fms.getFmsDataSubType(), paralogyPairsBefore, paralogyIdsLoaded);
+				runCleanup(geneToGeneParalogyService, history, fms.getFmsDataSubType(), paralogyPairsBefore, paralogyIdsLoaded,fms.getFmsDataType(), bulkLoadFile.getMd5Sum(),false);
 			}
 			history.finishLoad();
 
@@ -66,31 +66,4 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			e.printStackTrace();
 		}
 	}
-
-	private void runCleanup(BulkLoadFileHistory history, String dataProvider, List<Long> paralogyPairsBefore, List<Long> paralogyPairsAfter) {
-		Log.debug("runLoad: After: " + dataProvider + " " + paralogyPairsAfter.size());
-
-		List<Long> distinctAfter = paralogyPairsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProvider + " " + distinctAfter.size());
-
-		List<Long> idsToRemove = ListUtils.subtract(paralogyPairsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProvider + " " + idsToRemove.size());
-
-		history.setTotalDeleteRecords((long) idsToRemove.size());
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("Deletion/deprecation of orthology pairs " + dataProvider, idsToRemove.size());
-		for (Long idToRemove : idsToRemove) {
-			try {
-				geneToGeneParalogyDAO.remove(idToRemove);
-				history.incrementDeleted();
-			} catch (Exception e) {
-				history.incrementDeleteFailed();
-				addException(history, new ObjectUpdateExceptionData("{}", e.getMessage(), e.getStackTrace()));
-			}
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-	}
-
 }
