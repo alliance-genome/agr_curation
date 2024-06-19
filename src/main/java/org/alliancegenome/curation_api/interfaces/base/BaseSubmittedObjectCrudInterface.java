@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseSubmittedObjectCrudInterface<E extends SubmittedObject> extends 
+public interface BaseSubmittedObjectCrudInterface<E extends SubmittedObject> extends
 	BaseCreateControllerInterface<E>,
 	BaseReadIdentifierControllerInterface<E>,
 	BaseUpdateControllerInterface<E>,

@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseCurieObjectCrudInterface<E extends CurieObject> extends 
+public interface BaseCurieObjectCrudInterface<E extends CurieObject> extends
 	BaseCreateControllerInterface<E>,
 	BaseReadCurieControllerInterface<E>,
 	BaseUpdateControllerInterface<E>,

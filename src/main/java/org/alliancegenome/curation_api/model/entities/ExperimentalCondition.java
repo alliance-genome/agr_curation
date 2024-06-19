@@ -39,8 +39,8 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
-@Table(indexes = { 
-		@Index(name = "experimentalcondition_createdby_index", columnList = "createdBy_id"), 
+@Table(indexes = {
+		@Index(name = "experimentalcondition_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "experimentalcondition_updatedby_index", columnList = "updatedBy_id")
 })
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })

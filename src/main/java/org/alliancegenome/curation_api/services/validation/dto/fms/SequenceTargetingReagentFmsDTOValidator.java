@@ -66,15 +66,15 @@ public class SequenceTargetingReagentFmsDTOValidator {
 		}
 		
 		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
-			sqtr.setSynonyms(dto.getSynonyms());	
+			sqtr.setSynonyms(dto.getSynonyms());
 		} else {
-			sqtr.setSynonyms(null);	
+			sqtr.setSynonyms(null);
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getSecondaryIds())) {
-			sqtr.setSecondaryIdentifiers(dto.getSecondaryIds());	
+			sqtr.setSecondaryIdentifiers(dto.getSecondaryIds());
 		} else {
-			sqtr.setSecondaryIdentifiers(null);	
+			sqtr.setSecondaryIdentifiers(null);
 		}
 		
 		if (beDataProvider != null) {

@@ -22,8 +22,8 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface SequenceTargetingReagentCrudInterface extends BaseIdCrudInterface<SequenceTargetingReagent> {
 
-	@POST 
-	@Path("/bulk/{dataProvider}/sqtrfile") 
+	@POST
+	@Path("/bulk/{dataProvider}/sqtrfile")
 	@JsonView(View.FieldsAndLists.class)
 	APIResponse updateSequenceTargetingReagent(@PathParam("dataProvider") String dataProvider, SequenceTargetingReagentIngestFmsDTO sqtrData);
 }
