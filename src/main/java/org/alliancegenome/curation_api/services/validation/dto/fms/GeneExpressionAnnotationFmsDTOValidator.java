@@ -121,6 +121,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
 		if (singleReferenceResponse.hasErrors()) {
 			response.addErrorMessages("singleReference", singleReferenceResponse.getErrorMessages());
+			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
 			geneExpressionAnnotation.setSingleReference(singleReferenceResponse.getEntity());
 		}
@@ -143,34 +144,36 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		}
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getEvidence().getCrossReference().getId())) {
 			response.addErrorMessage("evidence - crossreference - id", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getCrossReference() + ")");
-		}
-		String[] splittedId = geneExpressionFmsDTO.getEvidence().getCrossReference().getId().split(":");
-		if (splittedId.length != 2) {
-			response.addErrorMessage("evidence - crossreference - id - prefix", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getCrossReference().getId() + ")");
 		} else {
-			String prefix = splittedId[0];
-			if (resourceDescriptorService.getByPrefixOrSynonym(prefix) == null) {
-				response.addErrorMessage("evidence - crossreference - id - prefix", ValidationConstants.INVALID_MESSAGE + " (" + prefix + ")");
-			}
-			if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getEvidence().getCrossReference().getPages())) {
-				response.addErrorMessage("evidence - crossreference - pages", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getCrossReference().getPages() + ")");
+			String[] splittedId = geneExpressionFmsDTO.getEvidence().getCrossReference().getId().split(":");
+			if (splittedId.length != 2) {
+				response.addErrorMessage("evidence - crossreference - id - prefix", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getCrossReference().getId() + ")");
 			} else {
-				for (String page : geneExpressionFmsDTO.getEvidence().getCrossReference().getPages()) {
-					if (resourceDescriptorPageService.getPageForResourceDescriptor(prefix, page) == null) {
-						response.addErrorMessage("evidence - crossreference - pages - page_area", ValidationConstants.INVALID_MESSAGE + " (" + page + ")");
+				String prefix = splittedId[0];
+				if (resourceDescriptorService.getByPrefixOrSynonym(prefix) == null) {
+					response.addErrorMessage("evidence - crossreference - id - prefix", ValidationConstants.INVALID_MESSAGE + " (" + prefix + ")");
+				}
+				if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getEvidence().getCrossReference().getPages())) {
+					response.addErrorMessage("evidence - crossreference - pages", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getCrossReference().getPages() + ")");
+				} else {
+					for (String page : geneExpressionFmsDTO.getEvidence().getCrossReference().getPages()) {
+						if (resourceDescriptorPageService.getPageForResourceDescriptor(prefix, page) == null) {
+							response.addErrorMessage("evidence - crossreference - pages - page_area", ValidationConstants.INVALID_MESSAGE + " (" + page + ")");
+						}
 					}
 				}
 			}
 		}
 		if (StringUtils.isEmpty(geneExpressionFmsDTO.getEvidence().getPublicationId()) || StringUtils.isBlank(geneExpressionFmsDTO.getEvidence().getPublicationId())) {
 			response.addErrorMessage("evidence - publicationId", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getPublicationId() + ")");
+		} else {
+			Reference reference = referenceService.retrieveFromDbOrLiteratureService(geneExpressionFmsDTO.getEvidence().getPublicationId());
+			if (reference == null) {
+				response.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getPublicationId() + ")");
+			} else {
+				response.setEntity(reference);
+			}
 		}
-
-		Reference reference = referenceService.retrieveFromDbOrLiteratureService(geneExpressionFmsDTO.getEvidence().getPublicationId());
-		if (reference == null) {
-			response.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getEvidence().getPublicationId() + ")");
-		}
-		response.setEntity(reference);
 		return response;
 	}
 }

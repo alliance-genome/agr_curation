@@ -4,10 +4,10 @@
 		"geneId" : "GEXPTEST:GENE001",
 		"evidence" : {
 			"crossReference" : {
-				"id" : "ZFIN:notfound",
+				"id" : "ZFIN:PUB001",
 				"pages" : [ "reference" ]
 			},
-			"publicationId" : "PMID:009"
+			"publicationId" : "PMID:notfound"
 		},
 		"crossReference" : {
 			"id" : "ZFIN:ZDB-FIG-170413-34",

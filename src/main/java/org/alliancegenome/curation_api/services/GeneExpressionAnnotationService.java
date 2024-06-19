@@ -38,7 +38,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put("expressionAnnotationSubject.taxon.curie", dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.EA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		}
 		List<Long> annotationIds = geneExpressionAnnotationDAO.findIdsByParams(params);
 		return annotationIds;
