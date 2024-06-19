@@ -240,7 +240,7 @@ public class LoadFileExecutor {
 		return true;
 	}
 
-	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, String md5sum){
+	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, String md5sum) {
 		runCleanup(service, history, dataProviderName, annotationIdsBefore, annotationIdsAfter, loadTypeString, md5sum, true);
 	}
 
