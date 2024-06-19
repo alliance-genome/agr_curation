@@ -240,8 +240,12 @@ public class LoadFileExecutor {
 		return true;
 	}
 
-	// The following methods are for bulk validation
 	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, String md5sum) {
+		runCleanup(service, history, dataProviderName, annotationIdsBefore, annotationIdsAfter, loadTypeString, md5sum, true);
+	}
+
+	// The following methods are for bulk validation
+	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, String md5sum, Boolean deprecate) {
 		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
@@ -257,7 +261,7 @@ public class LoadFileExecutor {
 		for (Long id : idsToRemove) {
 			try {
 				String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + md5sum + ")";
-				service.deprecateOrDelete(id, false, loadDescription, true);
+				service.deprecateOrDelete(id, false, loadDescription, deprecate);
 				history.incrementDeleted();
 			} catch (Exception e) {
 				history.incrementDeleteFailed();
