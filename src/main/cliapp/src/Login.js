@@ -6,7 +6,6 @@ import { oktaSignInConfig } from './oktaAuthConfig';
 export const Login = ({ children }) => {
 	const { oktaAuth, authState } = useOktaAuth();
 
-
 	const onSuccess = (tokens) => {
 		oktaAuth.handleLoginRedirect(tokens);
 	};
@@ -15,5 +14,9 @@ export const Login = ({ children }) => {
 		console.log('error logging in', err);
 	};
 
-	return authState?.isAuthenticated ? children : <OktaSignInWidget config={oktaSignInConfig} onSuccess={onSuccess} onError={onError}/>;
+	return authState?.isAuthenticated ? (
+		children
+	) : (
+		<OktaSignInWidget config={oktaSignInConfig} onSuccess={onSuccess} onError={onError} />
+	);
 };

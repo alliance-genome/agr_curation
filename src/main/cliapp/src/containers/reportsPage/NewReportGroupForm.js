@@ -9,13 +9,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) => {
-
 	const [group, setGroup] = useState({});
 
 	const [submitted, setSubmitted] = useState(false);
 	let reportService = null;
 
-	const mutation = useMutation(newGroupName => {
+	const mutation = useMutation((newGroupName) => {
 		return getService().createGroup(newGroupName);
 	});
 
@@ -31,11 +30,11 @@ export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) 
 	};
 
 	const getService = () => {
-		if(!reportService) {
+		if (!reportService) {
 			reportService = new ReportService();
 		}
 		return reportService;
-	}
+	};
 
 	const hideDialog = () => {
 		setReportGroupDialog(false);
@@ -56,10 +55,9 @@ export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) 
 					setSubmitted(false);
 					setReportGroupDialog(false);
 					setGroup(emptyGroup);
-				}
+				},
 			});
 		}
-
 	};
 
 	const groupDialogFooter = (
@@ -69,21 +67,33 @@ export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) 
 		</React.Fragment>
 	);
 
-
 	return (
 		<div>
-			<Dialog visible={reportGroupDialog} style={{ width: '450px' }} header="Group Details" modal className="p-fluid" footer={groupDialogFooter} onHide={hideDialog}>
+			<Dialog
+				visible={reportGroupDialog}
+				style={{ width: '450px' }}
+				header="Group Details"
+				modal
+				className="p-fluid"
+				footer={groupDialogFooter}
+				onHide={hideDialog}
+			>
 				<ErrorBoundary>
 					<div className="field">
 						<label htmlFor="name">Group Name</label>
 
-						<InputText id="name" value={group.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !group.name })} />
+						<InputText
+							id="name"
+							value={group.name}
+							onChange={(e) => onChange(e, 'name')}
+							required
+							autoFocus
+							className={classNames({ 'p-invalid': submitted && !group.name })}
+						/>
 						{submitted && !group.name && <small className="p-error">Name is required.</small>}
 					</div>
 				</ErrorBoundary>
 			</Dialog>
 		</div>
-
 	);
 };
-

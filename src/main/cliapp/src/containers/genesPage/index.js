@@ -1,3 +1,3 @@
-import GenesPage from "./GenesPage";
+import GenesPage from './GenesPage';
 
 export { GenesPage };

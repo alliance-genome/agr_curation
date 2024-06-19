@@ -1,3 +1,3 @@
-import MoleculesPage from "./MoleculesPage";
+import MoleculesPage from './MoleculesPage';
 
 export { MoleculesPage };

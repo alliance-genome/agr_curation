@@ -4,19 +4,12 @@ import { FilterComponentBinaryDropDown } from './FilterComponentBinaryDropDown';
 import { FilterComponentMultiSelect } from './FilterComponentMultiSelect';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 
-export const FilterComponent = ({
-	filterConfig,
-	isInEditMode,
-	onFilter,
-	aggregationFields,
-	tableState,
-	endpoint,
-}) => {
+export const FilterComponent = ({ filterConfig, isInEditMode, onFilter, aggregationFields, tableState, endpoint }) => {
 	if (filterConfig && filterConfig.filterComponentType) {
 		switch (filterConfig.filterComponentType) {
-			case "input":
+			case 'input':
 				return (
-					<Splitter className='border-none' gutterSize={0}>
+					<Splitter className="border-none" gutterSize={0}>
 						<SplitterPanel size={95} className="text-left">
 							<FilterComponentInputText
 								filterConfig={filterConfig}
@@ -26,14 +19,14 @@ export const FilterComponent = ({
 							/>
 						</SplitterPanel>
 						<SplitterPanel size={5} className="text-right">
-							<i className="pi pi-filter text-base mt-3 ml-3" ></i>
+							<i className="pi pi-filter text-base mt-3 ml-3"></i>
 						</SplitterPanel>
 					</Splitter>
 				);
 
-			case "dropdown":
+			case 'dropdown':
 				return (
-					<Splitter className='border-none' gutterSize={0}>
+					<Splitter className="border-none" gutterSize={0}>
 						<SplitterPanel size={95} className="text-left">
 							<FilterComponentBinaryDropDown
 								filterConfig={filterConfig}
@@ -43,14 +36,14 @@ export const FilterComponent = ({
 							/>
 						</SplitterPanel>
 						<SplitterPanel size={5} className="text-right">
-							<i className="pi pi-filter text-base mt-3 ml-3" ></i>
+							<i className="pi pi-filter text-base mt-3 ml-3"></i>
 						</SplitterPanel>
-					</Splitter >
+					</Splitter>
 				);
 
-			case "multiselect":
+			case 'multiselect':
 				return (
-					<Splitter className='border-none' gutterSize={0}>
+					<Splitter className="border-none" gutterSize={0}>
 						<SplitterPanel size={95} className="text-left">
 							<FilterComponentMultiSelect
 								filterConfig={filterConfig}
@@ -62,13 +55,13 @@ export const FilterComponent = ({
 							/>
 						</SplitterPanel>
 						<SplitterPanel size={5} className="text-right">
-							<i className="pi pi-filter text-base mt-3 ml-3" ></i>
+							<i className="pi pi-filter text-base mt-3 ml-3"></i>
 						</SplitterPanel>
-					</Splitter >
+					</Splitter>
 				);
 			default:
 				return null;
-		};
+		}
 	} else {
 		return null;
 	}

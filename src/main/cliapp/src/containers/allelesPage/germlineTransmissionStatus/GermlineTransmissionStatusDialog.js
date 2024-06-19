@@ -15,13 +15,14 @@ import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 
 export const GermlineTransmissionStatusDialog = ({
-													originalGermlineTransmissionStatusData,
-													setOriginalGermlineTransmissionStatusData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow
-												}) => {
-	const { originalGermlineTransmissionStatuses, isInEdit, dialog, rowIndex, mainRowProps } = originalGermlineTransmissionStatusData;
-	const [localGermlineTransmissionStatuses, setLocalGermlineTransmissionStatuses] = useState(null) ;
+	originalGermlineTransmissionStatusData,
+	setOriginalGermlineTransmissionStatusData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+}) => {
+	const { originalGermlineTransmissionStatuses, isInEdit, dialog, rowIndex, mainRowProps } =
+		originalGermlineTransmissionStatusData;
+	const [localGermlineTransmissionStatuses, setLocalGermlineTransmissionStatuses] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -36,15 +37,15 @@ export const GermlineTransmissionStatusDialog = ({
 		let _localGermlineTransmissionStatuses = cloneGermlineTransmissionStatuses(originalGermlineTransmissionStatuses);
 		setLocalGermlineTransmissionStatuses(_localGermlineTransmissionStatuses);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localGermlineTransmissionStatuses) {
+			if (_localGermlineTransmissionStatuses) {
 				_localGermlineTransmissionStatuses.forEach((gst) => {
 					rowsObject[`${gst.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -52,34 +53,37 @@ export const GermlineTransmissionStatusDialog = ({
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localGermlineTransmissionStatuses = [...localGermlineTransmissionStatuses];//add new note support
-		if(originalGermlineTransmissionStatuses && originalGermlineTransmissionStatuses[event.index]){
+		let _localGermlineTransmissionStatuses = [...localGermlineTransmissionStatuses]; //add new note support
+		if (originalGermlineTransmissionStatuses && originalGermlineTransmissionStatuses[event.index]) {
 			let dataKey = _localGermlineTransmissionStatuses[event.index].dataKey;
-			_localGermlineTransmissionStatuses[event.index] = global.structuredClone(originalGermlineTransmissionStatuses[event.index]);
+			_localGermlineTransmissionStatuses[event.index] = global.structuredClone(
+				originalGermlineTransmissionStatuses[event.index]
+			);
 			_localGermlineTransmissionStatuses[event.index].dataKey = dataKey;
 			setLocalGermlineTransmissionStatuses(_localGermlineTransmissionStatuses);
 		}
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInGermlineTransmissionStatuses(event.data,event.index);
+		compareChangesInGermlineTransmissionStatuses(event.data, event.index);
 	};
 
 	const compareChangesInGermlineTransmissionStatuses = (data, index) => {
-		if(originalGermlineTransmissionStatuses && originalGermlineTransmissionStatuses[index]) {
+		if (originalGermlineTransmissionStatuses && originalGermlineTransmissionStatuses[index]) {
 			if (data.internal !== originalGermlineTransmissionStatuses[index].internal) {
 				rowsEdited.current++;
 			}
-			if ((originalGermlineTransmissionStatuses[index].evidence && !data.evidence) ||
-					(!originalGermlineTransmissionStatuses[index].evidence && data.evidence) ||
-					(data.evidence && (data.evidence.length !== originalGermlineTransmissionStatuses[index].evidence.length))
-				) {
+			if (
+				(originalGermlineTransmissionStatuses[index].evidence && !data.evidence) ||
+				(!originalGermlineTransmissionStatuses[index].evidence && data.evidence) ||
+				(data.evidence && data.evidence.length !== originalGermlineTransmissionStatuses[index].evidence.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
@@ -90,20 +94,26 @@ export const GermlineTransmissionStatusDialog = ({
 					}
 				}
 			}
-			if ((originalGermlineTransmissionStatuses[index].germlineTransmissionStatus && !data.germlineTransmissionStatus) ||
-					(!originalGermlineTransmissionStatuses[index].germlineTransmissionStatus && data.germlineTransmissionStatus) ||
-					(originalGermlineTransmissionStatuses[index].germlineTransmissionStatus && (originalGermlineTransmissionStatuses[index].germlineTransmissionStatus.name !== data.germlineTransmissionStatus.name))
-				) {
+			if (
+				(originalGermlineTransmissionStatuses[index].germlineTransmissionStatus && !data.germlineTransmissionStatus) ||
+				(!originalGermlineTransmissionStatuses[index].germlineTransmissionStatus && data.germlineTransmissionStatus) ||
+				(originalGermlineTransmissionStatuses[index].germlineTransmissionStatus &&
+					originalGermlineTransmissionStatuses[index].germlineTransmissionStatus.name !==
+						data.germlineTransmissionStatus.name)
+			) {
 				rowsEdited.current++;
 			}
 		}
-		
-		if (localGermlineTransmissionStatuses.length > originalGermlineTransmissionStatuses?.length || !originalGermlineTransmissionStatuses[0]) {
+
+		if (
+			localGermlineTransmissionStatuses.length > originalGermlineTransmissionStatuses?.length ||
+			!originalGermlineTransmissionStatuses[0]
+		) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateGermlineTransmissionStatus(localGermlineTransmissionStatuses[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -112,14 +122,22 @@ export const GermlineTransmissionStatusDialog = ({
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update AlleleGermlineTransmissionStatus [' + localGermlineTransmissionStatuses[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail:
+								'Could not update AlleleGermlineTransmissionStatus [' +
+								localGermlineTransmissionStatuses[event.index].id +
+								']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
@@ -158,13 +176,13 @@ export const GermlineTransmissionStatusDialog = ({
 		let _clonableGermlineTransmissionStatuses = [];
 		if (clonableGermlineTransmissionStatuses?.length > 0 && clonableGermlineTransmissionStatuses[0]) {
 			_clonableGermlineTransmissionStatuses = global.structuredClone(clonableGermlineTransmissionStatuses);
-			if(_clonableGermlineTransmissionStatuses) {
-				let counter = 0 ;
+			if (_clonableGermlineTransmissionStatuses) {
+				let counter = 0;
 				_clonableGermlineTransmissionStatuses.forEach((gts) => {
 					gts.dataKey = counter++;
 				});
 			}
-		} 
+		}
 		return _clonableGermlineTransmissionStatuses;
 	};
 
@@ -173,26 +191,29 @@ export const GermlineTransmissionStatusDialog = ({
 		for (const name of localGermlineTransmissionStatuses) {
 			delete name.dataKey;
 		}
-		mainRowProps.rowData.alleleGermlineTransmissionStatus = localGermlineTransmissionStatuses[0] ? localGermlineTransmissionStatuses[0] : null;
+		mainRowProps.rowData.alleleGermlineTransmissionStatus = localGermlineTransmissionStatuses[0]
+			? localGermlineTransmissionStatuses[0]
+			: null;
 		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleGermlineTransmissionStatus = localGermlineTransmissionStatuses[0] ? localGermlineTransmissionStatuses[0] : null;
+		updatedAnnotations[rowIndex].alleleGermlineTransmissionStatus = localGermlineTransmissionStatuses[0]
+			? localGermlineTransmissionStatuses[0]
+			: null;
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["alleleGermlineTransmissionStatus"] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
+		errorMessagesCopy[rowIndex]['alleleGermlineTransmissionStatus'] = messageObject;
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalGermlineTransmissionStatusData((originalGermlineTransmissionStatusData) => {
-				return {
-					...originalGermlineTransmissionStatusData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalGermlineTransmissionStatusData,
+				dialog: false,
+			};
+		});
 	};
 
 	const onGermlineTransmissionStatusEditorValueChange = (props, event) => {
@@ -209,9 +230,12 @@ export const GermlineTransmissionStatusDialog = ({
 					editorChange={onGermlineTransmissionStatusEditorValueChange}
 					props={props}
 					showClear={true}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"germlineTransmissionStatus"} />
+				<DialogErrorMessageComponent
+					errorMessages={errorMessages[props.rowIndex]}
+					errorField={'germlineTransmissionStatus'}
+				/>
 			</>
 		);
 	};
@@ -231,37 +255,42 @@ export const GermlineTransmissionStatusDialog = ({
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
-	
+
 	const onInternalEditorValueChange = (props, event) => {
 		let _localGermlineTransmissionStatuses = [...localGermlineTransmissionStatuses];
 		_localGermlineTransmissionStatuses[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Germline Transmission Status" icon="pi pi-plus" onClick={createNewGermlineTransmissionStatusHandler} disabled={localGermlineTransmissionStatuses?.length > 0}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button
+					label="New Germline Transmission Status"
+					icon="pi pi-plus"
+					onClick={createNewGermlineTransmissionStatusHandler}
+					disabled={localGermlineTransmissionStatuses?.length > 0}
+				/>
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const createNewGermlineTransmissionStatusHandler = (event) => {
 		let cnt = localGermlineTransmissionStatuses ? localGermlineTransmissionStatuses.length : 0;
 		const _localGermlineTransmissionStatuses = global.structuredClone(localGermlineTransmissionStatuses);
 		_localGermlineTransmissionStatuses.push({
-			dataKey : cnt,
-			internal : false
+			dataKey: cnt,
+			internal: false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -270,45 +299,100 @@ export const GermlineTransmissionStatusDialog = ({
 
 	const handleDeleteGermlineTransmissionStatus = (event, props) => {
 		let _localGermlineTransmissionStatuses = global.structuredClone(localGermlineTransmissionStatuses);
-		if(props.dataKey){
+		if (props.dataKey) {
 			_localGermlineTransmissionStatuses.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localGermlineTransmissionStatuses.splice(props.rowIndex, 1);
 		}
 		setLocalGermlineTransmissionStatuses(_localGermlineTransmissionStatuses);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteGermlineTransmissionStatus(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteGermlineTransmissionStatus(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 
-			<ColumnGroup>
-				<Row>
-					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-					<Column header="Germline Transmission Status" />
-					<Column header="Internal" />
-					<Column header="Evidence" />
-				</Row>
-			</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Germline Transmission Status" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-5' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-5"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Germline Transmission Status</h3>
-				<DataTable value={localGermlineTransmissionStatuses} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={germlineTransmissionStatusEditor} field="germlineTransmissionStatus" header="Germline Transmission Status" headerClassName='surface-0' body={germlineTransmissionStatusTemplate}/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+				<DataTable
+					value={localGermlineTransmissionStatuses}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
+					<Column
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={germlineTransmissionStatusEditor}
+						field="germlineTransmissionStatus"
+						header="Germline Transmission Status"
+						headerClassName="surface-0"
+						body={germlineTransmissionStatusTemplate}
+					/>
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 				</DataTable>
 			</Dialog>
 		</div>

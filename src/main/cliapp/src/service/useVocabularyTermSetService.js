@@ -7,27 +7,23 @@ export function useVocabularyTermSetService(vocabularyLabel) {
 	const searchService = new SearchService();
 	const termData = {};
 
-	useQuery(['terms', vocabularyLabel],
+	useQuery(
+		['terms', vocabularyLabel],
 		() => {
-			return searchService.find("vocabularyterm", 15, 0, {"vocabularyTermSets.vocabularyLabel" : vocabularyLabel } )
-		}, {
+			return searchService.find('vocabularyterm', 15, 0, { 'vocabularyTermSets.vocabularyLabel': vocabularyLabel });
+		},
+		{
 			onSuccess: (data) => {
 				if (data.results) {
-					setTerms(data.results.sort((a, b) => (a.name > b.name) ? 1 : -1));
+					setTerms(data.results.sort((a, b) => (a.name > b.name ? 1 : -1)));
 				} else {
 					if (termData[vocabularyLabel]) {
 						setTerms(termData[vocabularyLabel]['terms']);
 					}
 				}
 			},
-			refetchOnWindowFocus: false
+			refetchOnWindowFocus: false,
 		}
 	);
 	return terms;
 }
-
-
-
-
-
-

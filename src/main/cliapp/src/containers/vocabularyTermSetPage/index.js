@@ -1,3 +1,3 @@
-import VocabularyTermSetPage from "./VocabularyTermSetPage";
+import VocabularyTermSetPage from './VocabularyTermSetPage';
 
 export { VocabularyTermSetPage };

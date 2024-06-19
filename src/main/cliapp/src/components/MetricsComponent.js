@@ -6,25 +6,22 @@ import { Button } from 'primereact/button';
 import { MetricService } from '../service/MetricService';
 
 export const MetricsComponent = () => {
-
 	const [metrics, setMetrics] = useState(null);
 	const [refresh, setRefresh] = useState(false);
-	
+
 	const metricService = new MetricService();
 
-	useQuery(['getMetrics', refresh],
-		() => metricService.getMetrics(), {
-			onSuccess: (results) => {
-				//console.log(data);
-				setMetrics(results);
-			},
-			onError: (error) => {
-				console.log(error);
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false
-		}
-	);
+	useQuery(['getMetrics', refresh], () => metricService.getMetrics(), {
+		onSuccess: (results) => {
+			//console.log(data);
+			setMetrics(results);
+		},
+		onError: (error) => {
+			console.log(error);
+		},
+		keepPreviousData: true,
+		refetchOnWindowFocus: false,
+	});
 
 	return (
 		<div className="card">
@@ -41,9 +38,9 @@ export const MetricsComponent = () => {
 				<Column field="vendor" header="vendor"></Column>
 				<Column field="version" header="version"></Column>
 				<Column field="state" header="state"></Column>
-			
+
 				<Column field="pool" header="pool"></Column>
 			</TreeTable>
 		</div>
-	)
-}
+	);
+};

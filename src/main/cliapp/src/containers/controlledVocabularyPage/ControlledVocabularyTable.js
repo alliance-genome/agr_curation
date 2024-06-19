@@ -1,20 +1,20 @@
-import React, {useRef, useState, useReducer} from 'react';
+import React, { useRef, useState, useReducer } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { useMutation, useQuery} from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
 import { Tooltip } from 'primereact/tooltip';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
-import { useControlledVocabularyService } from "../../service/useControlledVocabularyService";
-import { VocabularyService } from "../../service/VocabularyService";
-import { TrueFalseDropdown } from "../../components/TrueFalseDropDownSelector";
-import { ErrorMessageComponent } from "../../components/Error/ErrorMessageComponent";
-import { InputTextEditor } from "../../components/InputTextEditor";
-import { ControlledVocabularyDropdown } from "../../components/ControlledVocabularySelector";
-import { NewTermForm } from "../../containers/controlledVocabularyPage/NewTermForm";
-import { NewVocabularyForm } from "../../containers/controlledVocabularyPage/NewVocabularyForm";
-import { Button } from "primereact/button";
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { VocabularyService } from '../../service/VocabularyService';
+import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
+import { InputTextEditor } from '../../components/InputTextEditor';
+import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { NewTermForm } from '../../containers/controlledVocabularyPage/NewTermForm';
+import { NewVocabularyForm } from '../../containers/controlledVocabularyPage/NewVocabularyForm';
+import { Button } from 'primereact/button';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -23,14 +23,14 @@ import { SearchService } from '../../service/SearchService';
 import { setNewEntity } from '../../utils/utils';
 
 export const ControlledVocabularyTable = () => {
-		const newTermReducer = (state, action) => {
-				switch (action.type) {
-						case 'RESET':
-								return { name: "", obsolete: false };
-						default:
-								return { ...state, [action.field]: action.value };
-				}
-		};
+	const newTermReducer = (state, action) => {
+		switch (action.type) {
+			case 'RESET':
+				return { name: '', obsolete: false };
+			default:
+				return { ...state, [action.field]: action.value };
+		}
+	};
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -53,27 +53,29 @@ export const ControlledVocabularyTable = () => {
 	let vocabularyService = new VocabularyService();
 
 	useQuery(['vocabularies'], () => vocabularyService.getVocabularies(), {
-			onSuccess: (data) => {
-					setVocabularies(data.data.results.sort(function (a, b) {
-						return a.name.localeCompare(b.name, 'en', {'sensitivity' : 'base'});
-					}));
-			},
-			onError: (error) => {
-					toast_topleft.current.show([
-							{ life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
-					]);
-			}
+		onSuccess: (data) => {
+			setVocabularies(
+				data.data.results.sort(function (a, b) {
+					return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
+				})
+			);
+		},
+		onError: (error) => {
+			toast_topleft.current.show([
+				{ life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false },
+			]);
+		},
 	});
 
-	const mutation = useMutation(updatedTerm => {
-			if (!vocabularyService) {
-					vocabularyService = new VocabularyService();
-			}
-			return vocabularyService.saveTerm(updatedTerm);
+	const mutation = useMutation((updatedTerm) => {
+		if (!vocabularyService) {
+			vocabularyService = new VocabularyService();
+		}
+		return vocabularyService.saveTerm(updatedTerm);
 	});
 
 	const handleNewTerm = () => {
-		newTermDispatch({ type: "RESET" });
+		newTermDispatch({ type: 'RESET' });
 		setNewTermDialog(true);
 	};
 
@@ -81,101 +83,93 @@ export const ControlledVocabularyTable = () => {
 		setNewVocabularyDialog(true);
 	};
 
-	const createButtons = (disabled=false) => {
-				return (
-						<>
-						<Button label="New Term" icon="pi pi-plus" onClick={handleNewTerm} disabled={disabled}/>&nbsp;&nbsp;
-						<Button label="New Vocabulary" icon="pi pi-plus" onClick={handleNewVocabulary} disabled={disabled} />
-						</>
-				);
-		};
+	const createButtons = (disabled = false) => {
+		return (
+			<>
+				<Button label="New Term" icon="pi pi-plus" onClick={handleNewTerm} disabled={disabled} />
+				&nbsp;&nbsp;
+				<Button label="New Vocabulary" icon="pi pi-plus" onClick={handleNewVocabulary} disabled={disabled} />
+			</>
+		);
+	};
 
 	const onNameEditorValueChange = (props, event) => {
 		let updatedTerms = [...props.props.value];
 		if (event.target.value || event.target.value === '') {
-				updatedTerms[props.rowIndex].name = event.target.value;
+			updatedTerms[props.rowIndex].name = event.target.value;
 		}
 	};
 
 	const nameEditorTemplate = (props) => {
-			return (
-					<>
-							<InputTextEditor
-									editorChange={onNameEditorValueChange}
-									rowProps={props}
-									fieldName={'name'}
-							/>
-							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"name"} />
-					</>
-			);
+		return (
+			<>
+				<InputTextEditor editorChange={onNameEditorValueChange} rowProps={props} fieldName={'name'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'name'} />
+			</>
+		);
 	};
 
 	const onAbbreviationEditorValueChange = (props, event) => {
-			let updatedTerms = [...props.props.value];
-			if (event.target.value || event.target.value === '') {
-					updatedTerms[props.rowIndex].abbreviation = event.target.value;
-			}
+		let updatedTerms = [...props.props.value];
+		if (event.target.value || event.target.value === '') {
+			updatedTerms[props.rowIndex].abbreviation = event.target.value;
+		}
 	};
 
 	const abbreviationEditorTemplate = (props) => {
-			return (
-					<>
-							<InputTextEditor
-									editorChange={onAbbreviationEditorValueChange}
-									rowProps={props}
-									fieldName={'abbreviation'}
-							/>
-							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"abbreviation"} />
-					</>
-			);
+		return (
+			<>
+				<InputTextEditor editorChange={onAbbreviationEditorValueChange} rowProps={props} fieldName={'abbreviation'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'abbreviation'} />
+			</>
+		);
 	};
 
-		const onVocabularyNameEditorValueChange = (props, event) => {
-				let updatedTerms = [...props.props.value];
-				if (event.value || event.value === '') {
-					updatedTerms[props.rowIndex].vocabulary = event.value;
-				}
-		};
+	const onVocabularyNameEditorValueChange = (props, event) => {
+		let updatedTerms = [...props.props.value];
+		if (event.value || event.value === '') {
+			updatedTerms[props.rowIndex].vocabulary = event.value;
+		}
+	};
 
 	const vocabularyEditorTemplate = (props) => {
-			return (
-					<>
-							<ControlledVocabularyDropdown
-									options={vocabularies}
-									editorChange={onVocabularyNameEditorValueChange}
-									props={props}
-									placeholderText={props.rowData.vocabulary.name}
-							/>
-							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"vocabulary.name"} />
-					</>
-			);
+		return (
+			<>
+				<ControlledVocabularyDropdown
+					options={vocabularies}
+					editorChange={onVocabularyNameEditorValueChange}
+					props={props}
+					placeholderText={props.rowData.vocabulary.name}
+				/>
+				<ErrorMessageComponent
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField={'vocabulary.name'}
+				/>
+			</>
+		);
 	};
 
-	const onDefinitionEditorValueChange =(props, event) => {
-			let updatedTerms = [...props.props.value];
-			if (event.target.value || event.target.value === '') {
-					updatedTerms[props.rowIndex].definition = event.target.value;
-			}
+	const onDefinitionEditorValueChange = (props, event) => {
+		let updatedTerms = [...props.props.value];
+		if (event.target.value || event.target.value === '') {
+			updatedTerms[props.rowIndex].definition = event.target.value;
+		}
 	};
 
 	const definitionEditorTemplate = (props) => {
-			return (
-					<>
-							<InputTextEditor
-									editorChange={onDefinitionEditorValueChange}
-									rowProps={props}
-									fieldName={'definition'}
-							/>
-							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"definition"} />
-					</>
-			);
+		return (
+			<>
+				<InputTextEditor editorChange={onDefinitionEditorValueChange} rowProps={props} fieldName={'definition'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'definition'} />
+			</>
+		);
 	};
 
 	const onObsoleteEditorValueChange = (props, event) => {
-			let updatedTerms = [...props.props.value];
-			if (event.value || event.value === '') {
-					updatedTerms[props.rowIndex].obsolete = JSON.parse(event.value.name);
-			}
+		let updatedTerms = [...props.props.value];
+		if (event.value || event.value === '') {
+			updatedTerms[props.rowIndex].obsolete = JSON.parse(event.value.name);
+		}
 	};
 
 	const obsoleteEditorTemplate = (props) => {
@@ -185,41 +179,41 @@ export const ControlledVocabularyTable = () => {
 					options={obsoleteTerms}
 					editorChange={onObsoleteEditorValueChange}
 					props={props}
-					field={"obsolete"}
+					field={'obsolete'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'obsolete'} />
 			</>
 		);
 	};
 
 	const nameBodyTemplate = (rowData) => {
-			if (rowData.name) {
-					return <div>{rowData.name}</div>;
-			}
+		if (rowData.name) {
+			return <div>{rowData.name}</div>;
+		}
 	};
 
 	const abbreviationBodyTemplate = (rowData) => {
-			if (rowData.abbreviation) {
-					return <div>{rowData.abbreviation}</div>;
-			}
+		if (rowData.abbreviation) {
+			return <div>{rowData.abbreviation}</div>;
+		}
 	};
 
 	const vocabularyBodyTemplate = (rowData) => {
-			if (rowData.vocabulary && rowData.vocabulary.name) {
-					return <div>{rowData.vocabulary.name}</div>;
-			}
+		if (rowData.vocabulary && rowData.vocabulary.name) {
+			return <div>{rowData.vocabulary.name}</div>;
+		}
 	};
 
 	const definitionBodyTemplate = (rowData) => {
-			if (rowData.definition) {
-					return <div>{rowData.definition}</div>;
-			}
+		if (rowData.definition) {
+			return <div>{rowData.definition}</div>;
+		}
 	};
 
 	const obsoleteBodyTemplate = (rowData) => {
-			if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
-					return <div>{JSON.stringify(rowData.obsolete)}</div>;
-			}
+		if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
+			return <div>{JSON.stringify(rowData.obsolete)}</div>;
+		}
 	};
 
 	const synonymsBodyTemplate = (rowData) => {
@@ -228,17 +222,21 @@ export const ControlledVocabularyTable = () => {
 			const listTemplate = (synonym) => {
 				return (
 					<EllipsisTableCell>
-						<div dangerouslySetInnerHTML={{__html: synonym}}/>
+						<div dangerouslySetInnerHTML={{ __html: synonym }} />
 					</EllipsisTableCell>
-				)
+				);
 			};
 			return (
 				<>
 					<div className={`a${rowData.id}${rowData.synonyms[0]}`}>
-						<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+						<ListTableCell template={listTemplate} listData={sortedSynonyms} />
 					</div>
-					<Tooltip target={`.a${rowData.id}${rowData.synonyms[0]}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-						<ListTableCell template={listTemplate} listData={sortedSynonyms}/>
+					<Tooltip
+						target={`.a${rowData.id}${rowData.synonyms[0]}`}
+						style={{ width: '450px', maxWidth: '450px' }}
+						position="left"
+					>
+						<ListTableCell template={listTemplate} listData={sortedSynonyms} />
 					</Tooltip>
 				</>
 			);
@@ -247,65 +245,68 @@ export const ControlledVocabularyTable = () => {
 
 	const columns = [
 		{
-			field: "id",
-			header: "Id",
-			sortable: false
+			field: 'id',
+			header: 'Id',
+			sortable: false,
 		},
 		{
-			field: "name",
-			header: "Name",
+			field: 'name',
+			header: 'Name',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => nameEditorTemplate(props),
-			body: nameBodyTemplate
+			body: nameBodyTemplate,
 		},
 		{
-			field: "abbreviation",
-			header: "Abbreviation",
+			field: 'abbreviation',
+			header: 'Abbreviation',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 			editor: (props) => abbreviationEditorTemplate(props),
-			body: abbreviationBodyTemplate
+			body: abbreviationBodyTemplate,
 		},
 		{
-			field: "synonyms",
-			header: "Synonyms",
+			field: 'synonyms',
+			header: 'Synonyms',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
-			body: synonymsBodyTemplate
+			body: synonymsBodyTemplate,
 		},
 		{
-			field: "vocabulary.name",
-			header: "Vocabulary",
+			field: 'vocabulary.name',
+			header: 'Vocabulary',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
 			editor: (props) => vocabularyEditorTemplate(props),
-			body: vocabularyBodyTemplate
+			body: vocabularyBodyTemplate,
 		},
 		{
-			field: "definition",
-			header: "Definition",
+			field: 'definition',
+			header: 'Definition',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
 			editor: (props) => definitionEditorTemplate(props),
-			body: definitionBodyTemplate
+			body: definitionBodyTemplate,
 		},
 		{
-			field: "obsolete",
-			header: "Obsolete",
+			field: 'obsolete',
+			header: 'Obsolete',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditorTemplate(props),
-			body: obsoleteBodyTemplate
-		}
+			body: obsoleteBodyTemplate,
+		},
 	];
 
 	const DEFAULT_COLUMN_WIDTH = 13;
-	const SEARCH_ENDPOINT = "vocabularyterm";
+	const SEARCH_ENDPOINT = 'vocabularyterm';
 
-	const initialTableState = getDefaultTableState("ControlledVocabularyTerms", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState('ControlledVocabularyTerms', columns, DEFAULT_COLUMN_WIDTH);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isLoading, isFetching } = useGetTableData({
 		tableState,
@@ -314,49 +315,46 @@ export const ControlledVocabularyTable = () => {
 		setEntities: setTerms,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
 	return (
-			<div className="card">
-				<Toast ref={toast_topleft} position="top-left" />
-				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable 
-					endpoint={SEARCH_ENDPOINT} 
-					tableName="Controlled Vocabulary Terms" 
-					entities={terms}
-					setEntities={setTerms}
-					totalRecords={totalRecords}
-					setTotalRecords={setTotalRecords}
-					tableState={tableState}
-					setTableState={setTableState}
-					columns={columns}  
-					isEditable={true}
-					mutation={mutation}
-					isInEditMode={isInEditMode}
-					setIsInEditMode={setIsInEditMode}
-					toasts={{toast_topleft, toast_topright }}
-					errorObject = {{errorMessages, setErrorMessages}}
-					headerButtons={createButtons}
-					deletionEnabled={true}
-					deletionMethod={vocabularyService.deleteTerm}
-					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
-					fetching={isFetching || isLoading}
-				/>
-				<NewTermForm
-					newTermDialog = {newTermDialog}
-					setNewTermDialog = {setNewTermDialog}
-					newTerm = {newTerm}
-					newTermDispatch = {newTermDispatch}
-					vocabularies = {vocabularies}
-					obsoleteTerms = {obsoleteTerms}
-					vocabularyService = {vocabularyService}
-					setNewTerm={(newTerm, queryClient) => setNewEntity(tableState, setTerms, newTerm, queryClient)}
-				/>
-				<NewVocabularyForm
-					newVocabularyDialog = {newVocabularyDialog}
-					setNewVocabularyDialog = {setNewVocabularyDialog}
-				/>
-			</div>
+		<div className="card">
+			<Toast ref={toast_topleft} position="top-left" />
+			<Toast ref={toast_topright} position="top-right" />
+			<GenericDataTable
+				endpoint={SEARCH_ENDPOINT}
+				tableName="Controlled Vocabulary Terms"
+				entities={terms}
+				setEntities={setTerms}
+				totalRecords={totalRecords}
+				setTotalRecords={setTotalRecords}
+				tableState={tableState}
+				setTableState={setTableState}
+				columns={columns}
+				isEditable={true}
+				mutation={mutation}
+				isInEditMode={isInEditMode}
+				setIsInEditMode={setIsInEditMode}
+				toasts={{ toast_topleft, toast_topright }}
+				errorObject={{ errorMessages, setErrorMessages }}
+				headerButtons={createButtons}
+				deletionEnabled={true}
+				deletionMethod={vocabularyService.deleteTerm}
+				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+				fetching={isFetching || isLoading}
+			/>
+			<NewTermForm
+				newTermDialog={newTermDialog}
+				setNewTermDialog={setNewTermDialog}
+				newTerm={newTerm}
+				newTermDispatch={newTermDispatch}
+				vocabularies={vocabularies}
+				obsoleteTerms={obsoleteTerms}
+				vocabularyService={vocabularyService}
+				setNewTerm={(newTerm, queryClient) => setNewEntity(tableState, setTerms, newTerm, queryClient)}
+			/>
+			<NewVocabularyForm newVocabularyDialog={newVocabularyDialog} setNewVocabularyDialog={setNewVocabularyDialog} />
+		</div>
 	);
 };

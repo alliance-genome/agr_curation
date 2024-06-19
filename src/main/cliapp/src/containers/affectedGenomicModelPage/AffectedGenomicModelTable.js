@@ -14,7 +14,6 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
 
 export const AffectedGenomicModelTable = () => {
-
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -27,109 +26,112 @@ export const AffectedGenomicModelTable = () => {
 
 	const columns = [
 		{
-			field: "curie",
-			header: "Curie",
+			field: 'curie',
+			header: 'Curie',
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.curieFilterConfig
+			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
-			field: "modEntityId",
-			header: "MOD Entity ID",
-			body: (rowData) => <IdTemplate id = {rowData.modEntityId}/>,
-			sortable:  true,
+			field: 'modEntityId',
+			header: 'MOD Entity ID',
+			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
-			field: "modInternalId",
-			header: "MOD Internal ID",
-			body: (rowData) => <IdTemplate id = {rowData.modInternalId}/>,
-			sortable:  true,
+			field: 'modInternalId',
+			header: 'MOD Internal ID',
+			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+			sortable: true,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
-			field: "name",
-			header: "Name",
-			body: (rowData) => <NameTemplate name = {rowData.name}/>,
+			field: 'name',
+			header: 'Name',
+			body: (rowData) => <NameTemplate name={rowData.name} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig
-		},
-		{ 	
-			field: "subtype.name",
-			header: "Sub Type",
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.subtypeFilterConfig
+			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 		},
 		{
-			field: "taxon.name",
-			header: "Taxon",
+			field: 'subtype.name',
+			header: 'Sub Type',
 			sortable: true,
-			body: (rowData) => <TaxonTemplate taxon = {rowData.taxon}/>,
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig
+			filterConfig: FILTER_CONFIGS.subtypeFilterConfig,
 		},
 		{
-			field: "dataProvider.sourceOrganization.abbreviation",
-			header: "Data Provider",
+			field: 'taxon.name',
+			header: 'Taxon',
+			sortable: true,
+			body: (rowData) => <TaxonTemplate taxon={rowData.taxon} />,
+			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+		},
+		{
+			field: 'dataProvider.sourceOrganization.abbreviation',
+			header: 'Data Provider',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,
 		},
 		{
-			field: "crossReferences.displayName",
-			header: "Cross References",
+			field: 'crossReferences.displayName',
+			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences}/>
+			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences} />,
 		},
 		{
-			field: "updatedBy.uniqueId",
-			header: "Updated By",
+			field: 'updatedBy.uniqueId',
+			header: 'Updated By',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
-			field: "dateUpdated",
-			header: "Date Updated",
+			field: 'dateUpdated',
+			header: 'Date Updated',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
+			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
-			field: "createdBy.uniqueId",
-			header: "Created By",
+			field: 'createdBy.uniqueId',
+			header: 'Created By',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig
+			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
-			field: "dateCreated",
-			header: "Date Created",
+			field: 'dateCreated',
+			header: 'Date Created',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
+			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{
-			field: "internal",
-			header: "Internal",
-			body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
+			field: 'internal',
+			header: 'Internal',
+			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: true
+			sortable: true,
 		},
 		{
-			field: "obsolete",
-			header: "Obsolete",
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
+			field: 'obsolete',
+			header: 'Obsolete',
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: true
-		}
- ];
+			sortable: true,
+		},
+	];
 
 	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;
-	const SEARCH_ENDPOINT = "agm";
+	const SEARCH_ENDPOINT = 'agm';
 
-	const initialTableState = getDefaultTableState("AffectedGenomicModels", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState('AffectedGenomicModels', columns, DEFAULT_COLUMN_WIDTH);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
@@ -138,32 +140,31 @@ export const AffectedGenomicModelTable = () => {
 		setEntities: setAgms,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
-
 	return (
-			<div className="card">
-				<Toast ref={toast_topleft} position="top-left" />
-				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable
-					endpoint={SEARCH_ENDPOINT}
-					tableName="Affected Genomic Models"
-					entities={agms}
-					setEntities={setAgms}
-					totalRecords={totalRecords}
-					setTotalRecords={setTotalRecords}
-					tableState={tableState}
-					setTableState={setTableState}
-					columns={columns}
-					isEditable={false}
-					isInEditMode={isInEditMode}
-					setIsInEditMode={setIsInEditMode}
-					toasts={{toast_topleft, toast_topright }}
-					errorObject = {{errorMessages, setErrorMessages}}
-					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
-					fetching={isFetching || isLoading}
-				/>
-			</div>
-	)
-}
+		<div className="card">
+			<Toast ref={toast_topleft} position="top-left" />
+			<Toast ref={toast_topright} position="top-right" />
+			<GenericDataTable
+				endpoint={SEARCH_ENDPOINT}
+				tableName="Affected Genomic Models"
+				entities={agms}
+				setEntities={setAgms}
+				totalRecords={totalRecords}
+				setTotalRecords={setTotalRecords}
+				tableState={tableState}
+				setTableState={setTableState}
+				columns={columns}
+				isEditable={false}
+				isInEditMode={isInEditMode}
+				setIsInEditMode={setIsInEditMode}
+				toasts={{ toast_topleft, toast_topright }}
+				errorObject={{ errorMessages, setErrorMessages }}
+				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+				fetching={isFetching || isLoading}
+			/>
+		</div>
+	);
+};

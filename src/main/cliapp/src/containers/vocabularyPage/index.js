@@ -1,3 +1,3 @@
-import VocabulariesPage from "./VocabulariesPage";
+import VocabulariesPage from './VocabulariesPage';
 
 export { VocabulariesPage };

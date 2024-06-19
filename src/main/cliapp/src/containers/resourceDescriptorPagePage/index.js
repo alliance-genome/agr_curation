@@ -1,3 +1,3 @@
-import ResourceDescriptorPagesPage from "./ResourceDescriptorPagesPage";
+import ResourceDescriptorPagesPage from './ResourceDescriptorPagesPage';
 
 export { ResourceDescriptorPagesPage };

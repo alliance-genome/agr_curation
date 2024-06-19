@@ -1,3 +1,3 @@
-import VariantsPage from "./VariantsPage";
+import VariantsPage from './VariantsPage';
 
 export { VariantsPage };

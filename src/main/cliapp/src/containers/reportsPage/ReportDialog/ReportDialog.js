@@ -15,11 +15,10 @@ export const ReportDialog = ({ reportDialog, setReportDialog, report }) => {
 		</>
 	);
 
-	return (					
+	return (
 		<Dialog visible={reportDialog} footer={reportDialogFooter} closable onHide={hideDialog}>
-			<DialogTop report={report}/>
+			<DialogTop report={report} />
 			<ReportHistoryTable history={report.curationReportHistory} />
 		</Dialog>
-	)
-}
-
+	);
+};

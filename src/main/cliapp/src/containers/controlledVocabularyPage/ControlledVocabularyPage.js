@@ -2,9 +2,7 @@ import React from 'react';
 import { ControlledVocabularyTable } from './ControlledVocabularyTable';
 
 function ControlledVocabularyPage() {
-		return (
-				<ControlledVocabularyTable />
-		);
+	return <ControlledVocabularyTable />;
 }
 
 export default ControlledVocabularyPage;

@@ -15,13 +15,13 @@ import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 
 export const DatabaseStatusDialog = ({
-													originalDatabaseStatusData,
-													setOriginalDatabaseStatusData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow
-												}) => {
+	originalDatabaseStatusData,
+	setOriginalDatabaseStatusData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+}) => {
 	const { originalDatabaseStatuses, isInEdit, dialog, rowIndex, mainRowProps } = originalDatabaseStatusData;
-	const [localDatabaseStatuses, setLocalDatabaseStatuses] = useState(null) ;
+	const [localDatabaseStatuses, setLocalDatabaseStatuses] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -36,15 +36,15 @@ export const DatabaseStatusDialog = ({
 		let _localDatabaseStatuses = cloneDatabaseStatuses(originalDatabaseStatuses);
 		setLocalDatabaseStatuses(_localDatabaseStatuses);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localDatabaseStatuses) {
+			if (_localDatabaseStatuses) {
 				_localDatabaseStatuses.forEach((ds) => {
 					rowsObject[`${ds.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -52,14 +52,14 @@ export const DatabaseStatusDialog = ({
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localDatabaseStatuses = [...localDatabaseStatuses];//add new note support
-		if(originalDatabaseStatuses && originalDatabaseStatuses[event.index]){
+		let _localDatabaseStatuses = [...localDatabaseStatuses]; //add new note support
+		if (originalDatabaseStatuses && originalDatabaseStatuses[event.index]) {
 			let dataKey = _localDatabaseStatuses[event.index].dataKey;
 			_localDatabaseStatuses[event.index] = global.structuredClone(originalDatabaseStatuses[event.index]);
 			_localDatabaseStatuses[event.index].dataKey = dataKey;
@@ -68,18 +68,19 @@ export const DatabaseStatusDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInDatabaseStatuses(event.data,event.index);
+		compareChangesInDatabaseStatuses(event.data, event.index);
 	};
 
 	const compareChangesInDatabaseStatuses = (data, index) => {
-		if(originalDatabaseStatuses && originalDatabaseStatuses[index]) {
+		if (originalDatabaseStatuses && originalDatabaseStatuses[index]) {
 			if (data.internal !== originalDatabaseStatuses[index].internal) {
 				rowsEdited.current++;
 			}
-			if ((originalDatabaseStatuses[index].evidence && !data.evidence) ||
-					(!originalDatabaseStatuses[index].evidence && data.evidence) ||
-					(data.evidence && (data.evidence.length !== originalDatabaseStatuses[index].evidence.length))
-				) {
+			if (
+				(originalDatabaseStatuses[index].evidence && !data.evidence) ||
+				(!originalDatabaseStatuses[index].evidence && data.evidence) ||
+				(data.evidence && data.evidence.length !== originalDatabaseStatuses[index].evidence.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
@@ -90,20 +91,22 @@ export const DatabaseStatusDialog = ({
 					}
 				}
 			}
-			if ((originalDatabaseStatuses[index].databaseStatus && !data.databaseStatus) ||
-					(!originalDatabaseStatuses[index].databaseStatus && data.databaseStatus) ||
-					(originalDatabaseStatuses[index].databaseStatus && (originalDatabaseStatuses[index].databaseStatus.name !== data.databaseStatus.name))
-				) {
+			if (
+				(originalDatabaseStatuses[index].databaseStatus && !data.databaseStatus) ||
+				(!originalDatabaseStatuses[index].databaseStatus && data.databaseStatus) ||
+				(originalDatabaseStatuses[index].databaseStatus &&
+					originalDatabaseStatuses[index].databaseStatus.name !== data.databaseStatus.name)
+			) {
 				rowsEdited.current++;
 			}
 		}
-		
+
 		if (localDatabaseStatuses.length > originalDatabaseStatuses?.length || !originalDatabaseStatuses[0]) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateDatabaseStatus(localDatabaseStatuses[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -112,14 +115,19 @@ export const DatabaseStatusDialog = ({
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update AlleleDatabaseStatus [' + localDatabaseStatuses[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail: 'Could not update AlleleDatabaseStatus [' + localDatabaseStatuses[event.index].id + ']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
@@ -158,13 +166,13 @@ export const DatabaseStatusDialog = ({
 		let _clonableDatabaseStatuses = [];
 		if (clonableDatabaseStatuses?.length > 0 && clonableDatabaseStatuses[0]) {
 			_clonableDatabaseStatuses = global.structuredClone(clonableDatabaseStatuses);
-			if(_clonableDatabaseStatuses) {
-				let counter = 0 ;
+			if (_clonableDatabaseStatuses) {
+				let counter = 0;
 				_clonableDatabaseStatuses.forEach((gts) => {
 					gts.dataKey = counter++;
 				});
 			}
-		} 
+		}
 		return _clonableDatabaseStatuses;
 	};
 
@@ -179,20 +187,19 @@ export const DatabaseStatusDialog = ({
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["alleleDatabaseStatus"] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
+		errorMessagesCopy[rowIndex]['alleleDatabaseStatus'] = messageObject;
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalDatabaseStatusData((originalDatabaseStatusData) => {
-				return {
-					...originalDatabaseStatusData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalDatabaseStatusData,
+				dialog: false,
+			};
+		});
 	};
 
 	const onDatabaseStatusEditorValueChange = (props, event) => {
@@ -209,9 +216,9 @@ export const DatabaseStatusDialog = ({
 					editorChange={onDatabaseStatusEditorValueChange}
 					props={props}
 					showClear={true}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"databaseStatus"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'databaseStatus'} />
 			</>
 		);
 	};
@@ -231,37 +238,42 @@ export const DatabaseStatusDialog = ({
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
-	
+
 	const onInternalEditorValueChange = (props, event) => {
 		let _localDatabaseStatuses = [...localDatabaseStatuses];
 		_localDatabaseStatuses[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Database Status" icon="pi pi-plus" onClick={createNewDatabaseStatusHandler} disabled={localDatabaseStatuses?.length > 0}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button
+					label="New Database Status"
+					icon="pi pi-plus"
+					onClick={createNewDatabaseStatusHandler}
+					disabled={localDatabaseStatuses?.length > 0}
+				/>
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const createNewDatabaseStatusHandler = (event) => {
 		let cnt = localDatabaseStatuses ? localDatabaseStatuses.length : 0;
 		const _localDatabaseStatuses = global.structuredClone(localDatabaseStatuses);
 		_localDatabaseStatuses.push({
-			dataKey : cnt,
-			internal : false
+			dataKey: cnt,
+			internal: false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -270,45 +282,100 @@ export const DatabaseStatusDialog = ({
 
 	const handleDeleteDatabaseStatus = (event, props) => {
 		let _localDatabaseStatuses = global.structuredClone(localDatabaseStatuses);
-		if(props.dataKey){
+		if (props.dataKey) {
 			_localDatabaseStatuses.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localDatabaseStatuses.splice(props.rowIndex, 1);
 		}
 		setLocalDatabaseStatuses(_localDatabaseStatuses);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteDatabaseStatus(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteDatabaseStatus(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 
-			<ColumnGroup>
-				<Row>
-					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-					<Column header="Database Status" />
-					<Column header="Internal" />
-					<Column header="Evidence" />
-				</Row>
-			</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Database Status" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-5' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-5"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Database Status</h3>
-				<DataTable value={localDatabaseStatuses} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={databaseStatusEditor} field="databaseStatus" header="Database Status" headerClassName='surface-0' body={databaseStatusTemplate}/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+				<DataTable
+					value={localDatabaseStatuses}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
+					<Column
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={databaseStatusEditor}
+						field="databaseStatus"
+						header="Database Status"
+						headerClassName="surface-0"
+						body={databaseStatusTemplate}
+					/>
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 				</DataTable>
 			</Dialog>
 		</div>

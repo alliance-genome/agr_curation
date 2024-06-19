@@ -1,3 +1,3 @@
-import ConditionRelationPage from "./ConditionRelationPage";
+import ConditionRelationPage from './ConditionRelationPage';
 
 export { ConditionRelationPage };

@@ -13,19 +13,19 @@ import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { SearchService } from '../../../service/SearchService';
 import { ValidationService } from '../../../service/ValidationService';
-import { AutocompleteMultiEditor } from "../../../components/Autocomplete/AutocompleteMultiEditor";
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from "../../../utils/utils";
+import { AutocompleteMultiEditor } from '../../../components/Autocomplete/AutocompleteMultiEditor';
+import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../../../utils/utils';
 import { SubjectAutocompleteTemplate } from '../../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 
 export const MutationTypesDialog = ({
-													originalMutationTypesData,
-													setOriginalMutationTypesData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow
-												}) => {
+	originalMutationTypesData,
+	setOriginalMutationTypesData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+}) => {
 	const { originalMutationTypes, isInEdit, dialog, rowIndex, mainRowProps } = originalMutationTypesData;
-	const [localMutationTypes, setLocalMutationTypes] = useState(null) ;
+	const [localMutationTypes, setLocalMutationTypes] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -39,15 +39,15 @@ export const MutationTypesDialog = ({
 		let _localMutationTypes = cloneMutationTypes(originalMutationTypes);
 		setLocalMutationTypes(_localMutationTypes);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localMutationTypes) {
+			if (_localMutationTypes) {
 				_localMutationTypes.forEach((mt) => {
 					rowsObject[`${mt.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -55,14 +55,14 @@ export const MutationTypesDialog = ({
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localMutationTypes = [...localMutationTypes];//add new note support
-		if(originalMutationTypes && originalMutationTypes[event.index]){
+		let _localMutationTypes = [...localMutationTypes]; //add new note support
+		if (originalMutationTypes && originalMutationTypes[event.index]) {
 			let dataKey = _localMutationTypes[event.index].dataKey;
 			_localMutationTypes[event.index] = global.structuredClone(originalMutationTypes[event.index]);
 			_localMutationTypes[event.index].dataKey = dataKey;
@@ -71,11 +71,11 @@ export const MutationTypesDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInMutationTypes(event.data,event.index);
+		compareChangesInMutationTypes(event.data, event.index);
 	};
 
-	const compareChangesInMutationTypes = (data,index) => {
-		if(originalMutationTypes && originalMutationTypes[index]) {
+	const compareChangesInMutationTypes = (data, index) => {
+		if (originalMutationTypes && originalMutationTypes[index]) {
 			if (data.internal !== originalMutationTypes[index].internal) {
 				rowsEdited.current++;
 			}
@@ -88,9 +88,11 @@ export const MutationTypesDialog = ({
 					}
 				}
 			}
-			if ((originalMutationTypes[index].evidence && !data.evidence) ||
+			if (
+				(originalMutationTypes[index].evidence && !data.evidence) ||
 				(!originalMutationTypes[index].evidence && data.evidence) ||
-				(data.evidence && (data.evidence.length !== originalMutationTypes[index].evidence.length))) {
+				(data.evidence && data.evidence.length !== originalMutationTypes[index].evidence.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
@@ -103,12 +105,12 @@ export const MutationTypesDialog = ({
 			}
 		}
 
-		if((localMutationTypes.length > originalMutationTypes?.length) || !originalMutationTypes){
+		if (localMutationTypes.length > originalMutationTypes?.length || !originalMutationTypes) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateMutationType(localMutationTypes[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -117,21 +119,26 @@ export const MutationTypesDialog = ({
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update AlleleMutationType [' + localMutationTypes[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail: 'Could not update AlleleMutationType [' + localMutationTypes[event.index].id + ']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
 			});
 		} else {
 			delete _editingRows[event.index];
-			compareChangesInMutationTypes(event.data,event.index);
+			compareChangesInMutationTypes(event.data, event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
 		let _localMutationTypes = [...localMutationTypes];
@@ -161,14 +168,14 @@ export const MutationTypesDialog = ({
 
 	const cloneMutationTypes = (clonableMutationTypes) => {
 		let _clonableMutationTypes = global.structuredClone(clonableMutationTypes);
-		if(_clonableMutationTypes) {
-			let counter = 0 ;
+		if (_clonableMutationTypes) {
+			let counter = 0;
 			_clonableMutationTypes.forEach((note) => {
 				note.dataKey = counter++;
 			});
 		} else {
 			_clonableMutationTypes = [];
-		};
+		}
 		return _clonableMutationTypes;
 	};
 
@@ -183,20 +190,19 @@ export const MutationTypesDialog = ({
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["alleleMutationTypes"] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
+		errorMessagesCopy[rowIndex]['alleleMutationTypes'] = messageObject;
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalMutationTypesData((originalMutationTypesData) => {
-				return {
-					...originalMutationTypesData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalMutationTypesData,
+				dialog: false,
+			};
+		});
 	};
 
 	const internalTemplate = (rowData) => {
@@ -210,29 +216,25 @@ export const MutationTypesDialog = ({
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
-	
+
 	const onInternalEditorValueChange = (props, event) => {
 		let _localMutationTypes = [...localMutationTypes];
 		_localMutationTypes[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const mutationTypeTemplate = (rowData) => {
 		if (rowData && rowData.mutationTypes) {
-			const sortedMutationTypes = rowData.mutationTypes.sort((a,b) => (a.name > b.name) ? 1 : -1);
+			const sortedMutationTypes = rowData.mutationTypes.sort((a, b) => (a.name > b.name ? 1 : -1));
 			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item.name + ' (' + item.curie + ')'}
-					</EllipsisTableCell>
-				);
+				return <EllipsisTableCell>{item.name + ' (' + item.curie + ')'}</EllipsisTableCell>;
 			};
-			return <ListTableCell template={listTemplate} listData={sortedMutationTypes} />
+			return <ListTableCell template={listTemplate} listData={sortedMutationTypes} />;
 		}
 	};
 
@@ -243,53 +245,56 @@ export const MutationTypesDialog = ({
 					search={mutationTypeSearch}
 					initialValue={props.rowData.mutationTypes}
 					rowProps={props}
-					fieldName='mutationTypes'
-					subField='curie'
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					fieldName="mutationTypes"
+					subField="curie"
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
+						<SubjectAutocompleteTemplate
+							item={item}
+							setAutocompleteHoverItem={setAutocompleteHoverItem}
+							op={op}
+							query={query}
+						/>
+					)}
 					onValueChangeHandler={onMutationTypeValueChange}
 				/>
-				<DialogErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"mutationTypes"}
-				/>
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'mutationTypes'} />
 			</>
 		);
 	};
 
 	const onMutationTypeValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, "mutationTypes", setFieldValue);
+		multipleAutocompleteOnChange(props, event, 'mutationTypes', setFieldValue);
 	};
 
 	const mutationTypeSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["name", "curie"];
-		const endpoint = "soterm";
-		const filterName = "mutationTypeFilter";
+		const autocompleteFields = ['name', 'curie'];
+		const endpoint = 'soterm';
+		const filterName = 'mutationTypeFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Mutation Type" icon="pi pi-plus" onClick={createNewMutationTypeHandler}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button label="New Mutation Type" icon="pi pi-plus" onClick={createNewMutationTypeHandler} />
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const createNewMutationTypeHandler = (event) => {
 		let cnt = localMutationTypes ? localMutationTypes.length : 0;
 		const _localMutationTypes = global.structuredClone(localMutationTypes);
 		_localMutationTypes.push({
-			dataKey : cnt,
-			internal : false,
+			dataKey: cnt,
+			internal: false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -298,44 +303,100 @@ export const MutationTypesDialog = ({
 
 	const handleDeleteMutationType = (event, props) => {
 		let _localMutationTypes = global.structuredClone(localMutationTypes);
-		if(props.dataKey){
+		if (props.dataKey) {
 			_localMutationTypes.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localMutationTypes.splice(props.rowIndex, 1);
 		}
 		setLocalMutationTypes(_localMutationTypes);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteMutationType(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteMutationType(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 	<ColumnGroup>
-							<Row>
-								<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-								<Column header="Mutation Types" />
-								<Column header="Internal" />
-								<Column header="Evidence" />
-							</Row>
-						</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Mutation Types" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-6"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Mutation Types</h3>
-				<DataTable value={localMutationTypes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-						editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={mutationTypeEditorTemplate} field="mutationType.curie" header="Mutation Type" headerClassName='surface-0' body={mutationTypeTemplate}/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) =>evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+				<DataTable
+					value={localMutationTypes}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
+					<Column
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={mutationTypeEditorTemplate}
+						field="mutationType.curie"
+						header="Mutation Type"
+						headerClassName="surface-0"
+						body={mutationTypeTemplate}
+					/>
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 				</DataTable>
 			</Dialog>
 		</div>

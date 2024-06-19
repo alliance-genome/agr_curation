@@ -6,17 +6,16 @@ export class ConstructService extends BaseAuthService {
 		return this.api.put(`/construct`, updatedConstruct);
 	}
 
-	createConstruct(newConstruct) { 
+	createConstruct(newConstruct) {
 		return this.api.post(`/construct`, newConstruct);
 	}
 
-	async deleteConstruct(construct) { 
+	async deleteConstruct(construct) {
 		const deletionService = new DeletionService();
 		return await deletionService.delete(`construct`, construct.id);
 	}
 
-	async getConstruct(identifier) { 
+	async getConstruct(identifier) {
 		return this.api.get(`/allele/findBy/${identifier}`);
 	}
 }
-

@@ -12,20 +12,20 @@ import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { SearchService } from '../../../service/SearchService';
 import { ValidationService } from '../../../service/ValidationService';
-import { autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange } from "../../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange } from '../../../utils/utils';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
 import { AutocompleteEditor } from '../../../components/Autocomplete/AutocompleteEditor';
 import { InputTextAreaEditor } from '../../../components/InputTextAreaEditor';
 
 export const InheritanceModesDialog = ({
-													originalInheritanceModesData,
-													setOriginalInheritanceModesData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow
-												}) => {
+	originalInheritanceModesData,
+	setOriginalInheritanceModesData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+}) => {
 	const { originalInheritanceModes, isInEdit, dialog, rowIndex, mainRowProps } = originalInheritanceModesData;
-	const [localInheritanceModes, setLocalInheritanceModes] = useState(null) ;
+	const [localInheritanceModes, setLocalInheritanceModes] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -41,15 +41,15 @@ export const InheritanceModesDialog = ({
 		let _localInheritanceModes = cloneInheritanceModes(originalInheritanceModes);
 		setLocalInheritanceModes(_localInheritanceModes);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localInheritanceModes) {
+			if (_localInheritanceModes) {
 				_localInheritanceModes.forEach((im) => {
 					rowsObject[`${im.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -57,14 +57,14 @@ export const InheritanceModesDialog = ({
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localInheritanceModes = [...localInheritanceModes];//add new note support
-		if(originalInheritanceModes && originalInheritanceModes[event.index]){
+		let _localInheritanceModes = [...localInheritanceModes]; //add new note support
+		if (originalInheritanceModes && originalInheritanceModes[event.index]) {
 			let dataKey = _localInheritanceModes[event.index].dataKey;
 			_localInheritanceModes[event.index] = global.structuredClone(originalInheritanceModes[event.index]);
 			_localInheritanceModes[event.index].dataKey = dataKey;
@@ -73,32 +73,40 @@ export const InheritanceModesDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInInheritanceModes(event.data,event.index);
+		compareChangesInInheritanceModes(event.data, event.index);
 	};
 
-	const compareChangesInInheritanceModes = (data,index) => {
-		if(originalInheritanceModes && originalInheritanceModes[index]) {
+	const compareChangesInInheritanceModes = (data, index) => {
+		if (originalInheritanceModes && originalInheritanceModes[index]) {
 			if (data.internal !== originalInheritanceModes[index].internal) {
 				rowsEdited.current++;
 			}
 			if (data.inheritanceMode.name !== originalInheritanceModes[index].inheritanceMode.name) {
 				rowsEdited.current++;
 			}
-			if ((originalInheritanceModes[index].phenotypeTerm && !data.phenotypeTerm) ||
+			if (
+				(originalInheritanceModes[index].phenotypeTerm && !data.phenotypeTerm) ||
 				(!originalInheritanceModes[index].phenotypeTerm && data.phenotypeTerm) ||
-				(originalInheritanceModes[index].phenotypeTerm && data.phenotypeTerm &&
-					originalInheritanceModes[index].phenotypeTerm.curie !== data.phenotypeTerm.curie)) {
+				(originalInheritanceModes[index].phenotypeTerm &&
+					data.phenotypeTerm &&
+					originalInheritanceModes[index].phenotypeTerm.curie !== data.phenotypeTerm.curie)
+			) {
 				rowsEdited.current++;
-			} 
-			if ((originalInheritanceModes[index].phenotypeStatement && !data.phenotypeStatement) ||
+			}
+			if (
+				(originalInheritanceModes[index].phenotypeStatement && !data.phenotypeStatement) ||
 				(!originalInheritanceModes[index].phenotypeStatement && data.phenotypeStatement) ||
-				(originalInheritanceModes[index].phenotypeStatement && data.phenotypeStatement &&
-					originalInheritanceModes[index].phenotypeStatement !== data.phenotypeStatement)) {
+				(originalInheritanceModes[index].phenotypeStatement &&
+					data.phenotypeStatement &&
+					originalInheritanceModes[index].phenotypeStatement !== data.phenotypeStatement)
+			) {
 				rowsEdited.current++;
-			} 
-			if ((originalInheritanceModes[index].evidence && !data.evidence) ||
+			}
+			if (
+				(originalInheritanceModes[index].evidence && !data.evidence) ||
 				(!originalInheritanceModes[index].evidence && data.evidence) ||
-				(data.evidence && (data.evidence.length !== originalInheritanceModes[index].evidence.length))) {
+				(data.evidence && data.evidence.length !== originalInheritanceModes[index].evidence.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
@@ -111,12 +119,12 @@ export const InheritanceModesDialog = ({
 			}
 		}
 
-		if((localInheritanceModes.length > originalInheritanceModes?.length) || !originalInheritanceModes){
+		if (localInheritanceModes.length > originalInheritanceModes?.length || !originalInheritanceModes) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateInheritanceMode(localInheritanceModes[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -125,21 +133,26 @@ export const InheritanceModesDialog = ({
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update AlleleInheritanceMode [' + localInheritanceModes[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail: 'Could not update AlleleInheritanceMode [' + localInheritanceModes[event.index].id + ']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
 			});
 		} else {
 			delete _editingRows[event.index];
-			compareChangesInInheritanceModes(event.data,event.index);
+			compareChangesInInheritanceModes(event.data, event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
 		let _localInheritanceModes = [...localInheritanceModes];
@@ -169,14 +182,14 @@ export const InheritanceModesDialog = ({
 
 	const cloneInheritanceModes = (clonableInheritanceModes) => {
 		let _clonableInheritanceModes = global.structuredClone(clonableInheritanceModes);
-		if(_clonableInheritanceModes) {
-			let counter = 0 ;
+		if (_clonableInheritanceModes) {
+			let counter = 0;
 			_clonableInheritanceModes.forEach((im) => {
 				im.dataKey = counter++;
 			});
 		} else {
 			_clonableInheritanceModes = [];
-		};
+		}
 		return _clonableInheritanceModes;
 	};
 
@@ -191,20 +204,19 @@ export const InheritanceModesDialog = ({
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["alleleInheritanceModes"] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
+		errorMessagesCopy[rowIndex]['alleleInheritanceModes'] = messageObject;
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalInheritanceModesData((originalInheritanceModesData) => {
-				return {
-					...originalInheritanceModesData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalInheritanceModesData,
+				dialog: false,
+			};
+		});
 	};
 
 	const internalTemplate = (rowData) => {
@@ -218,17 +230,17 @@ export const InheritanceModesDialog = ({
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
-	
+
 	const onInternalEditorValueChange = (props, event) => {
 		let _localInheritanceModes = [...localInheritanceModes];
 		_localInheritanceModes[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const onInheritanceModeEditorValueChange = (props, event) => {
 		let _localInheritanceModes = [...localInheritanceModes];
@@ -244,9 +256,9 @@ export const InheritanceModesDialog = ({
 					editorChange={onInheritanceModeEditorValueChange}
 					props={props}
 					showClear={false}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"inheritanceMode"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'inheritanceMode'} />
 			</>
 		);
 	};
@@ -254,14 +266,17 @@ export const InheritanceModesDialog = ({
 	const inheritanceModeTemplate = (rowData) => {
 		return <EllipsisTableCell>{rowData.inheritanceMode?.name}</EllipsisTableCell>;
 	};
-	
+
 	const phenotypeTermTemplate = (rowData) => {
 		if (rowData?.phenotypeTerm) {
-			return <div className='overflow-hidden text-overflow-ellipsis'
-				dangerouslySetInnerHTML={{
-					__html: rowData.phenotypeTerm.name + ' (' + rowData.phenotypeTerm.curie + ')'
-				}}
-			/>;
+			return (
+				<div
+					className="overflow-hidden text-overflow-ellipsis"
+					dangerouslySetInnerHTML={{
+						__html: rowData.phenotypeTerm.name + ' (' + rowData.phenotypeTerm.curie + ')',
+					}}
+				/>
+			);
 		}
 	};
 
@@ -272,30 +287,27 @@ export const InheritanceModesDialog = ({
 					search={phenotypeTermSearch}
 					initialValue={props.rowData.phenotypeTerm?.curie}
 					rowProps={props}
-					fieldName='phenotypeTerm'
+					fieldName="phenotypeTerm"
 					onValueChangeHandler={onPhenotypeTermValueChange}
 				/>
-				<DialogErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"phenotypeTerm"}
-				/>
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'phenotypeTerm'} />
 			</>
 		);
 	};
 
 	const onPhenotypeTermValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, "phenotypeTerm", setFieldValue);
+		defaultAutocompleteOnChange(props, event, 'phenotypeTerm', setFieldValue);
 	};
 
 	const phenotypeTermSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["name", "curie"];
-		const endpoint = "phenotypeterm";
-		const filterName = "phenotypeTermFilter";
+		const autocompleteFields = ['name', 'curie'];
+		const endpoint = 'phenotypeterm';
+		const filterName = 'phenotypeTermFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
+	};
 
 	const phenotypeStatementTemplate = (rowData) => {
 		if (rowData?.phenotypeStatement) {
@@ -310,7 +322,7 @@ export const InheritanceModesDialog = ({
 
 	const phenotypeStatementEditor = (props, errorMessages) => {
 		if (errorMessages) {
-			errorMessages.severity = "error";
+			errorMessages.severity = 'error';
 		}
 		return (
 			<>
@@ -320,7 +332,7 @@ export const InheritanceModesDialog = ({
 					rows={1}
 					columns={30}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"phenotypeStatement"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'phenotypeStatement'} />
 			</>
 		);
 	};
@@ -328,22 +340,22 @@ export const InheritanceModesDialog = ({
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Inheritance Mode" icon="pi pi-plus" onClick={createNewInheritanceModeHandler}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button label="New Inheritance Mode" icon="pi pi-plus" onClick={createNewInheritanceModeHandler} />
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const createNewInheritanceModeHandler = (event) => {
 		let cnt = localInheritanceModes ? localInheritanceModes.length : 0;
 		const _localInheritanceModes = global.structuredClone(localInheritanceModes);
 		_localInheritanceModes.push({
-			dataKey : cnt,
-			internal : false,
+			dataKey: cnt,
+			internal: false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -352,54 +364,116 @@ export const InheritanceModesDialog = ({
 
 	const handleDeleteInheritanceMode = (event, props) => {
 		let _localInheritanceModes = global.structuredClone(localInheritanceModes);
-		if(props.dataKey){
+		if (props.dataKey) {
 			_localInheritanceModes.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localInheritanceModes.splice(props.rowIndex, 1);
 		}
 		setLocalInheritanceModes(_localInheritanceModes);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteInheritanceMode(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteInheritanceMode(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 	<ColumnGroup>
-							<Row>
-								<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-								<Column header="Inheritance Mode" />
-								<Column header="Phenotype Term" />
-								<Column header="Phenotype Statement" />
-								<Column header="Internal" />
-								<Column header="Evidence" />
-							</Row>
-						</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Inheritance Mode" />
+				<Column header="Phenotype Term" />
+				<Column header="Phenotype Statement" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-6"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Inheritance Modes</h3>
-				<DataTable value={localInheritanceModes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} 
-						editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={(props) => inheritanceModeEditor(props)} field="inheritanceMode.name" header="Inheritance Mode" headerClassName='surface-0' body={inheritanceModeTemplate}/>
-					<Column editor={phenotypeTermEditorTemplate} field="phenotypeTerm.curie" header="Phenotype Term" headerClassName='surface-0' body={phenotypeTermTemplate}/>
+				<DataTable
+					value={localInheritanceModes}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
+					<Column
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={(props) => inheritanceModeEditor(props)}
+						field="inheritanceMode.name"
+						header="Inheritance Mode"
+						headerClassName="surface-0"
+						body={inheritanceModeTemplate}
+					/>
+					<Column
+						editor={phenotypeTermEditorTemplate}
+						field="phenotypeTerm.curie"
+						header="Phenotype Term"
+						headerClassName="surface-0"
+						body={phenotypeTermTemplate}
+					/>
 					<Column
 						editor={(props) => phenotypeStatementEditor(props, errorMessages)}
 						field="phenotypeStatement"
 						header="Phenotype Statement"
 						body={phenotypeStatementTemplate}
-						headerClassName='surface-0'
+						headerClassName="surface-0"
 					/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) =>evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 				</DataTable>
 			</Dialog>
 		</div>

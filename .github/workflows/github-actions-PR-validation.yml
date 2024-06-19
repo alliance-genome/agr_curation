@@ -87,6 +87,7 @@ jobs:
         working-directory: src/main/cliapp
         run: |
           npm ci
+          npx prettier --check .
           npm test -- --watchAll=false
           npm run build
   test-build-docker-image:

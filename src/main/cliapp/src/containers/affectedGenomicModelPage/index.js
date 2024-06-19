@@ -1,3 +1,3 @@
-import { AffectedGenomicModelPage } from "./AffectedGenomicModelPage";
+import { AffectedGenomicModelPage } from './AffectedGenomicModelPage';
 
 export { AffectedGenomicModelPage };
