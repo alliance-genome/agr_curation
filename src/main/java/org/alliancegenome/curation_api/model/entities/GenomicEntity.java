@@ -31,7 +31,7 @@ public class GenomicEntity extends BiologicalEntity {
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinTable(indexes = { 
+	@JoinTable(indexes = {
 		@Index(columnList = "genomicentity_id, crossreferences_id", name = "genomicentity_crossreference_ge_xref_index"),
 		@Index(columnList = "genomicentity_id", name = "genomicentity_crossreference_genomicentity_index"),
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")

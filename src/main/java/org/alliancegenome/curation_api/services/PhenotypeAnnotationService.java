@@ -138,6 +138,6 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			}
 		}
 		return primaryAnnotationIds;
-	} 
+	}
 
 }

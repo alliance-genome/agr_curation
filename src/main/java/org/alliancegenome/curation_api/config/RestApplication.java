@@ -20,13 +20,13 @@ import jakarta.ws.rs.core.Application;
 				+ "<h1>For flat file of API documentation click on the link below <a href=\"/openapi\"><h1>OpenAPI definition download</h1></a></h1>",
 				title = "Alliance of Genome Resources Curation API ",
 				version = "1.0 Alpha"
-			), 
+			),
 		security = { @SecurityRequirement(name = "api_token") },
 		components = @Components(securitySchemes = {
 				@SecurityScheme(
-						securitySchemeName = "api_token", 
-						type = SecuritySchemeType.HTTP, 
-						description = "Curator API Token", scheme = "bearer") 
+						securitySchemeName = "api_token",
+						type = SecuritySchemeType.HTTP,
+						description = "Curator API Token", scheme = "bearer")
 		})
 )
 public class RestApplication extends Application {

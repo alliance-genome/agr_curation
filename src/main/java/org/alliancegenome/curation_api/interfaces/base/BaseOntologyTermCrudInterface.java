@@ -22,7 +22,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Tag(name = "CRUD - Ontology - Bulk")
-public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends 
+public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends
 	BaseCreateControllerInterface<E>,
 	BaseReadCurieControllerInterface<E>,
 	BaseUpdateControllerInterface<E>,

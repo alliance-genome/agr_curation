@@ -39,7 +39,7 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "2.2.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @ToString(callSuper = true)
 @Schema(name = "Gene_Interaction", description = "Annotation class representing a gene interaction")
-@Table(indexes = { 
+@Table(indexes = {
 	@Index(name = "geneinteraction_interactionId_index", columnList = "interactionid"),
 	@Index(name = "geneinteraction_uniqueId_index", columnList = "uniqueid"),
 	@Index(name = "geneinteraction_interactionsource_index", columnList = "interactionsource_id"),
@@ -67,7 +67,7 @@ public abstract class GeneInteraction extends GeneGeneAssociation {
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinTable(indexes = { 
+	@JoinTable(indexes = {
 		@Index(columnList = "geneinteraction_id, crossreferences_id", name = "geneinteraction_crossreference_gi_xref_index"),
 		@Index(columnList = "geneinteraction_id", name = "geneinteraction_crossreference_geneinteraction_index"),
 		@Index(columnList = "crossreferences_id", name = "geneinteraction_crossreference_crossreferences_index")

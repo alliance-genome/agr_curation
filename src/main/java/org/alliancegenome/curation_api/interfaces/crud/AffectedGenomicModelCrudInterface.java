@@ -32,7 +32,7 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Affected Genomic Models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCrudInterface<AffectedGenomicModel>, 
+public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCrudInterface<AffectedGenomicModel>,
 	BaseReadIdentifierControllerInterface<AffectedGenomicModel>,
 	BaseUpsertControllerInterface<AffectedGenomicModel, AffectedGenomicModelDTO> {
 

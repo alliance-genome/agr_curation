@@ -89,8 +89,8 @@ public class Annotation extends SingleReferenceAssociation {
 	@JoinTable(indexes = { @Index(name = "annotation_conditionrelation_annotation_index", columnList = "annotation_id"), @Index(name = "annotation_conditionrelation_conditionrelations_index", columnList = "conditionrelations_id")})
 	private List<ConditionRelation> conditionRelations;
 
-	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie", 
-			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", 
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
+			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword",
 			"references.primaryCrossReferenceCurie_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

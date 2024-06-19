@@ -16,14 +16,14 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/paralogy") 
-@Tag(name = "CRUD - Paralogy") 
-@Produces(MediaType.APPLICATION_JSON) 
+@Path("/paralogy")
+@Tag(name = "CRUD - Paralogy")
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneToGeneParalogyCrudInterface extends BaseIdCrudInterface<GeneToGeneParalogy> {
 
-	@POST 
-	@Path("/bulk/{dataProvider}/paralogyfile") 
+	@POST
+	@Path("/bulk/{dataProvider}/paralogyfile")
 	@JsonView(View.FieldsAndLists.class)
 	APIResponse updateParalogy(@PathParam("dataProvider") String dataProvider, ParalogyIngestFmsDTO paralogyData);
 
