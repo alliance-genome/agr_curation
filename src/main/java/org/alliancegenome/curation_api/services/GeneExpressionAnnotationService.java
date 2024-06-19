@@ -6,7 +6,6 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
-import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
@@ -23,10 +22,8 @@ import java.util.Map;
 @RequestScoped
 public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<GeneExpressionAnnotation, GeneExpressionAnnotationDAO> implements BaseUpsertServiceInterface<GeneExpressionAnnotation, GeneExpressionFmsDTO> {
 
-	@Inject	GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
-	@Inject	GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
-	@Inject	PersonDAO personDAO;
-	@Inject PersonService personService;
+	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
+	@Inject GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
 
 	@Override
 	@PostConstruct

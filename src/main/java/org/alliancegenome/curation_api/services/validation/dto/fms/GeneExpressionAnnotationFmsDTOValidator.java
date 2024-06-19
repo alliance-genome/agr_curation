@@ -27,21 +27,21 @@ import java.time.format.DateTimeParseException;
 @RequestScoped
 public class GeneExpressionAnnotationFmsDTOValidator {
 
-	@Inject	GeneService geneService;
+	@Inject GeneService geneService;
 
-	@Inject	MmoTermService mmoTermService;
+	@Inject MmoTermService mmoTermService;
 
 	@Inject ReferenceService referenceService;
 
-	@Inject	ResourceDescriptorService resourceDescriptorService;
+	@Inject ResourceDescriptorService resourceDescriptorService;
 
-	@Inject	ResourceDescriptorPageService resourceDescriptorPageService;
+	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
-	@Inject	GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
+	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
 
-	@Inject	GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
+	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
 
-	@Inject	DataProviderService dataProviderService;
+	@Inject DataProviderService dataProviderService;
 
 	@Inject VocabularyTermService vocabularyTermService;
 
@@ -82,7 +82,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getAssay())) {
-			response.addErrorMessage("assay - ",  ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getAssay() + ")");
+			response.addErrorMessage("assay - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getAssay() + ")");
 		} else {
 			MMOTerm expressionAssayUsed = mmoTermService.findByCurie(geneExpressionFmsDTO.getAssay());
 			if (expressionAssayUsed == null) {
@@ -93,22 +93,22 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed())) {
-			response.addErrorMessage("whereExpressed - ",  ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed() + ")");
+			response.addErrorMessage("whereExpressed - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed() + ")");
 		} else {
 			String whereExpressedStatement = geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement();
 			if (ObjectUtils.isEmpty(whereExpressedStatement)) {
-				response.addErrorMessage("whereExpressed - whereExpressedStatement",  ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement() + ")");
+				response.addErrorMessage("whereExpressed - whereExpressedStatement", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement() + ")");
 			} else {
 				geneExpressionAnnotation.setWhereExpressedStatement(whereExpressedStatement);
 			}
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhenExpressed())) {
-			response.addErrorMessage("whenExpressed - ",  ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhenExpressed() + ")");
+			response.addErrorMessage("whenExpressed - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhenExpressed() + ")");
 		} else {
 			String stageName = geneExpressionFmsDTO.getWhenExpressed().getStageName();
 			if (ObjectUtils.isEmpty(stageName)) {
-				response.addErrorMessage("whenExpressed - whenExpressedStageName",  ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhenExpressed().getStageName() + ")");
+				response.addErrorMessage("whenExpressed - whenExpressedStageName", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getWhenExpressed().getStageName() + ")");
 			} else {
 				geneExpressionAnnotation.setWhenExpressedStageName(stageName);
 			}
