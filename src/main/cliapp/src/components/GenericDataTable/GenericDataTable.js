@@ -261,7 +261,7 @@ export const GenericDataTable = (props) => {
 			<React.Fragment>
 				<Button label="OK" icon="pi pi-times" className="p-button-text" onClick={hideErrorDialog} />
 			</React.Fragment>
-		);
+		)
 	};
 
 	const exceptionDialogFooter = () => {
