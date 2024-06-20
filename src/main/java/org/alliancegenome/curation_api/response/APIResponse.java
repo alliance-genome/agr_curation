@@ -28,7 +28,7 @@ public class APIResponse {
 		if (errorMessages == null) {
 			errorMessages = new HashMap<>(3);
 		}
-		errorMessages.put(fieldName, errorMessage);
+		errorMessages.put(fieldName, fieldName + " - " + errorMessage);
 	}
 
 	public void addErrorMessages(Map<String, String> newErrorMessages) {

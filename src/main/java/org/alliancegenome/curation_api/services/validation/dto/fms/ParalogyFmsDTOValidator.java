@@ -187,7 +187,6 @@ public class ParalogyFmsDTOValidator {
 		paralogyData.setInternal(false);
 
 		if (paralogyResponse.hasErrors()) {
-			System.out.println(paralogyResponse.errorMessagesString());
 			throw new ObjectValidationException(dto, paralogyResponse.errorMessagesString());
 		}
 
