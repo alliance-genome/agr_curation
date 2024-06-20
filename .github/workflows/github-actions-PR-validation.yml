@@ -8,6 +8,7 @@ on:
       - production
 jobs:
   check-branching-rules:
+    name: Check Branching Rules
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
