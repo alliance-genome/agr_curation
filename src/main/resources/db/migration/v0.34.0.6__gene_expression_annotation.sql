@@ -1,4 +1,4 @@
-CREATE SEQUENCE public.expressionannotation_seq         START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE public.expressionannotation_seq         START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
 CREATE TABLE expressionannotation (
 	id bigint CONSTRAINT expressionannotation_pkey PRIMARY KEY,
@@ -14,7 +14,7 @@ ALTER TABLE expressionannotation
 CREATE INDEX expressionannotation_whenexpressedstagename_index ON expressionannotation USING btree (whenexpressedstagename);
 CREATE INDEX expressionannotation_whereexpressedstatement_index ON expressionannotation USING btree (whereexpressedstatement);
 
-CREATE SEQUENCE public.geneexpressionannotation_seq         START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1;
+CREATE SEQUENCE public.geneexpressionannotation_seq         START WITH 1 INCREMENT BY 50 NO MINVALUE NO MAXVALUE CACHE 1;
 
 CREATE TABLE geneexpressionannotation (
 	id bigint CONSTRAINT geneexpressionannotation_pkey PRIMARY KEY,
