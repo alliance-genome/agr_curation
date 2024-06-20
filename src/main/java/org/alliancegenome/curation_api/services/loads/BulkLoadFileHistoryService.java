@@ -33,10 +33,10 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(id);
 		for (BulkLoadFileException exception : bulkLoadFileHistory.getExceptions()) {
 			JsonObject object = new JsonObject();
-			if(exception.getException().getMessage() != null) {
+			if (exception.getException().getMessage() != null) {
 				object.put("message", exception.getException().getMessage());
 			}
-			if(exception.getException().getMessages() != null) {
+			if (exception.getException().getMessages() != null) {
 				object.put("messages", exception.getException().getMessages());
 			}
 			JsonObject data = new JsonObject(exception.getException().getJsonObject());
