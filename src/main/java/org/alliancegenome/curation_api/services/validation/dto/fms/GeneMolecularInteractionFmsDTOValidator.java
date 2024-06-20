@@ -114,7 +114,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		interaction.setAggregationDatabase(aggregationDatabase);
 
 		if (gmiResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, gmiResponse.getErrorMessages().values());
+			throw new ObjectValidationException(dto, gmiResponse.errorMessagesList());
 		}
 
 		return interaction;
