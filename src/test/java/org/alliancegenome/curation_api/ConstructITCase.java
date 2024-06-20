@@ -208,7 +208,7 @@ public class ConstructITCase extends BaseITCase {
 			body("entity.constructComponents[0].evidence", hasSize(1)).
 			body("entity.constructComponents[0].evidence[0].curie", is(reference.getCurie())).
 			body("entity.secondaryIdentifiers", hasSize(1)).
-			body("entity.secondaryIdentifiers[0]", is("secondaryIdTest"));	
+			body("entity.secondaryIdentifiers[0]", is("secondaryIdTest"));
 	}
 
 	@Test
@@ -314,7 +314,7 @@ public class ConstructITCase extends BaseITCase {
 			body("entity.constructComponents[0].evidence", hasSize(1)).
 			body("entity.constructComponents[0].evidence[0].curie", is(reference2.getCurie())).
 			body("entity.secondaryIdentifiers", hasSize(1)).
-			body("entity.secondaryIdentifiers[0]", is("secondaryIdTestUpdate"));	
+			body("entity.secondaryIdentifiers[0]", is("secondaryIdTestUpdate"));
 	}
 	
 	@Test

@@ -147,7 +147,7 @@ public class VariantITCase extends BaseITCase {
 			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference.getCurie())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));	
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));
 	}
 
 	@Test

@@ -28,7 +28,7 @@ import io.restassured.RestAssured;
 @Order(310)
 public class VocabularyTermITCase extends BaseITCase {
 	
-	private Vocabulary testVocabulary;	
+	private Vocabulary testVocabulary;
 	private Vocabulary testVocabulary2;
 	private Vocabulary testObsoleteVocabulary;
 	

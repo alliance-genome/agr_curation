@@ -11,7 +11,7 @@ jobs:
     - name: Run check style
       uses: dbelyaev/action-checkstyle@master
       with:
-        level: 'warning'
+        level: 'error'
         fail_on_error: 'true'
         github_token: ${{ secrets.GH_DEVOPS_PAT }}
         reporter: github-pr-review

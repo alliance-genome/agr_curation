@@ -511,9 +511,6 @@
 							<phase>validate</phase>
 							<configuration>
 								<encoding>UTF-8</encoding>
-								<consoleOutput>true</consoleOutput>
-								<failsOnError>true</failsOnError>
-								<includeTestSourceDirectory>true</includeTestSourceDirectory>
 							</configuration>
 							<goals>
 								<goal>check</goal>
@@ -523,6 +520,11 @@
 					<configuration>
 						<propertyExpansion>config_loc=${basedir}</propertyExpansion>
 						<configLocation>checkstyle.xml</configLocation>
+						<consoleOutput>true</consoleOutput>
+						<failOnViolation>true</failOnViolation>
+						<failsOnError>true</failsOnError>
+						<includeTestSourceDirectory>true</includeTestSourceDirectory>
+						<failOnViolation>true</failOnViolation>
 					</configuration>
 				</plugin>
 			</plugins>

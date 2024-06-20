@@ -547,7 +547,7 @@ public class BaseITCase {
 		vocabulary.setInternal(false);
 		vocabulary.setObsolete(obsolete);
 		
-		ObjectResponse<Vocabulary> response = 
+		ObjectResponse<Vocabulary> response =
 			RestAssured.given().
 				contentType("application/json").
 				body(vocabulary).
@@ -1028,7 +1028,7 @@ public class BaseITCase {
 	}
 
 	public Vocabulary getVocabulary(String label) {
-		SearchResponse<Vocabulary> response = 
+		SearchResponse<Vocabulary> response =
 			RestAssured.given().
 				contentType("application/json").
 				body("{\"vocabularyLabel\": \"" + label + "\" }").
@@ -1043,7 +1043,7 @@ public class BaseITCase {
 	}
 	
 	public VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
-		ObjectListResponse<VocabularyTerm> response = 
+		ObjectListResponse<VocabularyTerm> response =
 			RestAssured.given().
 				when().
 				get("/api/vocabulary/" + vocabulary.getId() + "/terms").
@@ -1097,7 +1097,7 @@ public class BaseITCase {
 		agm.setTaxon(getNCBITaxonTerm(taxonCurie));
 		agm.setName(name);
 		agm.setSubtype(subtype);
-		agm.setDataProvider(dataProvider);		
+		agm.setDataProvider(dataProvider);
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).
@@ -1301,7 +1301,7 @@ public class BaseITCase {
 		xref.setReferencedCurie(xrefCurie);
 		xref.setDisplayName(xrefCurie);
 		
-		ObjectResponse<CrossReference> response = 
+		ObjectResponse<CrossReference> response =
 			RestAssured.given().
 				contentType("application/json").
 				body(xref).

@@ -926,7 +926,7 @@ public class GeneITCase extends BaseITCase {
 	
 	@Test
 	@Order(18)
-	public void createGeneWithOnlyRequiredFields() {		
+	public void createGeneWithOnlyRequiredFields() {
 		Gene gene = new Gene();
 		gene.setModEntityId("GENE:0020");
 		gene.setTaxon(taxon);
