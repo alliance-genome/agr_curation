@@ -19,6 +19,7 @@ jobs:
           bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
 
   checkstyle-api:
+    name: Checkstyle API
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -49,6 +50,7 @@ jobs:
 
 
   verify-api:
+    name: Verify API
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -70,6 +72,11 @@ jobs:
       - name: Report runtime details
         run: |
           echo "Github runner OS: ${{ runner.os }}"
+      - id: install-secret-key
+        name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
       - name: Report Maven version
         run: |
           mvn --version
@@ -79,6 +86,7 @@ jobs:
 
 
   test-api:
+    name: Test API
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -108,6 +116,7 @@ jobs:
           mvn -ntp test
 
   package-api:
+    name: Package API
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -138,6 +147,7 @@ jobs:
 
 
   integration-test-api:
+    name: Integration Test API
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -169,14 +179,8 @@ jobs:
         run: |
           make integration-test
 
-#  verify-test-api:
-#      - id: install-secret-key
-#        name: Install gpg secret key
-#        run: |
-#          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-#          gpg --list-secret-keys --keyid-format LONG
-
   verify-test-ui:
+    name: Verify Test UI
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -204,6 +208,7 @@ jobs:
           npm test -- --watchAll=false
           npm run build
   test-build-docker-image:
+      name: Test Build Docker Image
       runs-on: ubuntu-20.04
       steps:
         - name: Check out repository code
