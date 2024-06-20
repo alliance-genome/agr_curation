@@ -95,7 +95,7 @@ public class ConstructGenomicEntityAssociationITCase extends BaseITCase {
 		association.setConstructGenomicEntityAssociationObject(gene);
 		association.setRelation(relation);
 		association.setInternal(true);
-		association.setObsolete(true);	
+		association.setObsolete(true);
 		association.setRelatedNotes(List.of(note));
 		association.setEvidence(List.of(reference));
 		

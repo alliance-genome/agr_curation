@@ -8,6 +8,7 @@ on:
       - production
 jobs:
   check-branching-rules:
+    name: Check Branching Rules
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
@@ -17,7 +18,9 @@ jobs:
       - name: Check branching rules
         run: |
           bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
-  verify-test-api:
+
+  checkstyle-api:
+    name: Checkstyle API
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -36,11 +39,73 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+      - name: Report runtime details
+        run: |
+          echo "Github runner OS: ${{ runner.os }}"
+      - name: Report Maven version
+        run: |
+          mvn --version
+      - name: Run Check Styles
+        run: |
+          mvn -ntp checkstyle:check
+
+
+  verify-api:
+    name: Verify API
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Report workflow details
+        run: |
+          echo "Repository ${{ github.repository }}."
+          echo "Trigger ref ${{ github.ref }}, base-ref ${{ github.base_ref }}, head_ref ${{ github.head_ref }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
+      - name: Report files updated in PR
+        run: |
+          git fetch -q origin ${{ github.base_ref }} ${{ github.head_ref }}
+          git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }}
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Report runtime details
+        run: |
+          echo "Github runner OS: ${{ runner.os }}"
       - id: install-secret-key
         name: Install gpg secret key
         run: |
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
+      - name: Report Maven version
+        run: |
+          mvn --version
+      - name: Run Maven verify
+        run: |
+          mvn -ntp --batch-mode --update-snapshots verify
+
+
+  test-api:
+    name: Test API
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Report workflow details
+        run: |
+          echo "Repository ${{ github.repository }}."
+          echo "Trigger ref ${{ github.ref }}, base-ref ${{ github.base_ref }}, head_ref ${{ github.head_ref }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
+      - name: Report files updated in PR
+        run: |
+          git fetch -q origin ${{ github.base_ref }} ${{ github.head_ref }}
+          git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }}
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
       - name: Report runtime details
         run: |
           echo "Github runner OS: ${{ runner.os }}"
@@ -49,13 +114,65 @@ jobs:
           mvn --version
       - name: Run Maven test
         run: |
-          mvn --no-transfer-progress test
-      - name: Run Maven verify
+          mvn -ntp test
+
+  package-api:
+    name: Package API
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Report workflow details
         run: |
-          mvn --no-transfer-progress --batch-mode --update-snapshots verify
+          echo "Repository ${{ github.repository }}."
+          echo "Trigger ref ${{ github.ref }}, base-ref ${{ github.base_ref }}, head_ref ${{ github.head_ref }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
+      - name: Report files updated in PR
+        run: |
+          git fetch -q origin ${{ github.base_ref }} ${{ github.head_ref }}
+          git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }}
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Report runtime details
+        run: |
+          echo "Github runner OS: ${{ runner.os }}"
+      - name: Report Maven version
+        run: |
+          mvn --version
       - name: Package API
         run: |
-          mvn clean package -Dquarkus.package.type=uber-jar -ntp
+          mvn -ntp clean package -Dquarkus.package.type=uber-jar -ntp
+
+
+  integration-test-api:
+    name: Integration Test API
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Report workflow details
+        run: |
+          echo "Repository ${{ github.repository }}."
+          echo "Trigger ref ${{ github.ref }}, base-ref ${{ github.base_ref }}, head_ref ${{ github.head_ref }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
+      - name: Report files updated in PR
+        run: |
+          git fetch -q origin ${{ github.base_ref }} ${{ github.head_ref }}
+          git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }}
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Report runtime details
+        run: |
+          echo "Github runner OS: ${{ runner.os }}"
+      - name: Report Maven version
+        run: |
+          mvn --version
       - name: Create test containers properties file
         run: |
           touch ~/.testcontainers.properties
@@ -64,6 +181,7 @@ jobs:
           make integration-test
 
   verify-test-ui:
+    name: Verify Test UI
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -91,6 +209,7 @@ jobs:
           npm test -- --watchAll=false
           npm run build
   test-build-docker-image:
+      name: Test Build Docker Image
       runs-on: ubuntu-20.04
       steps:
         - name: Check out repository code

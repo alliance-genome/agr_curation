@@ -62,7 +62,7 @@ public class DOTermBulkUploadITCase {
 	}
 	
 	@Test
-	@Order(2) 
+	@Order(2)
 	public void doTermRetrievable() throws Exception {
 		RestAssured.given().
 			when().

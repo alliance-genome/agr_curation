@@ -2254,7 +2254,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity", not(hasKey("diseaseGeneticModifiers"))).
 			body("entity", not(hasKey("diseaseGeneticModifierRelation"))).
 			body("entity", not(hasKey("conditionRelations"))).
-			body("entity", not(hasKey("relatedNotes")));	
+			body("entity", not(hasKey("relatedNotes")));
 	}
 	
 	@Test
@@ -2298,7 +2298,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity", not(hasKey("conditionRelations"))).
 			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("inferredGene"))).
-			body("entity", not(hasKey("assertedGenes")));	
+			body("entity", not(hasKey("assertedGenes")));
 	}
 	
 	@Test
@@ -2346,7 +2346,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity", not(hasKey("inferredGene"))).
 			body("entity", not(hasKey("assertedGenes"))).
 			body("entity", not(hasKey("inferredAllele"))).
-			body("entity", not(hasKey("assertedAllele")));	
+			body("entity", not(hasKey("assertedAllele")));
 	}
 	
 	@Test

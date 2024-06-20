@@ -24,7 +24,7 @@ import jakarta.inject.Inject;
 public class ParalogyExecutor extends LoadFileExecutor {
 
 	@Inject GeneToGeneParalogyService geneToGeneParalogyService;
-	@Inject	GeneToGeneParalogyDAO geneToGeneParalogyDAO;
+	@Inject GeneToGeneParalogyDAO geneToGeneParalogyDAO;
 
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {

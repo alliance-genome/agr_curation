@@ -102,7 +102,7 @@ public class AlleleGeneAssociationITCase extends BaseITCase {
 		association.setRelation(relation);
 		association.setEvidenceCode(ecoTerm);
 		association.setInternal(true);
-		association.setObsolete(true);	
+		association.setObsolete(true);
 		association.setRelatedNote(note);
 		association.setEvidence(List.of(reference));
 		
