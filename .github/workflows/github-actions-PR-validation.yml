@@ -47,6 +47,9 @@ jobs:
       - name: Report Maven version
         run: |
           mvn --version
+      - name: Run Check Styles
+        run: |
+          mvn checkstyle:check
       - name: Run Maven test
         run: |
           mvn --no-transfer-progress test
