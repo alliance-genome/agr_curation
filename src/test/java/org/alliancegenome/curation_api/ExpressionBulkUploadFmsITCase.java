@@ -80,6 +80,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_04_no_assay.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_05_no_whenExpressed.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_06_no_whereExpressed.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_07_nowhenExpressedStageName.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_08_nowhereExpressedStatement.json");
 	}
 
 	@Test
@@ -89,8 +91,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_02_empty_dateAssigned.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_03_empty_crossReferenceId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_04_empty_assay.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_05_empty_whenExpressed.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_06_empty_whereExpressed.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_05_empty_whenExpressedStageName.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_06_empty_whereExpressedStatement.json");
 	}
 
 	@Test
