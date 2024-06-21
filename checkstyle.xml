@@ -49,6 +49,10 @@
 			<property name="message" value="Line must not have trailing whitespace"/>
 			<property name="ignoreComments" value="true"/>
 		</module>
+		<module name="RegexpSinglelineJava">
+			<property name="format" value="System\.out\.print"/>
+			<property name="ignoreComments" value="true"/>
+		</module>
 		<module name="ExplicitInitialization" />
 		<module name="DefaultComesLast" />
 		<module name="FallThrough" />

@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -14,10 +16,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDT
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped

@@ -54,8 +54,6 @@ public class SearchDocumentStatsGather {
 				processHit("", hit.getSourceAsMap());
 			}
 
-			System.out.println(c + " -> " + sizeMap);
-
 			SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
 			scrollRequest.scroll(TimeValue.timeValueSeconds(60));
 			searchResponse = client.scroll(scrollRequest, RequestOptions.DEFAULT);
@@ -64,8 +62,6 @@ public class SearchDocumentStatsGather {
 			searchHits = searchResponse.getHits().getHits();
 			// System.out.println(searchHits);
 		}
-
-		System.out.println(c + " -> " + sizeMap);
 
 		ClearScrollRequest clearScrollRequest = new ClearScrollRequest();
 		clearScrollRequest.addScrollId(scrollId);

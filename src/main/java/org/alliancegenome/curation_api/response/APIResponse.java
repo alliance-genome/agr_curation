@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.response;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,13 @@ public class APIResponse {
 			return null;
 		}
 		return errorMessages.entrySet().stream().map(m -> m.getKey() + " - " + m.getValue()).sorted().collect(Collectors.joining(" | "));
+	}
+
+	public List<String> errorMessagesList() {
+		if (errorMessages == null) {
+			return null;
+		}
+		return errorMessages.entrySet().stream().map(m -> m.getKey() + " - " + m.getValue()).sorted().collect(Collectors.toList());
 	}
 
 	public void convertErrorMessagesToMap() {

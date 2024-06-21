@@ -303,7 +303,7 @@ public class AlleleITCase extends BaseITCase {
 			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
 			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(reference.getCurie())).
 			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is(dataMergedEvent.getName())).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));	
+			body("entity.dataProvider.sourceOrganization.abbreviation", is(dataProvider.getSourceOrganization().getAbbreviation()));
 	}
 
 	@Test
@@ -1440,7 +1440,7 @@ public class AlleleITCase extends BaseITCase {
 		
 		Note note1 = createNote(noteType, "Test text", false, null);
 		Note note2 = createNote(noteType, "Test text", false, null);
-		allele.setRelatedNotes(List.of(note1, note2));	
+		allele.setRelatedNotes(List.of(note1, note2));
 		
 		RestAssured.given().
 			contentType("application/json").
