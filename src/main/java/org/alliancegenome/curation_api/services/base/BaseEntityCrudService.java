@@ -158,12 +158,11 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		if (deprecate) {
 			if (!object.getObsolete()) {
 				object.setObsolete(true);
-				if (authenticatedPerson.getId() != null) {
-					object.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
-				} else {
-					Person updatedBy = personService.fetchByUniqueIdOrCreate(requestSource);
-					object.setUpdatedBy(updatedBy);
+				if (authenticatedPerson.getUniqueId() != null) {
+					requestSource = authenticatedPerson.getUniqueId();
 				}
+				Person updatedBy = personService.fetchByUniqueIdOrCreate(requestSource);
+				object.setUpdatedBy(updatedBy);
 				object.setDateUpdated(OffsetDateTime.now());
 				return dao.persist(object);
 			} else {
