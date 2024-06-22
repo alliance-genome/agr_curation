@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
+import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -31,7 +32,8 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 	@Inject
 	@AuthenticatedUser protected Person authenticatedPerson;
 	@Inject PersonService personService;
-
+	@Inject PersonDAO personDAO;
+	
 	protected abstract void init();
 
 	@Transactional
@@ -157,9 +159,10 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 			if (!object.getObsolete()) {
 				object.setObsolete(true);
 				if (authenticatedPerson.getId() != null) {
-					object.setUpdatedBy(authenticatedPerson);
+					object.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
 				} else {
-					object.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
+					Person updatedBy = personService.fetchByUniqueIdOrCreate(requestSource);
+					object.setUpdatedBy(updatedBy);
 				}
 				object.setDateUpdated(OffsetDateTime.now());
 				return dao.persist(object);
