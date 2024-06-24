@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations;
 
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
@@ -33,17 +32,24 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SequenceTargetingReagentAssociation.class })
+@AGRCurationSchemaVersion(min = "2.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "SequenceTargetingReagentGeneAssociation", description = "POJO representing an association between an SQTR and a gene")
 @Table(
 	indexes = {
+		@Index(name = "sequencetargetingreagentgeneassociation_subject_index", columnList = "sequencetargetingreagentgeneassociationsubject_id"),
 		@Index(name = "sequencetargetingreagentgeneassociation_relation_index", columnList = "relation_id"),
 		@Index(name = "sequencetargetingreagentgeneassociation_sequencetargetingreagentgeneassociationobject_index", columnList = "sequencetargetingreagentgeneassociationobject_id")
 	}
 )
-public class SequenceTargetingReagentGeneAssociation extends SequenceTargetingReagentAssociation {
-    
-    @IndexedEmbedded(includePaths = {"name", "name_keyword"})
+public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation {
+	
+	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	@Fetch(FetchMode.JOIN)
+	private SequenceTargetingReagent sequenceTargetingReagentAssociationSubject;
+
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
