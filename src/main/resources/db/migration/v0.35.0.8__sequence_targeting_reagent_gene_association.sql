@@ -5,7 +5,6 @@ CREATE TABLE sequencetargetingreagentgeneassociation (
     sequencetargetingreagentgeneassociationobject_id bigint
 );
 
-
 ALTER TABLE ONLY sequencetargetingreagentgeneassociation ADD CONSTRAINT sequencetargetingreagentgeneassociation_pkey PRIMARY KEY (id);
 
 CREATE INDEX sequencetargetingreagentassociation_subject_index 
