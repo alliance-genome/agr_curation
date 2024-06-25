@@ -9,11 +9,11 @@ public class GeneExpressionAnnotationUniqueIdHelper {
 
 	//	UniqueID =
 	//	assayId | evidenceCurie | geneId | stageTermId | stageName | whereExpressedStatement | anatomicalStructureTermId | cellularComponentTermId
-	public String generateUniqueId(GeneExpressionFmsDTO geneExpressionFmsDTO, String curie) {
+	public String generateUniqueId(GeneExpressionFmsDTO geneExpressionFmsDTO, String referenceCurie) {
 		UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getAssay());
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getGeneId());
-		uniqueIdGeneratorHelper.add(curie);
+		uniqueIdGeneratorHelper.add(referenceCurie);
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageTermId());
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageName());
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());

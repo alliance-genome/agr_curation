@@ -54,8 +54,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			response.addErrorMessages("singleReference", singleReferenceResponse.getErrorMessages());
 			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
-			String curie = singleReferenceResponse.getEntity().getCurie();
-			String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, curie);
+			String referenceCurie = singleReferenceResponse.getEntity().getCurie();
+			String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
 			SearchResponse<GeneExpressionAnnotation> annotationDB = geneExpressionAnnotationDAO.findByField("uniqueId", uniqueId);
 			if (annotationDB != null && annotationDB.getSingleResult() != null) {
 				geneExpressionAnnotation = annotationDB.getSingleResult();
