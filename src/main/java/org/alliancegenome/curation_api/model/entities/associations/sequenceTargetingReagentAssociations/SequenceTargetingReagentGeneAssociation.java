@@ -36,7 +36,7 @@ import lombok.ToString;
 @Schema(name = "SequenceTargetingReagentGeneAssociation", description = "POJO representing an association between an SQTR and a gene")
 @Table(
 	indexes = {
-		@Index(name = "sequencetargetingreagentgeneassociation_subject_index", columnList = "sequencetargetingreagentgeneassociationsubject_id"),
+		@Index(name = "sequencetargetingreagentassociation_subject_index", columnList = "sequencetargetingreagentassociationsubject_id"),
 		@Index(name = "sequencetargetingreagentgeneassociation_relation_index", columnList = "relation_id"),
 		@Index(name = "sequencetargetingreagentgeneassociation_sequencetargetingreagentgeneassociationobject_index", columnList = "sequencetargetingreagentgeneassociationobject_id")
 	}
