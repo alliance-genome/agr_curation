@@ -8,12 +8,12 @@ import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 public class GeneExpressionAnnotationUniqueIdHelper {
 
 	//	UniqueID =
-	//	assayId | evidenceCrosseferenceId | geneId | stageTermId | stageName | whereExpressedStatement | anatomicalStructureTermId | cellularComponentTermId
-	public String generateUniqueId(GeneExpressionFmsDTO geneExpressionFmsDTO) {
+	//	assayId | evidenceCurie | geneId | stageTermId | stageName | whereExpressedStatement | anatomicalStructureTermId | cellularComponentTermId
+	public String generateUniqueId(GeneExpressionFmsDTO geneExpressionFmsDTO, String referenceCurie) {
 		UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getAssay());
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getGeneId());
-		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getEvidence().getCrossReference().getId());
+		uniqueIdGeneratorHelper.add(referenceCurie);
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageTermId());
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhenExpressed().getStageName());
 		uniqueIdGeneratorHelper.add(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());

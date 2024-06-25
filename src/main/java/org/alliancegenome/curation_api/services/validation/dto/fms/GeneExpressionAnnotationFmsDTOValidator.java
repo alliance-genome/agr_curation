@@ -48,14 +48,22 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<GeneExpressionAnnotation>();
 		GeneExpressionAnnotation geneExpressionAnnotation;
-		String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO);
 
-		SearchResponse<GeneExpressionAnnotation> annotationDB = geneExpressionAnnotationDAO.findByField("uniqueId", uniqueId);
-		if (annotationDB != null && annotationDB.getSingleResult() != null) {
-			geneExpressionAnnotation = annotationDB.getSingleResult();
+		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
+		if (singleReferenceResponse.hasErrors()) {
+			response.addErrorMessages("singleReference", singleReferenceResponse.getErrorMessages());
+			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
-			geneExpressionAnnotation = new GeneExpressionAnnotation();
-			geneExpressionAnnotation.setUniqueId(uniqueId);
+			String referenceCurie = singleReferenceResponse.getEntity().getCurie();
+			String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
+			SearchResponse<GeneExpressionAnnotation> annotationDB = geneExpressionAnnotationDAO.findByField("uniqueId", uniqueId);
+			if (annotationDB != null && annotationDB.getSingleResult() != null) {
+				geneExpressionAnnotation = annotationDB.getSingleResult();
+			} else {
+				geneExpressionAnnotation = new GeneExpressionAnnotation();
+				geneExpressionAnnotation.setUniqueId(uniqueId);
+			}
+			geneExpressionAnnotation.setSingleReference(singleReferenceResponse.getEntity());
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getGeneId())) {
@@ -118,13 +126,6 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		geneExpressionAnnotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM).getEntity());
 		geneExpressionAnnotation.setObsolete(false);
 		geneExpressionAnnotation.setInternal(false);
-		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
-		if (singleReferenceResponse.hasErrors()) {
-			response.addErrorMessages("singleReference", singleReferenceResponse.getErrorMessages());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
-		} else {
-			geneExpressionAnnotation.setSingleReference(singleReferenceResponse.getEntity());
-		}
 
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
