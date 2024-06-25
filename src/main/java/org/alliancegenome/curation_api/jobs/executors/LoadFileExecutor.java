@@ -196,12 +196,16 @@ public class LoadFileExecutor {
 		if (dataProviderName != null) {
 			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		}
-		runLoad(service, history, dataProvider, objectList, idsLoaded);
+		runLoad(service, history, dataProvider, objectList, idsLoaded, true);
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}
-
+	
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
+		return runLoad(service, history, dataProvider, objectList, idsAdded, true);
+	}
+
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
@@ -227,7 +231,7 @@ public class LoadFileExecutor {
 					history.incrementFailed();
 					addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
 				}
-				if (history.getErrorRate() > 0.25) {
+				if (terminateFailing && history.getErrorRate() > 0.25) {
 					Log.error("Failure Rate > 25% aborting load");
 					finalSaveHistory(history);
 					return false;
