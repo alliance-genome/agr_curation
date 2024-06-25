@@ -42,7 +42,7 @@ public class GeneGeneticInteractionExecutor extends LoadFileExecutor {
 
 			BulkLoadFileHistory history = new BulkLoadFileHistory(interactionData.size());
 			createHistory(history, bulkLoadFile);
-			boolean success = runLoad(geneGeneticInteractionService, history, null, interactionData, interactionIdsLoaded);
+			boolean success = runLoad(geneGeneticInteractionService, history, null, interactionData, interactionIdsLoaded, false);
 			if (success) {
 				runCleanup(geneInteractionService, history, "COMBINED", interactionIdsBefore, interactionIdsLoaded, "gene genetic interaction", bulkLoadFile.getMd5Sum());
 			}
