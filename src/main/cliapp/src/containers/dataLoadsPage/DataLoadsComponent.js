@@ -502,7 +502,7 @@ export const DataLoadsComponent = () => {
 			const start1 = new Date(a.loadStarted);
 			const start2 = new Date(b.loadStarted);
 			return start2 - start1;
-		})
+		});
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
