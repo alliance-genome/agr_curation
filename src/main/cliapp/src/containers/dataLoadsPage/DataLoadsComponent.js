@@ -505,7 +505,7 @@ export const DataLoadsComponent = () => {
 		})
 		return (
 			<div className="card">
-				<DataTable key="historyTable" value={file.history} responsiveLayout="scroll">
+				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
 					<Column field="loadStarted" header="Load Started" />
 					<Column field="loadFinished" header="Load Finished" />
 					<Column field="completedRecords" header="Records Completed" />
