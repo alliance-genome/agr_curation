@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -20,12 +21,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -33,7 +36,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(callSuper = true)
+@ToString(exclude = { "sequenceTargetingReagentGeneAssociations" }, callSuper = true)
 @Schema(name = "SequenceTargetingReagent", description = "POJO that represents the SequenceTargetingReagent")
 @AGRCurationSchemaVersion(min = "2.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 public class SequenceTargetingReagent extends GenomicEntity {
@@ -66,4 +69,8 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	@JoinTable(indexes = @Index(name = "sequencetargetingreagent_secondaryIdentifiers_sequencetargetingreagent_index", columnList = "sequencetargetingreagent_id"))
 	@JsonView({ View.FieldsAndLists.class })
 	private List<String> secondaryIdentifiers;
+
+	@OneToMany(mappedBy = "sequenceTargetingReagentAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class })
+	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
 }
