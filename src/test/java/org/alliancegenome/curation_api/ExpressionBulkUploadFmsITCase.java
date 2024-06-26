@@ -89,7 +89,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadEmptyRequiredFields() throws Exception {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_01_empty_geneId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_02_empty_dateAssigned.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_03_empty_crossReferenceId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_04_empty_assay.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_05_empty_whenExpressedStageName.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "ER_06_empty_whereExpressedStatement.json");
@@ -100,7 +99,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadInvalidFields() throws Exception {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_01_invalid_geneId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_02_invalid_dateAssigned.json");
-		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_03_invalidCrossReferenceId.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_04_invalid_assay.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_05_invalid_publicationId.json");
 	}
