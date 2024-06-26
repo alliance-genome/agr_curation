@@ -33,10 +33,6 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 	@Inject ReferenceService referenceService;
 
-	@Inject ResourceDescriptorService resourceDescriptorService;
-
-	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
-
 	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
 
 	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
