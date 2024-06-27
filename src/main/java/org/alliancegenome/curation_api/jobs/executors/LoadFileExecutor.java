@@ -234,6 +234,7 @@ public class LoadFileExecutor {
 				if (terminateFailing && history.getErrorRate() > 0.25) {
 					Log.error("Failure Rate > 25% aborting load");
 					finalSaveHistory(history);
+					failLoadAboveErrorRateCutoff(history.getBulkLoadFile());
 					return false;
 				}
 				updateHistory(history);
@@ -288,6 +289,13 @@ public class LoadFileExecutor {
 		}
 		bulkLoadFile.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+		slackNotifier.slackalert(bulkLoadFile);
+		bulkLoadFileDAO.merge(bulkLoadFile);
+	}
+	
+	protected void failLoadAboveErrorRateCutoff(BulkLoadFile bulkLoadFile) {
+		bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
+		bulkLoadFile.setErrorMessage("Failure rate exceeded cutoff");
 		slackNotifier.slackalert(bulkLoadFile);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 	}
