@@ -136,7 +136,7 @@ public class BulkLoadProcessor {
 			bulkLoadFile = bulkLoadFiles.getResults().get(0);
 			if (bulkLoadFile.getBulkloadStatus().isNotRunning()) {
 				bulkLoadFile.setLocalFilePath(localFilePath);
-				bulkLoadFile.setErrorMessage(null);				
+				bulkLoadFile.setErrorMessage(null);
 				bulkLoadFile.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			} else {
 				Log.warn("Bulk File is already running: " + bulkLoadFile.getMd5Sum());
