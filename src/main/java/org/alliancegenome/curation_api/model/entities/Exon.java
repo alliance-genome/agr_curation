@@ -18,7 +18,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,10 +32,15 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Schema(name = "Exon", description = "POJO that represents the Exon")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
+@Table(indexes = {@Index(name = "exon_uniqueid_index", columnList = "uniqueid")})
 public class Exon extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({ View.FieldsOnly.class })
+	@EqualsAndHashCode.Include
+	protected String uniqueId;
+	
 	@JsonView({ View.FieldsOnly.class })
 	private String name;
 

@@ -37,7 +37,7 @@ public class GenomeAssembly extends BiologicalEntity {
 	@JoinTable(indexes = {
 		@Index(columnList = "genomeassembly_id, crossreferences_id", name = "genomeassembly_crossreference_genomeassembly_xref_index"),
 		@Index(columnList = "genomeassembly_id", name = "genomeassembly_crossreference_genomeassembly_index"),
-		@Index(columnList = "crossreferences_id", name = "genomeassembly_crossreference_crossreferences_index")
+		@Index(columnList = "crossreferences_id", name = "genomeassembly_crossreference_crossreference_index")
 	})
 	@EqualsAndHashCode.Include
 	@JsonView({ View.FieldsAndLists.class })

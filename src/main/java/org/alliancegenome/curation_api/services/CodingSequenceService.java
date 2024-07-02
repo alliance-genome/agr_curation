@@ -6,11 +6,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
-import org.alliancegenome.curation_api.dao.ExonDAO;
+import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.model.entities.Exon;
+import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
 import org.apache.commons.lang.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -18,15 +19,16 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
+public class CodingSequenceService extends BaseEntityCrudService<CodingSequence, CodingSequenceDAO> {
 
-	@Inject ExonDAO exonDAO;
+	@Inject CodingSequenceDAO codingSequenceDAO;
 	@Inject PersonService personService;
+	@Inject Gff3DtoValidator gff3DtoValidator;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(exonDAO);
+		setSQLDao(codingSequenceDAO);
 	}
 
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
@@ -35,17 +37,18 @@ public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
 		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 		}
-		List<Long> ids = exonDAO.findIdsByParams(params);
+		List<Long> ids = codingSequenceDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
 	}
 
-	public ObjectResponse<Exon> deleteByIdentifier(String identifierString) {
-		Exon exon = findByAlternativeFields(List.of("modEntityId", "modInternalId", "uniqueId"), identifierString);
-		if (exon != null) {
-			exonDAO.remove(exon.getId());
+	public ObjectResponse<CodingSequence> deleteByIdentifier(String identifierString) {
+		CodingSequence codingSequence = findByAlternativeFields(List.of("modEntityId", "modInternalId", "uniqueId"), identifierString);
+		if (codingSequence != null) {
+			codingSequenceDAO.remove(codingSequence.getId());
 		}
-		ObjectResponse<Exon> ret = new ObjectResponse<>(exon);
+		ObjectResponse<CodingSequence> ret = new ObjectResponse<>(codingSequence);
 		return ret;
 	}
+
 }

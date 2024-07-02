@@ -84,9 +84,9 @@ public class GeneITCase extends BaseITCase {
 	
 	private void loadRequiredEntities() {
 
-		soTerm = createSoTerm("SO:0001", false);
-		soTerm2 = createSoTerm("SO:0002", false);
-		obsoleteSoTerm = createSoTerm("SO:0000", true);
+		soTerm = createSoTerm("SO:0001", "test1", false);
+		soTerm2 = createSoTerm("SO:0002", "test2", false);
+		obsoleteSoTerm = createSoTerm("SO:0000", "testObsolete", true);
 		nameType = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScope = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
 		symbolNameType = getVocabularyTerm(nameType, "nomenclature_symbol");
