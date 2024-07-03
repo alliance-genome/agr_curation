@@ -2,8 +2,10 @@ package org.alliancegenome.curation_api.constants;
 
 import java.util.List;
 
-public class Gff3Constants {
+@SuppressWarnings("checkstyle:hideutilityclassconstructor")
+public final class Gff3Constants {
 	private Gff3Constants() {
+		// Hidden from view, as it is a utility class
 		throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
 	}
 	public static final List<String> TRANSCRIPT_TYPES = List.of(
