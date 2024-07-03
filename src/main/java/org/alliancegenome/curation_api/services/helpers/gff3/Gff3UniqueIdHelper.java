@@ -5,7 +5,6 @@ import java.util.Map;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 
@@ -15,14 +14,18 @@ public class Gff3UniqueIdHelper {
 	public static String getExonOrCodingSequenceUniqueId(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		
-		if (attributes.containsKey("ID")) {
-			uniqueId.add(removeWormBasePrefix(attributes.get("ID"), dataProvider));
+		if (attributes.containsKey("curie")) {
+			uniqueId.add(attributes.get("curie"));
+		} else if (attributes.containsKey("ID")) {
+			uniqueId.add(attributes.get("ID"));
 		} else if (attributes.containsKey("Name")) {
 			uniqueId.add(attributes.get("Name"));
+		} else if (attributes.containsKey("exon_id")) {
+			uniqueId.add(attributes.get("exon_id"));
 		}
 		
 		if (attributes.containsKey("Parent")) {
-			uniqueId.add(removeWormBasePrefix(attributes.get("Parent"), dataProvider));
+			uniqueId.add(attributes.get("Parent"));
 		}
 		
 		uniqueId.add(dto.getSeqId());
@@ -31,16 +34,6 @@ public class Gff3UniqueIdHelper {
 		uniqueId.add(dto.getStrand());
 		
 		return uniqueId.getUniqueId();
-	}
-
-	private static String removeWormBasePrefix(String id, BackendBulkDataProvider dataProvider) {
-		if (StringUtils.equals("WB", dataProvider.sourceOrganization)) {
-			String[] idParts = id.split(":");
-			if (idParts.length > 1) {
-				id = idParts[1];
-			}
-		}
-		return id;
 	}
 
 }

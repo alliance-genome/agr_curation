@@ -24,7 +24,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("608 - GFF data bulk upload - FMS")
 @Order(608)
-public class Gff3BulkUploadFmsITCase extends BaseITCase {
+public class Gff3BulkUploadITCase extends BaseITCase {
 
 	@BeforeEach
 	public void init() {
@@ -42,8 +42,8 @@ public class Gff3BulkUploadFmsITCase extends BaseITCase {
 	private final String exonGetEndpoint = "/api/exon/";
 	private final String cdsGetEndpoint = "/api/cds/";
 	private final String transcriptId = "Y74C9A.2a.1";
-	private final String exonId = "Y74C9A.2a_exon";
-	private final String cdsId = "Y74C9A.2a";
+	private final String exonUniqueId = "Y74C9A.2a_exon|Y74C9A.2a.1|I|1|100|+";
+	private final String cdsUniqueId = "Y74C9A.2a|Y74C9A.2a.1|I|10|100|+";
 	
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:0000234", "mRNA", false);
@@ -77,11 +77,10 @@ public class Gff3BulkUploadFmsITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(exonGetEndpoint + exonId).
+			get(exonGetEndpoint + exonUniqueId).
 			then().
 			statusCode(200).
-			body("entity.modInternalId", is(exonId)).
-			body("entity.uniqueId", is("Y74C9A.2a_exon|Y74C9A.2a.1|I|1|100|+")).
+			body("entity.uniqueId", is(exonUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB"));
 
@@ -94,11 +93,10 @@ public class Gff3BulkUploadFmsITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(cdsGetEndpoint + cdsId).
+			get(cdsGetEndpoint + cdsUniqueId).
 			then().
 			statusCode(200).
-			body("entity.modInternalId", is(cdsId)).
-			body("entity.uniqueId", is("Y74C9A.2a|Y74C9A.2a.1|I|10|100|+")).
+			body("entity.uniqueId", is(cdsUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB"));
 

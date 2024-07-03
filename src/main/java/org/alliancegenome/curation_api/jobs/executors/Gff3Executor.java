@@ -60,7 +60,7 @@ public class Gff3Executor extends LoadFileExecutor {
 					break;
 				}
 			}
-			gffData.subList(0, gffHeaderData.size() - 1).clear();
+			gffData.subList(0, gffHeaderData.size()).clear();
 
 			
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFile.getBulkLoad();

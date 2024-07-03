@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -43,7 +44,7 @@ public class Gff3DtoValidator {
 
 		Exon exon = null;
 		
-		Map<String, String> attributes = getAttributes(dto);
+		Map<String, String> attributes = getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<Exon> searchResponse = exonDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -71,7 +72,7 @@ public class Gff3DtoValidator {
 
 		CodingSequence cds = null;
 		
-		Map<String, String> attributes = getAttributes(dto);
+		Map<String, String> attributes = getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<CodingSequence> searchResponse = codingSequenceDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -99,13 +100,14 @@ public class Gff3DtoValidator {
 
 		Transcript transcript = null;
 		
-		Map<String, String> attributes = getAttributes(dto);
+		Map<String, String> attributes = getAttributes(dto, dataProvider);
 		if (attributes.containsKey("ID")) {
 			SearchResponse<Transcript> searchResponse = transcriptDAO.findByField("modInternalId", attributes.get("ID"));
 			if (searchResponse != null && searchResponse.getSingleResult() != null) {
 				transcript = searchResponse.getSingleResult();
 			} else {
 				transcript = new Transcript();
+				transcript.setModInternalId(attributes.get("ID"));
 			}	
 		}
 		
@@ -133,21 +135,6 @@ public class Gff3DtoValidator {
 	private <E extends GenomicEntity> ObjectResponse<E> validateGffEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
 		
-		if (attributes.containsKey("ID")) {
-			String id = attributes.get("ID");
-			if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {
-				String[] idParts = id.split(":");
-				if (idParts.length > 1) {
-					id = idParts[1];
-				}
-			}
-			entity.setModInternalId(id);
-		} else if (attributes.containsKey("exon_id")) {
-			entity.setModInternalId(attributes.get("exon_id"));
-		} else if (attributes.containsKey("transcript_id")) {
-			entity.setModInternalId(attributes.get("transcript_id"));
-		}
-		
 		if (attributes.containsKey("curie")) {
 			entity.setModEntityId(attributes.get("curie"));
 		}
@@ -160,7 +147,7 @@ public class Gff3DtoValidator {
 		return geResponse;
 	}
 	
-	private Map<String, String> getAttributes (Gff3DTO dto) {
+	private Map<String, String> getAttributes (Gff3DTO dto, BackendBulkDataProvider dataProvider) {
 		Map<String, String> attributes = new HashMap<String, String>();
 		if (CollectionUtils.isNotEmpty(dto.getAttributes())) {
 			for (String keyValue : dto.getAttributes()) {
@@ -170,6 +157,20 @@ public class Gff3DtoValidator {
 				}
 			}
 		}
+
+		if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {
+			for (String key : List.of("ID", "Parent")) {
+				if (attributes.containsKey(key)) {
+					String id = attributes.get(key);
+					String[] idParts = id.split(":");
+					if (idParts.length > 1) {
+						id = idParts[1];
+					}
+					attributes.put(key, id);
+				}
+			}
+		}
+		
 		return attributes;
 	}
 
