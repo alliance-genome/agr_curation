@@ -493,16 +493,15 @@ export const DataLoadsComponent = () => {
 		return <Button label={latestStatus} tooltip={latestError} className={`p-button-rounded ${styleClass}`} />;
 	};
 
-	const percentage = (row) => {
-		return Math.round(row.errorRate * 100).toFixed(1) + '%';
-	};
-
 	const historyTable = (file) => {
-		let sortedHistory = file.history.sort(function (a, b) {
-			const start1 = new Date(a.loadStarted);
-			const start2 = new Date(b.loadStarted);
-			return start2 - start1;
-		});
+		let sortedHistory = [];
+		if (file.history != null) {
+			sortedHistory = file.history.sort(function (a, b) {
+				const start1 = new Date(a.loadStarted);
+				const start2 = new Date(b.loadStarted);
+				return start2 - start1;
+			});
+		}
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
@@ -510,7 +509,6 @@ export const DataLoadsComponent = () => {
 					<Column field="loadFinished" header="Load Finished" />
 					<Column field="completedRecords" header="Records Completed" />
 					<Column field="failedRecords" header="Records Failed" />
-					<Column body={percentage} header="Error Rate / 1000" />
 					<Column field="totalRecords" header="Total Records" />
 					<Column field="deletedRecords" header="Deletes Completed" />
 					<Column field="deleteFailedRecords" header="Deletes Failed" />
