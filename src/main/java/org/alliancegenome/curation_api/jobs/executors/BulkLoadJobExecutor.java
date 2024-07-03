@@ -51,6 +51,7 @@ public class BulkLoadJobExecutor {
 	@Inject ParalogyExecutor paralogyExecutor;
 	@Inject GeneExpressionExecutor geneExpressionExecutor;
 	@Inject SequenceTargetingReagentExecutor sqtrExecutor;
+	@Inject Gff3Executor gff3Executor;
 
 	public void process(BulkLoadFile bulkLoadFile, Boolean cleanUp) throws Exception {
 
@@ -114,6 +115,8 @@ public class BulkLoadJobExecutor {
 			resourceDescriptorExecutor.execLoad(bulkLoadFile);
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
 			geneExpressionExecutor.execLoad(bulkLoadFile);
+		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF) {
+			gff3Executor.execLoad(bulkLoadFile);
 		} else {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
