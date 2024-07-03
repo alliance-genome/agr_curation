@@ -3,9 +3,6 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
-import { Tooltip } from 'primereact/tooltip';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { VocabularyService } from '../../service/VocabularyService';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
