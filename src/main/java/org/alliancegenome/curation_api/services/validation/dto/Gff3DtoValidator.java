@@ -108,7 +108,7 @@ public class Gff3DtoValidator {
 			} else {
 				transcript = new Transcript();
 				transcript.setModInternalId(attributes.get("ID"));
-			}	
+			}
 		}
 		
 		SearchResponse<SOTerm> soResponse = soTermDAO.findByField("name", dto.getType());
@@ -147,7 +147,7 @@ public class Gff3DtoValidator {
 		return geResponse;
 	}
 	
-	private Map<String, String> getAttributes (Gff3DTO dto, BackendBulkDataProvider dataProvider) {
+	private Map<String, String> getAttributes(Gff3DTO dto, BackendBulkDataProvider dataProvider) {
 		Map<String, String> attributes = new HashMap<String, String>();
 		if (CollectionUtils.isNotEmpty(dto.getAttributes())) {
 			for (String keyValue : dto.getAttributes()) {

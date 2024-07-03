@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
-import org.alliancegenome.curation_api.interfaces.base.crud.BaseReadIdentifierControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;

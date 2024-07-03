@@ -27,7 +27,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class Gff3Service  {
+public class Gff3Service {
 
 	@Inject GenomeAssemblyDAO genomeAssemblyDAO;
 	@Inject DataProviderService dataProviderService;
