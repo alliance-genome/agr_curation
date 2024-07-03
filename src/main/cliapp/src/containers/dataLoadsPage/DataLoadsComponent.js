@@ -494,11 +494,14 @@ export const DataLoadsComponent = () => {
 	};
 
 	const historyTable = (file) => {
-		let sortedHistory = file.history.sort(function (a, b) {
-			const start1 = new Date(a.loadStarted);
-			const start2 = new Date(b.loadStarted);
-			return start2 - start1;
-		});
+		let sortedHistory = [];
+		if (file.history != null) {
+			sortedHistory = file.history.sort(function (a, b) {
+				const start1 = new Date(a.loadStarted);
+				const start2 = new Date(b.loadStarted);
+				return start2 - start1;
+			});
+		}
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
