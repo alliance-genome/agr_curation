@@ -1,6 +1,6 @@
 DELETE FROM bulkscheduledload WHERE id = (SELECT id FROM bulkload WHERE name = 'WGD GFF Load');
 
-DELETE FROM bulkload WHERE name = 'WGD GFF Load' OR name = 'HUMAN GFF Load';
+DELETE FROM bulkload WHERE name = 'WGD GFF Load';
 
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 	SELECT nextval('bulkload_seq'), 'GFF', 'SGD GFF Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'GFF Loads';
