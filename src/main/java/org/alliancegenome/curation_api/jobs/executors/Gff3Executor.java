@@ -48,9 +48,9 @@ public class Gff3Executor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
 
-			CsvSchema psiMiTabSchema = CsvSchemaBuilder.gff3Schema();
+			CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
 			CsvMapper csvMapper = new CsvMapper();
-			MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(PsiMiTabDTO.class).with(psiMiTabSchema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
+			MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 			List<Gff3DTO> gffData = it.readAll();
 			List<String> gffHeaderData = new ArrayList<>();
 			for (Gff3DTO gffLine : gffData) {

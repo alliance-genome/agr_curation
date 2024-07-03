@@ -57,6 +57,8 @@ CREATE INDEX genomeassembly_crossreference_genomeassembly_xref_index ON genomeas
 CREATE INDEX genomeassembly_crossreference_genomeassembly_index ON genomeassembly_crossreference USING btree(genomeassembly_id);
 CREATE INDEX genomeassembly_crossreference_crossreference_index ON genomeassembly_crossreference USING btree(crossreferences_id);
 
+
+/*
 INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'GFF Loads');
 
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
@@ -99,3 +101,4 @@ INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'GFF', 'XBXT' FROM bulkload WHERE name = 'XBXT GFF Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'GFF', 'ZFIN' FROM bulkload WHERE name = 'ZFIN GFF Load';
+*/
