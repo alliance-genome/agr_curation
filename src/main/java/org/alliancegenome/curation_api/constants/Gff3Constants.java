@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.constants;
 
 import java.util.List;
 
-@SuppressWarnings("checkstyle:hideutilityclassconstructor")
 public final class Gff3Constants {
 	private Gff3Constants() {
 		// Hidden from view, as it is a utility class
