@@ -57,8 +57,6 @@ CREATE INDEX genomeassembly_crossreference_genomeassembly_xref_index ON genomeas
 CREATE INDEX genomeassembly_crossreference_genomeassembly_index ON genomeassembly_crossreference USING btree(genomeassembly_id);
 CREATE INDEX genomeassembly_crossreference_crossreference_index ON genomeassembly_crossreference USING btree(crossreferences_id);
 
-
-/*
 INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'GFF Loads');
 
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
@@ -81,7 +79,7 @@ INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 	SELECT nextval('bulkload_seq'), 'GFF', 'ZFIN GFF Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'GFF Loads';
 	
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
-	SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'GFF';
+	SELECT id, '0 0 22 ? * SUN-THU', true FROM bulkload WHERE backendbulkloadtype = 'GFF';
 
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'GFF', 'FB' FROM bulkload WHERE name = 'FB GFF Load';
@@ -101,4 +99,3 @@ INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'GFF', 'XBXT' FROM bulkload WHERE name = 'XBXT GFF Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 	SELECT id, 'GFF', 'ZFIN' FROM bulkload WHERE name = 'ZFIN GFF Load';
-*/
