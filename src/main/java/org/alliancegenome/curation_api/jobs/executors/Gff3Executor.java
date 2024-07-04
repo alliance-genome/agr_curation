@@ -69,7 +69,7 @@ public class Gff3Executor extends LoadFileExecutor {
 			
 			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 			
-			BulkLoadFileHistory history = new BulkLoadFileHistory(gffData.size());
+			BulkLoadFileHistory history = new BulkLoadFileHistory((gffData.size() * 2) + 1);
 			createHistory(history, bulkLoadFile);
 			idsAdded = runLoad(history, gffHeaderData, gffData, idsAdded, dataProvider);
 			runCleanup(transcriptService, history, dataProvider.name(), previousIds.get("Transcript"), idsAdded.get("Transcript"), "GFF transcript", bulkLoadFile.getMd5Sum());
