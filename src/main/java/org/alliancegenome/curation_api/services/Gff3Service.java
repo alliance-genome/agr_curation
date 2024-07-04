@@ -66,7 +66,7 @@ public class Gff3Service {
 	}
 	
 	public Map<String, List<Long>> loadEntity(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		if (StringUtils.equals(gffEntry.getType(), "exon")) {
+		if (StringUtils.equals(gffEntry.getType(), "exon") || StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
 			Exon exon = gff3DtoValidator.validateExonEntry(gffEntry, dataProvider);
 			if (exon != null) {
 				idsAdded.get("Exon").add(exon.getId());
