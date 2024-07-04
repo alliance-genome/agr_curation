@@ -344,6 +344,9 @@ public class BaseITCase {
 		symbol.setFormatText(modEntityId);
 
 		gene.setGeneSymbol(symbol);
+		
+		SOTerm geneType = getSoTerm("SO:0001217");
+		gene.setGeneType(geneType);
 
 		ObjectResponse<Gene> response = given().
 				contentType("application/json").
@@ -1211,6 +1214,9 @@ public class BaseITCase {
 			symbol.setFormatText(modEntityId);
 
 			gene.setGeneSymbol(symbol);
+			
+			SOTerm geneType = getSoTerm("SO:0001217");
+			gene.setGeneType(geneType);
 
 			if (StringUtils.isNotBlank(xrefCurie)) {
 				CrossReference xref = new CrossReference();
