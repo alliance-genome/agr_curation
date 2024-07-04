@@ -31,9 +31,9 @@ export const data = {
 			geneType: {
 				internal: false,
 				obsolete: false,
-				curie: "SO:0001272",
-				name: "tRNA_gene",
-				id: 25665
+				curie: 'SO:0001272',
+				name: 'tRNA_gene',
+				id: 25665,
 			},
 			dataProvider: {
 				internal: false,
