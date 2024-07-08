@@ -1,3 +1,3 @@
-import { PhenotypeAnnotationsPage } from "./PhenotypeAnnotationsPage";
+import { PhenotypeAnnotationsPage } from './PhenotypeAnnotationsPage';
 
 export { PhenotypeAnnotationsPage };

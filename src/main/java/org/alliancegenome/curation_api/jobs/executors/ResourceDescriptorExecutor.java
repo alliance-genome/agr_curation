@@ -25,27 +25,28 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 @ApplicationScoped
 public class ResourceDescriptorExecutor extends LoadFileExecutor {
-	
-	@Inject
-	ResourceDescriptorService resourceDescriptorService;
 
-	public void runLoad(BulkLoadFile bulkLoadFile) throws Exception {
+	@Inject ResourceDescriptorService resourceDescriptorService;
+
+	public void execLoad(BulkLoadFile bulkLoadFile) throws Exception {
 
 		log.info("Loading ResourceDescriptor File");
-		
+
 		File rdFile = new File(bulkLoadFile.getLocalFilePath());
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		CollectionType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, ResourceDescriptorDTO.class);
 		List<ResourceDescriptorDTO> dtos = mapper.readValue(new GZIPInputStream(new FileInputStream(rdFile)), listType);
-		
+
 		List<String> rdNamesBefore = resourceDescriptorService.getAllNames();
 		List<String> rdNamesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(dtos.size());
+		createHistory(history, bulkLoadFile);
 		
 		dtos.forEach(dto -> {
 			try {
 				ResourceDescriptor rd = resourceDescriptorService.upsert(dto);
 				history.incrementCompleted();
+				updateHistory(history);
 				rdNamesAfter.add(rd.getName());
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
@@ -53,11 +54,11 @@ public class ResourceDescriptorExecutor extends LoadFileExecutor {
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
 		});
-		
+
 		history.finishLoad();
-		
+		finalSaveHistory(history);
 		resourceDescriptorService.removeNonUpdatedResourceDescriptors(rdNamesBefore, rdNamesAfter);
-		
+
 		log.info("Loading ResourceDescriptorFileFinished");
 	}
 }

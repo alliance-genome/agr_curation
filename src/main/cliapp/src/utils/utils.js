@@ -5,7 +5,6 @@ import { FIELD_SETS } from '../constants/FilterFields';
 import { ValidationService } from '../service/ValidationService';
 
 export function returnSorted(event, originalSort) {
-
 	let found = false;
 	let replace = false;
 	let newSort = [...originalSort];
@@ -44,26 +43,33 @@ export function trimWhitespace(value) {
 export function filterColumns(columns, selectedColumnNames) {
 	const filteredColumns = columns.filter((col) => {
 		return selectedColumnNames?.includes(col.header);
-	})
+	});
 	return filteredColumns;
-};
+}
 
 export function orderColumns(columns, orderedColumnNames) {
 	if (!orderedColumnNames) return columns;
 	let orderedColumns = [];
 	orderedColumnNames.forEach((columnName) => {
-		var column = columns.find(col => col.header === columnName); // Once column names change it can't be assumed that everyones settings are changed.
+		var column = columns.find((col) => col.header === columnName); // Once column names change it can't be assumed that everyones settings are changed.
 		if (column) {
 			orderedColumns.push(column);
 		}
 	});
 	return orderedColumns;
-};
-export function orderColumnFields(columns, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails) {
+}
+export function orderColumnFields(
+	columns,
+	orderedColumnNames,
+	isEditable,
+	deletionEnabled,
+	duplicationEnabled,
+	hasDetails
+) {
 	if (!orderedColumnNames) return columns;
 	let orderedColumnFields = [];
 	orderedColumnNames.forEach((columnName) => {
-		let column = columns.find(col => col.header === columnName); 
+		let column = columns.find((col) => col.header === columnName);
 		if (column) {
 			orderedColumnFields.push(column.field);
 		}
@@ -75,24 +81,40 @@ export function orderColumnFields(columns, orderedColumnNames, isEditable, delet
 	if (isEditable) orderedColumnFields.unshift('rowEditor');
 
 	return orderedColumnFields;
-};
+}
 
 export function reorderArray(array, from, to) {
 	const item = array.splice(from, 1);
 	array.splice(to, 0, item[0]);
 	return array;
-};
+}
 
-export function restoreTableState(columns, dataTable, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails, tableState) {
-	let initalColumnOrderFields = orderColumnFields(columns, orderedColumnNames, isEditable, deletionEnabled, duplicationEnabled, hasDetails);
+export function restoreTableState(
+	columns,
+	dataTable,
+	orderedColumnNames,
+	isEditable,
+	deletionEnabled,
+	duplicationEnabled,
+	hasDetails,
+	tableState
+) {
+	let initalColumnOrderFields = orderColumnFields(
+		columns,
+		orderedColumnNames,
+		isEditable,
+		deletionEnabled,
+		duplicationEnabled,
+		hasDetails
+	);
 
 	const newState = {
 		first: tableState.first,
 		rows: tableState.rows,
 		multisortmeta: tableState.multisortmeta,
 		filters: tableState.filters,
-		columnWidths: "",
-		tableWidth: "",
+		columnWidths: '',
+		tableWidth: '',
 		columnOrder: initalColumnOrderFields,
 	};
 
@@ -101,13 +123,13 @@ export function restoreTableState(columns, dataTable, orderedColumnNames, isEdit
 
 // ToDo: Create enumeration
 export function getEntityType(entity) {
-	if (entity.curie && entity.curie.startsWith("AGR:AGR-Reference-")) {
+	if (entity.curie && entity.curie.startsWith('AGR:AGR-Reference-')) {
 		return 'Literature';
 	}
 	if (entity.conditionSummary) {
 		return 'Experiment Condition';
 	}
-	return 'Unknown Entity'
+	return 'Unknown Entity';
 }
 
 export function getIdentifier(data) {
@@ -123,7 +145,7 @@ export function getIdentifier(data) {
 	if (data.curie) {
 		return data.curie;
 	}
-	return "";
+	return '';
 }
 
 export const getGenomicEntityText = (genomicEntity) => {
@@ -136,21 +158,20 @@ export const getGenomicEntityText = (genomicEntity) => {
 };
 
 export function getRefStrings(referenceItems) {
-	if (!referenceItems)
-		return;
+	if (!referenceItems) return;
 
 	let refStrings = [];
-	referenceItems.forEach((referenceItem) => { refStrings.push(getRefString(referenceItem)) });
+	referenceItems.forEach((referenceItem) => {
+		refStrings.push(getRefString(referenceItem));
+	});
 
 	return refStrings.sort();
 }
 
 export function getRefString(referenceItem) {
-	if (!referenceItem)
-		return;
+	if (!referenceItem) return;
 
-	if (!referenceItem.cross_references && !referenceItem.crossReferences)
-		return referenceItem.curie;
+	if (!referenceItem.cross_references && !referenceItem.crossReferences) return referenceItem.curie;
 
 	let xrefCuries = [];
 	if (referenceItem.cross_references) {
@@ -159,11 +180,9 @@ export function getRefString(referenceItem) {
 		referenceItem.crossReferences.forEach((x, i) => xrefCuries.push(x.referencedCurie));
 	}
 
-	if (xrefCuries.length === 0)
-		return referenceItem.curie;
+	if (xrefCuries.length === 0) return referenceItem.curie;
 
-	if (xrefCuries.length === 1)
-		return xrefCuries[0] + ' (' + referenceItem.curie + ')';
+	if (xrefCuries.length === 1) return xrefCuries[0] + ' (' + referenceItem.curie + ')';
 
 	let sortedCuries = [];
 	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) {
@@ -198,7 +217,6 @@ export function getRefString(referenceItem) {
 }
 
 function indexWithPrefix(array, prefix) {
-
 	for (var i = 0; i < array.length; i++) {
 		if (array[i].startsWith(prefix)) {
 			return i;
@@ -206,7 +224,6 @@ function indexWithPrefix(array, prefix) {
 	}
 	return -1;
 }
-
 
 export function genericConfirmDialog({ header, message, accept, reject }) {
 	confirmDialog({
@@ -217,13 +234,11 @@ export function genericConfirmDialog({ header, message, accept, reject }) {
 		accept,
 		reject,
 	});
-
 }
 
 function containsMatch(inputValue, selectedItem) {
 	for (const part of inputValue.split(/[^a-z0-9]/i)) {
-		if (part.length > 0 && selectedItem.indexOf(part) !== -1)
-			return 1;
+		if (part.length > 0 && selectedItem.indexOf(part) !== -1) return 1;
 	}
 	return 0;
 }
@@ -238,29 +253,28 @@ export function filterDropDownObject(inputValue, object) {
 	}
 
 	const listFields = new Map([
-		["synonyms", "name"],
-		["crossReferences", "displayName"],
-		["cross_references", "curie"],
-		["secondaryIdentifiers", ""],
-		["geneSynonyms", "displayText"],
-		["geneSecondaryIds", "secondaryId"],
-		["alleleSynonyms", "displayText"],
-		["alleleSecondaryIds", "secondaryId"]
+		['synonyms', 'name'],
+		['crossReferences', 'displayName'],
+		['cross_references', 'curie'],
+		['secondaryIdentifiers', ''],
+		['geneSynonyms', 'displayText'],
+		['geneSecondaryIds', 'secondaryId'],
+		['alleleSynonyms', 'displayText'],
+		['alleleSecondaryIds', 'secondaryId'],
 	]);
 
 	listFields.forEach(function (subField, field) {
 		if (_object[field] && _object[field]?.length > 0) {
 			const filteredItems = [];
 			_object[field].forEach((item) => {
-				let selectedItemValue = "";
-				if ((field === "synonyms" && !item.name) || subField === "") {
+				let selectedItemValue = '';
+				if ((field === 'synonyms' && !item.name) || subField === '') {
 					selectedItemValue = item;
 				} else {
 					selectedItemValue = item[subField];
 				}
 
-				if (containsMatch(trimmedValue, selectedItemValue.toString().toLowerCase()))
-					filteredItems.push(item);
+				if (containsMatch(trimmedValue, selectedItemValue.toString().toLowerCase())) filteredItems.push(item);
 			});
 			_object[field] = filteredItems;
 		}
@@ -270,21 +284,32 @@ export function filterDropDownObject(inputValue, object) {
 }
 
 export function onSelectionOver(event, item, query, op, setAutocompleteHoverItem) {
-	const _item = filterDropDownObject(query, item)
+	const _item = filterDropDownObject(query, item);
 	setAutocompleteHoverItem(_item);
 	op.current.show(event);
 }
 
-
-export function autocompleteSearch(searchService, endpoint, filterName, filter, setSuggestions, otherFilters = {}, applyObsoleteFilter = true) {
-	const obsoleteFilter = applyObsoleteFilter && endpoint !== 'literature-reference' ? {
-		obsoleteFilter: {
-			"obsolete": {
-				queryString: false
-			}
-		}
-	} : {};
-	searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters, ...obsoleteFilter })
+export function autocompleteSearch(
+	searchService,
+	endpoint,
+	filterName,
+	filter,
+	setSuggestions,
+	otherFilters = {},
+	applyObsoleteFilter = true
+) {
+	const obsoleteFilter =
+		applyObsoleteFilter && endpoint !== 'literature-reference'
+			? {
+					obsoleteFilter: {
+						obsolete: {
+							queryString: false,
+						},
+					},
+				}
+			: {};
+	searchService
+		.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters, ...obsoleteFilter })
 		.then((data) => {
 			if (data.results?.length > 0) {
 				setSuggestions(data.results);
@@ -296,19 +321,18 @@ export function autocompleteSearch(searchService, endpoint, filterName, filter, 
 
 export function buildAutocompleteFilter(event, autocompleteFields) {
 	let filter = {};
-	autocompleteFields.forEach(field => {
+	autocompleteFields.forEach((field) => {
 		filter[field] = {
 			queryString: event.query,
-			tokenOperator: "AND",
-			useKeywordFields: true
-		}
-	})
+			tokenOperator: 'AND',
+			useKeywordFields: true,
+		};
+	});
 
 	return filter;
 }
 
-export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField = "curie") {
-
+export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField = 'curie') {
 	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
 
 	let updatedRows = [...rowProps.props.value];
@@ -319,7 +343,7 @@ export function defaultAutocompleteOnChange(rowProps, event, fieldName, setField
 		return;
 	}
 
-	if (typeof event.target.value === "object") {
+	if (typeof event.target.value === 'object') {
 		updatedRows[index][fieldName] = event.target.value;
 		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
 	} else {
@@ -339,28 +363,38 @@ export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFiel
 	}
 	let nonDuplicateRows = [];
 	if (event.target.value.length > 0) {
-		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, "id");
+		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, 'id');
 	}
 	updatedRows[index][fieldName] = nonDuplicateRows;
 	setFieldValue(updatedRows[index][fieldName]);
 }
 
-const isPropValuesEqual = (subject, target, propName) => { return subject[propName] === target[propName] };
+const isPropValuesEqual = (subject, target, propName) => {
+	return subject[propName] === target[propName];
+};
 
 export function getUniqueItemsByProperty(items, propName) {
-	return items.filter((item, index, array) => index === array.findIndex(foundItem => isPropValuesEqual(foundItem, item, propName))
+	return items.filter(
+		(item, index, array) => index === array.findIndex((foundItem) => isPropValuesEqual(foundItem, item, propName))
 	);
 }
 
-export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors) {
-	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
+export function validateBioEntityFields(
+	updatedRow,
+	setUiErrorMessages,
+	event,
+	setIsInEditMode,
+	closeRowRef,
+	areUiErrors
+) {
+	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground', 'assertedAllele'];
 
 	bioEntityFieldNames.forEach((field) => {
 		if (updatedRow[field] && Object.keys(updatedRow[field]).length === 1) {
 			const errorObject = {
-				severity: "error",
-				message: "Must select from autosuggest"
-			}
+				severity: 'error',
+				message: 'Must select from autosuggest',
+			};
 			setUiErrorMessages((uiErrorMessages) => {
 				const _uiErrorMessages = global.structuredClone(uiErrorMessages);
 				if (!_uiErrorMessages[event.index]) _uiErrorMessages[event.index] = {};
@@ -370,49 +404,42 @@ export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, s
 
 			setIsInEditMode(false);
 			areUiErrors.current = true;
-
 		} else {
 			setUiErrorMessages((uiErrorMessages) => {
 				const _uiErrorMessages = global.structuredClone(uiErrorMessages);
 				if (_uiErrorMessages[event.index]) _uiErrorMessages[event.index][field] = null;
 				return _uiErrorMessages;
-			})
+			});
 		}
-	})
+	});
 }
 
 export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors, mod) {
-	const fields = [
-		"relation",
-		"diseaseAnnotationObject",
-		"singleReference",
-		"evidenceCodes",
-	]
+	const fields = ['relation', 'diseaseAnnotationObject', 'singleReference', 'evidenceCodes'];
 
 	const isEmptyObject = (field) => {
-		if ((Object.keys(newAnnotationForm[field]).length !== 0)) {
+		if (Object.keys(newAnnotationForm[field]).length !== 0) {
 			for (let key in newAnnotationForm[field]) {
-				if (newAnnotationForm[field][key] === "") {
+				if (newAnnotationForm[field][key] === '') {
 					return true;
-				}
-				else {
+				} else {
 					return false;
 				}
 			}
 		}
-	}
+	};
 
 	let _uiErrorMessages = {};
 	fields.forEach((field) => {
 		if (newAnnotationForm[field] === null || newAnnotationForm[field].length === 0 || isEmptyObject(field)) {
-			_uiErrorMessages[field] = "This is a required field";
+			_uiErrorMessages[field] = 'This is a required field';
 			setUiErrorMessages({ ..._uiErrorMessages });
 			areUiErrors.current = true;
 		}
-	})
+	});
 	if (mod.includes('ZFINStaff')) {
-		if (newAnnotationForm.conditionRelations.length === 0 || !newAnnotationForm.conditionRelations[0]["handle"]) {
-			_uiErrorMessages["conditionRelations"] = "This is a required field";
+		if (newAnnotationForm.conditionRelations.length === 0 || !newAnnotationForm.conditionRelations[0]['handle']) {
+			_uiErrorMessages['conditionRelations'] = 'This is a required field';
 			setUiErrorMessages({ ..._uiErrorMessages });
 			areUiErrors.current = true;
 		}
@@ -420,16 +447,21 @@ export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUi
 }
 
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ["diseaseAnnotationSubject", "sgdStrainBackground", "assertedAllele"];
+	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground', 'assertedAllele'];
 
 	bioEntityFieldNames.forEach((field) => {
-		if (newAnnotationForm[field] && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("curie") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modEntityId") && !Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes("modInternalId")) {
+		if (
+			newAnnotationForm[field] &&
+			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('curie') &&
+			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('modEntityId') &&
+			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('modInternalId')
+		) {
 			const _uiErrorMessages = {};
-			_uiErrorMessages[field] = "Must select from autosuggest";
+			_uiErrorMessages[field] = 'Must select from autosuggest';
 			setUiErrorMessages({ ..._uiErrorMessages });
 			areUiErrors.current = true;
 		}
-	})
+	});
 }
 
 export const removeInvalidFilters = (currentFilters) => {
@@ -452,7 +484,7 @@ export const removeInvalidFilters = (currentFilters) => {
 						invalidFields.push(fieldName);
 					}
 				}
-				invalidFields.forEach(fieldName => {
+				invalidFields.forEach((fieldName) => {
 					delete currentFiltersCopy[filterName][fieldName];
 				});
 				if (Object.keys(currentFiltersCopy[filterName]).length === 0) {
@@ -462,13 +494,13 @@ export const removeInvalidFilters = (currentFilters) => {
 				invalidFilters.push(filterName);
 			}
 		}
-		invalidFilters.forEach(filterName => {
+		invalidFilters.forEach((filterName) => {
 			delete currentFiltersCopy[filterName];
 		});
 	}
 
 	return currentFiltersCopy;
-}
+};
 
 export const removeInvalidSorts = (currentSorts) => {
 	const currentSortsCopy = global.structuredClone(currentSorts);
@@ -479,14 +511,17 @@ export const removeInvalidSorts = (currentSorts) => {
 	} else {
 		currentSortsCopy.forEach((sort) => {
 			if (!SORT_FIELDS.includes(sort.field)) invalidSorts.push(sort.field);
-		})
-		invalidSorts.forEach(field => {
-			currentSortsCopy.splice(currentSortsCopy.findIndex((sort) => sort.field === field), 1);
+		});
+		invalidSorts.forEach((field) => {
+			currentSortsCopy.splice(
+				currentSortsCopy.findIndex((sort) => sort.field === field),
+				1
+			);
 		});
 	}
 
 	return currentSortsCopy;
-}
+};
 
 export const validate = async (entities, endpoint, validationService) => {
 	const validationResultsArray = [];
@@ -510,43 +545,42 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 			if (!data) return;
 			Object.keys(data).forEach((field) => {
 				errors[index][field] = {
-					severity: "error",
-					message: data[field]
+					severity: 'error',
+					message: data[field],
 				};
 			});
 			anyErrors = true;
 		}
 	});
-	dispatch({ type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors });
+	dispatch({ type: 'UPDATE_ERROR_MESSAGES', errorType: errorType, errorMessages: errors });
 	return anyErrors;
-}
+};
 
-
-//handles optional autocomplete fields so that a string isn't sent to the backend 
+//handles optional autocomplete fields so that a string isn't sent to the backend
 //when a value is removed or not selected from the dropdown
 export const processOptionalField = (eventValue) => {
-	if (!eventValue || eventValue === "") return null;
+	if (!eventValue || eventValue === '') return null;
 	if (!eventValue.curie) return { curie: eventValue };
 	return eventValue;
-}
+};
 
 export const setNewEntity = (tableState, setEntities, newEntity, queryClient) => {
-	if(!tableState || !setEntities || !newEntity) return;
+	if (!tableState || !setEntities || !newEntity) return;
 
 	if (
-			(tableState.filters && Object.keys(tableState.filters).length > 0) ||
-			(tableState.multiSortMeta && tableState.multiSortMeta.length > 0) ||
-			tableState.page > 0 
+		(tableState.filters && Object.keys(tableState.filters).length > 0) ||
+		(tableState.multiSortMeta && tableState.multiSortMeta.length > 0) ||
+		tableState.page > 0
 	) {
 		//Invalidating the query immediately after success leads to api results that don't always include the new entity
 		setTimeout(() => {
 			queryClient.invalidateQueries([tableState.tableKeyName]);
 		}, 1000);
 		return;
-	};
+	}
 
 	// Adds new entity to the top of the entities array when there are no filters, sorting, or pagination applied.
 	setEntities((previousEntities) => {
-		return [newEntity, ...previousEntities]
+		return [newEntity, ...previousEntities];
 	});
 };

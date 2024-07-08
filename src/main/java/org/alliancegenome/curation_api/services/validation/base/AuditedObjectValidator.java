@@ -17,19 +17,18 @@ import jakarta.inject.Inject;
 public class AuditedObjectValidator<E extends AuditedObject> {
 
 	@Inject
-	@AuthenticatedUser
-	protected Person authenticatedPerson;
+	@AuthenticatedUser protected Person authenticatedPerson;
 
-	@Inject
-	PersonService personService;
+	@Inject PersonService personService;
 
 	public ObjectResponse<E> response;
 
 	public E validateAuditedObjectFields(E uiEntity, E dbEntity, Boolean newEntity) {
 		Boolean defaultInternal = false;
-		if (uiEntity instanceof Note)
+		if (uiEntity instanceof Note) {
 			defaultInternal = true;
-		
+		}
+
 		Boolean internal = uiEntity.getInternal() == null ? defaultInternal : uiEntity.getInternal();
 		dbEntity.setInternal(internal);
 
@@ -44,9 +43,13 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 
 		if (uiEntity.getCreatedBy() != null) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
+			createdBy.getEmails().size();
+			createdBy.getOldEmails().size();
 			dbEntity.setCreatedBy(createdBy);
 		} else if (newEntity) {
 			Person createdBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+			createdBy.getEmails().size();
+			createdBy.getOldEmails().size();
 			dbEntity.setCreatedBy(createdBy);
 		}
 
@@ -79,7 +82,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 	public void addMessageResponse(String fieldName, String message) {
 		response.addErrorMessage(fieldName, message);
 	}
-	
+
 	public void convertMapToErrorMessages(String fieldName) {
 		response.convertMapToErrorMessages(fieldName);
 	}

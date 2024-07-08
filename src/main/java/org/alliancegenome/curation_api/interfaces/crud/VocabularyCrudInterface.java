@@ -36,6 +36,6 @@ public interface VocabularyCrudInterface extends BaseIdCrudInterface<Vocabulary>
 	@GET
 	@Path("/findBy/{name}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<Vocabulary> findByName(@PathParam("name") String name);
+	ObjectResponse<Vocabulary> findByName(@PathParam("name") String name);
 
 }

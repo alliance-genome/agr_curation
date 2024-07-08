@@ -17,12 +17,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class BulkURLLoadService extends BaseEntityCrudService<BulkURLLoad, BulkURLLoadDAO> {
 
-	@Inject
-	BulkURLLoadDAO bulkURLLoadDAO;
-	
-	@Inject
-	Event<PendingBulkLoadJobEvent> pendingJobEvents;
-	
+	@Inject BulkURLLoadDAO bulkURLLoadDAO;
+
+	@Inject Event<PendingBulkLoadJobEvent> pendingJobEvents;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -32,19 +30,19 @@ public class BulkURLLoadService extends BaseEntityCrudService<BulkURLLoad, BulkU
 	public ObjectResponse<BulkURLLoad> restartLoad(Long id) {
 		Log.info("restartLoad: " + id);
 		ObjectResponse<BulkURLLoad> resp = updateLoad(id);
-		if(resp != null) {
+		if (resp != null) {
 			Log.info("Firing Load Pending Event: " + id);
 			pendingJobEvents.fire(new PendingBulkLoadJobEvent(id));
 			return resp;
 		}
 		return null;
 	}
-	
+
 	@Transactional
 	protected ObjectResponse<BulkURLLoad> updateLoad(Long id) {
 		Log.info("updateLoad: " + id);
 		BulkURLLoad load = bulkURLLoadDAO.find(id);
-		if(load != null && load.getBulkloadStatus().isNotRunning()) {
+		if (load != null && load.getBulkloadStatus().isNotRunning()) {
 			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			return new ObjectResponse<BulkURLLoad>(load);
 		}

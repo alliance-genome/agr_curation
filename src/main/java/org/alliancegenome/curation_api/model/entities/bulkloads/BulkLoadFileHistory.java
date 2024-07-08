@@ -14,8 +14,10 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +32,13 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "bulkLoadFile", "exceptions" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(
+	indexes = {
+		@Index(name = "bulkloadfilehistory_bulkLoadFile_index", columnList = "bulkLoadFile_id"),
+		@Index(name = "bulkloadfilehistory_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "bulkloadfilehistory_updatedby_index", columnList = "updatedBy_id")
+	}
+)
 public class BulkLoadFileHistory extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
@@ -39,22 +48,25 @@ public class BulkLoadFileHistory extends AuditedObject {
 	private LocalDateTime loadFinished;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long totalRecords = 0l;
+	private Long totalRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long failedRecords = 0l;
+	private Long failedRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long completedRecords = 0l;
+	private Long completedRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long totalDeleteRecords = 0l;
+	private Long totalDeleteRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long deletedRecords = 0l;
+	private Long deletedRecords = 0L;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Long deleteFailedRecords = 0l;
+	private Long deleteFailedRecords = 0L;
+	
+	@JsonView({ View.FieldsOnly.class })
+	private Double errorRate = 0.0;
 
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -71,11 +83,15 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	@Transient
 	public void incrementCompleted() {
+		if (errorRate > 0) {
+			errorRate -= 1d / 1000d;
+		}
 		completedRecords++;
 	}
 
 	@Transient
 	public void incrementFailed() {
+		errorRate += 1d / 1000d;
 		failedRecords++;
 	}
 

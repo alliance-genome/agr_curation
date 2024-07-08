@@ -12,14 +12,13 @@ import jakarta.ws.rs.core.MediaType;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseIdCrudInterface<E extends AuditedObject> extends 
+public interface BaseIdCrudInterface<E extends AuditedObject> extends
 	BaseCreateControllerInterface<E>,
 	BaseReadIdControllerInterface<E>,
 	BaseUpdateControllerInterface<E>,
 	BaseDeleteIdControllerInterface<E>,
 	BaseSearchControllerInterface<E>,
 	BaseFindControllerInterface<E>,
-	BaseReindexControllerInterface
-{
+	BaseReindexControllerInterface {
 	
 }

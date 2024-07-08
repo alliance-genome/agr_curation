@@ -27,22 +27,22 @@ public class IndexingHealthCheck implements HealthCheck {
 	public HealthCheckResponse call() {
 
 		HealthCheckResponseBuilder resp = null;
-		
+
 		resp = HealthCheckResponse.named("Elasticsearch Indexing health check").up();
-		
+
 		try {
 			IndexProcessingEvent event = indexProcessingWebsocket.getEvent();
-			
-			if(event != null) {
+
+			if (event != null) {
 				resp.withData("json", mapper.writeValueAsString(event));
-				
-				if(event instanceof StartIndexProcessingEvent) {
+
+				if (event instanceof StartIndexProcessingEvent) {
 					resp.withData("status", "Start Indexing");
 				}
-				if(event instanceof ProgressIndexProcessingEvent) {
+				if (event instanceof ProgressIndexProcessingEvent) {
 					resp.withData("status", "Indexing");
 				}
-				if(event instanceof EndIndexProcessingEvent) {
+				if (event instanceof EndIndexProcessingEvent) {
 					resp.withData("status", "Indexing Finished");
 				}
 			}

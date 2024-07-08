@@ -14,32 +14,34 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ResourceDescriptorPageDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	ResourceDescriptorPageService resourceDescriptorPageService;
-	
+	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
+
 	public ObjectResponse<ResourceDescriptorPage> validateResourceDescriptorPageDTO(ResourceDescriptorPageDTO dto, String resourceDescriptorPrefix) {
 		ResourceDescriptorPage rdPage = null;
-		
+
 		ObjectResponse<ResourceDescriptorPage> rdPageResponse = new ObjectResponse<ResourceDescriptorPage>();
 
 		if (StringUtils.isBlank(dto.getName())) {
 			rdPageResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			rdPage = resourceDescriptorPageService.getPageForResourceDescriptor(resourceDescriptorPrefix, dto.getName());
-			if (rdPage == null)
+			if (rdPage == null) {
 				rdPage = new ResourceDescriptorPage();
+			}
 			rdPage.setName(dto.getName());
 		}
-		
-		if (StringUtils.isBlank(dto.getUrl()))
+
+		if (StringUtils.isBlank(dto.getUrl())) {
 			rdPageResponse.addErrorMessage("url", ValidationConstants.REQUIRED_MESSAGE);
+		}
 		rdPage.setUrlTemplate(dto.getUrl());
-			
+
 		String pageDescription = null;
-		if (StringUtils.isNotBlank(dto.getDescription()))
+		if (StringUtils.isNotBlank(dto.getDescription())) {
 			pageDescription = dto.getDescription();
+		}
 		rdPage.setPageDescription(pageDescription);
-		
+
 		rdPageResponse.setEntity(rdPage);
 
 		return rdPageResponse;

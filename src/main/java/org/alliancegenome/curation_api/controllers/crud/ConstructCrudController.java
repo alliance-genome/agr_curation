@@ -31,7 +31,7 @@ public class ConstructCrudController extends SubmittedObjectCrudController<Const
 
 	@Override
 	public APIResponse updateConstructs(String dataProvider, List<ConstructDTO> annotations) {
-		return constructExecutor.runLoad(dataProvider, annotations);
+		return constructExecutor.runLoadApi(constructService, dataProvider, annotations);
 	}
 
 	

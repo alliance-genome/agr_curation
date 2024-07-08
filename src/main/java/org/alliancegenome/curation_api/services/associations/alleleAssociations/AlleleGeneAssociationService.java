@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
@@ -17,6 +16,7 @@ import org.alliancegenome.curation_api.dao.associations.alleleAssociations.Allel
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
@@ -36,24 +36,16 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<AlleleGeneAssociation, AlleleGeneAssociationDTO, AlleleGeneAssociationDAO> {
+public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<AlleleGeneAssociation, AlleleGeneAssociationDTO, AlleleGeneAssociationDAO> implements BaseUpsertServiceInterface<AlleleGeneAssociation, AlleleGeneAssociationDTO> {
 
-	@Inject
-	AlleleGeneAssociationDAO alleleGeneAssociationDAO;
-	@Inject
-	AlleleGeneAssociationValidator alleleGeneAssociationValidator;
-	@Inject
-	AlleleGeneAssociationDTOValidator alleleGeneAssociationDtoValidator;
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	PersonService personService;
-	@Inject
-	PersonDAO personDAO;
+	@Inject AlleleGeneAssociationDAO alleleGeneAssociationDAO;
+	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
+	@Inject AlleleGeneAssociationDTOValidator alleleGeneAssociationDtoValidator;
+	@Inject AlleleDAO alleleDAO;
+	@Inject NoteDAO noteDAO;
+	@Inject GeneDAO geneDAO;
+	@Inject PersonService personService;
+	@Inject PersonDAO personDAO;
 
 	@Override
 	@PostConstruct
@@ -64,8 +56,9 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	@Transactional
 	public ObjectResponse<AlleleGeneAssociation> upsert(AlleleGeneAssociation uiEntity) {
 		AlleleGeneAssociation dbEntity = alleleGeneAssociationValidator.validateAlleleGeneAssociation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		dbEntity = alleleGeneAssociationDAO.persist(dbEntity);
 		addAssociationToAllele(dbEntity);
 		addAssociationToGene(dbEntity);
@@ -77,6 +70,7 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return new ObjectResponse<AlleleGeneAssociation>(aga);
 	}
 
+	@Override
 	@Transactional
 	public AlleleGeneAssociation upsert(AlleleGeneAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		AlleleGeneAssociation association = alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, dataProvider);
@@ -84,23 +78,24 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 			addAssociationToAllele(association);
 			addAssociationToGene(association);
 		}
-			
+
 		return association;
 	}
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<Long> associationIds = alleleGeneAssociationDAO.findFilteredIds(params);
+		List<Long> associationIds = alleleGeneAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
-		
+
 		return associationIds;
 	}
 
+	@Override
 	@Transactional
-	public AlleleGeneAssociation deprecateOrDeleteAssociation(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
+	public AlleleGeneAssociation deprecateOrDelete(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
 		AlleleGeneAssociation association = alleleGeneAssociationDAO.find(id);
-		
+
 		if (association == null) {
 			String errorMessage = "Could not find AlleleGeneAssociation with id: " + id;
 			if (throwApiError) {
@@ -124,17 +119,19 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 			}
 			return association;
 		}
-		
+
 		Long noteId = null;
-		if (association.getRelatedNote() != null)
+		if (association.getRelatedNote() != null) {
 			noteId = association.getRelatedNote().getId();
+		}
 		alleleGeneAssociationDAO.remove(association.getId());
-		if (noteId != null)
+		if (noteId != null) {
 			noteDAO.remove(noteId);
-		
+		}
+
 		return null;
 	}
-	
+
 	public ObjectResponse<AlleleGeneAssociation> getAssociation(Long alleleId, String relationName, Long geneId) {
 		AlleleGeneAssociation association = null;
 
@@ -144,36 +141,50 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		params.put("alleleGeneAssociationObject.id", geneId);
 
 		SearchResponse<AlleleGeneAssociation> resp = alleleGeneAssociationDAO.findByParams(params);
-		if (resp != null && resp.getSingleResult() != null)
+		if (resp != null && resp.getSingleResult() != null) {
 			association = resp.getSingleResult();
-		
+		}
+
 		ObjectResponse<AlleleGeneAssociation> response = new ObjectResponse<>();
 		response.setEntity(association);
-		
+
 		return response;
 	}
-	
+
 	private void addAssociationToAllele(AlleleGeneAssociation association) {
 		Allele allele = association.getAlleleAssociationSubject();
 		List<AlleleGeneAssociation> currentAssociations = allele.getAlleleGeneAssociations();
-		if (currentAssociations == null)
+		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
-		List<Long> currentAssociationIds = currentAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList());
-		if (!currentAssociationIds.contains(association.getId()));
+			allele.setAlleleGeneAssociations(currentAssociations);
+		}
+
+		List<Long> currentAssociationIds = new ArrayList<>();
+		for (AlleleGeneAssociation aga : currentAssociations) {
+			currentAssociationIds.add(aga.getId());
+		}
+
+		if (!currentAssociationIds.contains(association.getId())) {
 			currentAssociations.add(association);
-		allele.setAlleleGeneAssociations(currentAssociations);
-		alleleDAO.persist(allele);
+		}
 	}
-	
+
 	private void addAssociationToGene(AlleleGeneAssociation association) {
 		Gene gene = association.getAlleleGeneAssociationObject();
 		List<AlleleGeneAssociation> currentAssociations = gene.getAlleleGeneAssociations();
-		if (currentAssociations == null)
+		if (currentAssociations == null) {
 			currentAssociations = new ArrayList<>();
-		List<Long> currentAssociationIds = currentAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList());
-		if (!currentAssociationIds.contains(association.getId()));
+			gene.setAlleleGeneAssociations(currentAssociations);
+		}
+
+		List<Long> currentAssociationIds = new ArrayList<>();
+		for (AlleleGeneAssociation aga : currentAssociations) {
+			currentAssociationIds.add(aga.getId());
+		}
+
+		if (!currentAssociationIds.contains(association.getId())) {
 			currentAssociations.add(association);
-		gene.setAlleleGeneAssociations(currentAssociations);
-		geneDAO.persist(gene);
+		}
+		
 	}
 }

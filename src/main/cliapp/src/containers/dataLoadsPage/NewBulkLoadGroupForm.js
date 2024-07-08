@@ -10,7 +10,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) => {
-
 	const { authState } = useOktaAuth();
 
 	const [group, setGroup] = useState({});
@@ -18,7 +17,7 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 	const [submitted, setSubmitted] = useState(false);
 	let dataLoadService = null;
 
-	const mutation = useMutation(newGroupName => {
+	const mutation = useMutation((newGroupName) => {
 		return getService().createGroup(newGroupName);
 	});
 
@@ -34,11 +33,11 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 	};
 
 	const getService = () => {
-		if(!dataLoadService) {
+		if (!dataLoadService) {
 			dataLoadService = new DataLoadService(authState);
 		}
 		return dataLoadService;
-	}
+	};
 
 	const hideDialog = () => {
 		setBulkLoadGroupDialog(false);
@@ -59,10 +58,9 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 					setSubmitted(false);
 					setBulkLoadGroupDialog(false);
 					setGroup(emptyGroup);
-				}
+				},
 			});
 		}
-
 	};
 
 	const groupDialogFooter = (
@@ -72,15 +70,29 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 		</React.Fragment>
 	);
 
-
 	return (
 		<div>
-			<Dialog visible={bulkLoadGroupDialog} style={{ width: '450px' }} header="Group Details" modal className="p-fluid" footer={groupDialogFooter} onHide={hideDialog}>
+			<Dialog
+				visible={bulkLoadGroupDialog}
+				style={{ width: '450px' }}
+				header="Group Details"
+				modal
+				className="p-fluid"
+				footer={groupDialogFooter}
+				onHide={hideDialog}
+			>
 				<ErrorBoundary>
 					<div className="field">
 						<label htmlFor="name">Group Name</label>
 
-						<InputText id="name" value={group.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !group.name })} />
+						<InputText
+							id="name"
+							value={group.name}
+							onChange={(e) => onChange(e, 'name')}
+							required
+							autoFocus
+							className={classNames({ 'p-invalid': submitted && !group.name })}
+						/>
 						{submitted && !group.name && <small className="p-error">Name is required.</small>}
 					</div>
 				</ErrorBoundary>
@@ -88,4 +100,3 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 		</div>
 	);
 };
-

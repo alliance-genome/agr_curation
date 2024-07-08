@@ -24,5 +24,5 @@ public interface BulkLoadFileCrudInterface extends BaseIdCrudInterface<BulkLoadF
 	@GET
 	@Path("/restart/{id}")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectResponse<BulkLoadFile> restartLoadFile(@PathParam("id") Long id);
+	ObjectResponse<BulkLoadFile> restartLoadFile(@PathParam("id") Long id);
 }

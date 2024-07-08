@@ -26,7 +26,7 @@ public class UniqueIdGeneratorHelper extends ArrayList<String> {
 		}
 		return false;
 	}
-	
+
 	public void addList(List<String> list) {
 		if (CollectionUtils.isNotEmpty(list)) {
 			Collections.sort(list);
@@ -35,12 +35,12 @@ public class UniqueIdGeneratorHelper extends ArrayList<String> {
 			}
 		}
 	}
-	
+
 	public <E extends SubmittedObject> void addSubmittedObjectList(List<E> list) {
 		if (CollectionUtils.isNotEmpty(list)) {
 			List<String> submittedIdentifiers = list.stream().map(SubmittedObject::getSubmittedIdentifier).collect(Collectors.toList());
 			addList(submittedIdentifiers);
-		} 
+		}
 	}
 
 }

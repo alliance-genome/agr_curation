@@ -21,14 +21,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GenePhenotypeAnnotationService extends BaseAnnotationCrudService<GenePhenotypeAnnotation, GenePhenotypeAnnotationDAO> {
 
-	@Inject
-	GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject
-	GenePhenotypeAnnotationFmsDTOValidator genePhenotypeAnnotationFmsDtoValidator;
+	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject GenePhenotypeAnnotationFmsDTOValidator genePhenotypeAnnotationFmsDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -53,22 +49,16 @@ public class GenePhenotypeAnnotationService extends BaseAnnotationCrudService<Ge
 		GenePhenotypeAnnotation annotation = genePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return genePhenotypeAnnotationDAO.persist(annotation);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<GenePhenotypeAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Gene phenotype annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Gene phenotype annotation DELETE API call", false);
 		ObjectResponse<GenePhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public GenePhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
-		return (GenePhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

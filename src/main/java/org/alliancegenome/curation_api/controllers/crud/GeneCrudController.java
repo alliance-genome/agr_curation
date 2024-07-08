@@ -32,7 +32,7 @@ public class GeneCrudController extends SubmittedObjectCrudController<GeneServic
 
 	@Override
 	public APIResponse updateGenes(String dataProvider, List<GeneDTO> geneData) {
-		return geneExecutor.runLoad(dataProvider, geneData);
+		return geneExecutor.runLoadApi(geneService, dataProvider, geneData);
 	}
 
 }

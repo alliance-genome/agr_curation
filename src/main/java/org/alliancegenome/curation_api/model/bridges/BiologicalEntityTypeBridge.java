@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.hibernate.search.engine.backend.document.DocumentElement;
 import org.hibernate.search.engine.backend.document.IndexFieldReference;
 import org.hibernate.search.engine.backend.document.model.dsl.IndexSchemaElement;
@@ -72,6 +73,10 @@ public class BiologicalEntityTypeBridge implements TypeBinder {
 				} else if (bridgedElement instanceof AffectedGenomicModel) {
 					AffectedGenomicModel agm = (AffectedGenomicModel) bridgedElement;
 					name = agm.getName();
+					symbol = null;
+				} else if (bridgedElement instanceof SequenceTargetingReagent) {
+					SequenceTargetingReagent sqtr = (SequenceTargetingReagent) bridgedElement;
+					name = sqtr.getName();
 					symbol = null;
 				} else {
 					name = null;

@@ -15,10 +15,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneToGeneOrthologyService extends BaseEntityCrudService<GeneToGeneOrthology, GeneToGeneOrthologyDAO> {
 
-	@Inject
-	GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
-	@Inject
-	PersonService personService;
+	@Inject GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
+	@Inject PersonService personService;
 
 	@Override
 	@PostConstruct
@@ -29,13 +27,15 @@ public class GeneToGeneOrthologyService extends BaseEntityCrudService<GeneToGene
 	@Transactional
 	public GeneToGeneOrthology deprecateOrthologyPair(Long orthId, String loadDescription) {
 		GeneToGeneOrthology orthoPair = geneToGeneOrthologyDAO.find(orthId);
-		
-		if (orthoPair == null)
+
+		if (orthoPair == null) {
 			return null;
-		
-		if (orthoPair.getObsolete())
+		}
+
+		if (orthoPair.getObsolete()) {
 			return orthoPair;
-			
+		}
+
 		orthoPair.setObsolete(true);
 		orthoPair.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 		orthoPair.setDateUpdated(OffsetDateTime.now());

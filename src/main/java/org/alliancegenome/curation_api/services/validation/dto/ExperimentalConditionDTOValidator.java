@@ -30,22 +30,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject
-	ZecoTermService zecoTermService;
-	@Inject
-	ChemicalTermService chemicalTermService;
-	@Inject
-	AnatomicalTermService anatomicalTermService;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	GoTermService goTermService;
-	@Inject
-	ExperimentalConditionOntologyTermService experimentalConditionOntologyTermService;
-	@Inject
-	ExperimentalConditionSummary experimentalConditionSummary;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject ZecoTermService zecoTermService;
+	@Inject ChemicalTermService chemicalTermService;
+	@Inject AnatomicalTermService anatomicalTermService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject GoTermService goTermService;
+	@Inject ExperimentalConditionOntologyTermService experimentalConditionOntologyTermService;
+	@Inject ExperimentalConditionSummary experimentalConditionSummary;
 
 	public ObjectResponse<ExperimentalCondition> validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
 		ObjectResponse<ExperimentalCondition> ecResponse = new ObjectResponse<ExperimentalCondition>();
@@ -68,23 +60,26 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 		ChemicalTerm conditionChemical = null;
 		if (StringUtils.isNotBlank(dto.getConditionChemicalCurie())) {
 			conditionChemical = chemicalTermService.findByCurieOrSecondaryId(dto.getConditionChemicalCurie());
-			if (conditionChemical == null)
+			if (conditionChemical == null) {
 				ecResponse.addErrorMessage("condition_chemical_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionChemicalCurie() + ")");
+			}
 		}
 		experimentalCondition.setConditionChemical(conditionChemical);
 
 		ExperimentalConditionOntologyTerm conditionId = null;
 		if (StringUtils.isNotBlank(dto.getConditionIdCurie())) {
 			conditionId = experimentalConditionOntologyTermService.findByCurieOrSecondaryId(dto.getConditionIdCurie());
-			if (conditionId == null)
+			if (conditionId == null) {
 				ecResponse.addErrorMessage("condition_id_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionIdCurie() + ")");
+			}
 		}
 		experimentalCondition.setConditionId(conditionId);
 
 		if (StringUtils.isNotBlank(dto.getConditionClassCurie())) {
 			ZECOTerm term = zecoTermService.findByCurieOrSecondaryId(dto.getConditionClassCurie());
-			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET))
+			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
 				ecResponse.addErrorMessage("condition_class_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionClassCurie() + ")");
+			}
 			experimentalCondition.setConditionClass(term);
 		} else {
 			ecResponse.addErrorMessage("condition_class_curie", ValidationConstants.REQUIRED_MESSAGE);
@@ -93,35 +88,40 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 		AnatomicalTerm conditionAnatomy = null;
 		if (StringUtils.isNotBlank(dto.getConditionAnatomyCurie())) {
 			conditionAnatomy = anatomicalTermService.findByCurieOrSecondaryId(dto.getConditionAnatomyCurie());
-			if (conditionAnatomy == null)
+			if (conditionAnatomy == null) {
 				ecResponse.addErrorMessage("condition_anatomy_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionAnatomyCurie() + ")");
+			}
 		}
 		experimentalCondition.setConditionAnatomy(conditionAnatomy);
 
 		NCBITaxonTerm conditionTaxon = null;
 		if (StringUtils.isNotBlank(dto.getConditionTaxonCurie())) {
 			conditionTaxon = ncbiTaxonTermService.getTaxonFromDB(dto.getConditionTaxonCurie());
-			if (conditionTaxon == null)
+			if (conditionTaxon == null) {
 				ecResponse.addErrorMessage("condition_taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionTaxonCurie() + ")");
+			}
 		}
 		experimentalCondition.setConditionTaxon(conditionTaxon);
 
 		GOTerm conditionGeneOntology = null;
 		if (StringUtils.isNotBlank(dto.getConditionGeneOntologyCurie())) {
 			conditionGeneOntology = goTermService.findByCurieOrSecondaryId(dto.getConditionGeneOntologyCurie());
-			if (conditionGeneOntology == null)
+			if (conditionGeneOntology == null) {
 				ecResponse.addErrorMessage("condition_gene_ontology_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionGeneOntologyCurie() + ")");
+			}
 		}
 		experimentalCondition.setConditionGeneOntology(conditionGeneOntology);
 
 		String conditionQuantity = null;
-		if (StringUtils.isNotBlank(dto.getConditionQuantity()))
+		if (StringUtils.isNotBlank(dto.getConditionQuantity())) {
 			conditionQuantity = dto.getConditionQuantity();
+		}
 		experimentalCondition.setConditionQuantity(conditionQuantity);
 
 		String conditionFreeText = null;
-		if (StringUtils.isNotBlank(dto.getConditionFreeText()))
+		if (StringUtils.isNotBlank(dto.getConditionFreeText())) {
 			conditionFreeText = dto.getConditionFreeText();
+		}
 		experimentalCondition.setConditionFreeText(conditionFreeText);
 
 		if (!ecResponse.hasErrors()) {

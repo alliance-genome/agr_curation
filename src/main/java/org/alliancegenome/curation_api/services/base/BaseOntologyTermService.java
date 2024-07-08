@@ -24,22 +24,17 @@ import jakarta.transaction.Transactional;
 
 public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
-	@Inject
-	SynonymDAO synonymDAO;
-	@Inject
-	CrossReferenceService crossReferenceService;
+	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject SynonymDAO synonymDAO;
+	@Inject CrossReferenceService crossReferenceService;
 
 	@Inject
-	@AuthenticatedUser
-	Person authenticatedPerson;
+	@AuthenticatedUser Person authenticatedPerson;
 
-	public E findByCurieOrSecondaryId(String id) {		
-		List<String> identifierFields = List.of("curie", "secondaryIdentifiers");
-		return findByAlternativeFields(identifierFields, id);
+	public E findByCurieOrSecondaryId(String id) {
+		return findByAlternativeFields(List.of("curie", "secondaryIdentifiers"), id);
 	}
-	
+
 	@Transactional
 	public E processUpdate(E inTerm) {
 
@@ -64,7 +59,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		handleSynonyms(term, inTerm);
 		handleCrossReferences(term, inTerm);
 
-		if(newTerm) {
+		if (newTerm) {
 			return dao.persist(term);
 		} else {
 			return term;
@@ -76,7 +71,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		E term = findByCurie(inTerm.getCurie());
 
 		HashSet<OntologyTerm> parentSet = new HashSet<>();
-		if(inTerm.getIsaParents() != null) {
+		if (inTerm.getIsaParents() != null) {
 			inTerm.getIsaParents().forEach(o -> {
 				E parent = findByCurie(o.getCurie());
 				parentSet.add(parent);
@@ -85,18 +80,17 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		term.setIsaParents(parentSet);
 
 		HashSet<OntologyTerm> ancestorsSet = new HashSet<>();
-		if(inTerm.getIsaAncestors() != null) {
+		if (inTerm.getIsaAncestors() != null) {
 			inTerm.getIsaAncestors().forEach(o -> {
 				E ancestor = findByCurie(o.getCurie());
 				ancestorsSet.add(ancestor);
 			});
 		}
 		term.setIsaAncestors(ancestorsSet);
-		
+
 		return term;
 	}
-	
-	
+
 	@Transactional
 	public E processCounts(E inTerm) {
 		E term = findByCurie(inTerm.getCurie());
@@ -104,8 +98,6 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		term.setDescendantCount(term.getIsaDescendants().size());
 		return term;
 	}
-	
-	
 
 	private void handleDefinitionUrls(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentDefinitionUrls;
@@ -141,7 +133,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("isaParents", null);
 		SearchResponse<E> rootNodesRes = dao.findByParams(params);
-		if(rootNodesRes != null) {
+		if (rootNodesRes != null) {
 			return new ObjectListResponse<E>(rootNodesRes.getResults());
 		} else {
 			return new ObjectListResponse<E>();
@@ -282,7 +274,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		});
 
 	}
-	
+
 	private void handleCrossReferences(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		List<Long> currentIds;
 		if (dbTerm.getCrossReferences() == null) {
@@ -290,7 +282,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		} else {
 			currentIds = dbTerm.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
 		}
-		
+
 		List<Long> mergedIds;
 		if (incomingTerm.getCrossReferences() == null) {
 			mergedIds = new ArrayList<>();
@@ -300,7 +292,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
 			dbTerm.setCrossReferences(mergedCrossReferences);
 		}
-		
+
 		for (Long currentId : currentIds) {
 			if (!mergedIds.contains(currentId)) {
 				crossReferenceDAO.remove(currentId);

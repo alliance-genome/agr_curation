@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneSymbolSlotAnnotationValidator extends NameSlotAnnotationValidator<GeneSymbolSlotAnnotation> {
 
-	@Inject
-	GeneSymbolSlotAnnotationDAO geneSymbolDAO;
-	@Inject
-	GeneDAO geneDAO;
+	@Inject GeneSymbolSlotAnnotationDAO geneSymbolDAO;
+	@Inject GeneDAO geneDAO;
 
 	public ObjectResponse<GeneSymbolSlotAnnotation> validateGeneSymbolSlotAnnotation(GeneSymbolSlotAnnotation uiEntity) {
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbolSlotAnnotation(uiEntity, false, false);

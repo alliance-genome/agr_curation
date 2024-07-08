@@ -20,15 +20,11 @@ import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<AllelePhenotypeAnnotation, AllelePhenotypeAnnotationDAO> {
-	
-	@Inject
-	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject
-	AllelePhenotypeAnnotationFmsDTOValidator allelePhenotypeAnnotationFmsDtoValidator;
+
+	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject AllelePhenotypeAnnotationFmsDTOValidator allelePhenotypeAnnotationFmsDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -53,28 +49,25 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return allelePhenotypeAnnotationDAO.persist(annotation);
 	}
-	
+
 	@Transactional
-	public void addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, idsAdded, dataProvider);
-		allelePhenotypeAnnotationDAO.persist(annotation);
+	public List<AllelePhenotypeAnnotation> addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		List<AllelePhenotypeAnnotation> annotations = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider);
+		for (AllelePhenotypeAnnotation annotation : annotations) {
+			allelePhenotypeAnnotationDAO.persist(annotation);
+		}
+		return annotations;
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<AllelePhenotypeAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Allele phenotype annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Allele phenotype annotation DELETE API call", false);
 		ObjectResponse<AllelePhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public AllelePhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
-		return (AllelePhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

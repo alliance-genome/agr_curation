@@ -1,12 +1,17 @@
-import React from "react";
-import { waitFor } from "@testing-library/react";
+import React from 'react';
+import { waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
-import { GeneralOntologyComponent } from "../GeneralOntologyComponent";
-import { setLocalStorage } from "../../../tools/jest/setupTests";
-import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
+import { GeneralOntologyComponent } from '../GeneralOntologyComponent';
+import { setLocalStorage } from '../../../tools/jest/setupTests';
+import {
+	setupSettingsHandler,
+	setupFindHandler,
+	setupSearchHandler,
+	setupSaveSettingsHandler,
+} from '../../../tools/jest/commonMswhandlers';
 import 'core-js/features/structured-clone';
 
-describe("ChEBI", () => {
+describe('ChEBI', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -14,7 +19,7 @@ describe("ChEBI", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />);
 
 		await waitFor(() => {
@@ -22,7 +27,7 @@ describe("ChEBI", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />);
 
 		const tableTitle = await result.findByText(/ChEBI Table/i);
@@ -30,7 +35,7 @@ describe("ChEBI", () => {
 	});
 });
 
-describe("Diseases", () => {
+describe('Diseases', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -38,7 +43,7 @@ describe("Diseases", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="Diseases" endpoint="doterm" />);
 
 		await waitFor(() => {
@@ -46,7 +51,7 @@ describe("Diseases", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="Diseases" endpoint="doterm" />);
 
 		const tableTitle = await result.findByText(/Diseases Table/i);
@@ -54,7 +59,7 @@ describe("Diseases", () => {
 	});
 });
 
-describe("MA", () => {
+describe('MA', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -62,7 +67,7 @@ describe("MA", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="MA" endpoint="materm" />);
 
 		await waitFor(() => {
@@ -70,7 +75,7 @@ describe("MA", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="MA" endpoint="materm" />);
 
 		const tableTitle = await result.findByText(/MA Table/i);
@@ -78,7 +83,7 @@ describe("MA", () => {
 	});
 });
 
-describe("ZFA", () => {
+describe('ZFA', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -86,7 +91,7 @@ describe("ZFA", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />);
 
 		await waitFor(() => {
@@ -94,7 +99,7 @@ describe("ZFA", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />);
 
 		const tableTitle = await result.findByText(/ZFA Table/i);
@@ -102,7 +107,7 @@ describe("ZFA", () => {
 	});
 });
 
-describe("MP", () => {
+describe('MP', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -110,7 +115,7 @@ describe("MP", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="MP" endpoint="mpterm" />);
 
 		await waitFor(() => {
@@ -118,7 +123,7 @@ describe("MP", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="MP" endpoint="mpterm" />);
 
 		const tableTitle = await result.findByText(/MP Table/i);
@@ -126,7 +131,7 @@ describe("MP", () => {
 	});
 });
 
-describe("DAO", () => {
+describe('DAO', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -134,7 +139,7 @@ describe("DAO", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="DAO" endpoint="daoterm" />);
 
 		await waitFor(() => {
@@ -142,7 +147,7 @@ describe("DAO", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="DAO" endpoint="daoterm" />);
 
 		const tableTitle = await result.findByText(/DAO Table/i);
@@ -150,7 +155,7 @@ describe("DAO", () => {
 	});
 });
 
-describe("EMAPA", () => {
+describe('EMAPA', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -158,7 +163,7 @@ describe("EMAPA", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />);
 
 		await waitFor(() => {
@@ -166,7 +171,7 @@ describe("EMAPA", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />);
 
 		const tableTitle = await result.findByText(/EMAPA Table/i);
@@ -174,7 +179,7 @@ describe("EMAPA", () => {
 	});
 });
 
-describe("WBbt", () => {
+describe('WBbt', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -182,7 +187,7 @@ describe("WBbt", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />);
 
 		await waitFor(() => {
@@ -190,7 +195,7 @@ describe("WBbt", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />);
 
 		const tableTitle = await result.findByText(/WBbt Table/i);
@@ -198,7 +203,7 @@ describe("WBbt", () => {
 	});
 });
 
-describe("XCO", () => {
+describe('XCO', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -206,7 +211,7 @@ describe("XCO", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XCO" endpoint="xcoterm" />);
 
 		await waitFor(() => {
@@ -214,7 +219,7 @@ describe("XCO", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XCO" endpoint="xcoterm" />);
 
 		const tableTitle = await result.findByText(/XCO Table/i);
@@ -222,7 +227,7 @@ describe("XCO", () => {
 	});
 });
 
-describe("RO", () => {
+describe('RO', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -230,7 +235,7 @@ describe("RO", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="RO" endpoint="roterm" />);
 
 		await waitFor(() => {
@@ -238,7 +243,7 @@ describe("RO", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="RO" endpoint="roterm" />);
 
 		const tableTitle = await result.findByText(/RO Table/i);
@@ -246,7 +251,7 @@ describe("RO", () => {
 	});
 });
 
-describe("ZECO", () => {
+describe('ZECO', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -254,7 +259,7 @@ describe("ZECO", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />);
 
 		await waitFor(() => {
@@ -262,7 +267,7 @@ describe("ZECO", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />);
 
 		const tableTitle = await result.findByText(/ZECO Table/i);
@@ -270,7 +275,7 @@ describe("ZECO", () => {
 	});
 });
 
-describe("WBls", () => {
+describe('WBls', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -278,7 +283,7 @@ describe("WBls", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="WBls" endpoint="wblsterm" />);
 
 		await waitFor(() => {
@@ -286,7 +291,7 @@ describe("WBls", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="WBls" endpoint="wblsterm" />);
 
 		const tableTitle = await result.findByText(/WBls Table/i);
@@ -294,7 +299,7 @@ describe("WBls", () => {
 	});
 });
 
-describe("MmusDv", () => {
+describe('MmusDv', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -302,7 +307,7 @@ describe("MmusDv", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />);
 
 		await waitFor(() => {
@@ -310,7 +315,7 @@ describe("MmusDv", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />);
 
 		const tableTitle = await result.findByText(/MmusDv Table/i);
@@ -318,7 +323,7 @@ describe("MmusDv", () => {
 	});
 });
 
-describe("ZFS", () => {
+describe('ZFS', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -326,7 +331,7 @@ describe("ZFS", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />);
 
 		await waitFor(() => {
@@ -334,7 +339,7 @@ describe("ZFS", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />);
 
 		const tableTitle = await result.findByText(/ZFS Table/i);
@@ -342,7 +347,7 @@ describe("ZFS", () => {
 	});
 });
 
-describe("XBA", () => {
+describe('XBA', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -350,7 +355,7 @@ describe("XBA", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XBA" endpoint="xbaterm" />);
 
 		await waitFor(() => {
@@ -358,7 +363,7 @@ describe("XBA", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XBA" endpoint="xbaterm" />);
 
 		const tableTitle = await result.findByText(/XBA Table/i);
@@ -366,7 +371,7 @@ describe("XBA", () => {
 	});
 });
 
-describe("XBS", () => {
+describe('XBS', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -374,7 +379,7 @@ describe("XBS", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XBS" endpoint="xbsterm" />);
 
 		await waitFor(() => {
@@ -382,7 +387,7 @@ describe("XBS", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XBS" endpoint="xbsterm" />);
 
 		const tableTitle = await result.findByText(/XBS Table/i);
@@ -390,7 +395,7 @@ describe("XBS", () => {
 	});
 });
 
-describe("XPO", () => {
+describe('XPO', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -398,7 +403,7 @@ describe("XPO", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XPO" endpoint="xpoterm" />);
 
 		await waitFor(() => {
@@ -406,7 +411,7 @@ describe("XPO", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XPO" endpoint="xpoterm" />);
 
 		const tableTitle = await result.findByText(/XPO Table/i);
@@ -414,7 +419,7 @@ describe("XPO", () => {
 	});
 });
 
-describe("ATP", () => {
+describe('ATP', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -422,7 +427,7 @@ describe("ATP", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ATP" endpoint="atpterm" />);
 
 		await waitFor(() => {
@@ -430,7 +435,7 @@ describe("ATP", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="ATP" endpoint="atpterm" />);
 
 		const tableTitle = await result.findByText(/ATP Table/i);
@@ -438,7 +443,7 @@ describe("ATP", () => {
 	});
 });
 
-describe("XBED", () => {
+describe('XBED', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -446,7 +451,7 @@ describe("XBED", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XBED" endpoint="xbedterm" />);
 
 		await waitFor(() => {
@@ -454,7 +459,7 @@ describe("XBED", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XBED" endpoint="xbedterm" />);
 
 		const tableTitle = await result.findByText(/XBED Table/i);
@@ -462,7 +467,7 @@ describe("XBED", () => {
 	});
 });
 
-describe("XSMO", () => {
+describe('XSMO', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -470,7 +475,7 @@ describe("XSMO", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />);
 
 		await waitFor(() => {
@@ -478,7 +483,7 @@ describe("XSMO", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />);
 
 		const tableTitle = await result.findByText(/XSMO Table/i);
@@ -486,7 +491,7 @@ describe("XSMO", () => {
 	});
 });
 
-describe("OBI", () => {
+describe('OBI', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -494,7 +499,7 @@ describe("OBI", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="OBI" endpoint="obiterm" />);
 
 		await waitFor(() => {
@@ -502,7 +507,7 @@ describe("OBI", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="OBI" endpoint="obiterm" />);
 
 		const tableTitle = await result.findByText(/OBI Table/i);
@@ -510,7 +515,7 @@ describe("OBI", () => {
 	});
 });
 
-describe("WBPhenotype", () => {
+describe('WBPhenotype', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -518,7 +523,7 @@ describe("WBPhenotype", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />);
 
 		await waitFor(() => {
@@ -526,7 +531,7 @@ describe("WBPhenotype", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />);
 
 		const tableTitle = await result.findByText(/WBPhenotype Table/i);
@@ -534,7 +539,7 @@ describe("WBPhenotype", () => {
 	});
 });
 
-describe("PATO", () => {
+describe('PATO', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -542,7 +547,7 @@ describe("PATO", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="PATO" endpoint="patoterm" />);
 
 		await waitFor(() => {
@@ -550,7 +555,7 @@ describe("PATO", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="PATO" endpoint="patoterm" />);
 
 		const tableTitle = await result.findByText(/PATO Table/i);
@@ -558,7 +563,7 @@ describe("PATO", () => {
 	});
 });
 
-describe("HP", () => {
+describe('HP', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -566,7 +571,7 @@ describe("HP", () => {
 		setupSearchHandler();
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="HP" endpoint="hpterm" />);
 
 		await waitFor(() => {
@@ -574,7 +579,7 @@ describe("HP", () => {
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GeneralOntologyComponent name="HP" endpoint="hpterm" />);
 
 		const tableTitle = await result.findByText(/HP Table/i);

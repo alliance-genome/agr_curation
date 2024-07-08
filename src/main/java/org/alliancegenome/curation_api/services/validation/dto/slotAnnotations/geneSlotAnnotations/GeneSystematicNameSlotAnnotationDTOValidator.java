@@ -12,8 +12,9 @@ import jakarta.enterprise.context.RequestScoped;
 public class GeneSystematicNameSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
 	public ObjectResponse<GeneSystematicNameSlotAnnotation> validateGeneSystematicNameSlotAnnotationDTO(GeneSystematicNameSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new GeneSystematicNameSlotAnnotation();
+		}
 
 		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET);
 	}

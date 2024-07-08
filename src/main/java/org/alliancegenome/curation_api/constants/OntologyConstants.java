@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.constants;
 
 public final class OntologyConstants {
-
+	private OntologyConstants() {
+		// Hidden from view, as it is a utility class
+	}
 	public static final String ZECO_AGR_SLIM_SUBSET = "ZECO_0000267";
 
 	public static final String ECO_TERM_ABBREVIATION_VOCABULARY = VocabularyConstants.ECO_TERM_ABBREVIATION_VOCABULARY;

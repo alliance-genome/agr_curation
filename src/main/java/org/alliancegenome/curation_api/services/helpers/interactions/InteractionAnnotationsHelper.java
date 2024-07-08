@@ -15,41 +15,46 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class InteractionAnnotationsHelper {
-	
+
 	private static final Pattern WB_PHENO_TERM = Pattern.compile("wormbase:\"(WBPhenotype:\\d+)\"");
 	private static final Pattern NON_WB_ANNOT = Pattern.compile("(.*?)\\((.*?)\\)");
-	
+
 	@Inject WbPhenotypeTermService wbPhenotypeTermService;
-	
+
 	public List<String> extractPhenotypeStatements(List<String> annotations) {
-		if (CollectionUtils.isEmpty(annotations))
+		if (CollectionUtils.isEmpty(annotations)) {
 			return null;
-		
+		}
+
 		List<String> statements = new ArrayList<>();
 		for (String annotation : annotations) {
 			String statement = extractPhenotypeStatement(annotation);
-			if (statement != null)
+			if (statement != null) {
 				statements.add(statement);
+			}
 		}
-		
-		if (CollectionUtils.isEmpty(statements))
+
+		if (CollectionUtils.isEmpty(statements)) {
 			return null;
-		
+		}
+
 		return statements;
 	}
-	
+
 	private String extractPhenotypeStatement(String annotation) {
 		if (annotation.startsWith("wormbase:")) {
 			Matcher wbMatcher = WB_PHENO_TERM.matcher(annotation);
-			if (!wbMatcher.find())
+			if (!wbMatcher.find()) {
 				return null;
+			}
 			String wbPhenotypeTermCurie = wbMatcher.group(1);
 			WBPhenotypeTerm wbPhenotypeTerm = wbPhenotypeTermService.findByCurieOrSecondaryId(wbPhenotypeTermCurie);
-			if (wbPhenotypeTerm == null)
+			if (wbPhenotypeTerm == null) {
 				return null;
+			}
 			return wbPhenotypeTerm.getName();
 		}
-		
+
 		List<String> statementParts = new ArrayList<>();
 		String[] annotationParts = annotation.split(";");
 		for (String annotationPart : annotationParts) {
@@ -67,18 +72,18 @@ public class InteractionAnnotationsHelper {
 							statementParts.add("undetermined extend of rescue");
 							break;
 						default:
-						Log.error("Unrecognised annotation type " + annotationPart);
+							Log.error("Unrecognised annotation type " + annotationPart);
 					}
-				}
-				else {
+				} else {
 					statementParts.add(nonWbMatcher.group(2));
 				}
 			}
 		}
-	
-		if (CollectionUtils.isEmpty(statementParts))
+
+		if (CollectionUtils.isEmpty(statementParts)) {
 			return null;
-		
+		}
+
 		return String.join(", ", statementParts);
 	}
 }

@@ -23,14 +23,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class NoteDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	ReferenceDAO referenceDAO;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	PersonService personService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
+	@Inject PersonService personService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String noteTypeVocabularyTermSet) {
 		Note note = new Note();
@@ -38,16 +34,18 @@ public class NoteDTOValidator extends BaseDTOValidator {
 
 		note = noteResponse.getEntity();
 
-		if (StringUtils.isBlank(dto.getFreeText()))
+		if (StringUtils.isBlank(dto.getFreeText())) {
 			noteResponse.addErrorMessage("freeText", ValidationConstants.REQUIRED_MESSAGE);
+		}
 		note.setFreeText(dto.getFreeText());
 
 		if (StringUtils.isBlank(dto.getNoteTypeName())) {
 			noteResponse.addErrorMessage("note_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			VocabularyTerm noteType = vocabularyTermService.getTermInVocabularyTermSet(noteTypeVocabularyTermSet, dto.getNoteTypeName()).getEntity();
-			if (noteType == null)
+			if (noteType == null) {
 				noteResponse.addErrorMessage("note_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNoteTypeName() + ")");
+			}
 			note.setNoteType(noteType);
 		}
 
@@ -65,9 +63,10 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		} else {
 			note.setReferences(null);
 		}
-		
-		if (note.getInternal() == null)
+
+		if (note.getInternal() == null) {
 			note.setInternal(true);
+		}
 
 		noteResponse.setEntity(note);
 

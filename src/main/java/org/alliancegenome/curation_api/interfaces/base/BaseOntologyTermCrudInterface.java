@@ -22,45 +22,44 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Tag(name = "CRUD - Ontology - Bulk")
-public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends 
+public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends
 	BaseCreateControllerInterface<E>,
 	BaseReadCurieControllerInterface<E>,
 	BaseUpdateControllerInterface<E>,
 	BaseDeleteCurieControllerInterface<E>,
 	BaseSearchControllerInterface<E>,
 	BaseFindControllerInterface<E>,
-	BaseReindexControllerInterface
-{
+	BaseReindexControllerInterface {
 
-	public void init();
+	void init();
 
 	@POST
 	@Path("/bulk/owl")
 	@Consumes(MediaType.APPLICATION_XML)
-	public String updateTerms(@DefaultValue("true") @QueryParam("async") boolean async, @RequestBody String fullText);
+	String updateTerms(@DefaultValue("true") @QueryParam("async") boolean async, @RequestBody String fullText);
 
 	@GET
 	@Path("/rootNodes")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectListResponse<E> getRootNodes();
+	ObjectListResponse<E> getRootNodes();
 
 	@GET
 	@Path("/{curie}/descendants")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectListResponse<E> getDescendants(@PathParam("curie") String curie);
+	ObjectListResponse<E> getDescendants(@PathParam("curie") String curie);
 
 	@GET
 	@Path("/{curie}/children")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectListResponse<E> getChildren(@PathParam("curie") String curie);
+	ObjectListResponse<E> getChildren(@PathParam("curie") String curie);
 
 	@GET
 	@Path("/{curie}/parents")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectListResponse<E> getParents(@PathParam("curie") String curie);
+	ObjectListResponse<E> getParents(@PathParam("curie") String curie);
 
 	@GET
 	@Path("/{curie}/ancestors")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectListResponse<E> getAncestors(@PathParam("curie") String curie);
+	ObjectListResponse<E> getAncestors(@PathParam("curie") String curie);
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MultiSelect } from "primereact/multiselect"
+import { MultiSelect } from 'primereact/multiselect';
 
 export function ControlledVocabularyFormMultiSelectDropdown({ name, value, options, editorChange, placeholderText }) {
 	return (
@@ -15,5 +15,5 @@ export function ControlledVocabularyFormMultiSelectDropdown({ name, value, optio
 				style={{ width: '100%' }}
 			/>
 		</>
-	)
+	);
 }

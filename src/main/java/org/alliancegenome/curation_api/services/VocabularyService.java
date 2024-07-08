@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class VocabularyService extends BaseEntityCrudService<Vocabulary, VocabularyDAO> {
 
-	@Inject
-	VocabularyDAO vocabularyDAO;
-	@Inject
-	VocabularyValidator vocabularyValidator;
+	@Inject VocabularyDAO vocabularyDAO;
+	@Inject VocabularyValidator vocabularyValidator;
 
 	@Override
 	@PostConstruct

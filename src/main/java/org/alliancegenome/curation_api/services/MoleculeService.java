@@ -8,7 +8,9 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Molecule;
 import org.alliancegenome.curation_api.model.entities.Synonym;
@@ -29,27 +31,21 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO> {
+public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO> implements BaseUpsertServiceInterface<Molecule, MoleculeFmsDTO> {
 
-	@Inject
-	MoleculeDAO moleculeDAO;
-	@Inject
-	SynonymDAO synonymDAO;
-	@Inject
-	ResourceDescriptorPageDAO resourceDescriptorPageDAO;
-	@Inject
-	MoleculeValidator moleculeValidator;
-	@Inject
-	CrossReferenceService crossReferenceService;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
+	@Inject MoleculeDAO moleculeDAO;
+	@Inject SynonymDAO synonymDAO;
+	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
+	@Inject MoleculeValidator moleculeValidator;
+	@Inject CrossReferenceService crossReferenceService;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(moleculeDAO);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Molecule> create(Molecule uiEntity) {
@@ -65,7 +61,7 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	}
 
 	@Transactional
-	public void processUpdate(MoleculeFmsDTO dto) throws ObjectUpdateException {
+	public Molecule upsert(MoleculeFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
 		log.debug("processUpdate Molecule: ");
 
 		if (StringUtils.isBlank(dto.getId())) {
@@ -103,28 +99,33 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			molecule.setName(dto.getName());
 
 			String inchi = null;
-			if (StringUtils.isNotBlank(dto.getInchi()))
+			if (StringUtils.isNotBlank(dto.getInchi())) {
 				inchi = dto.getInchi();
+			}
 			molecule.setInchi(inchi);
 
 			String inchikey = null;
-			if (StringUtils.isNotBlank(dto.getInchikey()))
+			if (StringUtils.isNotBlank(dto.getInchikey())) {
 				inchikey = dto.getInchikey();
+			}
 			molecule.setInchiKey(inchikey);
 
 			String iupac = null;
-			if (StringUtils.isNotBlank(dto.getIupac()))
+			if (StringUtils.isNotBlank(dto.getIupac())) {
 				iupac = dto.getIupac();
+			}
 			molecule.setIupac(iupac);
 
 			String formula = null;
-			if (StringUtils.isNotBlank(dto.getFormula()))
+			if (StringUtils.isNotBlank(dto.getFormula())) {
 				formula = dto.getFormula();
+			}
 			molecule.setFormula(formula);
 
 			String smiles = null;
-			if (StringUtils.isNotBlank(dto.getSmiles()))
+			if (StringUtils.isNotBlank(dto.getSmiles())) {
 				smiles = dto.getSmiles();
+			}
 			molecule.setSmiles(smiles);
 
 			if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
@@ -147,14 +148,14 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			}
 
 			molecule.setNamespace("molecule");
-			
+
 			List<Long> currentXrefIds;
 			if (molecule.getCrossReferences() == null) {
 				currentXrefIds = new ArrayList<>();
 			} else {
 				currentXrefIds = molecule.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
 			}
-			
+
 			List<Long> mergedXrefIds;
 			if (dto.getCrossReferences() == null) {
 				mergedXrefIds = new ArrayList<>();
@@ -164,18 +165,21 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 				mergedXrefIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
 				molecule.setCrossReferences(mergedCrossReferences);
 			}
-			
+
 			moleculeDAO.persist(molecule);
-			
+
 			for (Long currentId : currentXrefIds) {
 				if (!mergedXrefIds.contains(currentId)) {
 					crossReferenceDAO.remove(currentId);
 				}
 			}
-			
-	} catch (Exception e) {
+
+			return molecule;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ObjectUpdateException(dto, e.getMessage(), e.getStackTrace());
 		}
+
 	}
+
 }

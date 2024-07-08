@@ -10,7 +10,6 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
 
 export const SpeciesTable = () => {
-
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -23,47 +22,47 @@ export const SpeciesTable = () => {
 
 	const columns = [
 		{
-			field: "taxon.curie",
-			header: "Taxon",
+			field: 'taxon.curie',
+			header: 'Taxon',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig,
 		},
 		{
-			field: "fullName",
-			header: "Full Name",
+			field: 'fullName',
+			header: 'Full Name',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig,
 		},
 		{
-			field: "displayName",
-			header: "Display Name",
+			field: 'displayName',
+			header: 'Display Name',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig,
 		},
 		{
-			field: "abbreviation",
-			header: "Abbreviation",
+			field: 'abbreviation',
+			header: 'Abbreviation',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig,
 		},
 		{
-			field: "commonNames",
-			header: "Common Names",
+			field: 'commonNames',
+			header: 'Common Names',
 			sortable: false,
 			filter: true,
-			body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames}/>,
-			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig
+			body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames} />,
+			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig,
 		},
 		{
-			field: "dataProvider.sourceOrganization.abbreviation",
-			header: "Data Provider",
+			field: 'dataProvider.sourceOrganization.abbreviation',
+			header: 'Data Provider',
 			sortable: true,
 			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig
+			filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig,
 		},
 		/*{
 			field: "dataProvider.sourceOrganization.abbreviation",
@@ -72,24 +71,27 @@ export const SpeciesTable = () => {
 			//filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig
 		},*/
 		{
-			field: "phylogeneticOrder",
-			header: "Phylogenetic Order",
-			sortable: true
+			field: 'phylogeneticOrder',
+			header: 'Phylogenetic Order',
+			sortable: true,
 		},
 		{
-			field: "assembly_curie",
-			header: "Assembly",
-			sortable: false
+			field: 'assembly_curie',
+			header: 'Assembly',
+			sortable: false,
 			//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
-		}
+		},
 	];
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = "species";
+	const SEARCH_ENDPOINT = 'species';
 
-	const initialTableState = getDefaultTableState("Species", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState('Species', columns, DEFAULT_COLUMN_WIDTH);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
@@ -98,7 +100,7 @@ export const SpeciesTable = () => {
 		setEntities: setSpecies,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
 	return (
@@ -126,5 +128,5 @@ export const SpeciesTable = () => {
 				/>
 			</div>
 		</>
-	)
-}
+	);
+};

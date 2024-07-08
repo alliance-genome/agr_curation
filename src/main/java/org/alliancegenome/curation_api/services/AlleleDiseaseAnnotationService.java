@@ -20,14 +20,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
 
-	@Inject
-	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject
-	AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
-	@Inject
-	AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
+	@Inject AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -59,18 +55,12 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Override
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Allele disease annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Allele disease annotation DELETE API call", false);
 		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(alleleDiseaseAnnotationDAO, dataProvider);
-	}
-	
-	@Override
-	public AlleleDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
-		return (AlleleDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

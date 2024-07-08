@@ -8,10 +8,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class ProcessDisplayHelper {
 
-	private long startTime = 0;
-	private long lastTime = 0;
+	private long startTime;
+	private long lastTime;
 	private String message;
-	private long lastSizeCounter = 0;
+	private long lastSizeCounter;
 	private long totalSize;
 
 	private final Semaphore sem = new Semaphore(1);

@@ -25,7 +25,6 @@ import org.alliancegenome.curation_api.services.validation.NoteValidator;
 import org.alliancegenome.curation_api.services.validation.associations.EvidenceAssociationValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -33,16 +32,11 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociationValidator<ConstructGenomicEntityAssociation> {
 
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	GenomicEntityDAO genomicEntityDAO;
-	@Inject
-	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	NoteValidator noteValidator;
+	@Inject ConstructDAO constructDAO;
+	@Inject GenomicEntityDAO genomicEntityDAO;
+	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject NoteValidator noteValidator;
 
 	private String errorMessage;
 
@@ -51,7 +45,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		response.setEntity(geAssociation);
 		return response;
 	}
-	
+
 	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociation(ConstructGenomicEntityAssociation uiEntity, Boolean throwError, Boolean validateConstruct) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not create/update Construct GenomicEntity Association: [" + uiEntity.getId() + "]";
@@ -67,26 +61,28 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		} else {
 			dbEntity = new ConstructGenomicEntityAssociation();
 		}
-		
+
 		dbEntity = (ConstructGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		if (validateConstruct) {
 			Construct subject = validateSubjectReagent(uiEntity, dbEntity);
 			dbEntity.setConstructAssociationSubject(subject);
 		}
-		
+
 		GenomicEntity object = validateObject(uiEntity, dbEntity);
 		dbEntity.setConstructGenomicEntityAssociationObject(object);
 
 		VocabularyTerm relation = validateRelation(uiEntity, dbEntity);
 		dbEntity.setRelation(relation);
-		
+
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		if (dbEntity.getRelatedNotes() != null)
+		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
+		}
 		if (relatedNotes != null) {
-			if (dbEntity.getRelatedNotes() == null)
+			if (dbEntity.getRelatedNotes() == null) {
 				dbEntity.setRelatedNotes(new ArrayList<>());
+			}
 			dbEntity.getRelatedNotes().addAll(relatedNotes);
 		}
 
@@ -101,7 +97,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 
 		return dbEntity;
 	}
-	
+
 	private Construct validateSubjectReagent(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
 		String field = "constructAssociationSubject";
 		if (ObjectUtils.isEmpty(uiEntity.getConstructAssociationSubject())) {
@@ -110,8 +106,9 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		}
 
 		Construct subjectEntity = null;
-		if (uiEntity.getConstructAssociationSubject().getId() != null)
+		if (uiEntity.getConstructAssociationSubject().getId() != null) {
 			subjectEntity = constructDAO.find(uiEntity.getConstructAssociationSubject().getId());
+		}
 		if (subjectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -134,8 +131,9 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 		}
 
 		GenomicEntity objectEntity = null;
-		if (uiEntity.getConstructGenomicEntityAssociationObject().getId() != null)
+		if (uiEntity.getConstructGenomicEntityAssociationObject().getId() != null) {
 			objectEntity = genomicEntityDAO.find(uiEntity.getConstructGenomicEntityAssociationObject().getId());
+		}
 		if (objectEntity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -171,7 +169,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 
 		return relation;
 	}
-	
+
 	public List<Note> validateRelatedNotes(ConstructGenomicEntityAssociation uiEntity, ConstructGenomicEntityAssociation dbEntity) {
 		String field = "relatedNotes";
 
@@ -187,7 +185,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
 				} else {
 					note = noteResponse.getEntity();
-				
+
 					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
 					if (validatedNoteIdentities.contains(noteIdentity)) {
 						allValid = false;
@@ -206,8 +204,9 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedNotes))
+		if (CollectionUtils.isEmpty(validatedNotes)) {
 			return null;
+		}
 
 		return validatedNotes;
 	}

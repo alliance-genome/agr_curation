@@ -19,10 +19,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class EcoTermService extends BaseOntologyTermService<ECOTerm, EcoTermDAO> {
 
-	@Inject
-	EcoTermDAO ecoTermDAO;
-	@Inject
-	VocabularyDAO vocabularyDAO;
+	@Inject EcoTermDAO ecoTermDAO;
+	@Inject VocabularyDAO vocabularyDAO;
 
 	@Override
 	@PostConstruct
@@ -34,9 +32,9 @@ public class EcoTermService extends BaseOntologyTermService<ECOTerm, EcoTermDAO>
 	public void updateAbbreviations() {
 
 		SearchResponse<Vocabulary> res = vocabularyDAO.findByField("vocabularyLabel", OntologyConstants.ECO_TERM_ABBREVIATION_VOCABULARY);
-		if (res != null && res.getTotalResults() == 1) {
+		if (res != null && res.getResults().size() == 1) {
 			List<VocabularyTerm> ecoVocabularyTerms = res.getResults().get(0).getMemberTerms();
-			ecoVocabularyTerms.forEach((ecoVocabularyTerm) -> {
+			ecoVocabularyTerms.forEach(ecoVocabularyTerm -> {
 				ECOTerm ecoTerm = findByCurie(ecoVocabularyTerm.getName());
 				if (ecoTerm != null) {
 					ecoTerm.setAbbreviation(ecoVocabularyTerm.getAbbreviation());

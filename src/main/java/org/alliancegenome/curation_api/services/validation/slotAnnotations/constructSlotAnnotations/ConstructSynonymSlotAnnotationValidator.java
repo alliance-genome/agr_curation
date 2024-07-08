@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructSynonymSlotAnnotationValidator extends NameSlotAnnotationValidator<ConstructSynonymSlotAnnotation> {
 
-	@Inject
-	ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
-	@Inject
-	ConstructDAO constructDAO;
+	@Inject ConstructSynonymSlotAnnotationDAO constructSynonymDAO;
+	@Inject ConstructDAO constructDAO;
 
 	public ObjectResponse<ConstructSynonymSlotAnnotation> validateConstructSynonymSlotAnnotation(ConstructSynonymSlotAnnotation uiEntity) {
 		ConstructSynonymSlotAnnotation synonym = validateConstructSynonymSlotAnnotation(uiEntity, false, false);

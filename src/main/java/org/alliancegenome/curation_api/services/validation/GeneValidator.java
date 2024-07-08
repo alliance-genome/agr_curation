@@ -31,22 +31,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneValidator extends GenomicEntityValidator<Gene> {
 
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	SoTermService soTermService;
-	@Inject
-	GeneSymbolSlotAnnotationValidator geneSymbolValidator;
-	@Inject
-	GeneFullNameSlotAnnotationValidator geneFullNameValidator;
-	@Inject
-	GeneSystematicNameSlotAnnotationValidator geneSystematicNameValidator;
-	@Inject
-	GeneSynonymSlotAnnotationValidator geneSynonymValidator;
-	@Inject
-	GeneSecondaryIdSlotAnnotationValidator geneSecondaryIdValidator;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
+	@Inject GeneDAO geneDAO;
+	@Inject SoTermService soTermService;
+	@Inject GeneSymbolSlotAnnotationValidator geneSymbolValidator;
+	@Inject GeneFullNameSlotAnnotationValidator geneFullNameValidator;
+	@Inject GeneSystematicNameSlotAnnotationValidator geneSystematicNameValidator;
+	@Inject GeneSynonymSlotAnnotationValidator geneSynonymValidator;
+	@Inject GeneSecondaryIdSlotAnnotationValidator geneSecondaryIdValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	private String errorMessage;
 
@@ -85,7 +77,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
 
 		dbEntity = (Gene) validateGenomicEntityFields(uiEntity, dbEntity);
-		
+
 		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
 		dbEntity.setGeneType(geneType);
 
@@ -94,9 +86,9 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(uiEntity, dbEntity);
 		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(uiEntity, dbEntity);
 		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
-		
+
 		response.convertErrorMessagesToMap();
-		
+
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
@@ -104,31 +96,38 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 		dbEntity = geneDAO.persist(dbEntity);
 
-		if (symbol != null)
+		if (symbol != null) {
 			symbol.setSingleGene(dbEntity);
+		}
 		dbEntity.setGeneSymbol(symbol);
 
-		if (fullName != null)
+		if (fullName != null) {
 			fullName.setSingleGene(dbEntity);
+		}
 		dbEntity.setGeneFullName(fullName);
 
-		if (systematicName != null)
+		if (systematicName != null) {
 			systematicName.setSingleGene(dbEntity);
+		}
 		dbEntity.setGeneSystematicName(systematicName);
 
-		if (dbEntity.getGeneSynonyms() != null)
+		if (dbEntity.getGeneSynonyms() != null) {
 			dbEntity.getGeneSynonyms().clear();
+		}
 		if (synonyms != null) {
-			if (dbEntity.getGeneSynonyms() == null)
+			if (dbEntity.getGeneSynonyms() == null) {
 				dbEntity.setGeneSynonyms(new ArrayList<>());
+			}
 			dbEntity.getGeneSynonyms().addAll(synonyms);
 		}
 
-		if (dbEntity.getGeneSecondaryIds() != null)
+		if (dbEntity.getGeneSecondaryIds() != null) {
 			dbEntity.getGeneSecondaryIds().clear();
+		}
 		if (secondaryIds != null) {
-			if (dbEntity.getGeneSecondaryIds() == null)
+			if (dbEntity.getGeneSecondaryIds() == null) {
 				dbEntity.setGeneSecondaryIds(new ArrayList<>());
+			}
 			dbEntity.getGeneSecondaryIds().addAll(secondaryIds);
 		}
 
@@ -136,8 +135,9 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 	}
 
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getGeneType()))
+		if (ObjectUtils.isEmpty(uiEntity.getGeneType())) {
 			return null;
+		}
 
 		SOTerm soTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getGeneType().getCurie())) {
@@ -172,8 +172,9 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 	}
 
 	private GeneFullNameSlotAnnotation validateGeneFullName(Gene uiEntity, Gene dbEntity) {
-		if (uiEntity.getGeneFullName() == null)
+		if (uiEntity.getGeneFullName() == null) {
 			return null;
+		}
 
 		String field = "geneFullName";
 
@@ -188,8 +189,9 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 	}
 
 	private GeneSystematicNameSlotAnnotation validateGeneSystematicName(Gene uiEntity, Gene dbEntity) {
-		if (uiEntity.getGeneSystematicName() == null)
+		if (uiEntity.getGeneSystematicName() == null) {
 			return null;
+		}
 
 		String field = "geneSystematicName";
 
@@ -209,7 +211,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		List<GeneSynonymSlotAnnotation> validatedSynonyms = new ArrayList<GeneSynonymSlotAnnotation>();
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getGeneSynonyms())) {
-			for (int ix = 0; ix < uiEntity.getGeneSynonyms().size(); ix++) { 
+			for (int ix = 0; ix < uiEntity.getGeneSynonyms().size(); ix++) {
 				GeneSynonymSlotAnnotation syn = uiEntity.getGeneSynonyms().get(ix);
 				ObjectResponse<GeneSynonymSlotAnnotation> synResponse = geneSynonymValidator.validateGeneSynonymSlotAnnotation(syn);
 				if (synResponse.getEntity() == null) {
@@ -228,8 +230,9 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedSynonyms))
+		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
+		}
 
 		return validatedSynonyms;
 	}
@@ -253,14 +256,15 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedSecondaryIds))
+		if (CollectionUtils.isEmpty(validatedSecondaryIds)) {
 			return null;
+		}
 
 		return validatedSecondaryIds;
 	}

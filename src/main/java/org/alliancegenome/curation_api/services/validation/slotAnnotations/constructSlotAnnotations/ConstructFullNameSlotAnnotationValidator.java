@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructFullNameSlotAnnotationValidator extends NameSlotAnnotationValidator<ConstructFullNameSlotAnnotation> {
 
-	@Inject
-	ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
-	@Inject
-	ConstructDAO constructDAO;
+	@Inject ConstructFullNameSlotAnnotationDAO constructFullNameDAO;
+	@Inject ConstructDAO constructDAO;
 
 	public ObjectResponse<ConstructFullNameSlotAnnotation> validateConstructFullNameSlotAnnotation(ConstructFullNameSlotAnnotation uiEntity) {
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullNameSlotAnnotation(uiEntity, false, false);

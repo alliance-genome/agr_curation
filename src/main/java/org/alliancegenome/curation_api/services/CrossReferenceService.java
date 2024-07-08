@@ -21,10 +21,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO> {
 
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
-	@Inject
-	ResourceDescriptorPageService resourceDescriptorPageService;
+	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Override
 	@PostConstruct
@@ -37,14 +35,14 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		if (CollectionUtils.isNotEmpty(fmsCrossReferences)) {
 			for (CrossReferenceFmsDTO fmsXref : fmsCrossReferences) {
 				String xrefCurie = fmsXref.getCurie();
-				if (CollectionUtils.isEmpty(fmsXref.getPages()))
+				if (CollectionUtils.isEmpty(fmsXref.getPages())) {
 					fmsXref.getPages().add("default");
+				}
 				for (String xrefPage : fmsXref.getPages()) {
 					CrossReference xref = new CrossReference();
 					xref.setReferencedCurie(xrefCurie);
 					xref.setDisplayName(xrefCurie);
-					String prefix = xrefCurie.indexOf(":") == -1 ? xrefCurie :
-						xrefCurie.substring(0, xrefCurie.indexOf(":"));
+					String prefix = xrefCurie.indexOf(":") == -1 ? xrefCurie : xrefCurie.substring(0, xrefCurie.indexOf(":"));
 					ResourceDescriptorPage rdp = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, xrefPage);
 					if (rdp != null) {
 						xref.setResourceDescriptorPage(rdp);
@@ -53,10 +51,10 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 				}
 			}
 		}
-		
+
 		return getUpdatedXrefList(incomingXrefs, existingXrefs);
 	}
-	
+
 	@Transactional
 	public List<CrossReference> getUpdatedXrefList(List<CrossReference> incomingXrefs, List<CrossReference> existingXrefs) {
 		Map<String, CrossReference> existingXrefMap = new HashMap<>();
@@ -65,24 +63,26 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 				existingXrefMap.put(getCrossReferenceUniqueId(existingXref), existingXref);
 			}
 		}
-		
+
 		List<CrossReference> finalXrefs = new ArrayList<>();
+		List<String> addedXrefUniqueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(incomingXrefs)) {
 			for (CrossReference incomingXref : incomingXrefs) {
 				String incomingXrefUniqueId = getCrossReferenceUniqueId(incomingXref);
-				if (existingXrefMap.containsKey(incomingXrefUniqueId)) {
-					finalXrefs.add(updateCrossReference(existingXrefMap.get(incomingXrefUniqueId), incomingXref));
-				} else {
-					finalXrefs.add(crossReferenceDAO.persist(incomingXref));
+				if (!addedXrefUniqueIds.contains(incomingXrefUniqueId)) {
+					if (existingXrefMap.containsKey(incomingXrefUniqueId)) {
+						finalXrefs.add(updateCrossReference(existingXrefMap.get(incomingXrefUniqueId), incomingXref));
+					} else {
+						finalXrefs.add(crossReferenceDAO.persist(incomingXref));
+					}
+					addedXrefUniqueIds.add(incomingXrefUniqueId);
 				}
 			}
 		}
-		
+
 		return finalXrefs;
 	}
-	
-	
-	
+
 	public CrossReference updateCrossReference(CrossReference oldXref, CrossReference newXref) {
 		oldXref.setDisplayName(newXref.getDisplayName());
 		oldXref.setCreatedBy(newXref.getCreatedBy());
@@ -91,16 +91,17 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		oldXref.setDateUpdated(newXref.getDateUpdated());
 		oldXref.setInternal(newXref.getInternal());
 		oldXref.setObsolete(newXref.getObsolete());
-		
+
 		return oldXref;
 	}
-	
+
 	public String getCrossReferenceUniqueId(CrossReference xref) {
-		if (xref == null)
+		if (xref == null) {
 			return null;
-		if (xref.getResourceDescriptorPage() == null)
+		}
+		if (xref.getResourceDescriptorPage() == null) {
 			return xref.getReferencedCurie();
-		return StringUtils.join(
-				List.of(xref.getReferencedCurie(), xref.getResourceDescriptorPage().getId()), "|");
+		}
+		return StringUtils.join(List.of(xref.getReferencedCurie(), xref.getResourceDescriptorPage().getId()), "|");
 	}
 }

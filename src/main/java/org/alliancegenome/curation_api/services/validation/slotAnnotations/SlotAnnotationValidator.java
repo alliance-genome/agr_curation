@@ -21,14 +21,10 @@ import jakarta.inject.Inject;
 
 public class SlotAnnotationValidator<E extends SlotAnnotation> extends AuditedObjectValidator<E> {
 
-	@Inject
-	InformationContentEntityService informationContentEntityService;
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	GeneDAO geneDAO;
+	@Inject InformationContentEntityService informationContentEntityService;
+	@Inject AlleleDAO alleleDAO;
+	@Inject ConstructDAO constructDAO;
+	@Inject GeneDAO geneDAO;
 
 	public E validateSlotAnnotationFields(E uiEntity, E dbEntity, Boolean newObject) {
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newObject);
@@ -42,8 +38,9 @@ public class SlotAnnotationValidator<E extends SlotAnnotation> extends AuditedOb
 	public List<InformationContentEntity> validateEvidence(E uiEntity, E dbEntity) {
 		String field = "evidence";
 
-		if (CollectionUtils.isEmpty(uiEntity.getEvidence()))
+		if (CollectionUtils.isEmpty(uiEntity.getEvidence())) {
 			return null;
+		}
 
 		List<InformationContentEntity> validatedEntities = new ArrayList<>();
 		for (InformationContentEntity evidenceEntity : uiEntity.getEvidence()) {
@@ -68,37 +65,39 @@ public class SlotAnnotationValidator<E extends SlotAnnotation> extends AuditedOb
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		Allele allele = null;
-		if (uiAllele.getId() != null)
+		if (uiAllele.getId() != null) {
 			allele = alleleDAO.find(uiAllele.getId());
+		}
 		if (allele == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		if (allele.getObsolete() && (dbAllele != null && !dbAllele.getObsolete())) {
+		if (allele.getObsolete() && dbAllele != null && !dbAllele.getObsolete()) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
 		return allele;
 	}
-	
+
 	public Construct validateSingleConstruct(Construct uiConstruct, Construct dbConstruct) {
 		String field = "singleConstruct";
 		if (ObjectUtils.isEmpty(uiConstruct)) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		Construct construct = null;
-		if (uiConstruct.getId() != null)
+		if (uiConstruct.getId() != null) {
 			construct = constructDAO.find(uiConstruct.getId());
+		}
 		if (construct == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		if (construct.getObsolete() && (dbConstruct != null && !dbConstruct.getObsolete())) {
+		if (construct.getObsolete() && dbConstruct != null && !dbConstruct.getObsolete()) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -112,15 +111,16 @@ public class SlotAnnotationValidator<E extends SlotAnnotation> extends AuditedOb
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		Gene gene = null;
-		if (uiGene.getId() != null)
+		if (uiGene.getId() != null) {
 			gene = geneDAO.find(uiGene.getId());
+		}
 		if (gene == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		if (gene.getObsolete() && (dbGene != null && !dbGene.getObsolete())) {
+		if (gene.getObsolete() && dbGene != null && !dbGene.getObsolete()) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

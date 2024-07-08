@@ -21,6 +21,6 @@ public interface APIVersionInterface {
 	@GET
 	@Path("/")
 	@JsonView(View.FieldsOnly.class)
-	public APIVersionInfo get();
+	APIVersionInfo get();
 
 }

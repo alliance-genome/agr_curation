@@ -83,6 +83,11 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
-	@JoinTable(indexes = { @Index(name = "constructcomponentsa_note_ccsa_index", columnList = "constructcomponentslotannotation_id"), @Index(name = "constructcomponentsa_note_relatednotes_index",columnList = "relatednotes_id")})
+	@JoinTable(
+		indexes = {
+			@Index(name = "constructcomponentsa_note_ccsa_index", columnList = "constructcomponentslotannotation_id"),
+			@Index(name = "constructcomponentsa_note_relatednotes_index", columnList = "relatednotes_id")
+		}
+	)
 	private List<Note> relatedNotes;
 }

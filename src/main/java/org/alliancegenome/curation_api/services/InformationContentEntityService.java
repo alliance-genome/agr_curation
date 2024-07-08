@@ -11,10 +11,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class InformationContentEntityService extends BaseEntityCrudService<InformationContentEntity, InformationContentEntityDAO> {
 
-	@Inject
-	InformationContentEntityDAO informationContentEntityDAO;
-	@Inject
-	ReferenceService referenceService;
+	@Inject InformationContentEntityDAO informationContentEntityDAO;
+	@Inject ReferenceService referenceService;
 
 	@Override
 	@PostConstruct
@@ -24,8 +22,9 @@ public class InformationContentEntityService extends BaseEntityCrudService<Infor
 
 	public InformationContentEntity retrieveFromDbOrLiteratureService(String curieOrXref) {
 		InformationContentEntity ice = findByCurie(curieOrXref);
-		if (ice == null)
+		if (ice == null) {
 			ice = referenceService.retrieveFromDbOrLiteratureService(curieOrXref);
+		}
 
 		return ice;
 	}

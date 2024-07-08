@@ -10,7 +10,6 @@ import routes from './routes';
 import './App.scss';
 
 const App = () => {
-
 	const oktaAuth = new OktaAuth(oktaAuthConfig);
 
 	const history = useHistory();
@@ -27,9 +26,7 @@ const App = () => {
 
 	return (
 		<Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
-			<Login>
-				{routes}
-			</Login>
+			<Login>{routes}</Login>
 		</Security>
 	);
 };

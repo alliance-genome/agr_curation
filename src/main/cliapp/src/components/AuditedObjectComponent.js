@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { EllipsisTableCell } from './EllipsisTableCell';
 
 export const internalTemplate = (rowData) => {

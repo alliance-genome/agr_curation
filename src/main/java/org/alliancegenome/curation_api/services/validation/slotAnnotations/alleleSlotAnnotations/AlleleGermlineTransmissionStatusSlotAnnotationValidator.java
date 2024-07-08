@@ -18,12 +18,9 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends SlotAnnotationValidator<AlleleGermlineTransmissionStatusSlotAnnotation> {
 
-	@Inject
-	AlleleGermlineTransmissionStatusSlotAnnotationDAO alleleGermlineTransmissionStatusDAO;
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AlleleGermlineTransmissionStatusSlotAnnotationDAO alleleGermlineTransmissionStatusDAO;
+	@Inject AlleleDAO alleleDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> validateAlleleGermlineTransmissionStatusSlotAnnotation(AlleleGermlineTransmissionStatusSlotAnnotation uiEntity) {
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity, false, false);
@@ -71,7 +68,7 @@ public class AlleleGermlineTransmissionStatusSlotAnnotationValidator extends Slo
 
 		return dbEntity;
 	}
-	
+
 	private VocabularyTerm validateGermlineTransmissionStatus(AlleleGermlineTransmissionStatusSlotAnnotation uiEntity, AlleleGermlineTransmissionStatusSlotAnnotation dbEntity) {
 		String field = "germlineTransmissionStatus";
 		if (uiEntity.getGermlineTransmissionStatus() == null) {

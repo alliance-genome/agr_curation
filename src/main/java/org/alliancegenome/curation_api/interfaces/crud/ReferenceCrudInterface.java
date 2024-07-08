@@ -23,10 +23,10 @@ public interface ReferenceCrudInterface extends BaseCurieObjectCrudInterface<Ref
 
 	@GET
 	@Path("/sync")
-	public void synchroniseReferences();
+	void synchroniseReferences();
 
 	@GET
 	@Path("/sync/{id}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<Reference> synchroniseReference(@PathParam("id") Long id);
+	ObjectResponse<Reference> synchroniseReference(@PathParam("id") Long id);
 }

@@ -32,20 +32,20 @@ import jakarta.ws.rs.core.MediaType;
 public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<PhenotypeAnnotation> {
 
 	@GET
-	@Path("/findBy/{modEntityId|modInternalId|uniqueId}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<PhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
+	ObjectResponse<PhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@POST
 	@Path("/search")
 	@JsonView(View.PhenotypeAnnotationView.class)
 	@Tag(name = "Elastic Search Phenotype Annotations")
-	public SearchResponse<PhenotypeAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<PhenotypeAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updatePhenotypeAnnotations(@PathParam("dataProvider") String dataProvider, List<PhenotypeFmsDTO> annotationData);
+	APIResponse updatePhenotypeAnnotations(@PathParam("dataProvider") String dataProvider, List<PhenotypeFmsDTO> annotationData);
 
 }

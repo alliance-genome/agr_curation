@@ -23,5 +23,5 @@ public interface AlleleSymbolSlotAnnotationCrudInterface extends BaseIdCrudInter
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleSymbolSlotAnnotation> validate(AlleleSymbolSlotAnnotation entity);
+	ObjectResponse<AlleleSymbolSlotAnnotation> validate(AlleleSymbolSlotAnnotation entity);
 }

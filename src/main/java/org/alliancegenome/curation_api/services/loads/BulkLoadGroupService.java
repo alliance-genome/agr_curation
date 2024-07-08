@@ -11,8 +11,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class BulkLoadGroupService extends BaseEntityCrudService<BulkLoadGroup, BulkLoadGroupDAO> {
 
-	@Inject
-	BulkLoadGroupDAO bulkLoadGroupDAO;
+	@Inject BulkLoadGroupDAO bulkLoadGroupDAO;
 
 	@Override
 	@PostConstruct

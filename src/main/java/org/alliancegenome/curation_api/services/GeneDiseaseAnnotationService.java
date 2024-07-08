@@ -20,14 +20,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
 
-	@Inject
-	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject
-	GeneDiseaseAnnotationValidator geneDiseaseValidator;
-	@Inject
-	GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject GeneDiseaseAnnotationValidator geneDiseaseValidator;
+	@Inject GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -59,18 +55,12 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	@Override
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "Gene disease annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "Gene disease annotation DELETE API call", false);
 		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(geneDiseaseAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public GeneDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
-		return (GeneDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

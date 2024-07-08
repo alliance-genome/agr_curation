@@ -23,5 +23,5 @@ public interface ConstructFullNameSlotAnnotationCrudInterface extends BaseIdCrud
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<ConstructFullNameSlotAnnotation> validate(ConstructFullNameSlotAnnotation entity);
+	ObjectResponse<ConstructFullNameSlotAnnotation> validate(ConstructFullNameSlotAnnotation entity);
 }

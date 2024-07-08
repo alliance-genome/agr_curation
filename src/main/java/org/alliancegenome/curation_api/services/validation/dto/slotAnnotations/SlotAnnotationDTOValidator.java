@@ -18,13 +18,12 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class SlotAnnotationDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	InformationContentEntityService informationContentEntityService;
+	@Inject InformationContentEntityService informationContentEntityService;
 
 	public <E extends SlotAnnotation, D extends SlotAnnotationDTO> ObjectResponse<E> validateSlotAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> saResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = saResponse.getEntity();
-		
+
 		List<InformationContentEntity> evidence = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getEvidenceCuries())) {
 			for (String evidenceCurie : dto.getEvidenceCuries()) {

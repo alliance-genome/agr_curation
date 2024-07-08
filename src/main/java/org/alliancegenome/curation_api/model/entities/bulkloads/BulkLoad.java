@@ -20,11 +20,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,6 +38,16 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "group" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(
+	indexes = {
+		@Index(name = "bulkload_group_index", columnList = "group_id"),
+		@Index(name = "bulkload_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "bulkload_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "bulkload_backendBulkLoadType_index", columnList = "backendBulkLoadType"),
+		@Index(name = "bulkload_ontologyType_index", columnList = "ontologyType"),
+		@Index(name = "bulkload_bulkloadStatus_index", columnList = "bulkloadStatus")
+	}
+)
 public abstract class BulkLoad extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })

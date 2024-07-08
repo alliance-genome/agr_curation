@@ -3,8 +3,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -36,38 +36,38 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@POST
 	@Path("/bulk/{dataProvider}/variants")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateVariants(@PathParam("dataProvider") String dataProvider, List<VariantDTO> alleleData);
+	APIResponse updateVariants(@PathParam("dataProvider") String dataProvider, List<VariantDTO> alleleData);
 
 	@Override
 	@GET
 	@JsonView(View.VariantView.class)
 	@Path("/{identifierString}")
-	public ObjectResponse<Variant> getByIdentifier(@PathParam("identifierString") String identifierString);
+	ObjectResponse<Variant> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.VariantView.class)
-	public ObjectResponse<Variant> update(Variant entity);
+	ObjectResponse<Variant> update(Variant entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.VariantView.class)
-	public ObjectResponse<Variant> create(Variant entity);
+	ObjectResponse<Variant> create(Variant entity);
 
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.VariantView.class)
-	public SearchResponse<Variant> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<Variant> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.VariantView.class })
-	public SearchResponse<Variant> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<Variant> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

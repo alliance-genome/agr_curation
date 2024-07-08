@@ -2,6 +2,21 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.33.0
+* New features 
+  * Importing gene interactions into the persistent store (phase 2) (SCRUM-3809)
+  * Load SARS-CoV-2 genes into the persistent store (SCRUM-3929)
+  * Remove apparently redundant subclass (e.g. Gene Disease Annotations) links from curation Dashboard (SCRUM-3954)
+  * Hide obsolete rows (filter obsolete = false) when resetting the table to default settings (SCRUM-3960)
+  * Reduce empty space in all remaining tables to create a more compact representation (SCRUM-3968)
+* Fixes and maintenance
+  * Refactor Constructs Templates Table into Components (SCRUM-3755)
+  * Refactor Genes Table Templates into Components (SCRUM-3759)
+  * Refactor Literature Reference Table Templates into Components (SCRUM-3762)
+  * Refactor useGenericDataTable's useQuery into a seperate useGetTableData hook (SCRUM-3803)
+  * Upgrade to React 18 (SCRUM-3894)
+  * Obsolete GO & CHEBI terms cluttering up root level Tree View (SCRUM-3918)
+  * Fix interaction bulk load cleanup failures (SCRUM-3944)
 
 ## v0.32.0
 * New features

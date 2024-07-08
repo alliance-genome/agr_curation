@@ -24,6 +24,6 @@ public interface BulkManualLoadCrudInterface extends BaseIdCrudInterface<BulkMan
 	@GET
 	@Path("/restart/{id}")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectResponse<BulkManualLoad> restartLoad(@PathParam("id") Long id);
+	ObjectResponse<BulkManualLoad> restartLoad(@PathParam("id") Long id);
 
 }

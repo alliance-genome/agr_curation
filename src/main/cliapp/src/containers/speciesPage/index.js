@@ -1,3 +1,3 @@
-import SpeciesPage from "./SpeciesPage";
+import SpeciesPage from './SpeciesPage';
 
 export { SpeciesPage };
