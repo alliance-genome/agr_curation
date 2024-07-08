@@ -182,7 +182,7 @@ public class AlleleITCase extends BaseITCase {
 		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
 		soTerm = getSoTerm("SO:00001");
 		soTerm2 = getSoTerm("SO:00002");
-		obsoleteSoTerm = createSoTerm("SO:00000", true);
+		obsoleteSoTerm = createSoTerm("SO:00000", "obsoleteTest", true);
 		mpTerm = getMpTerm("MP:00001");
 		mpTerm2 = getMpTerm("MP:00002");
 		obsoleteMpTerm = createMpTerm("MP:00000", true);
