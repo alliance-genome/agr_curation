@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -18,6 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingRea
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
+import org.alliancegenome.curation_api.services.associations.SequenceTargetingReagentGeneAssociationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,6 +29,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 	@Inject SequenceTargetingReagentService sqtrService;
+	@Inject SequenceTargetingReagentGeneAssociationService sqtrGeneAssociationService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 
@@ -122,7 +125,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 		for (SequenceTargetingReagentFmsDTO dto : sqtrs) {
 			try {
-				List<Long> associationIds = sqtrService.addGeneAssociations(dto, dataProvider);
+				List<Long> associationIds = sqtrGeneAssociationService.addGeneAssociations(dto, dataProvider);
 				history.incrementCompleted();
 				if (idsLoaded != null) {
 					idsLoaded.addAll(associationIds);

@@ -42,58 +42,6 @@ public class SequenceTargetingReagentService extends BaseEntityCrudService<Seque
 		return sqtrDAO.persist(sqtr);
 	}
 
-	@Transactional
-	public List<Long> addGeneAssociations(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-
-		List<SequenceTargetingReagentGeneAssociation> associations = sqtrDtoValidator.validateSQTRGeneAssociationFmsDTO(dto, dataProvider);
-
-		for (SequenceTargetingReagentGeneAssociation association : associations) {
-			if (association != null) {
-				addAssociationToSQTR(association);
-				addAssociationToGene(association);
-			}
-		}
-
-		return associations.stream().map(SequenceTargetingReagentGeneAssociation::getId).collect(Collectors.toList());
-	}
-
-	private void addAssociationToSQTR(SequenceTargetingReagentGeneAssociation association) {
-		SequenceTargetingReagent sqtr = association.getSequenceTargetingReagentAssociationSubject();
-		List<SequenceTargetingReagentGeneAssociation> currentAssociations = sqtr.getSequenceTargetingReagentGeneAssociations();
-		if (currentAssociations == null) {
-			currentAssociations = new ArrayList<>();
-			sqtr.setSequenceTargetingReagentGeneAssociations(currentAssociations);
-		}
-
-		List<Long> currentAssociationIds = new ArrayList<>();
-		for (SequenceTargetingReagentGeneAssociation sqtrga : currentAssociations) {
-			currentAssociationIds.add(sqtrga.getId());
-		}
-
-		if (!currentAssociationIds.contains(association.getId())) {
-			currentAssociations.add(association);
-		}
-	}
-
-	private void addAssociationToGene(SequenceTargetingReagentGeneAssociation association) {
-		Gene gene = association.getSequenceTargetingReagentGeneAssociationObject();
-		List<SequenceTargetingReagentGeneAssociation> currentAssociations = gene.getSequenceTargetingReagentGeneAssociations();
-		if (currentAssociations == null) {
-			currentAssociations = new ArrayList<>();
-			gene.setSequenceTargetingReagentGeneAssociations(currentAssociations);
-		}
-
-		List<Long> currentAssociationIds = new ArrayList<>();
-		for (SequenceTargetingReagentGeneAssociation sqtrga : currentAssociations) {
-			currentAssociationIds.add(sqtrga.getId());
-		}
-
-		if (!currentAssociationIds.contains(association.getId())) {
-			currentAssociations.add(association);
-		}
-		
-	}
-
 	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
