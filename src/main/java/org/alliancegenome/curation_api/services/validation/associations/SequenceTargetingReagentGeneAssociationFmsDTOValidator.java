@@ -22,57 +22,61 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class SequenceTargetingReagentGeneAssociationFmsDTOValidator {
-    @Inject SequenceTargetingReagentDAO sqtrDAO;
-    @Inject VocabularyTermService vocabularyTermService;
-    @Inject GeneService geneService;
+	@Inject
+	SequenceTargetingReagentDAO sqtrDAO;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	GeneService geneService;
 
-    public List<SequenceTargetingReagentGeneAssociation> validateSQTRGeneAssociationFmsDTO( SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
-        List<SequenceTargetingReagentGeneAssociation> strGeneAssociations = new ArrayList<>();
-        ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
+	public List<SequenceTargetingReagentGeneAssociation> validateSQTRGeneAssociationFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
+		List<SequenceTargetingReagentGeneAssociation> strGeneAssociations = new ArrayList<>();
+		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 
-        SequenceTargetingReagent sqtr;
-        SearchResponse<SequenceTargetingReagent> sqtrSearchResponse = sqtrDAO.findByField("modEntityId", dto.getPrimaryId());
+		SequenceTargetingReagent sqtr;
+		SearchResponse<SequenceTargetingReagent> sqtrSearchResponse = sqtrDAO.findByField("modEntityId",
+				dto.getPrimaryId());
 
-        if (sqtrSearchResponse == null || sqtrSearchResponse.getSingleResult() == null) {
-            sqtrResponse.addErrorMessage("modEntityId",
-                    ValidationConstants.INVALID_MESSAGE + " (" + dto.getPrimaryId() + ")");
-            sqtr = new SequenceTargetingReagent();
-        } else {
-            sqtr = sqtrSearchResponse.getSingleResult();
-        }
+		if (sqtrSearchResponse == null || sqtrSearchResponse.getSingleResult() == null) {
+			sqtrResponse.addErrorMessage("modEntityId",
+					ValidationConstants.INVALID_MESSAGE + " (" + dto.getPrimaryId() + ")");
+			sqtr = new SequenceTargetingReagent();
+		} else {
+			sqtr = sqtrSearchResponse.getSingleResult();
+		}
 
-        VocabularyTerm relation;
-        SearchResponse<VocabularyTerm> relationSearchResponse = vocabularyTermService.findByField("name", "targets");
-        if (relationSearchResponse == null || relationSearchResponse.getSingleResult() == null) {
-            sqtrResponse.addErrorMessage("relation", ValidationConstants.INVALID_MESSAGE + " (" + "targets" + ")");
-            relation = new VocabularyTerm();
-        } else {
-            relation = relationSearchResponse.getSingleResult();
-        }
+		VocabularyTerm relation;
+		SearchResponse<VocabularyTerm> relationSearchResponse = vocabularyTermService.findByField("name", "targets");
+		if (relationSearchResponse == null || relationSearchResponse.getSingleResult() == null) {
+			sqtrResponse.addErrorMessage("relation", ValidationConstants.INVALID_MESSAGE + " (" + "targets" + ")");
+			relation = new VocabularyTerm();
+		} else {
+			relation = relationSearchResponse.getSingleResult();
+		}
 
-        if(dto.getTargetGeneIds() != null){
-            for (String geneId : dto.getTargetGeneIds()) {
-                Gene gene = geneService.findByIdentifierString(geneId);
-    
-                if (gene == null) {
-                    sqtrResponse.addErrorMessage("targetGeneIds",
-                            ValidationConstants.INVALID_MESSAGE + " (" + geneId + ")");
-                } else {
-                    SequenceTargetingReagentGeneAssociation strGeneAssociation = new SequenceTargetingReagentGeneAssociation();
-                    strGeneAssociation.setSequenceTargetingReagentAssociationSubject(sqtr);
-                    strGeneAssociation.setRelation(relation);
-                    strGeneAssociation.setSequenceTargetingReagentGeneAssociationObject(gene);
-    
-                    strGeneAssociations.add(strGeneAssociation);
-                }
-    
-            }
-        }
-        
-        if (sqtrResponse.hasErrors()) {
-            throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());
-        }
+		if (dto.getTargetGeneIds() != null) {
+			for (String geneId : dto.getTargetGeneIds()) {
+				Gene gene = geneService.findByIdentifierString(geneId);
 
-        return strGeneAssociations;
-    }
+				if (gene == null) {
+					sqtrResponse.addErrorMessage("targetGeneIds",
+							ValidationConstants.INVALID_MESSAGE + " (" + geneId + ")");
+				} else {
+					SequenceTargetingReagentGeneAssociation strGeneAssociation = new SequenceTargetingReagentGeneAssociation();
+					strGeneAssociation.setSequenceTargetingReagentAssociationSubject(sqtr);
+					strGeneAssociation.setRelation(relation);
+					strGeneAssociation.setSequenceTargetingReagentGeneAssociationObject(gene);
+
+					strGeneAssociations.add(strGeneAssociation);
+				}
+
+			}
+		}
+
+		if (sqtrResponse.hasErrors()) {
+			throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());
+		}
+
+		return strGeneAssociations;
+	}
 }
