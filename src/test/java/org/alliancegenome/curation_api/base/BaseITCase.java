@@ -97,6 +97,10 @@ public class BaseITCase {
 	}
 
 	public void checkFailedBulkLoad(String endpoint, String filePath) throws Exception {
+		checkFailedBulkLoad(endpoint, filePath, 1, 1, 0);
+	}
+	
+	public void checkFailedBulkLoad(String endpoint, String filePath, int expectedTotalRecords, int expectedFailedRecords, int expectedCompletedRecords) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 
 		RestAssured.given().
@@ -106,9 +110,9 @@ public class BaseITCase {
 			post(endpoint).
 			then().
 			statusCode(200).
-			body("history.totalRecords", is(1)).
-			body("history.failedRecords", is(1)).
-			body("history.completedRecords", is(0));
+			body("history.totalRecords", is(expectedTotalRecords)).
+			body("history.failedRecords", is(expectedFailedRecords)).
+			body("history.completedRecords", is(expectedCompletedRecords));
 	}
 
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath) throws Exception {
