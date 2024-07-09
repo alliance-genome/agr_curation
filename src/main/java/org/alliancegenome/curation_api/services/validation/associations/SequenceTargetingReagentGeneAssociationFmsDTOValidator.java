@@ -31,8 +31,7 @@ public class SequenceTargetingReagentGeneAssociationFmsDTOValidator {
         ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 
         SequenceTargetingReagent sqtr;
-        SearchResponse<SequenceTargetingReagent> sqtrSearchResponse = sqtrDAO.findByField("modEntityId",
-                dto.getPrimaryId());
+        SearchResponse<SequenceTargetingReagent> sqtrSearchResponse = sqtrDAO.findByField("modEntityId", dto.getPrimaryId());
 
         if (sqtrSearchResponse == null || sqtrSearchResponse.getSingleResult() == null) {
             sqtrResponse.addErrorMessage("modEntityId",
@@ -51,22 +50,25 @@ public class SequenceTargetingReagentGeneAssociationFmsDTOValidator {
             relation = relationSearchResponse.getSingleResult();
         }
 
-        for (String geneId : dto.getTargetGeneIds()) {
-            Gene gene = geneService.findByIdentifierString(geneId);
-
-            if (gene == null) {
-                sqtrResponse.addErrorMessage("targetGeneIds",
-                        ValidationConstants.INVALID_MESSAGE + " (" + geneId + ")");
-            } else {
-                SequenceTargetingReagentGeneAssociation strGeneAssociation = new SequenceTargetingReagentGeneAssociation();
-                strGeneAssociation.setSequenceTargetingReagentAssociationSubject(sqtr);
-                strGeneAssociation.setRelation(relation);
-                strGeneAssociation.setSequenceTargetingReagentGeneAssociationObject(gene);
-
-                strGeneAssociations.add(strGeneAssociation);
+        if(dto.getTargetGeneIds() != null){
+            for (String geneId : dto.getTargetGeneIds()) {
+                Gene gene = geneService.findByIdentifierString(geneId);
+    
+                if (gene == null) {
+                    sqtrResponse.addErrorMessage("targetGeneIds",
+                            ValidationConstants.INVALID_MESSAGE + " (" + geneId + ")");
+                } else {
+                    SequenceTargetingReagentGeneAssociation strGeneAssociation = new SequenceTargetingReagentGeneAssociation();
+                    strGeneAssociation.setSequenceTargetingReagentAssociationSubject(sqtr);
+                    strGeneAssociation.setRelation(relation);
+                    strGeneAssociation.setSequenceTargetingReagentGeneAssociationObject(gene);
+    
+                    strGeneAssociations.add(strGeneAssociation);
+                }
+    
             }
-
         }
+        
         if (sqtrResponse.hasErrors()) {
             throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());
         }

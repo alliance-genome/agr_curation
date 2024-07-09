@@ -2,7 +2,9 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -28,8 +30,10 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
-	@Inject SequenceTargetingReagentService sqtrService;
-	@Inject SequenceTargetingReagentGeneAssociationService sqtrGeneAssociationService;
+	@Inject
+	SequenceTargetingReagentService sqtrService;
+	@Inject
+	SequenceTargetingReagentGeneAssociationService sqtrGeneAssociationService;
 
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 
@@ -53,20 +57,20 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
-			List<Long> sqtrIdsLoaded = new ArrayList<>();
-			List<Long> sqtrIdsBefore = sqtrService.getIdsByDataProvider(dataProvider.name());
-			List<Long> sqtrGeneAssociationIdsLoaded = new ArrayList<>();
-			List<Long> sqtrGeneAssociationIdsBefore = sqtrService.getIdsByDataProvider(dataProvider.name());
+			Map<String, List<Long>> idsAdded = new HashMap<String, List<Long>>();
+			idsAdded.put("SQTR", new ArrayList<Long>());
+			idsAdded.put("SQTRGeneAssociation", new ArrayList<Long>());
 
+			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 
 			bulkLoadFileDAO.merge(bulkLoadFile);
 
-			BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrIngestFmsDTO.getData().size());
+			BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrIngestFmsDTO.getData().size() * 2);
 
-			runLoad(history, dataProvider, sqtrIngestFmsDTO.getData(), sqtrIdsLoaded, sqtrGeneAssociationIdsLoaded);
+			runLoad(history, dataProvider, sqtrIngestFmsDTO.getData(), idsAdded.get("SQTR"), idsAdded.get("SQTRGeneAssociation"));
 
-			runCleanup(sqtrService, history, dataProvider.name(), sqtrIdsBefore, sqtrIdsLoaded, "SQTR", bulkLoadFile.getMd5Sum());
-			runCleanup(sqtrService, history, dataProvider.name(), sqtrGeneAssociationIdsBefore, sqtrGeneAssociationIdsLoaded, "SQTR Gene Associations", bulkLoadFile.getMd5Sum());
+			runCleanup(sqtrService, history, dataProvider.name(), previousIds.get("SQTR"), idsAdded.get("SQTR"), "SQTR", bulkLoadFile.getMd5Sum());
+			runCleanup(sqtrService, history, dataProvider.name(), previousIds.get("SQTRGeneAssociation"), idsAdded.get("SQTRGeneAssociation"), "SQTR Gene Associations", bulkLoadFile.getMd5Sum());
 
 			history.finishLoad();
 
@@ -77,11 +81,20 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		}
 	}
 
+	private Map<String, List<Long>> getPreviouslyLoadedIds(BackendBulkDataProvider dataProvider) {
+		Map<String, List<Long>> previousIds = new HashMap<>();
+		
+		previousIds.put("SQTR", sqtrService.getIdsByDataProvider(dataProvider.name()));
+		previousIds.put("SQTRGeneAssociation", sqtrGeneAssociationService.getIdsByDataProvider(dataProvider.name()));
+		
+		return previousIds;
+	}
+
 	public APIResponse runLoadApi(String dataProviderName, List<SequenceTargetingReagentFmsDTO> sqtrDTOs) {
 		List<Long> sqtrIdsLoaded = new ArrayList<>();
 		List<Long> sqtrGeneAssociationIdsLoaded = new ArrayList<>();
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrDTOs.size());
+		BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrDTOs.size() * 2);
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, dataProvider, sqtrDTOs, sqtrIdsLoaded, sqtrGeneAssociationIdsLoaded);
 		history.finishLoad();
@@ -101,7 +114,8 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 	}
 
-	private void loadSequenceTargetingReagents(BulkLoadFileHistory history, List<SequenceTargetingReagentFmsDTO> sqtrs, List<Long> idsLoaded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private void loadSequenceTargetingReagents(BulkLoadFileHistory history, List<SequenceTargetingReagentFmsDTO> sqtrs,
+			List<Long> idsLoaded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
 		for (SequenceTargetingReagentFmsDTO dto : sqtrs) {
 			try {
 				SequenceTargetingReagent dbObject = sqtrService.upsert(dto, dataProvider);
@@ -121,11 +135,13 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private void loadSequenceTargetingReagentGeneAssociations(BulkLoadFileHistory history, List<SequenceTargetingReagentFmsDTO> sqtrs, List<Long> idsLoaded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private void loadSequenceTargetingReagentGeneAssociations(BulkLoadFileHistory history,
+			List<SequenceTargetingReagentFmsDTO> sqtrs, List<Long> idsLoaded, BackendBulkDataProvider dataProvider,
+			ProcessDisplayHelper ph) {
 
 		for (SequenceTargetingReagentFmsDTO dto : sqtrs) {
 			try {
-				List<Long> associationIds = sqtrGeneAssociationService.addGeneAssociations(dto, dataProvider);
+				List<Long> associationIds = sqtrGeneAssociationService.loadGeneAssociations(dto, dataProvider);
 				history.incrementCompleted();
 				if (idsLoaded != null) {
 					idsLoaded.addAll(associationIds);

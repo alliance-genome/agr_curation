@@ -1,9 +1,13 @@
 package org.alliancegenome.curation_api.services.associations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.SequenceTargetingReagentGeneAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleGeneAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -24,31 +28,15 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class SequenceTargetingReagentGeneAssociationService extends
-		BaseAssociationDTOCrudService<SequenceTargetingReagentGeneAssociation, SequenceTargetingReagentFmsDTO, SequenceTargetingReagentGeneAssociationDAO> {
+public class SequenceTargetingReagentGeneAssociationService {
+	
 	@Inject
 	SequenceTargetingReagentGeneAssociationDAO sequenceTargetingReagentGeneAssociationDAO;
 	@Inject
 	SequenceTargetingReagentGeneAssociationFmsDTOValidator sequenceTargetingReagentGeneAssociationFmsDTOValidator;
 
-	@Override
-	@PostConstruct
-	protected void init() {
-		setSQLDao(sequenceTargetingReagentGeneAssociationDAO);
-	}
-
 	@Transactional
-	public SequenceTargetingReagentGeneAssociation upsert(SequenceTargetingReagentFmsDTO dto,
-			BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		// TODO: fix this placeholder code
-		SequenceTargetingReagentGeneAssociation sequenceTargetingReagentGeneAssociation = new SequenceTargetingReagentGeneAssociation();
-		return sequenceTargetingReagentGeneAssociation;
-	}
-
-	// TODO: rename?
-	@Transactional
-	public List<Long> addGeneAssociations(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider)
-			throws ObjectUpdateException {
+	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 
 		List<SequenceTargetingReagentGeneAssociation> associations = sequenceTargetingReagentGeneAssociationFmsDTOValidator
 				.validateSQTRGeneAssociationFmsDTO(dto, dataProvider);
@@ -101,5 +89,13 @@ public class SequenceTargetingReagentGeneAssociationService extends
 			currentAssociations.add(association);
 		}
 
+	}
+
+	public List<Long> getIdsByDataProvider(String dataProvider) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		List<Long> ids = sequenceTargetingReagentGeneAssociationDAO.findIdsByParams(params);
+		ids.removeIf(Objects::isNull);
+		return ids;
 	}
 }
