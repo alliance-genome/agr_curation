@@ -85,11 +85,12 @@ public class SequenceTargetingReagentGeneAssociationService {
 
 	}
 
-	public List<Long> getIdsByDataProvider(String dataProvider) {
+	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		params.put(EntityFieldConstants.SQTR_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<Long> ids = sequenceTargetingReagentGeneAssociationDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
 	}
+
 }
