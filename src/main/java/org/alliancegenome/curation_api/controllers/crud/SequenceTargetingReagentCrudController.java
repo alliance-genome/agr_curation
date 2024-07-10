@@ -30,7 +30,7 @@ public class SequenceTargetingReagentCrudController extends BaseEntityCrudContro
 
 	@Override
 	public APIResponse updateSequenceTargetingReagent(String dataProvider, SequenceTargetingReagentIngestFmsDTO sqtrFmsDTO) {
-		return sqtrExecutor.runLoadApi(sqtrService, dataProvider, sqtrFmsDTO.getData());
+		return sqtrExecutor.runLoadApi(dataProvider, sqtrFmsDTO.getData());
 	}
 
 }
