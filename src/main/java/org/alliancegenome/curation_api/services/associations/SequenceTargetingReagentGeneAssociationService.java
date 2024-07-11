@@ -15,19 +15,27 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.SequenceTargetingReagentGeneAssociationFmsDTOValidator;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class SequenceTargetingReagentGeneAssociationService {
+public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCrudService<SequenceTargetingReagentGeneAssociation, SequenceTargetingReagentGeneAssociationDAO>{
 	
 	@Inject
 	SequenceTargetingReagentGeneAssociationDAO sequenceTargetingReagentGeneAssociationDAO;
 	@Inject
 	SequenceTargetingReagentGeneAssociationFmsDTOValidator sequenceTargetingReagentGeneAssociationFmsDTOValidator;
+
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(sequenceTargetingReagentGeneAssociationDAO);
+	}
 
 	@Transactional
 	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
