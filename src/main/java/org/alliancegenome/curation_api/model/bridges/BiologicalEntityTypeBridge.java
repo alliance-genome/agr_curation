@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.bridges;
 
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Exon;
@@ -92,6 +93,10 @@ public class BiologicalEntityTypeBridge implements TypeBinder {
 				} else if (bridgedElement instanceof CodingSequence) {
 					CodingSequence cds = (CodingSequence) bridgedElement;
 					name = cds.getName();
+					symbol = null;
+				} else if (bridgedElement instanceof AssemblyComponent) {
+					AssemblyComponent ac = (AssemblyComponent) bridgedElement;
+					name = ac.getName();
 					symbol = null;
 				} else {
 					name = null;

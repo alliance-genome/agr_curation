@@ -4,19 +4,15 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
-import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGenomicLocationAssociation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.search.engine.backend.types.Aggregable;
-import org.hibernate.search.engine.backend.types.Searchable;
-import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -34,37 +30,41 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = "exonGenomicLocationAssociations", callSuper = true)
-@Schema(name = "Exon", description = "POJO that represents the Exon")
+@ToString(callSuper = true)
+@Schema(name = "AssemblyComponent", description = "POJO that represents the AssemblyComponent")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
-@Table(indexes = {@Index(name = "exon_uniqueid_index", columnList = "uniqueid")})
-public class Exon extends GenomicEntity {
+@Table(
+	indexes = {
+		@Index(name = "assemblycomponent_genomeassembly_index", columnList = "genomeassembly_id")
+	}
+)
+public class AssemblyComponent extends GenomicEntity {
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
-	@EqualsAndHashCode.Include
-	protected String uniqueId;
-	
 	@JsonView({ View.FieldsOnly.class })
 	private String name;
 
-	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	private SOTerm exonType;
-
-	@IndexedEmbedded(
-		includePaths = {
-			"exonGenomicLocationAssociationObject.curie", "exonGenomicLocationAssociationObject.curie_keyword",
-			"exonGenomicLocationAssociationObject.modEntityId", "exonGenomicLocationAssociationObject.modEntityId_keyword",
-			"exonGenomicLocationAssociationObject.modInternalId", "exonGenomicLocationAssociationObject.modInternalId_keyword",
-			"start", "end"
-		}
-	)
-	@OneToMany(mappedBy = "exonAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private GenomeAssembly genomeAssembly;
+	
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	private Chromosome mapsToChromosome;
+	
+	@OneToMany(mappedBy = "transcriptGenomicLocationAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class })
+	private List<TranscriptGenomicLocationAssociation> transcriptGenomicLocationAssociations;
+	
+	@OneToMany(mappedBy = "exonGenomicLocationAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class })
 	private List<ExonGenomicLocationAssociation> exonGenomicLocationAssociations;
+	
+	@OneToMany(mappedBy = "codingSequenceGenomicLocationAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class })
+	private List<CodingSequenceGenomicLocationAssociation> codingSequenceGenomicLocationAssociations;
 
 }
