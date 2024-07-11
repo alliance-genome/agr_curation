@@ -13,8 +13,12 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Exon;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Transcript;
+import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -168,6 +172,24 @@ public class Gff3DtoValidator {
 		}
 		
 		return attributes;
+	}
+
+	public CodingSequenceGenomicLocationAssociation validateCdsSequenceLocation(Gff3DTO gffEntry, GenomeAssembly assembly,
+			BackendBulkDataProvider dataProvider) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, GenomeAssembly assembly,
+			BackendBulkDataProvider dataProvider) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, GenomeAssembly assembly,
+			BackendBulkDataProvider dataProvider) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

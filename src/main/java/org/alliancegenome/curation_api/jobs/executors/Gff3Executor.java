@@ -22,8 +22,10 @@ import org.alliancegenome.curation_api.services.CodingSequenceService;
 import org.alliancegenome.curation_api.services.ExonService;
 import org.alliancegenome.curation_api.services.Gff3Service;
 import org.alliancegenome.curation_api.services.TranscriptService;
+import org.alliancegenome.curation_api.services.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.associations.exonAssociations.ExonGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -40,6 +42,9 @@ public class Gff3Executor extends LoadFileExecutor {
 	@Inject ExonService exonService;
 	@Inject CodingSequenceService cdsService;
 	@Inject TranscriptService transcriptService;
+	@Inject ExonGenomicLocationAssociationService exonLocationService;
+	@Inject CodingSequenceGenomicLocationAssociationService cdsLocationService;
+	@Inject TranscriptGenomicLocationAssociationService transcriptLocationService;
 	
 	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
@@ -66,6 +71,9 @@ public class Gff3Executor extends LoadFileExecutor {
 			idsAdded.put("Transcript", new ArrayList<Long>());
 			idsAdded.put("Exon", new ArrayList<Long>());
 			idsAdded.put("CodingSequence", new ArrayList<Long>());
+			idsAdded.put("TranscriptGenomicLocationAssociation", new ArrayList<Long>());
+			idsAdded.put("ExonGenomicLocationAssociation", new ArrayList<Long>());
+			idsAdded.put("CodingSequenceGenomicLocationAssociation", new ArrayList<Long>());
 			
 			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 			
@@ -75,6 +83,9 @@ public class Gff3Executor extends LoadFileExecutor {
 			runCleanup(transcriptService, history, dataProvider.name(), previousIds.get("Transcript"), idsAdded.get("Transcript"), "GFF transcript", bulkLoadFile.getMd5Sum());
 			runCleanup(exonService, history, dataProvider.name(), previousIds.get("Exon"), idsAdded.get("Exon"), "GFF exon", bulkLoadFile.getMd5Sum());
 			runCleanup(cdsService, history, dataProvider.name(), previousIds.get("CodingSequence"), idsAdded.get("CodingSequence"), "GFF coding sequence", bulkLoadFile.getMd5Sum());
+			runCleanup(transcriptLocationService, history, dataProvider.name(), previousIds.get("TranscriptGenomicLocationAssociation"), idsAdded.get("TranscriptGenomicLocationAssociation"), "GFF transcript genomic location association", bulkLoadFile.getMd5Sum());
+			runCleanup(exonLocationService, history, dataProvider.name(), previousIds.get("ExonGenomicLocationAssociation"), idsAdded.get("ExonGenomicLocationAssociation"), "GFF exon genomic location association", bulkLoadFile.getMd5Sum());
+			runCleanup(cdsLocationService, history, dataProvider.name(), previousIds.get("CodingSequenceGenomicLocationAssociation"), idsAdded.get("CodingSequenceGenomicLocationAssociation"), "GFF coding sequence genomic location association", bulkLoadFile.getMd5Sum());
 			
 			history.finishLoad();
 			finalSaveHistory(history);
@@ -90,6 +101,10 @@ public class Gff3Executor extends LoadFileExecutor {
 		previousIds.put("Transcript", transcriptService.getIdsByDataProvider(dataProvider));
 		previousIds.put("Exon", exonService.getIdsByDataProvider(dataProvider));
 		previousIds.put("CodingSequence", cdsService.getIdsByDataProvider(dataProvider));
+		previousIds.put("TranscriptGenomicLocationAssociation", transcriptLocationService.getIdsByDataProvider(dataProvider));
+		previousIds.put("ExonGenomicLocationAssociation", exonLocationService.getIdsByDataProvider(dataProvider));
+		previousIds.put("CodingSequenceGenomicLocationAssociation", cdsLocationService.getIdsByDataProvider(dataProvider));
+		
 		
 		return previousIds;
 	}
@@ -108,9 +123,7 @@ public class Gff3Executor extends LoadFileExecutor {
 		
 		GenomeAssembly assembly = loadGenomeAssembly(assemblyName, history, gffHeaderData, dataProvider, ph);
 		idsAdded = loadEntities(history, gffData, idsAdded, dataProvider, ph);
-		if (ObjectUtils.isNotEmpty(assembly)) {
-			idsAdded = loadAssociations(history, gffData, idsAdded, dataProvider, assembly, ph);
-		}
+		idsAdded = loadAssociations(history, gffData, idsAdded, dataProvider, assembly, ph);
 		
 		return idsAdded;
 	}
@@ -120,6 +133,9 @@ public class Gff3Executor extends LoadFileExecutor {
 		idsAdded.put("Transcript", new ArrayList<Long>());
 		idsAdded.put("Exon", new ArrayList<Long>());
 		idsAdded.put("CodingSequence", new ArrayList<Long>());
+		idsAdded.put("TranscriptGenomicLocationAssociation", new ArrayList<Long>());
+		idsAdded.put("ExonGenomicLocationAssociation", new ArrayList<Long>());
+		idsAdded.put("CodingSequenceGenomicLocationAssociation", new ArrayList<Long>());
 		BulkLoadFileHistory history = new BulkLoadFileHistory((gffData.size() * 2) + 1);
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, null, gffData, idsAdded, dataProvider, assemblyName);
@@ -171,7 +187,7 @@ public class Gff3Executor extends LoadFileExecutor {
 			BackendBulkDataProvider dataProvider, GenomeAssembly assembly, ProcessDisplayHelper ph) {
 		for (Gff3DTO gff3Entry : gffData) {
 			try {
-				idsAdded = gff3Service.loadAssociation(history, gff3Entry, idsAdded, dataProvider, assembly);
+				idsAdded = gff3Service.loadAssociations(history, gff3Entry, idsAdded, dataProvider, assembly);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

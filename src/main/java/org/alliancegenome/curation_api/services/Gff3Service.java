@@ -15,11 +15,15 @@ import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.Transcript;
+import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -88,8 +92,31 @@ public class Gff3Service {
 		return idsAdded;
 	}
 	
-	public Map<String, List<Long>> loadAssociation(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, GenomeAssembly assembly) throws ObjectUpdateException {
-		// TODO: implement association loading
+	public Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, GenomeAssembly assembly) throws ObjectUpdateException {
+		if (ObjectUtils.isEmpty(assembly)) {
+			throw new ObjectValidationException(gffEntry, "Cannot load associations without assembly");
+		}
+		
+		if (StringUtils.equals(gffEntry.getType(), "exon") || StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
+			ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, assembly, dataProvider);
+			if (exonLocation != null) {
+				idsAdded.get("ExonGenomicLocationAssociation").add(exonLocation.getId());
+			}
+		} else if (StringUtils.equals(gffEntry.getType(), "CDS")) {
+			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, assembly, dataProvider);
+			if (cdsLocation != null) {
+				idsAdded.get("CodingSequenceGenomicLocationAssociation").add(cdsLocation.getId());
+			}
+		} else if (Gff3Constants.TRANSCRIPT_TYPES.contains(gffEntry.getType())) {
+			if (StringUtils.equals(gffEntry.getType(), "lnc_RNA")) {
+				gffEntry.setType("lncRNA");
+			}
+			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, assembly, dataProvider);
+			if (transcriptLocation != null) {
+				idsAdded.get("TranscriptGenomicLocationAssociation").add(transcriptLocation.getId());
+			}
+		}
+		
 		return idsAdded;
 	}
 	

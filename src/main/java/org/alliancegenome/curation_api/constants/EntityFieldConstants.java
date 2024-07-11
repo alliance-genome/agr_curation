@@ -14,7 +14,10 @@ public final class EntityFieldConstants {
 	public static final String PA_SUBJECT = "phenotypeAnnotationSubject";
 	public static final String PA_SUBJECT_TAXON = PA_SUBJECT + "." + TAXON;
 	public static final String ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER = "alleleAssociationSubject." + DATA_PROVIDER;
+	public static final String CODING_SEQUENCE_ASSOCIATION_SUBJECT_DATA_PROVIDER = "codingSequenceAssociationSubject." + DATA_PROVIDER;
 	public static final String CONSTRUCT_ASSOCIATION_SUBJECT_DATA_PROVIDER = "constructAssociationSubject." + DATA_PROVIDER;
+	public static final String EXON_ASSOCIATION_SUBJECT_DATA_PROVIDER = "exonAssociationSubject." + DATA_PROVIDER;
+	public static final String TRANSCRIPT_ASSOCIATION_SUBJECT_DATA_PROVIDER = "transcriptAssociationSubject." + DATA_PROVIDER;
 	public static final String SUBJECT_GENE_DATA_PROVIDER = "subjectGene." + DATA_PROVIDER;
 	public static final String SUBJECT_GENE_TAXON = "subjectGene." + TAXON;
 	public static final String EA_SUBJECT_TAXON = "expressionAnnotationSubject.taxon.curie";
