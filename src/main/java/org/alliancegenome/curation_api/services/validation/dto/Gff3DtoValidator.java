@@ -167,6 +167,17 @@ public class Gff3DtoValidator {
 			}
 		}
 		
+		for (String key : List.of("ID", "Parent")) {
+			if (attributes.containsKey(key)) {
+				String id = attributes.get(key);
+				String[] idParts = id.split(":");
+				if (idParts.length == 1) {
+					id = dataProvider.name() + ':' + idParts[0];
+				}
+				attributes.put(key, id);
+			}
+		}
+		
 		return attributes;
 	}
 

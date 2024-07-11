@@ -41,9 +41,9 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	private final String transcriptGetEndpoint = "/api/transcript/";
 	private final String exonGetEndpoint = "/api/exon/";
 	private final String cdsGetEndpoint = "/api/cds/";
-	private final String transcriptId = "Y74C9A.2a.1";
-	private final String exonUniqueId = "Y74C9A.2a_exon|Y74C9A.2a.1|I|1|100|+";
-	private final String cdsUniqueId = "Y74C9A.2a|Y74C9A.2a.1|I|10|100|+";
+	private final String transcriptId = "WB:Y74C9A.2a.1";
+	private final String exonUniqueId = "WB:Y74C9A.2a_exon|WB:Y74C9A.2a.1|I|1|100|+";
+	private final String cdsUniqueId = "WB:Y74C9A.2a|WB:Y74C9A.2a.1|I|10|100|+";
 	
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:0000234", "mRNA", false);
