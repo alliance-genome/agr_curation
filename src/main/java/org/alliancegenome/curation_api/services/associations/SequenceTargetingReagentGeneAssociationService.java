@@ -24,7 +24,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCrudService<SequenceTargetingReagentGeneAssociation, SequenceTargetingReagentGeneAssociationDAO>{
+public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCrudService<SequenceTargetingReagentGeneAssociation, SequenceTargetingReagentGeneAssociationDAO> {
 	
 	@Inject
 	SequenceTargetingReagentGeneAssociationDAO sequenceTargetingReagentGeneAssociationDAO;
