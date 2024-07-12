@@ -13,6 +13,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
@@ -32,9 +33,11 @@ public abstract class LocationAssociation extends EvidenceAssociation {
 	private VocabularyTerm relation;
 	
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
+	@Column(name="`start`")
 	private Integer start;
 	
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
+	@Column(name="`end`")
 	private Integer end;
 
 }

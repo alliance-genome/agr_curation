@@ -1,16 +1,20 @@
 package org.alliancegenome.curation_api.services.associations.codingSequenceAssociations;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -97,5 +101,35 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 		response.setEntity(association);
 
 		return response;
+	}
+	
+	public void addAssociationToSubjectAndObject(CodingSequenceGenomicLocationAssociation association) {
+		CodingSequence cds = association.getCodingSequenceAssociationSubject();
+		
+		List<CodingSequenceGenomicLocationAssociation> currentSubjectAssociations = cds.getCodingSequenceGenomicLocationAssociations();
+		if (currentSubjectAssociations == null) {
+			currentSubjectAssociations = new ArrayList<>();
+		}
+		
+		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream()
+				.map(CodingSequenceGenomicLocationAssociation::getId).collect(Collectors.toList());
+		
+		if (!currentSubjectAssociationIds.contains(association.getId())) {
+			currentSubjectAssociations.add(association);
+		}
+		
+		AssemblyComponent assemblyComponent = association.getCodingSequenceGenomicLocationAssociationObject();
+		
+		List<CodingSequenceGenomicLocationAssociation> currentObjectAssociations = assemblyComponent.getCodingSequenceGenomicLocationAssociations();
+		if (currentObjectAssociations == null) {
+			currentObjectAssociations = new ArrayList<>();
+		}
+		
+		List<Long> currentObjectAssociationIds = currentObjectAssociations.stream()
+				.map(CodingSequenceGenomicLocationAssociation::getId).collect(Collectors.toList());
+		
+		if (!currentObjectAssociationIds.contains(association.getId())) {
+			currentObjectAssociations.add(association);
+		}
 	}
 }

@@ -7,7 +7,10 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.Gff3Constants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
+import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
+import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -21,6 +24,11 @@ import org.alliancegenome.curation_api.model.entities.associations.transcriptAss
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.associations.exonAssociations.ExonGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
+import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
 import org.apache.commons.lang3.ObjectUtils;
@@ -34,6 +42,12 @@ import jakarta.transaction.Transactional;
 public class Gff3Service {
 
 	@Inject GenomeAssemblyDAO genomeAssemblyDAO;
+	@Inject ExonDAO exonDAO;
+	@Inject CodingSequenceDAO cdsDAO;
+	@Inject TranscriptDAO transcriptDAO;
+	@Inject ExonGenomicLocationAssociationService exonLocationService;
+	@Inject CodingSequenceGenomicLocationAssociationService cdsLocationService;
+	@Inject TranscriptGenomicLocationAssociationService transcriptLocationService;
 	@Inject DataProviderService dataProviderService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
@@ -92,28 +106,54 @@ public class Gff3Service {
 		return idsAdded;
 	}
 	
+	@Transactional
 	public Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, GenomeAssembly assembly) throws ObjectUpdateException {
 		if (ObjectUtils.isEmpty(assembly)) {
 			throw new ObjectValidationException(gffEntry, "Cannot load associations without assembly");
 		}
 		
+		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(gffEntry, dataProvider);
 		if (StringUtils.equals(gffEntry.getType(), "exon") || StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
-			ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, assembly, dataProvider);
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+			SearchResponse<Exon> response = exonDAO.findByField("uniqueId", uniqueId);
+			if (response == null || response.getSingleResult() == null) {
+				throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
+			}
+			Exon exon = response.getSingleResult();
+			
+			ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assembly, dataProvider);
 			if (exonLocation != null) {
 				idsAdded.get("ExonGenomicLocationAssociation").add(exonLocation.getId());
+				exonLocationService.addAssociationToSubjectAndObject(exonLocation);
 			}
 		} else if (StringUtils.equals(gffEntry.getType(), "CDS")) {
-			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, assembly, dataProvider);
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+			SearchResponse<CodingSequence> response = cdsDAO.findByField("uniqueId", uniqueId);
+			if (response == null || response.getSingleResult() == null) {
+				throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
+			}
+			CodingSequence cds = response.getSingleResult();
+			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assembly, dataProvider);
 			if (cdsLocation != null) {
 				idsAdded.get("CodingSequenceGenomicLocationAssociation").add(cdsLocation.getId());
+				cdsLocationService.addAssociationToSubjectAndObject(cdsLocation);
 			}
 		} else if (Gff3Constants.TRANSCRIPT_TYPES.contains(gffEntry.getType())) {
 			if (StringUtils.equals(gffEntry.getType(), "lnc_RNA")) {
 				gffEntry.setType("lncRNA");
 			}
-			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, assembly, dataProvider);
+			if (!attributes.containsKey("ID")) {
+				throw new ObjectValidationException(gffEntry, "attributes - ID - " + ValidationConstants.REQUIRED_MESSAGE);
+			}
+			SearchResponse<Transcript> response = transcriptDAO.findByField("modInternalId", attributes.get("ID"));
+			if (response == null || response.getSingleResult() == null) {
+				throw new ObjectValidationException(gffEntry, "attributes - ID - " + ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("ID") + ")");
+			}
+			Transcript transcript = response.getSingleResult();
+			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assembly, dataProvider);
 			if (transcriptLocation != null) {
 				idsAdded.get("TranscriptGenomicLocationAssociation").add(transcriptLocation.getId());
+				transcriptLocationService.addAssociationToSubjectAndObject(transcriptLocation);
 			}
 		}
 		

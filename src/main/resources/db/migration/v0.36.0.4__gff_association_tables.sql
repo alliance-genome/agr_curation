@@ -53,6 +53,8 @@ CREATE TABLE codingsequencegenomiclocationassociation (
 	id bigint CONSTRAINT codingsequencegenomiclocationassociation_pkey PRIMARY KEY,
 	"start" integer,
 	"end" integer,
+	phase integer,
+	strand varchar(1),
 	relation_id bigint,
 	codingsequenceassociationsubject_id bigint,
 	codingsequencegenomiclocationassociationobject_id bigint
@@ -78,6 +80,7 @@ CREATE TABLE exongenomiclocationassociation (
 	id bigint CONSTRAINT exongenomiclocationassociation_pkey PRIMARY KEY,
 	"start" integer,
 	"end" integer,
+	strand varchar(1),
 	relation_id bigint,
 	exonassociationsubject_id bigint,
 	exongenomiclocationassociationobject_id bigint
@@ -103,6 +106,8 @@ CREATE TABLE transcriptgenomiclocationassociation (
 	id bigint CONSTRAINT transcriptgenomiclocationassociation_pkey PRIMARY KEY,
 	"start" integer,
 	"end" integer,
+	phase integer,
+	strand varchar(1),
 	relation_id bigint,
 	transcriptassociationsubject_id bigint,
 	transcriptgenomiclocationassociationobject_id bigint

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -66,7 +67,13 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.modInternalId", is(transcriptId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
-			body("entity.transcriptType.curie", is("SO:0000234"));
+			body("entity.transcriptType.curie", is("SO:0000234")).
+			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("I")).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxonCurie", is("NCBITaxon:6239")).
+			body("entity.transcriptGenomicLocationAssociations[0].start", is(1)).
+			body("entity.transcriptGenomicLocationAssociations[0].end", is(100)).
+			body("entity.transcriptGenomicLocationAssociations[0].strand", is("+"));
 
 	}
 	
