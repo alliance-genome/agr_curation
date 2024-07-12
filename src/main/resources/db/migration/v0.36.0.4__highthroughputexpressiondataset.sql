@@ -16,7 +16,7 @@ INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 SELECT nextval('bulkload_seq'), 'HTP_EXPRESSION_DATASET_ANNOTATION', 'WB HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
 
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
-SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'HTP_EXPRESSION_DATASET_ANNOTATION';
+SELECT id, '0 0 22 ? * SUN-THU', true FROM bulkload WHERE backendbulkloadtype = 'HTP_EXPRESSION_DATASET_ANNOTATION';
 
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
 SELECT id, 'HTP_EXPRESSION_DATASET_ANNOTATION', 'FB' FROM bulkload WHERE name = 'FB HTP Expression Dataset Annotation Load';
@@ -55,7 +55,7 @@ CREATE TABLE highthroughputexpressiondatasetannotation (
      modinternalid character varying(255),
      name character varying(255),
      numberofchannels integer,
-     realtednote character varying(255),
+     relatednote_id bigint,
      createdby_id bigint,
      updatedby_id bigint,
      dataprovider_id bigint
@@ -80,6 +80,9 @@ CREATE INDEX htpdatasetannotation_reference_references_index ON highthroughputex
 CREATE INDEX htpdatasetannotation_categorytags_index ON highthroughputexpressiondatasetannotation_categorytags USING btree (categorytags_id);
 
 CREATE INDEX htpdatasetannotation_htpdatasetid_index ON highthroughputexpressiondatasetannotation_categorytags USING btree (highthroughputexpressiondatasetannotation_id);
+
+ALTER TABLE highthroughputexpressiondatasetannotation 
+    ADD CONSTRAINT highthroughputexpressiondatasetannotation_relatednote_id_fk FOREIGN KEY (relatednote_id) REFERENCES note (id);
 
 ALTER TABLE highthroughputexpressiondatasetannotation_categorytags
     ADD CONSTRAINT highthroughputexpressiondatasetannotation_categorytags_highthroughputexpressiondatasetannotation_id_fk FOREIGN KEY (highthroughputexpressiondatasetannotation_id) REFERENCES highthroughputexpressiondatasetannotation(id);
