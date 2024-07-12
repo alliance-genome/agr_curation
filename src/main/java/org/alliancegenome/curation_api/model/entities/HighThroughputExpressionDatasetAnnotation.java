@@ -28,12 +28,12 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "HighThroughputExpressionDatasetAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetAnnotation")
-public class HighThroughputExpressionDatasetAnnotation extends SubmittedObject{
+public class HighThroughputExpressionDatasetAnnotation extends SubmittedObject {
 
 	@JsonView({ View.FieldsOnly.class })
-	private String name;   
+	private String name;
 
-    @IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie", "curie_keyword", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword"})
+	@IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie", "curie_keyword", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
@@ -44,17 +44,17 @@ public class HighThroughputExpressionDatasetAnnotation extends SubmittedObject{
 	@JsonView({ View.FieldsAndLists.class })
 	private List<Reference> references;
 
-    @JsonView({ View.FieldsOnly.class })
-    private String realtedNote;
+	@JsonView({ View.FieldsOnly.class })
+	private String realtedNote;
 
-    @JsonView({ View.FieldsOnly.class })
-    private Integer numberOfChannels;
+	@JsonView({ View.FieldsOnly.class })
+	private Integer numberOfChannels;
 
-    @IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JsonView({ View.FieldsAndLists.class })
+	@ManyToMany
+	@JsonView({ View.FieldsAndLists.class })
 	@JoinTable(name = "htpexpressiondatasetannotation_categorytags", indexes = { @Index(name = "htpdatasetannotation_htpdatasetid_index", columnList = "highthroughputexpressiondatasetannotation_id"), @Index(name = "htpdatasetannotation_categorytags_index", columnList = "categorytags_id")})
-    List<VocabularyTerm> categoryTags;
+	List<VocabularyTerm> categoryTags;
 
 }
