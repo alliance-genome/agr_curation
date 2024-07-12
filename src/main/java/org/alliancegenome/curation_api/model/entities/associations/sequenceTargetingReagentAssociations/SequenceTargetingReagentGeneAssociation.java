@@ -44,6 +44,7 @@ import lombok.ToString;
 public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
+	@JsonIgnoreProperties("sequenceTargetingReagentGeneAssociations")
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@Fetch(FetchMode.JOIN)
@@ -62,6 +63,6 @@ public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations" })
+	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations" })
 	private Gene sequenceTargetingReagentGeneAssociationObject;
 }

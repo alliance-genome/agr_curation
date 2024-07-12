@@ -42,9 +42,9 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	private final String transcriptGetEndpoint = "/api/transcript/";
 	private final String exonGetEndpoint = "/api/exon/";
 	private final String cdsGetEndpoint = "/api/cds/";
-	private final String transcriptId = "Y74C9A.2a.1";
-	private final String exonUniqueId = "Y74C9A.2a_exon|Y74C9A.2a.1|I|1|100|+";
-	private final String cdsUniqueId = "Y74C9A.2a|Y74C9A.2a.1|I|10|100|+";
+	private final String transcriptId = "WB:Y74C9A.2a.1";
+	private final String exonUniqueId = "WB:Y74C9A.2a_exon|WB:Y74C9A.2a.1|I|1|100|+";
+	private final String cdsUniqueId = "WB:Y74C9A.2a|WB:Y74C9A.2a.1|I|10|100|+";
 	
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:0000234", "mRNA", false);
@@ -65,6 +65,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.modInternalId", is(transcriptId)).
+			body("entity.name", is("Y74C9A.2a.1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.transcriptType.curie", is("SO:0000234")).
@@ -72,7 +73,8 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("I")).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxonCurie", is("NCBITaxon:6239")).
 			body("entity.transcriptGenomicLocationAssociations[0].start", is(1)).
-			body("entity.transcriptGenomicLocationAssociations[0].end", is(100)).
+			body("entity.transcriptGenomicLocationAssociations[0].end", is(1000)).
+			body("entity.transcriptGenomicLocationAssociations[0].phase", is(0)).
 			body("entity.transcriptGenomicLocationAssociations[0].strand", is("+"));
 
 	}
@@ -89,12 +91,18 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is(exonUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB"));
+			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.exonGenomicLocationAssociations", hasSize(1)).
+			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.name", is("I")).
+			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.taxonCurie", is("NCBITaxon:6239")).
+			body("entity.exonGenomicLocationAssociations[0].start", is(1)).
+			body("entity.exonGenomicLocationAssociations[0].end", is(100)).
+			body("entity.exonGenomicLocationAssociations[0].strand", is("+"));
 
 	}
 	
 	@Test
-	@Order(2)
+	@Order(3)
 	public void gff3DataBulkUploadCodingSequenceEntity() throws Exception {
 		checkSuccessfulBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF03_CDS.json", 3);
 		
@@ -105,7 +113,14 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.uniqueId", is(cdsUniqueId)).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB"));
+			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.codingSequenceGenomicLocationAssociations", hasSize(1)).
+			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.name", is("I")).
+			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.taxonCurie", is("NCBITaxon:6239")).
+			body("entity.codingSequenceGenomicLocationAssociations[0].start", is(10)).
+			body("entity.codingSequenceGenomicLocationAssociations[0].end", is(100)).
+			body("entity.codingSequenceGenomicLocationAssociations[0].phase", is(1)).
+			body("entity.codingSequenceGenomicLocationAssociations[0].strand", is("+"));
 
 	}
 
