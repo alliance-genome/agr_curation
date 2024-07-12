@@ -62,7 +62,7 @@ public class HighThroughputExpressionDatasetAnnotation extends SubmittedObject {
 	private Note relatedNote;
 
 	@JsonView({ View.FieldsOnly.class })
-	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	private Integer numberOfChannels;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
