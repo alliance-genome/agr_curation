@@ -48,6 +48,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	
 	private void loadRequiredEntities() throws Exception {
 		createSoTerm("SO:0000234", "mRNA", false);
+		createSoTerm("SO:0001035", "piRNA", false);
 		createSoTerm("SO:0000147", "exon", false);
 		createSoTerm("SO:0000316", "CDS", false);
 	}
@@ -57,7 +58,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	public void gff3DataBulkUploadTranscriptEntity() throws Exception {
 		loadRequiredEntities();
 		
-		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF01_transcript.json", 3);
+		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", 3);
 		
 		RestAssured.given().
 			when().
@@ -71,7 +72,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.transcriptType.curie", is("SO:0000234")).
 			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("I")).
-			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxonCurie", is("NCBITaxon:6239")).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.transcriptGenomicLocationAssociations[0].start", is(1)).
 			body("entity.transcriptGenomicLocationAssociations[0].end", is(1000)).
 			body("entity.transcriptGenomicLocationAssociations[0].phase", is(0)).
@@ -82,7 +83,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void gff3DataBulkUploadExonEntity() throws Exception {
-		checkSuccessfulBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF02_exon.json", 3);
+		checkSuccessfulBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", 3);
 		
 		RestAssured.given().
 			when().
@@ -94,7 +95,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.exonGenomicLocationAssociations", hasSize(1)).
 			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.name", is("I")).
-			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.taxonCurie", is("NCBITaxon:6239")).
+			body("entity.exonGenomicLocationAssociations[0].exonGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.exonGenomicLocationAssociations[0].start", is(1)).
 			body("entity.exonGenomicLocationAssociations[0].end", is(100)).
 			body("entity.exonGenomicLocationAssociations[0].strand", is("+"));
@@ -104,7 +105,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void gff3DataBulkUploadCodingSequenceEntity() throws Exception {
-		checkSuccessfulBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF03_CDS.json", 3);
+		checkSuccessfulBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", 3);
 		
 		RestAssured.given().
 			when().
@@ -116,12 +117,60 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
 			body("entity.codingSequenceGenomicLocationAssociations", hasSize(1)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.name", is("I")).
-			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.taxonCurie", is("NCBITaxon:6239")).
+			body("entity.codingSequenceGenomicLocationAssociations[0].codingSequenceGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.codingSequenceGenomicLocationAssociations[0].start", is(10)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].end", is(100)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].phase", is(1)).
 			body("entity.codingSequenceGenomicLocationAssociations[0].strand", is("+"));
 
+	}
+	
+	@Test
+	@Order(4)
+	public void gff3DataBulkUploadUpdateTranscriptEntity() throws Exception {
+		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", 3);
+		
+		RestAssured.given().
+			when().
+			get(transcriptGetEndpoint + transcriptId).
+			then().
+			statusCode(200).
+			body("entity.modInternalId", is(transcriptId)).
+			body("entity.name", is("Y74C9A.2a.1")).
+			body("entity.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.dataProvider.sourceOrganization.abbreviation", is("WB")).
+			body("entity.transcriptType.curie", is("SO:0001035")).
+			body("entity.transcriptGenomicLocationAssociations", hasSize(1)).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.name", is("II")).
+			body("entity.transcriptGenomicLocationAssociations[0].transcriptGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.transcriptGenomicLocationAssociations[0].start", is(2)).
+			body("entity.transcriptGenomicLocationAssociations[0].end", is(2000)).
+			body("entity.transcriptGenomicLocationAssociations[0].phase", is(1)).
+			body("entity.transcriptGenomicLocationAssociations[0].strand", is("-"));
+
+	}
+	
+	@Test
+	@Order(5)
+	public void gff3DataBulkUploadMissingRequiredFields() throws Exception {
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_01_no_seq_id.json", 3, 1, 2);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_02_no_start.json", 3, 1, 2);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_03_no_end.json", 3, 1, 2);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_04_no_strand.json", 3, 1, 2);
+	}
+	
+	@Test
+	@Order(6)
+	public void gff3DataBulkUploadEmptyRequiredFields() throws Exception {
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_01_empty_seq_id.json", 3, 1, 2);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_02_empty_strand.json", 3, 1, 2);
+	}
+	
+	@Test
+	@Order(7)
+	public void gff3DataBulkUploadInvalidFields() throws Exception {
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_01_invalid_strand.json", 3, 1, 2);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_02_invalid_phase.json", 3, 1, 2);
 	}
 
 }

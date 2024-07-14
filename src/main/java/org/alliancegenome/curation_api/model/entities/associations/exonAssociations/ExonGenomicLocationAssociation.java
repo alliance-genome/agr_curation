@@ -59,7 +59,11 @@ public class ExonGenomicLocationAssociation extends LocationAssociation {
 	})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties("exonGenomicLocationAssociations")
+	@JsonIgnoreProperties({
+		"codingSequenceGenomicLocationAssociations",
+		"exonGenomicLocationAssociations",
+		"transcriptGenomicLocationAssociations"
+	})
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent exonGenomicLocationAssociationObject;	
 	

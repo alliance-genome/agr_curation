@@ -66,12 +66,15 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties({"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations"})
+	@JsonIgnoreProperties({
+		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
+		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations"
+	})
 	private GenomicEntity constructGenomicEntityAssociationObject;
 
 	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
-			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword",
-			"references.primaryCrossReferenceCurie_keyword"
+		"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword",
+		"references.primaryCrossReferenceCurie_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

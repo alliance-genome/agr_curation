@@ -61,11 +61,16 @@ public class CodingSequenceGenomicLocationAssociation extends LocationAssociatio
 	})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties("codingSequenceGenomicLocationAssociations")
+	@JsonIgnoreProperties({
+		"codingSequenceGenomicLocationAssociations",
+		"exonGenomicLocationAssociations",
+		"transcriptGenomicLocationAssociations"
+	})
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent codingSequenceGenomicLocationAssociationObject;
 	
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
+	@JsonView({ View.FieldsOnly.class })
 	private Integer phase;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

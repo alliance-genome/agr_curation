@@ -34,10 +34,12 @@ public abstract class LocationAssociation extends EvidenceAssociation {
 	
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
 	@Column(name="`start`")
+	@JsonView({ View.FieldsOnly.class })
 	private Integer start;
 	
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
 	@Column(name="`end`")
+	@JsonView({ View.FieldsOnly.class })
 	private Integer end;
 
 }

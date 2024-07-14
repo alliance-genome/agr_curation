@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -115,15 +114,15 @@ public class Gff3Executor extends LoadFileExecutor {
 	}
 
 	private Map<String, List<Long>> runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<Gff3DTO> gffData,
-			Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyName) {
+			Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF update for " + dataProvider.name(), (gffData.size() * 2) + 1);
 		
-		GenomeAssembly assembly = loadGenomeAssembly(assemblyName, history, gffHeaderData, dataProvider, ph);
+		loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
 		idsAdded = loadEntities(history, gffData, idsAdded, dataProvider, ph);
-		idsAdded = loadAssociations(history, gffData, idsAdded, dataProvider, assembly, ph);
+		idsAdded = loadAssociations(history, gffData, idsAdded, dataProvider, assemblyId, ph);
 		
 		return idsAdded;
 	}
@@ -144,10 +143,9 @@ public class Gff3Executor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	private GenomeAssembly loadGenomeAssembly(String assemblyName, BulkLoadFileHistory history, List<String> gffHeaderData, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
-		GenomeAssembly assembly = null;
+	private void loadGenomeAssembly(String assemblyName, BulkLoadFileHistory history, List<String> gffHeaderData, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
 		try {
-			assembly = gff3Service.loadGenomeAssembly(assemblyName, gffHeaderData, dataProvider);
+			gff3Service.loadGenomeAssembly(assemblyName, gffHeaderData, dataProvider);
 			history.incrementCompleted();
 		} catch (ObjectUpdateException e) {
 			history.incrementFailed();
@@ -159,7 +157,6 @@ public class Gff3Executor extends LoadFileExecutor {
 		}
 		updateHistory(history);
 		ph.progressProcess();
-		return assembly;
 	}
 
 	private Map<String, List<Long>> loadEntities(BulkLoadFileHistory history, List<Gff3DTO> gffData, Map<String, List<Long>> idsAdded,
@@ -184,10 +181,10 @@ public class Gff3Executor extends LoadFileExecutor {
 	}
 
 	private Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, List<Gff3DTO> gffData, Map<String, List<Long>> idsAdded,
-			BackendBulkDataProvider dataProvider, GenomeAssembly assembly, ProcessDisplayHelper ph) {
+			BackendBulkDataProvider dataProvider, String assemblyId, ProcessDisplayHelper ph) {
 		for (Gff3DTO gff3Entry : gffData) {
 			try {
-				idsAdded = gff3Service.loadAssociations(history, gff3Entry, idsAdded, dataProvider, assembly);
+				idsAdded = gff3Service.loadAssociations(history, gff3Entry, idsAdded, dataProvider, assemblyId);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

@@ -31,7 +31,6 @@ import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelpe
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -53,7 +52,7 @@ public class Gff3Service {
 	@Inject Gff3DtoValidator gff3DtoValidator;
 	
 	@Transactional
-	public GenomeAssembly loadGenomeAssembly(String assemblyName, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public void loadGenomeAssembly(String assemblyName, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		
 		if (StringUtils.isBlank(assemblyName)) {
 			for (String header : gffHeaderData) {
@@ -69,18 +68,17 @@ public class Gff3Service {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
 			
 			SearchResponse<GenomeAssembly> resp = genomeAssemblyDAO.findByParams(params);
-			if (resp != null && resp.getSingleResult() != null) {
-				return resp.getSingleResult();
+			if (resp == null || resp.getSingleResult() == null) {
+				GenomeAssembly assembly = new GenomeAssembly();
+				assembly.setModEntityId(assemblyName);
+				assembly.setDataProvider(dataProviderService.createOrganizationDataProvider(dataProvider.sourceOrganization));
+				assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+				
+				genomeAssemblyDAO.persist(assembly);
 			}
-				
-			GenomeAssembly assembly = new GenomeAssembly();
-			assembly.setModEntityId(assemblyName);
-			assembly.setDataProvider(dataProviderService.createOrganizationDataProvider(dataProvider.sourceOrganization));
-			assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
-				
-			return genomeAssemblyDAO.persist(assembly);
+		} else {
+			throw new ObjectValidationException(gffHeaderData, "#!assembly - " + ValidationConstants.REQUIRED_MESSAGE);
 		}
-		throw new ObjectValidationException(gffHeaderData, "#!assembly - " + ValidationConstants.REQUIRED_MESSAGE);
 	}
 	
 	public Map<String, List<Long>> loadEntity(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
@@ -107,8 +105,8 @@ public class Gff3Service {
 	}
 	
 	@Transactional
-	public Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, GenomeAssembly assembly) throws ObjectUpdateException {
-		if (ObjectUtils.isEmpty(assembly)) {
+	public Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ObjectUpdateException {
+		if (StringUtils.isEmpty(assemblyId)) {
 			throw new ObjectValidationException(gffEntry, "Cannot load associations without assembly");
 		}
 		
@@ -121,7 +119,7 @@ public class Gff3Service {
 			}
 			Exon exon = response.getSingleResult();
 			
-			ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assembly, dataProvider);
+			ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assemblyId, dataProvider);
 			if (exonLocation != null) {
 				idsAdded.get("ExonGenomicLocationAssociation").add(exonLocation.getId());
 				exonLocationService.addAssociationToSubjectAndObject(exonLocation);
@@ -133,7 +131,7 @@ public class Gff3Service {
 				throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
 			}
 			CodingSequence cds = response.getSingleResult();
-			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assembly, dataProvider);
+			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, dataProvider);
 			if (cdsLocation != null) {
 				idsAdded.get("CodingSequenceGenomicLocationAssociation").add(cdsLocation.getId());
 				cdsLocationService.addAssociationToSubjectAndObject(cdsLocation);
@@ -150,7 +148,7 @@ public class Gff3Service {
 				throw new ObjectValidationException(gffEntry, "attributes - ID - " + ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("ID") + ")");
 			}
 			Transcript transcript = response.getSingleResult();
-			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assembly, dataProvider);
+			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, dataProvider);
 			if (transcriptLocation != null) {
 				idsAdded.get("TranscriptGenomicLocationAssociation").add(transcriptLocation.getId());
 				transcriptLocationService.addAssociationToSubjectAndObject(transcriptLocation);

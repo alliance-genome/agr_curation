@@ -161,15 +161,15 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, GenomeAssembly assembly, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		CodingSequenceGenomicLocationAssociation locationAssociation = new CodingSequenceGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assembly, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.CODING_SEQUENCE_ASSOCIATION_SUBJECT + ".id", cds.getId());
 			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
-			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assembly.getModEntityId());
+			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
 			SearchResponse<CodingSequenceGenomicLocationAssociation> locationSearchResponse = cdsLocationDAO.findByParams(params);
 			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
 				locationAssociation = locationSearchResponse.getSingleResult();
@@ -189,15 +189,15 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, GenomeAssembly assembly, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		ExonGenomicLocationAssociation locationAssociation = new ExonGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assembly, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT + ".id", exon.getId());
 			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
-			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assembly.getModEntityId());
+			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
 			SearchResponse<ExonGenomicLocationAssociation> locationSearchResponse = exonLocationDAO.findByParams(params);
 			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
 				locationAssociation = locationSearchResponse.getSingleResult();
@@ -216,15 +216,14 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, GenomeAssembly assembly, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		TranscriptGenomicLocationAssociation locationAssociation = new TranscriptGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assembly, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", transcript.getId());
-			params.put(EntityFieldConstants.TRANSCRIPT_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
-			params.put(EntityFieldConstants.TRANSCRIPT_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assembly.getModEntityId());
+			params.put(EntityFieldConstants.TRANSCRIPT_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
 			SearchResponse<TranscriptGenomicLocationAssociation> locationSearchResponse = transcriptLocationDAO.findByParams(params);
 			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
 				locationAssociation = locationSearchResponse.getSingleResult();
