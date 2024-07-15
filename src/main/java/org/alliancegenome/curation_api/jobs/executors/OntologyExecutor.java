@@ -21,7 +21,7 @@ import org.alliancegenome.curation_api.services.ontology.ClTermService;
 import org.alliancegenome.curation_api.services.ontology.CmoTermService;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
-import org.alliancegenome.curation_api.services.ontology.DpoTermService;
+import org.alliancegenome.curation_api.services.ontology.FbcvTermService;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
@@ -95,7 +95,7 @@ public class OntologyExecutor {
 	@Inject ObiTermService obiTermService;
 	@Inject PatoTermService patoTermService;
 	@Inject WbPhenotypeTermService wbPhenotypeTermService;
-	@Inject DpoTermService dpoTermService;
+	@Inject FbcvTermService fbcvTermService;
 	@Inject MmoTermService mmoTermService;
 	@Inject ApoTermService apoTermService;
 	@Inject MiTermService miTermService;
@@ -202,9 +202,9 @@ public class OntologyExecutor {
 				config.setLoadOnlyIRIPrefix("HP");
 				processTerms(bulkLoadFile, hpTermService, config);
 			}
-			case DPO -> {
-				config.getAltNameSpaces().add("phenotypic_class");
-				processTerms(bulkLoadFile, dpoTermService, config);
+			case FBCV -> {
+				config.setLoadOnlyIRIPrefix("FBcv");
+				processTerms(bulkLoadFile, fbcvTermService, config);
 			}
 			case MMO -> processTerms(bulkLoadFile, mmoTermService, config);
 			case APO -> {

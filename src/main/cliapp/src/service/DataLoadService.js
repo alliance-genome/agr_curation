@@ -80,6 +80,7 @@ export class DataLoadService extends BaseAuthService {
 	getBackendBulkLoadTypes(loadType) {
 		const bulkLoadTypes = {
 			BulkFMSLoad: [
+				'GFF',
 				'INTERACTION-GEN',
 				'INTERACTION-MOL',
 				'MOLECULE',
@@ -121,9 +122,9 @@ export class DataLoadService extends BaseAuthService {
 			'CMO',
 			'DAO',
 			'DO',
-			'DPO',
 			'ECO',
 			'EMAPA',
+			'FBCV',
 			'FBDV',
 			'GENO',
 			'GO',
