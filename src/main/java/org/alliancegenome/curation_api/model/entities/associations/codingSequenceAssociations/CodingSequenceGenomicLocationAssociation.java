@@ -69,7 +69,7 @@ public class CodingSequenceGenomicLocationAssociation extends LocationAssociatio
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent codingSequenceGenomicLocationAssociationObject;
 	
-	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@JsonView({ View.FieldsOnly.class })
 	private Integer phase;
 	

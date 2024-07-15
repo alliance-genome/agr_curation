@@ -67,9 +67,9 @@ public class TranscriptGenomicLocationAssociation extends LocationAssociation {
 		"transcriptGenomicLocationAssociations"
 	})
 	@Fetch(FetchMode.JOIN)
-	private AssemblyComponent transcriptGenomicLocationAssociationObject;	
+	private AssemblyComponent transcriptGenomicLocationAssociationObject;
 	
-	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@JsonView({ View.FieldsOnly.class })
 	private Integer phase;
 	

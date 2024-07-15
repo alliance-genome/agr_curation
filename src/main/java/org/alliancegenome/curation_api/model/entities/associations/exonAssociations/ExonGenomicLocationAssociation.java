@@ -65,7 +65,7 @@ public class ExonGenomicLocationAssociation extends LocationAssociation {
 		"transcriptGenomicLocationAssociations"
 	})
 	@Fetch(FetchMode.JOIN)
-	private AssemblyComponent exonGenomicLocationAssociationObject;	
+	private AssemblyComponent exonGenomicLocationAssociationObject;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "phenotypeAnnotationObject_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
