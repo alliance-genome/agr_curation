@@ -32,7 +32,7 @@ public abstract class LocationAssociation extends EvidenceAssociation {
 	@JsonView({ View.FieldsOnly.class })
 	private VocabularyTerm relation;
 	
-	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES) 
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@Column(name = "`start`")
 	@JsonView({ View.FieldsOnly.class })
 	private Integer start;
