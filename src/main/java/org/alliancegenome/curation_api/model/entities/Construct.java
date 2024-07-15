@@ -74,8 +74,12 @@ public class Construct extends Reagent {
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
 	
-	@IndexedEmbedded(includePaths = {"constructGenomicEntityAssociationObject.curie", "constructGenomicEntityAssociationObject.modEntityId", "constructGenomicEntityAssociationObject.modInternalId", "constructGenomicEntityAssociationObject.name", "constructGenomicEntityAssociationObject.symbol", "relation.name",
-			"constructGenomicEntityAssociationObject.curie_keyword", "constructGenomicEntityAssociationObject.modEntityId_keyword", "constructGenomicEntityAssociationObject.modInternalId_keyword", "constructGenomicEntityAssociationObject.name_keyword", "constructGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"})
+	@IndexedEmbedded(includePaths = {
+		"constructGenomicEntityAssociationObject.curie", "constructGenomicEntityAssociationObject.modEntityId", "constructGenomicEntityAssociationObject.modInternalId",
+		"constructGenomicEntityAssociationObject.name", "constructGenomicEntityAssociationObject.symbol", "relation.name", "constructGenomicEntityAssociationObject.curie_keyword",
+		"constructGenomicEntityAssociationObject.modEntityId_keyword", "constructGenomicEntityAssociationObject.modInternalId_keyword", "constructGenomicEntityAssociationObject.name_keyword",
+		"constructGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"
+	})
 	@OneToMany(mappedBy = "constructAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;

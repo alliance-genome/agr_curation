@@ -27,24 +27,28 @@ public enum PsiMiTabPrefixEnum {
 		psiMiTabPrefix = psiMiTabPrefix.replace("/", "_");
 		
 		for (PsiMiTabPrefixEnum prefix : values()) {
-			if (prefix.name().equals(psiMiTabPrefix))
+			if (prefix.name().equals(psiMiTabPrefix)) {
 				return prefix;
+			}
 		}
 		
 		return null;
 	}
 	
 	public static String getAllianceIdentifier(String psiMiTabIdentifier) {
-		if (StringUtils.isBlank(psiMiTabIdentifier))
+		if (StringUtils.isBlank(psiMiTabIdentifier)) {
 			return null;
+		}
 		
 		String[] psiMiTabIdParts = psiMiTabIdentifier.split(":");
-		if (psiMiTabIdParts.length != 2)
+		if (psiMiTabIdParts.length != 2) {
 			return psiMiTabIdentifier;
+		}
 		
 		PsiMiTabPrefixEnum prefix = findByPsiMiTabPrefix(psiMiTabIdParts[0]);
-		if (prefix == null)
+		if (prefix == null) {
 			return psiMiTabIdentifier;
+		}
 		
 		return prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
 	}

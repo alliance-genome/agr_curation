@@ -15,6 +15,9 @@ These instructions will get you a copy of the project and the API up and running
    *  [Postgres](#postgres)
    *  [OpenSearch](#opensearch-elastic-search-alternative)
    *  [Cerebro](#cerebro)
+-  [Code Style](#codestyle)
+   *  [Running Checkstyle](#running-checkstyle)
+   *  [Checkstyle Links](#checkstyle-links)
 -  [Building](#building)
    *  [Building Docker Image](#building-docker-image)
 -  [Running](#running)
@@ -238,6 +241,100 @@ CONTAINER ID   IMAGE                                   COMMAND                  
 7811ffe3c92d   opensearchproject/opensearch:1.2.4   "./opensearch-docker…"   24 minutes ago   Up 24 minutes   0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 9300/tcp, 0.0.0.0:9600->9600/tcp, :::9600->9600/tcp, 9650/tcp          opensearch
 7de3cf028e9c   postgres:13                             "docker-entrypoint.s…"   3 days ago       Up 3 days       0.0.0.0:5432->5432/tcp, :::5432->5432/tcp                                                                         postgres
 ```
+
+## Code Style
+
+This repository uses checkstyle to validate formatting of code to a coding standard. [Checkstyle](https://checkstyle.sourceforge.io/) is a development tool to help programmers write Java code that adheres to a coding standard. It automates the process of checking Java code to spare humans of this boring (but important) task. This makes it ideal for projects that want to enforce a coding standard.
+
+This repository also uses [Prettier](https://prettier.io/) to validate and update the formatting of code in the frontend codebase.
+
+### Running Checkstyle
+
+To run checkstyle locally in order to check your code before committing run the following:
+
+```bash
+> mvn checkstyle:check
+```
+
+Or the make target:
+
+```bash
+> make checkstyle
+```
+
+This will check all the style of the code and report any issues that it finds with the code. Here is an example output:
+
+```bash
+> make checkstyle
+[INFO] Scanning for projects...
+[INFO] Inspecting build with total of 1 modules...
+[INFO] Installing Nexus Staging features:
+[INFO]   ... total of 1 executions of maven-deploy-plugin replaced with nexus-staging-maven-plugin
+[INFO] 
+[INFO] ----------------< org.alliancegenome:agr_curation_api >-----------------
+[INFO] Building AGR Curation :: API 0.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- checkstyle:3.3.1:check (default-cli) @ agr_curation_api ---
+[INFO] There is 1 error reported by Checkstyle 10.17.0 with checkstyle.xml ruleset.
+[ERROR] src/main/java/org/alliancegenome/curation_api/main/Main.java:[9] (regexp) RegexpSinglelineJava: Indent must use tab characters
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.107 s
+[INFO] Finished at: 2024-05-29T05:23:33-04:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-checkstyle-plugin:3.3.1:check (default-cli) on project agr_curation_api: You have 1 Checkstyle violation. -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+make: *** [checkstyle] Error 1
+```
+
+Checkstyle can be configured via the checkstyle.xml file in the root of the project, this file can also be used by IDE's to keep code in line with the ruleset.
+
+### Running Prettier
+
+To validate formatting on JavaScript files locally with Prettier: 
+
+```bash
+> npx prettier --check **/*.js
+```
+
+Or the make target:
+
+```bash
+> make prettier-check
+```
+
+To update formatting on JavaScript files locally with Prettier: 
+
+```bash
+> npx prettier --write **/*.js
+```
+
+Or the make target:
+
+```bash
+> make prettier-write
+```
+
+Prettier can be configured via the .prettierrc.yaml file in the src/main/cliapp director of this project, this file can also be used by IDE's to keep code in line with the ruleset.
+
+### Checkstyle Links
+
+* Checkstyle for vscode: [https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle)
+* Checkstyle for Intellij: [https://stackoverflow.com/questions/26955766/intellij-idea-checkstyle](https://stackoverflow.com/questions/26955766/intellij-idea-checkstyle)
+* Checkstyle for Eclipse: [https://www.youtube.com/watch?v=H90QoBp2NSQ](https://www.youtube.com/watch?v=H90QoBp2NSQ) or [https://checkstyle.org/eclipse-cs/#!/](https://checkstyle.org/eclipse-cs/#!/)
+
+### Prettier Links
+
+* Prettier for vscode: [https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+* Prettier for Intellij: [https://www.jetbrains.com/help/idea/prettier.html](https://www.jetbrains.com/help/idea/prettier.html)
 
 ## Building
 

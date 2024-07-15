@@ -20,14 +20,12 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 
-	@Inject
-	PersonDAO personDAO;
-	@Inject
-	PersonValidator personValidator;
+	@Inject PersonDAO personDAO;
+	@Inject PersonValidator personValidator;
 
-	Date personRequest = null;
+	Date personRequest;
 	HashMap<String, Person> personCacheMap = new HashMap<>();
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -37,8 +35,8 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 	@Transactional
 	public Person fetchByUniqueIdOrCreate(String uniqueId) {
 		Person person = null;
-		if(personRequest != null) {
-			if(personCacheMap.containsKey(uniqueId)) {
+		if (personRequest != null) {
+			if (personCacheMap.containsKey(uniqueId)) {
 				person = personCacheMap.get(uniqueId);
 			} else {
 				Log.debug("Person not cached, caching uniqueId: (" + uniqueId + ")");
@@ -51,7 +49,7 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		}
 		return person;
 	}
-	
+
 	private Person findPersonByUniqueIdOrCreateDB(String uniqueId) {
 		SearchResponse<Person> personResponse = personDAO.findByField("uniqueId", uniqueId);
 		if (personResponse != null && personResponse.getResults().size() > 0) {
@@ -64,7 +62,7 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 
 	public Person findPersonByEmail(String email) {
 		SearchResponse<Person> resp = personDAO.findByField("email", email);
-		if (resp != null && resp.getTotalResults() == 1) {
+		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
 		}
 		return null;
@@ -76,26 +74,26 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		Person dbEntity = personValidator.validatePerson(uiEntity);
 		return new ObjectResponse<>(personDAO.persist(dbEntity));
 	}
-	
+
 	public Person findPersonByApiToken(String apiToken) {
 		SearchResponse<Person> resp = personDAO.findByField("apiToken", apiToken);
-		if (resp != null && resp.getTotalResults() == 1) {
+		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
 		}
 		return null;
 	}
-	
+
 	public Person findPersonByOktaEmail(String email) {
 		SearchResponse<Person> resp = personDAO.findByField("oktaEmail", email);
-		if (resp != null && resp.getTotalResults() == 1) {
+		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
 		}
 		return null;
 	}
-	
+
 	public Person findPersonByOktaId(String oktaId) {
 		SearchResponse<Person> resp = personDAO.findByField("oktaId", oktaId);
-		if (resp != null && resp.getTotalResults() == 1) {
+		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
 		}
 		return null;

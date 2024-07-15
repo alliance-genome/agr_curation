@@ -14,8 +14,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class CrossReferenceValidator extends AuditedObjectValidator<CrossReference> {
 
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
@@ -23,28 +22,32 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 
 		CrossReference dbEntity;
 
-		Boolean newEntity = true; 
+		Boolean newEntity = true;
 		if (uiEntity.getId() != null) {
 			dbEntity = crossReferenceDAO.find(uiEntity.getId());
 			newEntity = false;
 		} else {
 			dbEntity = new CrossReference();
 		}
-		
+
 		dbEntity = (CrossReference) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
-		if (StringUtils.isEmpty(uiEntity.getReferencedCurie()))
+		if (StringUtils.isEmpty(uiEntity.getReferencedCurie())) {
 			addMessageResponse("referencedCurie", ValidationConstants.REQUIRED_MESSAGE);
+		}
 		dbEntity.setReferencedCurie(uiEntity.getReferencedCurie());
 
-		if (StringUtils.isEmpty(uiEntity.getDisplayName()))
-			if (StringUtils.isEmpty(uiEntity.getReferencedCurie()))
+		if (StringUtils.isEmpty(uiEntity.getDisplayName())) {
+			if (StringUtils.isEmpty(uiEntity.getReferencedCurie())) {
 				addMessageResponse("displayName", ValidationConstants.REQUIRED_MESSAGE);
+			}
+		}
 		dbEntity.setDisplayName(uiEntity.getDisplayName());
-		
-		if (uiEntity.getResourceDescriptorPage() != null)
+
+		if (uiEntity.getResourceDescriptorPage() != null) {
 			dbEntity.setResourceDescriptorPage(uiEntity.getResourceDescriptorPage());
-			
+		}
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);
@@ -52,7 +55,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 			}
 			return response;
 		}
-		
+
 		response.setEntity(crossReferenceDAO.persist(dbEntity));
 
 		return response;

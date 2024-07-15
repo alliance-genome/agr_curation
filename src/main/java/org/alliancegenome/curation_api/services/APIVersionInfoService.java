@@ -15,14 +15,16 @@ import jakarta.enterprise.context.RequestScoped;
 public class APIVersionInfoService {
 
 	public Boolean isPartiallyImplemented(Class<?> clazz, AGRCurationSchemaVersion version) {
-		if (version.partial())
+		if (version.partial()) {
 			return true;
+		}
 
 		Set<Class<?>> dependencyClasses = getDependencyClasses(version);
 		for (Class<?> dependencyClass : dependencyClasses) {
 			AGRCurationSchemaVersion dependencyVersion = dependencyClass.getAnnotation(AGRCurationSchemaVersion.class);
-			if (dependencyVersion.partial())
+			if (dependencyVersion.partial()) {
 				return true;
+			}
 		}
 
 		return false;
@@ -58,14 +60,17 @@ public class APIVersionInfoService {
 		List<Integer> vParts1 = getVersionParts(version1);
 		List<Integer> vParts2 = getVersionParts(version2);
 
-		if (vParts1.get(0) < vParts2.get(0))
+		if (vParts1.get(0) < vParts2.get(0)) {
 			return version1;
+		}
 		if (vParts1.get(0).equals(vParts2.get(0))) {
-			if (vParts1.get(1) < vParts2.get(1))
+			if (vParts1.get(1) < vParts2.get(1)) {
 				return version1;
+			}
 			if (vParts1.get(1).equals(vParts2.get(1))) {
-				if (vParts1.get(2) < vParts2.get(2))
+				if (vParts1.get(2) < vParts2.get(2)) {
 					return version1;
+				}
 			}
 		}
 		return version2;

@@ -58,13 +58,22 @@ docker-run:
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
 
+checkstyle:
+	mvn checkstyle:check
+
+prettier-check:
+	npx prettier 'src/main/cliapp/**/*.js' --check
+
+prettier-write:
+	npx prettier 'src/main/cliapp/**/*.js' --write
+
 test:
 	mvn test
 
 integration-test:
-	mvn clean package
+	mvn -ntp clean package
 	mvn -ntp failsafe:integration-test -Dokta.authentication=false
-	mvn failsafe:verify
+	mvn -ntp failsafe:verify
 
 verify:
 	mvn verify

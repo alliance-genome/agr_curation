@@ -13,19 +13,28 @@ import { ControlledVocabularyDropdown } from '../../../components/ControlledVoca
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
-import { synonymScopeTemplate, nameTypeTemplate, synonymUrlTemplate, synonymUrlEditorTemplate, displayTextTemplate, displayTextEditorTemplate, formatTextTemplate, formatTextEditorTemplate } from '../../../components/NameSlotAnnotationComponent';
+import {
+	synonymScopeTemplate,
+	nameTypeTemplate,
+	synonymUrlTemplate,
+	synonymUrlEditorTemplate,
+	displayTextTemplate,
+	displayTextEditorTemplate,
+	formatTextTemplate,
+	formatTextEditorTemplate,
+} from '../../../components/NameSlotAnnotationComponent';
 
 export const SynonymsDialog = ({
-													name,
-													field,
-													endpoint,
-													originalSynonymsData,
-													setOriginalSynonymsData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow
-												}) => {
+	name,
+	field,
+	endpoint,
+	originalSynonymsData,
+	setOriginalSynonymsData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+}) => {
 	const { originalSynonyms, isInEdit, dialog, rowIndex, mainRowProps } = originalSynonymsData;
-	const [localSynonyms, setLocalSynonyms] = useState(null) ;
+	const [localSynonyms, setLocalSynonyms] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -41,15 +50,15 @@ export const SynonymsDialog = ({
 		let _localSynonyms = cloneSynonyms(originalSynonyms);
 		setLocalSynonyms(_localSynonyms);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localSynonyms) {
+			if (_localSynonyms) {
 				_localSynonyms.forEach((fn) => {
 					rowsObject[`${fn.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -57,14 +66,14 @@ export const SynonymsDialog = ({
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localSynonyms = [...localSynonyms];//add new note support
-		if(originalSynonyms && originalSynonyms[event.index]){
+		let _localSynonyms = [...localSynonyms]; //add new note support
+		if (originalSynonyms && originalSynonyms[event.index]) {
 			let dataKey = _localSynonyms[event.index].dataKey;
 			_localSynonyms[event.index] = global.structuredClone(originalSynonyms[event.index]);
 			_localSynonyms[event.index].dataKey = dataKey;
@@ -73,11 +82,11 @@ export const SynonymsDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInSynonyms(event.data,event.index);
+		compareChangesInSynonyms(event.data, event.index);
 	};
 
 	const compareChangesInSynonyms = (data, index) => {
-		if(originalSynonyms && originalSynonyms[index]) {
+		if (originalSynonyms && originalSynonyms[index]) {
 			if (data.internal !== originalSynonyms[index].internal) {
 				rowsEdited.current++;
 			}
@@ -90,10 +99,11 @@ export const SynonymsDialog = ({
 			if (data.synonymUrl !== originalSynonyms[index].synonymUrl) {
 				rowsEdited.current++;
 			}
-			if ((originalSynonyms[index].evidence && !data.evidence) ||
-					(!originalSynonyms[index].evidence && data.evidence) ||
-					(data.evidence && (data.evidence.length !== originalSynonyms[index].evidence.length))
-				) {
+			if (
+				(originalSynonyms[index].evidence && !data.evidence) ||
+				(!originalSynonyms[index].evidence && data.evidence) ||
+				(data.evidence && data.evidence.length !== originalSynonyms[index].evidence.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
@@ -104,26 +114,28 @@ export const SynonymsDialog = ({
 					}
 				}
 			}
-			if ((originalSynonyms[index].synonymScope && !data.synonymScope) ||
-					(!originalSynonyms[index].synonymScope && data.synonymScope) ||
-					(originalSynonyms[index].synonymScope && (originalSynonyms[index].synonymScope.name !== data.synonymScope.name))
-				) {
+			if (
+				(originalSynonyms[index].synonymScope && !data.synonymScope) ||
+				(!originalSynonyms[index].synonymScope && data.synonymScope) ||
+				(originalSynonyms[index].synonymScope && originalSynonyms[index].synonymScope.name !== data.synonymScope.name)
+			) {
 				rowsEdited.current++;
 			}
-			if ((originalSynonyms[index].nameType && !data.nameType) ||
-					(!originalSynonyms[index].nameType && data.nameType) ||
-					(originalSynonyms[index].nameType && (originalSynonyms[index].nameType.name !== data.nameType.name))
-				) {
+			if (
+				(originalSynonyms[index].nameType && !data.nameType) ||
+				(!originalSynonyms[index].nameType && data.nameType) ||
+				(originalSynonyms[index].nameType && originalSynonyms[index].nameType.name !== data.nameType.name)
+			) {
 				rowsEdited.current++;
 			}
 		}
-		
+
 		if (localSynonyms.length > originalSynonyms?.length || !originalSynonyms) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateSynonym(localSynonyms[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -132,14 +144,19 @@ export const SynonymsDialog = ({
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update ' + name + ' [' + localSynonyms[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail: 'Could not update ' + name + ' [' + localSynonyms[event.index].id + ']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
@@ -178,13 +195,13 @@ export const SynonymsDialog = ({
 		let _clonableSynonyms = [];
 		if (clonableSynonyms?.length > 0 && clonableSynonyms[0]) {
 			_clonableSynonyms = global.structuredClone(clonableSynonyms);
-			if(_clonableSynonyms) {
-				let counter = 0 ;
+			if (_clonableSynonyms) {
+				let counter = 0;
 				_clonableSynonyms.forEach((name) => {
 					name.dataKey = counter++;
 				});
 			}
-		} 
+		}
 		return _clonableSynonyms;
 	};
 
@@ -199,20 +216,19 @@ export const SynonymsDialog = ({
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
 		errorMessagesCopy[rowIndex][field] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalSynonymsData((originalSynonymsData) => {
-				return {
-					...originalSynonymsData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalSynonymsData,
+				dialog: false,
+			};
+		});
 	};
 
 	const internalTemplate = (rowData) => {
@@ -222,7 +238,7 @@ export const SynonymsDialog = ({
 	const onInternalEditorValueChange = (props, event) => {
 		let _localSynonyms = [...localSynonyms];
 		_localSynonyms[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const internalEditor = (props) => {
 		return (
@@ -231,14 +247,12 @@ export const SynonymsDialog = ({
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
-
-	
 
 	const onSynonymScopeEditorValueChange = (props, event) => {
 		let _localSynonyms = [...localSynonyms];
@@ -254,9 +268,9 @@ export const SynonymsDialog = ({
 					editorChange={onSynonymScopeEditorValueChange}
 					props={props}
 					showClear={true}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"synonymScope"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'synonymScope'} />
 			</>
 		);
 	};
@@ -275,9 +289,9 @@ export const SynonymsDialog = ({
 					editorChange={onNameTypeEditorValueChange}
 					props={props}
 					showClear={false}
-					dataKey='id'
+					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"nameType"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'nameType'} />
 			</>
 		);
 	};
@@ -285,23 +299,23 @@ export const SynonymsDialog = ({
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Synonym" icon="pi pi-plus" onClick={createNewSynonymHandler}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button label="New Synonym" icon="pi pi-plus" onClick={createNewSynonymHandler} />
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const createNewSynonymHandler = (event) => {
 		let cnt = localSynonyms ? localSynonyms.length : 0;
 		const _localSynonyms = global.structuredClone(localSynonyms);
 		_localSynonyms.push({
-			dataKey : cnt,
-			internal : false,
-			nameType : synonymTypeTerms[0]
+			dataKey: cnt,
+			internal: false,
+			nameType: synonymTypeTerms[0],
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -310,55 +324,134 @@ export const SynonymsDialog = ({
 
 	const handleDeleteSynonym = (event, props) => {
 		let _localSynonyms = global.structuredClone(localSynonyms);
-		if(props.dataKey){
+		if (props.dataKey) {
 			_localSynonyms.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localSynonyms.splice(props.rowIndex, 1);
 		}
 		setLocalSynonyms(_localSynonyms);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteSynonym(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteSynonym(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 
-			<ColumnGroup>
-				<Row>
-					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-					<Column header="Display Text" />
-					<Column header="Format Text" />
-					<Column header="Synonym Scope" />
-					<Column header="Name Type" />
-					<Column header="Synonym URL" />
-					<Column header="Internal" />
-					<Column header="Evidence" />
-					<Column header="Updated By" />
-					<Column header="Date Updated" />
-				</Row>
-			</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Display Text" />
+				<Column header="Format Text" />
+				<Column header="Synonym Scope" />
+				<Column header="Name Type" />
+				<Column header="Synonym URL" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+				<Column header="Updated By" />
+				<Column header="Date Updated" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-10' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-10"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Synonyms</h3>
-				<DataTable value={localSynonyms} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={(props) => displayTextEditorTemplate(props, errorMessages)} field="displayText" header="Display Text" headerClassName='surface-0' body={displayTextTemplate}/>
-					<Column editor={(props) => formatTextEditorTemplate(props, errorMessages)} field="formatText" header="Format Text" headerClassName='surface-0' body={formatTextTemplate}/>
-					<Column editor={synonymScopeEditor} field="synonymScope" header="Synonym Scope" headerClassName='surface-0' body={synonymScopeTemplate}/>
-					<Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName='surface-0' body={nameTypeTemplate}/>
-					<Column editor={(props) => synonymUrlEditorTemplate(props, errorMessages)} field="synonymUrl" header="Synonym URL" headerClassName='surface-0' body={synonymUrlTemplate}/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+				<DataTable
+					value={localSynonyms}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
+					<Column
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={(props) => displayTextEditorTemplate(props, errorMessages)}
+						field="displayText"
+						header="Display Text"
+						headerClassName="surface-0"
+						body={displayTextTemplate}
+					/>
+					<Column
+						editor={(props) => formatTextEditorTemplate(props, errorMessages)}
+						field="formatText"
+						header="Format Text"
+						headerClassName="surface-0"
+						body={formatTextTemplate}
+					/>
+					<Column
+						editor={synonymScopeEditor}
+						field="synonymScope"
+						header="Synonym Scope"
+						headerClassName="surface-0"
+						body={synonymScopeTemplate}
+					/>
+					<Column
+						editor={nameTypeEditor}
+						field="nameType"
+						header="Name Type"
+						headerClassName="surface-0"
+						body={nameTypeTemplate}
+					/>
+					<Column
+						editor={(props) => synonymUrlEditorTemplate(props, errorMessages)}
+						field="synonymUrl"
+						header="Synonym URL"
+						headerClassName="surface-0"
+						body={synonymUrlTemplate}
+					/>
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 					<Column field="updatedBy.uniqueId" header="Updated By" />
 					<Column field="dateUpdated" header="Date Updated" />
 				</DataTable>

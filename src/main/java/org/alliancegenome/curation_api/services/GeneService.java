@@ -9,14 +9,9 @@ import java.util.Objects;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneInteraction;
-import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
-import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthology;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
@@ -28,36 +23,25 @@ import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> {
 
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	GeneValidator geneValidator;
-	@Inject
-	GeneDTOValidator geneDtoValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
-	@Inject
-	PersonService personService;
-	@Inject
-	GeneToGeneOrthologyService orthologyService;
-	@Inject
-	AlleleGeneAssociationService alleleGeneAssociationService;
-	@Inject
-	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
-	@Inject
-	GeneInteractionService geneInteractionService;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject GeneDAO geneDAO;
+	@Inject GeneValidator geneValidator;
+	@Inject GeneDTOValidator geneDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject PersonService personService;
+	@Inject GeneToGeneOrthologyService orthologyService;
+	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
+	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject GeneInteractionService geneInteractionService;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -83,7 +67,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
 		return upsert(dto, null);
 	}
-	
+
 	@Override
 	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
@@ -92,76 +76,50 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	@Override
 	@Transactional
 	public ObjectResponse<Gene> deleteById(Long id) {
-		removeOrDeprecateNonUpdated(id, "Gene DELETE API call");
+		deprecateOrDelete(id, true, "Gene DELETE API call", false);
 		ObjectResponse<Gene> ret = new ObjectResponse<>();
 		return ret;
 	}
-	
+
+	@Override
 	@Transactional
-	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+	public Gene deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Gene gene = geneDAO.find(id);
 		if (gene != null) {
-			List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(id);
-			Boolean anyReferencingEntities = false;
-			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null)
-					anyReferencingEntities = true;
-			}
-
-			List<Long> referencingPAIds = geneDAO.findReferencingPhenotypeAnnotations(id);
-			for (Long paId : referencingPAIds) {
-				PhenotypeAnnotation referencingPA = phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(paId, false, loadDescription, true);
-				if (referencingPA != null)
-					anyReferencingEntities = true;
-			}
-
-			List<Long> referencingOrthologyPairs = geneDAO.findReferencingOrthologyPairs(id);
-			for (Long orthId : referencingOrthologyPairs) {
-				GeneToGeneOrthology referencingOrthoPair = orthologyService.deprecateOrthologyPair(orthId, loadDescription);
-				if (referencingOrthoPair != null)
-					anyReferencingEntities = true;
-			}
-			List<Long> referencingInteractions = geneDAO.findReferencingInteractions(id);
-			for (Long interactionId : referencingInteractions) {
-				GeneInteraction referencingInteraction = geneInteractionService.deprecateOrDeleteInteraction(interactionId, false, loadDescription, true);
-				if (referencingInteraction != null)
-					anyReferencingEntities = true;
-			}
-			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
-				for (AlleleGeneAssociation association : gene.getAlleleGeneAssociations()) {
-					association = alleleGeneAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null)
-						anyReferencingEntities = true;
+			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id) || geneDAO.hasReferencingPhenotypeAnnotations(id)
+					|| geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id)
+					|| CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())
+					|| CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
+				if (!gene.getObsolete()) {
+					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
+					gene.setDateUpdated(OffsetDateTime.now());
+					gene.setObsolete(true);
+					return geneDAO.persist(gene);
+				} else {
+					return gene;
 				}
-			}
-			if (CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
-				for (ConstructGenomicEntityAssociation association : gene.getConstructGenomicEntityAssociations()) {
-					association = constructGenomicEntityAssociationService.deprecateOrDeleteAssociation(association.getId(), false, loadDescription, true);
-					if (association != null)
-						anyReferencingEntities = true;
-				}
-			}
-			
-			if (anyReferencingEntities) {
-				gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-				gene.setDateUpdated(OffsetDateTime.now());
-				gene.setObsolete(true);
-				geneDAO.persist(gene);
 			} else {
 				geneDAO.remove(id);
 			}
 		} else {
-			log.error("Failed getting gene: " + id);
-		}	
+			String errorMessage = "Could not find Gene with id: " + id;
+			if (throwApiError) {
+				ObjectResponse<Gene> response = new ObjectResponse<>();
+				response.addErrorMessage("id", errorMessage);
+				throw new ApiErrorException(response);
+			}
+			Log.error(errorMessage);
+		}
+		return null;
 	}
 
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if(StringUtils.equals(dataProvider.sourceOrganization, "RGD"))
+		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
 			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
-		List<Long> ids = geneDAO.findFilteredIds(params);
+		}
+		List<Long> ids = geneDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 
 		return ids;

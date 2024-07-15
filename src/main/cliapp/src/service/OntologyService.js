@@ -1,7 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 
 export class OntologyService extends BaseAuthService {
-
 	endpoint;
 
 	constructor(serviceEndpoint) {

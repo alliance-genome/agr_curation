@@ -2,9 +2,7 @@ import React from 'react';
 import { VocabulariesTable } from './VocabulariesTable';
 
 function VocabulariesPage() {
-		return (
-				<VocabulariesTable />
-		);
+	return <VocabulariesTable />;
 }
 
 export default VocabulariesPage;

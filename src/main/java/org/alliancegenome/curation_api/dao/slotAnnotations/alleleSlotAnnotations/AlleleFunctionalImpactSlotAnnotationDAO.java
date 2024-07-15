@@ -6,10 +6,10 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class AlleleFunctionalImpactSlotAnnotationDAO extends BaseSQLDAO< AlleleFunctionalImpactSlotAnnotation> {
+public class AlleleFunctionalImpactSlotAnnotationDAO extends BaseSQLDAO<AlleleFunctionalImpactSlotAnnotation> {
 
 	protected AlleleFunctionalImpactSlotAnnotationDAO() {
-		super( AlleleFunctionalImpactSlotAnnotation.class);
+		super(AlleleFunctionalImpactSlotAnnotation.class);
 	}
 
 }

@@ -7,16 +7,14 @@ export class ValidationService extends BaseAuthService {
 			return {
 				isSuccess: true,
 				isError: false,
-				data: response.data.entity
-			}
+				data: response.data.entity,
+			};
 		} catch (error) {
 			return {
 				isSuccess: false,
 				isError: true,
-				data: error.response.data.errorMessages
+				data: error.response.data.errorMessages,
 			};
-		};
+		}
 	}
 }
-
-

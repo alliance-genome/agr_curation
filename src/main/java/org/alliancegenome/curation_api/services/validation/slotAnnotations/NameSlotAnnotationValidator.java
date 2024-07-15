@@ -11,8 +11,7 @@ import jakarta.inject.Inject;
 
 public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends SlotAnnotationValidator<E> {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public E validateNameSlotAnnotationFields(E uiEntity, E dbEntity, Boolean newEntity) {
 
@@ -46,8 +45,9 @@ public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends S
 
 	private VocabularyTerm validateSynonymScope(E uiEntity, E dbEntity) {
 		String field = "synonymScope";
-		if (uiEntity.getSynonymScope() == null)
+		if (uiEntity.getSynonymScope() == null) {
 			return null;
+		}
 
 		VocabularyTerm synonymScope = vocabularyTermService.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, uiEntity.getSynonymScope().getName()).getEntity();
 		if (synonymScope == null) {

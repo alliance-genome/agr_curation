@@ -1,8 +1,8 @@
-import React, { useRef } from "react";
-import { Dropdown } from "primereact/dropdown";
+import React, { useRef } from 'react';
+import { Dropdown } from 'primereact/dropdown';
 
 export function FilterComponentBinaryDropDown({ isInEditMode, filterConfig, currentFilters, onFilter }) {
-	const options = useRef(filterConfig.options || ["true", "false"]);
+	const options = useRef(filterConfig.options || ['true', 'false']);
 
 	const fieldSet = filterConfig.fieldSets[0];
 
@@ -15,17 +15,16 @@ export function FilterComponentBinaryDropDown({ isInEditMode, filterConfig, curr
 			placeholder="Select"
 			onChange={(e) => {
 				let filter = {};
-				if(e.target.value && e.target.value.length !== 0) {
+				if (e.target.value && e.target.value.length !== 0) {
 					filter[fieldSet.fields[0]] = {
-						queryString : e.target.value,
-						tokenOperator : "OR"
+						queryString: e.target.value,
 					};
 				} else {
 					filter = null;
 				}
 
-				//undefined check needs to be in place. Otherwise, the else block below will throw an error 
-				const filtersCopy = currentFilters  ? currentFilters : {};
+				//undefined check needs to be in place. Otherwise, the else block below will throw an error
+				const filtersCopy = currentFilters ? currentFilters : {};
 				if (filter === null) {
 					delete filtersCopy[fieldSet.filterName];
 				} else {
@@ -34,6 +33,5 @@ export function FilterComponentBinaryDropDown({ isInEditMode, filterConfig, curr
 				onFilter(filtersCopy);
 			}}
 		/>
-	)
+	);
 }
-

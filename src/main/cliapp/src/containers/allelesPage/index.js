@@ -1,4 +1,4 @@
-import AllelesPage from "./AllelesPage";
-import AlleleDetailPage  from "./AlleleDetailPage";
+import AllelesPage from './AllelesPage';
+import AlleleDetailPage from './AlleleDetailPage';
 
 export { AllelesPage, AlleleDetailPage };

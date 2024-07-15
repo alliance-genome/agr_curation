@@ -10,7 +10,7 @@ export const useGenericDataTable = ({
 	tableState,
 	setTableState,
 	tableName,
- 	curieFields,
+	curieFields,
 	idFields,
 	mutation,
 	setIsInEditMode,
@@ -21,13 +21,12 @@ export const useGenericDataTable = ({
 	totalRecords,
 	columns,
 	defaultColumnWidth,
-	isEditable, 
-	deletionEnabled, 
-	duplicationEnabled, 
+	isEditable,
+	deletionEnabled,
+	duplicationEnabled,
 	hasDetails,
-	defaultFilters
+	defaultFilters,
 }) => {
-
 	const [originalRows, setOriginalRows] = useState([]);
 	const [columnList, setColumnList] = useState([]);
 	const [editingRows, setEditingRows] = useState({});
@@ -40,7 +39,7 @@ export const useGenericDataTable = ({
 
 	const { toast_topleft, toast_topright } = toasts;
 	const [exceptionDialog, setExceptionDialog] = useState(false);
-	const [exceptionMessage,setExceptionMessage] = useState("");
+	const [exceptionMessage, setExceptionMessage] = useState('');
 
 	const onLazyLoad = (event) => {
 		let _tableState = {
@@ -48,33 +47,32 @@ export const useGenericDataTable = ({
 
 			rows: event.rows,
 			page: event.page,
-			first: event.first
+			first: event.first,
 		};
 
 		setTableState(_tableState);
-	}
+	};
 
 	const onFilter = (filtersCopy) => {
 		let _tableState = {
 			...tableState,
-			filters: { ...filtersCopy }
-		}
+			filters: { ...filtersCopy },
+		};
 		setTableState(_tableState);
 	};
 
 	const onSort = (event) => {
 		let _tableState = {
 			...tableState,
-			multiSortMeta: returnSorted(event, tableState.multiSortMeta || [])
-		}
+			multiSortMeta: returnSorted(event, tableState.multiSortMeta || []),
+		};
 		setTableState(_tableState);
 	};
 
 	const setSelectedColumnNames = (newValue) => {
-
 		let _tableState = {
 			...tableState,
-			selectedColumnNames: newValue
+			selectedColumnNames: newValue,
 		};
 		setTableState(_tableState);
 	};
@@ -82,20 +80,18 @@ export const useGenericDataTable = ({
 	const setOrderedColumnNames = (newValue) => {
 		let _tableState = {
 			...tableState,
-			orderedColumnNames: newValue
+			orderedColumnNames: newValue,
 		};
 		setTableState(_tableState);
 	};
 
-	const setColumnWidths= (newValue) => {
+	const setColumnWidths = (newValue) => {
 		let _tableState = {
 			...tableState,
-			columnWidths: newValue
+			columnWidths: newValue,
 		};
 		setTableState(_tableState);
 	};
-
-
 
 	const onRowEditInit = (event) => {
 		setIsInEditMode(true);
@@ -124,13 +120,13 @@ export const useGenericDataTable = ({
 		errorMessagesCopy[index] = {};
 		setErrorMessages({ ...errorMessagesCopy });
 
-		if (uiErrorMessages){
+		if (uiErrorMessages) {
 			const uiErrorMessagesCopy = uiErrorMessages;
 			uiErrorMessagesCopy[index] = {};
 			setUiErrorMessages({ ...uiErrorMessagesCopy });
 		}
 	};
-	
+
 	//Todo: at some point it may make sense to refactor this function into a set of smaller utility functions and pass them down from the calling components
 	const onRowEditSave = (event) => {
 		const index = event.index % tableState.rows;
@@ -141,9 +137,9 @@ export const useGenericDataTable = ({
 			setIsInEditMode(false);
 		}
 
-		let updatedRow = global.structuredClone(event.data);//deep copy
-		
-		if(tableName === "Disease Annotations"){
+		let updatedRow = global.structuredClone(event.data); //deep copy
+
+		if (tableName === 'Disease Annotations') {
 			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors);
 		}
 
@@ -152,7 +148,7 @@ export const useGenericDataTable = ({
 			return;
 		}
 
-		if(curieFields){
+		if (curieFields) {
 			curieFields.forEach((field) => {
 				if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
 					const curie = trimWhitespace(event.data[field].curie);
@@ -162,14 +158,14 @@ export const useGenericDataTable = ({
 			});
 		}
 
-		if(idFields){
+		if (idFields) {
 			idFields.forEach((field) => {
 				if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
 					const id = event.data[field].id;
 					updatedRow[field] = {};
 					updatedRow[field].id = id;
 				}
-			})
+			});
 		}
 
 		mutation.mutate(updatedRow, {
@@ -185,24 +181,23 @@ export const useGenericDataTable = ({
 			},
 			onError: (error, variables, context) => {
 				setIsInEditMode(true);
-				let errorMessage = "";
-				if(error.response.data.errorMessage !== undefined) {
+				let errorMessage = '';
+				if (error.response.data.errorMessage !== undefined) {
 					errorMessage = error.response.data.errorMessage;
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
+						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false },
 					]);
 					if (error.response.data.errorMessages && Object.keys(error.response.data.errorMessages).length > 0) {
 						let messages = [];
 						for (let errorField in error.response.data.errorMessages) {
-							messages.push(errorField + ": " + error.response.data.errorMessages[errorField]);
+							messages.push(errorField + ': ' + error.response.data.errorMessages[errorField]);
 						}
-						let messageSummary = messages.join(" / ");
+						let messageSummary = messages.join(' / ');
 						toast_topleft.current.show([
-							{ life: 7000, severity: 'error', summary: 'Errors found: ', detail: messageSummary, sticky: false }
+							{ life: 7000, severity: 'error', summary: 'Errors found: ', detail: messageSummary, sticky: false },
 						]);
 					}
-				}
-				else if(error.response.data !== undefined) {
+				} else if (error.response.data !== undefined) {
 					setExceptionMessage(error.response.data);
 					setExceptionDialog(true);
 				}
@@ -211,15 +206,15 @@ export const useGenericDataTable = ({
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 				errorMessagesCopy[index] = {};
-				if(error.response.data.errorMessages !== undefined) {
+				if (error.response.data.errorMessages !== undefined) {
 					Object.keys(error.response.data.errorMessages).forEach((field) => {
 						let messageObject = {
-							severity: "error",
-							message: error.response.data.errorMessages[field]
+							severity: 'error',
+							message: error.response.data.errorMessages[field],
 						};
 						errorMessagesCopy[index][field] = messageObject;
 					});
-					setErrorMessages({...errorMessagesCopy});
+					setErrorMessages({ ...errorMessagesCopy });
 				}
 
 				setEntities(_entities);
@@ -234,45 +229,58 @@ export const useGenericDataTable = ({
 		let result = await deletionMethod(entityToDelete);
 		if (result.isError) {
 			toast_topright.current.show([
-				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
-					' [' + idToDelete + ']', sticky: false }
+				{
+					life: 7000,
+					severity: 'error',
+					summary: 'Could not delete ' + endpoint + ' [' + idToDelete + ']',
+					sticky: false,
+				},
 			]);
 			let deletionErrorMessage = result?.message ? result.message : null;
 			return deletionErrorMessage;
 		} else {
 			toast_topright.current.show([
-				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
-					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
+				{
+					life: 7000,
+					severity: 'success',
+					summary: 'Deletion successful: ',
+					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful',
+					sticky: false,
+				},
 			]);
 			let _entities = global.structuredClone(entities);
 			if (editingRows[idToDelete]) {
-				let _editingRows = { ...editingRows};
+				let _editingRows = { ...editingRows };
 				delete _editingRows[idToDelete];
 				setEditingRows(_editingRows);
 
 				const rowsInEdit = Object.keys(editingRows).length;
 				if (rowsInEdit === 0) {
 					setIsInEditMode(false);
-				};
+				}
 			}
 
 			setEntities(_entities);
 			let _tableState = {
 				...tableState,
-				rows: tableState.rows - 1
-			}
+				rows: tableState.rows - 1,
+			};
 
 			setTableState(_tableState);
 			setTotalRecords(totalRecords - 1);
 			return null;
 		}
-	}
+	};
 	const handleDeprecation = (entityToDeprecate) => {
 		areUiErrors.current = false;
-		let updatedRow = global.structuredClone(entityToDeprecate);//deep copy
+		let updatedRow = global.structuredClone(entityToDeprecate); //deep copy
 		updatedRow.obsolete = true;
-		
-		let deprecatedIndex = entities.map(function(e) {return e.id;}).indexOf(updatedRow.id);
+
+		let deprecatedIndex = entities
+			.map(function (e) {
+				return e.id;
+			})
+			.indexOf(updatedRow.id);
 
 		mutation.mutate(updatedRow, {
 			onSuccess: (response, variables, context) => {
@@ -287,91 +295,96 @@ export const useGenericDataTable = ({
 			},
 			onError: (error, variables, context) => {
 				setIsInEditMode(true);
-				let errorMessage = "";
-				if(error.response.data.errorMessage !== undefined) {
+				let errorMessage = '';
+				if (error.response.data.errorMessage !== undefined) {
 					errorMessage = error.response.data.errorMessage;
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
+						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false },
 					]);
-				}
-				else if(error.response.data !== undefined) {
+				} else if (error.response.data !== undefined) {
 					setExceptionMessage(error.response.data);
 					setExceptionDialog(true);
 				}
 
 				let _entities = global.structuredClone(entities);
-				
+
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 				errorMessagesCopy[deprecatedIndex] = {};
-				if(error.response.data.errorMessages !== undefined) {
+				if (error.response.data.errorMessages !== undefined) {
 					Object.keys(error.response.data.errorMessages).forEach((field) => {
 						let messageObject = {
-							severity: "error",
-							message: error.response.data.errorMessages[field]
+							severity: 'error',
+							message: error.response.data.errorMessages[field],
 						};
 						errorMessagesCopy[deprecatedIndex][field] = messageObject;
 					});
-					setErrorMessages({...errorMessagesCopy});
+					setErrorMessages({ ...errorMessagesCopy });
 				}
 				setEntities(_entities);
 			},
 		});
 	};
 
-
 	const onRowEditChange = (event) => {
 		const index = event.index % tableState.rows;
 
 		//keep the row in edit mode if there are UI validation errors
-		if(closeRowRef.current[index] === false){
+		if (closeRowRef.current[index] === false) {
 			return;
 		}
 		setEditingRows(event.data);
 	};
 
 	const setToModDefault = () => {
-		const modTableState = getModTableState(tableState.tableKeyName, tableState.defaultColumnWidths, tableState.defaultColumnNames);
+		const modTableState = getModTableState(
+			tableState.tableKeyName,
+			tableState.defaultColumnWidths,
+			tableState.defaultColumnNames
+		);
 		restoreTableState(
-			columns, 
-			dataTable, 
-			modTableState.orderedColumnNames, 
-			isEditable, 
-			deletionEnabled, 
-			duplicationEnabled, 
-			hasDetails, 
+			columns,
+			dataTable,
+			modTableState.orderedColumnNames,
+			isEditable,
+			deletionEnabled,
+			duplicationEnabled,
+			hasDetails,
 			modTableState
 		);
 		dataTable.current.resetScroll();
 		setTableState(modTableState);
-	}
-	
+	};
+
 	const resetTableState = () => {
 		let defaultTableState = getDefaultTableState(tableState.tableKeyName, columns, defaultColumnWidth, defaultFilters);
 		restoreTableState(
-			columns, 
-			dataTable, 
-			defaultTableState.orderedColumnNames, 
-			isEditable, 
-			deletionEnabled, 
-			duplicationEnabled, 
-			hasDetails, 
+			columns,
+			dataTable,
+			defaultTableState.orderedColumnNames,
+			isEditable,
+			deletionEnabled,
+			duplicationEnabled,
+			hasDetails,
 			defaultTableState
 		);
 		dataTable.current.resetScroll();
 		setTableState(defaultTableState);
-	}
+	};
 
 	const colReorderHandler = (event) => {
-		const columnNames = event.columns.filter((column) => {
-			return column.props.field !== 'rowEditor' 
-			&& column.props.field !== 'delete' 
-			&& column.props.field !== 'duplicate'
-			&& column.props.field !== 'details';
-		})
-		.map(column => column.props.header);
+		const columnNames = event.columns
+			.filter((column) => {
+				return (
+					column.props.field !== 'rowEditor' &&
+					column.props.field !== 'delete' &&
+					column.props.field !== 'duplicate' &&
+					column.props.field !== 'details'
+				);
+			})
+			.map((column) => column.props.header);
 
-		for(let i = 0; i < tableState.orderedColumnNames.length; i++) {
-			if(!columnNames.includes(tableState.orderedColumnNames[i])) {
+		for (let i = 0; i < tableState.orderedColumnNames.length; i++) {
+			if (!columnNames.includes(tableState.orderedColumnNames[i])) {
 				columnNames.splice(i, 0, tableState.orderedColumnNames[i]);
 			}
 		}
@@ -384,7 +397,7 @@ export const useGenericDataTable = ({
 		const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
 		const field = event.column.props.field;
 
-		const _columnWidths = {...tableState.columnWidths};
+		const _columnWidths = { ...tableState.columnWidths };
 
 		_columnWidths[field] = newWidth;
 		setColumnWidths(_columnWidths);

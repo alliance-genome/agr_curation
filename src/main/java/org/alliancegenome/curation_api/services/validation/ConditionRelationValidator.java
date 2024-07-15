@@ -30,20 +30,13 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConditionRelationValidator extends AuditedObjectValidator<ConditionRelation> {
 
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	LiteratureReferenceDAO literatureReferenceDAO;
-	@Inject
-	ReferenceDAO referenceDAO;
-	@Inject
-	ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	ReferenceValidator referenceValidator;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject LiteratureReferenceDAO literatureReferenceDAO;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject ReferenceService referenceService;
+	@Inject ReferenceValidator referenceValidator;
 
 	private String errorMessage;
 
@@ -148,9 +141,9 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			HashMap<String, Object> params = new HashMap<>();
 			params.put("handle", uiEntity.getHandle());
 			params.put("singleReference.curie", uiEntity.getSingleReference().getCurie());
-			
+
 			SearchResponse<ConditionRelation> response = conditionRelationDAO.findByParams(params);
-			if (response.getTotalResults() > 0) {
+			if (response.getResults().size() > 0) {
 				addMessageResponse("handle", "Handle / Pub combination already exists");
 				return null;
 			}
@@ -165,9 +158,10 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 	private Reference validateSingleReference(ConditionRelation uiEntity, ConditionRelation dbEntity) {
 		String field = "singleReference";
-		if (uiEntity.getSingleReference() == null)
+		if (uiEntity.getSingleReference() == null) {
 			return null;
-		
+		}
+
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
 		if (singleRefResponse.getEntity() == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -217,7 +211,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
-			if(condition.getId() == null){
+			if (condition.getId() == null) {
 				condition = conditionResponse.getSingleResult();
 			}
 			conditions.add(condition);

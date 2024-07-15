@@ -1,3 +1,3 @@
-import { DataLoadsComponent as DataLoadsPage } from "./DataLoadsComponent";
+import { DataLoadsComponent as DataLoadsPage } from './DataLoadsComponent';
 
 export { DataLoadsPage };

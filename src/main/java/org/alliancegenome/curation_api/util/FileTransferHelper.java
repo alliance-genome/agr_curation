@@ -45,7 +45,7 @@ public class FileTransferHelper {
 			URL redirectUrl = response.url();
 			log.info("Saving file to local filesystem: " + saveFilePath.getAbsolutePath());
 			FileUtils.copyURLToFile(redirectUrl, saveFilePath);
-			if(!saveFilePath.exists() || saveFilePath.length() == 0) {
+			if (!saveFilePath.exists() || saveFilePath.length() == 0) {
 				log.error("Downloading URL failed: " + redirectUrl);
 				saveFilePath.delete();
 				return null;
@@ -87,17 +87,17 @@ public class FileTransferHelper {
 
 	public String compressInputFile(String fullFilePath) {
 
-		if(fullFilePath == null) {
+		if (fullFilePath == null) {
 			return null;
 		}
-		
+
 		File inFilePath = new File(fullFilePath);
-		
-		if(!inFilePath.exists() || inFilePath.length() == 0) {
+
+		if (!inFilePath.exists() || inFilePath.length() == 0) {
 			log.error("Input file does not exist");
 			return null;
 		}
-		
+
 		try {
 			GZIPInputStream gs = new GZIPInputStream(new FileInputStream(inFilePath));
 			gs.close();
@@ -121,13 +121,13 @@ public class FileTransferHelper {
 
 	}
 
-	public File downloadFileFromS3(String AWSAccessKey, String AWSSecretKey, String bucket, String fullS3Path) {
+	public File downloadFileFromS3(String aWSAccessKey, String aWSSecretKey, String bucket, String fullS3Path) {
 
 		File localOutFile = generateFilePath();
 
 		try {
 			log.info("Download file From S3: " + "s3://" + bucket + "/" + fullS3Path + " -> " + localOutFile.getAbsolutePath());
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWSAccessKey, AWSSecretKey))).withRegion(Regions.US_EAST_1).build();
+			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(aWSAccessKey, aWSSecretKey))).withRegion(Regions.US_EAST_1).build();
 			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
 			final Download downloadFile = tm.download(bucket, fullS3Path, localOutFile);
 			downloadFile.waitForCompletion();
@@ -142,11 +142,11 @@ public class FileTransferHelper {
 		}
 	}
 
-	public String uploadFileToS3(String AWSAccessKey, String AWSSecretKey, String bucket, String prefix, String path, File inFile) {
+	public String uploadFileToS3(String aWSAccessKey, String aWSSecretKey, String bucket, String prefix, String path, File inFile) {
 		try {
 			String fullS3Path = prefix + "/" + path;
 			log.info("Uploading file to S3: " + inFile.getAbsolutePath() + " -> s3://" + bucket + "/" + fullS3Path);
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWSAccessKey, AWSSecretKey))).withRegion(Regions.US_EAST_1).build();
+			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(aWSAccessKey, aWSSecretKey))).withRegion(Regions.US_EAST_1).build();
 			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
 			final Upload uploadFile = tm.upload(bucket, fullS3Path, inFile);
 			uploadFile.waitForCompletion();

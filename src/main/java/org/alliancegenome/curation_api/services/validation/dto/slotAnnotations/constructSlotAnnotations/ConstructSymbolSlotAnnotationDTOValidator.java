@@ -12,8 +12,9 @@ import jakarta.enterprise.context.RequestScoped;
 public class ConstructSymbolSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
 
 	public ObjectResponse<ConstructSymbolSlotAnnotation> validateConstructSymbolSlotAnnotationDTO(ConstructSymbolSlotAnnotation annotation, NameSlotAnnotationDTO dto) {
-		if (annotation == null)
+		if (annotation == null) {
 			annotation = new ConstructSymbolSlotAnnotation();
+		}
 
 		return validateNameSlotAnnotationDTO(annotation, dto, VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET);
 	}

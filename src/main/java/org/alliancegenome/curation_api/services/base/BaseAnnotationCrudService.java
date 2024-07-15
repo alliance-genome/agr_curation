@@ -7,21 +7,21 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 public abstract class BaseAnnotationCrudService<E extends Annotation, D extends BaseSQLDAO<E>> extends BaseEntityCrudService<E, D> {
 
+	@Override
 	protected abstract void init();
-
-	public abstract E deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate);
 
 	protected List<Long> getAllReferencedConditionRelationIds(D dao) {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		
+
 		List<Long> daIds = dao.findAllIds().getResults();
 		pdh.startProcess("Checking DAs for referenced Conditions ", daIds.size());
-		
+
 		List<Long> conditionRelationIds = new ArrayList<>();
 		daIds.forEach(daId -> {
 			E annotation = dao.find(daId);
@@ -32,7 +32,13 @@ public abstract class BaseAnnotationCrudService<E extends Annotation, D extends 
 			pdh.progressProcess();
 		});
 		pdh.finishProcess();
-		
+
 		return conditionRelationIds;
+	}
+	
+	public ObjectResponse<E> getByIdentifier(String identifier) {
+		E object = findByAlternativeFields(List.of("curie", "modEntityId", "modInternalId", "uniqueId"), identifier);
+		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		return ret;
 	}
 }

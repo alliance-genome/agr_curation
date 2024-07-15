@@ -31,23 +31,23 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
+	ObjectResponse<AlleleDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
-	public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
+	ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
-	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
+	ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
 
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAlleleDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<AlleleDiseaseAnnotationDTO> annotationData);
+	APIResponse updateAlleleDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<AlleleDiseaseAnnotationDTO> annotationData);
 
 }

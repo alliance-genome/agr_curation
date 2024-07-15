@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	NoteValidator noteValidator;
+	@Inject NoteDAO noteDAO;
+	@Inject NoteValidator noteValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 	@Transactional
 	public ObjectResponse<Note> upsert(Note uiEntity) {
 		Note dbEntity = noteValidator.validateNote(uiEntity, null, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<Note>(noteDAO.persist(dbEntity));
 	}
 

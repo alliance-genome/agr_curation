@@ -29,15 +29,15 @@ import jakarta.ws.rs.core.MediaType;
 public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<DiseaseAnnotation> {
 
 	@GET
-	@Path("/findBy/{modEntityId|modInternalId|uniqueId}")
+	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<DiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
+	ObjectResponse<DiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@POST
 	@Path("/search")
 	@JsonView(View.DiseaseAnnotation.class)
 	@Tag(name = "Elastic Search Disease Annotations")
-	public SearchResponse<DiseaseAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<DiseaseAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

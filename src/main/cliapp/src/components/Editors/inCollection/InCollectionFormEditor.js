@@ -7,36 +7,41 @@ import { VocabTermAutocompleteTemplate } from '../../Autocomplete/VocabTermAutoc
 import { FormFieldWrapper } from '../../FormFieldWrapper';
 
 export const InCollectionFormEditor = ({
-  inCollection,
-  onInCollectionValueChange,
-  widgetColumnSize,
-  labelColumnSize,
-  fieldDetailsColumnSize,
-  errorMessages
+	inCollection,
+	onInCollectionValueChange,
+	widgetColumnSize,
+	labelColumnSize,
+	fieldDetailsColumnSize,
+	errorMessages,
 }) => {
-
-  return (
-    <>
-      <FormFieldWrapper
-        labelColumnSize={labelColumnSize}
-        fieldDetailsColumnSize={fieldDetailsColumnSize}
-        widgetColumnSize={widgetColumnSize}
-        fieldName="In Collection"
-        formField={
-          <AutocompleteFormEditor
-            name="inCollection-input"
-            search={inCollectionSearch}
-            initialValue={inCollection}
-            fieldName='inCollection'
-            subField='name'
-            onValueChangeHandler={onInCollectionValueChange}
-            valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-              <VocabTermAutocompleteTemplate item={item} op={op} query={query} setAutocompleteSelectedItem={setAutocompleteSelectedItem} />}
-          />
-        }
-        errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={"inCollection"} />}
-        additionalDataField={<InCollectionAdditionalFieldData name={inCollection?.name}/>}
-      />
-    </>
-  );
+	return (
+		<>
+			<FormFieldWrapper
+				labelColumnSize={labelColumnSize}
+				fieldDetailsColumnSize={fieldDetailsColumnSize}
+				widgetColumnSize={widgetColumnSize}
+				fieldName="In Collection"
+				formField={
+					<AutocompleteFormEditor
+						name="inCollection-input"
+						search={inCollectionSearch}
+						initialValue={inCollection}
+						fieldName="inCollection"
+						subField="name"
+						onValueChangeHandler={onInCollectionValueChange}
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
+							<VocabTermAutocompleteTemplate
+								item={item}
+								op={op}
+								query={query}
+								setAutocompleteSelectedItem={setAutocompleteSelectedItem}
+							/>
+						)}
+					/>
+				}
+				errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={'inCollection'} />}
+				additionalDataField={<InCollectionAdditionalFieldData name={inCollection?.name} />}
+			/>
+		</>
+	);
 };

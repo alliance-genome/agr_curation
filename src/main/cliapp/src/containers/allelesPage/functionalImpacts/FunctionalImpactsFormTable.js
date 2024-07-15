@@ -10,89 +10,123 @@ import { PhenotypeTermEditor } from '../../../components/Editors/PhenotypeTermEd
 import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
 
 export const FunctionalImpactsFormTable = ({
-  functionalImpacts,
-  editingRows,
-  onRowEditChange,
-  tableRef,
-  deletionHandler,
-  errorMessages,
-  functionalImpactsOnChangeHandler,
-  phenotypeTermOnChangeHandler,
-  phenotypeStatementOnChangeHandler,
-  internalOnChangeHandler,
-  evidenceOnChangeHandler,
+	functionalImpacts,
+	editingRows,
+	onRowEditChange,
+	tableRef,
+	deletionHandler,
+	errorMessages,
+	functionalImpactsOnChangeHandler,
+	phenotypeTermOnChangeHandler,
+	phenotypeStatementOnChangeHandler,
+	internalOnChangeHandler,
+	evidenceOnChangeHandler,
 }) => {
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" />
+				<Column header="Functional Impacts" />
+				<Column header="Phenotype Term" />
+				<Column header="Phenotype Statement" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+			</Row>
+		</ColumnGroup>
+	);
 
-  let headerGroup = <ColumnGroup>
-    <Row>
-      <Column header="Actions" />
-      <Column header="Functional Impacts" />
-      <Column header="Phenotype Term" />
-      <Column header="Phenotype Statement" />
-      <Column header="Internal" />
-      <Column header="Evidence" />
-    </Row>
-  </ColumnGroup>;
-
-
-  return (
-    <DataTable value={functionalImpacts} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup} size='small'
-      editingRows={editingRows} resizableColumns columnResizeMode="expand" onRowEditChange={onRowEditChange} ref={tableRef}>
-      <Column editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
-        className='max-w-4rem' bodyClassName="text-center" headerClassName='surface-0' frozen />
-      <Column
-        editor={(props) => {
-          return <FunctionalImpactsEditor
-            props={props}
-            errorMessages={errorMessages}
-            onChange={functionalImpactsOnChangeHandler}
-            dataKey={props?.rowData?.dataKey}
-          />;
-        }}
-        field="functionalImpacts" header="Functional Impacts" headerClassName='surface-0' />
-      <Column
-        editor={(props) => {
-          return <PhenotypeTermEditor
-            props={props}
-            errorMessages={errorMessages}
-            dataKey={props?.rowData?.dataKey}
-            onChange={phenotypeTermOnChangeHandler}
-          />;
-        }}
-        field="phenotypeTerm" header="Phenotype Term" headerClassName='surface-0' />
-      <Column
-        editor={(props) => {
-          return <TableInputTextEditor
-            value={props.value}
-            rowIndex={props.rowIndex}
-            errorMessages={errorMessages}
-            dataKey={props?.rowData?.dataKey}
-            textOnChangeHandler={phenotypeStatementOnChangeHandler}
-            field="phenotypeStatement"
-          />;
-        }}
-        field="phenotypeStatement" header="Phenotype Statement" headerClassName='surface-0' />
-      <Column
-        editor={(props) => {
-          return <InternalEditor
-            props={props}
-            rowIndex={props.rowIndex}
-            errorMessages={errorMessages}
-            dataKey={props?.rowData?.dataKey}
-            internalOnChangeHandler={internalOnChangeHandler}
-          />;
-        }}
-        field="internal" header="Internal" headerClassName='surface-0' />
-      <Column
-        editor={(props) => {
-          return <EvidenceEditor
-            props={props}
-            errorMessages={errorMessages}
-            onChange={evidenceOnChangeHandler}
-          />;
-        }}
-        field="evidence.curie" header="Evidence" headerClassName='surface-0' />
-    </DataTable>
-  );
+	return (
+		<DataTable
+			value={functionalImpacts}
+			dataKey="dataKey"
+			showGridlines
+			editMode="row"
+			headerColumnGroup={headerGroup}
+			size="small"
+			editingRows={editingRows}
+			resizableColumns
+			columnResizeMode="expand"
+			onRowEditChange={onRowEditChange}
+			ref={tableRef}
+		>
+			<Column
+				editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
+				className="max-w-4rem"
+				bodyClassName="text-center"
+				headerClassName="surface-0"
+				frozen
+			/>
+			<Column
+				editor={(props) => {
+					return (
+						<FunctionalImpactsEditor
+							props={props}
+							errorMessages={errorMessages}
+							onChange={functionalImpactsOnChangeHandler}
+							dataKey={props?.rowData?.dataKey}
+						/>
+					);
+				}}
+				field="functionalImpacts"
+				header="Functional Impacts"
+				headerClassName="surface-0"
+			/>
+			<Column
+				editor={(props) => {
+					return (
+						<PhenotypeTermEditor
+							props={props}
+							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
+							onChange={phenotypeTermOnChangeHandler}
+						/>
+					);
+				}}
+				field="phenotypeTerm"
+				header="Phenotype Term"
+				headerClassName="surface-0"
+			/>
+			<Column
+				editor={(props) => {
+					return (
+						<TableInputTextEditor
+							value={props.value}
+							rowIndex={props.rowIndex}
+							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
+							textOnChangeHandler={phenotypeStatementOnChangeHandler}
+							field="phenotypeStatement"
+						/>
+					);
+				}}
+				field="phenotypeStatement"
+				header="Phenotype Statement"
+				headerClassName="surface-0"
+			/>
+			<Column
+				editor={(props) => {
+					return (
+						<InternalEditor
+							props={props}
+							rowIndex={props.rowIndex}
+							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
+							internalOnChangeHandler={internalOnChangeHandler}
+						/>
+					);
+				}}
+				field="internal"
+				header="Internal"
+				headerClassName="surface-0"
+			/>
+			<Column
+				editor={(props) => {
+					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
+				}}
+				field="evidence.curie"
+				header="Evidence"
+				headerClassName="surface-0"
+			/>
+		</DataTable>
+	);
 };
-

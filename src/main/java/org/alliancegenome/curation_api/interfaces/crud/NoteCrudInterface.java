@@ -25,16 +25,16 @@ public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 	@POST
 	@Path("/validate")
 	@JsonView(View.NoteView.class)
-	public ObjectResponse<Note> validate(Note entity);
+	ObjectResponse<Note> validate(Note entity);
 
 	@Override
 	@GET
 	@JsonView(View.NoteView.class)
 	@Path("/{id}")
-	public ObjectResponse<Note> getById(@PathParam("id") Long id);
+	ObjectResponse<Note> getById(@PathParam("id") Long id);
 
 	@POST
 	@Path("/")
 	@JsonView(View.NoteView.class)
-	public ObjectResponse<Note> create(Note entity);
+	ObjectResponse<Note> create(Note entity);
 }

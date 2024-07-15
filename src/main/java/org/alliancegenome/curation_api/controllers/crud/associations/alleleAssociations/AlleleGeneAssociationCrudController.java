@@ -48,7 +48,7 @@ public class AlleleGeneAssociationCrudController extends
 	@Override
 	public APIResponse updateAlleleGeneAssociations(String dataProvider,
 			List<AlleleGeneAssociationDTO> associations) {
-		return alleleGeneAssociationExecutor.runLoad(dataProvider, associations);
+		return alleleGeneAssociationExecutor.runLoadApi(alleleGeneAssociationService, dataProvider, associations);
 	}
 
 	public ObjectResponse<AlleleGeneAssociation> getAssociation(Long alleleId, String relationName,

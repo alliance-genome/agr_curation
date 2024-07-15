@@ -9,9 +9,9 @@ import ScrollToTop from './ScrollToTop';
 
 const queryClient = new QueryClient();
 
-const container = document.getElementById("root");
+const container = document.getElementById('root');
 
-if (!container) throw new Error("container not found!");
+if (!container) throw new Error('container not found!');
 
 const root = createRoot(container);
 

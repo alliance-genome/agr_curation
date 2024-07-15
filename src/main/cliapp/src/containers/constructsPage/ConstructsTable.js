@@ -20,20 +20,19 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 import { SearchService } from '../../service/SearchService';
 
 export const ConstructsTable = () => {
-
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
 	const [synonymsData, setSynonymsData] = useState({
-		dialog: false
+		dialog: false,
 	});
 
 	const [symbolData, setSymbolData] = useState({
-		dialog: false
+		dialog: false,
 	});
 
 	const [fullNameData, setFullNameData] = useState({
-		dialog: false
+		dialog: false,
 	});
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -42,10 +41,10 @@ export const ConstructsTable = () => {
 	const [constructs, setConstructs] = useState([]);
 
 	const searchService = new SearchService();
-	
+
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
-	
+
 	const [componentsData, setComponentsData] = useState({
 		isInEdit: false,
 		dialog: false,
@@ -62,238 +61,252 @@ export const ConstructsTable = () => {
 
 	const handleFullNameOpen = (constructFullName) => {
 		let _fullNameData = {};
-		_fullNameData["originalFullNames"] = [constructFullName];
-		_fullNameData["dialog"] = true;
+		_fullNameData['originalFullNames'] = [constructFullName];
+		_fullNameData['dialog'] = true;
 		setFullNameData(() => ({
-			..._fullNameData
+			..._fullNameData,
 		}));
 	};
 
 	const handleSynonymsOpen = (constructSynonyms) => {
 		let _synonymsData = {};
-		_synonymsData["originalSynonyms"] = constructSynonyms;
-		_synonymsData["dialog"] = true;
+		_synonymsData['originalSynonyms'] = constructSynonyms;
+		_synonymsData['dialog'] = true;
 		setSynonymsData(() => ({
-			..._synonymsData
+			..._synonymsData,
 		}));
 	};
 
 	const handleSymbolOpen = (constructSymbol) => {
 		let _symbolData = {};
-		_symbolData["originalSymbols"] = [constructSymbol];
-		_symbolData["dialog"] = true;
+		_symbolData['originalSymbols'] = [constructSymbol];
+		_symbolData['dialog'] = true;
 		setSymbolData(() => ({
-			..._symbolData
+			..._symbolData,
 		}));
 	};
-	
+
 	const handleComponentsOpen = (constructComponents) => {
 		let _componentsData = {};
-		_componentsData["originalComponents"] = constructComponents;
-		_componentsData["dialog"] = true;
+		_componentsData['originalComponents'] = constructComponents;
+		_componentsData['dialog'] = true;
 		setComponentsData(() => ({
-			..._componentsData
+			..._componentsData,
 		}));
 	};
-	
+
 	const handleGenomicComponentsOpen = (constructGenomicEntityAssociations) => {
 		let _componentsData = {};
-		_componentsData["originalComponents"] = constructGenomicEntityAssociations;
-		_componentsData["dialog"] = true;
+		_componentsData['originalComponents'] = constructGenomicEntityAssociations;
+		_componentsData['dialog'] = true;
 		setGenomicComponentsData(() => ({
-			..._componentsData
+			..._componentsData,
 		}));
 	};
 
 	const getComponentsTextString = (item) => {
-		let relationName = "";
+		let relationName = '';
 		if (item?.relation?.name) {
 			relationName = item.relation.name;
 			if (relationName.indexOf(' (RO:') !== -1) {
-				relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+				relationName = relationName.substring(0, relationName.indexOf(' (RO:'));
 			}
-		}	
+		}
 		return relationName + ': ' + item.componentSymbol;
 	};
 
 	const getComponentsAssociationTextString = (item) => {
-		let symbolValue = "";
-		if (item?.constructGenomicEntityAssociationObject?.geneSymbol || item?.constructGenomicEntityAssociationObject?.alleleSymbol) {
-			symbolValue = item.constructGenomicEntityAssociationObject.geneSymbol ? item.constructGenomicEntityAssociationObject.geneSymbol.displayText : item.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
+		let symbolValue = '';
+		if (
+			item?.constructGenomicEntityAssociationObject?.geneSymbol ||
+			item?.constructGenomicEntityAssociationObject?.alleleSymbol
+		) {
+			symbolValue = item.constructGenomicEntityAssociationObject.geneSymbol
+				? item.constructGenomicEntityAssociationObject.geneSymbol.displayText
+				: item.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
 		} else if (item?.constructGenomicEntityAssociationObject?.name) {
 			symbolValue = item.constructGenomicEntityAssociationObject.name;
 		} else {
 			symbolValue = item.constructGenomicEntityAssociationObject.curie;
 		}
-		let relationName = "";
+		let relationName = '';
 		if (item?.relation?.name) {
 			relationName = item.relation.name;
 			if (relationName.indexOf(' (RO:') !== -1) {
-				relationName = relationName.substring(0, relationName.indexOf(' (RO:'))
+				relationName = relationName.substring(0, relationName.indexOf(' (RO:'));
 			}
 		}
 		return relationName + ': ' + symbolValue;
-	}
+	};
 
 	const columns = [
 		{
-			field: "uniqueId",
-			header: "Unique ID",
+			field: 'uniqueId',
+			header: 'Unique ID',
 			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.uniqueId}/>,
+			body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
-			field: "modEntityId",
-			header: "MOD Entity ID",
+			field: 'modEntityId',
+			header: 'MOD Entity ID',
 			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.modEntityId}/>,
+			body: (rowData) => <IdTemplate id={rowData.modEntityId} />,
 			filterConfig: FILTER_CONFIGS.modentityidFilterConfig,
 		},
 		{
-			field: "modInternalId",
-			header: "MOD Internal ID",
+			field: 'modInternalId',
+			header: 'MOD Internal ID',
 			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.modInternalId}/>,
+			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
-			field: "constructSymbol.displayText",
-			header: "Symbol",
+			field: 'constructSymbol.displayText',
+			header: 'Symbol',
 			sortable: true,
-			body: (rowData) => <TextDialogTemplate
-				entity={rowData.constructSymbol}
-				handleOpen={handleSymbolOpen}
-				text={rowData.constructSymbol?.displayText}
-				underline={false}
-			/>,
+			body: (rowData) => (
+				<TextDialogTemplate
+					entity={rowData.constructSymbol}
+					handleOpen={handleSymbolOpen}
+					text={rowData.constructSymbol?.displayText}
+					underline={false}
+				/>
+			),
 			filter: true,
-			filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig
+			filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig,
 		},
 		{
-			field: "constructFullName.displayText",
-			header: "Name",
+			field: 'constructFullName.displayText',
+			header: 'Name',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <TextDialogTemplate
-				entity={rowData.constructFullName}
-				handleOpen={handleFullNameOpen}
-				text={rowData.constructFullName?.displayText}
-				underline={false}
-			/>,
-			filterConfig: FILTER_CONFIGS.constructNameFilterConfig
+			body: (rowData) => (
+				<TextDialogTemplate
+					entity={rowData.constructFullName}
+					handleOpen={handleFullNameOpen}
+					text={rowData.constructFullName?.displayText}
+					underline={false}
+				/>
+			),
+			filterConfig: FILTER_CONFIGS.constructNameFilterConfig,
 		},
 		{
-			field: "constructSynonyms.displayText",
-			header: "Synonyms",
-			body: (rowData) => <ListDialogTemplate
-				entities={rowData.constructSynonyms}
-				handleOpen={handleSynonymsOpen}
-				getTextField={(entity) => entity?.displayText}
-				underline={false}
-			/>,
+			field: 'constructSynonyms.displayText',
+			header: 'Synonyms',
+			body: (rowData) => (
+				<ListDialogTemplate
+					entities={rowData.constructSynonyms}
+					handleOpen={handleSynonymsOpen}
+					getTextField={(entity) => entity?.displayText}
+					underline={false}
+				/>
+			),
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig
+			filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig,
 		},
 		{
-			field: "secondaryIdentifiers",
-			header: "Secondary IDs",
+			field: 'secondaryIdentifiers',
+			header: 'Secondary IDs',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
-			body: (rowData) => <StringListTemplate 
-				list = {rowData.secondaryIdentifiers}
-			/>
+			body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
 		},
 		{
-			field: "constructComponents.componentSymbol",
-			header: "Free Text Components",
-			body: (rowData) => <ListDialogTemplate
-				entities={rowData.constructComponents}
-				handleOpen={handleComponentsOpen}
-				getTextField={getComponentsTextString}
-				underline={true}
-			/>,	
+			field: 'constructComponents.componentSymbol',
+			header: 'Free Text Components',
+			body: (rowData) => (
+				<ListDialogTemplate
+					entities={rowData.constructComponents}
+					handleOpen={handleComponentsOpen}
+					getTextField={getComponentsTextString}
+					underline={true}
+				/>
+			),
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
 		},
 		{
-			field: "constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol",
-			header: "Component Associations",
-			body: (rowData) => <ListDialogTemplate
-				entities={rowData.constructGenomicEntityAssociations}
-				handleOpen={handleGenomicComponentsOpen}
-				getTextField={getComponentsAssociationTextString}
-				underline={true}
-			/>,
+			field: 'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol',
+			header: 'Component Associations',
+			body: (rowData) => (
+				<ListDialogTemplate
+					entities={rowData.constructGenomicEntityAssociations}
+					handleOpen={handleGenomicComponentsOpen}
+					getTextField={getComponentsAssociationTextString}
+					underline={true}
+				/>
+			),
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
 		},
 		{
-			field: "references.primaryCrossReferenceCurie",
-			header: "References",
-			body: (rowData) => <TruncatedReferencesTemplate 
-				references={rowData.references} 
-			/>,
+			field: 'references.primaryCrossReferenceCurie',
+			header: 'References',
+			body: (rowData) => <TruncatedReferencesTemplate references={rowData.references} />,
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 		},
 		{
-			field: "dataProvider.sourceOrganization.abbreviation",
-			header: "Data Provider",
+			field: 'dataProvider.sourceOrganization.abbreviation',
+			header: 'Data Provider',
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.constructDataProviderFilterConfig,
 		},
 		{
-			field: "updatedBy.uniqueId",
-			header: "Updated By",
+			field: 'updatedBy.uniqueId',
+			header: 'Updated By',
 			sortable: { isInEditMode },
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
-			field: "dateUpdated",
-			header: "Date Updated",
+			field: 'dateUpdated',
+			header: 'Date Updated',
 			sortable: { isInEditMode },
 			filter: true,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig
+			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
-			field: "createdBy.uniqueId",
-			header: "Created By",
+			field: 'createdBy.uniqueId',
+			header: 'Created By',
 			sortable: { isInEditMode },
 			filter: true,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig
+			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
-			field: "dateCreated",
-			header: "Date Created",
+			field: 'dateCreated',
+			header: 'Date Created',
 			sortable: { isInEditMode },
 			filter: true,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig
+			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{
-			field: "internal",
-			header: "Internal",
-			body: (rowData) => <BooleanTemplate value={rowData.internal}/>,
+			field: 'internal',
+			header: 'Internal',
+			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: { isInEditMode }
+			sortable: { isInEditMode },
 		},
 		{
-			field: "obsolete",
-			header: "Obsolete",
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete}/>,
+			field: 'obsolete',
+			header: 'Obsolete',
+			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: { isInEditMode }
-		}
+			sortable: { isInEditMode },
+		},
 	];
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = "construct";
+	const SEARCH_ENDPOINT = 'construct';
 
-	const initialTableState = getDefaultTableState("Constructs", columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = getDefaultTableState('Constructs', columns, DEFAULT_COLUMN_WIDTH);
 
-	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
 
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
@@ -302,7 +315,7 @@ export const ConstructsTable = () => {
 		setEntities: setConstructs,
 		setTotalRecords,
 		toast_topleft,
-		searchService
+		searchService,
 	});
 
 	return (
@@ -325,8 +338,8 @@ export const ConstructsTable = () => {
 					hasDetails={false}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
-					toasts={{toast_topleft, toast_topright }}
-					errorObject = {{errorMessages, setErrorMessages}}
+					toasts={{ toast_topleft, toast_topright }}
+					errorObject={{ errorMessages, setErrorMessages }}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
 				/>

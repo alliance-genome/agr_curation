@@ -18,32 +18,32 @@ import si.mazi.rescu.RestProxyFactory;
 public class MaTIService {
 
 	@ConfigProperty(name = "okta.client.id")
-	String client_id;
+	String clientId;
 
 	@ConfigProperty(name = "okta.client.secret")
-	String client_secret;
+	String clientSecret;
 
 	@ConfigProperty(name = "okta.url")
-	String okta_url;
+	String oktaUrl;
 
 	@ConfigProperty(name = "okta.scopes")
-	String okta_scopes;
+	String oktaScopes;
 
 	@ConfigProperty(name = "mati.url")
-	String mati_url;
+	String matiUrl;
 
 	private String fetchOktaToken() throws IOException {
-		OktaTokenInterface oktaAPI = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url);
-		String authorization = "Basic " + Base64.getEncoder().encodeToString((client_id + ":" + client_secret).getBytes());
-		OktaToken oktaToken = oktaAPI.getClientCredentialsAccessToken(authorization, "client_credentials", okta_scopes);
-		return oktaToken.getAccess_token();
+		OktaTokenInterface oktaAPI = RestProxyFactory.createProxy(OktaTokenInterface.class, oktaUrl);
+		String authorization = "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
+		OktaToken oktaToken = oktaAPI.getClientCredentialsAccessToken(authorization, "client_credentials", oktaScopes);
+		return oktaToken.getAccessToken();
 	}
 
 	public Identifier mintIdentifier(String subdomain) throws IOException {
 		String token = fetchOktaToken();
 		String authorization = "Bearer: " + token;
 		Identifier identifier = RestAssured.given().contentType(ContentType.JSON).header("Accept", "application/json").header("Authorization", authorization).header("subdomain", subdomain).when()
-			.put(mati_url + "/api/identifier").then().extract().body().as(Identifier.class);
+			.put(matiUrl + "/api/identifier").then().extract().body().as(Identifier.class);
 		return identifier;
 	}
 
@@ -51,7 +51,7 @@ public class MaTIService {
 		String token = fetchOktaToken();
 		String authorization = "Bearer: " + token;
 		IdentifiersRange range = RestAssured.given().contentType(ContentType.JSON).header("Accept", "application/json").header("Authorization", authorization).header("subdomain", subdomain)
-			.header("value", howMany).when().post(mati_url + "/api/identifier").then().extract().body().as(IdentifiersRange.class);
+			.header("value", howMany).when().post(matiUrl + "/api/identifier").then().extract().body().as(IdentifiersRange.class);
 		return range;
 	}
 }

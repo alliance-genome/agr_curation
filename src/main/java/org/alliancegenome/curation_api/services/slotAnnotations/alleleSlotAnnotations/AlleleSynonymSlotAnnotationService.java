@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleSynonymSlotAnnotationService extends BaseEntityCrudService<AlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotationDAO> {
 
-	@Inject
-	AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
-	@Inject
-	AlleleSynonymSlotAnnotationValidator alleleSynonymValidator;
+	@Inject AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
+	@Inject AlleleSynonymSlotAnnotationValidator alleleSynonymValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleSynonymSlotAnnotationService extends BaseEntityCrudService<Al
 	@Transactional
 	public ObjectResponse<AlleleSynonymSlotAnnotation> upsert(AlleleSynonymSlotAnnotation uiEntity) {
 		AlleleSynonymSlotAnnotation dbEntity = alleleSynonymValidator.validateAlleleSynonymSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleSynonymSlotAnnotation>(alleleSynonymDAO.persist(dbEntity));
 	}
 

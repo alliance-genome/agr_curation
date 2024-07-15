@@ -25,12 +25,9 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotationValidator<AlleleFunctionalImpactSlotAnnotation> {
 
-	@Inject
-	AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
-	@Inject
-	PhenotypeTermService phenotypeTermService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AlleleFunctionalImpactSlotAnnotationDAO alleleFunctionalImpactDAO;
+	@Inject PhenotypeTermService phenotypeTermService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validateAlleleFunctionalImpactSlotAnnotation(AlleleFunctionalImpactSlotAnnotation uiEntity) {
 		AlleleFunctionalImpactSlotAnnotation mutationType = validateAlleleFunctionalImpactSlotAnnotation(uiEntity, false, false);
@@ -67,10 +64,10 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 
 		List<VocabularyTerm> functionalImpacts = validateFunctionalImpacts(uiEntity, dbEntity);
 		dbEntity.setFunctionalImpacts(functionalImpacts);
-		
+
 		PhenotypeTerm phenotypeTerm = validatePhenotypeTerm(uiEntity, dbEntity);
 		dbEntity.setPhenotypeTerm(phenotypeTerm);
-		
+
 		String phenotypeStatement = handleStringField(uiEntity.getPhenotypeStatement());
 		dbEntity.setPhenotypeStatement(phenotypeStatement);
 
@@ -112,9 +109,10 @@ public class AlleleFunctionalImpactSlotAnnotationValidator extends SlotAnnotatio
 
 	public PhenotypeTerm validatePhenotypeTerm(AlleleFunctionalImpactSlotAnnotation uiEntity, AlleleFunctionalImpactSlotAnnotation dbEntity) {
 		String field = "phenotypeTerm";
-		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm()))
+		if (ObjectUtils.isEmpty(uiEntity.getPhenotypeTerm())) {
 			return null;
-		
+		}
+
 		PhenotypeTerm phenotypeTerm = null;
 		if (StringUtils.isNotBlank(uiEntity.getPhenotypeTerm().getCurie())) {
 			phenotypeTerm = phenotypeTermService.findByCurie(uiEntity.getPhenotypeTerm().getCurie());

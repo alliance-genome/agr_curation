@@ -23,5 +23,5 @@ public interface AlleleFunctionalImpactSlotAnnotationCrudInterface extends BaseI
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validate(AlleleFunctionalImpactSlotAnnotation entity);
+	ObjectResponse<AlleleFunctionalImpactSlotAnnotation> validate(AlleleFunctionalImpactSlotAnnotation entity);
 }

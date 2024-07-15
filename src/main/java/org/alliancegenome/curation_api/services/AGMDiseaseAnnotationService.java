@@ -21,16 +21,11 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> {
 
-	@Inject
-	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject
-	AGMDiseaseAnnotationValidator agmDiseaseValidator;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
-	@Inject
-	AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
+	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -62,18 +57,12 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	@Override
 	@Transactional
 	public ObjectResponse<AGMDiseaseAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "AGM disease annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "AGM disease annotation DELETE API call", false);
 		ObjectResponse<AGMDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(agmDiseaseAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public AGMDiseaseAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
-		return (AGMDiseaseAnnotation) diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);	
 	}
 }

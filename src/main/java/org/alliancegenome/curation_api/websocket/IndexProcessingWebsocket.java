@@ -36,7 +36,7 @@ public class IndexProcessingWebsocket {
 		//Log.info("Creating New Session: " + session);
 		try {
 			sessions.put(session.getId(), session);
-			if(event != null) {
+			if (event != null) {
 				session.getAsyncRemote().sendText(mapper.writeValueAsString(event));
 			}
 		} catch (Exception e) {

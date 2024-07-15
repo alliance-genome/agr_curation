@@ -6,49 +6,66 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
-	
-	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
-	
+	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+
 	protected AlleleDAO() {
 		super(Allele.class);
 	}
 
-	public List<Long> findReferencingDiseaseAnnotationIds(Long alleleId) {
-		
-		Map<String, Object> params = new HashMap<>();
-		params.put("diseaseAnnotationSubject.id", alleleId);
-		List<Long> results = alleleDiseaseAnnotationDAO.findFilteredIds(params);
-		
-		Map<String, Object> aaParams = new HashMap<>();
-		aaParams.put("assertedAllele.id", alleleId);
-		results.addAll(agmDiseaseAnnotationDAO.findFilteredIds(aaParams));
-		
-		Map<String, Object> iaParams = new HashMap<>();
-		iaParams.put("inferredAllele.id", alleleId);
-		results.addAll(agmDiseaseAnnotationDAO.findFilteredIds(iaParams));
-		
-		Map<String, Object> dgmParams = new HashMap<>();
-		dgmParams.put("diseaseGeneticModifiers.id", alleleId);
-		results.addAll(diseaseAnnotationDAO.findFilteredIds(dgmParams));
+	public Boolean hasReferencingDiseaseAnnotationIds(Long alleleId) {
 
-		return results;
+		Map<String, Object> alleleDaParams = new HashMap<>();
+		alleleDaParams.put("query_operator", "or");
+		alleleDaParams.put("diseaseAnnotationSubject.id", alleleId);
+		alleleDaParams.put("diseaseGeneticModifiers.id", alleleId);
+		List<Long> results = alleleDiseaseAnnotationDAO.findIdsByParams(alleleDaParams);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
+
+		Map<String, Object> agmDaParams = new HashMap<>();
+		agmDaParams.put("query_operator", "or");
+		agmDaParams.put("assertedAllele.id", alleleId);
+		agmDaParams.put("inferredAllele.id", alleleId);
+		agmDaParams.put("diseaseGeneticModifiers.id", alleleId);
+		results = agmDiseaseAnnotationDAO.findIdsByParams(agmDaParams);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
+		
+		Map<String, Object> geneDaParams = new HashMap<>();
+		geneDaParams.put("diseaseGeneticModifiers.id", alleleId);
+		results = geneDiseaseAnnotationDAO.findIdsByParams(geneDaParams);
+
+		return CollectionUtils.isNotEmpty(results);
 	}
 
-	public List<Long> findReferencingPhenotypeAnnotations(Long alleleId) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("phenotypeAnnotationSubject.id", alleleId);
-		List<Long> results = allelePhenotypeAnnotationDAO.findFilteredIds(params);
+	public Boolean hasReferencingPhenotypeAnnotations(Long alleleId) {
+		
+		Map<String, Object> allelePaParams = new HashMap<>();
+		allelePaParams.put("phenotypeAnnotationSubject.id", alleleId);
+		List<Long> results = allelePhenotypeAnnotationDAO.findIdsByParams(allelePaParams);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
 
-		return results;
+		Map<String, Object> agmPaParams = new HashMap<>();
+		agmPaParams.put("query_operator", "or");
+		agmPaParams.put("assertedAllele.id", alleleId);
+		agmPaParams.put("inferredAllele.id", alleleId);
+		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
+		return CollectionUtils.isNotEmpty(results);
 	}
-
 }

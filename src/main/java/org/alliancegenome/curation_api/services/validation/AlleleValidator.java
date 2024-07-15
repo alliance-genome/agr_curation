@@ -52,38 +52,22 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
-	@Inject
-	AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
-	@Inject
-	AlleleGermlineTransmissionStatusSlotAnnotationValidator alleleGermlineTransmissionStatusValidator;
-	@Inject
-	AlleleNomenclatureEventSlotAnnotationValidator alleleNomenclatureEventValidator;
-	@Inject
-	AlleleSymbolSlotAnnotationValidator alleleSymbolValidator;
-	@Inject
-	AlleleFullNameSlotAnnotationValidator alleleFullNameValidator;
-	@Inject
-	AlleleSynonymSlotAnnotationValidator alleleSynonymValidator;
-	@Inject
-	AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
-	@Inject
-	AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
-	@Inject
-	AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
-	@Inject
-	AlleleGeneAssociationValidator alleleGeneAssociationValidator;
-	@Inject
-	NoteValidator noteValidator;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	ReferenceValidator referenceValidator;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
+	@Inject AlleleDAO alleleDAO;
+	@Inject AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
+	@Inject AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
+	@Inject AlleleGermlineTransmissionStatusSlotAnnotationValidator alleleGermlineTransmissionStatusValidator;
+	@Inject AlleleNomenclatureEventSlotAnnotationValidator alleleNomenclatureEventValidator;
+	@Inject AlleleSymbolSlotAnnotationValidator alleleSymbolValidator;
+	@Inject AlleleFullNameSlotAnnotationValidator alleleFullNameValidator;
+	@Inject AlleleSynonymSlotAnnotationValidator alleleSynonymValidator;
+	@Inject AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
+	@Inject AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
+	@Inject AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
+	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
+	@Inject NoteValidator noteValidator;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject ReferenceValidator referenceValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	private String errorMessage;
 
@@ -136,13 +120,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		} else {
 			dbEntity.setIsExtinct(null);
 		}
-		
+
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		if (dbEntity.getRelatedNotes() != null)
+		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
+		}
 		if (relatedNotes != null) {
-			if (dbEntity.getRelatedNotes() == null)
+			if (dbEntity.getRelatedNotes() == null) {
 				dbEntity.setRelatedNotes(new ArrayList<>());
+			}
 			dbEntity.getRelatedNotes().addAll(relatedNotes);
 		}
 
@@ -156,14 +142,14 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
 		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
-		
+
 		List<AlleleGeneAssociation> geneAssociations = null;
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
 			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
 		}
-		
+
 		response.convertErrorMessagesToMap();
-		
+
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
@@ -171,84 +157,106 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = alleleDAO.persist(dbEntity);
 
-		if (symbol != null)
+		if (symbol != null) {
 			symbol.setSingleAllele(dbEntity);
+		}
 		dbEntity.setAlleleSymbol(symbol);
-		
-		if (fullName != null)
+
+		if (fullName != null) {
 			fullName.setSingleAllele(dbEntity);
+		}
 		dbEntity.setAlleleFullName(fullName);
-		
-		if (germlineTransmissionStatus != null)
+
+		if (germlineTransmissionStatus != null) {
 			germlineTransmissionStatus.setSingleAllele(dbEntity);
+		}
 		dbEntity.setAlleleGermlineTransmissionStatus(germlineTransmissionStatus);
-		
-		if (databaseStatus != null)
+
+		if (databaseStatus != null) {
 			databaseStatus.setSingleAllele(dbEntity);
+		}
 		dbEntity.setAlleleDatabaseStatus(databaseStatus);
-		
-		if (dbEntity.getAlleleSynonyms() != null)
+
+		if (dbEntity.getAlleleSynonyms() != null) {
 			dbEntity.getAlleleSynonyms().clear();
+		}
 		if (synonyms != null) {
-			if (dbEntity.getAlleleSynonyms() == null)
+			if (dbEntity.getAlleleSynonyms() == null) {
 				dbEntity.setAlleleSynonyms(new ArrayList<>());
+			}
 			dbEntity.getAlleleSynonyms().addAll(synonyms);
 		}
-		
-		if (dbEntity.getAlleleSecondaryIds() != null)
+
+		if (dbEntity.getAlleleSecondaryIds() != null) {
 			dbEntity.getAlleleSecondaryIds().clear();
+		}
 		if (secondaryIds != null) {
-			if (dbEntity.getAlleleSecondaryIds() == null)
+			if (dbEntity.getAlleleSecondaryIds() == null) {
 				dbEntity.setAlleleSecondaryIds(new ArrayList<>());
+			}
 			dbEntity.getAlleleSecondaryIds().addAll(secondaryIds);
 		}
-		
-		if (dbEntity.getAlleleInheritanceModes() != null)
+
+		if (dbEntity.getAlleleInheritanceModes() != null) {
 			dbEntity.getAlleleInheritanceModes().clear();
+		}
 		if (inheritanceModes != null) {
-			if (dbEntity.getAlleleInheritanceModes() == null)
+			if (dbEntity.getAlleleInheritanceModes() == null) {
 				dbEntity.setAlleleInheritanceModes(new ArrayList<>());
-			for (AlleleInheritanceModeSlotAnnotation im : inheritanceModes)
+			}
+			for (AlleleInheritanceModeSlotAnnotation im : inheritanceModes) {
 				im.setSingleAllele(dbEntity);
+			}
 			dbEntity.getAlleleInheritanceModes().addAll(inheritanceModes);
 		}
-		
-		if (dbEntity.getAlleleFunctionalImpacts() != null)
+
+		if (dbEntity.getAlleleFunctionalImpacts() != null) {
 			dbEntity.getAlleleFunctionalImpacts().clear();
+		}
 		if (functionalImpacts != null) {
-			if (dbEntity.getAlleleFunctionalImpacts() == null)
+			if (dbEntity.getAlleleFunctionalImpacts() == null) {
 				dbEntity.setAlleleFunctionalImpacts(new ArrayList<>());
-			for (AlleleFunctionalImpactSlotAnnotation fi : functionalImpacts)
-					fi.setSingleAllele(dbEntity);
+			}
+			for (AlleleFunctionalImpactSlotAnnotation fi : functionalImpacts) {
+				fi.setSingleAllele(dbEntity);
+			}
 			dbEntity.getAlleleFunctionalImpacts().addAll(functionalImpacts);
 		}
-		
-		if (dbEntity.getAlleleMutationTypes() != null)
+
+		if (dbEntity.getAlleleMutationTypes() != null) {
 			dbEntity.getAlleleMutationTypes().clear();
+		}
 		if (mutationTypes != null) {
-			if (dbEntity.getAlleleMutationTypes() == null)
+			if (dbEntity.getAlleleMutationTypes() == null) {
 				dbEntity.setAlleleMutationTypes(new ArrayList<>());
-			for (AlleleMutationTypeSlotAnnotation mt : mutationTypes)
+			}
+			for (AlleleMutationTypeSlotAnnotation mt : mutationTypes) {
 				mt.setSingleAllele(dbEntity);
+			}
 			dbEntity.getAlleleMutationTypes().addAll(mutationTypes);
 		}
-		
-		if (dbEntity.getAlleleNomenclatureEvents() != null)
+
+		if (dbEntity.getAlleleNomenclatureEvents() != null) {
 			dbEntity.getAlleleNomenclatureEvents().clear();
+		}
 		if (nomenclatureEvents != null) {
-			if (dbEntity.getAlleleNomenclatureEvents() == null)
+			if (dbEntity.getAlleleNomenclatureEvents() == null) {
 				dbEntity.setAlleleNomenclatureEvents(new ArrayList<>());
-			for (AlleleNomenclatureEventSlotAnnotation nm : nomenclatureEvents)
+			}
+			for (AlleleNomenclatureEventSlotAnnotation nm : nomenclatureEvents) {
 				nm.setSingleAllele(dbEntity);
+			}
 			dbEntity.getAlleleNomenclatureEvents().addAll(nomenclatureEvents);
 		}
-		
+
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
-			if (dbEntity.getAlleleGeneAssociations() != null)
+			if (dbEntity.getAlleleGeneAssociations() != null) {
 				dbEntity.getAlleleGeneAssociations().clear();
+			}
 			if (geneAssociations != null) {
-				if (dbEntity.getAlleleGeneAssociations() == null)
+				if (dbEntity.getAlleleGeneAssociations() == null) {
 					dbEntity.setAlleleGeneAssociations(new ArrayList<>());
+				}
 				dbEntity.getAlleleGeneAssociations().addAll(geneAssociations);
 			}
 		}
@@ -268,15 +276,16 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		return singleRefResponse;
 	}
-	
+
 	public List<Reference> validateReferences(Allele uiEntity, Allele dbEntity) {
 		String field = "references";
-		
+
 		List<Reference> validatedReferences = new ArrayList<Reference>();
 		List<String> previousReferenceCuries = new ArrayList<String>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
 			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
-		
+		}
+
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
 			for (int ix = 0; ix < uiEntity.getReferences().size(); ix++) {
@@ -289,14 +298,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
-		
-		if (CollectionUtils.isEmpty(validatedReferences))
+
+		if (CollectionUtils.isEmpty(validatedReferences)) {
 			return null;
+		}
 
 		return validatedReferences;
 	}
@@ -304,8 +314,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	private VocabularyTerm validateInCollection(Allele uiEntity, Allele dbEntity) {
 		String field = "inCollection";
 
-		if (uiEntity.getInCollection() == null)
+		if (uiEntity.getInCollection() == null) {
 			return null;
+		}
 
 		VocabularyTerm inCollection = vocabularyTermService.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, uiEntity.getInCollection().getName()).getEntity();
 		if (inCollection == null) {
@@ -335,7 +346,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
 				} else {
 					note = noteResponse.getEntity();
-				
+
 					String noteIdentity = NoteIdentityHelper.noteIdentity(note);
 					if (validatedNoteIdentities.contains(noteIdentity)) {
 						allValid = false;
@@ -353,14 +364,14 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			convertMapToErrorMessages(field);
 			return null;
 		}
-		
-		if (CollectionUtils.isEmpty(validatedNotes))
+
+		if (CollectionUtils.isEmpty(validatedNotes)) {
 			return null;
+		}
 
 		return validatedNotes;
 	}
 
-	
 	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele uiEntity, Allele dbEntity) {
 		String field = "alleleMutationTypes";
 
@@ -378,14 +389,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedMutationTypes))
+		if (CollectionUtils.isEmpty(validatedMutationTypes)) {
 			return null;
+		}
 
 		return validatedMutationTypes;
 	}
@@ -407,47 +419,50 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedInheritanceModes))
+		if (CollectionUtils.isEmpty(validatedInheritanceModes)) {
 			return null;
+		}
 
 		return validatedInheritanceModes;
 	}
-	
+
 	private AlleleGermlineTransmissionStatusSlotAnnotation validateAlleleGermlineTransmissionStatus(Allele uiEntity, Allele dbEntity) {
-		if (uiEntity.getAlleleGermlineTransmissionStatus() == null)
+		if (uiEntity.getAlleleGermlineTransmissionStatus() == null) {
 			return null;
-		
+		}
+
 		String field = "alleleGermlineTransmissionStatus";
-		
+
 		ObjectResponse<AlleleGermlineTransmissionStatusSlotAnnotation> agtsResponse = alleleGermlineTransmissionStatusValidator.validateAlleleGermlineTransmissionStatusSlotAnnotation(uiEntity.getAlleleGermlineTransmissionStatus());
 		if (agtsResponse.getEntity() == null) {
 			addMessageResponse(field, agtsResponse.errorMessagesString());
 			response.addErrorMessages(field, agtsResponse.getErrorMessages());
 			return null;
 		}
-		
+
 		return agtsResponse.getEntity();
 	}
-	
+
 	private AlleleDatabaseStatusSlotAnnotation validateAlleleDatabaseStatus(Allele uiEntity, Allele dbEntity) {
-		if (uiEntity.getAlleleDatabaseStatus() == null)
+		if (uiEntity.getAlleleDatabaseStatus() == null) {
 			return null;
-		
+		}
+
 		String field = "alleleDatabaseStatus";
-		
+
 		ObjectResponse<AlleleDatabaseStatusSlotAnnotation> adsResponse = alleleDatabaseStatusValidator.validateAlleleDatabaseStatusSlotAnnotation(uiEntity.getAlleleDatabaseStatus());
 		if (adsResponse.getEntity() == null) {
 			addMessageResponse(field, adsResponse.errorMessagesString());
 			response.addErrorMessages(field, adsResponse.getErrorMessages());
 			return null;
 		}
-		
+
 		return adsResponse.getEntity();
 	}
 
@@ -468,8 +483,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			}
 		}
 
-		if (CollectionUtils.isEmpty(validatedNomenclatureEvents))
+		if (CollectionUtils.isEmpty(validatedNomenclatureEvents)) {
 			return null;
+		}
 
 		return validatedNomenclatureEvents;
 	}
@@ -493,8 +509,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	}
 
 	private AlleleFullNameSlotAnnotation validateAlleleFullName(Allele uiEntity, Allele dbEntity) {
-		if (uiEntity.getAlleleFullName() == null)
+		if (uiEntity.getAlleleFullName() == null) {
 			return null;
+		}
 
 		String field = "alleleFullName";
 
@@ -514,7 +531,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		List<AlleleSynonymSlotAnnotation> validatedSynonyms = new ArrayList<AlleleSynonymSlotAnnotation>();
 		Boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleSynonyms())) {
-			for (int ix = 0; ix < uiEntity.getAlleleSynonyms().size(); ix++) { 
+			for (int ix = 0; ix < uiEntity.getAlleleSynonyms().size(); ix++) {
 				AlleleSynonymSlotAnnotation syn = uiEntity.getAlleleSynonyms().get(ix);
 				ObjectResponse<AlleleSynonymSlotAnnotation> synResponse = alleleSynonymValidator.validateAlleleSynonymSlotAnnotation(syn);
 				if (synResponse.getEntity() == null) {
@@ -533,8 +550,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedSynonyms))
+		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
+		}
 
 		return validatedSynonyms;
 	}
@@ -558,14 +576,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedSecondaryIds))
+		if (CollectionUtils.isEmpty(validatedSecondaryIds)) {
 			return null;
+		}
 
 		return validatedSecondaryIds;
 	}
@@ -593,8 +612,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedFunctionalImpacts))
+		if (CollectionUtils.isEmpty(validatedFunctionalImpacts)) {
 			return null;
+		}
 
 		return validatedFunctionalImpacts;
 	}
@@ -647,8 +667,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			if (uiAssociations != null) {
 				Set<Long> uiIDs = new HashSet<>(uiAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
 				idsToDelete.removeAll(uiIDs);
-				for(AlleleGeneAssociation ga: dbAssociations){
-					if(idsToDelete.contains(ga.getId())){
+				for (AlleleGeneAssociation ga : dbAssociations) {
+					if (idsToDelete.contains(ga.getId())) {
 						Gene gene = ga.getAlleleGeneAssociationObject();
 						List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
 						geneAssociations.removeIf(geneAGA -> {
@@ -658,14 +678,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 				}
 			}
 		}
-		
+
 		if (!allValid) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedGeneAssociations))
+		if (CollectionUtils.isEmpty(validatedGeneAssociations)) {
 			return null;
+		}
 
 		return validatedGeneAssociations;
 	}

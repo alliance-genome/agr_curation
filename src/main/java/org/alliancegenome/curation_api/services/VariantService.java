@@ -9,8 +9,9 @@ import java.util.Objects;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -18,13 +19,12 @@ import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.VariantValidator;
 import org.alliancegenome.curation_api.services.validation.dto.VariantDTOValidator;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class VariantService extends SubmittedObjectCrudService<Variant, VariantDTO, VariantDAO> {
 
@@ -47,7 +47,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		Variant dbEntity = variantValidator.validateVariantUpdate(uiEntity);
 		return new ObjectResponse<Variant>(dbEntity);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Variant> create(Variant uiEntity) {
@@ -58,37 +58,40 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
 	}
-	
+
+	@Override
 	@Transactional
-	public void removeOrDeprecateNonUpdated(Long id, String loadDescription) {
+	public Variant deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Variant variant = variantDAO.find(id);
 		if (variant != null) {
-			List<Long> referencingDAIds = variantDAO.findReferencingDiseaseAnnotationIds(id);
-			Boolean anyReferencingEntities = false;
-			for (Long daId : referencingDAIds) {
-				DiseaseAnnotation referencingDA = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, loadDescription, true);
-				if (referencingDA != null)
-					anyReferencingEntities = true;
-			}
-			if (anyReferencingEntities) {
+			if (forceDeprecate || variantDAO.hasReferencingDiseaseAnnotationIds(id)) {
 				if (!variant.getObsolete()) {
-					variant.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
+					variant.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					variant.setDateUpdated(OffsetDateTime.now());
 					variant.setObsolete(true);
-					variantDAO.persist(variant);
+					return variantDAO.persist(variant);
+				} else {
+					return variant;
 				}
 			} else {
 				variantDAO.remove(id);
 			}
 		} else {
-			log.error("Failed getting variant: " + id);
+			String errorMessage = "Could not find Variant with id: " + id;
+			if (throwApiError) {
+				ObjectResponse<AffectedGenomicModel> response = new ObjectResponse<>();
+				response.addErrorMessage("id", errorMessage);
+				throw new ApiErrorException(response);
+			}
+			Log.error(errorMessage);
 		}
+		return null;
 	}
-	
+
 	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
-		List<Long> ids = variantDAO.findFilteredIds(params);
+		List<Long> ids = variantDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
 	}

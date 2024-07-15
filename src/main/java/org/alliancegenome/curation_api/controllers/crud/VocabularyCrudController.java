@@ -17,8 +17,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class VocabularyCrudController extends BaseEntityCrudController<VocabularyService, Vocabulary, VocabularyDAO> implements VocabularyCrudInterface {
 
-	@Inject
-	VocabularyService vocabularyService;
+	@Inject VocabularyService vocabularyService;
 
 	@Override
 	@PostConstruct
@@ -31,9 +30,10 @@ public class VocabularyCrudController extends BaseEntityCrudController<Vocabular
 		return vocabularyService.getById(id);
 	}
 
+	@Override
 	public ObjectResponse<Vocabulary> findByName(String name) {
 		SearchResponse<Vocabulary> ret = findByField("name", name);
-		if (ret != null && ret.getTotalResults() == 1) {
+		if (ret != null && ret.getResults().size() == 1) {
 			return new ObjectResponse<>(ret.getResults().get(0));
 		} else {
 			return new ObjectResponse<>();

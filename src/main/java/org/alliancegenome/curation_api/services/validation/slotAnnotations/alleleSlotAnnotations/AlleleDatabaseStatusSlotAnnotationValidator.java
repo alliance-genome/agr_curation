@@ -17,10 +17,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationValidator<AlleleDatabaseStatusSlotAnnotation> {
 
-	@Inject
-	AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AlleleDatabaseStatusSlotAnnotationDAO alleleDatabaseStatusDAO;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public ObjectResponse<AlleleDatabaseStatusSlotAnnotation> validateAlleleDatabaseStatusSlotAnnotation(AlleleDatabaseStatusSlotAnnotation uiEntity) {
 		AlleleDatabaseStatusSlotAnnotation mutationType = validateAlleleDatabaseStatusSlotAnnotation(uiEntity, false, false);
@@ -57,7 +55,7 @@ public class AlleleDatabaseStatusSlotAnnotationValidator extends SlotAnnotationV
 
 		VocabularyTerm databaseStatus = validateDatabaseStatus(uiEntity, dbEntity);
 		dbEntity.setDatabaseStatus(databaseStatus);
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);

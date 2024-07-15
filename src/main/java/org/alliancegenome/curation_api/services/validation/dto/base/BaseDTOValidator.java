@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -14,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
@@ -24,6 +26,8 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.PersonService;
+import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
+import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.CrossReferenceDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.DataProviderDTOValidator;
@@ -36,43 +40,72 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class BaseDTOValidator {
 
-	@Inject
-	PersonService personService;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	DataProviderService dataProviderService;
-	@Inject
-	DataProviderDTOValidator dataProviderDtoValidator;
-	@Inject
-	DataProviderDAO dataProviderDAO;
-	@Inject
-	CrossReferenceDTOValidator crossReferenceDtoValidator;
-	@Inject
-	CrossReferenceService crossReferenceService;
+	@Inject PersonService personService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject DataProviderService dataProviderService;
+	@Inject DataProviderDTOValidator dataProviderDtoValidator;
+	@Inject DataProviderDAO dataProviderDAO;
+	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceService crossReferenceService;
+	@Inject MiTermService miTermService;
+
+	protected HashMap<String, String> miCurieCache = new HashMap<>();
+	protected HashMap<String, MITerm> miTermCache = new HashMap<>();
+
+	protected String getCurieFromCache(String psiMiFormat) {
+		if (miCurieCache.containsKey(psiMiFormat)) {
+			return miCurieCache.get(psiMiFormat);
+		} else {
+			String curie = InteractionStringHelper.extractCurieFromPsiMiFormat(psiMiFormat);
+			if (curie != null) {
+				miCurieCache.put(psiMiFormat, curie);
+				return curie;
+			}
+		}
+		return null;
+	}
+
+	protected MITerm getTermFromCache(String curie) {
+		if (miTermCache.containsKey(curie)) {
+			return miTermCache.get(curie);
+		} else {
+			if (curie != null) {
+				MITerm miTerm = miTermService.findByCurie(curie);
+				if (miTerm != null) {
+					miTermCache.put(curie, miTerm);
+					return miTerm;
+				}
+			}
+		}
+		return null;
+	}
 
 	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO(E entity, D dto) {
 
 		ObjectResponse<E> response = new ObjectResponse<E>();
 
 		Person createdBy = null;
-		if (StringUtils.isNotBlank(dto.getCreatedByCurie()))
+		if (StringUtils.isNotBlank(dto.getCreatedByCurie())) {
 			createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedByCurie());
+		}
 		entity.setCreatedBy(createdBy);
 
 		Person updatedBy = null;
-		if (StringUtils.isNotBlank(dto.getUpdatedByCurie()))
+		if (StringUtils.isNotBlank(dto.getUpdatedByCurie())) {
 			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedByCurie());
+		}
 		entity.setUpdatedBy(updatedBy);
 
-		Boolean internal = dto instanceof NoteDTO ? true : false;
-		if (dto.getInternal() != null)
+		Boolean internal = dto instanceof NoteDTO;
+		if (dto.getInternal() != null) {
 			internal = dto.getInternal();
+		}
 		entity.setInternal(internal);
 
 		Boolean obsolete = false;
-		if (dto.getObsolete() != null)
+		if (dto.getObsolete() != null) {
 			obsolete = dto.getObsolete();
+		}
 		entity.setObsolete(obsolete);
 
 		OffsetDateTime dateUpdated = null;
@@ -115,13 +148,12 @@ public class BaseDTOValidator {
 			if (taxonResponse.getEntity() == null) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
 			}
-			if (beDataProvider != null && (beDataProvider.name().equals("RGD") || beDataProvider.name().equals("HUMAN")) &&
-					!taxonResponse.getEntity().getCurie().equals(beDataProvider.canonicalTaxonCurie)) {
+			if (beDataProvider != null && (beDataProvider.name().equals("RGD") || beDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(beDataProvider.canonicalTaxonCurie)) {
 				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ") for " + beDataProvider.name() + " load");
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
-		
+
 		if (dto.getDataProviderDto() == null) {
 			beResponse.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -130,13 +162,12 @@ public class BaseDTOValidator {
 				beResponse.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
 				if (beDataProvider != null && !dpResponse.getEntity().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-					beResponse.addErrorMessage("data_provider_dto - source_organization_dto - abbreviation", ValidationConstants.INVALID_MESSAGE +
-							" (" + dpResponse.getEntity().getSourceOrganization().getAbbreviation() + ") for " + beDataProvider.name() + " load");
+					beResponse.addErrorMessage("data_provider_dto - source_organization_dto - abbreviation", ValidationConstants.INVALID_MESSAGE + " (" + dpResponse.getEntity().getSourceOrganization().getAbbreviation() + ") for " + beDataProvider.name() + " load");
 				}
 				entity.setDataProvider(dataProviderDAO.persist(dpResponse.getEntity()));
 			}
 		}
-		
+
 		beResponse.setEntity(entity);
 
 		return beResponse;
@@ -149,7 +180,7 @@ public class BaseDTOValidator {
 		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto, dataProvider);
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
-		
+
 		List<CrossReference> validatedXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getCrossReferenceDtos())) {
 			for (CrossReferenceDTO xrefDto : dto.getCrossReferenceDtos()) {
@@ -162,14 +193,16 @@ public class BaseDTOValidator {
 				}
 			}
 		}
-		
+
 		List<CrossReference> xrefs = crossReferenceService.getUpdatedXrefList(validatedXrefs, entity.getCrossReferences());
-		
-		if (entity.getCrossReferences() != null)
+
+		if (entity.getCrossReferences() != null) {
 			entity.getCrossReferences().clear();
+		}
 		if (xrefs != null) {
-			if (entity.getCrossReferences() == null)
+			if (entity.getCrossReferences() == null) {
 				entity.setCrossReferences(new ArrayList<>());
+			}
 			entity.getCrossReferences().addAll(xrefs);
 		}
 
@@ -177,18 +210,20 @@ public class BaseDTOValidator {
 
 		return geResponse;
 	}
-	
+
 	public String handleStringField(String string) {
-		if (StringUtils.isNotBlank(string))
+		if (StringUtils.isNotBlank(string)) {
 			return string;
-		
+		}
+
 		return null;
 	}
-	
+
 	public List<String> handleStringListField(List<String> list) {
-		if (CollectionUtils.isEmpty(list))
+		if (CollectionUtils.isEmpty(list)) {
 			return null;
-		
+		}
+
 		return list;
 	}
 }

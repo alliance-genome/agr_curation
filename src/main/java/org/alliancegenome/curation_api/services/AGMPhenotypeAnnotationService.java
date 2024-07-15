@@ -21,14 +21,10 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGMPhenotypeAnnotation, AGMPhenotypeAnnotationDAO> {
 
-	@Inject
-	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject
-	AGMPhenotypeAnnotationFmsDTOValidator agmPhenotypeAnnotationFmsDtoValidator;
+	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject AGMPhenotypeAnnotationFmsDTOValidator agmPhenotypeAnnotationFmsDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -53,28 +49,25 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return agmPhenotypeAnnotationDAO.persist(annotation);
 	}
-	
+
 	@Transactional
-	public void addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, idsAdded, dataProvider);
-		agmPhenotypeAnnotationDAO.persist(annotation);
+	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+		List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider);
+		for (AGMPhenotypeAnnotation annotation : annotations) {
+			agmPhenotypeAnnotationDAO.persist(annotation);
+		}
+		return annotations;
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<AGMPhenotypeAnnotation> deleteById(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true, "AGM phenotype annotation DELETE API call", false);
+		deprecateOrDelete(id, true, "AGM phenotype annotation DELETE API call", false);
 		ObjectResponse<AGMPhenotypeAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider);
-	}
-
-	@Override
-	public AGMPhenotypeAnnotation deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError,
-			String loadDescription, Boolean deprecate) {
-		return (AGMPhenotypeAnnotation) phenotypeAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, throwApiError, loadDescription, deprecate);
 	}
 }

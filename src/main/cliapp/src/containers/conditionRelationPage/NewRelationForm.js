@@ -1,20 +1,19 @@
-import React, { useRef } from "react";
-import { ConditionRelationService } from "../../service/ConditionRelationService";
-import { Dialog } from "primereact/dialog";
-import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
-import { Dropdown } from "primereact/dropdown";
-import { Toast } from "primereact/toast";
+import React, { useRef } from 'react';
+import { ConditionRelationService } from '../../service/ConditionRelationService';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Toast } from 'primereact/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
-import { LiteratureAutocompleteTemplate } from "../../components/Autocomplete/LiteratureAutocompleteTemplate";
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
-import { FormErrorMessageComponent } from "../../components/Error/FormErrorMessageComponent";
-import { classNames } from "primereact/utils";
-import { autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
-import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import ErrorBoundary from "../../components/Error/ErrorBoundary";
-
+import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
+import { classNames } from 'primereact/utils';
+import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
+import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
+import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewRelationForm = ({
 	newRelationState,
@@ -29,12 +28,11 @@ export const NewRelationForm = ({
 	const toast_error = useRef(null);
 	const { newRelation, errorMessages, submitted, newRelationDialog } = newRelationState;
 
-
 	const hideDialog = () => {
-		newRelationDispatch({ type: "RESET" });
+		newRelationDispatch({ type: 'RESET' });
 	};
 
-	const mutation = useMutation(newRelation => {
+	const mutation = useMutation((newRelation) => {
 		if (!conditionRelationService) {
 			conditionRelationService = new ConditionRelationService();
 		}
@@ -43,40 +41,38 @@ export const NewRelationForm = ({
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		newRelationDispatch({ type: "SUBMIT" });
+		newRelationDispatch({ type: 'SUBMIT' });
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
 				setNewConditionRelation(data.data.entity, queryClient);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
-				newRelationDispatch({ type: "RESET" });
+				newRelationDispatch({ type: 'RESET' });
 			},
 			onError: (error) => {
-
-				const message =
-					error.response.data.errorMessages.uniqueId ?
-						"Page Error: New relation is a duplicate of an existing relation" :
-						error.response.data.errorMessage;
+				const message = error.response.data.errorMessages.uniqueId
+					? 'Page Error: New relation is a duplicate of an existing relation'
+					: error.response.data.errorMessage;
 
 				toast_error.current.show([
-					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false }
+					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false },
 				]);
-				newRelationDispatch({ type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages });
-			}
+				newRelationDispatch({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: error.response.data.errorMessages });
+			},
 		});
 	};
 
 	const onHandleChange = (event) => {
 		newRelationDispatch({
-			type: "EDIT",
+			type: 'EDIT',
 			field: event.target.name,
-			value: event.target.value
+			value: event.target.value,
 		});
 	};
 
 	const onRelationChange = (event) => {
 		const name = event.value;
 		newRelationDispatch({
-			type: "EDIT",
+			type: 'EDIT',
 			field: event.target.name,
 			value: { name },
 		});
@@ -85,16 +81,16 @@ export const NewRelationForm = ({
 	const onReferenceChange = (event, setFieldValue) => {
 		setFieldValue(event.target.value);
 		newRelationDispatch({
-			type: "EDIT",
+			type: 'EDIT',
 			field: event.target.name,
-			value: event.target.value
+			value: event.target.value,
 		});
 	};
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["curie", "cross_references.curie"];
-		const endpoint = "literature-reference";
-		const filterName = "curieFilter";
+		const autocompleteFields = ['curie', 'cross_references.curie'];
+		const endpoint = 'literature-reference';
+		const filterName = 'curieFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -103,16 +99,16 @@ export const NewRelationForm = ({
 	const onConditionsChange = (event, setFieldValue) => {
 		setFieldValue(event.target.value);
 		newRelationDispatch({
-			type: "EDIT",
+			type: 'EDIT',
 			field: event.target.name,
-			value: event.target.value
+			value: event.target.value,
 		});
 	};
 
 	const conditionSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["conditionSummary"];
-		const endpoint = "experimental-condition";
-		const filterName = "experimentalConditionFilter";
+		const autocompleteFields = ['conditionSummary'];
+		const endpoint = 'experimental-condition';
+		const filterName = 'experimentalConditionFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -129,9 +125,17 @@ export const NewRelationForm = ({
 		<div>
 			<Toast ref={toast_error} position="top-left" />
 			<Toast ref={toast_success} position="top-right" />
-			<Dialog visible={newRelationDialog} style={{ width: '450px' }} header="Add Relation" modal className="p-fluid" footer={dialogFooter} onHide={hideDialog}>
+			<Dialog
+				visible={newRelationDialog}
+				style={{ width: '450px' }}
+				header="Add Relation"
+				modal
+				className="p-fluid"
+				footer={dialogFooter}
+				onHide={hideDialog}
+			>
 				<ErrorBoundary>
-					<div className='p-justify-center'>
+					<div className="p-justify-center">
 						<form>
 							<div className="field">
 								<label htmlFor="handle">Handle</label>
@@ -142,51 +146,65 @@ export const NewRelationForm = ({
 									onChange={onHandleChange}
 									className={classNames({ 'p-invalid': submitted && errorMessages.handle })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"handle"} />
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'handle'} />
 							</div>
 							<div className="field">
-								<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
+								<label htmlFor="singleReference">
+									<font color={'red'}>*</font>Reference
+								</label>
 								<AutocompleteEditor
 									search={referenceSearch}
 									name="singleReference"
 									label="Reference"
-									fieldName='singleReference'
+									fieldName="singleReference"
 									initialValue={newRelation.singleReference}
 									onValueChangeHandler={onReferenceChange}
 									classNames={classNames({ 'p-invalid': submitted && errorMessages.singleReference })}
-									valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-										<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
+									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
+										<LiteratureAutocompleteTemplate
+											item={item}
+											setAutocompleteHoverItem={setAutocompleteHoverItem}
+											op={op}
+											query={query}
+										/>
+									)}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"} />
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'singleReference'} />
 							</div>
 							<div className="field">
 								<label htmlFor="relation">Relation</label>
 								<Dropdown
 									options={conditionRelationTypeTerms}
 									value={newRelation.conditionRelationType.name}
-									placeholder={"Select Relation"}
+									placeholder={'Select Relation'}
 									name="conditionRelationType"
-									optionLabel='name'
-									optionValue='name'
+									optionLabel="name"
+									optionValue="name"
 									onChange={onRelationChange}
 									required
 									className={classNames({ 'p-invalid': submitted && errorMessages.conditionRelationType })}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelationType"} />
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionRelationType'} />
 							</div>
 							<div className="field">
 								<label htmlFor="conditions">Conditions</label>
 								<AutocompleteMultiEditor
 									search={conditionSearch}
 									initialValue={newRelation.conditions}
-									fieldName='conditions'
-									subField='conditionSummary'
+									fieldName="conditions"
+									subField="conditionSummary"
 									name="conditions"
-									valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-										<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />}
+									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
+										<ExConAutocompleteTemplate
+											item={item}
+											setAutocompleteHoverItem={setAutocompleteHoverItem}
+											op={op}
+											query={query}
+										/>
+									)}
 									onValueChangeHandler={onConditionsChange}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditions"} />
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditions'} />
 							</div>
 						</form>
 					</div>

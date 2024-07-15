@@ -24,6 +24,6 @@ public interface ExperimentalConditionCrudInterface extends BaseIdCrudInterface<
 	@GET
 	@Path("/findBy/{conditionSummary}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<ExperimentalCondition> get(@PathParam("conditionSummary") String conditionSummary);
+	ObjectResponse<ExperimentalCondition> get(@PathParam("conditionSummary") String conditionSummary);
 
 }

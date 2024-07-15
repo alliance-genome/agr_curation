@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneSecondaryIdSlotAnnotationService extends BaseEntityCrudService<GeneSecondaryIdSlotAnnotation, GeneSecondaryIdSlotAnnotationDAO> {
 
-	@Inject
-	GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
-	@Inject
-	GeneSecondaryIdSlotAnnotationValidator geneSecondaryIdValidator;
+	@Inject GeneSecondaryIdSlotAnnotationDAO geneSecondaryIdDAO;
+	@Inject GeneSecondaryIdSlotAnnotationValidator geneSecondaryIdValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class GeneSecondaryIdSlotAnnotationService extends BaseEntityCrudService<
 	@Transactional
 	public ObjectResponse<GeneSecondaryIdSlotAnnotation> upsert(GeneSecondaryIdSlotAnnotation uiEntity) {
 		GeneSecondaryIdSlotAnnotation dbEntity = geneSecondaryIdValidator.validateGeneSecondaryIdSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<GeneSecondaryIdSlotAnnotation>(geneSecondaryIdDAO.persist(dbEntity));
 	}
 

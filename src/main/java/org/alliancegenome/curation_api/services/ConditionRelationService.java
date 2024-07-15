@@ -27,16 +27,11 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ConditionRelationService extends BaseEntityCrudService<ConditionRelation, ConditionRelationDAO> {
 
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	ConditionRelationValidator conditionRelationValidator;
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	ZecoTermDAO zecoTermDAO;
-	@Inject
-	ReferenceService referenceService;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject ConditionRelationValidator conditionRelationValidator;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject ZecoTermDAO zecoTermDAO;
+	@Inject ReferenceService referenceService;
 
 	@Override
 	@PostConstruct
@@ -99,7 +94,8 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 		SearchResponse<ConditionRelation> conditionRelationSearchResponse = conditionRelationDAO.findByField(key, referenceID);
 		Optional<ConditionRelation> standardOptional = Optional.empty();
 		Optional<ConditionRelation> genericOptional = Optional.empty();
-		// add standard experiments (standard, generic_control) if not present as per ZFIN requirement
+		// add standard experiments (standard, generic_control) if not present as per
+		// ZFIN requirement
 		if (conditionRelationSearchResponse != null) {
 			standardOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_STANDARD)).findFirst();
 			genericOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_GENERIC_CONTROL)).findFirst();
@@ -121,7 +117,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 
 	public void deleteUnusedConditions(List<Long> inUseCrIds) {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		
+
 		List<Long> crIds = conditionRelationDAO.findAllIds().getResults();
 		pdh.startProcess("Delete unused Conditions", crIds.size());
 		crIds.forEach(crId -> {

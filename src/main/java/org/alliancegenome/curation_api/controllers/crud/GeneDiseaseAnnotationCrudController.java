@@ -32,7 +32,7 @@ public class GeneDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudCo
 	}
 
 	public APIResponse updateGeneDiseaseAnnotations(String dataProvider, List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad(dataProvider, annotations);
+		return geneDiseaseAnnotationExecutor.runLoadApi(geneDiseaseAnnotationService, dataProvider, annotations);
 	}
 	
 	public ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(String identifierString) {

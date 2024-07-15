@@ -29,8 +29,13 @@ import lombok.ToString;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"), @JsonSubTypes.Type(value = Allele.class, name = "Allele"),
-	@JsonSubTypes.Type(value = Gene.class, name = "Gene"), @JsonSubTypes.Type(value = Variant.class, name = "Variant") })
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"),
+	@JsonSubTypes.Type(value = Allele.class, name = "Allele"),
+	@JsonSubTypes.Type(value = Gene.class, name = "Gene"),
+	@JsonSubTypes.Type(value = Variant.class, name = "Variant"),
+	@JsonSubTypes.Type(value = SequenceTargetingReagent.class, name = "SequenceTargetingReagent")
+})
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
 @Data
@@ -45,7 +50,7 @@ import lombok.ToString;
 		@Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
 		@Index(name = "biologicalentity_modentityid_index", columnList = "modentityid"),
 		@Index(name = "biologicalentity_modinternalid_index", columnList = "modinternalid"),
-		@Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id"),
+		@Index(name = "biologicalentity_dataprovider_index", columnList = "dataprovider_id")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "biologicalentity_curie_uk", columnNames = "curie"),

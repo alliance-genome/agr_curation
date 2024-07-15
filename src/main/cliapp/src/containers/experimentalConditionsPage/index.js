@@ -1,3 +1,3 @@
-import ExperimentalConditionsPage from "./ExperimentalConditionsPage";
+import ExperimentalConditionsPage from './ExperimentalConditionsPage';
 
 export { ExperimentalConditionsPage };

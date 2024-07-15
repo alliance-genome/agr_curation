@@ -1,3 +1,3 @@
-import { SiteLayout } from "./SiteLayout";
+import { SiteLayout } from './SiteLayout';
 
 export { SiteLayout };

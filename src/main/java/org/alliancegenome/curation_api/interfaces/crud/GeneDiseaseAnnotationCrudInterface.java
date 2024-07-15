@@ -31,23 +31,23 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
+	ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
-	public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation entity);
+	ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation entity);
 
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
-	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation entity);
+	ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation entity);
 
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateGeneDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<GeneDiseaseAnnotationDTO> annotationData);
+	APIResponse updateGeneDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<GeneDiseaseAnnotationDTO> annotationData);
 
 }

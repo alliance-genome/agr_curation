@@ -15,8 +15,7 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class PersonValidator extends AuditedObjectValidator<Person> {
 
-	@Inject
-	PersonDAO personDAO;
+	@Inject PersonDAO personDAO;
 
 	public Person validatePerson(Person uiEntity) {
 		response = new ObjectResponse<>(uiEntity);

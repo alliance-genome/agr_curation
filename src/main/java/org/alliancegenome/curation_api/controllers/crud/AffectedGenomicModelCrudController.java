@@ -32,7 +32,7 @@ public class AffectedGenomicModelCrudController extends SubmittedObjectCrudContr
 
 	@Override
 	public APIResponse updateAGMs(String dataProvider, List<AffectedGenomicModelDTO> agmData) {
-		return agmExecutor.runLoad(dataProvider, agmData);
+		return agmExecutor.runLoadApi(affectedGenomicModelService, dataProvider, agmData);
 	}
 
 }

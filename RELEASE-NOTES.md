@@ -2,6 +2,26 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.34.0
+* New features
+  * Paralogy annotations loaded into persistent store (SCRUM-4086, SCRUM-4088, SCRUM-4089, SCRUM-4090)
+  * Expression annotations loaded into persistent store (SCRUM-3708)
+  * HTPTags loaded into persistent store (SCRUM-4221)
+  * Data load file history sorted by Load Started timestamp (SCRUM-4204)
+  * Data loads stopped if error rate exceeds cutoff threshold (SCRUM-3871)
+  * SGD strain background added to defining fields of disease/phenotype annotations (SCRUM-4137)
+  * Turned off cleanup of associated annotations/associations (SCRUM-4107)
+* Fixes and maintenance
+  * Fixed reporting of out-of-date errors in data loads tooltip (SCRUM-4210)
+  * Fixed loading of genes with duplicate cross-references (SCRUM-4160)
+  * Fixed lading of interactions via NCBI_Gene cross-references (SCRUM-4159)
+  * Fixed orthology load cleanup (SCRUM-4146)
+  * Fixed duplicate references on interactions (SCRUM-4114)
+  * Fixed subject filter on disease annotations table (SCRUM-4113)
+  * Fixed association of secondary phenotype annotations with primary annotations that have condition relations (SCRUM-4062)
+  * Fixed downloads of large exception lists (SCRUM-3871)
+  * Fixed missing exception messages in downloads (SCRUM-4162)
+
 ## v0.33.0
 * New features 
   * Importing gene interactions into the persistent store (phase 2) (SCRUM-3809)

@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneSynonymSlotAnnotationValidator extends NameSlotAnnotationValidator<GeneSynonymSlotAnnotation> {
 
-	@Inject
-	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
-	@Inject
-	GeneDAO geneDAO;
+	@Inject GeneSynonymSlotAnnotationDAO geneSynonymDAO;
+	@Inject GeneDAO geneDAO;
 
 	public ObjectResponse<GeneSynonymSlotAnnotation> validateGeneSynonymSlotAnnotation(GeneSynonymSlotAnnotation uiEntity) {
 		GeneSynonymSlotAnnotation synonym = validateGeneSynonymSlotAnnotation(uiEntity, false, false);

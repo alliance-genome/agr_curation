@@ -1,13 +1,18 @@
-import React from "react";
-import { waitFor } from "@testing-library/react";
+import React from 'react';
+import { waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
-import { GenesPage } from "../index";
-import { setLocalStorage } from "../../../tools/jest/setupTests";
-import { setupSettingsHandler, setupFindHandler, setupSearchHandler, setupSaveSettingsHandler } from "../../../tools/jest/commonMswhandlers";
-import { data } from "../mockData/mockData";
+import { GenesPage } from '../index';
+import { setLocalStorage } from '../../../tools/jest/setupTests';
+import {
+	setupSettingsHandler,
+	setupFindHandler,
+	setupSearchHandler,
+	setupSaveSettingsHandler,
+} from '../../../tools/jest/commonMswhandlers';
+import { data } from '../mockData/mockData';
 import 'core-js/features/structured-clone';
 
-describe("<GenesPage />", () => {
+describe('<GenesPage />', () => {
 	beforeEach(() => {
 		setupFindHandler();
 		setupSettingsHandler();
@@ -15,33 +20,32 @@ describe("<GenesPage />", () => {
 		setupSearchHandler(data);
 	});
 
-	it("Renders without crashing", async () => {
+	it('Renders without crashing', async () => {
 		let result = await renderWithClient(<GenesPage />);
-		
+
 		await waitFor(() => {
 			expect(result);
 		});
 	});
 
-	it("Contains Correct Table Name", async () => {
+	it('Contains Correct Table Name', async () => {
 		let result = await renderWithClient(<GenesPage />);
 
 		const tableTitle = await result.findByText(/Genes Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it("The table contains correct data", async () => {
+	it('The table contains correct data', async () => {
 		let result = await renderWithClient(<GenesPage />);
 
 		const modEntityIdTd = await result.findByText(/WB:WBGene00003771/i);
 		const nameTd = await result.findByText(/LEVamisole resistant 8/i);
-		const symbolTd = await result.findByText(/lev-8/i); 
-		const synonymsTd = await result.findByText(/acr-13/i); 
-		const secondaryIdsTd = await result.findByText(/WB:WBGene00000052/i); 
-		const systematicNameTd = await result.findByText("C35C5.5"); 
+		const symbolTd = await result.findByText(/lev-8/i);
+		const synonymsTd = await result.findByText(/acr-13/i);
+		const secondaryIdsTd = await result.findByText(/WB:WBGene00000052/i);
+		const systematicNameTd = await result.findByText('C35C5.5');
 		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
 		const xrefsTd = await result.findByText(/WBGene00003771Xref \(gene\)/);
-
 
 		await waitFor(() => {
 			expect(modEntityIdTd).toBeInTheDocument();
@@ -54,5 +58,4 @@ describe("<GenesPage />", () => {
 			expect(xrefsTd).toBeInTheDocument();
 		});
 	});
-
 });

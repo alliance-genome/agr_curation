@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.model.entities;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,7 +29,7 @@ import lombok.ToString;
 	indexes = {
 		@Index(name = "informationcontententity_curie_index", columnList = "curie"),
 		@Index(name = "informationcontententity_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "informationcontententity_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "informationcontententity_updatedby_index", columnList = "updatedBy_id")
 	},
 	uniqueConstraints = {
 		@UniqueConstraint(name = "informationcontententity_curie_uk", columnNames = "curie")

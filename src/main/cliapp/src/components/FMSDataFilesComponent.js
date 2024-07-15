@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-export const FMSDataFilesComponent = ({dataFiles}) => {
-
+export const FMSDataFilesComponent = ({ dataFiles }) => {
 	const [expandedRows, setExpandedRows] = useState(null);
 
 	const downloadTemplate = (row) => {
-      return <a href={row.s3Url}>Download</a>
-	}
+		return <a href={row.s3Url}>Download</a>;
+	};
 
 	const dataFileTable = (row) => {
 		console.log(row);
 		return (
-			<DataTable value={row.dataFiles} className="p-datatable-sm"
+			<DataTable
+				value={row.dataFiles}
+				className="p-datatable-sm"
 				filterDisplay="row"
 				sortField="uploadDate"
 				sortOrder={-1}
@@ -26,21 +27,23 @@ export const FMSDataFilesComponent = ({dataFiles}) => {
 				<Column showFilterMenu={false} body={downloadTemplate} header="S3 Download" sortable filter></Column>
 			</DataTable>
 		);
-	}
+	};
 
 	return (
-			<DataTable value={dataFiles} className="p-datatable-sm"
-				filterDisplay="row"
-				sortField="releaseVersion"
-				expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)} rowExpansionTemplate={dataFileTable} 
-				sortOrder={-1}
-				paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-			>
-				<Column expander style={{ width: '3em' }} />
-				<Column showFilterMenu={false} field="releaseVersion" header="Releases" sortable filter></Column>
-				<Column showFilterMenu={false} field="releaseDate" header="Release Date" sortable filter></Column>
-			</DataTable>
-
+		<DataTable
+			value={dataFiles}
+			className="p-datatable-sm"
+			filterDisplay="row"
+			sortField="releaseVersion"
+			expandedRows={expandedRows}
+			onRowToggle={(e) => setExpandedRows(e.data)}
+			rowExpansionTemplate={dataFileTable}
+			sortOrder={-1}
+			paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+		>
+			<Column expander style={{ width: '3em' }} />
+			<Column showFilterMenu={false} field="releaseVersion" header="Releases" sortable filter></Column>
+			<Column showFilterMenu={false} field="releaseDate" header="Release Date" sortable filter></Column>
+		</DataTable>
 	);
-
-}
+};

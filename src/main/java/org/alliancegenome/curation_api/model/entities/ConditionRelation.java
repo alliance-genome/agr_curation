@@ -37,8 +37,8 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
-@Table(indexes = { 
-		@Index(name = "conditionrelation_createdby_index", columnList = "createdBy_id"), 
+@Table(indexes = {
+		@Index(name = "conditionrelation_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "conditionrelation_updatedby_index", columnList = "updatedBy_id")
 })
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ExperimentalCondition.class })
@@ -70,8 +70,9 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 	private List<ExperimentalCondition> conditions;
 
 	public void addExperimentCondition(ExperimentalCondition experimentalCondition) {
-		if (conditions == null)
+		if (conditions == null) {
 			conditions = new ArrayList<>();
+		}
 		conditions.add(experimentalCondition);
 	}
 

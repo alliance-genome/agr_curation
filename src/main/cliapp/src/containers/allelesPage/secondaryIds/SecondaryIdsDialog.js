@@ -15,13 +15,13 @@ import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 
 export const SecondaryIdsDialog = ({
-													originalSecondaryIdsData,
-													setOriginalSecondaryIdsData,
-													errorMessagesMainRow,
-													setErrorMessagesMainRow
-												}) => {
+	originalSecondaryIdsData,
+	setOriginalSecondaryIdsData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+}) => {
 	const { originalSecondaryIds, isInEdit, dialog, rowIndex, mainRowProps } = originalSecondaryIdsData;
-	const [localSecondaryIds, setLocalSecondaryIds] = useState(null) ;
+	const [localSecondaryIds, setLocalSecondaryIds] = useState(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -34,15 +34,15 @@ export const SecondaryIdsDialog = ({
 		let _localSecondaryIds = cloneSecondaryIds(originalSecondaryIds);
 		setLocalSecondaryIds(_localSecondaryIds);
 
-		if(isInEdit){
+		if (isInEdit) {
 			let rowsObject = {};
-			if(_localSecondaryIds) {
+			if (_localSecondaryIds) {
 				_localSecondaryIds.forEach((mt) => {
 					rowsObject[`${mt.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
-		}else{
+		} else {
 			setEditingRows({});
 		}
 		rowsEdited.current = 0;
@@ -50,14 +50,14 @@ export const SecondaryIdsDialog = ({
 
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
-	}
+	};
 
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localSecondaryIds = [...localSecondaryIds];//add new note support
-		if(originalSecondaryIds && originalSecondaryIds[event.index]){
+		let _localSecondaryIds = [...localSecondaryIds]; //add new note support
+		if (originalSecondaryIds && originalSecondaryIds[event.index]) {
 			let dataKey = _localSecondaryIds[event.index].dataKey;
 			_localSecondaryIds[event.index] = global.structuredClone(originalSecondaryIds[event.index]);
 			_localSecondaryIds[event.index].dataKey = dataKey;
@@ -66,20 +66,22 @@ export const SecondaryIdsDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInSecondaryIds(event.data,event.index);
+		compareChangesInSecondaryIds(event.data, event.index);
 	};
 
-	const compareChangesInSecondaryIds = (data,index) => {
-		if(originalSecondaryIds && originalSecondaryIds[index]) {
+	const compareChangesInSecondaryIds = (data, index) => {
+		if (originalSecondaryIds && originalSecondaryIds[index]) {
 			if (data.internal !== originalSecondaryIds[index].internal) {
 				rowsEdited.current++;
 			}
 			if (data.secondaryId !== originalSecondaryIds[index].secondaryId) {
 				rowsEdited.current++;
 			}
-			if ((originalSecondaryIds[index].evidence && !data.evidence) ||
+			if (
+				(originalSecondaryIds[index].evidence && !data.evidence) ||
 				(!originalSecondaryIds[index].evidence && data.evidence) ||
-				(data.evidence && (data.evidence.length !== originalSecondaryIds[index].evidence.length))) {
+				(data.evidence && data.evidence.length !== originalSecondaryIds[index].evidence.length)
+			) {
 				rowsEdited.current++;
 			} else {
 				if (data.evidence) {
@@ -92,12 +94,12 @@ export const SecondaryIdsDialog = ({
 			}
 		}
 
-		if((localSecondaryIds.length > originalSecondaryIds?.length) || !originalSecondaryIds){
+		if (localSecondaryIds.length > originalSecondaryIds?.length || !originalSecondaryIds) {
 			rowsEdited.current++;
 		}
 	};
 
-	const onRowEditSave = async(event) => {
+	const onRowEditSave = async (event) => {
 		const result = await validateSecondaryId(localSecondaryIds[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 		errorMessagesCopy[event.index] = {};
@@ -106,21 +108,26 @@ export const SecondaryIdsDialog = ({
 			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
-					severity: "error",
-					message: result.data[field]
+					severity: 'error',
+					message: result.data[field],
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				if(!reported) {
+				if (!reported) {
 					toast_topright.current.show([
-						{ life: 7000, severity: 'error', summary: 'Update error: ',
-						detail: 'Could not update AlleleSecondaryId [' + localSecondaryIds[event.index].id + ']', sticky: false }
+						{
+							life: 7000,
+							severity: 'error',
+							summary: 'Update error: ',
+							detail: 'Could not update AlleleSecondaryId [' + localSecondaryIds[event.index].id + ']',
+							sticky: false,
+						},
 					]);
 					reported = true;
 				}
 			});
 		} else {
 			delete _editingRows[event.index];
-			compareChangesInSecondaryIds(event.data,event.index);
+			compareChangesInSecondaryIds(event.data, event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
 		let _localSecondaryIds = [...localSecondaryIds];
@@ -150,14 +157,14 @@ export const SecondaryIdsDialog = ({
 
 	const cloneSecondaryIds = (clonableSecondaryIds) => {
 		let _clonableSecondaryIds = global.structuredClone(clonableSecondaryIds);
-		if(_clonableSecondaryIds) {
-			let counter = 0 ;
+		if (_clonableSecondaryIds) {
+			let counter = 0;
 			_clonableSecondaryIds.forEach((note) => {
 				note.dataKey = counter++;
 			});
 		} else {
 			_clonableSecondaryIds = [];
-		};
+		}
 		return _clonableSecondaryIds;
 	};
 
@@ -172,20 +179,19 @@ export const SecondaryIdsDialog = ({
 
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
-			severity: "warn",
-			message: "Pending Edits!"
+			severity: 'warn',
+			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]["alleleSecondaryIds"] = messageObject;
-		setErrorMessagesMainRow({...errorMessagesCopy});
+		errorMessagesCopy[rowIndex]['alleleSecondaryIds'] = messageObject;
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalSecondaryIdsData((originalSecondaryIdsData) => {
-				return {
-					...originalSecondaryIdsData,
-					dialog: false,
-				}
-			}
-		);
+			return {
+				...originalSecondaryIdsData,
+				dialog: false,
+			};
+		});
 	};
 
 	const internalTemplate = (rowData) => {
@@ -195,7 +201,7 @@ export const SecondaryIdsDialog = ({
 	const onInternalEditorValueChange = (props, event) => {
 		let _localSecondaryIds = [...localSecondaryIds];
 		_localSecondaryIds[props.rowIndex].internal = event.value.name;
-	}
+	};
 
 	const internalEditor = (props) => {
 		return (
@@ -204,9 +210,9 @@ export const SecondaryIdsDialog = ({
 					options={booleanTerms}
 					editorChange={onInternalEditorValueChange}
 					props={props}
-					field={"internal"}
+					field={'internal'}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
@@ -218,11 +224,8 @@ export const SecondaryIdsDialog = ({
 	const secondaryIdEditorTemplate = (props) => {
 		return (
 			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={"secondaryId"}
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"secondaryId"} />
+				<InputTextEditor rowProps={props} fieldName={'secondaryId'} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'secondaryId'} />
 			</>
 		);
 	};
@@ -230,22 +233,22 @@ export const SecondaryIdsDialog = ({
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
-		};
+		}
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Secondary ID" icon="pi pi-plus" onClick={createNewSecondaryIdHandler}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
+				<Button label="New Secondary ID" icon="pi pi-plus" onClick={createNewSecondaryIdHandler} />
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0} />
 			</div>
 		);
-	}
+	};
 
 	const createNewSecondaryIdHandler = (event) => {
 		let cnt = localSecondaryIds ? localSecondaryIds.length : 0;
 		const _localSecondaryIds = global.structuredClone(localSecondaryIds);
 		_localSecondaryIds.push({
-			dataKey : cnt,
-			internal : false,
+			dataKey: cnt,
+			internal: false,
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
@@ -254,45 +257,100 @@ export const SecondaryIdsDialog = ({
 
 	const handleDeleteSecondaryId = (event, props) => {
 		let _localSecondaryIds = global.structuredClone(localSecondaryIds);
-		if(props.dataKey){
+		if (props.dataKey) {
 			_localSecondaryIds.splice(props.dataKey, 1);
-		}else {
+		} else {
 			_localSecondaryIds.splice(props.rowIndex, 1);
 		}
 		setLocalSecondaryIds(_localSecondaryIds);
 		rowsEdited.current++;
-	}
+	};
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { handleDeleteSecondaryId(event, props) }}/>
+			<Button
+				icon="pi pi-trash"
+				className="p-button-text"
+				onClick={(event) => {
+					handleDeleteSecondaryId(event, props);
+				}}
+			/>
 		);
-	}
+	};
 
-	let headerGroup = 
-			<ColumnGroup>
-				<Row>
-					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-					<Column header="Secondary ID" />
-					<Column header="Internal" />
-					<Column header="Evidence" />
-				</Row>
-			</ColumnGroup>;
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" colSpan={2} style={{ display: isInEdit ? 'visible' : 'none' }} />
+				<Column header="Secondary ID" />
+				<Column header="Internal" />
+				<Column header="Evidence" />
+			</Row>
+		</ColumnGroup>
+	);
 
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
-			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+			<Dialog
+				visible={dialog}
+				className="w-6"
+				modal
+				onHide={hideDialog}
+				closable={!isInEdit}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
 				<h3>Secondary IDs</h3>
-				<DataTable value={localSecondaryIds} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
-					<Column editor={secondaryIdEditorTemplate} field="secondaryId" header="Secondary ID" headerClassName='surface-0' body={secondaryIdTemplate}/>
-					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
+				<DataTable
+					value={localSecondaryIds}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={(props) => onRowEditSave(props)}
+				>
+					<Column
+						rowEditor={isInEdit}
+						style={{ maxWidth: '7rem', display: isInEdit ? 'visible' : 'none' }}
+						headerStyle={{ width: '7rem', position: 'sticky' }}
+						bodyStyle={{ textAlign: 'center' }}
+						frozen
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => deleteAction(props)}
+						body={(props) => deleteAction(props)}
+						style={{ maxWidth: '4rem', display: isInEdit ? 'visible' : 'none' }}
+						frozen
+						headerClassName="surface-0"
+						bodyStyle={{ textAlign: 'center' }}
+					/>
+					<Column
+						editor={secondaryIdEditorTemplate}
+						field="secondaryId"
+						header="Secondary ID"
+						headerClassName="surface-0"
+						body={secondaryIdTemplate}
+					/>
+					<Column
+						editor={internalEditor}
+						field="internal"
+						header="Internal"
+						body={internalTemplate}
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(props) => evidenceEditorTemplate(props, errorMessages)}
+						field="evidence.curie"
+						header="Evidence"
+						headerClassName="surface-0"
+						body={(rowData) => evidenceTemplate(rowData)}
+					/>
 				</DataTable>
 			</Dialog>
 		</div>

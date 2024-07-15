@@ -1,13 +1,8 @@
-import { getShortCitation } from "../../../containers/allelesPage/utils";
+import { getShortCitation } from '../../../containers/allelesPage/utils';
 export const ShortCitationTemplate = ({ reference }) => {
-  if (!reference) return null;
+	if (!reference) return null;
 
-  const shortCitation = getShortCitation(reference);
+	const shortCitation = getShortCitation(reference);
 
-  return (
-    <div>
-      {shortCitation}
-    </div>
-  );
+	return <div>{shortCitation}</div>;
 };
-

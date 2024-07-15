@@ -19,22 +19,18 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneInteractionService extends BaseEntityCrudService<GeneInteraction, GeneInteractionDAO> {
 
-	@Inject
-	GeneInteractionDAO geneInteractionDAO;
-	@Inject
-	PersonService personService;
-	@Inject
-	PersonDAO personDAO;
-	
+	@Inject GeneInteractionDAO geneInteractionDAO;
+	@Inject PersonService personService;
+	@Inject PersonDAO personDAO;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneInteractionDAO);
 	}
-	
+
 	public ObjectResponse<GeneInteraction> getByIdentifer(String identifier) {
-		List<String> identifierFields = List.of("interactionId", "uniqueId");
-		GeneInteraction interaction = findByAlternativeFields(identifierFields, identifier);
+		GeneInteraction interaction = findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier);
 		return new ObjectResponse<GeneInteraction>(interaction);
 	}
 
@@ -70,6 +66,6 @@ public class GeneInteractionService extends BaseEntityCrudService<GeneInteractio
 		}
 
 		return null;
-		
+
 	}
 }

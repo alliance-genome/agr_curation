@@ -14,10 +14,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationService extends BaseEntityCrudService<AlleleMutationTypeSlotAnnotation, AlleleMutationTypeSlotAnnotationDAO> {
 
-	@Inject
-	AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
-	@Inject
-	AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
+	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
+	@Inject AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
 
 	@Override
 	@PostConstruct
@@ -28,8 +26,9 @@ public class AlleleMutationTypeSlotAnnotationService extends BaseEntityCrudServi
 	@Transactional
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> upsert(AlleleMutationTypeSlotAnnotation uiEntity) {
 		AlleleMutationTypeSlotAnnotation dbEntity = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true, true);
-		if (dbEntity == null)
+		if (dbEntity == null) {
 			return null;
+		}
 		return new ObjectResponse<AlleleMutationTypeSlotAnnotation>(alleleMutationTypeDAO.persist(dbEntity));
 	}
 

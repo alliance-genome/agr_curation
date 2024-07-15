@@ -32,45 +32,45 @@ import jakarta.ws.rs.core.MediaType;
 @Tag(name = "CRUD - Affected Genomic Models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCrudInterface<AffectedGenomicModel>, 
+public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCrudInterface<AffectedGenomicModel>,
 	BaseReadIdentifierControllerInterface<AffectedGenomicModel>,
 	BaseUpsertControllerInterface<AffectedGenomicModel, AffectedGenomicModelDTO> {
 
 	@POST
 	@Path("/bulk/{dataProvider}/agms")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAGMs(@PathParam("dataProvider") String dataProvider, List<AffectedGenomicModelDTO> agmData);
+	APIResponse updateAGMs(@PathParam("dataProvider") String dataProvider, List<AffectedGenomicModelDTO> agmData);
 
 	@Override
 	@GET
 	@Path("/{identifierString}")
 	@JsonView(View.AffectedGenomicModelView.class)
-	public ObjectResponse<AffectedGenomicModel> getByIdentifier(@PathParam("identifierString") String identifierString);
+	ObjectResponse<AffectedGenomicModel> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.AffectedGenomicModelView.class)
-	public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel entity);
+	ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel entity);
 	
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.AffectedGenomicModelView.class)
-	public ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel entity);
+	ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel entity);
 
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(View.AffectedGenomicModelView.class)
-	public SearchResponse<AffectedGenomicModel> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<AffectedGenomicModel> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.AffectedGenomicModelView.class })
-	public SearchResponse<AffectedGenomicModel> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<AffectedGenomicModel> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

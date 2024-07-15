@@ -1,12 +1,12 @@
-import { useImmerReducer } from "use-immer";
+import { useImmerReducer } from 'use-immer';
 
 const initialNewRelationState = {
 	newRelation: {
-		handle: "",
+		handle: '',
 		singleReference: {
-			curie: "",
+			curie: '',
 		},
-		conditionRelationType: {name: ""},
+		conditionRelationType: { name: '' },
 		conditions: [],
 	},
 	errorMessages: {},
@@ -35,11 +35,11 @@ const newRelationReducer = (draft, action) => {
 			draft.newRelationDialog = true;
 			break;
 		default:
-      throw Error('Unknown action: ' + action.type);
+			throw Error('Unknown action: ' + action.type);
 	}
 };
 
 export const useNewRelationReducer = () => {
 	const [newRelationState, newRelationDispatch] = useImmerReducer(newRelationReducer, initialNewRelationState);
-	return {newRelationState, newRelationDispatch};
-}
+	return { newRelationState, newRelationDispatch };
+};

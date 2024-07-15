@@ -19,10 +19,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ExperimentalConditionService extends BaseEntityCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
 
-	@Inject
-	ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject
-	ExperimentalConditionValidator experimentalConditionValidator;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject ExperimentalConditionValidator experimentalConditionValidator;
 
 	@Override
 	@PostConstruct

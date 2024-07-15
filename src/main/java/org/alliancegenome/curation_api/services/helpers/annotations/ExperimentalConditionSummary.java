@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.ExperimentalConditionFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
@@ -24,45 +23,47 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ExperimentalConditionSummary {
 
-	@Inject
-	ZecoTermService zecoTermService;
-	@Inject
-	ExperimentalConditionOntologyTermService expCondTermService;
-	@Inject
-	AnatomicalTermService anatomicalTermService;
-	@Inject
-	GoTermService goTermService;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject
-	ChemicalTermService chemicalTermService;
+	@Inject ZecoTermService zecoTermService;
+	@Inject ExperimentalConditionOntologyTermService expCondTermService;
+	@Inject AnatomicalTermService anatomicalTermService;
+	@Inject GoTermService goTermService;
+	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject ChemicalTermService chemicalTermService;
 
 	public static String getConditionSummary(ExperimentalCondition condition) {
 		UniqueIdGeneratorHelper conditionSummary = new UniqueIdGeneratorHelper();
 
-		if (condition.getConditionClass() != null)
+		if (condition.getConditionClass() != null) {
 			conditionSummary.add(condition.getConditionClass().getName());
+		}
 
-		if (condition.getConditionId() != null)
+		if (condition.getConditionId() != null) {
 			conditionSummary.add(condition.getConditionId().getName());
+		}
 
-		if (condition.getConditionAnatomy() != null)
+		if (condition.getConditionAnatomy() != null) {
 			conditionSummary.add(condition.getConditionAnatomy().getName());
+		}
 
-		if (condition.getConditionGeneOntology() != null)
+		if (condition.getConditionGeneOntology() != null) {
 			conditionSummary.add(condition.getConditionGeneOntology().getName());
+		}
 
-		if (condition.getConditionChemical() != null)
+		if (condition.getConditionChemical() != null) {
 			conditionSummary.add(condition.getConditionChemical().getName());
+		}
 
-		if (condition.getConditionTaxon() != null)
+		if (condition.getConditionTaxon() != null) {
 			conditionSummary.add(condition.getConditionTaxon().getName());
+		}
 
-		if (condition.getConditionQuantity() != null)
+		if (condition.getConditionQuantity() != null) {
 			conditionSummary.add(condition.getConditionQuantity());
+		}
 
-		if (StringUtils.isNotBlank(condition.getConditionFreeText()))
+		if (StringUtils.isNotBlank(condition.getConditionFreeText())) {
 			conditionSummary.add(condition.getConditionFreeText());
+		}
 
 		return conditionSummary.getSummary();
 	}
@@ -100,11 +101,13 @@ public class ExperimentalConditionSummary {
 			conditionSummary.add(conditionTaxon.getName());
 		}
 
-		if (StringUtils.isNotBlank(conditionDto.getConditionQuantity()))
+		if (StringUtils.isNotBlank(conditionDto.getConditionQuantity())) {
 			conditionSummary.add(conditionDto.getConditionQuantity());
+		}
 
-		if (StringUtils.isNotBlank(conditionDto.getConditionFreeText()))
+		if (StringUtils.isNotBlank(conditionDto.getConditionFreeText())) {
 			conditionSummary.add(conditionDto.getConditionFreeText());
+		}
 
 		return conditionSummary.getSummary();
 	}

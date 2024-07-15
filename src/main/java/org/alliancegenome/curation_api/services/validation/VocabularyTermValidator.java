@@ -18,10 +18,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTerm> {
 
-	@Inject
-	VocabularyTermService vocabularyTermService;
-	@Inject
-	VocabularyDAO vocabularyDAO;
+	@Inject VocabularyTermService vocabularyTermService;
+	@Inject VocabularyDAO vocabularyDAO;
 
 	private String errorMessage;
 

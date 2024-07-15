@@ -23,5 +23,5 @@ public interface AlleleMutationTypeSlotAnnotationCrudInterface extends BaseIdCru
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validate(AlleleMutationTypeSlotAnnotation entity);
+	ObjectResponse<AlleleMutationTypeSlotAnnotation> validate(AlleleMutationTypeSlotAnnotation entity);
 }

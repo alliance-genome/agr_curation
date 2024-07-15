@@ -15,10 +15,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructSymbolSlotAnnotationValidator extends NameSlotAnnotationValidator<ConstructSymbolSlotAnnotation> {
 
-	@Inject
-	ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
-	@Inject
-	ConstructDAO constructDAO;
+	@Inject ConstructSymbolSlotAnnotationDAO constructSymbolDAO;
+	@Inject ConstructDAO constructDAO;
 
 	public ObjectResponse<ConstructSymbolSlotAnnotation> validateConstructSymbolSlotAnnotation(ConstructSymbolSlotAnnotation uiEntity) {
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbolSlotAnnotation(uiEntity, false, false);
