@@ -18,7 +18,6 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Exon;
-import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.LocationAssociation;
 import org.alliancegenome.curation_api.model.entities.Transcript;
@@ -32,6 +31,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AssemblyComponentService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.Gff3Service;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
@@ -55,6 +55,7 @@ public class Gff3DtoValidator {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject SoTermDAO soTermDAO;
 	@Inject Gff3Service gff3Service;
+	@Inject VocabularyTermService vocabularyTermService;
 	
 	@Transactional
 	public Exon validateExonEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
@@ -244,6 +245,8 @@ public class Gff3DtoValidator {
 	
 	private <E extends LocationAssociation> ObjectResponse<E> validateLocationAssociation(E association, Gff3DTO dto, AssemblyComponent assemblyComponent) {
 		ObjectResponse<E> associationResponse = new ObjectResponse<E>();
+		
+		association.setRelation(vocabularyTermService.getTermInVocabulary("location_association_relation", "located_on").getEntity());
 		
 		if (assemblyComponent == null) {
 			associationResponse.addErrorMessage("SeqId", ValidationConstants.REQUIRED_MESSAGE);

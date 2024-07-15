@@ -128,3 +128,7 @@ CREATE INDEX transcriptlocationassociation_subject_index ON transcriptgenomicloc
 	USING btree (transcriptassociationsubject_id);
 CREATE INDEX transcriptlocationassociation_object_index ON transcriptgenomiclocationassociation
 	USING btree (transcriptgenomiclocationassociationobject_id);
+	
+INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'Location Association Relation', 'location_association_relation');
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'located_on', id FROM vocabulary WHERE vocabularylabel = 'location_association_relation';
+	
