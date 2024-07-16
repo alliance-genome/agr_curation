@@ -35,13 +35,13 @@ SELECT id, 'HTPDATASET', 'ZFIN' FROM bulkload WHERE name = 'ZFIN HTP Expression 
 --Adding vocabulary terms
 
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'epigenome', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'functional genomics and proteomics', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'functional_genomics_and_proteomics', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'karyotyping', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
 
 INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'htp_expression_dataset_summary', 'Summary of the high-throughput expression dataset' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
 INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'htp_expression_dataset_sample_note', 'Note pertaining to a high-throughput expression dataset sample' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
 
-INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
+INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id)
 	SELECT nextval('vocabularytermset_seq'), 'HTP Expression Dataset Note Type', 'htp_expression_dataset_note_type', id FROM vocabulary WHERE vocabularylabel = 'note_type';
 
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
@@ -56,7 +56,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
   	)
   	SELECT t1.id, t2.id FROM t1,t2;
 
-INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
+INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id)
 	SELECT nextval('vocabularytermset_seq'), 'HTP Expression Dataset Sample Note Type', 'htp_expression_dataset_sample_note_type', id FROM vocabulary WHERE vocabularylabel = 'note_type';
 
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
