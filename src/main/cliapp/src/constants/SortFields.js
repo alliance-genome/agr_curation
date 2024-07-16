@@ -73,6 +73,7 @@ export const SORT_FIELDS = Object.freeze([
 	'geneSymbol.displayText',
 	'geneSecondaryIds.secondaryId',
 	'geneSystematicName.displayText',
+	'geneType.name',
 	'inchi',
 	'inchiKey',
 	'iupac',

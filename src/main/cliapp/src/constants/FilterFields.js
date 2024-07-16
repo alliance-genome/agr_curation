@@ -344,6 +344,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'geneticSexFilter',
 		fields: ['geneticSex.name'],
 	},
+	geneTypeFieldSet: {
+		filterName: 'geneTypeFilter',
+		fields: ['geneType.curie', 'geneType.name'],
+	},
 	gmiAggregationFieldSet: {
 		filterName: 'gmiAggregationFilter',
 		fields: ['relation.name'],
@@ -788,6 +792,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	geneSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSymbolFieldSet] },
 	geneSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSynonymsFieldSet] },
 	geneSystematicNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSystematicNameFieldSet] },
+	geneTypeFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneTypeFieldSet] },
 	geneticModifiersFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneticModifiersFieldSet] },
 	idExampleFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.idExampleFieldSet] },
 	idPatternFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.idPatternFieldSet] },
