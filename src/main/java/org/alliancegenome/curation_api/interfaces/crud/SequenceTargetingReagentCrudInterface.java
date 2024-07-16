@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -46,4 +48,11 @@ public interface SequenceTargetingReagentCrudInterface extends BaseIdCrudInterfa
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ View.SequenceTargetingReagentView.class })
 	SearchResponse<SequenceTargetingReagent> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+
+
+	@Override
+	@GET
+	@Path("/{id}")
+	@JsonView(View.SequenceTargetingReagentDetailView.class)
+	ObjectResponse<SequenceTargetingReagent> getById(@PathParam("id") Long id);
 }

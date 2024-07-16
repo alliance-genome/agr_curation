@@ -5,6 +5,7 @@ import org.alliancegenome.curation_api.dao.associations.SequenceTargetingReagent
 import org.alliancegenome.curation_api.interfaces.crud.associations.SequenceTargetingReagentGeneAssociationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.SequenceTargetingReagentExecutor;
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.SequenceTargetingReagentGeneAssociationService;
 
 import jakarta.annotation.PostConstruct;
@@ -22,5 +23,10 @@ public class SequenceTargetingReagentGeneAssociationCrudController extends
 	@PostConstruct
 	protected void init() {
 		setService(sequenceTargetingReagentGeneAssociationService);
+	}
+
+	@Override
+	public ObjectResponse<SequenceTargetingReagentGeneAssociation> getAssociation(Long sqtrId, String relationName, Long geneId) {
+		return sequenceTargetingReagentGeneAssociationService.getAssociation(sqtrId, relationName, geneId);
 	}
 }
