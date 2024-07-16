@@ -3,40 +3,73 @@
 INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'HTP Expression Dataset Annotation Bulk Loads');
 
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-SELECT nextval('bulkload_seq'), 'HTP_EXPRESSION_DATASET_ANNOTATION', 'FB HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
+SELECT nextval('bulkload_seq'), 'HTPDATASET', 'FB HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-SELECT nextval('bulkload_seq'), 'HTP_EXPRESSION_DATASET_ANNOTATION', 'ZFIN HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
+SELECT nextval('bulkload_seq'), 'HTPDATASET', 'ZFIN HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-SELECT nextval('bulkload_seq'), 'HTP_EXPRESSION_DATASET_ANNOTATION', 'MGI HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
+SELECT nextval('bulkload_seq'), 'HTPDATASET', 'MGI HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-SELECT nextval('bulkload_seq'), 'HTP_EXPRESSION_DATASET_ANNOTATION', 'RGD HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
+SELECT nextval('bulkload_seq'), 'HTPDATASET', 'RGD HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-SELECT nextval('bulkload_seq'), 'HTP_EXPRESSION_DATASET_ANNOTATION', 'SGD HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
+SELECT nextval('bulkload_seq'), 'HTPDATASET', 'SGD HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
-SELECT nextval('bulkload_seq'), 'HTP_EXPRESSION_DATASET_ANNOTATION', 'WB HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
+SELECT nextval('bulkload_seq'), 'HTPDATASET', 'WB HTP Expression Dataset Annotation Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'HTP Expression Dataset Annotation Bulk Loads';
 
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
-SELECT id, '0 0 22 ? * SUN-THU', true FROM bulkload WHERE backendbulkloadtype = 'HTP_EXPRESSION_DATASET_ANNOTATION';
+SELECT id, '0 0 22 ? * SUN-THU', true FROM bulkload WHERE backendbulkloadtype = 'HTPDATASET';
 
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-SELECT id, 'HTP_EXPRESSION_DATASET_ANNOTATION', 'FB' FROM bulkload WHERE name = 'FB HTP Expression Dataset Annotation Load';
+SELECT id, 'HTPDATASET', 'FB' FROM bulkload WHERE name = 'FB HTP Expression Dataset Annotation Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-SELECT id, 'HTP_EXPRESSION_DATASET_ANNOTATION', 'MGI' FROM bulkload WHERE name = 'MGI HTP Expression Dataset Annotation Load';
+SELECT id, 'HTPDATASET', 'MGI' FROM bulkload WHERE name = 'MGI HTP Expression Dataset Annotation Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-SELECT id, 'HTP_EXPRESSION_DATASET_ANNOTATION', 'RGD' FROM bulkload WHERE name = 'RGD HTP Expression Dataset Annotation Load';
+SELECT id, 'HTPDATASET', 'RGD' FROM bulkload WHERE name = 'RGD HTP Expression Dataset Annotation Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-SELECT id, 'HTP_EXPRESSION_DATASET_ANNOTATION', 'SGD' FROM bulkload WHERE name = 'SGD HTP Expression Dataset Annotation Load';
+SELECT id, 'HTPDATASET', 'SGD' FROM bulkload WHERE name = 'SGD HTP Expression Dataset Annotation Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-SELECT id, 'HTP_EXPRESSION_DATASET_ANNOTATION', 'WB' FROM bulkload WHERE name = 'WB HTP Expression Dataset Annotation Load';
+SELECT id, 'HTPDATASET', 'WB' FROM bulkload WHERE name = 'WB HTP Expression Dataset Annotation Load';
 INSERT INTO bulkfmsload (id, fmsdatatype, fmsdatasubtype)
-SELECT id, 'HTP_EXPRESSION_DATASET_ANNOTATION', 'ZFIN' FROM bulkload WHERE name = 'ZFIN HTP Expression Dataset Annotation Load';
+SELECT id, 'HTPDATASET', 'ZFIN' FROM bulkload WHERE name = 'ZFIN HTP Expression Dataset Annotation Load';
 
 
---Adding 3 extra vocabulary terms for HTPTags
+--Adding vocabulary terms
 
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'epigenome', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'functional genomics and proteomics', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'karyotyping', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
+
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'HTP Expression Dataset Summary', 'Summary of the high-throughput expression dataset' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'HTP Expression Dataset Sample Note', 'Note pertaining to a high-throughput expression dataset sample' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
+
+INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
+	SELECT nextval('vocabularytermset_seq'), 'HTP Expression Dataset Note Type', 'htp_expression_dataset_note_type', id FROM vocabulary WHERE vocabularylabel = 'note_type';
+
+INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
+	WITH
+  	t1 AS (
+    	SELECT id FROM vocabularytermset WHERE vocabularylabel = 'htp_expression_dataset_note_type'
+  	),
+  	t2 AS (
+    	SELECT id FROM vocabularyterm WHERE name = 'HTP Expression Dataset Summary' AND vocabulary_id = (
+    		SELECT id FROM vocabulary WHERE vocabularylabel = 'note_type'
+    	)
+  	)
+  	SELECT t1.id, t2.id FROM t1,t2;
+
+INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
+	SELECT nextval('vocabularytermset_seq'), 'HTP Expression Dataset Sample Note Type', 'htp_expression_dataset_sample_note_type', id FROM vocabulary WHERE vocabularylabel = 'note_type';
+
+INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id) 
+	WITH
+  	t1 AS (
+    	SELECT id FROM vocabularytermset WHERE vocabularylabel = 'htp_expression_dataset_sample_note_type'
+  	),
+  	t2 AS (
+    	SELECT id FROM vocabularyterm WHERE name = 'HTP Expression Dataset Sample Note' AND vocabulary_id = (
+    		SELECT id FROM vocabulary WHERE vocabularylabel = 'note_type'
+    	)
+  	)
+  	SELECT t1.id, t2.id FROM t1,t2;
 
 -- Adding highthroughputexpressiondatasetannotation
 
