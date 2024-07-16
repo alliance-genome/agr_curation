@@ -38,8 +38,8 @@ INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyt
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'functional genomics and proteomics', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'karyotyping', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
 
-INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'HTP Expression Dataset Summary', 'Summary of the high-throughput expression dataset' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
-INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'HTP Expression Dataset Sample Note', 'Note pertaining to a high-throughput expression dataset sample' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'htp_expression_dataset_summary', 'Summary of the high-throughput expression dataset' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'htp_expression_dataset_sample_note', 'Note pertaining to a high-throughput expression dataset sample' ,id FROM vocabulary WHERE vocabularylabel = 'note_type';
 
 INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
 	SELECT nextval('vocabularytermset_seq'), 'HTP Expression Dataset Note Type', 'htp_expression_dataset_note_type', id FROM vocabulary WHERE vocabularylabel = 'note_type';
@@ -50,7 +50,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
     	SELECT id FROM vocabularytermset WHERE vocabularylabel = 'htp_expression_dataset_note_type'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'HTP Expression Dataset Summary' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'htp_expression_dataset_summary' AND vocabulary_id = (
     		SELECT id FROM vocabulary WHERE vocabularylabel = 'note_type'
     	)
   	)
@@ -65,7 +65,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
     	SELECT id FROM vocabularytermset WHERE vocabularylabel = 'htp_expression_dataset_sample_note_type'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'HTP Expression Dataset Sample Note' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'htp_expression_dataset_sample_note' AND vocabulary_id = (
     		SELECT id FROM vocabulary WHERE vocabularylabel = 'note_type'
     	)
   	)
