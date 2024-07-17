@@ -1,28 +1,40 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.constants.Gff3Constants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
+import org.alliancegenome.curation_api.dao.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.exonAssociations.ExonGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.LocationAssociation;
 import org.alliancegenome.curation_api.model.entities.Transcript;
+import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.AssemblyComponentService;
 import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.Gff3Service;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -35,16 +47,22 @@ public class Gff3DtoValidator {
 	@Inject ExonDAO exonDAO;
 	@Inject TranscriptDAO transcriptDAO;
 	@Inject CodingSequenceDAO codingSequenceDAO;
+	@Inject ExonGenomicLocationAssociationDAO exonLocationDAO;
+	@Inject TranscriptGenomicLocationAssociationDAO transcriptLocationDAO;
+	@Inject CodingSequenceGenomicLocationAssociationDAO cdsLocationDAO;
+	@Inject AssemblyComponentService assemblyComponentService;
 	@Inject DataProviderService dataProviderService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject SoTermDAO soTermDAO;
+	@Inject Gff3Service gff3Service;
+	@Inject VocabularyTermService vocabularyTermService;
 	
 	@Transactional
 	public Exon validateExonEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Exon exon = null;
 		
-		Map<String, String> attributes = getAttributes(dto, dataProvider);
+		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<Exon> searchResponse = exonDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -72,7 +90,7 @@ public class Gff3DtoValidator {
 
 		CodingSequence cds = null;
 		
-		Map<String, String> attributes = getAttributes(dto, dataProvider);
+		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<CodingSequence> searchResponse = codingSequenceDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -100,7 +118,7 @@ public class Gff3DtoValidator {
 
 		Transcript transcript = null;
 		
-		Map<String, String> attributes = getAttributes(dto, dataProvider);
+		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		if (attributes.containsKey("ID")) {
 			SearchResponse<Transcript> searchResponse = transcriptDAO.findByField("modInternalId", attributes.get("ID"));
 			if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -142,43 +160,121 @@ public class Gff3DtoValidator {
 		
 		return geResponse;
 	}
-	
-	private Map<String, String> getAttributes(Gff3DTO dto, BackendBulkDataProvider dataProvider) {
-		Map<String, String> attributes = new HashMap<String, String>();
-		if (CollectionUtils.isNotEmpty(dto.getAttributes())) {
-			for (String keyValue : dto.getAttributes()) {
-				String[] parts = keyValue.split("=");
-				if (parts.length == 2) {
-					attributes.put(parts[0], parts[1]);
-				}
-			}
-		}
 
-		if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {
-			for (String key : List.of("ID", "Parent")) {
-				if (attributes.containsKey(key)) {
-					String id = attributes.get(key);
-					String[] idParts = id.split(":");
-					if (idParts.length > 1) {
-						id = idParts[1];
-					}
-					attributes.put(key, id);
-				}
+	@Transactional
+	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+		AssemblyComponent assemblyComponent = null;
+		CodingSequenceGenomicLocationAssociation locationAssociation = new CodingSequenceGenomicLocationAssociation();
+		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			Map<String, Object> params = new HashMap<>();
+			params.put(EntityFieldConstants.CODING_SEQUENCE_ASSOCIATION_SUBJECT + ".id", cds.getId());
+			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
+			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
+			SearchResponse<CodingSequenceGenomicLocationAssociation> locationSearchResponse = cdsLocationDAO.findByParams(params);
+			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
+				locationAssociation = locationSearchResponse.getSingleResult();
 			}
+			locationAssociation.setCodingSequenceGenomicLocationAssociationObject(assemblyComponent);
+		}
+		locationAssociation.setCodingSequenceAssociationSubject(cds);
+		locationAssociation.setStrand(gffEntry.getStrand());
+		locationAssociation.setPhase(gffEntry.getPhase());
+		
+		ObjectResponse<CodingSequenceGenomicLocationAssociation> locationResponse = validateLocationAssociation(locationAssociation, gffEntry, assemblyComponent);
+		if (locationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, locationResponse.errorMessagesString());
 		}
 		
-		for (String key : List.of("ID", "Parent")) {
-			if (attributes.containsKey(key)) {
-				String id = attributes.get(key);
-				String[] idParts = id.split(":");
-				if (idParts.length == 1) {
-					id = dataProvider.name() + ':' + idParts[0];
-				}
-				attributes.put(key, id);
+		return cdsLocationDAO.persist(locationResponse.getEntity());
+	}
+
+	@Transactional
+	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+		AssemblyComponent assemblyComponent = null;
+		ExonGenomicLocationAssociation locationAssociation = new ExonGenomicLocationAssociation();
+		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			Map<String, Object> params = new HashMap<>();
+			params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT + ".id", exon.getId());
+			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
+			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
+			SearchResponse<ExonGenomicLocationAssociation> locationSearchResponse = exonLocationDAO.findByParams(params);
+			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
+				locationAssociation = locationSearchResponse.getSingleResult();
 			}
+			locationAssociation.setExonGenomicLocationAssociationObject(assemblyComponent);
+		}
+		locationAssociation.setExonAssociationSubject(exon);
+		locationAssociation.setStrand(gffEntry.getStrand());
+		
+		ObjectResponse<ExonGenomicLocationAssociation> locationResponse = validateLocationAssociation(locationAssociation, gffEntry, assemblyComponent);
+		if (locationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, locationResponse.errorMessagesString());
 		}
 		
-		return attributes;
+		return exonLocationDAO.persist(locationResponse.getEntity());
+	}
+
+	@Transactional
+	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+		AssemblyComponent assemblyComponent = null;
+		TranscriptGenomicLocationAssociation locationAssociation = new TranscriptGenomicLocationAssociation();
+		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			Map<String, Object> params = new HashMap<>();
+			params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", transcript.getId());
+			params.put(EntityFieldConstants.TRANSCRIPT_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
+			SearchResponse<TranscriptGenomicLocationAssociation> locationSearchResponse = transcriptLocationDAO.findByParams(params);
+			if (locationSearchResponse != null && locationSearchResponse.getSingleResult() != null) {
+				locationAssociation = locationSearchResponse.getSingleResult();
+			}
+			locationAssociation.setTranscriptGenomicLocationAssociationObject(assemblyComponent);
+		}
+		locationAssociation.setTranscriptAssociationSubject(transcript);
+		locationAssociation.setStrand(gffEntry.getStrand());
+		locationAssociation.setPhase(gffEntry.getPhase());
+		
+		ObjectResponse<TranscriptGenomicLocationAssociation> locationResponse = validateLocationAssociation(locationAssociation, gffEntry, assemblyComponent);
+		if (locationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, locationResponse.errorMessagesString());
+		}
+		
+		return transcriptLocationDAO.persist(locationResponse.getEntity());
+	}
+	
+	private <E extends LocationAssociation> ObjectResponse<E> validateLocationAssociation(E association, Gff3DTO dto, AssemblyComponent assemblyComponent) {
+		ObjectResponse<E> associationResponse = new ObjectResponse<E>();
+		
+		association.setRelation(vocabularyTermService.getTermInVocabulary("location_association_relation", "located_on").getEntity());
+		
+		if (assemblyComponent == null) {
+			associationResponse.addErrorMessage("SeqId", ValidationConstants.REQUIRED_MESSAGE);
+		}
+		
+		if (dto.getStart() == null) {
+			associationResponse.addErrorMessage("Start", ValidationConstants.REQUIRED_MESSAGE);
+		}
+		association.setStart(dto.getStart());
+		
+		if (dto.getEnd() == null) {
+			associationResponse.addErrorMessage("End", ValidationConstants.REQUIRED_MESSAGE);
+		}
+		association.setEnd(dto.getEnd());
+		
+		if (StringUtils.isBlank(dto.getStrand())) {
+			associationResponse.addErrorMessage("Strand", ValidationConstants.REQUIRED_MESSAGE);
+		} else if (!Gff3Constants.STRANDS.contains(dto.getStrand())) {
+			associationResponse.addErrorMessage("Strand", ValidationConstants.INVALID_MESSAGE + " (" + dto.getStrand() + ")");
+		}
+		
+		if (dto.getPhase() != null && (dto.getPhase() > 2 || dto.getPhase() < 0)) {
+			associationResponse.addErrorMessage("Phase", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPhase() + ")");
+		}
+		
+		associationResponse.setEntity(association);
+		
+		return associationResponse;
 	}
 
 }

@@ -39,13 +39,13 @@ public class GenomeAssembly extends BiologicalEntity {
 		@Index(columnList = "genomeassembly_id", name = "genomeassembly_crossreference_genomeassembly_index"),
 		@Index(columnList = "crossreferences_id", name = "genomeassembly_crossreference_crossreference_index")
 	})
-	@EqualsAndHashCode.Include
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
+	@EqualsAndHashCode.Include
 	@JsonView({ View.FieldsOnly.class })
 	private AffectedGenomicModel specimenGenomicModel;
 
