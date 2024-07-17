@@ -32,7 +32,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	
 	private Gene gene;
 	private SequenceTargetingReagent sqtr;
-	VocabularyTerm relation;
+	private VocabularyTerm relation;
 	private String relationName = "targets";
 	private String geneCurie = "GENETEST:Gene0001";
 	private String sqtrId = "83";
@@ -98,7 +98,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	@Test
 	@Order(3)
 	public void sqtrGeneAssociationBulkUploadMissingGenes() throws Exception {
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", 2, 0, 1);
+		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", 2, 0, 2);
 	}
 	
 
