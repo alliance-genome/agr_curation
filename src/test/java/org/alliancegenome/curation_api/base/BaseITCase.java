@@ -31,6 +31,7 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -760,6 +761,17 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
+	public SequenceTargetingReagent getSequenceTargetingReagent(String identifier) {
+		ObjectResponse<SequenceTargetingReagent> res = RestAssured.given().
+				when().
+				get("/api/sqtr/" + identifier).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefSequenceTargetingReagent());
+
+		return res.getEntity();
+	}
+
 	public GeneDiseaseAnnotation getGeneDiseaseAnnotation(String uniqueId) {
 		ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
 				when().
@@ -890,6 +902,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<Gene>> getObjectResponseTypeRefGene() {
 		return new TypeRef<ObjectResponse<Gene>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<SequenceTargetingReagent>> getObjectResponseTypeRefSequenceTargetingReagent() {
+		return new TypeRef<ObjectResponse<SequenceTargetingReagent>>() {
 		};
 	}
 
