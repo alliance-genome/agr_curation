@@ -120,7 +120,7 @@ public class Gff3Executor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF update for " + dataProvider.name(), (gffData.size() * 2) + 1);
 		
-		loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
+		assemblyId = loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
 		idsAdded = loadEntities(history, gffData, idsAdded, dataProvider, ph);
 		idsAdded = loadAssociations(history, gffData, idsAdded, dataProvider, assemblyId, ph);
 		
@@ -143,9 +143,9 @@ public class Gff3Executor extends LoadFileExecutor {
 		return new LoadHistoryResponce(history);
 	}
 	
-	private void loadGenomeAssembly(String assemblyName, BulkLoadFileHistory history, List<String> gffHeaderData, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private String loadGenomeAssembly(String assemblyName, BulkLoadFileHistory history, List<String> gffHeaderData, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
 		try {
-			gff3Service.loadGenomeAssembly(assemblyName, gffHeaderData, dataProvider);
+			assemblyName = gff3Service.loadGenomeAssembly(assemblyName, gffHeaderData, dataProvider);
 			history.incrementCompleted();
 		} catch (ObjectUpdateException e) {
 			history.incrementFailed();
@@ -157,6 +157,8 @@ public class Gff3Executor extends LoadFileExecutor {
 		}
 		updateHistory(history);
 		ph.progressProcess();
+		
+		return assemblyName;
 	}
 
 	private Map<String, List<Long>> loadEntities(BulkLoadFileHistory history, List<Gff3DTO> gffData, Map<String, List<Long>> idsAdded,

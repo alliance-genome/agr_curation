@@ -52,7 +52,7 @@ public class Gff3Service {
 	@Inject Gff3DtoValidator gff3DtoValidator;
 	
 	@Transactional
-	public void loadGenomeAssembly(String assemblyName, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public String loadGenomeAssembly(String assemblyName, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		
 		if (StringUtils.isBlank(assemblyName)) {
 			for (String header : gffHeaderData) {
@@ -76,6 +76,8 @@ public class Gff3Service {
 				
 				genomeAssemblyDAO.persist(assembly);
 			}
+			
+			return assemblyName;
 		} else {
 			throw new ObjectValidationException(gffHeaderData, "#!assembly - " + ValidationConstants.REQUIRED_MESSAGE);
 		}
@@ -106,7 +108,7 @@ public class Gff3Service {
 	
 	@Transactional
 	public Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, Gff3DTO gffEntry, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ObjectUpdateException {
-		if (StringUtils.isEmpty(assemblyId)) {
+		if (StringUtils.isBlank(assemblyId)) {
 			throw new ObjectValidationException(gffEntry, "Cannot load associations without assembly");
 		}
 		
