@@ -88,10 +88,10 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
 	),
 	t2 AS (
 		SELECT id FROM vocabularyterm WHERE name = 'parent_of' AND vocabulary_id = (
-			SELECT id FROM vocabulary WHERE vocabulary_label = 'transcript_relation'
+			SELECT id FROM vocabulary WHERE vocabularylabel = 'transcript_relation'
 		)
 	)
-	SELECT t2.id, t2.id FROM t1, t2;
+	SELECT t1.id, t2.id FROM t1, t2;
 
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id)
 	WITH t1 AS (
@@ -99,10 +99,10 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
 	),
 	t2 AS (
 		SELECT id FROM vocabularyterm WHERE name = 'parent_of' AND vocabulary_id = (
-			SELECT id FROM vocabulary WHERE vocabulary_label = 'transcript_relation'
+			SELECT id FROM vocabulary WHERE vocabularylabel = 'transcript_relation'
 		)
 	)
-	SELECT t2.id, t2.id FROM t1, t2;
+	SELECT t1.id, t2.id FROM t1, t2;
 
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id)
 	WITH t1 AS (
@@ -110,8 +110,8 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
 	),
 	t2 AS (
 		SELECT id FROM vocabularyterm WHERE name = 'child_of' AND vocabulary_id = (
-			SELECT id FROM vocabulary WHERE vocabulary_label = 'transcript_relation'
+			SELECT id FROM vocabulary WHERE vocabularylabel = 'transcript_relation'
 		)
 	)
-	SELECT t2.id, t2.id FROM t1, t2;
+	SELECT t1.id, t2.id FROM t1, t2;
 	
