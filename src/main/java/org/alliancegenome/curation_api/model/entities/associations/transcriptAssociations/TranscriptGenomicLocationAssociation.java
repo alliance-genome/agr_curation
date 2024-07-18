@@ -51,7 +51,12 @@ public class TranscriptGenomicLocationAssociation extends LocationAssociation {
 	})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties("transcriptGenomicLocationAssociations")
+	@JsonIgnoreProperties({
+		"transcriptCodingSequenceAssociations",
+		"transcriptExonAssociations",
+		"transcriptGeneAssociations",
+		"transcriptGenomicLocationAssociations"
+	})
 	@Fetch(FetchMode.JOIN)
 	private Transcript transcriptAssociationSubject;
 

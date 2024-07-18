@@ -5,6 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptExonAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -66,5 +67,9 @@ public class Exon extends GenomicEntity {
 	@OneToMany(mappedBy = "exonAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class })
 	private List<ExonGenomicLocationAssociation> exonGenomicLocationAssociations;
+	
+	@OneToMany(mappedBy = "transcriptExonAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class })
+	private List<TranscriptExonAssociation> transcriptExonAssociations;
 
 }

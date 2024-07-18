@@ -5,6 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptCodingSequenceAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -66,5 +67,9 @@ public class CodingSequence extends GenomicEntity {
 	@OneToMany(mappedBy = "codingSequenceAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CodingSequenceGenomicLocationAssociation> codingSequenceGenomicLocationAssociations;
+	
+	@OneToMany(mappedBy = "transcriptCodingSequenceAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class })
+	private List<TranscriptCodingSequenceAssociation> transcriptCodingSequenceAssociations;
 
 }
