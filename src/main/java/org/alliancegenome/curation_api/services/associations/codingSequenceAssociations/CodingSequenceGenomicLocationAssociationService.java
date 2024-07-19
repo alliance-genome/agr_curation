@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -107,7 +106,7 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 		return response;
 	}
 	
-	public void addAssociationToSubjectAndObject(CodingSequenceGenomicLocationAssociation association) {
+	public void addAssociationToSubject(CodingSequenceGenomicLocationAssociation association) {
 		CodingSequence cds = association.getCodingSequenceAssociationSubject();
 		
 		List<CodingSequenceGenomicLocationAssociation> currentSubjectAssociations = cds.getCodingSequenceGenomicLocationAssociations();
@@ -120,20 +119,6 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 		
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);
-		}
-		
-		AssemblyComponent assemblyComponent = association.getCodingSequenceGenomicLocationAssociationObject();
-		
-		List<CodingSequenceGenomicLocationAssociation> currentObjectAssociations = assemblyComponent.getCodingSequenceGenomicLocationAssociations();
-		if (currentObjectAssociations == null) {
-			currentObjectAssociations = new ArrayList<>();
-		}
-		
-		List<Long> currentObjectAssociationIds = currentObjectAssociations.stream()
-				.map(CodingSequenceGenomicLocationAssociation::getId).collect(Collectors.toList());
-		
-		if (!currentObjectAssociationIds.contains(association.getId())) {
-			currentObjectAssociations.add(association);
 		}
 	}
 }

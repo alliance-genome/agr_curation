@@ -12,8 +12,10 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -59,11 +61,7 @@ public class ExonGenomicLocationAssociation extends LocationAssociation {
 	})
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
-	@JsonIgnoreProperties({
-		"codingSequenceGenomicLocationAssociations",
-		"exonGenomicLocationAssociations",
-		"transcriptGenomicLocationAssociations"
-	})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent exonGenomicLocationAssociationObject;
 	

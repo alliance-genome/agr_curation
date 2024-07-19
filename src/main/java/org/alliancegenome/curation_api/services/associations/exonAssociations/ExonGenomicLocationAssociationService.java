@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.exonAssociations.ExonGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -107,7 +106,7 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 		return response;
 	}
 	
-	public void addAssociationToSubjectAndObject(ExonGenomicLocationAssociation association) {
+	public void addAssociationToSubject(ExonGenomicLocationAssociation association) {
 		Exon exon = association.getExonAssociationSubject();
 		
 		List<ExonGenomicLocationAssociation> currentSubjectAssociations = exon.getExonGenomicLocationAssociations();
@@ -120,20 +119,6 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 		
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);
-		}
-		
-		AssemblyComponent assemblyComponent = association.getExonGenomicLocationAssociationObject();
-		
-		List<ExonGenomicLocationAssociation> currentObjectAssociations = assemblyComponent.getExonGenomicLocationAssociations();
-		if (currentObjectAssociations == null) {
-			currentObjectAssociations = new ArrayList<>();
-		}
-		
-		List<Long> currentObjectAssociationIds = currentObjectAssociations.stream()
-				.map(ExonGenomicLocationAssociation::getId).collect(Collectors.toList());
-		
-		if (!currentObjectAssociationIds.contains(association.getId())) {
-			currentObjectAssociations.add(association);
 		}
 	}
 }
