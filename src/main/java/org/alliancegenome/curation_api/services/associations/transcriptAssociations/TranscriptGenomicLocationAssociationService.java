@@ -103,7 +103,7 @@ public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudS
 		return response;
 	}
 	
-	public void addAssociationToSubjectAndObject(TranscriptGenomicLocationAssociation association) {
+	public void addAssociationToSubject(TranscriptGenomicLocationAssociation association) {
 		Transcript transcript = association.getTranscriptAssociationSubject();
 		
 		List<TranscriptGenomicLocationAssociation> currentSubjectAssociations = transcript.getTranscriptGenomicLocationAssociations();
@@ -116,20 +116,6 @@ public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudS
 		
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);
-		}
-		
-		AssemblyComponent assemblyComponent = association.getTranscriptGenomicLocationAssociationObject();
-		
-		List<TranscriptGenomicLocationAssociation> currentObjectAssociations = assemblyComponent.getTranscriptGenomicLocationAssociations();
-		if (currentObjectAssociations == null) {
-			currentObjectAssociations = new ArrayList<>();
-		}
-		
-		List<Long> currentObjectAssociationIds = currentObjectAssociations.stream()
-				.map(TranscriptGenomicLocationAssociation::getId).collect(Collectors.toList());
-		
-		if (!currentObjectAssociationIds.contains(association.getId())) {
-			currentObjectAssociations.add(association);
 		}
 	}
 }

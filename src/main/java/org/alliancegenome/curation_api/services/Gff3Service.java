@@ -124,7 +124,7 @@ public class Gff3Service {
 			ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assemblyId, dataProvider);
 			if (exonLocation != null) {
 				idsAdded.get("ExonGenomicLocationAssociation").add(exonLocation.getId());
-				exonLocationService.addAssociationToSubjectAndObject(exonLocation);
+				exonLocationService.addAssociationToSubject(exonLocation);
 			}
 		} else if (StringUtils.equals(gffEntry.getType(), "CDS")) {
 			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
@@ -136,7 +136,7 @@ public class Gff3Service {
 			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, dataProvider);
 			if (cdsLocation != null) {
 				idsAdded.get("CodingSequenceGenomicLocationAssociation").add(cdsLocation.getId());
-				cdsLocationService.addAssociationToSubjectAndObject(cdsLocation);
+				cdsLocationService.addAssociationToSubject(cdsLocation);
 			}
 		} else if (Gff3Constants.TRANSCRIPT_TYPES.contains(gffEntry.getType())) {
 			if (StringUtils.equals(gffEntry.getType(), "lnc_RNA")) {
@@ -153,7 +153,7 @@ public class Gff3Service {
 			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, dataProvider);
 			if (transcriptLocation != null) {
 				idsAdded.get("TranscriptGenomicLocationAssociation").add(transcriptLocation.getId());
-				transcriptLocationService.addAssociationToSubjectAndObject(transcriptLocation);
+				transcriptLocationService.addAssociationToSubject(transcriptLocation);
 			}
 		}
 		

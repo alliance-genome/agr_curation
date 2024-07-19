@@ -103,7 +103,7 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 		return response;
 	}
 	
-	public void addAssociationToSubjectAndObject(ExonGenomicLocationAssociation association) {
+	public void addAssociationToSubject(ExonGenomicLocationAssociation association) {
 		Exon exon = association.getExonAssociationSubject();
 		
 		List<ExonGenomicLocationAssociation> currentSubjectAssociations = exon.getExonGenomicLocationAssociations();
@@ -116,20 +116,6 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 		
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);
-		}
-		
-		AssemblyComponent assemblyComponent = association.getExonGenomicLocationAssociationObject();
-		
-		List<ExonGenomicLocationAssociation> currentObjectAssociations = assemblyComponent.getExonGenomicLocationAssociations();
-		if (currentObjectAssociations == null) {
-			currentObjectAssociations = new ArrayList<>();
-		}
-		
-		List<Long> currentObjectAssociationIds = currentObjectAssociations.stream()
-				.map(ExonGenomicLocationAssociation::getId).collect(Collectors.toList());
-		
-		if (!currentObjectAssociationIds.contains(association.getId())) {
-			currentObjectAssociations.add(association);
 		}
 	}
 }
