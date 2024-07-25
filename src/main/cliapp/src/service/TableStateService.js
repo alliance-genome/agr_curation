@@ -390,7 +390,11 @@ const modTableSettings = {
 				'Genetic Modifiers',
 				'Internal',
 			],
-			filters: {},
+			filters: {
+				obsoleteFilter: {
+					obsolete: { queryString: 'false' },
+				},
+			},
 			tableKeyName: 'DiseaseAnnotations',
 			tableSettingsKeyName: 'DiseaseAnnotationsTableSettings',
 		},
