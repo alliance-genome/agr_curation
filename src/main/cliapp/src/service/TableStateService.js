@@ -47,6 +47,9 @@ const modTableSettings = {
 					'dataProvider.sourceOrganization.fullName': { queryString: 'RGD', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.shortName': { queryString: 'RGD', tokenOperator: 'AND' },
 				},
+				obsoleteFilter: {
+					obsolete: { queryString: 'false' },
+				},
 			},
 			tableKeyName: 'DiseaseAnnotations',
 			tableSettingsKeyName: 'DiseaseAnnotationsTableSettings',
@@ -93,6 +96,9 @@ const modTableSettings = {
 					'dataProvider.sourceOrganization.fullName': { queryString: 'SGD', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.shortName': { queryString: 'SGD', tokenOperator: 'AND' },
 				},
+				obsoleteFilter: {
+					obsolete: { queryString: 'false' },
+				},
 			},
 			tableKeyName: 'DiseaseAnnotations',
 			tableSettingsKeyName: 'DiseaseAnnotationsTableSettings',
@@ -103,14 +109,6 @@ const modTableSettings = {
 			page: 0,
 			rows: 50,
 			first: 0,
-			filters: {
-				dataProviderFilter: {
-					'dataProvider.sourceOrganization.abbreviation': { queryString: 'WB', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.fullName': { queryString: 'WB', tokenOperator: 'AND' },
-					'dataProvider.sourceOrganization.shortName': { queryString: 'WB', tokenOperator: 'AND' },
-				},
-			},
-			tableKeyName: 'DiseaseAnnotations',
 			multiSortMeta: [{ field: 'dateCreated', order: -1 }],
 			selectedColumnNames: [
 				'MOD Annotation ID',
@@ -148,6 +146,17 @@ const modTableSettings = {
 				'Genetic Modifiers',
 				'Asserted Genes',
 			],
+			filters: {
+				dataProviderFilter: {
+					'dataProvider.sourceOrganization.abbreviation': { queryString: 'WB', tokenOperator: 'AND' },
+					'dataProvider.sourceOrganization.fullName': { queryString: 'WB', tokenOperator: 'AND' },
+					'dataProvider.sourceOrganization.shortName': { queryString: 'WB', tokenOperator: 'AND' },
+				},
+				obsoleteFilter: {
+					obsolete: { queryString: 'false' },
+				},
+			},
+			tableKeyName: 'DiseaseAnnotations',
 			tableSettingsKeyName: 'DiseaseAnnotationsTableSettings',
 		},
 	},
@@ -187,13 +196,13 @@ const modTableSettings = {
 				'Genetic Modifiers',
 			],
 			filters: {
-				obsoleteFilter: {
-					obsolete: { queryString: 'false' },
-				},
 				dataProviderFilter: {
 					'dataProvider.sourceOrganization.abbreviation': { queryString: 'FB', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.fullName': { queryString: 'FB', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.shortName': { queryString: 'FB', tokenOperator: 'AND' },
+				},
+				obsoleteFilter: {
+					obsolete: { queryString: 'false' },
 				},
 			},
 			tableKeyName: 'DiseaseAnnotations',
@@ -228,6 +237,9 @@ const modTableSettings = {
 					'dataProvider.sourceOrganization.abbreviation': { queryString: 'ZFIN', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.fullName': { queryString: 'ZFIN', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.shortName': { queryString: 'ZFIN', tokenOperator: 'AND' },
+				},
+				obsoleteFilter: {
+					obsolete: { queryString: 'false' },
 				},
 			},
 			tableKeyName: 'DiseaseAnnotations',
@@ -268,6 +280,9 @@ const modTableSettings = {
 					'dataProvider.sourceOrganization.abbreviation': { queryString: 'ZFIN', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.fullName': { queryString: 'ZFIN', tokenOperator: 'AND' },
 					'dataProvider.sourceOrganization.shortName': { queryString: 'ZFIN', tokenOperator: 'AND' },
+				},
+				obsoleteFilter: {
+					obsolete: { queryString: 'false' },
 				},
 			},
 			tableKeyName: 'DiseaseAnnotations',
