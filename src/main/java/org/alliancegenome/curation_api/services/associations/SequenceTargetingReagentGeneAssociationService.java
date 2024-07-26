@@ -15,6 +15,8 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.associations.SequenceTargetingReagentGeneAssociationFmsDTOValidator;
 
@@ -99,6 +101,25 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 		List<Long> ids = sequenceTargetingReagentGeneAssociationDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
+	}
+
+	public ObjectResponse<SequenceTargetingReagentGeneAssociation> getAssociation(Long sqtrId, String relationName, Long geneId) {
+		SequenceTargetingReagentGeneAssociation association = null;
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("sequenceTargetingReagentAssociationSubject.id", sqtrId);
+		params.put("relation.name", relationName);
+		params.put("sequenceTargetingReagentGeneAssociationObject.id", geneId);
+
+		SearchResponse<SequenceTargetingReagentGeneAssociation> resp = sequenceTargetingReagentGeneAssociationDAO.findByParams(params);
+		if (resp != null && resp.getSingleResult() != null) {
+			association = resp.getSingleResult();
+		}
+
+		ObjectResponse<SequenceTargetingReagentGeneAssociation> response = new ObjectResponse<>();
+		response.setEntity(association);
+
+		return response;
 	}
 
 }
