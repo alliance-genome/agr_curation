@@ -39,6 +39,21 @@ import lombok.ToString;
 @Schema(name = "HighThroughputExpressionDatasetAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetAnnotation")
 public class HighThroughputExpressionDatasetAnnotation extends SubmittedObject {
 
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsOnly.class })
+	private ExternalDataBaseEntity htpExpressionDataset;
+
+	@IndexedEmbedded(includePaths = {"secondaryIdentifiers", "preferredCrossReference", "crossReferences"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@Fetch(FetchMode.JOIN)
+	@JoinTable(indexes = {
+		@Index(name = "htpdatasetannotation_reference_htpdataset_index", columnList = "highthroughputexpressiondatasetannotation_id"),
+		@Index(name = "htpdatasetannotation_reference_references_index", columnList = "references_id")
+	})
+	@JsonView({ View.FieldsAndLists.class })
+	private List<ExternalDataBaseEntity> subSeries;
+
 	@JsonView({ View.FieldsOnly.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
