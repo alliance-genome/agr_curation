@@ -37,7 +37,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "ExternalDataBaseEntity", description = "POJO that represents the ExternalDataBaseEntity")
-public class ExternalDataBaseEntity extends CurieObject{
+public class ExternalDataBaseEntity extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

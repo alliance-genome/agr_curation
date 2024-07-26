@@ -43,13 +43,13 @@ public class HighThroughputExpressionDatasetAnnotation extends SubmittedObject {
 	@JsonView({ View.FieldsOnly.class })
 	private ExternalDataBaseEntity htpExpressionDataset;
 
-	@IndexedEmbedded(includePaths = {"secondaryIdentifiers", "preferredCrossReference", "crossReferences"})
+	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
 	@JoinTable(indexes = {
-		@Index(name = "htpdatasetannotation_reference_htpdataset_index", columnList = "highthroughputexpressiondatasetannotation_id"),
-		@Index(name = "htpdatasetannotation_reference_references_index", columnList = "references_id")
+		@Index(name = "htpdatasetannotation_externaldatabaseentity_htpdataset_index", columnList = "highthroughputexpressiondatasetannotation_id"),
+		@Index(name = "htpdatasetannotation_externaldatabaseentity_subseries_index", columnList = "subseries_id")
 	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<ExternalDataBaseEntity> subSeries;
