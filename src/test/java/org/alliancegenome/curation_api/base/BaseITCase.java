@@ -1,57 +1,13 @@
 package org.alliancegenome.curation_api.base;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.Construct;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
-import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
-import org.alliancegenome.curation_api.model.entities.Variant;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
-import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
-import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
@@ -60,8 +16,14 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.lang3.StringUtils;
 
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 
 public class BaseITCase {
 
@@ -100,7 +62,7 @@ public class BaseITCase {
 	public void checkFailedBulkLoad(String endpoint, String filePath) throws Exception {
 		checkFailedBulkLoad(endpoint, filePath, 1, 1, 0);
 	}
-	
+
 	public void checkFailedBulkLoad(String endpoint, String filePath, int expectedTotalRecords, int expectedFailedRecords, int expectedCompletedRecords) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 
@@ -349,7 +311,7 @@ public class BaseITCase {
 		symbol.setFormatText(modEntityId);
 
 		gene.setGeneSymbol(symbol);
-		
+
 		SOTerm geneType = getSoTerm("SO:0001217");
 		gene.setGeneType(geneType);
 
@@ -1235,7 +1197,7 @@ public class BaseITCase {
 			symbol.setFormatText(modEntityId);
 
 			gene.setGeneSymbol(symbol);
-			
+
 			SOTerm geneType = getSoTerm("SO:0001217");
 			gene.setGeneType(geneType);
 
@@ -1324,6 +1286,22 @@ public class BaseITCase {
 			statusCode(200);
 	}
 
+	public void loadStageTerm(String curie, String name) throws Exception {
+		MPTerm mpTerm = new MPTerm();
+		mpTerm.setCurie(curie);
+		mpTerm.setName(name);
+		mpTerm.setObsolete(false);
+		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(mpTerm).
+			when().
+			put("/api/stageterm").
+			then().
+			statusCode(200);
+	}
+
 	public void loadOrganization(String abbreviation) throws Exception {
 		Organization organization = new Organization();
 		organization.setAbbreviation(abbreviation);
@@ -1380,6 +1358,22 @@ public class BaseITCase {
 			body(soTerm).
 			when().
 			put("/api/soterm").
+			then().
+			statusCode(200);
+	}
+
+	public void loadUberonTerm(String curie, String name) throws Exception {
+		SOTerm soTerm = new SOTerm();
+		soTerm.setCurie(curie);
+		soTerm.setName(name);
+		soTerm.setObsolete(false);
+		soTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(soTerm).
+			when().
+			put("/api/uberonterm").
 			then().
 			statusCode(200);
 	}
