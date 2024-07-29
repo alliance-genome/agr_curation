@@ -49,8 +49,8 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 		Vocabulary noteTypeVocab = getVocabulary("construct_relation");
 		relation = getVocabularyTerm(noteTypeVocab, relationName);
 		gene = getGene(geneCurie);
-		// sqtr = getSequenceTargetingReagent(sqtrId);
-		sqtr = createSequenceTargetingReagent(sqtrModEntityId, false, "TALEN-inhbaa");
+		sqtr = getSequenceTargetingReagent(sqtrModEntityId);
+		// sqtr = createSequenceTargetingReagent(sqtrModEntityId, false, "TALEN-inhbaa");
 	}
 
 	@Test
