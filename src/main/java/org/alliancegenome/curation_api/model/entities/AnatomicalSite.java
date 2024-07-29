@@ -74,7 +74,7 @@ public class AnatomicalSite extends AuditedObject {
 		name = "anatomicalsite_anatomicalsubstructurequalifiers",
 		indexes = {
 			@Index(name = "anatomicalsubstructurequalifiers_anatomicalsite_index", columnList = "anatomicalsite_id"),
-			@Index(name = "anatomicalsubstructurequalifiers_anatomicalsubstructurequalifiers_index", columnList = "anatomicalsubstructurequalifiers_id")}
+			@Index(name = "anatomicalsubstructurequalifiers_qualifiers_index", columnList = "anatomicalsubstructurequalifiers_id")}
 	)
 	private List<VocabularyTerm> anatomicalSubstructureQualifiers;
 
@@ -98,7 +98,7 @@ public class AnatomicalSite extends AuditedObject {
 		name = "anatomicalsite_anatomicalstructureuberonterms",
 		indexes = {
 			@Index(name = "anatomicalstructureuberonterms_anatomicalsite_index", columnList = "anatomicalsite_id"),
-			@Index(name = "anatomicalstructureuberonterms_anatomicalstructureuberonterms_index", columnList = "anatomicalstructureuberonterms_id")}
+			@Index(name = "anatomicalstructureuberonterms_uberonterms_index", columnList = "anatomicalstructureuberonterms_id")}
 	)
 	private List<UBERONTerm> anatomicalStructureUberonTerms;
 
@@ -110,7 +110,7 @@ public class AnatomicalSite extends AuditedObject {
 		name = "anatomicalsite_anatomicalsubstructureuberonterms",
 		indexes = {
 			@Index(name = "anatomicalsubstructureuberonterms_anatomicalsite_index", columnList = "anatomicalsite_id"),
-			@Index(name = "anatomicalsubstructureuberonterms_anatomicalstructureuberonterms_index", columnList = "anatomicalsubstructureuberonterms_id")}
+			@Index(name = "anatomicalsubstructureuberonterms_uberonterms_index", columnList = "anatomicalsubstructureuberonterms_id")}
 	)
 	private List<UBERONTerm> anatomicalSubstructureUberonTerms;
 }
