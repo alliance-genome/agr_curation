@@ -48,37 +48,37 @@ CREATE TABLE anatomicalsite (
 );
 
 CREATE TABLE anatomicalsite_anatomicalstructurequalifiers (
-	anatomicalsite_id BIGINT NOT NULL,
+	anatomicalsite_id BIGINT,
 	anatomicalstructurequalifiers_id BIGINT
 );
 
 CREATE TABLE anatomicalsite_anatomicalsubstructurequalifiers (
-	anatomicalsite_id BIGINT NOT NULL,
+	anatomicalsite_id BIGINT,
 	anatomicalsubstructurequalifiers_id BIGINT
 );
 
 CREATE TABLE anatomicalsite_cellularcomponentqualifiers (
-	anatomicalsite_id BIGINT NOT NULL,
+	anatomicalsite_id BIGINT,
 	cellularcomponentqualifiers_id BIGINT
 );
 
 CREATE TABLE anatomicalsite_anatomicalstructureuberonterms (
-	anatomicalsite_id BIGINT NOT NULL,
+	anatomicalsite_id BIGINT,
 	anatomicalstructureuberonterms_id BIGINT
 );
 
 CREATE TABLE anatomicalsite_anatomicalsubstructureuberonterms (
-	anatomicalsite_id BIGINT NOT NULL,
+	anatomicalsite_id BIGINT,
 	anatomicalsubstructureuberonterms_id BIGINT
 );
 
 CREATE TABLE temporalcontext_stageuberonslimterms (
-	temporalcontext_id BIGINT NOT NULL,
+	temporalcontext_id BIGINT,
 	stageuberonslimterms_id BIGINT
 );
 
 CREATE TABLE temporalcontext_temporalqualifiers (
-	temporalcontext_id BIGINT NOT NULL,
+	temporalcontext_id BIGINT,
 	temporalqualifiers_id BIGINT
 );
 
