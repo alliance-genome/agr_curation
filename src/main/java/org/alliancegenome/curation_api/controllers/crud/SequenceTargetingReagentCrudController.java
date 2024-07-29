@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
+import org.alliancegenome.curation_api.controllers.base.SubmittedObjectCrudController;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.interfaces.crud.SequenceTargetingReagentCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.SequenceTargetingReagentExecutor;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -15,7 +16,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class SequenceTargetingReagentCrudController extends BaseEntityCrudController<SequenceTargetingReagentService, SequenceTargetingReagent, SequenceTargetingReagentDAO> implements SequenceTargetingReagentCrudInterface {
+public class SequenceTargetingReagentCrudController extends SubmittedObjectCrudController<SequenceTargetingReagentService, SequenceTargetingReagent, SequenceTargetingReagentFmsDTO, SequenceTargetingReagentDAO> implements SequenceTargetingReagentCrudInterface {
 
 	@Inject
 	SequenceTargetingReagentService sqtrService;

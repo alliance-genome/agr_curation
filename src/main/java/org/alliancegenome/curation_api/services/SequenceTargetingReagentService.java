@@ -12,8 +12,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.SequenceTargetingReagentFmsDTOValidator;
 
 import jakarta.annotation.PostConstruct;
@@ -22,7 +21,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class SequenceTargetingReagentService extends BaseEntityCrudService<SequenceTargetingReagent, SequenceTargetingReagentDAO> implements BaseUpsertServiceInterface<SequenceTargetingReagent, SequenceTargetingReagentFmsDTO> {
+public class SequenceTargetingReagentService extends SubmittedObjectCrudService<SequenceTargetingReagent, SequenceTargetingReagentFmsDTO, SequenceTargetingReagentDAO> implements BaseUpsertServiceInterface<SequenceTargetingReagent, SequenceTargetingReagentFmsDTO> {
 
 	@Inject SequenceTargetingReagentFmsDTOValidator sqtrDtoValidator;
 	@Inject SequenceTargetingReagentDAO sqtrDAO;
@@ -45,11 +44,5 @@ public class SequenceTargetingReagentService extends BaseEntityCrudService<Seque
 		List<Long> ids = sqtrDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
-	}
-
-	public ObjectResponse<SequenceTargetingReagent> getByIdentifier(String identifier) {
-		SequenceTargetingReagent sqtr = findByAlternativeFields(List.of("modEntityId"), identifier);
-		ObjectResponse<SequenceTargetingReagent> ret = new ObjectResponse<>(sqtr);
-		return ret;
 	}
 }
