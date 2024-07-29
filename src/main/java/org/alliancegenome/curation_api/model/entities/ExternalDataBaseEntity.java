@@ -44,7 +44,7 @@ public class ExternalDataBaseEntity extends CurieObject {
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
 	@Column(columnDefinition = "TEXT")
-	@JoinTable(indexes = @Index(name = "externaldatabaseentity_secondaryIdentifiers_externaldatabaseentity_index", columnList = "externaldatabaseentity_id"))
+	@JoinTable(indexes = @Index(name = "externaldbentity_secondaryidentifiers_externaldbentity_index", columnList = "externaldatabaseentity_id"))
 	private List<String> secondaryIdentifiers;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -58,8 +58,8 @@ public class ExternalDataBaseEntity extends CurieObject {
 	@ManyToMany
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinTable(indexes = {
-		@Index(columnList = "externaldatabaseentity_id", name = "externaldatabaseentity_crossreference_externaldatabaseentity_index"),
-		@Index(columnList = "crossreferences_id", name = "externaldatabaseentity_crossreference_crossreferences_index")
+		@Index(columnList = "externaldatabaseentity_id", name = "externaldbentity_crossreference_externaldbentity_index"),
+		@Index(columnList = "crossreferences_id", name = "externaldbentity_crossreference_crossreferences_index")
 	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
