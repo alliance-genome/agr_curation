@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.jobs.executors.SequenceTargetingReagentEx
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
 
 import jakarta.annotation.PostConstruct;
@@ -31,6 +32,11 @@ public class SequenceTargetingReagentCrudController extends BaseEntityCrudContro
 	@Override
 	public APIResponse updateSequenceTargetingReagent(String dataProvider, SequenceTargetingReagentIngestFmsDTO sqtrFmsDTO) {
 		return sqtrExecutor.runLoadApi(dataProvider, sqtrFmsDTO.getData());
+	}
+	
+	@Override
+	public ObjectResponse<SequenceTargetingReagent> getByIdentifier(String identifierString) {
+		return sqtrService.getByIdentifier(identifierString);
 	}
 
 }

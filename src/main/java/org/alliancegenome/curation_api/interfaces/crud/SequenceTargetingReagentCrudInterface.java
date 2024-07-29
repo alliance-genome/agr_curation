@@ -50,9 +50,14 @@ public interface SequenceTargetingReagentCrudInterface extends BaseIdCrudInterfa
 	SearchResponse<SequenceTargetingReagent> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 
-	@Override
+	// @Override
+	// @GET
+	// @Path("/{id}")
+	// @JsonView(View.SequenceTargetingReagentDetailView.class)
+	// ObjectResponse<SequenceTargetingReagent> getById(@PathParam("id") Long id);
+
 	@GET
-	@Path("/{id}")
+	@Path("/{identifierString}")
 	@JsonView(View.SequenceTargetingReagentDetailView.class)
-	ObjectResponse<SequenceTargetingReagent> getById(@PathParam("id") Long id);
+	ObjectResponse<SequenceTargetingReagent> getByIdentifier(@PathParam("identifierString") String identifierString);
 }
