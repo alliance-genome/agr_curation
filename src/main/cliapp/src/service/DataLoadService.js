@@ -81,6 +81,7 @@ export class DataLoadService extends BaseAuthService {
 		const bulkLoadTypes = {
 			BulkFMSLoad: [
 				'GFF',
+				'HTPDATASET',
 				'INTERACTION-GEN',
 				'INTERACTION-MOL',
 				'MOLECULE',
