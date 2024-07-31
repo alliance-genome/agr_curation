@@ -38,24 +38,24 @@ public class TemporalContext extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class})
 	private StageTerm developmentalStageStart;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class})
 	private StageTerm developmentalStageStop;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "age_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class})
 	private String age;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "temporalqualifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class})
 	@JoinTable(
 		name = "temporalcontext_temporalqualifiers",
 		indexes = {
@@ -67,7 +67,7 @@ public class TemporalContext extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "stageuberonslimterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class})
 	@JoinTable(
 		name = "temporalcontext_stageuberonslimterms",
 		indexes = {

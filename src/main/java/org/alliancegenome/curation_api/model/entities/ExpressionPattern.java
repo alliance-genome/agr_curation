@@ -28,11 +28,11 @@ public class ExpressionPattern extends AuditedObject {
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class})
 	private TemporalContext whenExpressed;
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class})
 	private AnatomicalSite whereExpressed;
 }
