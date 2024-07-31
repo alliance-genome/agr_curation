@@ -30,7 +30,7 @@
 			"anatomicalSubStructureQualifierTermId": "UBERON:003",
 			"cellularComponentQualifierTermId": "FBCV:001",
 			"anatomicalStructureUberonSlimTermIds" : [
-				{"uberonTerm" : "UBERON:004"},
+				{"uberonTerm" : "UBERON:NOTFOUND"},
 				{"uberonTerm" : "UBERON:005"}
 			],
 			"anatomicalSubStructureUberonSlimTermIds" : [

@@ -16,7 +16,7 @@
 		"assay" : "GEXPTEST:assay001",
 		"whenExpressed" : {
 			"stageName" : "stage1",
-			"stageTermId" : "ZFS:001",
+			"stageTermId" : "ZFS:NOTFOUND",
 			"stageUberonSlimTerm" : {
 				"uberonTerm" : "UBERON:001"
 			}
