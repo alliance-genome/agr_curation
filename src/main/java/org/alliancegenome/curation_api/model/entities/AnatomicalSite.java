@@ -56,7 +56,7 @@ public class AnatomicalSite extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
+	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalstructurequalifiers",
@@ -68,7 +68,7 @@ public class AnatomicalSite extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalsubstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
+	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalsubstructurequalifiers",
@@ -80,7 +80,7 @@ public class AnatomicalSite extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "cellularcomponentqualifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
+	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_cellularcomponentqualifiers",
@@ -92,7 +92,7 @@ public class AnatomicalSite extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalstructureuberonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
+	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalstructureuberonterms",
@@ -104,7 +104,7 @@ public class AnatomicalSite extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalsubstructureuberonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
+	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalsubstructureuberonterms",

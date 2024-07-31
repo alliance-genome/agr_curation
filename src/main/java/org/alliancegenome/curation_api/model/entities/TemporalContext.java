@@ -54,7 +54,7 @@ public class TemporalContext extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "temporalqualifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
+	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
 	@JoinTable(
 		name = "temporalcontext_temporalqualifiers",
@@ -66,7 +66,7 @@ public class TemporalContext extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "stageuberonslimterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
+	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.ForPublic.class})
 	@JoinTable(
 		name = "temporalcontext_stageuberonslimterms",

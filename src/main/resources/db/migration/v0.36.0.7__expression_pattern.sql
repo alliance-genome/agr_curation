@@ -99,59 +99,59 @@ ALTER TABLE expressionpattern
 
 ALTER TABLE anatomicalsite_anatomicalstructurequalifiers
 	ADD CONSTRAINT anatomicalstructurequalifiers_anatomicalsite_fk
-		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id);
+		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_anatomicalstructurequalifiers
 	ADD CONSTRAINT anatomicalstructurequalifiers_structurequalifier_fk
-		FOREIGN KEY (anatomicalstructurequalifiers_id) REFERENCES vocabularyterm(id);
+		FOREIGN KEY (anatomicalstructurequalifiers_id) REFERENCES vocabularyterm(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_anatomicalsubstructurequalifiers
 	ADD CONSTRAINT anatomicalsubstructurequalifiers_anatomicalsite_fk
-		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id);
+		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_anatomicalsubstructurequalifiers
 	ADD CONSTRAINT anatomicalsubstructurequalifiers_qualifier_fk
-		FOREIGN KEY (anatomicalsubstructurequalifiers_id) REFERENCES vocabularyterm(id);
+		FOREIGN KEY (anatomicalsubstructurequalifiers_id) REFERENCES vocabularyterm(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_cellularcomponentqualifiers
 	ADD CONSTRAINT cellularcomponentqualifiers_anatomicalsite_fk
-		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id);
+		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_cellularcomponentqualifiers
 	ADD CONSTRAINT cellularcomponentqualifiers_cellularcomponentqualifier_fk
-		FOREIGN KEY (cellularcomponentqualifiers_id) REFERENCES vocabularyterm(id);
+		FOREIGN KEY (cellularcomponentqualifiers_id) REFERENCES vocabularyterm(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_anatomicalstructureuberonterms
 	ADD CONSTRAINT anatomicalstructureuberonterms_anatomicalsite_fk
-		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id);
+		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_anatomicalstructureuberonterms
 	ADD CONSTRAINT anatomicalstructureuberonterms_uberonterm_fk
-		FOREIGN KEY (anatomicalstructureuberonterms_id) REFERENCES ontologyterm(id);
+		FOREIGN KEY (anatomicalstructureuberonterms_id) REFERENCES ontologyterm(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_anatomicalsubstructureuberonterms
 	ADD CONSTRAINT anatomicalsubstructureuberonterms_anatomicalsite_fk
-		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id);
+		FOREIGN KEY (anatomicalsite_id) REFERENCES anatomicalsite(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE anatomicalsite_anatomicalsubstructureuberonterms
 	ADD CONSTRAINT anatomicalsubstructureuberonterms_uberonterm_fk
-		FOREIGN KEY (anatomicalsubstructureuberonterms_id) REFERENCES ontologyterm(id);
+		FOREIGN KEY (anatomicalsubstructureuberonterms_id) REFERENCES ontologyterm(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE temporalcontext_stageuberonslimterms
 	ADD CONSTRAINT stageuberonterms_temporalcontext_fk
-		FOREIGN KEY (temporalcontext_id) REFERENCES temporalcontext(id);
+		FOREIGN KEY (temporalcontext_id) REFERENCES temporalcontext(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE temporalcontext_stageuberonslimterms
 	ADD CONSTRAINT stageuberonslimterms_uberonterm_fk
-		FOREIGN KEY (stageuberonslimterms_id) REFERENCES vocabularyterm(id);
+		FOREIGN KEY (stageuberonslimterms_id) REFERENCES vocabularyterm(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE temporalcontext_temporalqualifiers
 	ADD CONSTRAINT temporalqualifiers_temporalcontext_fk
-		FOREIGN KEY (temporalcontext_id) REFERENCES temporalcontext(id);
+		FOREIGN KEY (temporalcontext_id) REFERENCES temporalcontext(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE temporalcontext_temporalqualifiers
 	ADD CONSTRAINT temporalqualifiers_temporqualifiers_fk
-		FOREIGN KEY (temporalqualifiers_id) REFERENCES vocabularyterm(id);
+		FOREIGN KEY (temporalqualifiers_id) REFERENCES vocabularyterm(id) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
 CREATE INDEX expressionannotation_expressionpattern_index ON expressionannotation USING btree (expressionpattern_id);
