@@ -734,6 +734,23 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
+	public SequenceTargetingReagent createSequenceTargetingReagent(String modEntityId, Boolean obsolete, String name) {
+		SequenceTargetingReagent sqtr = new SequenceTargetingReagent();
+		sqtr.setModEntityId(modEntityId);
+		sqtr.setObsolete(obsolete);
+		sqtr.setName(name);
+
+		ObjectResponse<SequenceTargetingReagent> response = given().
+				contentType("application/json").
+				body(sqtr).
+				when().
+				post("/api/sqtr").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefSequenceTargetingReagent());
+		return response.getEntity();
+	}
+
 	public GeneDiseaseAnnotation getGeneDiseaseAnnotation(String uniqueId) {
 		ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
 				when().
