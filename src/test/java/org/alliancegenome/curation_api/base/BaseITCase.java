@@ -60,6 +60,10 @@ public class BaseITCase {
 	}
 
 	public void checkFailedBulkLoad(String endpoint, String filePath) throws Exception {
+		checkFailedBulkLoad(endpoint, filePath, 1, 1, 0);
+	}
+
+	public void checkFailedBulkLoad(String endpoint, String filePath, int expectedTotalRecords, int expectedFailedRecords, int expectedCompletedRecords) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 
 		RestAssured.given().
@@ -69,9 +73,9 @@ public class BaseITCase {
 			post(endpoint).
 			then().
 			statusCode(200).
-			body("history.totalRecords", is(1)).
-			body("history.failedRecords", is(1)).
-			body("history.completedRecords", is(0));
+			body("history.totalRecords", is(expectedTotalRecords)).
+			body("history.failedRecords", is(expectedFailedRecords)).
+			body("history.completedRecords", is(expectedCompletedRecords));
 	}
 
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath) throws Exception {
@@ -308,6 +312,9 @@ public class BaseITCase {
 
 		gene.setGeneSymbol(symbol);
 
+		SOTerm geneType = getSoTerm("SO:0001217");
+		gene.setGeneType(geneType);
+
 		ObjectResponse<Gene> response = given().
 				contentType("application/json").
 				body(gene).
@@ -485,9 +492,10 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public SOTerm createSoTerm(String curie, Boolean obsolete) {
+	public SOTerm createSoTerm(String curie, String name, Boolean obsolete) {
 		SOTerm term = new SOTerm();
 		term.setCurie(curie);
+		term.setName(name);
 		term.setObsolete(obsolete);
 		term.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
@@ -715,6 +723,34 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
+	public SequenceTargetingReagent getSequenceTargetingReagent(String identifier) {
+		ObjectResponse<SequenceTargetingReagent> res = RestAssured.given().
+				when().
+				get("/api/sqtr/" + identifier).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefSequenceTargetingReagent());
+
+		return res.getEntity();
+	}
+
+	public SequenceTargetingReagent createSequenceTargetingReagent(String modEntityId, Boolean obsolete, String name) {
+		SequenceTargetingReagent sqtr = new SequenceTargetingReagent();
+		sqtr.setModEntityId(modEntityId);
+		sqtr.setObsolete(obsolete);
+		sqtr.setName(name);
+
+		ObjectResponse<SequenceTargetingReagent> response = given().
+				contentType("application/json").
+				body(sqtr).
+				when().
+				post("/api/sqtr").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefSequenceTargetingReagent());
+		return response.getEntity();
+	}
+
 	public GeneDiseaseAnnotation getGeneDiseaseAnnotation(String uniqueId) {
 		ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
 				when().
@@ -845,6 +881,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<Gene>> getObjectResponseTypeRefGene() {
 		return new TypeRef<ObjectResponse<Gene>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<SequenceTargetingReagent>> getObjectResponseTypeRefSequenceTargetingReagent() {
+		return new TypeRef<ObjectResponse<SequenceTargetingReagent>>() {
 		};
 	}
 
@@ -1174,6 +1215,9 @@ public class BaseITCase {
 
 			gene.setGeneSymbol(symbol);
 
+			SOTerm geneType = getSoTerm("SO:0001217");
+			gene.setGeneType(geneType);
+
 			if (StringUtils.isNotBlank(xrefCurie)) {
 				CrossReference xref = new CrossReference();
 				xref.setReferencedCurie(xrefCurie);
@@ -1259,6 +1303,22 @@ public class BaseITCase {
 			statusCode(200);
 	}
 
+	public void loadStageTerm(String curie, String name) throws Exception {
+		MPTerm mpTerm = new MPTerm();
+		mpTerm.setCurie(curie);
+		mpTerm.setName(name);
+		mpTerm.setObsolete(false);
+		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(mpTerm).
+			when().
+			put("/api/stageterm").
+			then().
+			statusCode(200);
+	}
+
 	public void loadOrganization(String abbreviation) throws Exception {
 		Organization organization = new Organization();
 		organization.setAbbreviation(abbreviation);
@@ -1315,6 +1375,22 @@ public class BaseITCase {
 			body(soTerm).
 			when().
 			put("/api/soterm").
+			then().
+			statusCode(200);
+	}
+
+	public void loadUberonTerm(String curie, String name) throws Exception {
+		SOTerm soTerm = new SOTerm();
+		soTerm.setCurie(curie);
+		soTerm.setName(name);
+		soTerm.setObsolete(false);
+		soTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(soTerm).
+			when().
+			put("/api/uberonterm").
 			then().
 			statusCode(200);
 	}

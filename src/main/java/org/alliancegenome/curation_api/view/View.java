@@ -73,6 +73,12 @@ public class View {
 	public static class AlleleDetailView extends AlleleView {
 	}
 
+	public static class SequenceTargetingReagentView extends FieldsOnly {
+	}
+
+	public static class SequenceTargetingReagentDetailView extends SequenceTargetingReagentView {
+	}
+
 	public static class AlleleUpdate extends AlleleView {
 	}
 

@@ -136,6 +136,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {
 		if (ObjectUtils.isEmpty(uiEntity.getGeneType())) {
+			addMessageResponse("geneType", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 

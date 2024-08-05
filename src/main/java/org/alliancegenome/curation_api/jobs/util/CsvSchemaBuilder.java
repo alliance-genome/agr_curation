@@ -59,4 +59,24 @@ public class CsvSchemaBuilder {
 		
 		return schema;
 	}
+	
+	public static CsvSchema gff3Schema() {
+		CsvSchema schema = CsvSchema.builder()
+				.setColumnSeparator('\t')
+				.setArrayElementSeparator(";")
+				.setNullValue(".")
+				.disableQuoteChar()
+				.addColumn("seqId")
+				.addColumn("source")
+				.addColumn("type")
+				.addColumn("start")
+				.addColumn("end")
+				.addColumn("score")
+				.addColumn("strand")
+				.addColumn("phase")
+				.addColumn("attributes")
+				.build();
+		
+		return schema;
+	}
 }

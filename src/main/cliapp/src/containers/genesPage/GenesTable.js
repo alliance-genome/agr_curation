@@ -16,6 +16,7 @@ import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialog
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -190,6 +191,13 @@ export const GenesTable = () => {
 			),
 			filter: true,
 			filterConfig: FILTER_CONFIGS.geneSystematicNameFilterConfig,
+		},
+		{
+			field: 'geneType.name',
+			header: 'Gene Type',
+			body: (rowData) => <OntologyTermTemplate object={rowData.geneType} />,
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.geneTypeFilterConfig,
 		},
 		{
 			field: 'taxon.name',
