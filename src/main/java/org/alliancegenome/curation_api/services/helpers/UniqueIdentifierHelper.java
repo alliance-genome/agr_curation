@@ -10,9 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class UniqueIdentifierHelper {
 
-	private UniqueIdentifierHelper(){
-		
-	};
+	private UniqueIdentifierHelper() {
+	}
 
 	public static <E extends AnnotationDTO> String getIdentifyingField(E annotationDTO) {
 		if (StringUtils.isNotBlank(annotationDTO.getModEntityId())) {
