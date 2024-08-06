@@ -25,7 +25,7 @@
 			"whereExpressedStatement" : "trunk",
 			"anatomicalStructureTermId" : "ANAT:001",
 			"anatomicalSubStructureTermId" : "ANAT:002",
-			"cellularComponentTermId" : "GOTEST:0012",
+			"cellularComponentTermId" : "GOTEST:NOTFOUND",
 			"anatomicalStructureQualifierTermId": "UBERON:002",
 			"anatomicalSubStructureQualifierTermId": "UBERON:003",
 			"cellularComponentQualifierTermId": "FBCV:001",
