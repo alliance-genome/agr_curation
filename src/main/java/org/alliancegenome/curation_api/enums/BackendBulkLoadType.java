@@ -18,11 +18,13 @@ public enum BackendBulkLoadType {
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
 	VARIANT("json"),
+	GFF("gff"),
 	INTERACTION_MOL("tsv"),
 	INTERACTION_GEN("tsv"),
 	PARALOGY("json"),
 	SEQUENCE_TARGETING_REAGENT("json"),
-	EXPRESSION("json");
+	EXPRESSION("json"),
+	HTPDATASET("json");
 
 	public String fileExtension;
 
