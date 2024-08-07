@@ -35,7 +35,6 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	private VocabularyTerm relation;
 	private String relationName = "targets";
 	private String geneCurie = "GENETEST:Gene0001";
-	private String sqtrId = "83";
 	private String sqtrModEntityId = "ZFIN:ZDB-TALEN-180503-1";
 	
 	private final String sqtrGeneAssociationGetEndpoint = "/api/sqtrgeneassociation/findBy";
@@ -49,7 +48,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 		Vocabulary noteTypeVocab = getVocabulary("construct_relation");
 		relation = getVocabularyTerm(noteTypeVocab, relationName);
 		gene = getGene(geneCurie);
-		sqtr = getSequenceTargetingReagent(sqtrId);
+		sqtr = getSequenceTargetingReagent(sqtrModEntityId);
 	}
 
 	@Test
@@ -70,7 +69,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 		
 		RestAssured.given().
 			when().
-			get(sqtrGetEndpoint + sqtrId).
+			get(sqtrGetEndpoint + sqtrModEntityId).
 			then().
 			statusCode(200).
 			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).

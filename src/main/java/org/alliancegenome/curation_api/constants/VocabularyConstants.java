@@ -74,4 +74,8 @@ public final class VocabularyConstants {
 	public static final String TRANSCRIPT_CHILD_TERM= "is_child_of";
 	public static final String TRANSCRIPT_PARENT_TERM= "is_parent_of";
 
+	public static final String STAGE_UBERON_SLIM_TERMS = "stage_uberon_slim_terms";
+	public static final String ANATOMICAL_STRUCTURE_UBERON_SLIM_TERMS = "anatomical_structure_uberon_slim_terms";
+	public static final String CELLULAR_COMPONENT_QUALIFIERS = "cellular_component_qualifiers";
+
 }

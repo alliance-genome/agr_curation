@@ -26,7 +26,7 @@
 			"anatomicalStructureTermId" : "ANAT:001",
 			"anatomicalSubStructureTermId" : "ANAT:002",
 			"cellularComponentTermId" : "GOTEST:0012",
-			"anatomicalStructureQualifierTermId": "UBERON:002",
+			"anatomicalStructureQualifierTermId": "UBERON:NOTFOUND",
 			"anatomicalSubStructureQualifierTermId": "UBERON:003",
 			"cellularComponentQualifierTermId": "FBCV:001",
 			"anatomicalStructureUberonSlimTermIds" : [

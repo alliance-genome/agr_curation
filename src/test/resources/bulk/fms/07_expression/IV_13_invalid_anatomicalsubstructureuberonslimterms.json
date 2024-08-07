@@ -35,7 +35,7 @@
 			],
 			"anatomicalSubStructureUberonSlimTermIds" : [
 				{"uberonTerm" : "UBERON:006"},
-				{"uberonTerm" : "UBERON:007"}
+				{"uberonTerm" : "UBERON:NOTFOUND"}
 			]
 		}
 	}

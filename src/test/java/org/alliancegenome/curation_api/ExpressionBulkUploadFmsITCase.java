@@ -39,6 +39,20 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String publicationId = "PMID:009";
 	private final String agrPublicationId = "AGRKB:101000000668376";
 
+	private final String stageTermId = "ZFS:001";
+	private final String stageUberonTermId = "UBERON:001";
+
+	private final String anatomicalStructureTermId = "ANAT:001";
+	private final String anatomicalSubstructureTermId = "ANAT:002";
+	private final String cellularComponentTermId = "GOTEST:0012";
+	private final String anatomicalStructureQualifierTermId = "UBERON:002";
+	private final String anatomicalSubstructureQualifierTermId = "UBERON:003";
+	private final String cellularComponentQualifierTermId = "FBCV:001";
+	private final String anatomicalStructureUberonTermId1 = "UBERON:004";
+	private final String anatomicalStructureUberonTermId2 = "UBERON:005";
+	private final String anatomicalSubstructureUberonTermId1 = "UBERON:006";
+	private final String anatomicalSubstructureUberonTermId2 = "UBERON:007";
+
 	@BeforeEach
 	public void init() {
 		RestAssured.config = RestAssuredConfig.config()
@@ -68,7 +82,19 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].whereExpressedStatement", is("trunk"))
 			.body("results[0].whenExpressedStageName", is("stage1"))
 			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
-			.body("results[0].relation.name", is(VocabularyConstants.GENE_EXPRESSION_RELATION_TERM));
+			.body("results[0].relation.name", is(VocabularyConstants.GENE_EXPRESSION_RELATION_TERM))
+			.body("results[0].expressionPattern.whenExpressed.developmentalStageStart.curie", is(stageTermId))
+			.body("results[0].expressionPattern.whenExpressed.stageUberonSlimTerms[0].name", is(stageUberonTermId))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalStructure.curie", is(anatomicalStructureTermId))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructure.curie", is(anatomicalSubstructureTermId))
+			.body("results[0].expressionPattern.whereExpressed.cellularComponentTerm.curie", is(cellularComponentTermId))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureQualifiers[0].name", is(anatomicalStructureQualifierTermId))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureQualifiers[0].name", is(anatomicalSubstructureQualifierTermId))
+			.body("results[0].expressionPattern.whereExpressed.cellularComponentQualifiers[0].name", is(cellularComponentQualifierTermId))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureUberonTerms[0].curie", is(anatomicalStructureUberonTermId1))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureUberonTerms[1].curie", is(anatomicalStructureUberonTermId2))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureUberonTerms[0].curie", is(anatomicalSubstructureUberonTermId1))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureUberonTerms[1].curie", is(anatomicalSubstructureUberonTermId2));
 	}
 
 	@Test
@@ -82,6 +108,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_06_no_whereExpressed.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_07_nowhenExpressedStageName.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_08_nowhereExpressedStatement.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "MR_09_norCellComponentNORanatStructure.json");
 	}
 
 	@Test
@@ -101,6 +128,15 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_02_invalid_dateAssigned.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_03_invalid_assay.json");
 		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_04_invalid_publicationId.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_05_invalid_stageterm.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_06_invalid_anatomical_structure.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_07_invalid_anatomical_substructure.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_08_invalid_cellularcomponent.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_09_invalid_anatomicalstructurequalifier.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_10_invalid_anatomicalsubstructurequalifier.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_11_invalid_cellularcomponentqualifier.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_12_invalid_anatomicalstructureuberonslimterms.json");
+		checkFailedBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "IV_13_invalid_anatomicalsubstructureuberonslimterms.json");
 	}
 
 	private void loadRequiredEntities() throws Exception {
@@ -116,5 +152,20 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		loadReference(agrReferenceId, referenceId);
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		VocabularyTerm isExpressed = createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
+		Vocabulary stageUberonTermVocabulary = getVocabulary(VocabularyConstants.STAGE_UBERON_SLIM_TERMS);
+		Vocabulary anatomicalStructureUberonTermVocabulary = getVocabulary(VocabularyConstants.ANATOMICAL_STRUCTURE_UBERON_SLIM_TERMS);
+		Vocabulary cellullarComponentQualififerVocabulary = getVocabulary(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIERS);
+		loadStageTerm(stageTermId, "StageTermTest");
+		createVocabularyTerm(stageUberonTermVocabulary, stageUberonTermId, false);
+		loadAnatomyTerm(anatomicalStructureTermId, "AnatomicalStructureTermTest");
+		loadAnatomyTerm(anatomicalSubstructureTermId, "AnatomicalSubStructureTermTest");
+		loadGOTerm(cellularComponentTermId, "CellularComponentTermTest");
+		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalStructureQualifierTermId, false);
+		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalSubstructureQualifierTermId, false);
+		createVocabularyTerm(cellullarComponentQualififerVocabulary, cellularComponentQualifierTermId, false);
+		loadUberonTerm(anatomicalStructureUberonTermId1, "UberonTermTest1");
+		loadUberonTerm(anatomicalStructureUberonTermId2, "UberonTermTest2");
+		loadUberonTerm(anatomicalSubstructureUberonTermId1, "UberonTermTest3");
+		loadUberonTerm(anatomicalSubstructureUberonTermId2, "UberonTermTest4");
 	}
 }

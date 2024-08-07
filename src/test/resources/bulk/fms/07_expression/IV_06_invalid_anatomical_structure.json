@@ -23,7 +23,7 @@
 		},
 		"whereExpressed" : {
 			"whereExpressedStatement" : "trunk",
-			"anatomicalStructureTermId" : "ANAT:001",
+			"anatomicalStructureTermId" : "ANAT:NOTFOUND",
 			"anatomicalSubStructureTermId" : "ANAT:002",
 			"cellularComponentTermId" : "GOTEST:0012",
 			"anatomicalStructureQualifierTermId": "UBERON:002",
