@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +52,8 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 		createSoTerm("SO:0001035", "piRNA", false);
 		createSoTerm("SO:0000147", "exon", false);
 		createSoTerm("SO:0000316", "CDS", false);
+		createGene("WB:WBGene00022276", "NCBITaxon:6239", false, getVocabularyTerm(
+				getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol"));
 	}
 	
 	@Test

@@ -35,7 +35,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = "codingSequenceGenomicLocationAssociations", callSuper = true)
+@ToString(exclude = {"codingSequenceGenomicLocationAssociations", "transcriptCodingSequenceAssociations"}, callSuper = true)
 @Schema(name = "CodingSequence", description = "POJO that represents the CodingSequence (CDS)")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {@Index(name = "codingsequence_uniqueid_index", columnList = "uniqueid")})

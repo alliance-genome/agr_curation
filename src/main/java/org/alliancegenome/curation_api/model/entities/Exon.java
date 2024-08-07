@@ -35,7 +35,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = "exonGenomicLocationAssociations", callSuper = true)
+@ToString(exclude = {"exonGenomicLocationAssociations", "transcriptExonAssociations"}, callSuper = true)
 @Schema(name = "Exon", description = "POJO that represents the Exon")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {@Index(name = "exon_uniqueid_index", columnList = "uniqueid")})

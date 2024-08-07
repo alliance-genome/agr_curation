@@ -69,8 +69,8 @@ CREATE INDEX transcriptgeneassociation_object_index ON transcriptgeneassociation
 
 INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'Transcript Relation', 'transcript_relation');
 
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'parent_of', id FROM vocabulary WHERE vocabularylabel = 'transcript_relation';
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'child_of', id FROM vocabulary WHERE vocabularylabel = 'transcript_relation';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'is_parent_of', id FROM vocabulary WHERE vocabularylabel = 'transcript_relation';
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'is_child_of', id FROM vocabulary WHERE vocabularylabel = 'transcript_relation';
 
 INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id)
 	SELECT nextval('vocabularytermset_seq'), 'Transcript CodingSequence Association Relation', 'transcript_coding_sequence_relation', id FROM vocabulary
@@ -87,7 +87,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
 		SELECT id FROM vocabularytermset WHERE vocabularylabel = 'transcript_coding_sequence_relation'
 	),
 	t2 AS (
-		SELECT id FROM vocabularyterm WHERE name = 'parent_of' AND vocabulary_id = (
+		SELECT id FROM vocabularyterm WHERE name = 'is_parent_of' AND vocabulary_id = (
 			SELECT id FROM vocabulary WHERE vocabularylabel = 'transcript_relation'
 		)
 	)
@@ -98,7 +98,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
 		SELECT id FROM vocabularytermset WHERE vocabularylabel = 'transcript_exon_relation'
 	),
 	t2 AS (
-		SELECT id FROM vocabularyterm WHERE name = 'parent_of' AND vocabulary_id = (
+		SELECT id FROM vocabularyterm WHERE name = 'is_parent_of' AND vocabulary_id = (
 			SELECT id FROM vocabulary WHERE vocabularylabel = 'transcript_relation'
 		)
 	)
@@ -109,7 +109,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms
 		SELECT id FROM vocabularytermset WHERE vocabularylabel = 'transcript_gene_relation'
 	),
 	t2 AS (
-		SELECT id FROM vocabularyterm WHERE name = 'child_of' AND vocabulary_id = (
+		SELECT id FROM vocabularyterm WHERE name = 'is_child_of' AND vocabulary_id = (
 			SELECT id FROM vocabulary WHERE vocabularylabel = 'transcript_relation'
 		)
 	)

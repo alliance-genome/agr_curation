@@ -20,12 +20,18 @@ import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptCodingSequenceAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptExonAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.associations.exonAssociations.ExonGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptCodingSequenceAssociationService;
+import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptExonAssociationService;
+import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
@@ -47,6 +53,9 @@ public class Gff3Service {
 	@Inject ExonGenomicLocationAssociationService exonLocationService;
 	@Inject CodingSequenceGenomicLocationAssociationService cdsLocationService;
 	@Inject TranscriptGenomicLocationAssociationService transcriptLocationService;
+	@Inject TranscriptGeneAssociationService transcriptGeneService;
+	@Inject TranscriptCodingSequenceAssociationService transcriptCdsService;
+	@Inject TranscriptExonAssociationService transcriptExonService;
 	@Inject DataProviderService dataProviderService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
@@ -126,6 +135,11 @@ public class Gff3Service {
 				idsAdded.get("ExonGenomicLocationAssociation").add(exonLocation.getId());
 				exonLocationService.addAssociationToSubject(exonLocation);
 			}
+			TranscriptExonAssociation transcriptAssociation = gff3DtoValidator.validateTranscriptExonAssociation(gffEntry, exon, attributes);
+			if (transcriptAssociation != null) {
+				idsAdded.get("TranscriptExonAssociation").add(transcriptAssociation.getId());
+				transcriptExonService.addAssociationToSubjectAndObject(transcriptAssociation);
+			}
 		} else if (StringUtils.equals(gffEntry.getType(), "CDS")) {
 			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
 			SearchResponse<CodingSequence> response = cdsDAO.findByField("uniqueId", uniqueId);
@@ -137,6 +151,11 @@ public class Gff3Service {
 			if (cdsLocation != null) {
 				idsAdded.get("CodingSequenceGenomicLocationAssociation").add(cdsLocation.getId());
 				cdsLocationService.addAssociationToSubject(cdsLocation);
+			}
+			TranscriptCodingSequenceAssociation transcriptAssociation = gff3DtoValidator.validateTranscriptCodingSequenceAssociation(gffEntry, cds, attributes);
+			if (transcriptAssociation != null) {
+				idsAdded.get("TranscriptCodingSequenceAssociation").add(transcriptAssociation.getId());
+				transcriptCdsService.addAssociationToSubjectAndObject(transcriptAssociation);
 			}
 		} else if (Gff3Constants.TRANSCRIPT_TYPES.contains(gffEntry.getType())) {
 			if (StringUtils.equals(gffEntry.getType(), "lnc_RNA")) {
@@ -154,6 +173,11 @@ public class Gff3Service {
 			if (transcriptLocation != null) {
 				idsAdded.get("TranscriptGenomicLocationAssociation").add(transcriptLocation.getId());
 				transcriptLocationService.addAssociationToSubject(transcriptLocation);
+			}
+			TranscriptGeneAssociation geneAssociation = gff3DtoValidator.validateTranscriptGeneAssociation(gffEntry, transcript, attributes);
+			if (geneAssociation != null) {
+				idsAdded.get("TranscriptGeneAssociation").add(geneAssociation.getId());
+				transcriptGeneService.addAssociationToSubjectAndObject(geneAssociation);
 			}
 		}
 		
