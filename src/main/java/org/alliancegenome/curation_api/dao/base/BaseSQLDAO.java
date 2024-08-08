@@ -667,10 +667,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		if (orderByField != null) {
 			query.orderBy(builder.asc(root.get(orderByField)));
 		} else {
-			// Metamodel metaModel = entityManager.getMetamodel();
-			// IdentifiableType<E> of = (IdentifiableType<E>)
-			// metaModel.managedType(myClass);
-			// query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));
+			// Else always order by the ID field to prevent random lists when using different page,limit combinations
+			Metamodel metaModel = entityManager.getMetamodel();
+			IdentifiableType<E> of = (IdentifiableType<E>)metaModel.managedType(myClass);
+			query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));
 		}
 
 		if (queryOperator == Operator.AND) {
