@@ -259,7 +259,8 @@ public class LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
-		history.setTotalDeleteRecords((long) idsToRemove.size());
+		long existingDeletes = history.getTotalDeleteRecords() == null ? 0 : history.getTotalDeleteRecords();
+		history.setTotalDeleteRecords((long) idsToRemove.size() + existingDeletes);
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of entities linked to unloaded " + dataProviderName, idsToRemove.size());
