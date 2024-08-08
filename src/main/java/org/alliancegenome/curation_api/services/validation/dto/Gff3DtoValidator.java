@@ -258,14 +258,15 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional 
-	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Map<String, String> attributes) throws ObjectValidationException {
+	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Map<String, String> attributes, Map<String, String> geneIdCurieMap) throws ObjectValidationException {
 		TranscriptGeneAssociation association = new TranscriptGeneAssociation();
 		
 		ObjectResponse<TranscriptGeneAssociation> associationResponse = new ObjectResponse<TranscriptGeneAssociation>();
 		if (!attributes.containsKey("Parent")) {
 			associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			Gene parentGene = geneService.findByIdentifierString(attributes.get("Parent"));
+			String geneCurie = geneIdCurieMap.containsKey(attributes.get("Parent")) ? geneIdCurieMap.get(attributes.get("Parent")) : attributes.get("Parent");
+			Gene parentGene = geneService.findByIdentifierString(geneCurie);
 			if (parentGene == null) {
 				associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
 			} else {
