@@ -250,11 +250,13 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				List<UberonSlimTermDTO> anatomicalStructureUberonSlimTermIds = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureUberonSlimTermIds();
 				List<UBERONTerm> uberonTerms = new ArrayList<>();
 				for (UberonSlimTermDTO uberonSlimTermDTO: anatomicalStructureUberonSlimTermIds) {
-					UBERONTerm uberonTerm = uberonTermService.getByCurie(uberonSlimTermDTO.getUberonTerm()).getEntity();
-					if (uberonTerm == null) {
-						response.addErrorMessage("whereExpressed - anatomicalStructureUberonSlimTermId", ValidationConstants.INVALID_MESSAGE + " (" + uberonSlimTermDTO.getUberonTerm() + ")");
-					} else {
-						uberonTerms.add(uberonTerm);
+					if (!uberonSlimTermDTO.getUberonTerm().equals("Other")) {
+						UBERONTerm uberonTerm = uberonTermService.getByCurie(uberonSlimTermDTO.getUberonTerm()).getEntity();
+						if (uberonTerm == null) {
+							response.addErrorMessage("whereExpressed - anatomicalStructureUberonSlimTermId", ValidationConstants.INVALID_MESSAGE + " (" + uberonSlimTermDTO.getUberonTerm() + ")");
+						} else {
+							uberonTerms.add(uberonTerm);
+						}
 					}
 				}
 				anatomicalSite.setAnatomicalStructureUberonTerms(uberonTerms);
@@ -264,11 +266,13 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				List<UberonSlimTermDTO> anatomicalSubStructureUberonSlimTermIds = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureUberonSlimTermIds();
 				List<UBERONTerm> uberonTerms = new ArrayList<>();
 				for (UberonSlimTermDTO uberonSlimTermDTO : anatomicalSubStructureUberonSlimTermIds) {
-					UBERONTerm uberonTerm = uberonTermService.getByCurie(uberonSlimTermDTO.getUberonTerm()).getEntity();
-					if (uberonTerm == null) {
-						response.addErrorMessage("whereExpressed - anatomicalStructureUberonSlimTermId", ValidationConstants.INVALID_MESSAGE + " (" + uberonSlimTermDTO.getUberonTerm() + ")");
-					} else {
-						uberonTerms.add(uberonTerm);
+					if (!uberonSlimTermDTO.getUberonTerm().equals("Other")) {
+						UBERONTerm uberonTerm = uberonTermService.getByCurie(uberonSlimTermDTO.getUberonTerm()).getEntity();
+						if (uberonTerm == null) {
+							response.addErrorMessage("whereExpressed - anatomicalStructureUberonSlimTermId", ValidationConstants.INVALID_MESSAGE + " (" + uberonSlimTermDTO.getUberonTerm() + ")");
+						} else {
+							uberonTerms.add(uberonTerm);
+						}
 					}
 				}
 				anatomicalSite.setAnatomicalSubstructureUberonTerms(uberonTerms);
