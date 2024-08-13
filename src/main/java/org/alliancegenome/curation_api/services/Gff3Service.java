@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,11 +33,9 @@ import org.alliancegenome.curation_api.services.associations.transcriptAssociati
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptExonAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGenomicLocationAssociationService;
-import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -97,13 +94,14 @@ public class Gff3Service {
 	
 	public Map<String, List<Long>> loadEntity(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
+		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.equals(gffEntry.getType(), "exon") || StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
-			Exon exon = gff3DtoValidator.validateExonEntry(gffEntry, dataProvider);
+			Exon exon = gff3DtoValidator.validateExonEntry(gffEntry, attributes, dataProvider);
 			if (exon != null) {
 				idsAdded.get("Exon").add(exon.getId());
 			}
 		} else if (StringUtils.equals(gffEntry.getType(), "CDS")) {
-			CodingSequence cds = gff3DtoValidator.validateCdsEntry(gffEntry, dataProvider);
+			CodingSequence cds = gff3DtoValidator.validateCdsEntry(gffEntry, attributes, dataProvider);
 			if (cds != null) {
 				idsAdded.get("CodingSequence").add(cds.getId());
 			}
@@ -111,7 +109,7 @@ public class Gff3Service {
 			if (StringUtils.equals(gffEntry.getType(), "lnc_RNA")) {
 				gffEntry.setType("lncRNA");
 			}
-			Transcript transcript = gff3DtoValidator.validateTranscriptEntry(gffEntry, dataProvider);
+			Transcript transcript = gff3DtoValidator.validateTranscriptEntry(gffEntry, attributes, dataProvider);
 			if (transcript != null) {
 				idsAdded.get("Transcript").add(transcript.getId());
 			}
@@ -120,7 +118,7 @@ public class Gff3Service {
 	}
 	
 	@Transactional
-	public Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {
+	public Map<String, List<Long>> loadLocationAssociations(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -140,6 +138,58 @@ public class Gff3Service {
 				idsAdded.get("ExonGenomicLocationAssociation").add(exonLocation.getId());
 				exonLocationService.addAssociationToSubject(exonLocation);
 			}
+		} else if (StringUtils.equals(gffEntry.getType(), "CDS")) {
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+			SearchResponse<CodingSequence> response = cdsDAO.findByField("uniqueId", uniqueId);
+			if (response == null || response.getSingleResult() == null) {
+				throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
+			}
+			CodingSequence cds = response.getSingleResult();
+			
+			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, dataProvider);
+			if (cdsLocation != null) {
+				idsAdded.get("CodingSequenceGenomicLocationAssociation").add(cdsLocation.getId());
+				cdsLocationService.addAssociationToSubject(cdsLocation);
+			}
+		} else if (Gff3Constants.TRANSCRIPT_TYPES.contains(gffEntry.getType())) {
+			if (StringUtils.equals(gffEntry.getType(), "lnc_RNA")) {
+				gffEntry.setType("lncRNA");
+			}
+			if (!attributes.containsKey("ID")) {
+				throw new ObjectValidationException(gffEntry, "attributes - ID - " + ValidationConstants.REQUIRED_MESSAGE);
+			}
+			SearchResponse<Transcript> response = transcriptDAO.findByField("modInternalId", attributes.get("ID"));
+			if (response == null || response.getSingleResult() == null) {
+				throw new ObjectValidationException(gffEntry, "attributes - ID - " + ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("ID") + ")");
+			}
+			Transcript transcript = response.getSingleResult();
+			
+			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, dataProvider);
+			if (transcriptLocation != null) {
+				idsAdded.get("TranscriptGenomicLocationAssociation").add(transcriptLocation.getId());
+				transcriptLocationService.addAssociationToSubject(transcriptLocation);
+			}
+		}
+		
+		return idsAdded;
+	}
+	
+	@Transactional
+	public Map<String, List<Long>> loadParentChildAssociations(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {
+		Gff3DTO gffEntry = gffEntryPair.getKey();
+		Map<String, String> attributes = gffEntryPair.getValue();
+		if (StringUtils.isBlank(assemblyId)) {
+			throw new ObjectValidationException(gffEntry, "Cannot load associations without assembly");
+		}
+		
+		if (StringUtils.equals(gffEntry.getType(), "exon") || StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+			SearchResponse<Exon> response = exonDAO.findByField("uniqueId", uniqueId);
+			if (response == null || response.getSingleResult() == null) {
+				throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
+			}
+			Exon exon = response.getSingleResult();
+			
 			TranscriptExonAssociation transcriptAssociation = gff3DtoValidator.validateTranscriptExonAssociation(gffEntry, exon, attributes);
 			if (transcriptAssociation != null) {
 				idsAdded.get("TranscriptExonAssociation").add(transcriptAssociation.getId());
@@ -152,11 +202,7 @@ public class Gff3Service {
 				throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
 			}
 			CodingSequence cds = response.getSingleResult();
-			CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, dataProvider);
-			if (cdsLocation != null) {
-				idsAdded.get("CodingSequenceGenomicLocationAssociation").add(cdsLocation.getId());
-				cdsLocationService.addAssociationToSubject(cdsLocation);
-			}
+			
 			TranscriptCodingSequenceAssociation transcriptAssociation = gff3DtoValidator.validateTranscriptCodingSequenceAssociation(gffEntry, cds, attributes);
 			if (transcriptAssociation != null) {
 				idsAdded.get("TranscriptCodingSequenceAssociation").add(transcriptAssociation.getId());
@@ -174,11 +220,7 @@ public class Gff3Service {
 				throw new ObjectValidationException(gffEntry, "attributes - ID - " + ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("ID") + ")");
 			}
 			Transcript transcript = response.getSingleResult();
-			TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, dataProvider);
-			if (transcriptLocation != null) {
-				idsAdded.get("TranscriptGenomicLocationAssociation").add(transcriptLocation.getId());
-				transcriptLocationService.addAssociationToSubject(transcriptLocation);
-			}
+			
 			TranscriptGeneAssociation geneAssociation = gff3DtoValidator.validateTranscriptGeneAssociation(gffEntry, transcript, attributes, geneIdCurieMap);
 			if (geneAssociation != null) {
 				idsAdded.get("TranscriptGeneAssociation").add(geneAssociation.getId());

@@ -72,11 +72,10 @@ public class Gff3DtoValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	
 	@Transactional
-	public Exon validateExonEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Exon validateExonEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Exon exon = null;
 		
-		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<Exon> searchResponse = exonDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -100,11 +99,10 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public CodingSequence validateCdsEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public CodingSequence validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		CodingSequence cds = null;
 		
-		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<CodingSequence> searchResponse = codingSequenceDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -128,11 +126,10 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public Transcript validateTranscriptEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Transcript validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Transcript transcript = null;
 		
-		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		if (attributes.containsKey("ID")) {
 			SearchResponse<Transcript> searchResponse = transcriptDAO.findByField("modInternalId", attributes.get("ID"));
 			if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -300,7 +297,7 @@ public class Gff3DtoValidator {
 		} else {
 			SearchResponse<Transcript> parentTranscriptSearch = transcriptDAO.findByField("modInternalId", attributes.get("Parent"));
 			if (parentTranscriptSearch == null || parentTranscriptSearch.getSingleResult() == null) {
-				associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
+				associationResponse.addErrorMessage("Attributes - Parent",ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
 			} else {
 				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();				Map<String, Object> params = new HashMap<>();
 				params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", parentTranscript.getId());

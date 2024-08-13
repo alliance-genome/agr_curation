@@ -36,6 +36,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -78,7 +79,7 @@ public class Gff3Executor extends LoadFileExecutor {
 			Map<String, List<Long>> idsAdded = createIdsAddedMap();
 			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 			
-			BulkLoadFileHistory history = new BulkLoadFileHistory((preProcessedGffData.size() * 2) + 1);
+			BulkLoadFileHistory history = new BulkLoadFileHistory((preProcessedGffData.size() * 3) + 1);
 			createHistory(history, bulkLoadFile);
 			idsAdded = runLoad(history, gffHeaderData, preProcessedGffData, idsAdded, dataProvider);
 			runCleanup(transcriptService, history, dataProvider.name(), previousIds.get("Transcript"), idsAdded.get("Transcript"), "GFF transcript", bulkLoadFile.getMd5Sum());
@@ -141,11 +142,15 @@ public class Gff3Executor extends LoadFileExecutor {
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF update for " + dataProvider.name(), (gffData.size() * 2) + 1);
+		ph.startProcess("GFF update for " + dataProvider.name(), (gffData.size() * 3) + 1);
 		
 		assemblyId = loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
 		idsAdded = loadEntities(history, gffData, idsAdded, dataProvider, ph);
-		idsAdded = loadAssociations(history, gffData, idsAdded, dataProvider, assemblyId, ph);
+		
+		Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData, dataProvider);
+		
+		idsAdded = loadLocationAssociations(history, gffData, idsAdded, dataProvider, assemblyId, geneIdCurieMap, ph);
+		idsAdded = loadParentChildAssociations(history, gffData, idsAdded, dataProvider, assemblyId, geneIdCurieMap, ph);
 
 		ph.finishProcess();
 		
@@ -156,7 +161,7 @@ public class Gff3Executor extends LoadFileExecutor {
 		Map<String, List<Long>> idsAdded = createIdsAddedMap();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String,String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory((preProcessedGffData.size() * 2) + 1);
+		BulkLoadFileHistory history = new BulkLoadFileHistory((preProcessedGffData.size() * 3) + 1);
 		
 		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
@@ -203,13 +208,34 @@ public class Gff3Executor extends LoadFileExecutor {
 		return idsAdded;
 	}
 
-	private Map<String, List<Long>> loadAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData, Map<String, List<Long>> idsAdded,
-			BackendBulkDataProvider dataProvider, String assemblyId, ProcessDisplayHelper ph) {
-		Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData, dataProvider);
+	private Map<String, List<Long>> loadLocationAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData, Map<String, List<Long>> idsAdded,
+			BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
 		
 		for (ImmutablePair<Gff3DTO, Map<String,String>> gff3EntryPair : gffData) {
 			try {
-				idsAdded = gff3Service.loadAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
+				idsAdded = gff3Service.loadLocationAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
+				history.incrementCompleted();
+			} catch (ObjectUpdateException e) {
+				history.incrementFailed();
+				addException(history, e.getData());		
+			} catch (Exception e) {
+				e.printStackTrace();
+				history.incrementFailed();
+				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
+			}
+			updateHistory(history);
+			ph.progressProcess();
+		}
+		
+		return idsAdded;
+	}
+
+	private Map<String, List<Long>> loadParentChildAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData, Map<String, List<Long>> idsAdded,
+			BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
+		
+		for (ImmutablePair<Gff3DTO, Map<String,String>> gff3EntryPair : gffData) {
+			try {
+				idsAdded = gff3Service.loadParentChildAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
@@ -239,6 +265,10 @@ public class Gff3Executor extends LoadFileExecutor {
 				for (String parent : attributes.get("Parent").split(",")) {
 					HashMap<String, String> attributesCopy = new HashMap<>();
 					attributesCopy.putAll(attributes);
+					String[] parentIdParts = parent.split(":");
+					if (parentIdParts.length == 1) {
+						parent = dataProvider.name() + ':' + parentIdParts[0];
+					}
 					attributesCopy.put("Parent", parent);
 					processedGffData.add(new ImmutablePair<>(originalGffEntry, attributesCopy));
 				}
