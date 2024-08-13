@@ -2,13 +2,14 @@
 	{
 		"seqId": "I",
 		"source": "WormBase",
-		"type": "exon",
+		"type": "mRNA",
 		"start": 1,
-		"end": 100,
+		"end": 1000,
 		"strand": "+",
+		"phase": 0,
 		"attributes": [
-			"ID=Y74C9A.2a_exon",
-			"Parent=Transcript:Y74C9A.2a.1"
+			"ID=Transcript:Y74C9A.2a.1",
+			"Name=Y74C9A.2a.1"
 		]
 	}
 ]

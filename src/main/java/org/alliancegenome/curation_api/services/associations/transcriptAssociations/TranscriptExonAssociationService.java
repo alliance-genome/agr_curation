@@ -10,11 +10,12 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
-import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptExonAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.Transcript;
-import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptExonAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
@@ -29,16 +30,16 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudService<TranscriptGenomicLocationAssociation, TranscriptGenomicLocationAssociationDAO> {
+public class TranscriptExonAssociationService extends BaseEntityCrudService<TranscriptExonAssociation, TranscriptExonAssociationDAO> {
 
-	@Inject TranscriptGenomicLocationAssociationDAO transcriptGenomicLocationAssociationDAO;
+	@Inject TranscriptExonAssociationDAO transcriptExonAssociationDAO;
 	@Inject PersonDAO personDAO;
 	@Inject PersonService personService;
 	
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(transcriptGenomicLocationAssociationDAO);
+		setSQLDao(transcriptExonAssociationDAO);
 	}
 
 
@@ -48,7 +49,7 @@ public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudS
 		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
 			params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
 		}
-		List<Long> associationIds = transcriptGenomicLocationAssociationDAO.findIdsByParams(params);
+		List<Long> associationIds = transcriptExonAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
@@ -56,13 +57,13 @@ public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudS
 
 	@Override
 	@Transactional
-	public TranscriptGenomicLocationAssociation deprecateOrDelete(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		TranscriptGenomicLocationAssociation association = transcriptGenomicLocationAssociationDAO.find(id);
+	public TranscriptExonAssociation deprecateOrDelete(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
+		TranscriptExonAssociation association = transcriptExonAssociationDAO.find(id);
 
 		if (association == null) {
-			String errorMessage = "Could not find TranscriptGenomicLocationAssociation with id: " + id;
+			String errorMessage = "Could not find TranscriptExonAssociation with id: " + id;
 			if (throwApiError) {
-				ObjectResponse<TranscriptGenomicLocationAssociation> response = new ObjectResponse<>();
+				ObjectResponse<TranscriptExonAssociation> response = new ObjectResponse<>();
 				response.addErrorMessage("id", errorMessage);
 				throw new ApiErrorException(response);
 			}
@@ -78,47 +79,61 @@ public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudS
 					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
 				}
 				association.setDateUpdated(OffsetDateTime.now());
-				return transcriptGenomicLocationAssociationDAO.persist(association);
+				return transcriptExonAssociationDAO.persist(association);
 			}
 			return association;
 		}
 		
-		transcriptGenomicLocationAssociationDAO.remove(association.getId());
+		transcriptExonAssociationDAO.remove(association.getId());
 		
 		return null;
 	}
 
-	public ObjectResponse<TranscriptGenomicLocationAssociation> getLocationAssociation(Long transcriptId, Long assemblyComponentId) {
-		TranscriptGenomicLocationAssociation association = null;
+	public ObjectResponse<TranscriptExonAssociation> getLocationAssociation(Long transcriptId, Long assemblyComponentId) {
+		TranscriptExonAssociation association = null;
 
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", transcriptId);
-		params.put("transcriptGenomicLocationAssociationObject.id", assemblyComponentId);
+		params.put("transcriptExonAssociationObject.id", assemblyComponentId);
 
-		SearchResponse<TranscriptGenomicLocationAssociation> resp = transcriptGenomicLocationAssociationDAO.findByParams(params);
+		SearchResponse<TranscriptExonAssociation> resp = transcriptExonAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {
 			association = resp.getSingleResult();
 		}
 
-		ObjectResponse<TranscriptGenomicLocationAssociation> response = new ObjectResponse<>();
+		ObjectResponse<TranscriptExonAssociation> response = new ObjectResponse<>();
 		response.setEntity(association);
 
 		return response;
 	}
 	
-	public void addAssociationToSubject(TranscriptGenomicLocationAssociation association) {
+	public void addAssociationToSubjectAndObject(TranscriptExonAssociation association) {
 		Transcript transcript = association.getTranscriptAssociationSubject();
 		
-		List<TranscriptGenomicLocationAssociation> currentSubjectAssociations = transcript.getTranscriptGenomicLocationAssociations();
+		List<TranscriptExonAssociation> currentSubjectAssociations = transcript.getTranscriptExonAssociations();
 		if (currentSubjectAssociations == null) {
 			currentSubjectAssociations = new ArrayList<>();
 		}
 		
 		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream()
-				.map(TranscriptGenomicLocationAssociation::getId).collect(Collectors.toList());
+				.map(TranscriptExonAssociation::getId).collect(Collectors.toList());
 		
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);
+		}
+		
+		Exon exon = association.getTranscriptExonAssociationObject();
+		
+		List<TranscriptExonAssociation> currentObjectAssociations = exon.getTranscriptExonAssociations();
+		if (currentObjectAssociations == null) {
+			currentObjectAssociations = new ArrayList<>();
+		}
+		
+		List<Long> currentObjectAssociationIds = currentObjectAssociations.stream()
+				.map(TranscriptExonAssociation::getId).collect(Collectors.toList());
+		
+		if (!currentObjectAssociationIds.contains(association.getId())) {
+			currentObjectAssociations.add(association);
 		}
 	}
 }

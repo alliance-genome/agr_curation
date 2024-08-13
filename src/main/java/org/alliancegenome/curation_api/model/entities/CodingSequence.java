@@ -5,6 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptCodingSequenceAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -34,7 +35,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = "codingSequenceGenomicLocationAssociations", callSuper = true)
+@ToString(exclude = {"codingSequenceGenomicLocationAssociations", "transcriptCodingSequenceAssociations"}, callSuper = true)
 @Schema(name = "CodingSequence", description = "POJO that represents the CodingSequence (CDS)")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {@Index(name = "codingsequence_uniqueid_index", columnList = "uniqueid")})
@@ -66,5 +67,9 @@ public class CodingSequence extends GenomicEntity {
 	@OneToMany(mappedBy = "codingSequenceAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CodingSequenceGenomicLocationAssociation> codingSequenceGenomicLocationAssociations;
+	
+	@OneToMany(mappedBy = "transcriptCodingSequenceAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class })
+	private List<TranscriptCodingSequenceAssociation> transcriptCodingSequenceAssociations;
 
 }
