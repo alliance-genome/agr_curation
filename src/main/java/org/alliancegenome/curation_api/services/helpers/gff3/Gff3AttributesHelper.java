@@ -10,8 +10,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
-
 public class Gff3AttributesHelper {
 
 	public static Map<String, String> getAttributes(Gff3DTO dto, BackendBulkDataProvider dataProvider) {

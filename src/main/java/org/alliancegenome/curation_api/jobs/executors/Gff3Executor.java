@@ -36,7 +36,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -74,7 +73,7 @@ public class Gff3Executor extends LoadFileExecutor {
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
-			List<ImmutablePair<Gff3DTO, Map<String,String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
 			
 			Map<String, List<Long>> idsAdded = createIdsAddedMap();
 			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
@@ -132,12 +131,12 @@ public class Gff3Executor extends LoadFileExecutor {
 		return previousIds;
 	}
 	
-	private Map<String, List<Long>> runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData,
+	private Map<String, List<Long>> runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData,
 			Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider) {
 		return runLoad(history, gffHeaderData, gffData, idsAdded, dataProvider, null);
 	}
 
-	private Map<String, List<Long>> runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData,
+	private Map<String, List<Long>> runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData,
 			Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
@@ -160,7 +159,7 @@ public class Gff3Executor extends LoadFileExecutor {
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		Map<String, List<Long>> idsAdded = createIdsAddedMap();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<ImmutablePair<Gff3DTO, Map<String,String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
 		BulkLoadFileHistory history = new BulkLoadFileHistory((preProcessedGffData.size() * 3) + 1);
 		
 		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider, assemblyName);
@@ -187,9 +186,9 @@ public class Gff3Executor extends LoadFileExecutor {
 		return assemblyName;
 	}
 
-	private Map<String, List<Long>> loadEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData, Map<String, List<Long>> idsAdded,
+	private Map<String, List<Long>> loadEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, Map<String, List<Long>> idsAdded,
 			BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
-		for (ImmutablePair<Gff3DTO, Map<String,String>> gff3EntryPair : gffData) {
+		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
 				idsAdded = gff3Service.loadEntity(history, gff3EntryPair, idsAdded, dataProvider);
 				history.incrementCompleted();
@@ -208,16 +207,16 @@ public class Gff3Executor extends LoadFileExecutor {
 		return idsAdded;
 	}
 
-	private Map<String, List<Long>> loadLocationAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData, Map<String, List<Long>> idsAdded,
+	private Map<String, List<Long>> loadLocationAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, Map<String, List<Long>> idsAdded,
 			BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
 		
-		for (ImmutablePair<Gff3DTO, Map<String,String>> gff3EntryPair : gffData) {
+		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
 				idsAdded = gff3Service.loadLocationAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
-				addException(history, e.getData());		
+				addException(history, e.getData());
 			} catch (Exception e) {
 				e.printStackTrace();
 				history.incrementFailed();
@@ -230,10 +229,10 @@ public class Gff3Executor extends LoadFileExecutor {
 		return idsAdded;
 	}
 
-	private Map<String, List<Long>> loadParentChildAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData, Map<String, List<Long>> idsAdded,
+	private Map<String, List<Long>> loadParentChildAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, Map<String, List<Long>> idsAdded,
 			BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
 		
-		for (ImmutablePair<Gff3DTO, Map<String,String>> gff3EntryPair : gffData) {
+		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
 				idsAdded = gff3Service.loadParentChildAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
 				history.incrementCompleted();
@@ -252,7 +251,7 @@ public class Gff3Executor extends LoadFileExecutor {
 		return idsAdded;
 	}
 	
-	private List<ImmutablePair<Gff3DTO, Map<String,String>>> preProcessGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+	private List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> processedGffData = new ArrayList<>();
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();

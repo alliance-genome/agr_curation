@@ -61,7 +61,7 @@ public class Transcript extends GenomicEntity {
 			"transcriptCodingSequenceAssociationObject.curie", "transcriptCodingSequenceAssociationObject.name", "transcriptCodingSequenceAssociationObject.modEntityId",
 			"transcriptCodingSequenceAssociationObject.modInternalId", "transcriptCodingSequenceAssociationObject.uniqueId",
 			"transcriptCodingSequenceAssociationObject.curie_keyword", "transcriptCodingSequenceAssociationObject.name_keyword", "transcriptCodingSequenceAssociationObject.modEntityId_keyword",
-			"transcriptCodingSequenceAssociationObject.modInternalId_keyword", "transcriptCodingSequenceAssociationObject.uniqueId_keyword",
+			"transcriptCodingSequenceAssociationObject.modInternalId_keyword", "transcriptCodingSequenceAssociationObject.uniqueId_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -73,7 +73,7 @@ public class Transcript extends GenomicEntity {
 			"transcriptExonAssociationObject.curie", "transcriptExonAssociationObject.name", "transcriptExonAssociationObject.modEntityId",
 			"transcriptExonAssociationObject.modInternalId", "transcriptExonAssociationObject.uniqueId",
 			"transcriptExonAssociationObject.curie_keyword", "transcriptExonAssociationObject.name_keyword", "transcriptExonAssociationObject.modEntityId_keyword",
-			"transcriptExonAssociationObject.modInternalId_keyword", "transcriptExonAssociationObject.uniqueId_keyword",
+			"transcriptExonAssociationObject.modInternalId_keyword", "transcriptExonAssociationObject.uniqueId_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -42,7 +42,6 @@ import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.Gff3Service;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
@@ -254,7 +253,7 @@ public class Gff3DtoValidator {
 		return transcriptLocationDAO.persist(locationResponse.getEntity());
 	}
 	
-	@Transactional 
+	@Transactional
 	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Map<String, String> attributes, Map<String, String> geneIdCurieMap) throws ObjectValidationException {
 		TranscriptGeneAssociation association = new TranscriptGeneAssociation();
 		
@@ -287,7 +286,7 @@ public class Gff3DtoValidator {
 		return transcriptGeneDAO.persist(association);
 	}
 	
-	@Transactional 
+	@Transactional
 	public TranscriptCodingSequenceAssociation validateTranscriptCodingSequenceAssociation(Gff3DTO gffEntry, CodingSequence cds, Map<String, String> attributes) throws ObjectValidationException {
 		TranscriptCodingSequenceAssociation association = new TranscriptCodingSequenceAssociation();
 		
@@ -299,7 +298,8 @@ public class Gff3DtoValidator {
 			if (parentTranscriptSearch == null || parentTranscriptSearch.getSingleResult() == null) {
 				associationResponse.addErrorMessage("Attributes - Parent",ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
 			} else {
-				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();				Map<String, Object> params = new HashMap<>();
+				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();
+				Map<String, Object> params = new HashMap<>();
 				params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", parentTranscript.getId());
 				params.put("transcriptCodingSequenceAssociationObject.id", cds.getId());
 				SearchResponse<TranscriptCodingSequenceAssociation> searchResponse = transcriptCdsDAO.findByParams(params);
@@ -319,7 +319,7 @@ public class Gff3DtoValidator {
 		return transcriptCdsDAO.persist(association);
 	}
 	
-	@Transactional 
+	@Transactional
 	public TranscriptExonAssociation validateTranscriptExonAssociation(Gff3DTO gffEntry, Exon exon, Map<String, String> attributes) throws ObjectValidationException {
 		TranscriptExonAssociation association = new TranscriptExonAssociation();
 		
@@ -331,7 +331,8 @@ public class Gff3DtoValidator {
 			if (parentTranscriptSearch == null || parentTranscriptSearch.getSingleResult() == null) {
 				associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
 			} else {
-				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();				Map<String, Object> params = new HashMap<>();
+				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();
+				Map<String, Object> params = new HashMap<>();
 				params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", parentTranscript.getId());
 				params.put("transcriptExonAssociationObject.id", exon.getId());
 				SearchResponse<TranscriptExonAssociation> searchResponse = transcriptExonDAO.findByParams(params);

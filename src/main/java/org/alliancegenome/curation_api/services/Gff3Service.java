@@ -92,7 +92,7 @@ public class Gff3Service {
 		}
 	}
 	
-	public Map<String, List<Long>> loadEntity(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public Map<String, List<Long>> loadEntity(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.equals(gffEntry.getType(), "exon") || StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
@@ -118,7 +118,7 @@ public class Gff3Service {
 	}
 	
 	@Transactional
-	public Map<String, List<Long>> loadLocationAssociations(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {
+	public Map<String, List<Long>> loadLocationAssociations(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -175,7 +175,7 @@ public class Gff3Service {
 	}
 	
 	@Transactional
-	public Map<String, List<Long>> loadParentChildAssociations(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {
+	public Map<String, List<Long>> loadParentChildAssociations(BulkLoadFileHistory history, ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -231,10 +231,10 @@ public class Gff3Service {
 		return idsAdded;
 	}
 
-	public Map<String, String> getIdCurieMap(List<ImmutablePair<Gff3DTO, Map<String,String>>> gffData, BackendBulkDataProvider dataProvider) {
+	public Map<String, String> getIdCurieMap(List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, BackendBulkDataProvider dataProvider) {
 		Map<String, String> geneIdCurieMap = new HashMap<>();
 		
-		for (ImmutablePair<Gff3DTO, Map<String,String>> gffEntryPair : gffData) {
+		for (ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair : gffData) {
 			Map<String, String> attributes = gffEntryPair.getValue();
 			if (attributes.containsKey("ID") && attributes.containsKey("gene_id")) {
 				geneIdCurieMap.put(attributes.get("ID"), attributes.get("gene_id"));
