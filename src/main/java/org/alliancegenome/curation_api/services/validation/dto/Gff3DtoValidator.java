@@ -296,7 +296,7 @@ public class Gff3DtoValidator {
 		} else {
 			SearchResponse<Transcript> parentTranscriptSearch = transcriptDAO.findByField("modInternalId", attributes.get("Parent"));
 			if (parentTranscriptSearch == null || parentTranscriptSearch.getSingleResult() == null) {
-				associationResponse.addErrorMessage("Attributes - Parent",ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
+				associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
 			} else {
 				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();
 				Map<String, Object> params = new HashMap<>();
