@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static io.restassured.RestAssured.given;
@@ -332,6 +333,25 @@ public class BaseITCase {
 		goTerm.setObsolete(obsolete);
 		goTerm.setName(name);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<GOTerm> response = given().
+				contentType("application/json").
+				body(goTerm).
+				when().
+				post("/api/goterm").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefGOTerm());
+		return response.getEntity();
+	}
+
+	public GOTerm createGOTermWithSubsets(String curie, String name, List<String> subsets) throws Exception {
+		GOTerm goTerm = new GOTerm();
+		goTerm.setCurie(curie);
+		goTerm.setName(name);
+		goTerm.setObsolete(false);
+		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		goTerm.setSubsets(subsets);
 
 		ObjectResponse<GOTerm> response = given().
 				contentType("application/json").
@@ -1246,6 +1266,26 @@ public class BaseITCase {
 		goTerm.setName(name);
 		goTerm.setObsolete(false);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(goTerm).
+			when().
+			put("/api/goterm").
+			then().
+			statusCode(200);
+	}
+
+
+	public void loadGOTermWithAncestors(String curie, String name, GOTerm ancestor) throws Exception {
+		GOTerm goTerm = new GOTerm();
+		List<String> subsets = new ArrayList<String>();
+		subsets.add("goslim_agr");
+		goTerm.setCurie(curie);
+		goTerm.setName(name);
+		goTerm.setObsolete(false);
+		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		goTerm.addIsaAncestor(ancestor);
 
 		RestAssured.given().
 			contentType("application/json").

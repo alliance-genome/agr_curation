@@ -11,10 +11,13 @@ import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -45,6 +48,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String anatomicalStructureTermId = "ANAT:001";
 	private final String anatomicalSubstructureTermId = "ANAT:002";
 	private final String cellularComponentTermId = "GOTEST:0012";
+	private final String cellularComponentRibbonTermId = "GOSLIMTEST:0012";
 	private final String anatomicalStructureQualifierTermId = "UBERON:002";
 	private final String anatomicalSubstructureQualifierTermId = "UBERON:003";
 	private final String cellularComponentQualifierTermId = "FBCV:001";
@@ -88,6 +92,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionPattern.whereExpressed.anatomicalStructure.curie", is(anatomicalStructureTermId))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructure.curie", is(anatomicalSubstructureTermId))
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentTerm.curie", is(cellularComponentTermId))
+			.body("results[0].expressionPattern.whereExpressed.cellularComponentRibbonTerm.curie", is(cellularComponentTermId))
+			.body("results[0].expressionPattern.whereExpressed.cellularComponentOther", is(false))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureQualifiers[0].name", is(anatomicalStructureQualifierTermId))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureQualifiers[0].name", is(anatomicalSubstructureQualifierTermId))
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentQualifiers[0].name", is(cellularComponentQualifierTermId))
@@ -159,7 +165,10 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		createVocabularyTerm(stageUberonTermVocabulary, stageUberonTermId, false);
 		loadAnatomyTerm(anatomicalStructureTermId, "AnatomicalStructureTermTest");
 		loadAnatomyTerm(anatomicalSubstructureTermId, "AnatomicalSubStructureTermTest");
-		loadGOTerm(cellularComponentTermId, "CellularComponentTermTest");
+		List<String> subsets = new ArrayList<String>();
+		subsets.add("goslim_agr");
+		GOTerm isaAncestor = createGOTermWithSubsets(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", subsets);
+		loadGOTermWithAncestors(cellularComponentTermId, "CellularComponentTermTest", isaAncestor);
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalStructureQualifierTermId, false);
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalSubstructureQualifierTermId, false);
 		createVocabularyTerm(cellullarComponentQualififerVocabulary, cellularComponentQualifierTermId, false);
