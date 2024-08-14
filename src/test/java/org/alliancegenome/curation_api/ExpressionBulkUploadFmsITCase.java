@@ -91,7 +91,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionPattern.whereExpressed.anatomicalStructure.curie", is(anatomicalStructureTermId))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructure.curie", is(anatomicalSubstructureTermId))
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentTerm.curie", is(cellularComponentTermId))
-			.body("results[0].expressionPattern.whereExpressed.cellularComponentRibbonTerm.curie", is(cellularComponentTermId))
+			.body("results[0].expressionPattern.whereExpressed.cellularComponentRibbonTerm.curie", is(cellularComponentRibbonTermId))
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentOther", is(false))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureQualifiers[0].name", is(anatomicalStructureQualifierTermId))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureQualifiers[0].name", is(anatomicalSubstructureQualifierTermId))
@@ -167,7 +167,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		List<String> subsets = new ArrayList<String>();
 		subsets.add("goslim_agr");
 		GOTerm isaAncestor = createGOTermWithSubsets(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", subsets);
-		loadGOTermWithAncestors(cellularComponentTermId, "CellularComponentTermTest", isaAncestor);
+		loadGOTermWithAncestor(cellularComponentTermId, "CellularComponentTermTest", isaAncestor);
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalStructureQualifierTermId, false);
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalSubstructureQualifierTermId, false);
 		createVocabularyTerm(cellullarComponentQualififerVocabulary, cellularComponentQualifierTermId, false);

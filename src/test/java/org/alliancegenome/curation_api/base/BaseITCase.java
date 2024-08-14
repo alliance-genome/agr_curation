@@ -1276,7 +1276,7 @@ public class BaseITCase {
 	}
 
 
-	public void loadGOTermWithAncestors(String curie, String name, GOTerm ancestor) throws Exception {
+	public void loadGOTermWithAncestor(String curie, String name, GOTerm ancestor) throws Exception {
 		GOTerm goTerm = new GOTerm();
 		List<String> subsets = new ArrayList<String>();
 		subsets.add("goslim_agr");
