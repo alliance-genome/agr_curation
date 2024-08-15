@@ -118,18 +118,19 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 			}
 		}
 
-	externalDataBaseEntityDAO.persist(externalDBEntity);
+		externalDataBaseEntityDAO.persist(externalDBEntity);
 
-	for (Long currentId : currentXrefIds) {
-		if (!mergedXrefIds.contains(currentId)) {
-			crossReferenceDAO.remove(currentId);
+		for (Long currentId : currentXrefIds) {
+			if (!mergedXrefIds.contains(currentId)) {
+				crossReferenceDAO.remove(currentId);
+			}
 		}
-	}
 
-	if (externalDBEntityResponse.hasErrors()) {
-		throw new ObjectValidationException(dto, externalDBEntityResponse.errorMessagesString());
-	}
-	return externalDBEntity;
+		if (externalDBEntityResponse.hasErrors()) {
+			throw new ObjectValidationException(dto, externalDBEntityResponse.errorMessagesString());
+		}
+		
+		return externalDBEntity;
 	}
 
 	private CrossReference createNewCrossReference(CrossReferenceFmsDTO dto) {
