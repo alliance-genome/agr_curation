@@ -6,23 +6,32 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.Gff3Constants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.dao.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.exonAssociations.ExonGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptCodingSequenceAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptExonAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptGeneAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
+import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
 import org.alliancegenome.curation_api.model.entities.Exon;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.LocationAssociation;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptCodingSequenceAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptExonAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
@@ -30,9 +39,9 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AssemblyComponentService;
 import org.alliancegenome.curation_api.services.DataProviderService;
+import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.Gff3Service;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
@@ -47,8 +56,12 @@ public class Gff3DtoValidator {
 	@Inject ExonDAO exonDAO;
 	@Inject TranscriptDAO transcriptDAO;
 	@Inject CodingSequenceDAO codingSequenceDAO;
+	@Inject GeneService geneService;
 	@Inject ExonGenomicLocationAssociationDAO exonLocationDAO;
 	@Inject TranscriptGenomicLocationAssociationDAO transcriptLocationDAO;
+	@Inject TranscriptGeneAssociationDAO transcriptGeneDAO;
+	@Inject TranscriptExonAssociationDAO transcriptExonDAO;
+	@Inject TranscriptCodingSequenceAssociationDAO transcriptCdsDAO;
 	@Inject CodingSequenceGenomicLocationAssociationDAO cdsLocationDAO;
 	@Inject AssemblyComponentService assemblyComponentService;
 	@Inject DataProviderService dataProviderService;
@@ -58,11 +71,10 @@ public class Gff3DtoValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	
 	@Transactional
-	public Exon validateExonEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Exon validateExonEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Exon exon = null;
 		
-		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<Exon> searchResponse = exonDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -86,11 +98,10 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public CodingSequence validateCdsEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public CodingSequence validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		CodingSequence cds = null;
 		
-		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<CodingSequence> searchResponse = codingSequenceDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -114,11 +125,10 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public Transcript validateTranscriptEntry(Gff3DTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public Transcript validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Transcript transcript = null;
 		
-		Map<String, String> attributes = Gff3AttributesHelper.getAttributes(dto, dataProvider);
 		if (attributes.containsKey("ID")) {
 			SearchResponse<Transcript> searchResponse = transcriptDAO.findByField("modInternalId", attributes.get("ID"));
 			if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -243,6 +253,105 @@ public class Gff3DtoValidator {
 		return transcriptLocationDAO.persist(locationResponse.getEntity());
 	}
 	
+	@Transactional
+	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Map<String, String> attributes, Map<String, String> geneIdCurieMap) throws ObjectValidationException {
+		TranscriptGeneAssociation association = new TranscriptGeneAssociation();
+		
+		ObjectResponse<TranscriptGeneAssociation> associationResponse = new ObjectResponse<TranscriptGeneAssociation>();
+		if (!attributes.containsKey("Parent")) {
+			associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			String geneCurie = geneIdCurieMap.containsKey(attributes.get("Parent")) ? geneIdCurieMap.get(attributes.get("Parent")) : attributes.get("Parent");
+			Gene parentGene = geneService.findByIdentifierString(geneCurie);
+			if (parentGene == null) {
+				associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
+			} else {
+				Map<String, Object> params = new HashMap<>();
+				params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", transcript.getId());
+				params.put("transcriptGeneAssociationObject.id", parentGene.getId());
+				SearchResponse<TranscriptGeneAssociation> searchResponse = transcriptGeneDAO.findByParams(params);
+				if (searchResponse != null && searchResponse.getSingleResult() != null) {
+					association = searchResponse.getSingleResult();
+				}
+				association.setTranscriptGeneAssociationObject(parentGene);
+			}
+		}
+		association.setTranscriptAssociationSubject(transcript);
+		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.TRANSCRIPT_RELATION_VOCABULARY, VocabularyConstants.TRANSCRIPT_CHILD_TERM).getEntity());
+		
+		if (associationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, associationResponse.errorMessagesString());
+		}
+
+		return transcriptGeneDAO.persist(association);
+	}
+	
+	@Transactional
+	public TranscriptCodingSequenceAssociation validateTranscriptCodingSequenceAssociation(Gff3DTO gffEntry, CodingSequence cds, Map<String, String> attributes) throws ObjectValidationException {
+		TranscriptCodingSequenceAssociation association = new TranscriptCodingSequenceAssociation();
+		
+		ObjectResponse<TranscriptCodingSequenceAssociation> associationResponse = new ObjectResponse<TranscriptCodingSequenceAssociation>();
+		if (!attributes.containsKey("Parent")) {
+			associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			SearchResponse<Transcript> parentTranscriptSearch = transcriptDAO.findByField("modInternalId", attributes.get("Parent"));
+			if (parentTranscriptSearch == null || parentTranscriptSearch.getSingleResult() == null) {
+				associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
+			} else {
+				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();
+				Map<String, Object> params = new HashMap<>();
+				params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", parentTranscript.getId());
+				params.put("transcriptCodingSequenceAssociationObject.id", cds.getId());
+				SearchResponse<TranscriptCodingSequenceAssociation> searchResponse = transcriptCdsDAO.findByParams(params);
+				if (searchResponse != null && searchResponse.getSingleResult() != null) {
+					association = searchResponse.getSingleResult();
+				}
+				association.setTranscriptAssociationSubject(parentTranscript);
+			}
+		}
+		association.setTranscriptCodingSequenceAssociationObject(cds);
+		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.TRANSCRIPT_RELATION_VOCABULARY, VocabularyConstants.TRANSCRIPT_PARENT_TERM).getEntity());
+		
+		if (associationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, associationResponse.errorMessagesString());
+		}
+
+		return transcriptCdsDAO.persist(association);
+	}
+	
+	@Transactional
+	public TranscriptExonAssociation validateTranscriptExonAssociation(Gff3DTO gffEntry, Exon exon, Map<String, String> attributes) throws ObjectValidationException {
+		TranscriptExonAssociation association = new TranscriptExonAssociation();
+		
+		ObjectResponse<TranscriptExonAssociation> associationResponse = new ObjectResponse<TranscriptExonAssociation>();
+		if (!attributes.containsKey("Parent")) {
+			associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			SearchResponse<Transcript> parentTranscriptSearch = transcriptDAO.findByField("modInternalId", attributes.get("Parent"));
+			if (parentTranscriptSearch == null || parentTranscriptSearch.getSingleResult() == null) {
+				associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
+			} else {
+				Transcript parentTranscript = parentTranscriptSearch.getSingleResult();
+				Map<String, Object> params = new HashMap<>();
+				params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", parentTranscript.getId());
+				params.put("transcriptExonAssociationObject.id", exon.getId());
+				SearchResponse<TranscriptExonAssociation> searchResponse = transcriptExonDAO.findByParams(params);
+				if (searchResponse != null && searchResponse.getSingleResult() != null) {
+					association = searchResponse.getSingleResult();
+				}
+				association.setTranscriptAssociationSubject(parentTranscript);
+			}
+		}
+		association.setTranscriptExonAssociationObject(exon);
+		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.TRANSCRIPT_RELATION_VOCABULARY, VocabularyConstants.TRANSCRIPT_PARENT_TERM).getEntity());
+		
+		if (associationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, associationResponse.errorMessagesString());
+		}
+
+		return transcriptExonDAO.persist(association);
+	}
+	
 	private <E extends LocationAssociation> ObjectResponse<E> validateLocationAssociation(E association, Gff3DTO dto, AssemblyComponent assemblyComponent) {
 		ObjectResponse<E> associationResponse = new ObjectResponse<E>();
 		
@@ -273,6 +382,13 @@ public class Gff3DtoValidator {
 		}
 		
 		associationResponse.setEntity(association);
+		
+		return associationResponse;
+	}
+	
+	private <E extends EvidenceAssociation> ObjectResponse<E> validateParent(E association, Map<String, String> attributes) {
+		ObjectResponse<E> associationResponse = new ObjectResponse<E>();
+		
 		
 		return associationResponse;
 	}

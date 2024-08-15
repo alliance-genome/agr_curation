@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.gff3;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,27 +23,26 @@ public class Gff3AttributesHelper {
 			}
 		}
 
-		if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {
-			for (String key : List.of("ID", "Parent")) {
-				if (attributes.containsKey(key)) {
-					String id = attributes.get(key);
-					String[] idParts = id.split(":");
-					if (idParts.length > 1) {
-						id = idParts[1];
-					}
-					attributes.put(key, id);
-				}
-			}
-		}
-		
+		// Ensure identifiers have MOD prefix
 		for (String key : List.of("ID", "Parent")) {
 			if (attributes.containsKey(key)) {
-				String id = attributes.get(key);
-				String[] idParts = id.split(":");
-				if (idParts.length == 1) {
-					id = dataProvider.name() + ':' + idParts[0];
+				String idsString = attributes.get(key);
+				if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {
+					// Remove prefixes like Gene: and Transcript: from WB identifiers
+					idsString = idsString.replaceAll("Gene:", "");
+					idsString = idsString.replaceAll("Transcript:", "");
+					idsString = idsString.replaceAll("CDS:", "");
 				}
-				attributes.put(key, id);
+				String[] idsList = idsString.split(",");
+				List<String> processedIdList = new ArrayList<>();
+				for (String id : idsList) {
+					String[] idParts = id.split(":");
+					if (idParts.length == 1) {
+						id = dataProvider.name() + ':' + idParts[0];
+					}
+					processedIdList.add(id);
+				}
+				attributes.put(key, String.join(",", processedIdList));
 			}
 		}
 		
