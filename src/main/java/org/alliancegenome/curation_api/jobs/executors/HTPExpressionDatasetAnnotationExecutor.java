@@ -65,7 +65,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("External Database Entity DTO Update for " + dataProvider.name(), htpDatasetData.size());
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
-			try{
+			try {
 				ExternalDataBaseEntity dbObject = externalDataBaseEntityService.upsert(dto.getDatasetId(), dataProvider);
 				history.incrementCompleted();
 				if (datasetIdsLoaded != null) {

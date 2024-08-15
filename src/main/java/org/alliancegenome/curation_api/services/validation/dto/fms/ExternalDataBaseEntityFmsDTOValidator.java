@@ -43,19 +43,19 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 		ObjectResponse<ExternalDataBaseEntity> externalDBEntityResponse = new ObjectResponse<>();
 		ExternalDataBaseEntity externalDBEntity = null;
 		
-		if(StringUtils.isEmpty(dto.getPrimaryId())) {
+		if (StringUtils.isEmpty(dto.getPrimaryId())) {
 			externalDBEntityResponse.addErrorMessage("primaryId", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			externalDBEntity = externalDataBaseEntityService.findByCurie(dto.getPrimaryId());
 		}
 
-		if(externalDBEntity == null) {
+		if (externalDBEntity == null) {
 			externalDBEntity = new ExternalDataBaseEntity();
 			externalDBEntity.setCurie(dto.getPrimaryId());
 		}
 
-		if(CollectionUtils.isNotEmpty(dto.getAlternateIds())) {
-			if(externalDBEntity.getSecondaryIdentifiers() == null) {
+		if (CollectionUtils.isNotEmpty(dto.getAlternateIds())) {
+			if (externalDBEntity.getSecondaryIdentifiers() == null) {
 				externalDBEntity.setSecondaryIdentifiers(new ArrayList<>());
 			}
 			Set<String> existingSecondaryIds = new HashSet<>(externalDBEntity.getSecondaryIdentifiers());
@@ -75,7 +75,7 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 
 		List<Long> mergedXrefIds = null;
 		List<CrossReference> mergedCrossReferences = new ArrayList<>();
-		if(CollectionUtils.isNotEmpty(dto.getCrossReferences())) {
+		if (CollectionUtils.isNotEmpty(dto.getCrossReferences())) {
 			mergedCrossReferences = crossReferenceService.getMergedFmsXrefList(dto.getCrossReferences(), externalDBEntity.getCrossReferences());
 			mergedXrefIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
 			externalDBEntity.setCrossReferences(mergedCrossReferences);
@@ -85,19 +85,19 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 		}
 
 		Map<String, CrossReference> mergedXrefUniqueIdsMap = new HashMap<>();
-		for(CrossReference mergedXref : mergedCrossReferences) {
+		for (CrossReference mergedXref : mergedCrossReferences) {
 			mergedXrefUniqueIdsMap.put(crossReferenceService.getCrossReferenceUniqueId(mergedXref), mergedXref);
 		}
 
-		if(externalDBEntity.getPreferredCrossReference() != null) {
-			if(dto.getPreferredCrossReference() != null) {
+		if (externalDBEntity.getPreferredCrossReference() != null) {
+			if (dto.getPreferredCrossReference() != null) {
 				CrossReference incomingPreferredXref = createNewCrossReference(dto.getPreferredCrossReference());
 				String incomingXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(incomingPreferredXref);
 				String currentXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(externalDBEntity.getPreferredCrossReference());
 
-				if(!incomingXrefUniqueId.equals(currentXrefUniqueId)){
+				if (!incomingXrefUniqueId.equals(currentXrefUniqueId)) {
 					externalDBEntity.setPreferredCrossReference(null);
-					if(mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
+					if (mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
 						externalDBEntity.setPreferredCrossReference(mergedXrefUniqueIdsMap.get(incomingXrefUniqueId));
 					} else {
 						externalDBEntity.setPreferredCrossReference(crossReferenceDAO.persist(incomingPreferredXref));
@@ -107,10 +107,10 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 				externalDBEntity.setPreferredCrossReference(null);
 			}
 		} else {
-			if(dto.getPreferredCrossReference() != null) {
+			if (dto.getPreferredCrossReference() != null) {
 				CrossReference incomingPreferredXref = createNewCrossReference(dto.getPreferredCrossReference());
 				String incomingXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(incomingPreferredXref);
-				if(mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
+				if (mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
 					externalDBEntity.setPreferredCrossReference(mergedXrefUniqueIdsMap.get(incomingXrefUniqueId));
 				} else {
 					externalDBEntity.setPreferredCrossReference(crossReferenceDAO.persist(incomingPreferredXref));
@@ -126,7 +126,7 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 		}
 	}
 
-	if(externalDBEntityResponse.hasErrors()) {
+	if (externalDBEntityResponse.hasErrors()) {
 		throw new ObjectValidationException(dto, externalDBEntityResponse.errorMessagesString());
 	}
 	return externalDBEntity;

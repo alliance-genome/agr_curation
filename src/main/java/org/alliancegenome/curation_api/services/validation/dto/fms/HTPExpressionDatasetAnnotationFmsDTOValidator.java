@@ -10,8 +10,8 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 
-    @Transactional
-    public HTPExpressionDatasetAnnotation validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto) throws ObjectValidationException{
-        return null;
-    }
+	@Transactional
+	public HTPExpressionDatasetAnnotation validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto) throws ObjectValidationException {
+		return null;
+	}
 }
