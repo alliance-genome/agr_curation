@@ -1,23 +1,26 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPIdFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
+import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,9 +35,10 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 	@Inject ExternalDataBaseEntityService externalDataBaseEntityService;
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject CrossReferenceService crossReferenceService;
+	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Transactional
-	public ExternalDataBaseEntity validateExternalDataBaseEntityFmsDTO(HTPIdFmsDTO dto) throws ObjectValidationException,ObjectUpdateException {
+	public ExternalDataBaseEntity validateExternalDataBaseEntityFmsDTO(HTPIdFmsDTO dto) throws ObjectValidationException {
 
 		ObjectResponse<ExternalDataBaseEntity> externalDBEntityResponse = new ObjectResponse<>();
 		ExternalDataBaseEntity externalDBEntity = null;
@@ -69,9 +73,10 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 			currentXrefIds = externalDBEntity.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toList());
 		}
 
-		List<Long> mergedXrefIds;
+		List<Long> mergedXrefIds = null;
+		List<CrossReference> mergedCrossReferences = new ArrayList<>();
 		if(CollectionUtils.isNotEmpty(dto.getCrossReferences())) {
-			List<CrossReference> mergedCrossReferences = crossReferenceService.getMergedFmsXrefList(dto.getCrossReferences(), externalDBEntity.getCrossReferences());
+			mergedCrossReferences = crossReferenceService.getMergedFmsXrefList(dto.getCrossReferences(), externalDBEntity.getCrossReferences());
 			mergedXrefIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
 			externalDBEntity.setCrossReferences(mergedCrossReferences);
 		} else {
@@ -79,33 +84,62 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 			externalDBEntity.setCrossReferences(null);
 		}
 
-		// CrossReference xref = new CrossReference();
-		// if(dto.getPreferredCrossReference() != null) {
-		// 	if(dto.getPreferredCrossReference().getPages().size() == 1) {
-		// 		List<CrossReferenceFmsDTO> incomingXrefDto = new ArrayList<>();
-		// 		incomingXrefDto.add(dto.getPreferredCrossReference());
-		// 		List<CrossReference> existingXReferences = new ArrayList<>();
-		// 		existingXReferences.add(externalDBEntity.getPreferredCrossReference());
-		// 		List<CrossReference> preferredXReferences = crossReferenceService.getMergedFmsXrefList(incomingXrefDto, existingXReferences);
-		// 		xref = preferredXReferences.get(0);
-		// 		externalDBEntity.setPreferredCrossReference(xref);
-		// 	} else {
-		// 		externalDBEntityResponse.addErrorMessage("preferredCrossReference.pages", ValidationConstants.INVALID_MESSAGE + " Only one page is allowed");
-		// 	}
-		// }
+		Map<String, CrossReference> mergedXrefUniqueIdsMap = new HashMap<>();
+		for(CrossReference mergedXref : mergedCrossReferences) {
+			mergedXrefUniqueIdsMap.put(crossReferenceService.getCrossReferenceUniqueId(mergedXref), mergedXref);
+		}
 
-		externalDataBaseEntityDAO.persist(externalDBEntity);
+		if(externalDBEntity.getPreferredCrossReference() != null) {
+			if(dto.getPreferredCrossReference() != null) {
+				CrossReference incomingPreferredXref = createNewCrossReference(dto.getPreferredCrossReference());
+				String incomingXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(incomingPreferredXref);
+				String currentXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(externalDBEntity.getPreferredCrossReference());
 
-		for (Long currentId : currentXrefIds) {
-			if (!mergedXrefIds.contains(currentId)) {
-				System.out.println("Removing CrossReference with ID: " + crossReferenceDAO.find(currentId).getId());
-				crossReferenceDAO.remove(currentId);
+				if(!incomingXrefUniqueId.equals(currentXrefUniqueId)){
+					if(mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
+						externalDBEntity.setPreferredCrossReference(mergedXrefUniqueIdsMap.get(incomingXrefUniqueId));
+					} else {
+						externalDBEntity.setPreferredCrossReference(crossReferenceDAO.persist(incomingPreferredXref));
+					}
+				}
+			} else {
+				externalDBEntity.setPreferredCrossReference(null);
+			}
+		} else {
+			if(dto.getPreferredCrossReference() != null) {
+				CrossReference incomingPreferredXref = createNewCrossReference(dto.getPreferredCrossReference());
+				String incomingXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(incomingPreferredXref);
+				if(mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
+					externalDBEntity.setPreferredCrossReference(mergedXrefUniqueIdsMap.get(incomingXrefUniqueId));
+				} else {
+					externalDBEntity.setPreferredCrossReference(crossReferenceDAO.persist(incomingPreferredXref));
+				}
 			}
 		}
 
-		if(externalDBEntityResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, externalDBEntityResponse.errorMessagesString());
+	externalDataBaseEntityDAO.persist(externalDBEntity);
+
+	for (Long currentId : currentXrefIds) {
+		if (!mergedXrefIds.contains(currentId)) {
+			crossReferenceDAO.remove(currentId);
 		}
-		return externalDBEntity;
+	}
+
+	if(externalDBEntityResponse.hasErrors()) {
+		throw new ObjectValidationException(dto, externalDBEntityResponse.errorMessagesString());
+	}
+	return externalDBEntity;
+	}
+
+	private CrossReference createNewCrossReference(CrossReferenceFmsDTO dto) {
+		CrossReference xref = new CrossReference();
+		xref.setReferencedCurie(dto.getCurie());
+		xref.setDisplayName(dto.getCurie());
+		String prefix = dto.getCurie().indexOf(":") == -1 ? dto.getCurie() : dto.getCurie().substring(0, dto.getCurie().indexOf(":"));
+		ResourceDescriptorPage rdp = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, dto.getPages().get(0));
+		if (rdp != null) {
+			xref.setResourceDescriptorPage(rdp);
+		}
+		return xref;
 	}
 }
