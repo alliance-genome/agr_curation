@@ -7,8 +7,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class ExternalDataBaseEntityDAO extends BaseSQLDAO<ExternalDataBaseEntity> {
-    
-    protected ExternalDataBaseEntityDAO() {
-        super(ExternalDataBaseEntity.class);
-    }
+	
+	protected ExternalDataBaseEntityDAO() {
+		super(ExternalDataBaseEntity.class);
+	}
 }

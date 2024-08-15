@@ -8,8 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class HTPExpressionDatasetAnnotationIngestFmsDTO extends BaseDTO{
+public class HTPExpressionDatasetAnnotationIngestFmsDTO extends BaseDTO {
 
-    private MetaDataFmsDTO metaData;
+	private MetaDataFmsDTO metaData;
 	private List<HTPExpressionDatasetAnnotationFmsDTO> data;
 }

@@ -11,8 +11,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=true)
 public class HTPIdFmsDTO extends BaseDTO {
 
-    private String primaryId;
-    private List<String> alternateIds;
-    private CrossReferenceFmsDTO preferredCrossReference;
-    private List<CrossReferenceFmsDTO> crossReferences;
+	private String primaryId;
+	private List<String> alternateIds;
+	private CrossReferenceFmsDTO preferredCrossReference;
+	private List<CrossReferenceFmsDTO> crossReferences;
 }

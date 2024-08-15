@@ -29,12 +29,12 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
-    @Inject ExternalDataBaseEntityService externalDataBaseEntityService;
-    @Inject ExternalDataBaseEntityDAO externalDataBaseEntityDAO;
-    @Inject HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService;
-    @Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
-    
-    public void execLoad(BulkLoadFile bulkLoadFile) {
+	@Inject ExternalDataBaseEntityService externalDataBaseEntityService;
+	@Inject ExternalDataBaseEntityDAO externalDataBaseEntityDAO;
+	@Inject HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService;
+	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
+	
+	public void execLoad(BulkLoadFile bulkLoadFile) {
 		try {
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
 
@@ -47,10 +47,10 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				bulkLoadFile.setAllianceMemberReleaseVersion(htpExpressionDatasetData.getMetaData().getRelease());
 			}
 
-            BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
+			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
 			bulkLoadFileDAO.merge(bulkLoadFile);
-            List<Long> datasetIdsLoaded = new ArrayList<>();
+			List<Long> datasetIdsLoaded = new ArrayList<>();
 			BulkLoadFileHistory history = new BulkLoadFileHistory(htpExpressionDatasetData.getData().size());
 			createHistory(history, bulkLoadFile);
 			Boolean result = runLoaddatasetid(externalDataBaseEntityService, history, dataProvider, htpExpressionDatasetData.getData(), datasetIdsLoaded, false);
@@ -60,26 +60,26 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		}
 	}
 
-    private boolean runLoaddatasetid(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded, boolean isUpdate) {
+	private boolean runLoaddatasetid(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded, boolean isUpdate) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("External Database Entity DTO Update for " + dataProvider.name(), htpDatasetData.size());
-        for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
-            try{
-                ExternalDataBaseEntity dbObject = externalDataBaseEntityService.upsert(dto.getDatasetId(), dataProvider);
-                history.incrementCompleted();
+		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
+			try{
+				ExternalDataBaseEntity dbObject = externalDataBaseEntityService.upsert(dto.getDatasetId(), dataProvider);
+				history.incrementCompleted();
 				if (datasetIdsLoaded != null) {
 					datasetIdsLoaded.add(dbObject.getId());
 				}
-            } catch (ObjectUpdateException e) {
+			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
-        }
+		}
 		ph.finishProcess();
-        return true;
+		return true;
 	}
 }
