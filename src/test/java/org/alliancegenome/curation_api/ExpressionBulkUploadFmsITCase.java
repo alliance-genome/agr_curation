@@ -166,8 +166,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		loadAnatomyTerm(anatomicalSubstructureTermId, "AnatomicalSubStructureTermTest");
 		List<String> subsets = new ArrayList<String>();
 		subsets.add("goslim_agr");
-		GOTerm isaAncestor = createGOTermWithSubsets(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", subsets);
-		loadGOTermWithAncestor(cellularComponentTermId, "CellularComponentTermTest", isaAncestor);
+		GOTerm isaAncestor = createGoTerm(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", false, subsets);
+		loadGOTerm(cellularComponentTermId, "CellularComponentTermTest", isaAncestor);
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalStructureQualifierTermId, false);
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalSubstructureQualifierTermId, false);
 		createVocabularyTerm(cellullarComponentQualififerVocabulary, cellularComponentQualifierTermId, false);

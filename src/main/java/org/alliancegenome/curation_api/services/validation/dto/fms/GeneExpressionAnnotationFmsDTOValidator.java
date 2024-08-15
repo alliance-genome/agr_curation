@@ -216,6 +216,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 					if (cellularComponentRibbon == null) {
 						anatomicalSite.setCellularComponentOther(true);
 					} else {
+						anatomicalSite.setCellularComponentOther(false);
 						anatomicalSite.setCellularComponentRibbonTerm(cellularComponentRibbon);
 					}
 					anatomicalSite.setCellularComponentTerm(cellularComponent);

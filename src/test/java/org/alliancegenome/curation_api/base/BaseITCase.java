@@ -327,30 +327,21 @@ public class BaseITCase {
 	}
 
 	public GOTerm createGoTerm(String curie, String name, Boolean obsolete) {
+		return createGoTerm(curie, name, obsolete, null, null);
+	}
+
+	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, List<String> subsets) {
+		return createGoTerm(curie, name, obsolete, null, subsets);
+	}
+
+	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, GOTerm ancestor, List<String> subsets) {
 		GOTerm goTerm = new GOTerm();
 		goTerm.setCurie(curie);
 		goTerm.setObsolete(obsolete);
 		goTerm.setName(name);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		ObjectResponse<GOTerm> response = given().
-				contentType("application/json").
-				body(goTerm).
-				when().
-				post("/api/goterm").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefGOTerm());
-		return response.getEntity();
-	}
-
-	public GOTerm createGOTermWithSubsets(String curie, String name, List<String> subsets) throws Exception {
-		GOTerm goTerm = new GOTerm();
-		goTerm.setCurie(curie);
-		goTerm.setName(name);
-		goTerm.setObsolete(false);
-		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		goTerm.setSubsets(subsets);
+		goTerm.addIsaAncestor(ancestor);
 
 		ObjectResponse<GOTerm> response = given().
 				contentType("application/json").
@@ -1260,31 +1251,21 @@ public class BaseITCase {
 	}
 
 	public void loadGOTerm(String curie, String name) throws Exception {
-		GOTerm goTerm = new GOTerm();
-		goTerm.setCurie(curie);
-		goTerm.setName(name);
-		goTerm.setObsolete(false);
-		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(goTerm).
-			when().
-			put("/api/goterm").
-			then().
-			statusCode(200);
+		loadGOTerm(curie, name, null, null);
 	}
 
+	public void loadGOTerm(String curie, String name, GOTerm ancestor) throws Exception {
+		loadGOTerm(curie, name, ancestor, null);
+	}
 
-	public void loadGOTermWithAncestor(String curie, String name, GOTerm ancestor) throws Exception {
+	public void loadGOTerm(String curie, String name, GOTerm ancestor, List<String> subsets) throws Exception {
 		GOTerm goTerm = new GOTerm();
-		List<String> subsets = new ArrayList<String>();
-		subsets.add("goslim_agr");
 		goTerm.setCurie(curie);
 		goTerm.setName(name);
 		goTerm.setObsolete(false);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		goTerm.addIsaAncestor(ancestor);
+		goTerm.setSubsets(subsets);
 
 		RestAssured.given().
 			contentType("application/json").
