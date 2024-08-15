@@ -96,6 +96,7 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 				String currentXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(externalDBEntity.getPreferredCrossReference());
 
 				if(!incomingXrefUniqueId.equals(currentXrefUniqueId)){
+					externalDBEntity.setPreferredCrossReference(null);
 					if(mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
 						externalDBEntity.setPreferredCrossReference(mergedXrefUniqueIdsMap.get(incomingXrefUniqueId));
 					} else {
