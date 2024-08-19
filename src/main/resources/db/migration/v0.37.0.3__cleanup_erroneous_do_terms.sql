@@ -9,7 +9,8 @@ CREATE TABLE other_ids_to_delete (
 );
 
 INSERT INTO ontology_ids_to_delete (id) SELECT id FROM ontologyterm
-	WHERE curie = 'DOID:0080025' OR curie = 'DOID:0080004' OR curie = 'DOID:0080003';
+	WHERE curie = 'DOID:0080025' OR curie = 'DOID:0080004' OR curie = 'DOID:0080003'
+	OR curie = 'DOID:0080035' OR curie = 'DOID:0080002';
 
 -- Clean up disease annotations
 
@@ -75,7 +76,7 @@ DELETE FROM ontologyterm_crossreference WHERE crossreferences_id IN (SELECT id F
 
 DELETE FROM crossreference WHERE id IN (SELECT id FROM other_ids_to_delete);
 
-DELETE FROM ids_to_delete;
+DELETE FROM other_ids_to_delete;
 
 -- Clean up definition URLs
 
@@ -111,7 +112,7 @@ DELETE FROM ontologyterm_synonym WHERE synonyms_id IN (SELECT id FROM other_ids_
 
 DELETE FROM synonym WHERE id IN (SELECT id FROM other_ids_to_delete);
 
-DELETE FROM ids_to_delete;
+DELETE FROM other_ids_to_delete;
 
 -- Clean up ontology terms
 
