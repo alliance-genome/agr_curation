@@ -32,6 +32,7 @@ public class Gff3AttributesHelper {
 					idsString = idsString.replaceAll("Gene:", "");
 					idsString = idsString.replaceAll("Transcript:", "");
 					idsString = idsString.replaceAll("CDS:", "");
+					idsString = idsString.replaceAll("Pseudogene:", "");
 				}
 				String[] idsList = idsString.split(",");
 				List<String> processedIdList = new ArrayList<>();
