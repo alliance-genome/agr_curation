@@ -1,25 +1,25 @@
 ALTER TABLE SlotAnnotation
-	ADD COLUMN phenotypestatement text
-	ADD COLUMN secondaryid character varying(255),
-	ADD COLUMN displaytext character text,
-	ADD COLUMN formattext character text,
-	ADD COLUMN synonymurl character varying(255),
-	ADD COLUMN componentsymbol character varying(255),
-	ADD COLUMN taxontext character varying(255),
+   ADD COLUMN phenotypestatement text,
+   ADD COLUMN secondaryid character varying(255),
+   ADD COLUMN displaytext text,
+   ADD COLUMN formattext text,
+   ADD COLUMN synonymurl character varying(255),
+   ADD COLUMN componentsymbol character varying(255),
+   ADD COLUMN taxontext character varying(255),
 
-	ADD COLUMN inheritancemode_id bigint,
-	ADD COLUMN phenotypeterm_id bigint,
-	ADD COLUMN singleallele_id bigint,
-	ADD COLUMN nomenclatureevent_id bigint,
-	ADD COLUMN nametype_id bigint,
-	ADD COLUMN synonymscope_id bigint,
-	ADD COLUMN singleconstruct_id bigint,
-	ADD COLUMN singlegene_id bigint,
-	ADD COLUMN databasestatus_id bigint,
-	ADD COLUMN germlinetransmissionstatus_id bigint,
-	ADD COLUMN relation_id bigint,
-	ADD COLUMN taxon_id bigint,
-	ADD COLUMN slotannotationtype character varying(96);
+   ADD COLUMN inheritancemode_id bigint,
+   ADD COLUMN phenotypeterm_id bigint,
+   ADD COLUMN singleallele_id bigint,
+   ADD COLUMN nomenclatureevent_id bigint,
+   ADD COLUMN nametype_id bigint,
+   ADD COLUMN synonymscope_id bigint,
+   ADD COLUMN singleconstruct_id bigint,
+   ADD COLUMN singlegene_id bigint,
+   ADD COLUMN databasestatus_id bigint,
+   ADD COLUMN germlinetransmissionstatus_id bigint,
+   ADD COLUMN relation_id bigint,
+   ADD COLUMN taxon_id bigint,
+   ADD COLUMN slotannotationtype character varying(96);
 
 
 UPDATE SlotAnnotation s SET
@@ -67,8 +67,10 @@ DROP TABLE AlleleGermlineTransmissionStatusSlotAnnotation;
 
 UPDATE SlotAnnotation s SET
    SlotAnnotationType = 'AlleleInheritanceModeSlotAnnotation',
+   inheritancemode_id = a.inheritancemode_id,
+   phenotypestatement = a.phenotypestatement,
    singleallele_id = a.singleallele_id,
-   germlinetransmissionstatus_id = a.germlinetransmissionstatus_id
+   phenotypeterm_id = a.phenotypeterm_id
 FROM AlleleInheritanceModeSlotAnnotation a WHERE s.id = a.id;
 
 DROP TABLE AlleleInheritanceModeSlotAnnotation;
@@ -142,7 +144,7 @@ CREATE INDEX slotannotation_note_relatednotes_index ON slotannotation_note USING
 
 DROP TABLE ConstructComponentSlotAnnotation;
 
-UPDATE SlotAnnotation s SET -- needs to get the type set
+UPDATE SlotAnnotation s SET
    SlotAnnotationType = 'ConstructFullNameSlotAnnotation',
    singleconstruct_id = a.singleconstruct_id
 FROM ConstructFullNameSlotAnnotation a WHERE s.id = a.id;
@@ -240,3 +242,21 @@ CREATE INDEX slotannotation_phenotypeterm_index ON slotannotation USING btree (p
 CREATE INDEX slotannotation_singleconstruct_index ON slotannotation USING btree (singleconstruct_id);
 CREATE INDEX slotannotation_databasestatus_index ON slotannotation USING btree (databasestatus_id);
 CREATE INDEX slotannotation_componentsymbol_index ON slotannotation USING btree (componentsymbol);
+
+CREATE TABLE evidence_ids_to_delete ( id bigint PRIMARY KEY);
+
+INSERT INTO evidence_ids_to_delete (id)
+	SELECT i.id
+	FROM slotannotation s, slotannotation_informationcontententity si, informationcontententity i
+	WHERE s.id = si.slotannotation_id and si.evidence_id = i.id and s.slotannotationtype is null;
+
+DELETE FROM slotannotation_informationcontententity WHERE evidence_id in (SELECT id FROM evidence_ids_to_delete);
+
+DROP TABLE evidence_ids_to_delete;
+
+DELETE FROM SlotAnnotation WHERE slotannotationtype is null;
+
+ALTER TABLE SlotAnnotation ALTER COLUMN slotannotationtype SET NOT null;
+ALTER TABLE OntologyTerm ALTER COLUMN ontologytermtype SET NOT null; -- Missed this on the last flattening exercise.
+
+CREATE INDEX slotannotation_slotannotationtype ON slotannotation USING btree (slotannotationtype);
