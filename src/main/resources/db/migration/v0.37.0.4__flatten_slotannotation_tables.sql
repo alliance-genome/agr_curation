@@ -214,18 +214,18 @@ FROM NameSlotAnnotation a WHERE s.id = a.id;
 
 DROP TABLE NameSlotAnnotation;
 
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fk19ret4dubt1ckfrbkng18lovq FOREIGN KEY (inheritancemode_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fk7gu3slsry4u26f33ns6gc7w0m FOREIGN KEY (taxon_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fk8whffy7l5ievs39b0nnbir6ph FOREIGN KEY (nametype_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fkbg9tp7mj2818od5n7ysaj37tf FOREIGN KEY (synonymscope_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fkc8o0sm7ank0efy810051wfqsd FOREIGN KEY (germlinetransmissionstatus_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fke3jo24un80y5wbimk8q3vi8ij FOREIGN KEY (nomenclatureevent_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fkhg0s2w84inbudpe523k2568vr FOREIGN KEY (singleallele_id) REFERENCES allele(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fkju1yhk6ryh61926japwdojk54 FOREIGN KEY (singlegene_id) REFERENCES gene(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fkp4p1tdkllrsmx3v1jfr5iyk6y FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fkq8ci945lhcjeysbmhgc96op5r FOREIGN KEY (phenotypeterm_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fkqkk6210gn4gugy1eae8uxp443 FOREIGN KEY (singleconstruct_id) REFERENCES construct(id);
-ALTER TABLE ONLY SlotAnnotation ADD CONSTRAINT fksjf0g4ao72a95jqwpp332d84q FOREIGN KEY (databasestatus_id) REFERENCES vocabularyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fk19ret4dubt1ckfrbkng18lovq FOREIGN KEY (inheritancemode_id) REFERENCES vocabularyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fk7gu3slsry4u26f33ns6gc7w0m FOREIGN KEY (taxon_id) REFERENCES ontologyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fk8whffy7l5ievs39b0nnbir6ph FOREIGN KEY (nametype_id) REFERENCES vocabularyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fkbg9tp7mj2818od5n7ysaj37tf FOREIGN KEY (synonymscope_id) REFERENCES vocabularyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fkc8o0sm7ank0efy810051wfqsd FOREIGN KEY (germlinetransmissionstatus_id) REFERENCES vocabularyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fke3jo24un80y5wbimk8q3vi8ij FOREIGN KEY (nomenclatureevent_id) REFERENCES vocabularyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fkhg0s2w84inbudpe523k2568vr FOREIGN KEY (singleallele_id) REFERENCES allele(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fkju1yhk6ryh61926japwdojk54 FOREIGN KEY (singlegene_id) REFERENCES gene(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fkp4p1tdkllrsmx3v1jfr5iyk6y FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fkq8ci945lhcjeysbmhgc96op5r FOREIGN KEY (phenotypeterm_id) REFERENCES ontologyterm(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fkqkk6210gn4gugy1eae8uxp443 FOREIGN KEY (singleconstruct_id) REFERENCES construct(id);
+ALTER TABLE SlotAnnotation ADD CONSTRAINT fksjf0g4ao72a95jqwpp332d84q FOREIGN KEY (databasestatus_id) REFERENCES vocabularyterm(id);
 
 CREATE INDEX slotannotation_inheritancemode_index ON slotannotation USING btree (inheritancemode_id);
 CREATE INDEX slotannotation_taxon_index ON slotannotation USING btree (taxon_id);
