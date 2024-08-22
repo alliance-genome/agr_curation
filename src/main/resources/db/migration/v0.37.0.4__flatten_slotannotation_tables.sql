@@ -246,7 +246,7 @@ CREATE INDEX slotannotation_componentsymbol_index ON slotannotation USING btree 
 CREATE TABLE evidence_ids_to_delete ( id bigint PRIMARY KEY);
 
 INSERT INTO evidence_ids_to_delete (id)
-	SELECT i.id
+	SELECT distinct i.id
 	FROM slotannotation s, slotannotation_informationcontententity si, informationcontententity i
 	WHERE s.id = si.slotannotation_id and si.evidence_id = i.id and s.slotannotationtype is null;
 
