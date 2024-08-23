@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -50,10 +51,14 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = {
-		@Index(name = "slotannotation_id_index", columnList = "slotannotation_id"),
-		@Index(name = "slotannotation_functionalimpacts_index", columnList = "functionalimpacts_id")
-	})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "slotannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "functionalimpacts_id"),
+		indexes = {
+			@Index(name = "slotannotation_id_index", columnList = "slotannotation_id"),
+			@Index(name = "slotannotation_functionalimpacts_index", columnList = "functionalimpacts_id")
+		}
+	)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<VocabularyTerm> functionalImpacts;
 

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -77,6 +78,8 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@OneToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(
+		joinColumns = @JoinColumn(name = "slotannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
 		indexes = {
 			@Index(name = "slotannotation_note_ccsa_index", columnList = "slotannotation_id"),
 			@Index(name = "slotannotation_note_relatednotes_index", columnList = "relatednotes_id")
