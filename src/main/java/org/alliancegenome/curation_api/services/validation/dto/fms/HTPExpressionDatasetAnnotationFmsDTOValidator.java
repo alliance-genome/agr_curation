@@ -47,7 +47,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 			ExternalDataBaseEntity externalDbEntity = externalDataBaseService.findByCurie(curie);
 			if (externalDbEntity != null) {
 				Long htpId = externalDbEntity.getId();
-				Map <String, Object> params = new HashMap<>();
+				Map<String, Object> params = new HashMap<>();
 				params.put("htpExpressionDataset.id", htpId);
 				SearchResponse<HTPExpressionDatasetAnnotation> searchResponse = htpExpressionDatasetAnnotationDAO.findByParams(params);
 				if (searchResponse == null || searchResponse.getSingleResult() == null) {

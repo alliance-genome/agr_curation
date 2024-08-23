@@ -51,10 +51,10 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			List<Long> datasetIdsLoaded = new ArrayList<>();
-			List<Long> htpAnnotaionsIdsLoaded = new ArrayList<>();
+			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 			BulkLoadFileHistory history = new BulkLoadFileHistory(htpExpressionDatasetData.getData().size());
 			
-			runLoad(history, dataProvider, htpExpressionDatasetData.getData(), htpAnnotaionsIdsLoaded, datasetIdsLoaded);
+			runLoad(history, dataProvider, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded, datasetIdsLoaded);
 			
 			history.finishLoad();
 			updateHistory(history);
@@ -64,18 +64,18 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset, List<Long> htpAnnotaionsIdsLoaded, List<Long> datasetIdsLoaded) {
+	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset, List<Long> htpAnnotationsIdsLoaded, List<Long> datasetIdsLoaded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + dataProvider.name(), htpDataset.size() * 2);
 
 		runLoaddatasetid(externalDataBaseEntityService, history, dataProvider, htpDataset, datasetIdsLoaded, ph);
-		runLoadHtpAnnotations(htpExpressionDatasetAnnotationService, history, dataProvider, htpDataset, htpAnnotaionsIdsLoaded, ph);
+		runLoadHtpAnnotations(htpExpressionDatasetAnnotationService, history, dataProvider, htpDataset, htpAnnotationsIdsLoaded, ph);
 
 		ph.finishProcess();
 	}
 
-	private void runLoaddatasetid(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded,  ProcessDisplayHelper ph) {
+	private void runLoaddatasetid(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded, ProcessDisplayHelper ph) {
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
 			try {
 				ExternalDataBaseEntity dbObject = externalDataBaseEntityService.upsert(dto.getDatasetId(), dataProvider);
@@ -95,13 +95,13 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		ph.progressProcess();
 	}
 
-	private void runLoadHtpAnnotations(HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> AnnotaionsIdsLoaded,  ProcessDisplayHelper ph) {
+	private void runLoadHtpAnnotations(HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> annotationsIdsLoaded, ProcessDisplayHelper ph) {
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
 			try {
 				HTPExpressionDatasetAnnotation dbObject = htpExpressionDatasetAnnotationService.upsert(dto, dataProvider);
 				history.incrementCompleted();
-				if (AnnotaionsIdsLoaded != null) {
-					AnnotaionsIdsLoaded.add(dbObject.getId());
+				if (annotationsIdsLoaded != null) {
+					annotationsIdsLoaded.add(dbObject.getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
