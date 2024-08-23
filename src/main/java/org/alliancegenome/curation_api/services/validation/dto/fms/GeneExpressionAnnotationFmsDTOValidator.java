@@ -212,6 +212,13 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				if (cellularComponent == null) {
 					response.addErrorMessage("whereExpressed - cellularComponentTermId", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getWhereExpressed().getCellularComponentTermId() + ")");
 				} else {
+					GOTerm cellularComponentRibbon = goTermService.findSubsetTerm(cellularComponent, "goslim_agr");
+					if (cellularComponentRibbon == null) {
+						anatomicalSite.setCellularComponentOther(true);
+					} else {
+						anatomicalSite.setCellularComponentOther(false);
+						anatomicalSite.setCellularComponentRibbonTerm(cellularComponentRibbon);
+					}
 					anatomicalSite.setCellularComponentTerm(cellularComponent);
 				}
 			}
@@ -320,6 +327,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			anatomicalSiteDB = new AnatomicalSite();
 		}
 		anatomicalSiteDB.setCellularComponentTerm(anatomicalSite.getCellularComponentTerm());
+		anatomicalSiteDB.setCellularComponentRibbonTerm(anatomicalSite.getCellularComponentRibbonTerm());
+		anatomicalSiteDB.setCellularComponentOther(anatomicalSite.getCellularComponentOther());
 		anatomicalSiteDB.setAnatomicalStructure(anatomicalSite.getAnatomicalStructure());
 		anatomicalSiteDB.setAnatomicalSubstructure(anatomicalSite.getAnatomicalSubstructure());
 		anatomicalSiteDB.setAnatomicalStructureQualifiers(anatomicalSite.getAnatomicalStructureQualifiers());

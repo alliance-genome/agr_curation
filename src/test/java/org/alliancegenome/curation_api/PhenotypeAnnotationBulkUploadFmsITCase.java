@@ -73,7 +73,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	private final String phenotypeStatement = "test phenotype statement";
 
 	private void loadRequiredEntities() throws Exception {
-		loadGOTerm(goTerm, "Test GOTerm");
+		createGoTerm(goTerm, "Test GOTerm", false);
 		loadExperimentalConditionTerm(expCondTerm, "Test ExperimentalConditionOntologyTerm");
 		loadZecoTerm(zecoTerm, "Test ExperimentalConditionOntologyTerm", OntologyConstants.ZECO_AGR_SLIM_SUBSET);
 		loadZecoTerm(nonSlimZecoTerm, "Test ExperimentalConditionOntologyTerm", null);
