@@ -334,6 +334,10 @@ public class BaseITCase {
 		return createGoTerm(curie, name, obsolete, null, subsets);
 	}
 
+	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, GOTerm ancestor) {
+		return createGoTerm(curie, name, obsolete, ancestor, null);
+	}
+
 	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, GOTerm ancestor, List<String> subsets) {
 		GOTerm goTerm = new GOTerm();
 		goTerm.setCurie(curie);
@@ -1248,32 +1252,6 @@ public class BaseITCase {
 		for (String modEntityId : modEntityIds) {
 			loadGene(modEntityId, taxonCurie, symbolNameTerm, dataProvider);
 		}
-	}
-
-	public void loadGOTerm(String curie, String name) throws Exception {
-		loadGOTerm(curie, name, null, null);
-	}
-
-	public void loadGOTerm(String curie, String name, GOTerm ancestor) throws Exception {
-		loadGOTerm(curie, name, ancestor, null);
-	}
-
-	public void loadGOTerm(String curie, String name, GOTerm ancestor, List<String> subsets) throws Exception {
-		GOTerm goTerm = new GOTerm();
-		goTerm.setCurie(curie);
-		goTerm.setName(name);
-		goTerm.setObsolete(false);
-		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-		goTerm.addIsaAncestor(ancestor);
-		goTerm.setSubsets(subsets);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(goTerm).
-			when().
-			put("/api/goterm").
-			then().
-			statusCode(200);
 	}
 
 	public void loadMITerm(String curie, String name) throws Exception {
