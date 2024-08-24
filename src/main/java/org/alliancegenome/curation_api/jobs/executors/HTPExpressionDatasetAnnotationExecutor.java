@@ -2,7 +2,9 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
@@ -22,6 +24,7 @@ import org.alliancegenome.curation_api.services.HTPExpressionDatasetAnnotationSe
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -48,14 +51,21 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
-			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
+			bulkLoadFileDAO.merge(bulkLoadFile);
+
+			Map<String, List<Long>> idsAdded = new HashMap<String, List<Long>>();
+			idsAdded.put("HTPDatasetIds", new ArrayList<Long>());
+			idsAdded.put("HTPDatasetAnnotationIds", new ArrayList<Long>());
+
+			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 			
-			List<Long> datasetIdsLoaded = new ArrayList<>();
-			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 			BulkLoadFileHistory history = new BulkLoadFileHistory(htpExpressionDatasetData.getData().size());
 			
-			runLoad(history, dataProvider, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded, datasetIdsLoaded);
+			runLoad(history, dataProvider, htpExpressionDatasetData.getData(), idsAdded.get("HTPDatasetIds"), idsAdded.get("HTPDatasetAnnotationIds"));
 			
+			runCleanup(externalDataBaseEntityService, history, dataProvider.name(), previousIds.get("HTPDatasetIds"), idsAdded.get("HTPDatasetIds"), "ExternalDatabaseEntities", bulkLoadFile.getMd5Sum());
+			runCleanup(htpExpressionDatasetAnnotationService, history, dataProvider.name(), previousIds.get("HTPDatasetAnnotationIds"), idsAdded.get("HTPDatasetAnnotationIds"), fms.getFmsDataType(), bulkLoadFile.getMd5Sum());
+
 			history.finishLoad();
 			updateHistory(history);
 		} catch (Exception e) {
@@ -64,18 +74,18 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset, List<Long> htpAnnotationsIdsLoaded, List<Long> datasetIdsLoaded) {
+	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset, List<Long> datasetIdsLoaded, List<Long> htpAnnotationsIdsLoaded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + dataProvider.name(), htpDataset.size() * 2);
 
-		runLoaddatasetid(externalDataBaseEntityService, history, dataProvider, htpDataset, datasetIdsLoaded, ph);
-		runLoadHtpAnnotations(htpExpressionDatasetAnnotationService, history, dataProvider, htpDataset, htpAnnotationsIdsLoaded, ph);
+		loadHtpDatasets(externalDataBaseEntityService, history, dataProvider, htpDataset, datasetIdsLoaded, ph);
+		loadHtpDatasetAnnotations(htpExpressionDatasetAnnotationService, history, dataProvider, htpDataset, htpAnnotationsIdsLoaded, ph);
 
 		ph.finishProcess();
 	}
 
-	private void runLoaddatasetid(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded, ProcessDisplayHelper ph) {
+	private void loadHtpDatasets(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded, ProcessDisplayHelper ph) {
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
 			try {
 				ExternalDataBaseEntity dbObject = externalDataBaseEntityService.upsert(dto.getDatasetId(), dataProvider);
@@ -87,15 +97,21 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
+			}
+			if (history.getErrorRate() > 0.25) {
+				Log.error("Failure Rate > 25% aborting load");
+				finalSaveHistory(history);
+				failLoadAboveErrorRateCutoff(history.getBulkLoadFile());
 			}
 		}
 		updateHistory(history);
 		ph.progressProcess();
 	}
 
-	private void runLoadHtpAnnotations(HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> annotationsIdsLoaded, ProcessDisplayHelper ph) {
+	private void loadHtpDatasetAnnotations(HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> annotationsIdsLoaded, ProcessDisplayHelper ph) {
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
 			try {
 				HTPExpressionDatasetAnnotation dbObject = htpExpressionDatasetAnnotationService.upsert(dto, dataProvider);
@@ -107,11 +123,26 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
+			}
+			if (history.getErrorRate() > 0.25) {
+				Log.error("Failure Rate > 25% aborting load");
+				finalSaveHistory(history);
+				failLoadAboveErrorRateCutoff(history.getBulkLoadFile());
 			}
 		}
 		updateHistory(history);
 		ph.progressProcess();
+	}
+
+	private Map<String, List<Long>> getPreviouslyLoadedIds(BackendBulkDataProvider dataProvider) {
+		Map<String, List<Long>> previousIds = new HashMap<>();
+		
+		previousIds.put("HTPDatasetIds", externalDataBaseEntityService.getDatasetIdsByDataProvider(dataProvider.name()));
+		previousIds.put("HTPDatasetAnnotationIds", htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name()));
+		
+		return previousIds;
 	}
 }

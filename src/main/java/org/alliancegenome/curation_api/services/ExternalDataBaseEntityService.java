@@ -1,5 +1,11 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -27,5 +33,13 @@ public class ExternalDataBaseEntityService extends BaseEntityCrudService<Externa
 
 	public ExternalDataBaseEntity upsert(HTPIdFmsDTO htpIdData, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
 		return externalDataBaseEntityFmsDtoValidator.validateExternalDataBaseEntityFmsDTO(htpIdData);
+	}
+
+	public List<Long> getDatasetIdsByDataProvider(String dataProvider) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		List<Long> ids = externalDataBaseEntityDAO.findIdsByParams(params);
+		ids.removeIf(Objects::isNull);
+		return ids;
 	}
 }
