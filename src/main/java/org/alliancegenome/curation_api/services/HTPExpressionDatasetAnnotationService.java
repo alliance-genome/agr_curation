@@ -1,5 +1,11 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -28,4 +34,13 @@ public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService
 	public HTPExpressionDatasetAnnotation upsert(HTPExpressionDatasetAnnotationFmsDTO htpExpressionDatasetAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
 		return htpExpressionDatasetAnnotationFmsDtoValidator.validateHTPExpressionDatasetAnnotationFmsDTO(htpExpressionDatasetAnnotationData);
 	}
+
+	public List<Long> getAnnotationIdsByDataProvider(String dataProvider) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		List<Long> ids = htpExpressionDatasetAnnotationDAO.findIdsByParams(params);
+		ids.removeIf(Objects::isNull);
+		return ids;
+	}
+
 }
