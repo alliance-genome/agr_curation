@@ -10,7 +10,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -721,6 +723,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public E getShallowEntity(Class<E> entityClass, long id) {
+		return entityManager.getReference(entityClass, id);
 	}
 
 }

@@ -1,11 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -21,27 +20,35 @@ import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologySer
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 @RequestScoped
 public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> {
 
-	@Inject GeneDAO geneDAO;
-	@Inject GeneValidator geneValidator;
-	@Inject GeneDTOValidator geneDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject PersonService personService;
-	@Inject GeneToGeneOrthologyService orthologyService;
-	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
-	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
-	@Inject GeneInteractionService geneInteractionService;
-	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	GeneValidator geneValidator;
+	@Inject
+	GeneDTOValidator geneDtoValidator;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	PersonService personService;
+	@Inject
+	GeneToGeneOrthologyService orthologyService;
+	@Inject
+	AlleleGeneAssociationService alleleGeneAssociationService;
+	@Inject
+	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject
+	GeneInteractionService geneInteractionService;
+	@Inject
+	PhenotypeAnnotationService phenotypeAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -87,9 +94,9 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		Gene gene = geneDAO.find(id);
 		if (gene != null) {
 			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id) || geneDAO.hasReferencingPhenotypeAnnotations(id)
-					|| geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id)
-					|| CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())
-					|| CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
+				|| geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id)
+				|| CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())
+				|| CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
 				if (!gene.getObsolete()) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					gene.setDateUpdated(OffsetDateTime.now());
@@ -114,6 +121,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+		if (geneMapByProvider.get(dataProvider) != null) {
+			return geneMapByProvider.get(dataProvider);
+		} else if (MapUtils.isNotEmpty(geneMapByProvider)) {
+			return geneMapByProvider.values().stream().flatMap(Collection::stream).toList();
+		}
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
@@ -121,8 +133,24 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		}
 		List<Long> ids = geneDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
-
+		geneMapByProvider.put(dataProvider, ids);
 		return ids;
+	}
+
+	// cache all
+	private Map<BackendBulkDataProvider, List<Long>> geneMapByProvider = new HashMap<>();
+
+	public Long getIdByModID(String modID) {
+		return geneDAO.getGeneIdByModID(modID);
+	}
+
+	public Gene getShallowEntity(long id) {
+		return geneDAO.getShallowEntity(Gene.class, id);
+	}
+
+	public long getShallowEntity1(String geneIdentifier) {
+		return 0;
+		//return geneDAO.getEntityIdFromModID(geneIdentifier);
 	}
 
 }

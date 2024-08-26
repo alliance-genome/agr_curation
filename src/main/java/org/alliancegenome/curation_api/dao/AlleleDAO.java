@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.apache.commons.collections.CollectionUtils;
@@ -68,4 +69,28 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
+
+	public Map<String, Long> getAlleleIdMap() {
+		if (alleleIdMap.size() > 0) {
+			return alleleIdMap;
+		}
+		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM biologicalentity as a where exists (select * from allele as g where g.id = a.id)");
+		List<Object[]> ids = q.getResultList();
+		ids.forEach(record -> {
+			if (record[1] != null) {
+				alleleIdMap.put((String) record[1], (long)record[0]);
+			}
+			if (record[2] != null) {
+				alleleIdMap.put((String) record[2], (long)record[0]);
+			}
+		});
+		return alleleIdMap;
+	}
+
+	private Map<String, Long> alleleIdMap = new HashMap<>();
+
+	public long getGeneIdByModID(String modID) {
+		return getAlleleIdMap().get(modID);
+	}
+
 }

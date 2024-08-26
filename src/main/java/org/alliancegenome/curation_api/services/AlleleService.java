@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleGeneAssociationService;
@@ -116,5 +117,15 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		ids.removeIf(Objects::isNull);
 		return ids;
 	}
+
+	public Long getIdByModID(String modID) {
+		return alleleDAO.getGeneIdByModID(modID);
+	}
+
+	public Allele getShallowEntity(long id) {
+		return alleleDAO.getShallowEntity(Allele.class, id);
+	}
+
+
 
 }

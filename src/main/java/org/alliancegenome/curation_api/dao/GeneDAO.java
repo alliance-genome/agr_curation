@@ -1,29 +1,39 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyDAO;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.apache.commons.collections.CollectionUtils;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class GeneDAO extends BaseSQLDAO<Gene> {
 
-	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
-	@Inject GeneInteractionDAO geneInteractionDAO;
-	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
-	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
-	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
-	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
+	@Inject
+	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject
+	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject
+	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject
+	GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
+	@Inject
+	GeneInteractionDAO geneInteractionDAO;
+	@Inject
+	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject
+	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject
+	GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
+	@Inject
+	GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
 
 	protected GeneDAO() {
 		super(Gene.class);
@@ -39,7 +49,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
-		
+
 		Map<String, Object> alleleDaParams = new HashMap<>();
 		alleleDaParams.put("query_operator", "or");
 		alleleDaParams.put("assertedGenes.id", geneId);
@@ -50,7 +60,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
-		
+
 		Map<String, Object> agmDaParams = new HashMap<>();
 		agmDaParams.put("query_operator", "or");
 		agmDaParams.put("assertedGenes.id", geneId);
@@ -108,5 +118,35 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		Map<String, Object> params = new HashMap<>();
 		params.put("expressionAnnotationSubject.id", geneId);
 		return geneExpressionAnnotationDAO.findIdsByParams(params);
+	}
+
+	public long getEntityIdFromModID(String id) {
+		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM biologicalentity a WHERE a.modEntityId = :id");
+		q.setParameter("id", id);
+		Object[] author = (Object[]) q.getSingleResult();
+		return (long) author[0];
+	}
+
+	public Map<String, Long> getGeneIdMap() {
+		if (geneIdMap.size() > 0) {
+			return geneIdMap;
+		}
+		Query q = entityManager.createNativeQuery("SELECT a.id, a.modEntityId, a.modInternalId FROM biologicalentity as a where exists (select * from gene as g where g.id = a.id)");
+		List<Object[]> ids = q.getResultList();
+		ids.forEach(record -> {
+			if (record[1] != null) {
+				geneIdMap.put((String) record[1], (long)record[0]);
+			}
+			if (record[2] != null) {
+				geneIdMap.put((String) record[2], (long)record[0]);
+			}
+		});
+		return getGeneIdMap();
+	}
+
+	private Map<String, Long> geneIdMap = new HashMap<>();
+
+	public long getGeneIdByModID(String modID) {
+		return getGeneIdMap().get(modID);
 	}
 }

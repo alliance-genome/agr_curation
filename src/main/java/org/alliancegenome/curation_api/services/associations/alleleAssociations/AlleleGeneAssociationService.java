@@ -1,12 +1,10 @@
 package org.alliancegenome.curation_api.services.associations.alleleAssociations;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
@@ -28,24 +26,29 @@ import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudServi
 import org.alliancegenome.curation_api.services.validation.associations.alleleAssociations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.alleleAssociations.AlleleGeneAssociationDTOValidator;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 @JBossLog
 @RequestScoped
 public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<AlleleGeneAssociation, AlleleGeneAssociationDTO, AlleleGeneAssociationDAO> implements BaseUpsertServiceInterface<AlleleGeneAssociation, AlleleGeneAssociationDTO> {
 
-	@Inject AlleleGeneAssociationDAO alleleGeneAssociationDAO;
-	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
-	@Inject AlleleGeneAssociationDTOValidator alleleGeneAssociationDtoValidator;
-	@Inject AlleleDAO alleleDAO;
-	@Inject NoteDAO noteDAO;
-	@Inject GeneDAO geneDAO;
-	@Inject PersonService personService;
-	@Inject PersonDAO personDAO;
+	@Inject
+	AlleleGeneAssociationDAO alleleGeneAssociationDAO;
+	@Inject
+	AlleleGeneAssociationValidator alleleGeneAssociationValidator;
+	@Inject
+	AlleleGeneAssociationDTOValidator alleleGeneAssociationDtoValidator;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	NoteDAO noteDAO;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	PersonService personService;
+	@Inject
+	PersonDAO personDAO;
 
 	@Override
 	@PostConstruct
@@ -89,6 +92,19 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
+	}
+
+	private List<AlleleGeneAssociation> associations = null;
+
+	public List<AlleleGeneAssociation> getAssociationObjectsByDataProvider(BackendBulkDataProvider dataProvider) {
+		if (associations != null) {
+			return associations;
+		}
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		associations = alleleGeneAssociationDAO.findByParams(params).getResults();
+		associations.removeIf(Objects::isNull);
+		return associations;
 	}
 
 	@Override
@@ -185,6 +201,6 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		if (!currentAssociationIds.contains(association.getId())) {
 			currentAssociations.add(association);
 		}
-		
+
 	}
 }
