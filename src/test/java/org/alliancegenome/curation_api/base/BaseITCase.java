@@ -327,11 +327,25 @@ public class BaseITCase {
 	}
 
 	public GOTerm createGoTerm(String curie, String name, Boolean obsolete) {
+		return createGoTerm(curie, name, obsolete, null, null);
+	}
+
+	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, List<String> subsets) {
+		return createGoTerm(curie, name, obsolete, null, subsets);
+	}
+
+	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, GOTerm ancestor) {
+		return createGoTerm(curie, name, obsolete, ancestor, null);
+	}
+
+	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, GOTerm ancestor, List<String> subsets) {
 		GOTerm goTerm = new GOTerm();
 		goTerm.setCurie(curie);
 		goTerm.setObsolete(obsolete);
 		goTerm.setName(name);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+		goTerm.setSubsets(subsets);
+		goTerm.addIsaAncestor(ancestor);
 
 		ObjectResponse<GOTerm> response = given().
 				contentType("application/json").
@@ -1238,22 +1252,6 @@ public class BaseITCase {
 		for (String modEntityId : modEntityIds) {
 			loadGene(modEntityId, taxonCurie, symbolNameTerm, dataProvider);
 		}
-	}
-
-	public void loadGOTerm(String curie, String name) throws Exception {
-		GOTerm goTerm = new GOTerm();
-		goTerm.setCurie(curie);
-		goTerm.setName(name);
-		goTerm.setObsolete(false);
-		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(goTerm).
-			when().
-			put("/api/goterm").
-			then().
-			statusCode(200);
 	}
 
 	public void loadMITerm(String curie, String name) throws Exception {

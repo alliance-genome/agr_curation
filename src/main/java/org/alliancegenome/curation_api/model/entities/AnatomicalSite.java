@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
@@ -17,6 +18,7 @@ import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -28,7 +30,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min = "2.6.1", max = LinkMLSchemaConstants.LATEST_RELEASE)
 @Schema(name = "Anatomical_Site", description = "Anatomical part of an expression pattern")
 @Table(indexes = {
 	@Index(name = "anatomicalsite_anatomicalstructure_index ", columnList = "anatomicalstructure_id"),
@@ -53,6 +55,19 @@ public class AnatomicalSite extends AuditedObject {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private GOTerm cellularComponentTerm;
+	
+	//celullar compoent ribbon -- slim
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private GOTerm cellularComponentRibbonTerm;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@KeywordField(name = "cellularComponentOther_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@JsonView({ View.FieldsOnly.class })
+	@Column(columnDefinition = "boolean default false", nullable = false)
+	private Boolean cellularComponentOther = false;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
