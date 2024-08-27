@@ -50,6 +50,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
 		if (singleReferenceResponse.hasErrors()) {
 			response.addErrorMessages("singleReference", singleReferenceResponse.getErrorMessages());
+			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
 			String referenceCurie = singleReferenceResponse.getEntity().getCurie();
 			String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
