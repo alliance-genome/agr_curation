@@ -50,7 +50,9 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
 		if (singleReferenceResponse.hasErrors()) {
 			response.addErrorMessages("singleReference", singleReferenceResponse.getErrorMessages());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
+//			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
+//			response.setEntity(geneExpressionAnnotation);
+//			return response;
 		} else {
 			String referenceCurie = singleReferenceResponse.getEntity().getCurie();
 			String uniqueId = geneExpressionAnnotationUniqueIdHelper.generateUniqueId(geneExpressionFmsDTO, referenceCurie);
@@ -65,69 +67,71 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
 			}
 			geneExpressionAnnotation.setSingleReference(singleReferenceResponse.getEntity());
-		}
 
-		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getGeneId())) {
-			response.addErrorMessage("geneId - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getGeneId() + ")");
-		} else {
-			Gene expressionAnnotationSubject = geneService.findByIdentifierString(geneExpressionFmsDTO.getGeneId());
-			if (expressionAnnotationSubject == null) {
-				response.addErrorMessage("geneId - ", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getGeneId() + ")");
+
+			if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getGeneId())) {
+				response.addErrorMessage("geneId - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getGeneId() + ")");
 			} else {
-				geneExpressionAnnotation.setExpressionAnnotationSubject(expressionAnnotationSubject);
+				Gene expressionAnnotationSubject = geneService.findByIdentifierString(geneExpressionFmsDTO.getGeneId());
+				if (expressionAnnotationSubject == null) {
+					response.addErrorMessage("geneId - ", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getGeneId() + ")");
+				} else {
+					geneExpressionAnnotation.setExpressionAnnotationSubject(expressionAnnotationSubject);
+				}
 			}
-		}
 
-		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getDateAssigned())) {
-			response.addErrorMessage("dateAssigned - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getDateAssigned() + ")");
-		} else {
-			OffsetDateTime creationDate = null;
-			try {
-				creationDate = OffsetDateTime.parse(geneExpressionFmsDTO.getDateAssigned());
-			} catch (DateTimeParseException e) {
-				response.addErrorMessage("dateAssigned", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getDateAssigned() + ")");
-			}
-			geneExpressionAnnotation.setDateCreated(creationDate);
-		}
-
-		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getAssay())) {
-			response.addErrorMessage("assay - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getAssay() + ")");
-		} else {
-			MMOTerm expressionAssayUsed = mmoTermService.findByCurie(geneExpressionFmsDTO.getAssay());
-			if (expressionAssayUsed == null) {
-				response.addErrorMessage("assay - ", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getAssay() + ")");
+			if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getDateAssigned())) {
+				response.addErrorMessage("dateAssigned - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getDateAssigned() + ")");
 			} else {
-				geneExpressionAnnotation.setExpressionAssayUsed(expressionAssayUsed);
+				OffsetDateTime creationDate = null;
+				try {
+					creationDate = OffsetDateTime.parse(geneExpressionFmsDTO.getDateAssigned());
+				} catch (DateTimeParseException e) {
+					response.addErrorMessage("dateAssigned", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getDateAssigned() + ")");
+				}
+				geneExpressionAnnotation.setDateCreated(creationDate);
+			}
+
+			if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getAssay())) {
+				response.addErrorMessage("assay - ", ValidationConstants.REQUIRED_MESSAGE + " (" + geneExpressionFmsDTO.getAssay() + ")");
+			} else {
+				MMOTerm expressionAssayUsed = mmoTermService.findByCurie(geneExpressionFmsDTO.getAssay());
+				if (expressionAssayUsed == null) {
+					response.addErrorMessage("assay - ", ValidationConstants.INVALID_MESSAGE + " (" + geneExpressionFmsDTO.getAssay() + ")");
+				} else {
+					geneExpressionAnnotation.setExpressionAssayUsed(expressionAssayUsed);
+				}
+			}
+
+			ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = validateAnatomicalSite(geneExpressionFmsDTO);
+			if (anatomicalSiteObjectResponse.hasErrors()) {
+				response.addErrorMessages("whereExpressed", anatomicalSiteObjectResponse.getErrorMessages());
+			} else {
+				geneExpressionAnnotation.setWhereExpressedStatement(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());
+				AnatomicalSite anatomicalSite = updateAnatomicalSite(anatomicalSiteObjectResponse, geneExpressionAnnotation);
+				geneExpressionAnnotation.getExpressionPattern().setWhereExpressed(anatomicalSite);
+			}
+
+			ObjectResponse<TemporalContext> temporalContextObjectResponse = validateTemporalContext(geneExpressionFmsDTO);
+			if (temporalContextObjectResponse.hasErrors()) {
+				response.addErrorMessages("whenExpressed", temporalContextObjectResponse.getErrorMessages());
+			} else {
+				geneExpressionAnnotation.setWhenExpressedStageName(geneExpressionFmsDTO.getWhenExpressed().getStageName());
+				TemporalContext temporalContext = updateTemporalContext(temporalContextObjectResponse, geneExpressionAnnotation);
+				geneExpressionAnnotation.getExpressionPattern().setWhenExpressed(temporalContext);
+				geneExpressionAnnotation.setDataProvider(dataProviderService.createOrganizationDataProvider(dataProvider.sourceOrganization));
+				geneExpressionAnnotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM).getEntity());
+				geneExpressionAnnotation.setObsolete(false);
+				geneExpressionAnnotation.setInternal(false);
+			}
+
+			if (response.hasErrors()) {
+				throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
+			} else {
+				return geneExpressionAnnotation;
 			}
 		}
-
-		ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = validateAnatomicalSite(geneExpressionFmsDTO);
-		if (anatomicalSiteObjectResponse.hasErrors()) {
-			response.addErrorMessages("whereExpressed", anatomicalSiteObjectResponse.getErrorMessages());
-		} else {
-			geneExpressionAnnotation.setWhereExpressedStatement(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());
-			AnatomicalSite anatomicalSite = updateAnatomicalSite(anatomicalSiteObjectResponse, geneExpressionAnnotation);
-			geneExpressionAnnotation.getExpressionPattern().setWhereExpressed(anatomicalSite);
-		}
-
-		ObjectResponse<TemporalContext> temporalContextObjectResponse = validateTemporalContext(geneExpressionFmsDTO);
-		if (temporalContextObjectResponse.hasErrors()) {
-			response.addErrorMessages("whenExpressed", temporalContextObjectResponse.getErrorMessages());
-		} else {
-			geneExpressionAnnotation.setWhenExpressedStageName(geneExpressionFmsDTO.getWhenExpressed().getStageName());
-			TemporalContext temporalContext = updateTemporalContext(temporalContextObjectResponse, geneExpressionAnnotation);
-			geneExpressionAnnotation.getExpressionPattern().setWhenExpressed(temporalContext);
-		}
-
-		geneExpressionAnnotation.setDataProvider(dataProviderService.createOrganizationDataProvider(dataProvider.sourceOrganization));
-		geneExpressionAnnotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM).getEntity());
-		geneExpressionAnnotation.setObsolete(false);
-		geneExpressionAnnotation.setInternal(false);
-
-		if (response.hasErrors()) {
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
-		}
-		return geneExpressionAnnotation;
+		return null;
 	}
 
 	private ObjectResponse<TemporalContext> validateTemporalContext(GeneExpressionFmsDTO geneExpressionFmsDTO) {
