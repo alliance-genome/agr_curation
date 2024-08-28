@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.io.File;
 import java.time.ZonedDateTime;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.concurrent.Semaphore;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
@@ -18,12 +16,9 @@ import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkScheduledLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.cronutils.model.Cron;
@@ -188,50 +183,7 @@ public class JobScheduler {
 
 	@Scheduled(cron = "0 0 0 ? * SAT")
 	public void cleanUpFileExceptions() {
-		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
-
-		Comparator<BulkLoadFile> c = new Comparator<BulkLoadFile>() {
-			@Override
-			public int compare(BulkLoadFile blf1, BulkLoadFile blf2) {
-				if (blf1.getDateLastLoaded() == null && blf2.getDateLastLoaded() == null) {
-					return 0;
-				}
-				if (blf1.getDateLastLoaded() == null) {
-					return 1;
-				}
-				if (blf2.getDateLastLoaded() == null) {
-					return -1;
-				}
-				return blf2.getDateLastLoaded().compareTo(blf1.getDateLastLoaded());
-			}
-		};
-
-		int historyExceptionsToKeep = 3;
-
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("Bulk Load File History Exception Cleanup");
-
-		for (BulkLoadGroup g : groups.getResults()) {
-			Log.debug("Group Clean Up: " + g.getName());
-			if (g.getLoads().size() > 0) {
-				for (BulkLoad b : g.getLoads()) {
-					Log.debug("Load Clean Up: " + b.getName());
-					Collections.sort(b.getLoadFiles(), c);
-					if (b.getLoadFiles().size() > historyExceptionsToKeep) {
-						for (int i = historyExceptionsToKeep; i < b.getLoadFiles().size(); i++) {
-							Log.debug("File Clean Up: " + b.getLoadFiles().get(i).getDateLastLoaded());
-							for (BulkLoadFileHistory h : b.getLoadFiles().get(i).getHistory()) {
-								for (BulkLoadFileException e : h.getExceptions()) {
-									bulkLoadFileExceptionDAO.remove(e.getId());
-									ph.progressProcess();
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		ph.finishProcess();
+		bulkLoadFileExceptionDAO.cleanUpTwoWeekOldExceptions();
 	}
 
 	@Scheduled(cron = "0 0 0 ? * SUN")
