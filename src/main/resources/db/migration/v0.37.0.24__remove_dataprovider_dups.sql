@@ -13,7 +13,6 @@ INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM annotation
 INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM biologicalentity where dataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 6241140
 INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM chromosome where dataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 0
 INSERT INTO dataprovider_ids_to_keep (id) SELECT secondarydataprovider_id FROM diseaseannotation where secondarydataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 14380
-INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM htpexpressiondatasetannotation where dataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 0
 INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM reagent where dataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 226431
 INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM species where dataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 10
 -- Total 6673392
