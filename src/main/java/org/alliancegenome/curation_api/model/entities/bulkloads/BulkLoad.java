@@ -73,14 +73,8 @@ public abstract class BulkLoad extends AuditedObject {
 	private BulkLoadGroup group;
 	
 	@JsonView({ View.FieldsOnly.class })
-	@OneToMany(mappedBy = "bulkLoadFile", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
 	@OrderBy("loadFinished DESC")
 	private List<BulkLoadFileHistory> history;
-	
-//	@JsonView({ View.FieldsOnly.class })
-//	@OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
-//	@OrderBy("dateUpdated DESC")
-//	private List<BulkLoadFile> loadFiles;
 
-	
 }

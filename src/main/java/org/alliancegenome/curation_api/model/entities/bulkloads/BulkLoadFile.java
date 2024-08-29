@@ -65,7 +65,7 @@ public class BulkLoadFile extends AuditedObject {
 	private String allianceMemberReleaseVersion;
 
 	@JsonView({ View.FieldsOnly.class })
-	@OneToMany(mappedBy = "bulkLoad")
+	@OneToMany(mappedBy = "bulkLoadFile")
 	private List<BulkLoadFileHistory> history;
 
 	@Transient
