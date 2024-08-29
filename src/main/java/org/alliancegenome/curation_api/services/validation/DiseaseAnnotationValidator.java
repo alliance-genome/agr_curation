@@ -150,7 +150,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 		if (uiEntity.getSecondaryDataProvider() == null) {
 			if (dbEntity.getId() == null) {
-				uiEntity.setSecondaryDataProvider(dataProviderService.createAllianceDataProvider());
+				uiEntity.setSecondaryDataProvider(dataProviderService.getAllianceDataProvider());
 				if (uiEntity.getSecondaryDataProvider() == null) {
 					return null;
 				}

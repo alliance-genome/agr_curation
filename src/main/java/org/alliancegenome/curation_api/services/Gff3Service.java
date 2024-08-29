@@ -80,7 +80,7 @@ public class Gff3Service {
 			if (resp == null || resp.getSingleResult() == null) {
 				GenomeAssembly assembly = new GenomeAssembly();
 				assembly.setModEntityId(assemblyName);
-				assembly.setDataProvider(dataProviderService.createOrganizationDataProvider(dataProvider.sourceOrganization));
+				assembly.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
 				assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 				
 				genomeAssemblyDAO.persist(assembly);

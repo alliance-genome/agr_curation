@@ -163,7 +163,7 @@ public class Gff3DtoValidator {
 	private <E extends GenomicEntity> ObjectResponse<E> validateGffEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
 		
-		entity.setDataProvider(dataProviderService.createOrganizationDataProvider(dataProvider.sourceOrganization));
+		entity.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
 		entity.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
 		
 		geResponse.setEntity(entity);

@@ -75,6 +75,8 @@ public class Gff3Executor extends LoadFileExecutor {
 
 			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
 			
+			gffData.clear();
+			
 			Map<String, List<Long>> idsAdded = createIdsAddedMap();
 			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 			

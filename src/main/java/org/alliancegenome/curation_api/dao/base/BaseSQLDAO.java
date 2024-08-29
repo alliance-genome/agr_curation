@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.processing.IndexProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.elasticsearch.index.query.Operator;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.sqm.internal.QuerySqmImpl;
@@ -57,10 +56,6 @@ import jakarta.persistence.metamodel.Metamodel;
 import jakarta.transaction.Transactional;
 
 public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
-
-	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts") String esHosts;
-
-	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.protocol") String esProtocol;
 
 	@Inject protected EntityManager entityManager;
 	@Inject protected SearchSession searchSession;
@@ -361,7 +356,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(5000);
 		ph.addDisplayHandler(indexProcessDisplayService);
 		ph.startProcess("Mass Index Everything");
 		MassIndexer indexer = searchSession.massIndexer(annotatedClasses).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects)
@@ -402,7 +397,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects)
 			.monitor(new MassIndexingMonitor() {
 
-				ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+				ProcessDisplayHelper ph = new ProcessDisplayHelper(5000);
 
 				@Override
 				public void documentsAdded(long increment) {
