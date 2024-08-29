@@ -37,7 +37,10 @@ import lombok.ToString;
 @ToString(exclude = {"exonGenomicLocationAssociations", "transcriptExonAssociations"}, callSuper = true)
 @Schema(name = "Exon", description = "POJO that represents the Exon")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
-@Table(indexes = {@Index(name = "exon_uniqueid_index", columnList = "uniqueid")})
+@Table(indexes = {
+	@Index(name = "exon_uniqueid_index", columnList = "uniqueid"),
+	@Index(name = "exon_exonType_index", columnList = "exonType_id")
+})
 public class Exon extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

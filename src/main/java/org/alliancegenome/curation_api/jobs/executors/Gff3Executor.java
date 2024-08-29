@@ -188,8 +188,9 @@ public class Gff3Executor extends LoadFileExecutor {
 		return assemblyName;
 	}
 
-	private Map<String, List<Long>> loadEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, Map<String, List<Long>> idsAdded,
-			BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private Map<String, List<Long>> loadEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, Map<String, List<Long>> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+		int updateThreshhold = 500; // Aim for every 5 seconds (r/s * 5 = this number)
+		int updateCounter = 0;
 		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
 				idsAdded = gff3Service.loadEntity(history, gff3EntryPair, idsAdded, dataProvider);
@@ -202,10 +203,12 @@ public class Gff3Executor extends LoadFileExecutor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
 			}
-			updateHistory(history);
+			if (updateCounter++ % updateThreshhold == 0) {
+				updateHistory(history);
+			}
 			ph.progressProcess();
 		}
-		
+		updateHistory(history);
 		return idsAdded;
 	}
 

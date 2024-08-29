@@ -37,7 +37,10 @@ import lombok.ToString;
 @ToString(exclude = {"codingSequenceGenomicLocationAssociations", "transcriptCodingSequenceAssociations"}, callSuper = true)
 @Schema(name = "CodingSequence", description = "POJO that represents the CodingSequence (CDS)")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
-@Table(indexes = {@Index(name = "codingsequence_uniqueid_index", columnList = "uniqueid")})
+@Table(indexes = {
+	@Index(name = "codingsequence_uniqueid_index", columnList = "uniqueid"),
+	@Index(name = "codingsequence_cdsType_index", columnList = "cdsType_id")
+})
 public class CodingSequence extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

@@ -8,4 +8,9 @@ update crossreference
 )
 WHERE resourcedescriptorpage_id is null and referencedCurie = 'XB';
 
+-- Add missing indexes
 CREATE INDEX organization_abbreviation_index ON organization USING btree (abbreviation);
+CREATE INDEX codingsequence_cdsType_index ON codingsequence USING btree (cdstype_id);
+CREATE INDEX transcript_transcriptType_index ON transcript USING btree (transcripttype_id);
+CREATE INDEX exon_exonType_index ON exon USING btree (exontype_id);
+CREATE INDEX ontologyterm_name_index ON ontologyterm USING btree (name);

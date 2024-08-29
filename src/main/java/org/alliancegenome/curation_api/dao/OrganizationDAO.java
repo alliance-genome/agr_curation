@@ -25,10 +25,12 @@ public class OrganizationDAO extends BaseSQLDAO<Organization> {
 			params.put("abbreviation", abbreviation);
 			SearchResponse<Organization> resp = findByParams(params);
 			if (resp != null) {
+				organizationCache.put(abbreviation, resp.getSingleResult());
 				return resp.getSingleResult();
 			} else {
 				Organization o = new Organization();
 				o.setAbbreviation(abbreviation);
+				organizationCache.put(abbreviation, o);
 				return persist(o);
 			}
 		}

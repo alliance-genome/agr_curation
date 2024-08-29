@@ -29,11 +29,16 @@ public class DataProviderDAO extends BaseSQLDAO<DataProvider> {
 		if (dataProviderCache.containsKey(sourceOrganization.getAbbreviation())) {
 			return dataProviderCache.get(sourceOrganization.getAbbreviation());
 		}
+		
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("sourceOrganization.abbreviation", sourceOrganization.getAbbreviation());
+		params.put("crossReference.referencedCurie", sourceOrganization.getAbbreviation());
 
-		SearchResponse<DataProvider> orgResponse = findByField("sourceOrganization.abbreviation", sourceOrganization.getAbbreviation());
+		SearchResponse<DataProvider> orgResponse = findByParams(params);
 		if (orgResponse != null) {
 			DataProvider member = orgResponse.getSingleResult();
 			if (member != null && member.getSourceOrganization() != null) {
+				dataProviderCache.put(sourceOrganization.getAbbreviation(), member);
 				return member;
 			}
 		} else {
@@ -47,6 +52,7 @@ public class DataProviderDAO extends BaseSQLDAO<DataProvider> {
 			xref.setResourceDescriptorPage(sourceOrganization.getHomepageResourceDescriptorPage());
 			dataProvider.setCrossReference(crossReferenceDAO.persist(xref));
 
+			dataProviderCache.put(sourceOrganization.getAbbreviation(), dataProvider);
 			return persist(dataProvider);
 
 		}
