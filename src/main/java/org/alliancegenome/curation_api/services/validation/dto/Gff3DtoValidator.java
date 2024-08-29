@@ -88,7 +88,7 @@ public class Gff3DtoValidator {
 			exon.setName(attributes.get("Name"));
 		}
 		
-		ObjectResponse<Exon> exonResponse = validateGffEntity(exon, dto, attributes, dataProvider);
+		ObjectResponse<Exon> exonResponse = validateGenomicEntity(exon, dto, attributes, dataProvider);
 	
 		if (exonResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, exonResponse.errorMessagesString());
@@ -115,7 +115,7 @@ public class Gff3DtoValidator {
 			cds.setName(attributes.get("Name"));
 		}
 		
-		ObjectResponse<CodingSequence> cdsResponse = validateGffEntity(cds, dto, attributes, dataProvider);
+		ObjectResponse<CodingSequence> cdsResponse = validateGenomicEntity(cds, dto, attributes, dataProvider);
 	
 		if (cdsResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, cdsResponse.errorMessagesString());
@@ -148,7 +148,7 @@ public class Gff3DtoValidator {
 			transcript.setName(attributes.get("Name"));
 		}
 		
-		ObjectResponse<Transcript> transcriptResponse = validateGffEntity(transcript, dto, attributes, dataProvider);
+		ObjectResponse<Transcript> transcriptResponse = validateGenomicEntity(transcript, dto, attributes, dataProvider);
 		if (!attributes.containsKey("ID")) {
 			transcriptResponse.addErrorMessage("attributes - ID", ValidationConstants.REQUIRED_MESSAGE);
 		}
@@ -160,7 +160,7 @@ public class Gff3DtoValidator {
 		return transcriptDAO.persist(transcriptResponse.getEntity());
 	}
 	
-	private <E extends GenomicEntity> ObjectResponse<E> validateGffEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
+	private <E extends GenomicEntity> ObjectResponse<E> validateGenomicEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
 		
 		entity.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));

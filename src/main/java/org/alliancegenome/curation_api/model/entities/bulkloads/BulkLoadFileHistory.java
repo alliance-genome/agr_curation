@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -13,7 +14,10 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -42,11 +46,11 @@ import lombok.ToString;
 public class BulkLoadFileHistory extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
-	private LocalDateTime loadStarted;
+	private LocalDateTime loadStarted = LocalDateTime.now();
 
 	@JsonView({ View.FieldsOnly.class })
 	private LocalDateTime loadFinished;
-
+	
 	@JsonView({ View.FieldsOnly.class })
 	private Long totalRecords = 0L;
 
@@ -68,9 +72,20 @@ public class BulkLoadFileHistory extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	private Double errorRate = 0.0;
 
+	@JsonView({ View.FieldsOnly.class })
+	@Enumerated(EnumType.STRING)
+	private JobStatus bulkloadStatus;
+	
+	@JsonView({ View.FieldsOnly.class })
+	@Column(columnDefinition = "TEXT")
+	private String errorMessage;
+	
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BulkLoadFile bulkLoadFile;
+	
+	@ManyToOne
+	private BulkLoad bulkLoad;
 
 	@OneToMany(mappedBy = "bulkLoadFileHistory")
 	@JsonView(View.BulkLoadFileHistoryView.class)
