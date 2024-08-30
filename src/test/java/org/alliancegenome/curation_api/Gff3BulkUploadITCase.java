@@ -61,7 +61,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	public void gff3DataBulkUploadTranscriptEntity() throws Exception {
 		loadRequiredEntities();
 		
-		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", 2);
+		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", 1);
 		
 		RestAssured.given().
 			when().
@@ -90,7 +90,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void gff3DataBulkUploadExonEntity() throws Exception {
-		checkSuccessfulBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", 2);
+		checkSuccessfulBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", 1);
 		
 		RestAssured.given().
 			when().
@@ -121,7 +121,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void gff3DataBulkUploadCodingSequenceEntity() throws Exception {
-		checkSuccessfulBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", 2);
+		checkSuccessfulBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", 1);
 		
 		RestAssured.given().
 			when().
@@ -154,7 +154,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void gff3DataBulkUploadUpdateTranscriptEntity() throws Exception {
-		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", 2);
+		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", 1);
 		
 		RestAssured.given().
 			when().
@@ -180,7 +180,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(5)
 	public void gff3DataBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_01_no_seq_id.json", 1, 1, 3);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_01_no_seq_id.json", 4, 1, 3);
 		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_02_no_start.json", 4, 1, 3);
 		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_03_no_end.json", 4, 1, 3);
 		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_04_no_strand.json", 4, 1, 3);
