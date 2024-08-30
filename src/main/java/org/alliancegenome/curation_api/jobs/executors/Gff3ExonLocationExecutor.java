@@ -114,7 +114,6 @@ public class Gff3ExonLocationExecutor extends Gff3Executor {
 				gff3Service.loadExonLocationAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
-				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {

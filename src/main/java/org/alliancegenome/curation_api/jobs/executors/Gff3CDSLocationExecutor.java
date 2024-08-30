@@ -114,7 +114,6 @@ public class Gff3CDSLocationExecutor extends Gff3Executor {
 				gff3Service.loadCDSLocationAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
-				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {

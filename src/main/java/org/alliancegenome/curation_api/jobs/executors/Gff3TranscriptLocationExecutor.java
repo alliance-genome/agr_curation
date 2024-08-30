@@ -115,7 +115,6 @@ public class Gff3TranscriptLocationExecutor extends Gff3Executor {
 				gff3Service.loadTranscriptLocationAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
-				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
