@@ -6,6 +6,8 @@ import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController
 import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ExonCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.Gff3ExonExecutor;
+import org.alliancegenome.curation_api.jobs.executors.Gff3ExonLocationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.Gff3TranscriptExonExecutor;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -19,10 +21,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ExonCrudController extends BaseEntityCrudController<ExonService, Exon, ExonDAO> implements ExonCrudInterface {
 
-	@Inject
-	ExonService exonService;
-	@Inject
-	Gff3ExonExecutor gff3ExonExecutor;
+	@Inject ExonService exonService;
+	@Inject Gff3ExonExecutor gff3ExonExecutor;
+	@Inject Gff3ExonLocationExecutor gff3ExonLocationExecutor;
+	@Inject Gff3TranscriptExonExecutor gff3TranscriptExonExecutor;
 
 	@Override
 	@PostConstruct
@@ -32,7 +34,9 @@ public class ExonCrudController extends BaseEntityCrudController<ExonService, Ex
 
 	@Override
 	public APIResponse updateExons(String dataProvider, String assembly, List<Gff3DTO> gffData) {
-		return gff3ExonExecutor.runLoadApi(dataProvider, assembly, gffData);
+		gff3ExonExecutor.runLoadApi(dataProvider, assembly, gffData);
+		gff3ExonLocationExecutor.runLoadApi(dataProvider, assembly, gffData);
+		return gff3TranscriptExonExecutor.runLoadApi(dataProvider, assembly, gffData);
 	}
 
 	@Override

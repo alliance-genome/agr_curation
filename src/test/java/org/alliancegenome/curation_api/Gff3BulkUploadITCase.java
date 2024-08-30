@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -61,7 +61,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	public void gff3DataBulkUploadTranscriptEntity() throws Exception {
 		loadRequiredEntities();
 		
-		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", 4);
+		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", 1);
 		
 		RestAssured.given().
 			when().
@@ -90,7 +90,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void gff3DataBulkUploadExonEntity() throws Exception {
-		checkSuccessfulBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", 4);
+		checkSuccessfulBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", 1);
 		
 		RestAssured.given().
 			when().
@@ -121,7 +121,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void gff3DataBulkUploadCodingSequenceEntity() throws Exception {
-		checkSuccessfulBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", 4);
+		checkSuccessfulBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", 1);
 		
 		RestAssured.given().
 			when().
@@ -154,7 +154,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void gff3DataBulkUploadUpdateTranscriptEntity() throws Exception {
-		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", 4);
+		checkSuccessfulBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", 1);
 		
 		RestAssured.given().
 			when().
