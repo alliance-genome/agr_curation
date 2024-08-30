@@ -8,6 +8,15 @@ CREATE TABLE dataprovider_ids_to_delete (
    id bigint
 );
 
+INSERT INTO dataprovider_ids_to_keep (id) 
+SELECT dp1.id
+   FROM dataprovider dp1, organization o1, crossreference cr1
+   WHERE o1.id = dp1.sourceorganization_id
+   AND dp1.crossreference_id = cr1.id
+   AND o1.abbreviation = 'Alliance'
+   AND cr1.referencedCurie = 'Alliance'
+   ORDER BY dp1.id ASC LIMIT 1;
+
 -- select all the dataproviders that we are going to keep
 INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM annotation where dataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 191431
 INSERT INTO dataprovider_ids_to_keep (id) SELECT dataprovider_id FROM biologicalentity where dataprovider_id is not null ON CONFLICT (id) DO NOTHING; -- 6241140

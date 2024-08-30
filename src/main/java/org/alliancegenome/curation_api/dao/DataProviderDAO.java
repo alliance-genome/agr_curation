@@ -37,7 +37,7 @@ public class DataProviderDAO extends BaseSQLDAO<DataProvider> {
 		SearchResponse<DataProvider> orgResponse = findByParams(params);
 		if (orgResponse != null) {
 			DataProvider member = orgResponse.getSingleResult();
-			if (member != null && member.getSourceOrganization() != null) {
+			if (member != null && member.getSourceOrganization() != null && member.getCrossReference() != null) {
 				dataProviderCache.put(sourceOrganization.getAbbreviation(), member);
 				return member;
 			}
