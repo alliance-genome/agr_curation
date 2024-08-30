@@ -18,3 +18,19 @@ WHERE
 	o.abbreviation = cr.referencedCurie AND
 	o.abbreviation = 'Alliance';
 
+UPDATE biologicalentity be
+SET dataprovider_id = (
+   SELECT dp1.id
+   FROM dataprovider dp1, organization o1
+   WHERE o1.id = dp1.sourceorganization_id 
+   AND dp1.crossreference_id is null
+   AND o1.abbreviation = 'Alliance'
+   ORDER BY dp1.id ASC LIMIT 1
+)
+FROM dataprovider dp, organization o
+WHERE 
+   be.dataprovider_id=dp.id AND 
+   dp.sourceorganization_id=o.id AND
+   dp.crossreference_id is null AND
+   o.abbreviation = 'Alliance';
+
