@@ -55,6 +55,14 @@ public class BulkLoadJobExecutor {
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
+
+	@Inject Gff3TranscriptLocationExecutor gff3TranscriptLocationExecutor;
+	@Inject Gff3ExonLocationExecutor gff3ExonLocationExecutor;
+	@Inject Gff3CDSLocationExecutor gff3CDSLocationExecutor;
+	
+	@Inject Gff3TranscriptExonExecutor gff3TranscriptExonExecutor;
+	@Inject Gff3TranscriptCDSExecutor gff3TranscriptCDSExecutor;
+	@Inject Gff3TranscriptGeneExecutor gff3TranscriptGeneExecutor;
 	
 	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 
@@ -128,17 +136,17 @@ public class BulkLoadJobExecutor {
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT) {
 			gff3TranscriptExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_EXON_LOCATION) {
-			//gff3Executor.execLoad(bulkLoadFile);
+			gff3ExonLocationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_CDS_LOCATION) {
-			//gff3Executor.execLoad(bulkLoadFile);
+			gff3CDSLocationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_LOCATION) {
-			//gff3Executor.execLoad(bulkLoadFile);
+			gff3TranscriptLocationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_GENE) {
-			//gff3Executor.execLoad(bulkLoadFile);
+			gff3TranscriptGeneExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_EXON) {
-			//gff3Executor.execLoad(bulkLoadFile);
+			gff3TranscriptExonExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_CDS) {
-			//gff3Executor.execLoad(bulkLoadFile);
+			gff3TranscriptCDSExecutor.execLoad(bulkLoadFileHistory);
 			
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASET) {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);

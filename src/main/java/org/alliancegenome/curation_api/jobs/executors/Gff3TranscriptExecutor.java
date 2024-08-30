@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.Gff3Service;
 import org.alliancegenome.curation_api.services.TranscriptService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -31,10 +30,8 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class Gff3TranscriptExecutor extends Gff3Executor {
 
-	@Inject Gff3Service gff3Service;
 	@Inject TranscriptService transcriptService;
-	
-	@Override
+
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 
@@ -81,7 +78,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 	
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF update for " + dataProvider.name(), (gffData.size() * 3) + 1);
+		ph.startProcess("GFF Transcript update for " + dataProvider.name(), gffData.size());
 
 		loadTranscriptEntities(history, gffData, idsAdded, dataProvider, ph);
 
@@ -94,7 +91,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory((preProcessedGffData.size() * 3) + 1);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedGffData.size());
 		
 		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider);
 		history.finishLoad();

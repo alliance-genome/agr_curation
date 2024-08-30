@@ -14,3 +14,6 @@ CREATE INDEX codingsequence_cdsType_index ON codingsequence USING btree (cdstype
 CREATE INDEX transcript_transcriptType_index ON transcript USING btree (transcripttype_id);
 CREATE INDEX exon_exonType_index ON exon USING btree (exontype_id);
 CREATE INDEX ontologyterm_name_index ON ontologyterm USING btree (name);
+
+CREATE INDEX assemblycomponent_mapsToChromosome_index ON AssemblyComponent USING btree (mapsToChromosome_id);
+CREATE INDEX assemblycomponent_name_index ON AssemblyComponent USING btree (name);

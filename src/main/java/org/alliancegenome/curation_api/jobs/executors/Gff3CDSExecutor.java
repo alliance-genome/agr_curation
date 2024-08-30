@@ -34,7 +34,6 @@ public class Gff3CDSExecutor extends Gff3Executor {
 	@Inject Gff3Service gff3Service;
 	@Inject CodingSequenceService cdsService;
 
-	@Override
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 
@@ -81,7 +80,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF update for " + dataProvider.name(), (gffData.size() * 3) + 1);
+		ph.startProcess("GFF CDS update for " + dataProvider.name(), gffData.size());
 
 		loadCDSEntities(history, gffData, idsAdded, dataProvider, ph);
 
@@ -94,7 +93,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory((preProcessedGffData.size() * 3) + 1);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedGffData.size());
 		
 		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider);
 		history.finishLoad();
@@ -104,8 +103,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 
 
 	private void loadCDSEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
-		int updateThreshhold = 1000; // Aim for every 5 seconds (r/s * 5 = this number)
-		int updateCounter = 0;
+		updateHistory(history);
 		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
 				gff3Service.loadCDSEntity(history, gff3EntryPair, idsAdded, dataProvider);
@@ -117,9 +115,6 @@ public class Gff3CDSExecutor extends Gff3Executor {
 				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
-			}
-			if (updateCounter++ % updateThreshhold == 0) {
-				updateHistory(history);
 			}
 			ph.progressProcess();
 		}

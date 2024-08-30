@@ -9,8 +9,6 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -34,7 +32,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "bulkLoadFile", "exceptions" }, callSuper = true)
+@ToString(exclude = { "bulkLoadFile", "bulkLoad", "exceptions" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(
 	indexes = {
@@ -74,14 +72,14 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
-	private JobStatus bulkloadStatus;
+	private JobStatus bulkloadStatus = JobStatus.STOPPED;
 	
 	@JsonView({ View.FieldsOnly.class })
 	@Column(columnDefinition = "TEXT")
 	private String errorMessage;
 	
 	@ManyToOne
-	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JsonView({ View.FieldsOnly.class })
 	private BulkLoadFile bulkLoadFile;
 	
 	@ManyToOne

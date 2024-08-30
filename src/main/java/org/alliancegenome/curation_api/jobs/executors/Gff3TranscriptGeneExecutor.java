@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.ExonService;
+import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGeneAssociationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -28,9 +28,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class Gff3ExonExecutor extends Gff3Executor {
+public class Gff3TranscriptGeneExecutor extends Gff3Executor {
 
-	@Inject ExonService exonService;
+	@Inject TranscriptGeneAssociationService transcriptGeneService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -55,56 +55,63 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
 			
 			gffData.clear();
-
-			List<Long> idsAdded = new ArrayList<Long>();
+			
+			List<Long> idsAdded = new ArrayList<>();
 
 			bulkLoadFileHistory.setTotalRecords((long) preProcessedGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGffData, idsAdded, dataProvider);
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGffData, idsAdded, dataProvider, null);
+
 			if (success) {
-				runCleanup(exonService, bulkLoadFileHistory, dataProvider.name(), exonService.getIdsByDataProvider(dataProvider), idsAdded, "GFF exon");
+				runCleanup(transcriptGeneService, bulkLoadFileHistory, dataProvider.name(), transcriptGeneService.getIdsByDataProvider(dataProvider), idsAdded, "GFF transcript gene association");
 			}
 			bulkLoadFileHistory.finishLoad();
 			finalSaveHistory(bulkLoadFileHistory);
 
 		} catch (Exception e) {
+			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
 	}
 
-	
-	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider) {
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF Exon update for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Transcript Gene update for " + dataProvider.name(), gffData.size());
 
-		loadExonEntities(history, gffData, idsAdded, dataProvider, ph);
-
+		assemblyId = loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
+		
+		if (assemblyId == null) {
+			failLoad(history, new Exception("GFF Header does not contain assembly"));
+			return false;
+		} else {
+			Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
+			loadParentChildAssociations(history, gffData, idsAdded, dataProvider, assemblyId, geneIdCurieMap, ph);
+		}
 		ph.finishProcess();
 		
 		return true;
 	}
 	
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
-		List<Long> idsAdded = new ArrayList<Long>();
+		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
 		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedGffData.size());
 		
-		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider);
+		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-
-	private void loadExonEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private void loadParentChildAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
 		updateHistory(history);
 		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
-				gff3Service.loadExonEntity(history, gff3EntryPair, idsAdded, dataProvider);
+				gff3Service.loadGeneParentChildAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
@@ -117,7 +124,6 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			ph.progressProcess();
 		}
 		updateHistory(history);
-
 	}
 
 }
