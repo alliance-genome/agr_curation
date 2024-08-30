@@ -45,7 +45,7 @@ export const DataLoadsComponent = () => {
 	const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
 	const [expandedGroupRows, setExpandedGroupRows] = useState(null);
 	const [expandedLoadRows, setExpandedLoadRows] = useState(null);
-	const [expandedFileRows, setExpandedFileRows] = useState(null);
+	//const [expandedFileRows, setExpandedFileRows] = useState(null);
 	const [expandedErrorLoadRows, setExpandedErrorLoadRows] = useState(null);
 	const [disableFormFields, setDisableFormFields] = useState(false);
 	const errorMessage = useRef(null);
@@ -566,6 +566,7 @@ export const DataLoadsComponent = () => {
 		return sortedFiles;
 	};
 
+/*
 	const fileTable = (load) => {
 		let sortedFiles = [];
 		if (load.loadFiles) {
@@ -599,6 +600,7 @@ export const DataLoadsComponent = () => {
 			</div>
 		);
 	};
+*/
 
 	const loadTable = (group) => {
 		let sortedLoads = [];
