@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.interfaces.crud.CodingSequenceCrudInterface;
-import org.alliancegenome.curation_api.jobs.executors.Gff3Executor;
+import org.alliancegenome.curation_api.jobs.executors.Gff3CDSExecutor;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -22,7 +22,7 @@ public class CodingSequenceCrudController extends BaseEntityCrudController<Codin
 	@Inject
 	CodingSequenceService codingSequenceService;
 	@Inject
-	Gff3Executor gff3Executor;
+	Gff3CDSExecutor gff3CDSExecutor;
 
 	@Override
 	@PostConstruct
@@ -30,8 +30,9 @@ public class CodingSequenceCrudController extends BaseEntityCrudController<Codin
 		setService(codingSequenceService);
 	}
 
+	@Override
 	public APIResponse updateCodingSequences(String dataProvider, String assembly, List<Gff3DTO> gffData) {
-		return gff3Executor.runLoadApi(dataProvider, assembly, gffData);
+		return gff3CDSExecutor.runLoadApi(dataProvider, assembly, gffData);
 	}
 
 	@Override

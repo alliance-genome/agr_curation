@@ -4,6 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data @AllArgsConstructor
-public class StartedBulkLoadFileJobEvent {
+public class PendingLoadJobEvent {
 	private Long id;
 }

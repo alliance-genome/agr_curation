@@ -14,7 +14,6 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationIngestFmsDTO;
@@ -34,28 +33,31 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 	@Inject HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService;
 	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
 	
-	public void execLoad(BulkLoadFile bulkLoadFile) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
-			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFile.getBulkLoad();
+			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 
-			HTPExpressionDatasetAnnotationIngestFmsDTO htpExpressionDatasetData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), HTPExpressionDatasetAnnotationIngestFmsDTO.class);
-			bulkLoadFile.setRecordCount(htpExpressionDatasetData.getData().size());
+			HTPExpressionDatasetAnnotationIngestFmsDTO htpExpressionDatasetData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), HTPExpressionDatasetAnnotationIngestFmsDTO.class);
+			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(htpExpressionDatasetData.getData().size());
 
 			AGRCurationSchemaVersion version = HTPExpressionDatasetAnnotation.class.getAnnotation(AGRCurationSchemaVersion.class);
-			bulkLoadFile.setLinkMLSchemaVersion(version.max());
+			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(version.max());
 			if (htpExpressionDatasetData.getMetaData() != null && StringUtils.isNotBlank(htpExpressionDatasetData.getMetaData().getRelease())) {
-				bulkLoadFile.setAllianceMemberReleaseVersion(htpExpressionDatasetData.getMetaData().getRelease());
+				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(htpExpressionDatasetData.getMetaData().getRelease());
 			}
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
-			bulkLoadFileDAO.merge(bulkLoadFile);
+			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
+			
 			List<Long> datasetIdsLoaded = new ArrayList<>();
-			BulkLoadFileHistory history = new BulkLoadFileHistory(htpExpressionDatasetData.getData().size());
-			createHistory(history, bulkLoadFile);
-			boolean result = runLoaddatasetid(externalDataBaseEntityService, history, dataProvider, htpExpressionDatasetData.getData(), datasetIdsLoaded, false);
+			
+			bulkLoadFileHistory.setTotalRecords((long) htpExpressionDatasetData.getData().size());
+			updateHistory(bulkLoadFileHistory);
+
+			boolean result = runLoaddatasetid(externalDataBaseEntityService, bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), datasetIdsLoaded, false);
 		} catch (Exception e) {
-			failLoad(bulkLoadFile, e);
+			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
 	}
@@ -79,6 +81,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
 			}
 		}
+		updateHistory(history);
 		ph.finishProcess();
 		return true;
 	}

@@ -27,7 +27,9 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(
 	indexes = {
-		@Index(name = "assemblycomponent_genomeassembly_index", columnList = "genomeassembly_id")
+		@Index(name = "assemblycomponent_genomeassembly_index", columnList = "genomeassembly_id"),
+		@Index(name = "assemblycomponent_mapsToChromosome_index", columnList = "mapsToChromosome_id"),
+		@Index(name = "assemblycomponent_name_index", columnList = "name")
 	}
 )
 public class AssemblyComponent extends GenomicEntity {

@@ -19,8 +19,6 @@ export class DataLoadService extends BaseAuthService {
 				delete newLoad[objectKey];
 			}
 		}
-		console.log('Creating: ');
-		console.log(newLoad);
 		return this.api.post(`/${endpoint}`, newLoad);
 	}
 
@@ -77,10 +75,27 @@ export class DataLoadService extends BaseAuthService {
 		return this.api.delete(`/bulkloadfile/${id}`);
 	}
 
+	deleteLoadFileHistory(id) {
+		return this.api.delete(`/bulkloadfilehistory/${id}`);
+	}
+
 	getBackendBulkLoadTypes(loadType) {
 		const bulkLoadTypes = {
 			BulkFMSLoad: [
 				'GFF',
+
+				'GFF_EXON',
+				'GFF_CDS',
+				'GFF_TRANSCRIPT',
+
+				'GFF_EXON_LOCATION',
+				'GFF_CDS_LOCATION',
+				'GFF_TRANSCRIPT_LOCATION',
+
+				'GFF_TRANSCRIPT_CDS',
+				'GFF_TRANSCRIPT_EXON',
+				'GFF_TRANSCRIPT_GENE',
+
 				'HTPDATASET',
 				'INTERACTION-GEN',
 				'INTERACTION-MOL',

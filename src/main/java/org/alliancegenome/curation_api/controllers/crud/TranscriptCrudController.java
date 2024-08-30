@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.interfaces.crud.TranscriptCrudInterface;
-import org.alliancegenome.curation_api.jobs.executors.Gff3Executor;
+import org.alliancegenome.curation_api.jobs.executors.Gff3TranscriptExecutor;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -22,7 +22,7 @@ public class TranscriptCrudController extends BaseEntityCrudController<Transcrip
 	@Inject
 	TranscriptService transcriptService;
 	@Inject
-	Gff3Executor gff3Executor;
+	Gff3TranscriptExecutor gff3TranscriptExecutor;
 
 	@Override
 	@PostConstruct
@@ -30,8 +30,9 @@ public class TranscriptCrudController extends BaseEntityCrudController<Transcrip
 		setService(transcriptService);
 	}
 
+	@Override
 	public APIResponse updateTranscripts(String dataProvider, String assembly, List<Gff3DTO> gffData) {
-		return gff3Executor.runLoadApi(dataProvider, assembly, gffData);
+		return gff3TranscriptExecutor.runLoadApi(dataProvider, assembly, gffData);
 	}
 
 	@Override
