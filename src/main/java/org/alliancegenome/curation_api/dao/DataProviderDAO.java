@@ -35,9 +35,9 @@ public class DataProviderDAO extends BaseSQLDAO<DataProvider> {
 		params.put("crossReference.referencedCurie", sourceOrganization.getAbbreviation());
 
 		SearchResponse<DataProvider> orgResponse = findByParams(params);
-		if (orgResponse != null) {
+		if (orgResponse != null && orgResponse.getSingleResult() != null) {
 			DataProvider member = orgResponse.getSingleResult();
-			if (member != null && member.getSourceOrganization() != null && member.getCrossReference() != null) {
+			if (member.getSourceOrganization() != null && member.getCrossReference() != null) {
 				dataProviderCache.put(sourceOrganization.getAbbreviation(), member);
 				return member;
 			}
@@ -53,7 +53,6 @@ public class DataProviderDAO extends BaseSQLDAO<DataProvider> {
 			dataProvider.setCrossReference(crossReferenceDAO.persist(xref));
 
 			DataProvider dp = persist(dataProvider);
-			dataProviderCache.put(sourceOrganization.getAbbreviation(), dp);
 			return dp;
 		}
 
