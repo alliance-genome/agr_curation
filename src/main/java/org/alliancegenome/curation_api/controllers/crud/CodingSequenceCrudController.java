@@ -9,8 +9,10 @@ import org.alliancegenome.curation_api.jobs.executors.Gff3CDSExecutor;
 import org.alliancegenome.curation_api.jobs.executors.Gff3CDSLocationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.Gff3TranscriptCDSExecutor;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CodingSequenceService;
 
@@ -34,9 +36,20 @@ public class CodingSequenceCrudController extends BaseEntityCrudController<Codin
 
 	@Override
 	public APIResponse updateCodingSequences(String dataProvider, String assembly, List<Gff3DTO> gffData) {
-		gff3CDSExecutor.runLoadApi(dataProvider, assembly, gffData);
-		gff3CDSLocationExecutor.runLoadApi(dataProvider, assembly, gffData);
-		return gff3TranscriptCDSExecutor.runLoadApi(dataProvider, assembly, gffData);
+		BulkLoadFileHistory history = new BulkLoadFileHistory();
+		LoadHistoryResponce resp = (LoadHistoryResponce) gff3CDSExecutor.runLoadApi(dataProvider, assembly, gffData);
+		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
+		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
+		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		resp = (LoadHistoryResponce) gff3CDSLocationExecutor.runLoadApi(dataProvider, assembly, gffData);
+		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
+		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
+		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		resp = (LoadHistoryResponce) gff3TranscriptCDSExecutor.runLoadApi(dataProvider, assembly, gffData);
+		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
+		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
+		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		return new LoadHistoryResponce(history);
 	}
 
 	@Override
