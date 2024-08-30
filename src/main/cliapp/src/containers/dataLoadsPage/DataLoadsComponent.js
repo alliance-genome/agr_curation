@@ -516,7 +516,6 @@ export const DataLoadsComponent = () => {
 					<Column field="deleteFailedRecords" header="Deletes Failed" />
 					<Column field="totalDeleteRecords" header="Total Deletes" />
 
-
 					<Column field="bulkLoadFile.md5Sum" header="MD5 Sum" />
 					<Column field="bulkLoadFile.fileSize" header="Compressed File Size" />
 					<Column field="bulkLoadFile.recordCount" header="Record Count" />
@@ -526,9 +525,6 @@ export const DataLoadsComponent = () => {
 
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-
-
-
 				</DataTable>
 			</div>
 		);
@@ -566,7 +562,7 @@ export const DataLoadsComponent = () => {
 		return sortedFiles;
 	};
 
-/*
+	/*
 	const fileTable = (load) => {
 		let sortedFiles = [];
 		if (load.loadFiles) {
