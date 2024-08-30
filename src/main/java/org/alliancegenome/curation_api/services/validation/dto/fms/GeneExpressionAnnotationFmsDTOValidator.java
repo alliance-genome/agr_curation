@@ -119,7 +119,6 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = validateAnatomicalSite(geneExpressionFmsDTO);
 		if (anatomicalSiteObjectResponse.hasErrors()) {
 			response.addErrorMessages("whereExpressed", anatomicalSiteObjectResponse.getErrorMessages());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
 			geneExpressionAnnotation.setWhereExpressedStatement(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());
 			AnatomicalSite anatomicalSite = updateAnatomicalSite(anatomicalSiteObjectResponse, geneExpressionAnnotation);
@@ -129,7 +128,6 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		ObjectResponse<TemporalContext> temporalContextObjectResponse = validateTemporalContext(geneExpressionFmsDTO);
 		if (temporalContextObjectResponse.hasErrors()) {
 			response.addErrorMessages("whenExpressed", temporalContextObjectResponse.getErrorMessages());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
 			geneExpressionAnnotation.setWhenExpressedStageName(geneExpressionFmsDTO.getWhenExpressed().getStageName());
 			TemporalContext temporalContext = updateTemporalContext(temporalContextObjectResponse, geneExpressionAnnotation);
