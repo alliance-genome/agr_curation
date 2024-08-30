@@ -56,6 +56,7 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 		if (uiEntity.getDataProvider() == null) {
 			if (dbEntity.getDataProvider() == null) {
 				uiEntity.setDataProvider(dataProviderService.createAffiliatedModDataProvider());
+				dbEntity.setDataProvider(uiEntity.getDataProvider());
 			}
 			if (uiEntity.getDataProvider() == null) {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
