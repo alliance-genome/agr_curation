@@ -31,6 +31,8 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { conditionsSort } from '../../components/Templates/utils';
 
 export const ConditionRelationTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -126,6 +128,7 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
+	//todo: replace
 	const conditionTemplate = (rowData) => {
 		if (rowData.conditions) {
 			const listTemplate = (condition) => {
@@ -153,6 +156,7 @@ export const ConditionRelationTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
+	//todo: replace
 	const conditionRelationTemplate = (props) => {
 		return (
 			<>
@@ -186,6 +190,7 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
+	//todo: replace
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
 			let refString = getRefString(rowData.singleReference);
@@ -237,7 +242,12 @@ export const ConditionRelationTable = () => {
 			field: 'conditions.conditionSummary',
 			header: 'Experimental Conditions',
 			sortable: true,
-			body: conditionTemplate,
+			body: (rowData) => <ObjectListTemplate 
+				list={rowData.conditions} 
+				sortMethod={conditionsSort}
+				stringTemplate={(item) => item.conditionSummary}
+				showBullets={true}
+			/>,
 			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props),
 		},

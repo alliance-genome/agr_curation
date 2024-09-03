@@ -2,24 +2,22 @@ import { EllipsisTableCell } from '../EllipsisTableCell';
 import { ListTableCell } from '../ListTableCell';
 import { Tooltip } from 'primereact/tooltip';
 
-export const StringListTemplate = ({ list }) => {
+export const ObjectListTemplate = ({ list, sortMethod, stringTemplate, showBullets = false }) => {
 	if (!list || list.length === 0) return null;
 
 	const targetClass = `a${global.crypto.randomUUID()}`;
 
-	//filter out falsy values
-	const filteredList = list.filter(item => item);
-	const sortedList = filteredList.sort();
+	const sortedList = sortMethod ? sortMethod(list) : list;
 
 	const listTemplate = (item) => {
-		if(!item) return;
-		return <EllipsisTableCell>{item}</EllipsisTableCell>;
+		const template = stringTemplate(item);
+		return template ? <EllipsisTableCell>{template}</EllipsisTableCell> : null;
 	};
 
 	return (
 		<>
 			<div className={`-my-2 p-1 ${targetClass}`}>
-				<ListTableCell template={listTemplate} listData={sortedList} />
+				<ListTableCell template={listTemplate} listData={sortedList} showBullets={showBullets} />
 			</div>
 			<Tooltip target={`.${targetClass}`} style={{ width: '450px', maxWidth: '450px' }} position="left">
 				<ListTableCell template={listTemplate} listData={sortedList} />
