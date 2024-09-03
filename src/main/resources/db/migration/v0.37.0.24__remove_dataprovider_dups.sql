@@ -31,3 +31,7 @@ CREATE INDEX crossreference_ids_to_delete_index ON crossreference_ids_to_delete 
 
 INSERT INTO dataprovider_ids_to_delete (id) select dp.id from dataprovider dp left join dataprovider_ids_to_keep dk on dp.id = dk.id where dk.id is null;
 CREATE INDEX dataprovider_ids_to_delete_index ON dataprovider_ids_to_delete USING btree (id);
+
+ALTER TABLE ONLY phenotypeannotation DROP CONSTRAINT crossreference_id_fk;
+ALTER TABLE ONLY dataprovider DROP CONSTRAINT dataprovider_crossreference_id_fk;
+ALTER TABLE ONLY externaldatabaseentity DROP CONSTRAINT externaldatabaseentity_preferredcrossreference_id;
