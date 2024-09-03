@@ -1,16 +1,12 @@
 package org.alliancegenome.curation_api.services;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.model.entities.AllianceMember;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.DataProviderValidator;
 
@@ -28,7 +24,6 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	@Inject DataProviderDAO dataProviderDAO;
 	@Inject OrganizationDAO organizationDAO;
 	@Inject DataProviderValidator dataProviderValidator;
-	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	@Override
 	@PostConstruct
@@ -40,39 +35,19 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	public DataProvider createAffiliatedModDataProvider() {
 		AllianceMember member = authenticatedPerson.getAllianceMember();
 		if (member == null) {
-			return createAllianceDataProvider();
+			return getAllianceDataProvider();
+		} else {
+			return dataProviderDAO.getOrCreateDataProvider(member);
 		}
-
-		return createDataProvider(member);
 	}
 
+	public DataProvider getAllianceDataProvider() {
+		return getDefaultDataProvider("Alliance");
+	}
+	
 	@Transactional
-	public DataProvider createOrganizationDataProvider(String organizationAbbreviation) {
-		SearchResponse<Organization> orgResponse = organizationDAO.findByField("abbreviation", organizationAbbreviation);
-		if (orgResponse == null || orgResponse.getSingleResult() == null) {
-			return null;
-		}
-		Organization member = orgResponse.getSingleResult();
-
-		return createDataProvider(member);
-	}
-
-	public DataProvider createAllianceDataProvider() {
-		return createOrganizationDataProvider("Alliance");
-	}
-
-	private DataProvider createDataProvider(Organization member) {
-		DataProvider dataProvider = new DataProvider();
-
-		dataProvider.setSourceOrganization(member);
-
-		CrossReference xref = new CrossReference();
-		xref.setDisplayName(member.getAbbreviation());
-		xref.setReferencedCurie(member.getAbbreviation());
-		xref.setResourceDescriptorPage(member.getHomepageResourceDescriptorPage());
-		dataProvider.setCrossReference(crossReferenceDAO.persist(xref));
-
-		return dataProviderDAO.persist(dataProvider);
+	public DataProvider getDefaultDataProvider(String sourceOrganizationAbbreviation) {
+		return dataProviderDAO.getOrCreateDataProvider(organizationDAO.getOrCreateOrganization(sourceOrganizationAbbreviation));
 	}
 
 	@Transactional
@@ -87,4 +62,6 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	public ObjectResponse<DataProvider> validate(DataProvider uiEntity) {
 		return dataProviderValidator.validateDataProvider(uiEntity, null, true);
 	}
+
+
 }

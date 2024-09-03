@@ -114,8 +114,7 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 			currentSubjectAssociations = new ArrayList<>();
 		}
 		
-		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream()
-				.map(CodingSequenceGenomicLocationAssociation::getId).collect(Collectors.toList());
+		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream().map(CodingSequenceGenomicLocationAssociation::getId).collect(Collectors.toList());
 		
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);

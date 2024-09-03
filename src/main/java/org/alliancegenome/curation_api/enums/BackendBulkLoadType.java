@@ -18,13 +18,27 @@ public enum BackendBulkLoadType {
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
 	VARIANT("json"),
-	GFF("gff"),
+
+	// GFF all from the same file but split out
+	GFF("gff"), // For Database entries
+	
+	GFF_EXON("gff"),
+	GFF_CDS("gff"),
+	GFF_TRANSCRIPT("gff"),
+	GFF_EXON_LOCATION("gff"),
+	GFF_CDS_LOCATION("gff"),
+	GFF_TRANSCRIPT_LOCATION("gff"),
+	GFF_TRANSCRIPT_GENE("gff"),
+	GFF_TRANSCRIPT_EXON("gff"),
+	GFF_TRANSCRIPT_CDS("gff"),
+	
 	INTERACTION_MOL("tsv"),
 	INTERACTION_GEN("tsv"),
 	PARALOGY("json"),
 	SEQUENCE_TARGETING_REAGENT("json"),
 	EXPRESSION("json"),
-	HTPDATASET("json");
+	HTPDATASET("json"),
+	;
 
 	public String fileExtension;
 

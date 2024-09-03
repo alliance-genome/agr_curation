@@ -7,15 +7,17 @@ import java.util.concurrent.Semaphore;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadGroupDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
-import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadFileJobEvent;
 import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadJobEvent;
-import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadFileJobEvent;
+import org.alliancegenome.curation_api.jobs.events.PendingLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
+import org.alliancegenome.curation_api.jobs.events.StartedLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkScheduledLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -46,9 +48,11 @@ public class JobScheduler {
 
 	@Inject Event<StartedBulkLoadJobEvent> startedJobEvents;
 
-	@Inject Event<StartedBulkLoadFileJobEvent> startedFileJobEvents;
+	@Inject Event<StartedLoadJobEvent> startedFileJobEvents;
 
+	
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadGroupDAO groupDAO;
 	@Inject BulkLoadDAO bulkLoadDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
@@ -70,21 +74,23 @@ public class JobScheduler {
 			if (g.getLoads().size() > 0) {
 				for (BulkLoad b : g.getLoads()) {
 					boolean isFirst = true;
-					for (BulkLoadFile bf : b.getLoadFiles()) {
-						if (bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
-							if (bf.getLocalFilePath() != null) {
-								File file = new File(bf.getLocalFilePath());
+					for (BulkLoadFileHistory bfh : b.getHistory()) {
+						BulkLoadFile bulkLoadFile = bfh.getBulkLoadFile();
+						if (bfh.getBulkloadStatus() == null || bfh.getBulkloadStatus().isRunning() || bfh.getBulkloadStatus().isStarted() || bulkLoadFile.getLocalFilePath() != null) {
+							if (bulkLoadFile.getLocalFilePath() != null) {
+								File file = new File(bulkLoadFile.getLocalFilePath());
 								if (file.exists()) {
 									file.delete();
 								}
 							}
-							bf.setLocalFilePath(null);
-							bf.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
-							bf.setBulkloadStatus(JobStatus.FAILED);
+							bulkLoadFile.setLocalFilePath(null);
+							bfh.setErrorMessage("Failed due to server start up: Process never finished before the server restarted");
+							bfh.setBulkloadStatus(JobStatus.FAILED);
 							if (isFirst) {
-								slackNotifier.slackalert(bf); // Only notify on the first failed file not all the failed files under a load
+								slackNotifier.slackalert(bfh); // Only notify on the first failed file not all the failed files under a load
 							}
-							bulkLoadFileDAO.merge(bf);
+							bulkLoadFileDAO.merge(bulkLoadFile);
+							bulkLoadFileHistoryDAO.merge(bfh);
 						}
 						isFirst = false;
 					}
@@ -168,15 +174,15 @@ public class JobScheduler {
 		}
 	}
 
-	public void pendingFileJobs(@Observes PendingBulkLoadFileJobEvent event) {
+	public void pendingFileJobs(@Observes PendingLoadJobEvent event) {
 		// Log.info("pendingFileJobs: " + event.getId());
-		BulkLoadFile fileLoad = bulkLoadFileDAO.find(event.getId());
-		if (fileLoad != null) {
-			if (fileLoad.getBulkloadStatus().isPending()) {
-				fileLoad.setBulkloadStatus(fileLoad.getBulkloadStatus().getNextStatus());
-				bulkLoadFileDAO.merge(fileLoad);
+		BulkLoadFileHistory fileLoadHistory = bulkLoadFileHistoryDAO.find(event.getId());
+		if (fileLoadHistory != null) {
+			if (fileLoadHistory.getBulkloadStatus().isPending()) {
+				fileLoadHistory.setBulkloadStatus(fileLoadHistory.getBulkloadStatus().getNextStatus());
+				bulkLoadFileHistoryDAO.merge(fileLoadHistory);
 				// Log.info("Firing Start File Job Event: " + fileLoad.getId());
-				startedFileJobEvents.fire(new StartedBulkLoadFileJobEvent(fileLoad.getId()));
+				startedFileJobEvents.fire(new StartedLoadJobEvent(fileLoadHistory.getId()));
 			}
 		}
 	}

@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.websocket;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 
@@ -26,7 +26,7 @@ public class IndexProcessingWebsocket {
 	@Inject
 	ObjectMapper mapper;
 
-	Map<String, Session> sessions = new ConcurrentHashMap<>();
+	Map<String, Session> sessions = new HashMap<>();
 
 	@Getter
 	private IndexProcessingEvent event;

@@ -86,7 +86,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 		}
 		
 		if (beDataProvider != null) {
-			sqtr.setDataProvider(dataProviderService.createOrganizationDataProvider(beDataProvider.sourceOrganization));
+			sqtr.setDataProvider(dataProviderService.getDefaultDataProvider(beDataProvider.sourceOrganization));
 		}
 		
 		if (sqtrResponse.hasErrors()) {
