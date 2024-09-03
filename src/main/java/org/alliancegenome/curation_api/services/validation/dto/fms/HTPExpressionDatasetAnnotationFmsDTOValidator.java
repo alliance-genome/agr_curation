@@ -118,6 +118,8 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 				}
 			}
 			htpannotation.setCategoryTags(categoryTags);
+		} else {
+			htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		if (StringUtils.isEmpty(dto.getTitle())) {
@@ -131,6 +133,10 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 			relatedNote.setFreeText(dto.getSummary());
 			relatedNote.setNoteType(vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.HTP_DATASET_NOTE_TYPE_VOCABULARY_TERM_SET, "htp_expression_dataset_summary").getEntity());
 			htpannotation.setRelatedNote(relatedNote);
+		}
+
+		if (htpAnnotationResponse.hasErrors()) {
+			throw new ObjectValidationException(dto, htpAnnotationResponse.errorMessagesString());
 		}
 
 		return htpExpressionDatasetAnnotationDAO.persist(htpannotation);

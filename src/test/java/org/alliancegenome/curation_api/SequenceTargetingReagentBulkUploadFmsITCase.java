@@ -25,8 +25,8 @@ import io.restassured.config.RestAssuredConfig;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("605 - Sequence Targeting Reagent bulk upload - FMS")
-@Order(605)
+@DisplayName("607 - Sequence Targeting Reagent bulk upload - FMS")
+@Order(607)
 public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach

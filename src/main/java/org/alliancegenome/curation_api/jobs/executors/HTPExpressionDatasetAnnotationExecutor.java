@@ -20,6 +20,8 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationIngestFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
 import org.alliancegenome.curation_api.services.HTPExpressionDatasetAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -80,13 +82,15 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + dataProvider.name(), htpDataset.size() * 2);
 
-		loadHtpDatasets(externalDataBaseEntityService, history, dataProvider, htpDataset, datasetIdsLoaded, ph);
-		loadHtpDatasetAnnotations(htpExpressionDatasetAnnotationService, history, dataProvider, htpDataset, htpAnnotationsIdsLoaded, ph);
-
+		boolean isSuccess = loadHtpDatasets(externalDataBaseEntityService, history, dataProvider, htpDataset, datasetIdsLoaded, ph);
+		if (isSuccess) {
+			loadHtpDatasetAnnotations(htpExpressionDatasetAnnotationService, history, dataProvider, htpDataset, htpAnnotationsIdsLoaded, ph);
+		}
 		ph.finishProcess();
 	}
 
-	private void loadHtpDatasets(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded, ProcessDisplayHelper ph) {
+	private boolean loadHtpDatasets(ExternalDataBaseEntityService externalDataBaseEntityService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> datasetIdsLoaded, ProcessDisplayHelper ph) {
+		boolean isSuccess = true;
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetData) {
 			try {
 				ExternalDataBaseEntity dbObject = externalDataBaseEntityService.upsert(dto.getDatasetId(), dataProvider);
@@ -95,9 +99,11 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 					datasetIdsLoaded.add(dbObject.getId());
 				}
 			} catch (ObjectUpdateException e) {
+				isSuccess = false;
 				history.incrementFailed();
 				addException(history, e.getData());
 			} catch (Exception e) {
+				isSuccess = false;
 				e.printStackTrace();
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(dto, e.getMessage(), e.getStackTrace()));
@@ -110,6 +116,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		}
 		updateHistory(history);
 		ph.progressProcess();
+		return isSuccess;
 	}
 
 	private void loadHtpDatasetAnnotations(HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetData, List<Long> annotationsIdsLoaded, ProcessDisplayHelper ph) {
@@ -136,6 +143,18 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		}
 		updateHistory(history);
 		ph.progressProcess();
+	}
+
+	public APIResponse runLoadApi(String dataProviderName, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset) {
+		List<Long> datasetIdsLoaded = new ArrayList<>();
+		List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
+
+		BulkLoadFileHistory history = new BulkLoadFileHistory(htpDataset.size() * 2);
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		runLoad(history, dataProvider, htpDataset, datasetIdsLoaded, htpAnnotationsIdsLoaded);
+		history.finishLoad();
+
+		return new LoadHistoryResponce(history);
 	}
 
 	private Map<String, List<Long>> getPreviouslyLoadedIds(BackendBulkDataProvider dataProvider) {
