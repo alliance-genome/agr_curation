@@ -1,15 +1,17 @@
 package org.alliancegenome.curation_api.response;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-import org.alliancegenome.curation_api.view.View;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
 
 @Data
 public class APIResponse {
@@ -48,7 +50,7 @@ public class APIResponse {
 	}
 
 	public boolean hasErrors() {
-		return StringUtils.isNotEmpty(errorMessage) || MapUtils.isNotEmpty(errorMessages) || MapUtils.isNotEmpty(supplementalData);
+		return StringUtils.isNotEmpty(errorMessage) || MapUtils.isNotEmpty(errorMessages);
 	}
 
 	public String errorMessagesString() {
