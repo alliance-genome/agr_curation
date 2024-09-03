@@ -122,8 +122,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		createEcoTerm(ecoTerm, "Test ECOTerm", false, true);
 		createEcoTerm(ecoTerm2, "Test ECOTerm 2", false, true);
 		createEcoTerm(unsupportedEcoTerm, "Test unsupported ECOTerm", false, false);
-		loadGOTerm(goTerm, "Test GOTerm");
-		loadGOTerm(goTerm2, "Test GOTerm 2");
+		createGoTerm(goTerm, "Test GOTerm", false);
+		createGoTerm(goTerm2, "Test GOTerm 2", false);
 		loadExperimentalConditionTerm(expCondTerm, "Test ExperimentalConditionOntologyTerm");
 		loadZecoTerm(zecoTerm, "Test ExperimentalConditionOntologyTerm", OntologyConstants.ZECO_AGR_SLIM_SUBSET);
 		loadZecoTerm(zecoTerm2, "Test ExperimentalConditionOntologyTerm 2", OntologyConstants.ZECO_AGR_SLIM_SUBSET);
