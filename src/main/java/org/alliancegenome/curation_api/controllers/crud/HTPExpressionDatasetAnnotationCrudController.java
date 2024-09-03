@@ -29,7 +29,7 @@ public class HTPExpressionDatasetAnnotationCrudController extends BaseEntityCrud
 
 	@Override
 	public APIResponse updateHTPExpressionDatasetAnnotation(String dataProvider, HTPExpressionDatasetAnnotationIngestFmsDTO htpDatasetData) {
-		return htpExpressionDatasetAnnotationExecutor.runLoadApi(htpExpressionDatasetAnnotationService, dataProvider, htpDatasetData.getData());
+		return htpExpressionDatasetAnnotationExecutor.runLoadApi(dataProvider, htpDatasetData.getData());
 	}
 	
 }
