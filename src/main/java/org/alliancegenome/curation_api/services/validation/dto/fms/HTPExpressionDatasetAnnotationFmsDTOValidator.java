@@ -80,6 +80,8 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 				}
 			}
 			htpannotation.setReferences(references);
+		} else {
+			htpannotation.setReferences(null);
 		}
 
 		if (dto.getNumChannels() != null) {
@@ -88,6 +90,8 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 			} else {
 				htpAnnotationResponse.addErrorMessage("numChannels", ValidationConstants.INVALID_MESSAGE);
 			}
+		} else {
+			htpannotation.setNumberOfChannels(null);
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getSubSeries())) {
@@ -103,6 +107,8 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 				}
 			}
 			htpannotation.setSubSeries(subSeries);
+		} else {
+			htpannotation.setSubSeries(null);
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getCategoryTags())) {
@@ -133,6 +139,8 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 			relatedNote.setFreeText(dto.getSummary());
 			relatedNote.setNoteType(vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.HTP_DATASET_NOTE_TYPE_VOCABULARY_TERM_SET, "htp_expression_dataset_summary").getEntity());
 			htpannotation.setRelatedNote(relatedNote);
+		} else {
+			htpannotation.setRelatedNote(null);
 		}
 
 		if (htpAnnotationResponse.hasErrors()) {

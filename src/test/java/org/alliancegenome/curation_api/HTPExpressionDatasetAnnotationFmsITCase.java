@@ -16,18 +16,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-
-import java.util.List;
-
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+
+import java.util.List;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -102,6 +101,48 @@ public class HTPExpressionDatasetAnnotationFmsITCase extends BaseITCase {
 		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_03_invalid_sub_series.json", 2, 1, 1);
 		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_04_invalid_category_tag.json", 2, 1, 1);
 	}
+
+	@Test
+	@Order(5)
+	public void htpDatasetBulkUploadUpdateMissingNonRequiredFields() throws Exception {
+
+		checkSuccessfulBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "UM_01_update_no_non_required_fields.json", 2);
+
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(htpDatasetFindEndpoint).
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0]", not(hasKey("references"))).
+			body("results[0]", not(hasKey("subSeries"))).
+			body("results[0]", not(hasKey("numberOfChannels"))).
+			body("results[0]", not(hasKey("relatedNote")));
+	}
+
+	@Test
+	@Order(6)
+	public void htpDatasetBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
+
+		checkSuccessfulBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "UE_01_update_empty_non_required_fields.json", 2);
+
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(htpDatasetFindEndpoint).
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0]", not(hasKey("references"))).
+			body("results[0]", not(hasKey("subSeries"))).
+			body("results[0]", not(hasKey("relatedNote")));
+	}
+
 
 	}
 
