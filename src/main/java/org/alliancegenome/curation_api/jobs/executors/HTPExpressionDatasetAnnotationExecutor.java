@@ -61,7 +61,8 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
 			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(dataProvider);
 			
-			BulkLoadFileHistory history = new BulkLoadFileHistory(htpExpressionDatasetData.getData().size());
+			bulkLoadFileHistory.setTotalRecords((long) htpExpressionDatasetData.getData().size());
+			runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), idsAdded.get("HTPDatasetIds"), idsAdded.get("HTPDatasetAnnotationIds"));
 			
 			runLoad(history, dataProvider, htpExpressionDatasetData.getData(), idsAdded.get("HTPDatasetIds"), idsAdded.get("HTPDatasetAnnotationIds"));
 			
