@@ -30,7 +30,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
-import { conditionsSort } from '../../components/Templates/sortMethods';
+import { conditionsSort } from '../../components/Templates/utils/sortMethods';
 
 export const ConditionRelationTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
