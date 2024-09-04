@@ -66,20 +66,20 @@
 	@Order(2)
 	public void htpDatasetBulkUploadMissingRequiredFields() throws Exception {
 
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_01_no_dataset_id.json",2,1,0);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_02_no_title.json",2,1,1);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_03_no_category_tags.json",2,1,1);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_04_no_primary_id.json",2,1,0);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_01_no_dataset_id.json", 2, 1, 0);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_02_no_title.json", 2, 1, 1);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_03_no_category_tags.json", 2, 1, 1);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "MR_04_no_primary_id.json", 2, 1, 0);
 	}
 
 	@Test
 	@Order(3)
 	public void htpDatasetBulkUploadEmptyRequiredFields() throws Exception {
 
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_01_empty_dataset_id.json",2,1,0);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_02_empty_title.json",2,1,1);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_03_empty_category_tags.json",2,1,1);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_04_empty_primary_id.json",2,1,0);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_01_empty_dataset_id.json", 2, 1, 0);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_02_empty_title.json", 2, 1, 1);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_03_empty_category_tags.json", 2, 1, 1);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "ER_04_empty_primary_id.json", 2, 1, 0);
 	}
 
 	@Test
@@ -87,9 +87,9 @@
 	public void htpDatasetBulkUploadInvalidFields() throws Exception {
 
 		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_01_invalid_publication.json", 2, 1, 1);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_02_invalid_number_of_channels.json",2,1,1);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_03_invalid_sub_series.json",2,1,1);
-		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_04_invalid_category_tag.json",2,1,1);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_02_invalid_number_of_channels.json", 2, 1, 1);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_03_invalid_sub_series.json", 2, 1, 1);
+		checkFailedBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "IV_04_invalid_category_tag.json", 2, 1, 1);
 	}
 
 	}
