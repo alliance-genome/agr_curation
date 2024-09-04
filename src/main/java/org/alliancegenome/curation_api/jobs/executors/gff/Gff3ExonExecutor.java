@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.jobs.executors;
+package org.alliancegenome.curation_api.jobs.executors.gff;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -10,12 +10,15 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
+import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.TranscriptService;
+import org.alliancegenome.curation_api.services.ExonService;
+import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
+import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -28,9 +31,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class Gff3TranscriptExecutor extends Gff3Executor {
+public class Gff3ExonExecutor extends Gff3Executor {
 
-	@Inject TranscriptService transcriptService;
+	@Inject ExonService exonService;
+	@Inject Gff3DtoValidator gff3DtoValidator;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -52,19 +56,18 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffData, dataProvider);
 			
 			gffData.clear();
-			
-			List<Long> idsAdded = new ArrayList<>();
 
-			bulkLoadFileHistory.setTotalRecords((long) preProcessedGffData.size());
+			List<Long> idsAdded = new ArrayList<Long>();
+
+			bulkLoadFileHistory.setTotalRecords((long) preProcessedExonGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGffData, idsAdded, dataProvider);
-
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, idsAdded, dataProvider);
 			if (success) {
-				runCleanup(transcriptService, bulkLoadFileHistory, dataProvider.name(), transcriptService.getIdsByDataProvider(dataProvider), idsAdded, "GFF transcript");
+				runCleanup(exonService, bulkLoadFileHistory, dataProvider.name(), exonService.getIdsByDataProvider(dataProvider), idsAdded, "GFF exon");
 			}
 			bulkLoadFileHistory.finishLoad();
 			finalSaveHistory(bulkLoadFileHistory);
@@ -73,37 +76,21 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			e.printStackTrace();
 		}
 	}
+
 	
 	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider) {
-	
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF Transcript update for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Exon update for " + dataProvider.name(), gffData.size());
 
-		loadTranscriptEntities(history, gffData, idsAdded, dataProvider, ph);
-
-		ph.finishProcess();
-		
-		return true;
-	}
-	
-	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
-		List<Long> idsAdded = new ArrayList<>();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedGffData.size());
-		
-		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider);
-		history.finishLoad();
-		
-		return new LoadHistoryResponce(history);
-	}
-
-	private void loadTranscriptEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
 		updateHistory(history);
 		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
-				gff3Service.loadTranscriptEntity(history, gff3EntryPair, idsAdded, dataProvider);
+				Exon exon = gff3DtoValidator.validateExonEntry(gff3EntryPair.getKey(), gff3EntryPair.getValue(), dataProvider);
+				if (exon != null) {
+					idsAdded.add(exon.getId());
+				}
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
@@ -117,6 +104,22 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		}
 		updateHistory(history);
 
+		ph.finishProcess();
+		
+		return true;
 	}
+	
+	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
+		List<Long> idsAdded = new ArrayList<Long>();
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffData, dataProvider);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedExonGffData.size());
+		
+		runLoad(history, null, preProcessedExonGffData, idsAdded, dataProvider);
+		history.finishLoad();
+		
+		return new LoadHistoryResponce(history);
+	}
+
 
 }

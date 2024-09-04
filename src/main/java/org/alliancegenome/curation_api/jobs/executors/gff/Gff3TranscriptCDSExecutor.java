@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.jobs.executors;
+package org.alliancegenome.curation_api.jobs.executors.gff;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -15,8 +15,8 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.CodingSequenceService;
-import org.alliancegenome.curation_api.services.Gff3Service;
+import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptCodingSequenceAssociationService;
+import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -29,11 +29,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class Gff3CDSExecutor extends Gff3Executor {
+public class Gff3TranscriptCDSExecutor extends Gff3Executor {
 
-	@Inject Gff3Service gff3Service;
-	@Inject CodingSequenceService cdsService;
-
+	@Inject TranscriptCodingSequenceAssociationService transcriptCdsService;
+	
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 
@@ -54,36 +53,44 @@ public class Gff3CDSExecutor extends Gff3Executor {
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedCDSGffData = Gff3AttributesHelper.getCDSGffData(gffData, dataProvider);
 			
 			gffData.clear();
 			
 			List<Long> idsAdded = new ArrayList<>();
 
-			bulkLoadFileHistory.setTotalRecords((long) preProcessedGffData.size());
+			bulkLoadFileHistory.setTotalRecords((long) preProcessedCDSGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGffData, idsAdded, dataProvider);
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedCDSGffData, idsAdded, dataProvider, null);
 
 			if (success) {
-				runCleanup(cdsService, bulkLoadFileHistory, dataProvider.name(), cdsService.getIdsByDataProvider(dataProvider), idsAdded, "GFF coding sequence");
+				runCleanup(transcriptCdsService, bulkLoadFileHistory, dataProvider.name(), transcriptCdsService.getIdsByDataProvider(dataProvider), idsAdded, "GFF transcript coding sequence association");
 			}
 			bulkLoadFileHistory.finishLoad();
 			finalSaveHistory(bulkLoadFileHistory);
 
 		} catch (Exception e) {
+			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
 	}
 
-	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider) {
-
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF CDS update for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Transcript CDS update for " + dataProvider.name(), gffData.size());
 
-		loadCDSEntities(history, gffData, idsAdded, dataProvider, ph);
-
+		assemblyId = loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
+		
+		if (assemblyId == null) {
+			failLoad(history, new Exception("GFF Header does not contain assembly"));
+			return false;
+		} else {
+			Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
+			loadParentChildAssociations(history, gffData, idsAdded, dataProvider, geneIdCurieMap, ph);
+		}
 		ph.finishProcess();
 		
 		return true;
@@ -92,21 +99,20 @@ public class Gff3CDSExecutor extends Gff3Executor {
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedGffData.size());
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedCDSGffData = Gff3AttributesHelper.getCDSGffData(gffData, dataProvider);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedCDSGffData.size());
 		
-		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider);
+		runLoad(history, null, preProcessedCDSGffData, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-
-	private void loadCDSEntities(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private void loadParentChildAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
 		updateHistory(history);
 		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
-				gff3Service.loadCDSEntity(history, gff3EntryPair, idsAdded, dataProvider);
+				gff3Service.loadCDSParentChildAssociations(history, gff3EntryPair, idsAdded, dataProvider, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
@@ -116,10 +122,10 @@ public class Gff3CDSExecutor extends Gff3Executor {
 				history.incrementFailed();
 				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
 			}
+			
 			ph.progressProcess();
 		}
 		updateHistory(history);
 	}
-
-
+	
 }

@@ -74,6 +74,10 @@ public class Gff3DtoValidator {
 	public Exon validateExonEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Exon exon = null;
+
+		if (!StringUtils.equals(dto.getType(), "exon") && !StringUtils.equals(dto.getType(), "noncoding_exon")) {
+			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for Exon Entity");
+		}
 		
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<Exon> searchResponse = exonDAO.findByField("uniqueId", uniqueId);
@@ -102,6 +106,10 @@ public class Gff3DtoValidator {
 
 		CodingSequence cds = null;
 		
+		if (!StringUtils.equals(dto.getType(), "CDS")) {
+			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for CDS Entity");
+		}
+		
 		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
 		SearchResponse<CodingSequence> searchResponse = codingSequenceDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
@@ -127,8 +135,11 @@ public class Gff3DtoValidator {
 	@Transactional
 	public Transcript validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
+		if (!Gff3Constants.TRANSCRIPT_TYPES.contains(dto.getType())) {
+			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for Transcript Entity");
+		}
+
 		Transcript transcript = null;
-		
 		if (attributes.containsKey("ID")) {
 			SearchResponse<Transcript> searchResponse = transcriptDAO.findByField("modInternalId", attributes.get("ID"));
 			if (searchResponse != null && searchResponse.getSingleResult() != null) {

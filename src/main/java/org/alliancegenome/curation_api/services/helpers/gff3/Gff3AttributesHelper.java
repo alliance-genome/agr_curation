@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alliancegenome.curation_api.constants.Gff3Constants;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class Gff3AttributesHelper {
 
@@ -48,6 +51,71 @@ public class Gff3AttributesHelper {
 		}
 		
 		return attributes;
+	}
+	
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getExonGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("GFF Exon pre-processing for " + dataProvider.name(), gffData.size());
+		for (Gff3DTO originalGffEntry : gffData) {
+			if (StringUtils.equals(originalGffEntry.getType(), "exon") || StringUtils.equals(originalGffEntry.getType(), "noncoding_exon")) {
+				processGffEntry(originalGffEntry, retGffData, dataProvider);
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		return retGffData;
+	}
+	
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getCDSGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("GFF CDS pre-processing for " + dataProvider.name(), gffData.size());
+		for (Gff3DTO originalGffEntry : gffData) {
+			if (StringUtils.equals(originalGffEntry.getType(), "CDS")) {
+				processGffEntry(originalGffEntry, retGffData, dataProvider);
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		return retGffData;
+	}
+	
+	
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getTranscriptGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("GFF Transcript pre-processing for " + dataProvider.name(), gffData.size());
+		for (Gff3DTO originalGffEntry : gffData) {
+			if (StringUtils.equals(originalGffEntry.getType(), "lnc_RNA")) {
+				originalGffEntry.setType("lncRNA");
+			}
+			if (Gff3Constants.TRANSCRIPT_TYPES.contains(originalGffEntry.getType())) {
+				processGffEntry(originalGffEntry, retGffData, dataProvider);
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		return retGffData;
+	}
+
+	private static void processGffEntry(Gff3DTO originalGffEntry, List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData, BackendBulkDataProvider dataProvider) {
+		Map<String, String> attributes = getAttributes(originalGffEntry, dataProvider);
+		if (attributes.containsKey("Parent") && attributes.get("Parent").indexOf(",") > -1) {
+			for (String parent : attributes.get("Parent").split(",")) {
+				HashMap<String, String> attributesCopy = new HashMap<>();
+				attributesCopy.putAll(attributes);
+				String[] parentIdParts = parent.split(":");
+				if (parentIdParts.length == 1) {
+					parent = dataProvider.name() + ':' + parentIdParts[0];
+				}
+				attributesCopy.put("Parent", parent);
+				retGffData.add(new ImmutablePair<>(originalGffEntry, attributesCopy));
+			}
+		} else {
+			retGffData.add(new ImmutablePair<>(originalGffEntry, attributes));
+		}
+		
 	}
 
 }
