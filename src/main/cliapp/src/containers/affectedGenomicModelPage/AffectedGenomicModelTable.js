@@ -7,11 +7,12 @@ import { NameTemplate } from '../../components/Templates/NameTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
+import { crossReferencesSort } from '../../components/Templates/utils';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -76,7 +77,11 @@ export const AffectedGenomicModelTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences} />,
+			body: (rowData) => <ObjectListTemplate 
+				list={rowData.crossReferences} 
+				sortMethod={crossReferencesSort}
+				stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
+			/>,
 		},
 		{
 			field: 'updatedBy.uniqueId',
