@@ -64,7 +64,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 		ObjectResponse<Reference> singleReferenceResponse = validateEvidence(geneExpressionFmsDTO);
 		if (singleReferenceResponse.hasErrors()) {
-			response.addErrorMessages("singleReference", singleReferenceResponse.getErrorMessages());
+			response.addErrorMessage("singleReference", singleReferenceResponse.errorMessagesString());
 			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
 		} else {
 			String referenceCurie = singleReferenceResponse.getEntity().getCurie();
@@ -118,8 +118,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 		ObjectResponse<AnatomicalSite> anatomicalSiteObjectResponse = validateAnatomicalSite(geneExpressionFmsDTO);
 		if (anatomicalSiteObjectResponse.hasErrors()) {
-			response.addErrorMessages("whereExpressed", anatomicalSiteObjectResponse.getErrorMessages());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
+			response.addErrorMessage("whereExpressed", anatomicalSiteObjectResponse.errorMessagesString());
 		} else {
 			geneExpressionAnnotation.setWhereExpressedStatement(geneExpressionFmsDTO.getWhereExpressed().getWhereExpressedStatement());
 			AnatomicalSite anatomicalSite = updateAnatomicalSite(anatomicalSiteObjectResponse, geneExpressionAnnotation);
@@ -128,8 +127,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 		ObjectResponse<TemporalContext> temporalContextObjectResponse = validateTemporalContext(geneExpressionFmsDTO);
 		if (temporalContextObjectResponse.hasErrors()) {
-			response.addErrorMessages("whenExpressed", temporalContextObjectResponse.getErrorMessages());
-			throw new ObjectValidationException(geneExpressionFmsDTO, response.errorMessagesString());
+			response.addErrorMessage("whenExpressed", temporalContextObjectResponse.errorMessagesString());
 		} else {
 			geneExpressionAnnotation.setWhenExpressedStageName(geneExpressionFmsDTO.getWhenExpressed().getStageName());
 			TemporalContext temporalContext = updateTemporalContext(temporalContextObjectResponse, geneExpressionAnnotation);
