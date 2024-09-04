@@ -4,6 +4,10 @@ DROP TABLE dataprovider_ids_to_keep;
 DROP TABLE crossreference_ids_to_delete;
 DROP TABLE dataprovider_ids_to_delete;
 
+ALTER TABLE ONLY phenotypeannotation ADD CONSTRAINT crossreference_id_fk FOREIGN KEY (crossreference_id) REFERENCES crossreference(id);
+ALTER TABLE ONLY dataprovider ADD CONSTRAINT dataprovider_crossreference_id_fk FOREIGN KEY (crossreference_id) REFERENCES crossreference(id);
+ALTER TABLE ONLY externaldatabaseentity ADD CONSTRAINT externaldatabaseentity_preferredcrossreference_id FOREIGN KEY (preferredcrossreference_id) REFERENCES crossreference(id);
+
 -- Migration to switch bulk load file and history around
 
 ALTER TABLE bulkloadfilehistory ADD COLUMN bulkload_id bigint;
@@ -139,7 +143,7 @@ INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id) S
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id) SELECT nextval('bulkload_seq'), 'GFF_TRANSCRIPT_CDS', 'XBXT GFF Transcript CDS Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) GFF Loads';
 INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id) SELECT nextval('bulkload_seq'), 'GFF_TRANSCRIPT_CDS', 'ZFIN GFF Transcript CDS Association Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'File Management System (FMS) GFF Loads';
 
-INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive) SELECT id, '0 0 22 ? * SUN-THU', true FROM bulkload WHERE backendbulkloadtype in(
+INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive) SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype in(
 	'GFF_TRANSCRIPT', 'GFF_CDS', 'GFF_EXON',
 	'GFF_EXON_LOCATION', 'GFF_CDS_LOCATION', 'GFF_TRANSCRIPT_LOCATION',
 	'GFF_TRANSCRIPT_GENE', 'GFF_TRANSCRIPT_EXON', 'GFF_TRANSCRIPT_CDS'
