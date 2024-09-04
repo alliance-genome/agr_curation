@@ -6,8 +6,6 @@ import { Messages } from 'primereact/messages';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import { ConditionRelationService } from '../../service/ConditionRelationService';
@@ -32,7 +30,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
-import { conditionsSort } from '../../components/Templates/utils';
+import { conditionsSort } from '../../components/Templates/sortMethods';
 
 export const ConditionRelationTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -126,20 +124,6 @@ export const ConditionRelationTable = () => {
 				/>
 			</>
 		);
-	};
-
-	//todo: replace
-	const conditionTemplate = (rowData) => {
-		if (rowData.conditions) {
-			const listTemplate = (condition) => {
-				return <EllipsisTableCell>{condition.conditionSummary}</EllipsisTableCell>;
-			};
-			return (
-				<div style={{ margin: '-10px 10px -10px 10px' }}>
-					<ListTableCell template={listTemplate} listData={rowData.conditions} showBullets={true} />
-				</div>
-			);
-		}
 	};
 
 	const onConditionRelationValueChange = (event, setFieldValue, props) => {
