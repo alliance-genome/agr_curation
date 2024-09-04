@@ -46,7 +46,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) orthologyData.getData().size());
+			bulkLoadFileHistory.setCount(orthologyData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			boolean success = runLoad(generatedOrthologyService, bulkLoadFileHistory, dataProvider, orthologyData.getData(), orthoPairIdsLoaded);

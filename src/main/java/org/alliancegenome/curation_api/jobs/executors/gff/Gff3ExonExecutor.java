@@ -62,7 +62,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 
 			List<Long> idsAdded = new ArrayList<Long>();
 
-			bulkLoadFileHistory.setTotalRecords((long) preProcessedExonGffData.size());
+			bulkLoadFileHistory.setCount(preProcessedExonGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, idsAdded, dataProvider);

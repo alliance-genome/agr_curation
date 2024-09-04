@@ -52,7 +52,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(constructs.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalDeleteRecords((long) constructs.size());
+		bulkLoadFileHistory.setCount("Deleted", constructs.size());
 		
 		updateHistory(bulkLoadFileHistory);
 		

@@ -52,7 +52,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 			
 			List<Long> datasetIdsLoaded = new ArrayList<>();
 			
-			bulkLoadFileHistory.setTotalRecords((long) htpExpressionDatasetData.getData().size());
+			bulkLoadFileHistory.setCount(htpExpressionDatasetData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			boolean result = runLoaddatasetid(externalDataBaseEntityService, bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), datasetIdsLoaded, false);

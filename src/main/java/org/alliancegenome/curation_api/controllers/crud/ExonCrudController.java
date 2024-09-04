@@ -38,17 +38,11 @@ public class ExonCrudController extends BaseEntityCrudController<ExonService, Ex
 	public APIResponse updateExons(String dataProvider, String assembly, List<Gff3DTO> gffData) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		LoadHistoryResponce resp = (LoadHistoryResponce) gff3ExonExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3ExonLocationExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3TranscriptExonExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		return new LoadHistoryResponce(history);
 	}
 

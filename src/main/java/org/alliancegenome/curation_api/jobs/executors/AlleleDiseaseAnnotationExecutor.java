@@ -51,7 +51,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(annotations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalRecords((long) annotations.size());
+		bulkLoadFileHistory.setCount(annotations.size());
 		
 		updateHistory(bulkLoadFileHistory);
 		

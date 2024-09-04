@@ -48,7 +48,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) phenotypeData.getData().size());
+			bulkLoadFileHistory.setCount(phenotypeData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			Set<Long> annotationIdsLoaded = new HashSet<>();

@@ -48,7 +48,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(alleles.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalRecords((long) alleles.size());
+		bulkLoadFileHistory.setCount(alleles.size());
 		updateHistory(bulkLoadFileHistory);
 		
 		boolean success = runLoad(alleleService, bulkLoadFileHistory, dataProvider, alleles, alleleIdsLoaded);

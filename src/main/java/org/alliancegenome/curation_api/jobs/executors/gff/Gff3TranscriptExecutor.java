@@ -62,7 +62,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			
 			List<Long> idsAdded = new ArrayList<>();
 
-			bulkLoadFileHistory.setTotalRecords((long) preProcessedTranscriptGffData.size());
+			bulkLoadFileHistory.setCount(preProcessedTranscriptGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, idsAdded, dataProvider);

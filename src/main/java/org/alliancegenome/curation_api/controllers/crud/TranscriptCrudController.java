@@ -43,25 +43,15 @@ public class TranscriptCrudController extends BaseEntityCrudController<Transcrip
 	public APIResponse updateTranscripts(String dataProvider, String assembly, List<Gff3DTO> gffData) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		LoadHistoryResponce resp = (LoadHistoryResponce) gff3TranscriptExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3TranscriptLocationExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3TranscriptGeneExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3TranscriptCDSExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3TranscriptExonExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		return new LoadHistoryResponce(history);
 	}
 

@@ -38,17 +38,11 @@ public class CodingSequenceCrudController extends BaseEntityCrudController<Codin
 	public APIResponse updateCodingSequences(String dataProvider, String assembly, List<Gff3DTO> gffData) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		LoadHistoryResponce resp = (LoadHistoryResponce) gff3CDSExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3CDSLocationExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		resp = (LoadHistoryResponce) gff3TranscriptCDSExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
-		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
-		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		history.addCounts(resp.getHistory());
 		return new LoadHistoryResponce(history);
 	}
 

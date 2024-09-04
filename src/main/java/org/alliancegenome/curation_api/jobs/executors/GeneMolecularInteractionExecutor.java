@@ -38,7 +38,7 @@ public class GeneMolecularInteractionExecutor extends LoadFileExecutor {
 			List<Long> interactionIdsLoaded = new ArrayList<>();
 			List<Long> interactionIdsBefore = geneMolecularInteractionDAO.findAllIds().getResults();
 			
-			bulkLoadFileHistory.setTotalRecords((long) interactionData.size());
+			bulkLoadFileHistory.setCount(interactionData.size());
 			updateHistory(bulkLoadFileHistory);
 			
 			boolean success = runLoad(geneMolecularInteractionService, bulkLoadFileHistory, null, interactionData, interactionIdsLoaded, false);

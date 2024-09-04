@@ -38,7 +38,7 @@ public class GeneGeneticInteractionExecutor extends LoadFileExecutor {
 			List<Long> interactionIdsLoaded = new ArrayList<>();
 			List<Long> interactionIdsBefore = geneGeneticInteractionDAO.findAllIds().getResults();
 
-			bulkLoadFileHistory.setTotalRecords((long) interactionData.size());
+			bulkLoadFileHistory.setCount(interactionData.size());
 			updateHistory(bulkLoadFileHistory);
 
 			boolean success = runLoad(geneGeneticInteractionService, bulkLoadFileHistory, null, interactionData, interactionIdsLoaded, false);

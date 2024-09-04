@@ -230,8 +230,7 @@ public class LoadFileExecutor {
 				}
 				ph.progressProcess();
 			}
-			updateHistory(history);
-			
+			finalSaveHistory(history);
 			ph.finishProcess();
 		}
 		return true;
@@ -251,8 +250,10 @@ public class LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
-		long existingDeletes = history.getTotalDeleteRecords() == null ? 0 : history.getTotalDeleteRecords();
-		history.setTotalDeleteRecords(idsToRemove.size() + existingDeletes);
+		String countType = "Deleted";
+		
+		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
+		history.setCount(countType, idsToRemove.size() + existingDeletes);
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("Deletion/deprecation of entities linked to unloaded " + dataProviderName, idsToRemove.size());
@@ -261,14 +262,19 @@ public class LoadFileExecutor {
 			try {
 				String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
 				service.deprecateOrDelete(id, false, loadDescription, deprecate);
-				history.incrementDeleted();
+				history.incrementCompleted(countType);
 			} catch (Exception e) {
-				history.incrementDeleteFailed();
+				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
+			}
+			if (history.getErrorRate(countType) > 0.25) {
+				Log.error(countType + " failure rate > 25% aborting load");
+				failLoadAboveErrorRateCutoff(history);
+				break;
 			}
 			ph.progressProcess();
 		}
-		updateHistory(history);
+		finalSaveHistory(history);
 		ph.finishProcess();
 	}
 

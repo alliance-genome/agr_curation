@@ -64,7 +64,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 			
 			List<Long> idsAdded = new ArrayList<>();
 
-			bulkLoadFileHistory.setTotalRecords((long) preProcessedCDSGffData.size());
+			bulkLoadFileHistory.setCount(preProcessedCDSGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedCDSGffData, idsAdded, dataProvider);

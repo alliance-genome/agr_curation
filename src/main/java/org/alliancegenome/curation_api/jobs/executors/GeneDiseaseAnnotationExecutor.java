@@ -51,7 +51,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(annotations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalRecords((long) annotations.size());
+		bulkLoadFileHistory.setCount(annotations.size());
 		updateHistory(bulkLoadFileHistory);
 
 		boolean success = runLoad(geneDiseaseAnnotationService, bulkLoadFileHistory, dataProvider, annotations, annotationIdsLoaded);

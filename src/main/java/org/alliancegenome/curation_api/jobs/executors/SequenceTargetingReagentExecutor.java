@@ -59,7 +59,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) sqtrIngestFmsDTO.getData().size() * 2);
+			bulkLoadFileHistory.setCount((long) sqtrIngestFmsDTO.getData().size() * 2);
 			updateHistory(bulkLoadFileHistory);
 			
 			runLoad(bulkLoadFileHistory, dataProvider, sqtrIngestFmsDTO.getData(), idsAdded.get("SQTR"), idsAdded.get("SQTRGeneAssociation"));

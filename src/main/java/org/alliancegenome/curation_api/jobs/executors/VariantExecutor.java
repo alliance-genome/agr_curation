@@ -48,7 +48,7 @@ public class VariantExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(variants.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalRecords((long) variants.size());
+		bulkLoadFileHistory.setCount(variants.size());
 		updateHistory(bulkLoadFileHistory);
 		
 		boolean success = runLoad(variantService, bulkLoadFileHistory, dataProvider, variants, variantIdsLoaded);

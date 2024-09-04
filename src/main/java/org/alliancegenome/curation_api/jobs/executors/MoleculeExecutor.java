@@ -31,7 +31,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) moleculeData.getData().size());
+			bulkLoadFileHistory.setCount(moleculeData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			runLoad(moleculeService, bulkLoadFileHistory, null, moleculeData.getData(), null);

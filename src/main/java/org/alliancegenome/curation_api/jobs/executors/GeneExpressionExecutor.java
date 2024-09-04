@@ -37,7 +37,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) geneExpressionIngestFmsDTO.getData().size());
+			bulkLoadFileHistory.setCount(geneExpressionIngestFmsDTO.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			
 			List<Long> annotationIdsLoaded = new ArrayList<>();
