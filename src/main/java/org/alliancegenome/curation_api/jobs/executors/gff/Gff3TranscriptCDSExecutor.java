@@ -82,15 +82,9 @@ public class Gff3TranscriptCDSExecutor extends Gff3Executor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF Transcript CDS update for " + dataProvider.name(), gffData.size());
 
-		assemblyId = loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
-		
-		if (assemblyId == null) {
-			failLoad(history, new Exception("GFF Header does not contain assembly"));
-			return false;
-		} else {
-			Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
-			loadParentChildAssociations(history, gffData, idsAdded, dataProvider, geneIdCurieMap, ph);
-		}
+		Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
+		loadParentChildAssociations(history, gffData, idsAdded, dataProvider, geneIdCurieMap, ph);
+
 		ph.finishProcess();
 		
 		return true;
