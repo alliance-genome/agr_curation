@@ -189,7 +189,6 @@ export const ConditionRelationTable = () => {
 			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
 			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
-
 		},
 		{
 			field: 'conditionRelationType.name',
@@ -202,12 +201,14 @@ export const ConditionRelationTable = () => {
 			field: 'conditions.conditionSummary',
 			header: 'Experimental Conditions',
 			sortable: true,
-			body: (rowData) => <ObjectListTemplate 
-				list={rowData.conditions} 
-				sortMethod={conditionsSort}
-				stringTemplate={(item) => item.conditionSummary}
-				showBullets={true}
-			/>,
+			body: (rowData) => (
+				<ObjectListTemplate
+					list={rowData.conditions}
+					sortMethod={conditionsSort}
+					stringTemplate={(item) => item.conditionSummary}
+					showBullets={true}
+				/>
+			),
 			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props),
 		},
