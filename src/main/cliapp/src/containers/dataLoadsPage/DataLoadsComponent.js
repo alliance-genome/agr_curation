@@ -45,7 +45,7 @@ export const DataLoadsComponent = () => {
 	const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
 	const [expandedGroupRows, setExpandedGroupRows] = useState(null);
 	const [expandedLoadRows, setExpandedLoadRows] = useState(null);
-	const [expandedFileRows, setExpandedFileRows] = useState(null);
+	//const [expandedFileRows, setExpandedFileRows] = useState(null);
 	const [expandedErrorLoadRows, setExpandedErrorLoadRows] = useState(null);
 	const [disableFormFields, setDisableFormFields] = useState(false);
 	const errorMessage = useRef(null);
@@ -105,8 +105,8 @@ export const DataLoadsComponent = () => {
 					if (group.loads) {
 						for (let load of group.loads) {
 							load.group = group.id;
-							if (load.loadFiles) {
-								let sortedFiles = sortFilesByDate(load.loadFiles);
+							if (load.history) {
+								let sortedFiles = sortFilesByDate(load.history);
 								if (sortedFiles[0].bulkloadStatus === 'FAILED') {
 									_errorLoads.push(load);
 								}
@@ -161,7 +161,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const urlTemplate = (rowData) => {
-		return <a href={rowData.s3Url}>Download</a>;
+		return <a href={rowData.bulkLoadFile.s3Url}>Download</a>;
 	};
 
 	const refresh = () => {
@@ -190,9 +190,9 @@ export const DataLoadsComponent = () => {
 		setDisableFormFields(true);
 	};
 
-	const deleteLoadFile = (rowData) => {
+	const deleteLoadFileHistory = (rowData) => {
 		getService()
-			.deleteLoadFile(rowData.id)
+			.deleteLoadFileHistory(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
@@ -306,7 +306,7 @@ export const DataLoadsComponent = () => {
 					key="delete"
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger mr-2"
-					onClick={() => deleteLoadFile(rowData)}
+					onClick={() => deleteLoadFileHistory(rowData)}
 				/>
 			);
 		}
@@ -354,7 +354,7 @@ export const DataLoadsComponent = () => {
 			);
 		}
 
-		if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
+		if (!rowData.history || rowData.history.length === 0) {
 			ret.push(
 				<Button
 					key="delete"
@@ -450,6 +450,7 @@ export const DataLoadsComponent = () => {
 		if (rowData.bulkloadStatus === 'FAILED') {
 			styleClass = 'p-button-danger';
 		}
+
 		if (
 			rowData.bulkloadStatus &&
 			(rowData.bulkloadStatus.endsWith('STARTED') ||
@@ -470,12 +471,12 @@ export const DataLoadsComponent = () => {
 
 	const bulkloadStatusTemplate = (rowData) => {
 		let sortedFiles = [];
-		if (rowData.loadFiles) {
-			sortedFiles = sortFilesByDate(rowData.loadFiles);
+		if (rowData.history) {
+			sortedFiles = sortFilesByDate(rowData.history);
 		}
 		let latestStatus = null;
 		let latestError = null;
-		if (rowData.loadFiles) {
+		if (rowData.history) {
 			latestStatus = sortedFiles[0].bulkloadStatus;
 			latestError = sortedFiles[0].errorMessage;
 		}
@@ -507,13 +508,23 @@ export const DataLoadsComponent = () => {
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
 					<Column field="loadStarted" header="Load Started" />
 					<Column field="loadFinished" header="Load Finished" />
+					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
 					<Column field="completedRecords" header="Records Completed" />
 					<Column field="failedRecords" header="Records Failed" />
 					<Column field="totalRecords" header="Total Records" />
 					<Column field="deletedRecords" header="Deletes Completed" />
 					<Column field="deleteFailedRecords" header="Deletes Failed" />
 					<Column field="totalDeleteRecords" header="Total Deletes" />
+
+					<Column field="bulkLoadFile.md5Sum" header="MD5 Sum" />
+					<Column field="bulkLoadFile.fileSize" header="Compressed File Size" />
+					<Column field="bulkLoadFile.recordCount" header="Record Count" />
+					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
+					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
+					{showModRelease(file)}
+
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
 			</div>
 		);
@@ -551,6 +562,7 @@ export const DataLoadsComponent = () => {
 		return sortedFiles;
 	};
 
+	/*
 	const fileTable = (load) => {
 		let sortedFiles = [];
 		if (load.loadFiles) {
@@ -584,6 +596,7 @@ export const DataLoadsComponent = () => {
 			</div>
 		);
 	};
+*/
 
 	const loadTable = (group) => {
 		let sortedLoads = [];
@@ -599,7 +612,7 @@ export const DataLoadsComponent = () => {
 					responsiveLayout="scroll"
 					expandedRows={expandedLoadRows}
 					onRowToggle={(e) => setExpandedLoadRows(e.data)}
-					rowExpansionTemplate={fileTable}
+					rowExpansionTemplate={historyTable}
 					dataKey="id"
 				>
 					<Column expander style={{ width: '3em' }} />
@@ -795,7 +808,7 @@ export const DataLoadsComponent = () => {
 							responsiveLayout="scroll"
 							expandedRows={expandedErrorLoadRows}
 							onRowToggle={(e) => setExpandedErrorLoadRows(e.data)}
-							rowExpansionTemplate={fileTable}
+							rowExpansionTemplate={historyTable}
 							dataKey="id"
 						>
 							<Column expander style={{ width: '3em' }} />

@@ -77,7 +77,7 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 			assemblyComponent.setGenomeAssembly(assemblyResponse.getSingleResult());
 		}
 		assemblyComponent.setTaxon(ncbiTaxonTermService.getByCurie(taxonCurie).getEntity());
-		assemblyComponent.setDataProvider(dataProviderService.createOrganizationDataProvider(dataProviderAbbreviation));
+		assemblyComponent.setDataProvider(dataProviderService.getDefaultDataProvider(dataProviderAbbreviation));
 		return assemblyComponentDAO.persist(assemblyComponent);
 	}
 
