@@ -16,7 +16,7 @@ import { ConditionRelationsDialog } from '../../components/ConditionRelationsDia
 
 import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
-import { DiseaseQualifiersTemplate } from '../../components/Templates/DiseaseQualifiersTemplate';
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate';
@@ -44,6 +44,7 @@ import {
 	getIdentifier,
 	setNewEntity,
 } from '../../utils/utils';
+import { diseaseQualifiersSort } from '../../components/Templates/sortMethods';
 import { useNewAnnotationReducer } from './useNewAnnotationReducer';
 import { NewAnnotationForm } from './NewAnnotationForm';
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
@@ -1149,7 +1150,11 @@ export const DiseaseAnnotationsTable = () => {
 		{
 			field: 'diseaseQualifiers.name',
 			header: 'Disease Qualifiers',
-			body: (rowData) => <DiseaseQualifiersTemplate diseaseQualifiers={rowData.diseaseQualifiers} />,
+			body: (rowData) => <ObjectListTemplate 
+				list={rowData.diseaseQualifiers} 
+				sortMethod={diseaseQualifiersSort}
+				stringTemplate={(item) => item.name}
+			/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
 			editor: (props) => diseaseQualifiersEditor(props),

@@ -12,7 +12,7 @@ import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
-import { crossReferencesSort } from '../../components/Templates/utils';
+import { crossReferencesSort } from '../../components/Templates/sortMethods';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
