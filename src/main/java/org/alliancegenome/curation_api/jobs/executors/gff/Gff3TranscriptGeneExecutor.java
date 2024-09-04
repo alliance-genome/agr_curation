@@ -62,7 +62,7 @@ public class Gff3TranscriptGeneExecutor extends Gff3Executor {
 			bulkLoadFileHistory.setTotalRecords((long) preProcessedTranscriptGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, idsAdded, dataProvider, null);
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, idsAdded, dataProvider);
 
 			if (success) {
 				runCleanup(transcriptGeneService, bulkLoadFileHistory, dataProvider.name(), transcriptGeneService.getIdsByDataProvider(dataProvider), idsAdded, "GFF transcript gene association");
@@ -76,21 +76,15 @@ public class Gff3TranscriptGeneExecutor extends Gff3Executor {
 		}
 	}
 
-	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider) {
 		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF Transcript Gene update for " + dataProvider.name(), gffData.size());
 
-		assemblyId = loadGenomeAssembly(assemblyId, history, gffHeaderData, dataProvider, ph);
-		
-		if (assemblyId == null) {
-			failLoad(history, new Exception("GFF Header does not contain assembly"));
-			return false;
-		} else {
-			Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
-			loadParentChildAssociations(history, gffData, idsAdded, dataProvider, geneIdCurieMap, ph);
-		}
+		Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
+		loadParentChildAssociations(history, gffData, idsAdded, dataProvider, geneIdCurieMap, ph);
+
 		ph.finishProcess();
 		
 		return true;
@@ -102,7 +96,7 @@ public class Gff3TranscriptGeneExecutor extends Gff3Executor {
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);
 		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedTranscriptGffData.size());
 		
-		runLoad(history, null, preProcessedTranscriptGffData, idsAdded, dataProvider, assemblyName);
+		runLoad(history, null, preProcessedTranscriptGffData, idsAdded, dataProvider);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
