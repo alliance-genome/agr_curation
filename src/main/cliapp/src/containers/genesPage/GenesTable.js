@@ -8,7 +8,7 @@ import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
 import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
 import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
-import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
@@ -17,6 +17,7 @@ import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialog
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -218,7 +219,13 @@ export const GenesTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences} />,
+			body: (rowData) => (
+				<ObjectListTemplate
+					list={rowData.crossReferences}
+					sortMethod={crossReferencesSort}
+					stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
+				/>
+			),
 		},
 		{
 			field: 'updatedBy.uniqueId',
