@@ -8,11 +8,11 @@ export const StringListTemplate = ({ list }) => {
 	const targetClass = `a${global.crypto.randomUUID()}`;
 
 	//filter out falsy values
-	const filteredList = list.filter(item => item);
+	const filteredList = list.filter((item) => item);
 	const sortedList = filteredList.sort();
 
 	const listTemplate = (item) => {
-		if(!item) return;
+		if (!item) return;
 		return <EllipsisTableCell>{item}</EllipsisTableCell>;
 	};
 

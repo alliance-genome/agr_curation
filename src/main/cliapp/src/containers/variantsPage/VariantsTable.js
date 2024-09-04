@@ -295,11 +295,13 @@ export const VariantsTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <ObjectListTemplate 
-				list={rowData.crossReferences} 
-				sortMethod={crossReferencesSort}
-				stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
-			/>,
+			body: (rowData) => (
+				<ObjectListTemplate
+					list={rowData.crossReferences}
+					sortMethod={crossReferencesSort}
+					stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
+				/>
+			),
 		},
 		{
 			field: 'updatedBy.uniqueId',

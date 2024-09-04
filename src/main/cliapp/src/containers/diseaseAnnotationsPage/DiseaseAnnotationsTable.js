@@ -1081,11 +1081,13 @@ export const DiseaseAnnotationsTable = () => {
 		{
 			field: 'evidenceCodes.abbreviation',
 			header: 'Evidence Code',
-			body: (rowData) => <ObjectListTemplate
-				list={rowData.evidenceCodes}
-				sortMethod={evidenceCodesSort}
-				stringTemplate={(item) => `${item.abbreviation} - ${item.name} (${item.curie})`}
-			/>,
+			body: (rowData) => (
+				<ObjectListTemplate
+					list={rowData.evidenceCodes}
+					sortMethod={evidenceCodesSort}
+					stringTemplate={(item) => `${item.abbreviation} - ${item.name} (${item.curie})`}
+				/>
+			),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 			editor: (props) => evidenceEditorTemplate(props),
@@ -1153,11 +1155,13 @@ export const DiseaseAnnotationsTable = () => {
 		{
 			field: 'diseaseQualifiers.name',
 			header: 'Disease Qualifiers',
-			body: (rowData) => <ObjectListTemplate
-				list={rowData.diseaseQualifiers}
-				sortMethod={diseaseQualifiersSort}
-				stringTemplate={(item) => item.name}
-			/>,
+			body: (rowData) => (
+				<ObjectListTemplate
+					list={rowData.diseaseQualifiers}
+					sortMethod={diseaseQualifiersSort}
+					stringTemplate={(item) => item.name}
+				/>
+			),
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
 			editor: (props) => diseaseQualifiersEditor(props),
