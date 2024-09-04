@@ -6,7 +6,6 @@ import { Messages } from 'primereact/messages';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { Tooltip } from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import { ConditionRelationService } from '../../service/ConditionRelationService';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
@@ -30,6 +29,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { conditionsSort } from '../../components/Templates/utils/sortMethods';
 
 export const ConditionRelationTable = () => {
@@ -140,7 +140,6 @@ export const ConditionRelationTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	//todo: replace
 	const conditionRelationTemplate = (props) => {
 		return (
 			<>
@@ -174,30 +173,6 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	//todo: replace
-	const singleReferenceBodyTemplate = (rowData) => {
-		if (rowData && rowData.singleReference) {
-			let refString = getRefString(rowData.singleReference);
-			return (
-				<>
-					<div
-						className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
-						dangerouslySetInnerHTML={{
-							__html: refString,
-						}}
-					/>
-					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
-						<div
-							dangerouslySetInnerHTML={{
-								__html: refString,
-							}}
-						/>
-					</Tooltip>
-				</>
-			);
-		}
-	};
-
 	const columns = [
 		{
 			field: 'handle',
@@ -213,7 +188,8 @@ export const ConditionRelationTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
-			body: singleReferenceBodyTemplate,
+			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
+
 		},
 		{
 			field: 'conditionRelationType.name',
