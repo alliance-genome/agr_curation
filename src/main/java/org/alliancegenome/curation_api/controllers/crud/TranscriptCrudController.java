@@ -54,6 +54,14 @@ public class TranscriptCrudController extends BaseEntityCrudController<Transcrip
 		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
 		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
 		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		resp = (LoadHistoryResponce) gff3TranscriptCDSExecutor.runLoadApi(dataProvider, assembly, gffData);
+		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
+		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
+		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
+		resp = (LoadHistoryResponce) gff3TranscriptExonExecutor.runLoadApi(dataProvider, assembly, gffData);
+		history.setFailedRecords(history.getFailedRecords() + resp.getHistory().getFailedRecords());
+		history.setCompletedRecords(history.getCompletedRecords() + resp.getHistory().getCompletedRecords());
+		history.setTotalRecords(history.getTotalRecords() + resp.getHistory().getTotalRecords());
 		return new LoadHistoryResponce(history);
 	}
 
