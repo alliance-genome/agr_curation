@@ -19,6 +19,15 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSLocationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonLocationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptCDSExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExonExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptGeneExecutor;
+import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptLocationExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 
 import jakarta.enterprise.context.ApplicationScoped;

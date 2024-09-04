@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.jobs.executors;
+package org.alliancegenome.curation_api.jobs.executors.gff;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGeneAssociationService;
+import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -52,16 +53,16 @@ public class Gff3TranscriptGeneExecutor extends Gff3Executor {
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);
 			
 			gffData.clear();
 			
 			List<Long> idsAdded = new ArrayList<>();
 
-			bulkLoadFileHistory.setTotalRecords((long) preProcessedGffData.size());
+			bulkLoadFileHistory.setTotalRecords((long) preProcessedTranscriptGffData.size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGffData, idsAdded, dataProvider, null);
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, idsAdded, dataProvider, null);
 
 			if (success) {
 				runCleanup(transcriptGeneService, bulkLoadFileHistory, dataProvider.name(), transcriptGeneService.getIdsByDataProvider(dataProvider), idsAdded, "GFF transcript gene association");
@@ -88,7 +89,7 @@ public class Gff3TranscriptGeneExecutor extends Gff3Executor {
 			return false;
 		} else {
 			Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
-			loadParentChildAssociations(history, gffData, idsAdded, dataProvider, assemblyId, geneIdCurieMap, ph);
+			loadParentChildAssociations(history, gffData, idsAdded, dataProvider, geneIdCurieMap, ph);
 		}
 		ph.finishProcess();
 		
@@ -98,20 +99,20 @@ public class Gff3TranscriptGeneExecutor extends Gff3Executor {
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGffData = preProcessGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedGffData.size());
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedTranscriptGffData.size());
 		
-		runLoad(history, null, preProcessedGffData, idsAdded, dataProvider, assemblyName);
+		runLoad(history, null, preProcessedTranscriptGffData, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);
 	}
 
-	private void loadParentChildAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
+	private void loadParentChildAssociations(BulkLoadFileHistory history, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> idsAdded, BackendBulkDataProvider dataProvider, Map<String, String> geneIdCurieMap, ProcessDisplayHelper ph) {
 		updateHistory(history);
 		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 			try {
-				gff3Service.loadGeneParentChildAssociations(history, gff3EntryPair, idsAdded, dataProvider, assemblyId, geneIdCurieMap);
+				gff3Service.loadGeneParentChildAssociations(history, gff3EntryPair, idsAdded, dataProvider, geneIdCurieMap);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
