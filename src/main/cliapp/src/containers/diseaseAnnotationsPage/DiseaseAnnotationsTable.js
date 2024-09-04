@@ -14,7 +14,6 @@ import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
 
-import { EvidenceCodesTemplate } from '../../components/Templates/EvidenceCodesTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
@@ -44,7 +43,7 @@ import {
 	getIdentifier,
 	setNewEntity,
 } from '../../utils/utils';
-import { diseaseQualifiersSort } from '../../components/Templates/sortMethods';
+import { diseaseQualifiersSort, evidenceCodesSort } from '../../components/Templates/utils/sortMethods';
 import { useNewAnnotationReducer } from './useNewAnnotationReducer';
 import { NewAnnotationForm } from './NewAnnotationForm';
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
@@ -1082,7 +1081,11 @@ export const DiseaseAnnotationsTable = () => {
 		{
 			field: 'evidenceCodes.abbreviation',
 			header: 'Evidence Code',
-			body: (rowData) => <EvidenceCodesTemplate evidenceCodes={rowData.evidenceCodes} />,
+			body: (rowData) => <ObjectListTemplate
+				list={rowData.evidenceCodes}
+				sortMethod={evidenceCodesSort}
+				stringTemplate={(item) => `${item.abbreviation} - ${item.name} (${item.curie})`}
+			/>,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 			editor: (props) => evidenceEditorTemplate(props),
@@ -1150,8 +1153,8 @@ export const DiseaseAnnotationsTable = () => {
 		{
 			field: 'diseaseQualifiers.name',
 			header: 'Disease Qualifiers',
-			body: (rowData) => <ObjectListTemplate 
-				list={rowData.diseaseQualifiers} 
+			body: (rowData) => <ObjectListTemplate
+				list={rowData.diseaseQualifiers}
 				sortMethod={diseaseQualifiersSort}
 				stringTemplate={(item) => item.name}
 			/>,

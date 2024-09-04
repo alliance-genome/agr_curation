@@ -22,7 +22,7 @@ import { ControlledVocabularyDropdown } from '../../components/ControlledVocabul
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-import { crossReferencesSort } from '../../components/Templates/sortMethods';
+import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
 

@@ -17,7 +17,7 @@ import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialog
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
-import { crossReferencesSort } from '../../components/Templates/sortMethods';
+import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
 
