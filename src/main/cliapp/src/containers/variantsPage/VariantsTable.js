@@ -19,9 +19,10 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { crossReferencesSort } from '../../components/Templates/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -294,7 +295,11 @@ export const VariantsTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate xrefs={rowData.crossReferences} />,
+			body: (rowData) => <ObjectListTemplate 
+				list={rowData.crossReferences} 
+				sortMethod={crossReferencesSort}
+				stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
+			/>,
 		},
 		{
 			field: 'updatedBy.uniqueId',
