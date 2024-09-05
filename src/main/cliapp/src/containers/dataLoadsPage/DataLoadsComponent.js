@@ -1,6 +1,7 @@
 import React, { useReducer, useRef, useState, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
+import Moment from 'react-moment';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
@@ -494,6 +495,21 @@ export const DataLoadsComponent = () => {
 		return <Button label={latestStatus} tooltip={latestError} className={`p-button-rounded ${styleClass}`} />;
 	};
 
+	const durationTemplate = (rowData) => {
+		const started = new Date(rowData.loadStarted);
+		const finished = new Date(rowData.loadFinished);
+
+		return (
+			<Moment format="HH:mm:ss" duration={started} date={finished} />
+		);
+	}
+
+	const numberTemplate = (number) => {
+		//still want to pass through falsy 0 values
+		if(number === null || number === undefined) return;
+		return new Intl.NumberFormat().format(number);
+	}
+
 	const historyTable = (file) => {
 		let sortedHistory = [];
 		if (file.history != null) {
@@ -503,22 +519,24 @@ export const DataLoadsComponent = () => {
 				return start2 - start1;
 			});
 		}
+
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
 					<Column field="loadStarted" header="Load Started" />
 					<Column field="loadFinished" header="Load Finished" />
+					<Column field="duration" header="Duration" body={durationTemplate}/>
 					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
-					<Column field="completedRecords" header="Records Completed" />
-					<Column field="failedRecords" header="Records Failed" />
-					<Column field="totalRecords" header="Total Records" />
-					<Column field="deletedRecords" header="Deletes Completed" />
-					<Column field="deleteFailedRecords" header="Deletes Failed" />
-					<Column field="totalDeleteRecords" header="Total Deletes" />
+					<Column field="completedRecords" header="Records Completed" body={(rowData) => numberTemplate(rowData.completedRecords)}/>
+					<Column field="failedRecords" header="Records Failed" body={(rowData) => numberTemplate(rowData.failedRecords)}/>
+					<Column field="totalRecords" header="Total Records" body={(rowData) => numberTemplate(rowData.totalRecords)}/>
+					<Column field="deletedRecords" header="Deletes Completed" body={(rowData) => numberTemplate(rowData.deletedRecords)}/>
+					<Column field="deleteFailedRecords" header="Deletes Failed" body={(rowData) => numberTemplate(rowData.deleteFailedRecords)}/>
+					<Column field="totalDeleteRecords" header="Total Deletes" body={(rowData) => numberTemplate(rowData.totalDeleteRecords)}/>
 
 					<Column field="bulkLoadFile.md5Sum" header="MD5 Sum" />
-					<Column field="bulkLoadFile.fileSize" header="Compressed File Size" />
-					<Column field="bulkLoadFile.recordCount" header="Record Count" />
+					<Column field="bulkLoadFile.fileSize" header="Compressed File Size" body={(rowData) => numberTemplate(rowData.bulkLoadFile.fileSize)}/>
+					<Column field="bulkLoadFile.recordCount" header="Record Count" body={(rowData) => numberTemplate(rowData.bulkLoadFile.recordCount)}/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
 					{showModRelease(file)}
