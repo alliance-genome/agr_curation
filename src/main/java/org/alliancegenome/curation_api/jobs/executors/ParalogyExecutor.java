@@ -55,7 +55,8 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileHistory.finishLoad();
 
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);

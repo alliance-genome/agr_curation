@@ -59,7 +59,8 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			runCleanup(diseaseAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "AGM disease annotation");
 		}
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }

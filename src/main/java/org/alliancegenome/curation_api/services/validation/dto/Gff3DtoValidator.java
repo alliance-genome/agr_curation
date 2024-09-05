@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
@@ -71,7 +72,7 @@ public class Gff3DtoValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	
 	@Transactional
-	public Exon validateExonEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Exon exon = null;
 
@@ -98,11 +99,14 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, exonResponse.errorMessagesString());
 		}
 		
-		return exonDAO.persist(exonResponse.getEntity());
+		exon = exonDAO.persist(exonResponse.getEntity());
+		if (exon != null) {
+			idsAdded.add(exon.getId());
+		}
 	}
 	
 	@Transactional
-	public CodingSequence validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		CodingSequence cds = null;
 		
@@ -129,11 +133,14 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, cdsResponse.errorMessagesString());
 		}
 		
-		return codingSequenceDAO.persist(cdsResponse.getEntity());
+		cds = codingSequenceDAO.persist(cdsResponse.getEntity());
+		if (cds != null) {
+			idsAdded.add(cds.getId());
+		}
 	}
 	
 	@Transactional
-	public Transcript validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		if (!Gff3Constants.TRANSCRIPT_TYPES.contains(dto.getType())) {
 			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for Transcript Entity");
@@ -168,7 +175,10 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, transcriptResponse.errorMessagesString());
 		}
 		
-		return transcriptDAO.persist(transcriptResponse.getEntity());
+		transcript = transcriptDAO.persist(transcriptResponse.getEntity());
+		if (transcript != null) {
+			idsAdded.add(transcript.getId());
+		}
 	}
 	
 	private <E extends GenomicEntity> ObjectResponse<E> validateGenomicEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {

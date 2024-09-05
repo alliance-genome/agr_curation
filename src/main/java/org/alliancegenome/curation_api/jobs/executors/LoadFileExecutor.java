@@ -53,8 +53,8 @@ public class LoadFileExecutor {
 		bulkLoadFileHistoryDAO.merge(history);
 	}
 
-	protected void finalSaveHistory(BulkLoadFileHistory history) {
-		bulkLoadFileHistoryDAO.merge(history);
+	protected void updateExceptions(BulkLoadFileHistory history) {
+		//bulkLoadFileHistoryDAO.merge(history);
 		for (BulkLoadFileException e : history.getExceptions()) {
 			bulkLoadFileExceptionDAO.merge(e);
 		}
@@ -64,7 +64,9 @@ public class LoadFileExecutor {
 		BulkLoadFileException exception = new BulkLoadFileException();
 		exception.setException(objectUpdateExceptionData);
 		exception.setBulkLoadFileHistory(history);
-		history.getExceptions().add(exception);
+		//history.getExceptions().add(exception);
+		bulkLoadFileExceptionDAO.persist(exception);
+		//bulkLoadFileHistoryDAO.merge(history);
 	}
 
 	protected String getVersionNumber(String versionString) {
@@ -224,13 +226,15 @@ public class LoadFileExecutor {
 				}
 				if (terminateFailing && history.getErrorRate() > 0.25) {
 					Log.error("Failure Rate > 25% aborting load");
-					finalSaveHistory(history);
+					updateHistory(history);
+					updateExceptions(history);
 					failLoadAboveErrorRateCutoff(history);
 					return false;
 				}
 				ph.progressProcess();
 			}
-			finalSaveHistory(history);
+			updateHistory(history);
+			updateExceptions(history);
 			ph.finishProcess();
 		}
 		return true;
@@ -255,12 +259,13 @@ public class LoadFileExecutor {
 		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
 		history.setCount(countType, idsToRemove.size() + existingDeletes);
 
+		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of entities linked to unloaded " + dataProviderName, idsToRemove.size());
-		updateHistory(history);
+		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
+		//updateHistory(history);
 		for (Long id : idsToRemove) {
 			try {
-				String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
 				service.deprecateOrDelete(id, false, loadDescription, deprecate);
 				history.incrementCompleted(countType);
 			} catch (Exception e) {
@@ -274,7 +279,8 @@ public class LoadFileExecutor {
 			}
 			ph.progressProcess();
 		}
-		finalSaveHistory(history);
+		updateHistory(history);
+		updateExceptions(history);
 		ph.finishProcess();
 	}
 

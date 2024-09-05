@@ -60,7 +60,8 @@ public class GeneExecutor extends LoadFileExecutor {
 			runCleanup(geneService, bulkLoadFileHistory, dataProvider.name(), geneIdsBefore, geneIdsLoaded, "gene");
 		}
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 
 	}
 

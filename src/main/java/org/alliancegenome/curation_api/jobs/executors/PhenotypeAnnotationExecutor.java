@@ -59,7 +59,8 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			runCleanup(phenotypeAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded.stream().collect(Collectors.toList()), "phenotype annotation");
 
 			bulkLoadFileHistory.finishLoad();
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();

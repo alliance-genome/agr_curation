@@ -61,7 +61,8 @@ public class ConstructExecutor extends LoadFileExecutor {
 			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct");
 		}
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }

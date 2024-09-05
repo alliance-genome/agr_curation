@@ -36,7 +36,8 @@ public class MoleculeExecutor extends LoadFileExecutor {
 
 			runLoad(moleculeService, bulkLoadFileHistory, null, moleculeData.getData(), null);
 			bulkLoadFileHistory.finishLoad();
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

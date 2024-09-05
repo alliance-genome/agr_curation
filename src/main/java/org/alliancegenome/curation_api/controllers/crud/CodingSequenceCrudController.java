@@ -6,10 +6,7 @@ import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.interfaces.crud.CodingSequenceCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSLocationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptCDSExecutor;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
@@ -25,8 +22,6 @@ public class CodingSequenceCrudController extends BaseEntityCrudController<Codin
 
 	@Inject CodingSequenceService codingSequenceService;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
-	@Inject Gff3CDSLocationExecutor gff3CDSLocationExecutor;
-	@Inject Gff3TranscriptCDSExecutor gff3TranscriptCDSExecutor;
 
 	@Override
 	@PostConstruct
@@ -36,14 +31,8 @@ public class CodingSequenceCrudController extends BaseEntityCrudController<Codin
 
 	@Override
 	public APIResponse updateCodingSequences(String dataProvider, String assembly, List<Gff3DTO> gffData) {
-		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		LoadHistoryResponce resp = (LoadHistoryResponce) gff3CDSExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.addCounts(resp.getHistory());
-		resp = (LoadHistoryResponce) gff3CDSLocationExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.addCounts(resp.getHistory());
-		resp = (LoadHistoryResponce) gff3TranscriptCDSExecutor.runLoadApi(dataProvider, assembly, gffData);
-		history.addCounts(resp.getHistory());
-		return new LoadHistoryResponce(history);
+		return new LoadHistoryResponce(resp.getHistory());
 	}
 
 	@Override

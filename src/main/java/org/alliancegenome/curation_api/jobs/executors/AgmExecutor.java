@@ -60,7 +60,8 @@ public class AgmExecutor extends LoadFileExecutor {
 			runCleanup(affectedGenomicModelService, bulkLoadFileHistory, dataProvider.name(), agmIdsBefore, agmIdsLoaded, "AGM");
 		}
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 
 	}
 

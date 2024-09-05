@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.output.ProcessCount;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -91,7 +92,7 @@ public class BulkLoadFileHistory extends AuditedObject {
 	
 	
 	@Transient
-	public void addCounts(BulkLoadFileHistory history) {
+	public void addCounts2(BulkLoadFileHistory history) {
 		for (Entry<String, ProcessCount> entry: history.getCounts().entrySet()) {
 			String key = entry.getKey();
 			if (counts.containsKey(key)) {
@@ -153,43 +154,5 @@ public class BulkLoadFileHistory extends AuditedObject {
 			return count;
 		}
 	}
-
-	@Data
-	public class ProcessCount {
-		private Long total;
-		private Long failed;
-		private Long completed;
-		private Long error;
-		
-		public ProcessCount(Long total) {
-			this.total = total;
-		}
-		public ProcessCount(Integer total) {
-			this.total = Long.valueOf(total);
-		}
-
-		public void incrementCompleted() {
-			completed++;
-			error--;
-		}
-		public void incrementFailed() {
-			failed++;
-			error++;
-		}
-		public double getErrorRate() {
-			return error / 1000;
-		}
-
-		public void add(ProcessCount count) {
-			total += count.getTotal();
-			failed += count.getFailed();
-			completed += count.getCompleted();
-			
-			
-		}
-	}
-	
-	
-	
 
 }
