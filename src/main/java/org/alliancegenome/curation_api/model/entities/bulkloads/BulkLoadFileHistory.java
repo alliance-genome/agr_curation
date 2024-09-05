@@ -135,7 +135,6 @@ public class BulkLoadFileHistory extends AuditedObject {
 	public void incrementFailed(String countType) {
 		getProcessCount(countType).incrementFailed();
 	}
-
 	@Transient
 	public double getErrorRate() {
 		return getErrorRate(COUNT_TYPE);

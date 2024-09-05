@@ -1,9 +1,14 @@
 package org.alliancegenome.curation_api.model.output;
 
+import org.alliancegenome.curation_api.view.View;
+
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data @NoArgsConstructor
+@JsonView({ View.FieldsOnly.class })
 public class ProcessCount {
 	private Long total = 0L;
 	private Long failed = 0L;
@@ -44,4 +49,5 @@ public class ProcessCount {
 		completed += count.getCompleted();
 		error += count.getError();
 	}
+
 }

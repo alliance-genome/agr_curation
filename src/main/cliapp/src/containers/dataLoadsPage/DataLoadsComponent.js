@@ -496,11 +496,23 @@ export const DataLoadsComponent = () => {
 	};
 
 	const durationTemplate = (rowData) => {
-		const started = new Date(rowData.loadStarted);
-		const finished = new Date(rowData.loadFinished);
+		let started = new Date(rowData.loadStarted);
+		let finished = Date.now();
+		if(rowData.loadFinished) {
+			finished = new Date(rowData.loadFinished);
+		}
 
 		return (
-			<Moment format="HH:mm:ss" duration={started} date={finished} />
+			<>
+				Start: <Moment format="YYYY-MM-DD HH:mm:ss" date={started} /><br />
+				{ rowData.loadFinished &&
+					<>End: <Moment format="YYYY-MM-DD HH:mm:ss" date={finished} /><br />
+					Duration: <Moment format="HH:mm:ss" duration={started} date={finished} /></>
+				}
+				{ !rowData.loadFinished && rowData.bulkloadStatus !== "FAILED" &&
+					<>Running Time: <Moment format="HH:mm:ss" duration={started} date={finished} /></>
+				}
+			</>
 		);
 	}
 
@@ -508,6 +520,24 @@ export const DataLoadsComponent = () => {
 		//still want to pass through falsy 0 values
 		if(number === null || number === undefined) return;
 		return new Intl.NumberFormat().format(number);
+	}
+
+	const countsTemplate = (rowData) => {
+
+		let countsArray = [];
+		for(let count in rowData.counts) {
+			countsArray.push({...rowData.counts[count], name: count});
+		}
+
+		return (
+			<DataTable key="countsTable" value={countsArray}>
+				<Column field="name" />
+				<Column field="completed" header="Completed" />
+				<Column field="failed" header="Failed" />
+				<Column field="skipped" header="Skipped" />
+				<Column field="total" header="Total" />
+			</DataTable>
+		);
 	}
 
 	const historyTable = (file) => {
@@ -523,20 +553,12 @@ export const DataLoadsComponent = () => {
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
-					<Column field="loadStarted" header="Load Started" />
-					<Column field="loadFinished" header="Load Finished" />
-					<Column field="duration" header="Duration" body={durationTemplate}/>
-					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
-					<Column field="completedRecords" header="Records Completed" body={(rowData) => numberTemplate(rowData.completedRecords)}/>
-					<Column field="failedRecords" header="Records Failed" body={(rowData) => numberTemplate(rowData.failedRecords)}/>
-					<Column field="totalRecords" header="Total Records" body={(rowData) => numberTemplate(rowData.totalRecords)}/>
-					<Column field="deletedRecords" header="Deletes Completed" body={(rowData) => numberTemplate(rowData.deletedRecords)}/>
-					<Column field="deleteFailedRecords" header="Deletes Failed" body={(rowData) => numberTemplate(rowData.deleteFailedRecords)}/>
-					<Column field="totalDeleteRecords" header="Total Deletes" body={(rowData) => numberTemplate(rowData.totalDeleteRecords)}/>
 
+					<Column field="duration" header="Time" body={durationTemplate}/>
+					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
+					<Column field="counts" body={countsTemplate} header="Counts" />
 					<Column field="bulkLoadFile.md5Sum" header="MD5 Sum" />
 					<Column field="bulkLoadFile.fileSize" header="Compressed File Size" body={(rowData) => numberTemplate(rowData.bulkLoadFile.fileSize)}/>
-					<Column field="bulkLoadFile.recordCount" header="Record Count" body={(rowData) => numberTemplate(rowData.bulkLoadFile.recordCount)}/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
 					{showModRelease(file)}

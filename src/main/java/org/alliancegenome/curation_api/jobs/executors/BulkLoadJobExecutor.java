@@ -69,9 +69,6 @@ public class BulkLoadJobExecutor {
 
 		if (ingestTypes.contains(loadType)) {
 
-			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(0);
-			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
-
 			if (loadType == AGM || loadType == FULL_INGEST) {
 				agmExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}

@@ -20,14 +20,13 @@ public class Gff3Executor extends LoadFileExecutor {
 	protected String loadGenomeAssembly(String assemblyName, BulkLoadFileHistory history, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) {
 		try {
 			assemblyName = gff3Service.loadGenomeAssembly(assemblyName, gffHeaderData, dataProvider);
-			history.incrementCompleted();
 		} catch (ObjectUpdateException e) {
 			//e.printStackTrace();
-			history.incrementFailed();
+			history.incrementFailed("Assembly");
 			addException(history, e.getData());
 		} catch (Exception e) {
 			e.printStackTrace();
-			history.incrementFailed();
+			history.incrementFailed("Assembly");
 			addException(history, new ObjectUpdateExceptionData(gffHeaderData, e.getMessage(), e.getStackTrace()));
 		}
 		updateHistory(history);

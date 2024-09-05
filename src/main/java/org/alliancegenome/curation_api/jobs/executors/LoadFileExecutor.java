@@ -254,7 +254,7 @@ public class LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
-		String countType = "Deleted";
+		String countType = loadTypeString + " Deleted";
 		
 		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
 		history.setCount(countType, idsToRemove.size() + existingDeletes);
