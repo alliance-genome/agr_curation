@@ -498,35 +498,40 @@ export const DataLoadsComponent = () => {
 	const durationTemplate = (rowData) => {
 		let started = new Date(rowData.loadStarted);
 		let finished = Date.now();
-		if(rowData.loadFinished) {
+		if (rowData.loadFinished) {
 			finished = new Date(rowData.loadFinished);
 		}
 
 		return (
 			<>
-				Start: <Moment format="YYYY-MM-DD HH:mm:ss" date={started} /><br />
-				{ rowData.loadFinished &&
-					<>End: <Moment format="YYYY-MM-DD HH:mm:ss" date={finished} /><br />
-					Duration: <Moment format="HH:mm:ss" duration={started} date={finished} /></>
-				}
-				{ !rowData.loadFinished && rowData.bulkloadStatus !== "FAILED" &&
-					<>Running Time: <Moment format="HH:mm:ss" duration={started} date={finished} /></>
-				}
+				Start: <Moment format="YYYY-MM-DD HH:mm:ss" date={started} />
+				<br />
+				{rowData.loadFinished && (
+					<>
+						End: <Moment format="YYYY-MM-DD HH:mm:ss" date={finished} />
+						<br />
+						Duration: <Moment format="HH:mm:ss" duration={started} date={finished} />
+					</>
+				)}
+				{!rowData.loadFinished && rowData.bulkloadStatus !== 'FAILED' && (
+					<>
+						Running Time: <Moment format="HH:mm:ss" duration={started} date={finished} />
+					</>
+				)}
 			</>
 		);
-	}
+	};
 
 	const numberTemplate = (number) => {
 		//still want to pass through falsy 0 values
-		if(number === null || number === undefined) return;
+		if (number === null || number === undefined) return;
 		return new Intl.NumberFormat().format(number);
-	}
+	};
 
 	const countsTemplate = (rowData) => {
-
 		let countsArray = [];
-		for(let count in rowData.counts) {
-			countsArray.push({...rowData.counts[count], name: count});
+		for (let count in rowData.counts) {
+			countsArray.push({ ...rowData.counts[count], name: count });
 		}
 
 		return (
@@ -538,7 +543,7 @@ export const DataLoadsComponent = () => {
 				<Column field="total" header="Total" />
 			</DataTable>
 		);
-	}
+	};
 
 	const historyTable = (file) => {
 		let sortedHistory = [];
@@ -553,12 +558,15 @@ export const DataLoadsComponent = () => {
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
-
-					<Column field="duration" header="Time" body={durationTemplate}/>
+					<Column field="duration" header="Time" body={durationTemplate} />
 					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
 					<Column field="counts" body={countsTemplate} header="Counts" />
 					<Column field="bulkLoadFile.md5Sum" header="MD5 Sum" />
-					<Column field="bulkLoadFile.fileSize" header="Compressed File Size" body={(rowData) => numberTemplate(rowData.bulkLoadFile.fileSize)}/>
+					<Column
+						field="bulkLoadFile.fileSize"
+						header="Compressed File Size"
+						body={(rowData) => numberTemplate(rowData.bulkLoadFile.fileSize)}
+					/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
 					{showModRelease(file)}
