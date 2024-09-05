@@ -32,7 +32,7 @@ public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService
 	}
 
 	public HTPExpressionDatasetAnnotation upsert(HTPExpressionDatasetAnnotationFmsDTO htpExpressionDatasetAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
-		return htpExpressionDatasetAnnotationFmsDtoValidator.validateHTPExpressionDatasetAnnotationFmsDTO(htpExpressionDatasetAnnotationData);
+		return htpExpressionDatasetAnnotationFmsDtoValidator.validateHTPExpressionDatasetAnnotationFmsDTO(htpExpressionDatasetAnnotationData, backendBulkDataProvider);
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(String dataProvider) {

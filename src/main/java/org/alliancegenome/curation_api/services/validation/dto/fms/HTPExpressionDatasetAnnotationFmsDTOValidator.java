@@ -8,6 +8,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
@@ -18,6 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDataset
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PublicationFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
@@ -35,16 +37,18 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 	@Inject ExternalDataBaseEntityService externalDataBaseService;
 	@Inject ReferenceService referenceService;
 	@Inject VocabularyTermService vocabularyTermService;
+	@Inject ExternalDataBaseEntityFmsDTOValidator externalDataBaseEntityFmsDtoValidator;
+	@Inject DataProviderService dataProviderService;
 	
 	@Transactional
-	public HTPExpressionDatasetAnnotation validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto) throws ObjectValidationException {
+	public HTPExpressionDatasetAnnotation validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ObjectValidationException {
 		ObjectResponse<HTPExpressionDatasetAnnotation> htpAnnotationResponse = new ObjectResponse<>();
 
 		HTPExpressionDatasetAnnotation htpannotation;
 
 		if (dto.getDatasetId() != null) {
 			String curie = dto.getDatasetId().getPrimaryId();
-			ExternalDataBaseEntity externalDbEntity = externalDataBaseService.findByCurie(curie);
+			ExternalDataBaseEntity externalDbEntity = externalDataBaseEntityFmsDtoValidator.validateExternalDataBaseEntityFmsDTO(dto.getDatasetId());
 			if (externalDbEntity != null) {
 				Long htpId = externalDbEntity.getId();
 				Map<String, Object> params = new HashMap<>();
@@ -142,6 +146,8 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 		} else {
 			htpannotation.setRelatedNote(null);
 		}
+
+		htpannotation.setDataProvider(dataProviderService.getDefaultDataProvider(backendBulkDataProvider.sourceOrganization));
 
 		if (htpAnnotationResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, htpAnnotationResponse.errorMessagesString());
