@@ -24,7 +24,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 	public void processBulkManualLoad(@ObservesAsync StartedBulkLoadJobEvent load) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		if (bulkLoad instanceof BulkManualLoad bulkURLLoad) {
-			Log.info("processBulkManualLoad: " + load.getId());
+			Log.debug("processBulkManualLoad: " + load.getId());
 			// We do nothing because at the load level we don't try to figure out what the
 			// next file to run is
 		}

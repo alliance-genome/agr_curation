@@ -55,9 +55,7 @@ public class BulkLoadProcessor {
 	public void syncWithS3(BulkLoadFileHistory bulkLoadFileHistory) {
 		BulkLoad bulkLoad = bulkLoadFileHistory.getBulkLoad();
 		BulkLoadFile bulkLoadFile = bulkLoadFileHistory.getBulkLoadFile();
-		Log.info("Syncing with S3");
-		Log.info("Local: " + bulkLoadFile.getLocalFilePath());
-		Log.info("S3: " + bulkLoadFile.getS3Path());
+		Log.info("Starting Syncing with S3: Local File: " + bulkLoadFile.getLocalFilePath() + " S3 File: " + bulkLoadFile.getS3Path());
 
 		if ((bulkLoadFile.getS3Path() != null || bulkLoadFile.generateS3MD5Path(bulkLoad) != null) && bulkLoadFile.getLocalFilePath() == null) {
 			File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, bulkLoadFile.getS3Path());
@@ -191,6 +189,9 @@ public class BulkLoadProcessor {
 
 	protected void startLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		bulkLoadFileHistory.setBulkloadStatus(bulkLoadFileHistory.getBulkloadStatus().getNextStatus());
+		bulkLoadFileHistory.setLoadStarted(LocalDateTime.now());
+		bulkLoadFileHistory.setErrorMessage(null);
+		bulkLoadFileHistory.setLoadFinished(null);
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 		Log.info("Load File: " + bulkLoadFileHistory.getBulkLoadFile().getMd5Sum() + " is running with file: " + bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath());
 	}

@@ -17,7 +17,6 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 
 	public void bulkLoadFile(@ObservesAsync StartedLoadJobEvent event) { // An @Observes method should not be in a super class as then it gets run for every child class
-		Log.info("bulkLoadFile: " + event);
 		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(event.getId());
 
 		if (!bulkLoadFileHistory.getBulkloadStatus().isStarted()) {

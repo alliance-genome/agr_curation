@@ -21,7 +21,7 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		if (bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
 
-			Log.info("processBulkFMSLoad: " + load.getId());
+			Log.debug("processBulkFMSLoad: " + load.getId());
 			startLoad(bulkFMSLoad);
 
 			if (bulkFMSLoad.getFmsDataType() != null && bulkFMSLoad.getFmsDataSubType() != null) {

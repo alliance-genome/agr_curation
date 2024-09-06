@@ -501,18 +501,18 @@ export const DataLoadsComponent = () => {
 
 	const durationTemplate = (rowData) => {
 		let started = new Date(rowData.loadStarted);
-		let finished = Date.now();
+		let finished = Date.UTC();
 		if (rowData.loadFinished) {
 			finished = new Date(rowData.loadFinished);
 		}
 
 		return (
 			<>
-				Start: <Moment local format="YYYY-MM-DD hh:mm:ss" date={started} />
+				Start: <Moment format="YYYY-MM-DD HH:mm:ss" date={started} />
 				<br />
 				{rowData.loadFinished && (
 					<>
-						End: <Moment local format="YYYY-MM-DD HH:mm:ss" date={finished} />
+						End: <Moment format="YYYY-MM-DD HH:mm:ss" date={finished} />
 						<br />
 						Duration: <Moment format="HH:mm:ss" duration={started} date={finished} />
 					</>

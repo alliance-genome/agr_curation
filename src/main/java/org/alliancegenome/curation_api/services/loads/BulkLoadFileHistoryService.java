@@ -92,9 +92,9 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	
 	public ObjectResponse<BulkLoad> restartBulkLoad(Long id) {
 		ObjectResponse<BulkLoad> resp = updateBulkLoad(id); // Transaction has to close before calling the fire
-		Log.info("Restart Bulk Load: " + id);
+		Log.debug("Restart Bulk Load: " + id);
 		if (resp != null) {
-			Log.info("Firing Event: " + id);
+			Log.debug("Firing Event: " + id);
 			pendingJobEvents.fireAsync(new PendingBulkLoadJobEvent(id));
 			return resp;
 		}
@@ -113,9 +113,9 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 
 	public ObjectResponse<BulkLoadFile> restartBulkLoadHistory(Long id) {
 		ObjectResponse<BulkLoadFile> resp = updateBulkLoadHistory(id);
-		Log.info("Restart Bulk Load History: " + id);
+		Log.debug("Restart Bulk Load History: " + id);
 		if (resp != null) {
-			Log.info("Firing Event: " + id);
+			Log.debug("Firing Event: " + id);
 			pendingLoadJobEvents.fireAsync(new PendingLoadJobEvent(id));
 			return resp;
 		}
