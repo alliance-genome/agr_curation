@@ -43,11 +43,11 @@ export class DataLoadService extends BaseAuthService {
 	}
 
 	restartLoad(id) {
-		return this.api.get(`/bulkloadfilehistory/restart/${id}`);
+		return this.api.get(`/bulkloadfilehistory/restartload/${id}`);
 	}
 
 	restartHistoryLoad(id) {
-		return this.api.get(`/bulkloadfilehistory/restart/${id}`);
+		return this.api.get(`/bulkloadfilehistory/restartloadhistory/${id}`);
 	}
 
 	getFileHistoryFile(id) {

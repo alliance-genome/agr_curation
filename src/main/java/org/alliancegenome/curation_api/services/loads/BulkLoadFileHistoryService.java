@@ -5,12 +5,15 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadJobEvent;
+import org.alliancegenome.curation_api.jobs.events.PendingLoadJobEvent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
+import io.quarkus.logging.Log;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import jakarta.annotation.PostConstruct;
@@ -25,6 +28,7 @@ import jakarta.ws.rs.core.Response;
 public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFileHistory, BulkLoadFileHistoryDAO> {
 
 	@Inject Event<PendingBulkLoadJobEvent> pendingJobEvents;
+	@Inject Event<PendingLoadJobEvent> pendingLoadJobEvents;
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject BulkLoadDAO bulkLoadDAO;
@@ -84,21 +88,46 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 		return response.build();
 	}
 	
-	public ObjectResponse<BulkLoad> restartLoad(Long id) {
-		ObjectResponse<BulkLoad> resp = updateLoad(id);
+
+	
+	public ObjectResponse<BulkLoad> restartBulkLoad(Long id) {
+		ObjectResponse<BulkLoad> resp = updateBulkLoad(id); // Transaction has to close before calling the fire
+		Log.info("Restart Bulk Load: " + id);
 		if (resp != null) {
-			pendingJobEvents.fire(new PendingBulkLoadJobEvent(id));
+			Log.info("Firing Event: " + id);
+			pendingJobEvents.fireAsync(new PendingBulkLoadJobEvent(id));
+			return resp;
+		}
+		return null;
+	}
+	
+	@Transactional
+	public ObjectResponse<BulkLoad> updateBulkLoad(Long id) {
+		BulkLoad load = bulkLoadDAO.find(id);
+		if (load != null && load.getBulkloadStatus().isNotRunning()) {
+			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
+			return new ObjectResponse<BulkLoad>(load);
+		}
+		return null;
+	}
+
+	public ObjectResponse<BulkLoadFile> restartBulkLoadHistory(Long id) {
+		ObjectResponse<BulkLoadFile> resp = updateBulkLoadHistory(id);
+		Log.info("Restart Bulk Load History: " + id);
+		if (resp != null) {
+			Log.info("Firing Event: " + id);
+			pendingLoadJobEvents.fireAsync(new PendingLoadJobEvent(id));
 			return resp;
 		}
 		return null;
 	}
 
 	@Transactional
-	protected ObjectResponse<BulkLoad> updateLoad(Long id) {
-		BulkLoad load = bulkLoadDAO.find(id);
-		if (load != null && load.getBulkloadStatus().isNotRunning()) {
-			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
-			return new ObjectResponse<BulkLoad>(load);
+	public ObjectResponse<BulkLoadFile> updateBulkLoadHistory(Long id) {
+		BulkLoadFileHistory history = bulkLoadFileHistoryDAO.find(id);
+		if (history != null && history.getBulkloadStatus().isNotRunning()) {
+			history.setBulkloadStatus(JobStatus.FORCED_PENDING);
+			return new ObjectResponse<BulkLoadFile>(history.getBulkLoadFile());
 		}
 		return null;
 	}

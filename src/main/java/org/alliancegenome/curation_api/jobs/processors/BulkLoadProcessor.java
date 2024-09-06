@@ -52,19 +52,6 @@ public class BulkLoadProcessor {
 
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 
-//	private String processFMS(String dataType, String dataSubType) {
-//		List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
-//
-//		if (files.size() == 1) {
-//			DataFile df = files.get(0);
-//			return df.getS3Url();
-//		} else {
-//			Log.warn("Files: " + files);
-//			Log.warn("Issue pulling files from the FMS: " + dataType + " " + dataSubType);
-//		}
-//		return null;
-//	}
-
 	public void syncWithS3(BulkLoadFileHistory bulkLoadFileHistory) {
 		BulkLoad bulkLoad = bulkLoadFileHistory.getBulkLoad();
 		BulkLoadFile bulkLoadFile = bulkLoadFileHistory.getBulkLoadFile();
@@ -175,7 +162,7 @@ public class BulkLoadProcessor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		bulkLoadDAO.merge(load);
 		Log.info("Firing Pending Bulk File History Event: " + history.getId());
-		pendingFileJobEvents.fire(new PendingLoadJobEvent(history.getId()));
+		pendingFileJobEvents.fireAsync(new PendingLoadJobEvent(history.getId()));
 	}
 
 	protected void startLoad(BulkLoad load) {

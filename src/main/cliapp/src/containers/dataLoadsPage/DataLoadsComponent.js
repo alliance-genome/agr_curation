@@ -179,7 +179,7 @@ export const DataLoadsComponent = () => {
 
 	const runHistoryLoad = (rowData) => {
 		getService()
-			.restartHisotryLoad(rowData.id)
+			.restartHistoryLoad(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
@@ -695,7 +695,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const exemptTypes = (loadType) => {
-		return (loadType == "GFF_EXON" || loadType == "GFF_TRANSCRIPT" || loadType == "GFF_CDS");
+		return (loadType === "GFF_EXON" || loadType === "GFF_TRANSCRIPT" || loadType === "GFF_CDS");
 	}
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
