@@ -60,7 +60,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	public void gff3DataBulkUploadTranscriptEntity() throws Exception {
 		loadRequiredEntities();
 		
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", "Entities", 3, 0, 4);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", "Entities", 1, 0, 4);
 		
 		RestAssured.given().
 			when().
@@ -89,7 +89,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void gff3DataBulkUploadExonEntity() throws Exception {
-		checkFailedBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", "Entities", 3, 0, 4);
+		checkFailedBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", "Entities", 1, 0, 4);
 		
 		RestAssured.given().
 			when().
@@ -120,7 +120,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void gff3DataBulkUploadCodingSequenceEntity() throws Exception {
-		checkFailedBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", "Entities", 3, 0, 4);
+		checkFailedBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", "Entities", 1, 0, 4);
 		
 		RestAssured.given().
 			when().
@@ -153,7 +153,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void gff3DataBulkUploadUpdateTranscriptEntity() throws Exception {
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", "Entities", 3, 0, 4);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", "Entities", 1, 0, 4);
 		
 		RestAssured.given().
 			when().
@@ -179,7 +179,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(5)
 	public void gff3DataBulkUploadMissingRequiredFields() throws Exception {
-		int total = 3;
+		int total = 1;
 		int failed = 1;
 		int completed = 3;
 		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_01_no_seq_id.json", "Entities", total, failed, completed);
@@ -194,7 +194,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(6)
 	public void gff3DataBulkUploadEmptyRequiredFields() throws Exception {
-		int total = 3;
+		int total = 1;
 		int failed = 1;
 		int completed = 3;
 		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_01_empty_seq_id.json", "Entities", total, failed, completed);
@@ -207,7 +207,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(7)
 	public void gff3DataBulkUploadInvalidFields() throws Exception {
-		int total = 3;
+		int total = 1;
 		int failed = 1;
 		int completed = 3;
 		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_01_invalid_strand.json", "Entities", total, failed, completed);
