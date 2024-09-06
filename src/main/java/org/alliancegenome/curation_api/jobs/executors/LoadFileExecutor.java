@@ -184,6 +184,7 @@ public class LoadFileExecutor {
 	public <E extends AuditedObject, T extends BaseDTO> APIResponse runLoadApi(BaseUpsertServiceInterface<E, T> service, String dataProviderName, List<T> objectList) {
 		List<Long> idsLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(objectList.size());
+		history = bulkLoadFileHistoryDAO.persist(history);
 		BackendBulkDataProvider dataProvider = null;
 		if (dataProviderName != null) {
 			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
