@@ -54,14 +54,15 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 			List<Long> previousIds = htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name());
-			bulkLoadFileHistory.setTotalRecords((long) htpExpressionDatasetData.getData().size());
+			bulkLoadFileHistory.setCount((long) htpExpressionDatasetData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			boolean success = runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded);
-			if(success) {
+			if (success) {
 				runCleanup(htpExpressionDatasetAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
@@ -72,7 +73,6 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + dataProvider.name(), htpDatasetAnnotations.size() * 2);
-		boolean isSuccess = true;
 
 		updateHistory(history);
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetAnnotations) {
@@ -92,14 +92,15 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 			}
 			if (history.getErrorRate() > 0.25) {
 				Log.error("Failure Rate > 25% aborting load");
-				finalSaveHistory(history);
+				updateHistory(history);
+				updateExceptions(history);
 				failLoadAboveErrorRateCutoff(history);
 			}
 			ph.progressProcess();
 		}
-		updateHistory(history);		
+		updateHistory(history);
 		ph.finishProcess();
-		return isSuccess;
+		return true;
 	}
 
 	public APIResponse runLoadApi(String dataProviderName, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset) {
