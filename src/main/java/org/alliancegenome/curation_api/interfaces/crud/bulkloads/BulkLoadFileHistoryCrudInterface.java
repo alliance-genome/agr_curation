@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.interfaces.crud.bulkloads;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -25,4 +27,10 @@ public interface BulkLoadFileHistoryCrudInterface extends BaseIdCrudInterface<Bu
 	@JsonView(View.BulkLoadFileHistoryView.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	Response download(@PathParam("id") Long id);
+
+	@GET
+	@Path("/restart/{id}")
+	@JsonView(View.FieldsOnly.class)
+	ObjectResponse<BulkLoad> restartLoad(@PathParam("id") Long id);
+	
 }

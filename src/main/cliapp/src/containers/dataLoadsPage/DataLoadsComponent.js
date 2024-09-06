@@ -171,19 +171,20 @@ export const DataLoadsComponent = () => {
 
 	const runLoad = (rowData) => {
 		getService()
-			.restartLoad(rowData.type, rowData.id)
+			.restartLoad(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
 	};
 
-	const runLoadFile = (rowData) => {
+	const runHistoryLoad = (rowData) => {
 		getService()
-			.restartLoadFile(rowData.id)
+			.restartHisotryLoad(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
 	};
+
 
 	const editLoad = (rowData) => {
 		bulkLoadDispatch({ type: 'EDIT', editBulkLoad: rowData });
@@ -277,21 +278,22 @@ export const DataLoadsComponent = () => {
 		setUploadConfirmDialog(false);
 	};
 
-	const loadFileActionBodyTemplate = (rowData) => {
+	const loadFileActionBodyTemplate = (rowData, bulkload) => {
 		let ret = [];
+		console.log(rowData);
 		if (
 			!rowData.bulkloadStatus ||
 			rowData.bulkloadStatus === 'FINISHED' ||
 			rowData.bulkloadStatus === 'FAILED' ||
 			rowData.bulkloadStatus === 'STOPPED'
 		) {
-			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.loadType)) {
+			if (fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType) || exemptTypes(bulkload.backendBulkLoadType)) {
 				ret.push(
 					<Button
 						key="run"
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
-						onClick={() => runLoadFile(rowData)}
+						onClick={() => runHistoryLoad(rowData)}
 					/>
 				);
 			}
@@ -545,10 +547,10 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
-	const historyTable = (file) => {
+	const historyTable = (bulkload) => {
 		let sortedHistory = [];
-		if (file.history != null) {
-			sortedHistory = file.history.sort(function (a, b) {
+		if (bulkload.history != null) {
+			sortedHistory = bulkload.history.sort(function (a, b) {
 				const start1 = new Date(a.loadStarted);
 				const start2 = new Date(b.loadStarted);
 				return start2 - start1;
@@ -569,10 +571,10 @@ export const DataLoadsComponent = () => {
 					/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
-					{showModRelease(file)}
+					{showModRelease(bulkload)}
 
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+					<Column body={(rowData) => loadFileActionBodyTemplate(rowData, bulkload)} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
 			</div>
 		);
@@ -691,6 +693,10 @@ export const DataLoadsComponent = () => {
 			return [];
 		}
 	};
+
+	const exemptTypes = (loadType) => {
+		return (loadType == "GFF_EXON" || loadType == "GFF_TRANSCRIPT" || loadType == "GFF_CDS");
+	}
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
 		if (!fileVersion) return false;
