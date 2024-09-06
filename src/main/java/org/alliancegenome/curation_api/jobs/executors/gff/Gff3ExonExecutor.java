@@ -37,7 +37,6 @@ public class Gff3ExonExecutor extends Gff3Executor {
 	@Inject ExonService exonService;
 	@Inject ExonGenomicLocationAssociationService exonLocationService;
 	@Inject TranscriptExonAssociationService transcriptExonService;
-	
 	@Inject Gff3DtoValidator gff3DtoValidator;
 	
 
@@ -70,7 +69,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			List<Long> associationIdsAdded = new ArrayList<>();
 			
 			
-			String assemblyId = loadGenomeAssembly(null, bulkLoadFileHistory, gffHeaderData, dataProvider);
+			String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
 			
 			if (assemblyId == null) {
 				addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(null, "GFF Header does not contain assembly", null));

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.Gff3Constants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
@@ -16,7 +15,6 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Exon;
-import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.exonAssociations.ExonGenomicLocationAssociation;
@@ -58,38 +56,6 @@ public class Gff3Service {
 	@Inject DataProviderService dataProviderService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
-
-	@Transactional
-	public String loadGenomeAssembly(String assemblyName, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
-
-		if (StringUtils.isBlank(assemblyName)) {
-			for (String header : gffHeaderData) {
-				if (header.startsWith("#!assembly")) {
-					assemblyName = header.split(" ")[1];
-				}
-			}
-		}
-		if (StringUtils.isNotBlank(assemblyName)) {
-			Map<String, Object> params = new HashMap<>();
-			params.put("modEntityId", assemblyName);
-			params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
-
-			SearchResponse<GenomeAssembly> resp = genomeAssemblyDAO.findByParams(params);
-			if (resp == null || resp.getSingleResult() == null) {
-				GenomeAssembly assembly = new GenomeAssembly();
-				assembly.setModEntityId(assemblyName);
-				assembly.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
-				assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
-
-				genomeAssemblyDAO.persist(assembly);
-			}
-
-			return assemblyName;
-		} else {
-			throw new ObjectValidationException(gffHeaderData, "#!assembly - " + ValidationConstants.REQUIRED_MESSAGE);
-		}
-	}
 
 	@Transactional
 	public void loadExonLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ObjectUpdateException {

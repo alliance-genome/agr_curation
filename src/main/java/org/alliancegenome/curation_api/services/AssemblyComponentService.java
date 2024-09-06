@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
-import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
@@ -37,47 +37,44 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 	}
 
 	@Transactional
-	public AssemblyComponent fetchOrCreate(String name, String assemblyId, String taxonCurie, String dataProviderAbbreviation) {
+	public AssemblyComponent fetchOrCreate(String name, String assemblyId, String taxonCurie, BackendBulkDataProvider dataProvider) {
 		AssemblyComponent assemblyComponent = null;
 		if (assemblyComponentRequest != null) {
 			UniqueIdGeneratorHelper uniqueIdGen = new UniqueIdGeneratorHelper();
 			uniqueIdGen.add(name);
 			uniqueIdGen.add(assemblyId);
 			uniqueIdGen.add(taxonCurie);
-			uniqueIdGen.add(dataProviderAbbreviation);
+			uniqueIdGen.add(dataProvider.sourceOrganization);
 			String uniqueId = uniqueIdGen.getUniqueId();
 			if (assemblyComponentCacheMap.containsKey(uniqueId)) {
 				assemblyComponent = assemblyComponentCacheMap.get(uniqueId);
 			} else {
 				Log.debug("AssemblyComponent not cached, caching name|assembly: (" + uniqueId + ")");
-				assemblyComponent = findAssemblyComponentOrCreateDB(name, assemblyId, taxonCurie, dataProviderAbbreviation);
+				assemblyComponent = findAssemblyComponentOrCreateDB(name, assemblyId, taxonCurie, dataProvider);
 				assemblyComponentCacheMap.put(uniqueId, assemblyComponent);
 			}
 		} else {
-			assemblyComponent = findAssemblyComponentOrCreateDB(name, assemblyId, taxonCurie, dataProviderAbbreviation);
+			assemblyComponent = findAssemblyComponentOrCreateDB(name, assemblyId, taxonCurie, dataProvider);
 			assemblyComponentRequest = new Date();
 		}
 		return assemblyComponent;
 	}
 
-	private AssemblyComponent findAssemblyComponentOrCreateDB(String name, String assemblyId, String taxonCurie, String dataProviderAbbreviation) {
+	private AssemblyComponent findAssemblyComponentOrCreateDB(String name, String assemblyId, String taxonCurie, BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("name", name);
 		params.put(EntityFieldConstants.ASSEMBLY, assemblyId);
 		params.put(EntityFieldConstants.TAXON, taxonCurie);
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProviderAbbreviation);
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
 		SearchResponse<AssemblyComponent> assemblyComponentResponse = assemblyComponentDAO.findByParams(params);
 		if (assemblyComponentResponse != null && assemblyComponentResponse.getResults().size() > 0) {
 			return assemblyComponentResponse.getSingleResult();
 		}
 		AssemblyComponent assemblyComponent = new AssemblyComponent();
 		assemblyComponent.setName(name);
-		SearchResponse<GenomeAssembly> assemblyResponse = genomeAssemblyService.findByField("modEntityId", assemblyId);
-		if (assemblyResponse != null && assemblyResponse.getSingleResult() != null) {
-			assemblyComponent.setGenomeAssembly(assemblyResponse.getSingleResult());
-		}
+		assemblyComponent.setGenomeAssembly(genomeAssemblyService.getOrCreate(assemblyId, dataProvider));
 		assemblyComponent.setTaxon(ncbiTaxonTermService.getByCurie(taxonCurie).getEntity());
-		assemblyComponent.setDataProvider(dataProviderService.getDefaultDataProvider(dataProviderAbbreviation));
+		assemblyComponent.setDataProvider(dataProviderService.getDefaultDataProvider(dataProvider.sourceOrganization));
 		return assemblyComponentDAO.persist(assemblyComponent);
 	}
 

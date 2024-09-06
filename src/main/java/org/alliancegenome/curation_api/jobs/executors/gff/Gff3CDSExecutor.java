@@ -69,7 +69,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 			List<Long> locationIdsAdded = new ArrayList<>();
 			List<Long> associationIdsAdded = new ArrayList<>();
 			
-			String assemblyId = loadGenomeAssembly(null, bulkLoadFileHistory, gffHeaderData, dataProvider);
+			String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
 			
 			if (assemblyId == null) {
 				addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(null, "GFF Header does not contain assembly", null));
