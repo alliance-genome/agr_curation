@@ -2,9 +2,7 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
@@ -13,7 +11,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -53,30 +50,32 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
-			bulkLoadFileDAO.merge(bulkLoadFile);
+			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 			List<Long> previousIds = htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name());
-			
 			bulkLoadFileHistory.setTotalRecords((long) htpExpressionDatasetData.getData().size());
+			updateHistory(bulkLoadFileHistory);
 			boolean success = runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded);
 			if(success) {
 				runCleanup(htpExpressionDatasetAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
-			updateHistory(bulkLoadFileHistory);
+			finalSaveHistory(bulkLoadFileHistory);
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
 	}
 
-	private boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset, List<Long> htpAnnotationsIdsLoaded) {
+	private boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetAnnotations, List<Long> htpAnnotationsIdsLoaded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + dataProvider.name(), htpDataset.size() * 2);
+		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + dataProvider.name(), htpDatasetAnnotations.size() * 2);
 		boolean isSuccess = true;
-		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDataset) {
+
+		updateHistory(history);
+		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetAnnotations) {
 			try {
 				HTPExpressionDatasetAnnotation dbObject = htpExpressionDatasetAnnotationService.upsert(dto, dataProvider);
 				history.incrementCompleted();
@@ -94,7 +93,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 			if (history.getErrorRate() > 0.25) {
 				Log.error("Failure Rate > 25% aborting load");
 				finalSaveHistory(history);
-				failLoadAboveErrorRateCutoff(history.getBulkLoadFile());
+				failLoadAboveErrorRateCutoff(history);
 			}
 			ph.progressProcess();
 		}
@@ -106,7 +105,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 	public APIResponse runLoadApi(String dataProviderName, List<HTPExpressionDatasetAnnotationFmsDTO> htpDataset) {
 		List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 
-		BulkLoadFileHistory history = new BulkLoadFileHistory(htpDataset.size() * 2);
+		BulkLoadFileHistory history = new BulkLoadFileHistory(htpDataset.size());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, dataProvider, htpDataset, htpAnnotationsIdsLoaded);
 		history.finishLoad();

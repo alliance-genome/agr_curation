@@ -17,7 +17,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/htpexpressiondatasetannotation")
-@Tag(name = "CRUD - htpexpressiondatasetannotation")
+@Tag(name = "CRUD - HTP Expression Dataset Annotation")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface HTPExpressionDatasetAnnotationCrudInterface extends BaseIdCrudInterface<HTPExpressionDatasetAnnotation> {
