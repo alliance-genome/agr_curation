@@ -49,20 +49,24 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 			}
 
 			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
-
-			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
-
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 			List<Long> previousIds = htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name());
+			
+			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
+
 			bulkLoadFileHistory.setCount((long) htpExpressionDatasetData.getData().size());
 			updateHistory(bulkLoadFileHistory);
+			
 			boolean success = runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded);
+			
 			if (success) {
 				runCleanup(htpExpressionDatasetAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
+
 			updateHistory(bulkLoadFileHistory);
 			updateExceptions(bulkLoadFileHistory);
+
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
@@ -108,6 +112,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(htpDataset.size());
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, dataProvider, htpDataset, htpAnnotationsIdsLoaded);
 		history.finishLoad();
 
