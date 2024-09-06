@@ -163,7 +163,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);
 		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedTranscriptGffData.size());
-		
+		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, null, preProcessedTranscriptGffData, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
 		

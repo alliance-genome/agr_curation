@@ -169,7 +169,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffData, dataProvider);
 		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedExonGffData.size());
-		
+		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, null, preProcessedExonGffData, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
 		

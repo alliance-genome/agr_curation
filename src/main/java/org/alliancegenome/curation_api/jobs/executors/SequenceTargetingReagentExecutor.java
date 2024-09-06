@@ -91,6 +91,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		List<Long> sqtrGeneAssociationIdsLoaded = new ArrayList<>();
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrDTOs.size() * 2);
+		history = bulkLoadFileHistoryDAO.persist(history);
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, dataProvider, sqtrDTOs, sqtrIdsLoaded, sqtrGeneAssociationIdsLoaded);
 		history.finishLoad();

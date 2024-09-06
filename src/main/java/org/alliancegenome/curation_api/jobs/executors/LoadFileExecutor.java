@@ -44,7 +44,7 @@ public class LoadFileExecutor {
 	@Inject protected ObjectMapper mapper;
 	@Inject protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject protected BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+	@Inject protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject APIVersionInfoService apiVersionInfoService;
 	@Inject SlackNotifier slackNotifier;
