@@ -48,7 +48,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) phenotypeData.getData().size());
+			bulkLoadFileHistory.setCount(phenotypeData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			Set<Long> annotationIdsLoaded = new HashSet<>();
@@ -59,7 +59,8 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			runCleanup(phenotypeAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded.stream().collect(Collectors.toList()), "phenotype annotation");
 
 			bulkLoadFileHistory.finishLoad();
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
@@ -67,10 +68,10 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 	}
 
 	// Gets called from the API directly
-	public APIResponse runLoad(String dataProviderName, List<PhenotypeFmsDTO> annotations) {
+	public APIResponse runLoadApi(String dataProviderName, List<PhenotypeFmsDTO> annotations) {
 		Set<Long> annotationIdsLoaded = new HashSet<>();
-
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
+		history = bulkLoadFileHistoryDAO.persist(history);
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, annotations, annotationIdsLoaded, dataProvider);
 		history.finishLoad();

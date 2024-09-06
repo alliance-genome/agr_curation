@@ -45,7 +45,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) paralogyData.getData().size());
+			bulkLoadFileHistory.setCount(paralogyData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			boolean success = runLoad(geneToGeneParalogyService, bulkLoadFileHistory, dataProvider, paralogyData.getData(), paralogyIdsLoaded, false);
@@ -55,7 +55,8 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileHistory.finishLoad();
 
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);

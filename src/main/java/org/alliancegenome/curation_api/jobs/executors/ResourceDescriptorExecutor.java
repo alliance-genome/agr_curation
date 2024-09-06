@@ -39,7 +39,7 @@ public class ResourceDescriptorExecutor extends LoadFileExecutor {
 		List<String> rdNamesBefore = resourceDescriptorService.getAllNames();
 		List<String> rdNamesAfter = new ArrayList<>();
 
-		bulkLoadFileHistory.setTotalRecords((long) dtos.size());
+		bulkLoadFileHistory.setCount(dtos.size());
 
 		updateHistory(bulkLoadFileHistory);
 		for (ResourceDescriptorDTO dto : dtos) {
@@ -59,7 +59,8 @@ public class ResourceDescriptorExecutor extends LoadFileExecutor {
 		updateHistory(bulkLoadFileHistory);
 
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 		resourceDescriptorService.removeNonUpdatedResourceDescriptors(rdNamesBefore, rdNamesAfter);
 
 		log.info("Loading ResourceDescriptorFileFinished");

@@ -37,7 +37,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) geneExpressionIngestFmsDTO.getData().size());
+			bulkLoadFileHistory.setCount(geneExpressionIngestFmsDTO.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			
 			List<Long> annotationIdsLoaded = new ArrayList<>();
@@ -49,7 +49,8 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			}
 
 			bulkLoadFileHistory.finishLoad();
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();

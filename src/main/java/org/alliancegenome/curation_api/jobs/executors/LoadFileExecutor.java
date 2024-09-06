@@ -44,7 +44,7 @@ public class LoadFileExecutor {
 	@Inject protected ObjectMapper mapper;
 	@Inject protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject protected BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+	@Inject protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject APIVersionInfoService apiVersionInfoService;
 	@Inject SlackNotifier slackNotifier;
@@ -53,8 +53,8 @@ public class LoadFileExecutor {
 		bulkLoadFileHistoryDAO.merge(history);
 	}
 
-	protected void finalSaveHistory(BulkLoadFileHistory history) {
-		bulkLoadFileHistoryDAO.merge(history);
+	protected void updateExceptions(BulkLoadFileHistory history) {
+		//bulkLoadFileHistoryDAO.merge(history);
 		for (BulkLoadFileException e : history.getExceptions()) {
 			bulkLoadFileExceptionDAO.merge(e);
 		}
@@ -64,7 +64,9 @@ public class LoadFileExecutor {
 		BulkLoadFileException exception = new BulkLoadFileException();
 		exception.setException(objectUpdateExceptionData);
 		exception.setBulkLoadFileHistory(history);
-		history.getExceptions().add(exception);
+		//history.getExceptions().add(exception);
+		bulkLoadFileExceptionDAO.persist(exception);
+		//bulkLoadFileHistoryDAO.merge(history);
 	}
 
 	protected String getVersionNumber(String versionString) {
@@ -182,6 +184,7 @@ public class LoadFileExecutor {
 	public <E extends AuditedObject, T extends BaseDTO> APIResponse runLoadApi(BaseUpsertServiceInterface<E, T> service, String dataProviderName, List<T> objectList) {
 		List<Long> idsLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(objectList.size());
+		history = bulkLoadFileHistoryDAO.persist(history);
 		BackendBulkDataProvider dataProvider = null;
 		if (dataProviderName != null) {
 			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
@@ -224,14 +227,15 @@ public class LoadFileExecutor {
 				}
 				if (terminateFailing && history.getErrorRate() > 0.25) {
 					Log.error("Failure Rate > 25% aborting load");
-					finalSaveHistory(history);
+					updateHistory(history);
+					updateExceptions(history);
 					failLoadAboveErrorRateCutoff(history);
 					return false;
 				}
 				ph.progressProcess();
 			}
 			updateHistory(history);
-			
+			updateExceptions(history);
 			ph.finishProcess();
 		}
 		return true;
@@ -251,24 +255,33 @@ public class LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
 		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
 
-		long existingDeletes = history.getTotalDeleteRecords() == null ? 0 : history.getTotalDeleteRecords();
-		history.setTotalDeleteRecords(idsToRemove.size() + existingDeletes);
+		String countType = loadTypeString + " Deleted";
+		
+		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
+		history.setCount(countType, idsToRemove.size() + existingDeletes);
 
+		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of entities linked to unloaded " + dataProviderName, idsToRemove.size());
-		updateHistory(history);
+		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
+		//updateHistory(history);
 		for (Long id : idsToRemove) {
 			try {
-				String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
 				service.deprecateOrDelete(id, false, loadDescription, deprecate);
-				history.incrementDeleted();
+				history.incrementCompleted(countType);
 			} catch (Exception e) {
-				history.incrementDeleteFailed();
+				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
+			}
+			if (history.getErrorRate(countType) > 0.25) {
+				Log.error(countType + " failure rate > 25% aborting load");
+				failLoadAboveErrorRateCutoff(history);
+				break;
 			}
 			ph.progressProcess();
 		}
 		updateHistory(history);
+		updateExceptions(history);
 		ph.finishProcess();
 	}
 

@@ -52,7 +52,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(genes.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalRecords((long) genes.size());
+		bulkLoadFileHistory.setCount(genes.size());
 		updateHistory(bulkLoadFileHistory);
 		
 		boolean success = runLoad(geneService, bulkLoadFileHistory, dataProvider, genes, geneIdsLoaded);
@@ -60,7 +60,8 @@ public class GeneExecutor extends LoadFileExecutor {
 			runCleanup(geneService, bulkLoadFileHistory, dataProvider.name(), geneIdsBefore, geneIdsLoaded, "gene");
 		}
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 
 	}
 

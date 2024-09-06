@@ -59,7 +59,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) sqtrIngestFmsDTO.getData().size() * 2);
+			bulkLoadFileHistory.setCount((long) sqtrIngestFmsDTO.getData().size() * 2);
 			updateHistory(bulkLoadFileHistory);
 			
 			runLoad(bulkLoadFileHistory, dataProvider, sqtrIngestFmsDTO.getData(), idsAdded.get("SQTR"), idsAdded.get("SQTRGeneAssociation"));
@@ -69,7 +69,8 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 			bulkLoadFileHistory.finishLoad();
 
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
@@ -90,6 +91,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		List<Long> sqtrGeneAssociationIdsLoaded = new ArrayList<>();
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(sqtrDTOs.size() * 2);
+		history = bulkLoadFileHistoryDAO.persist(history);
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		runLoad(history, dataProvider, sqtrDTOs, sqtrIdsLoaded, sqtrGeneAssociationIdsLoaded);
 		history.finishLoad();

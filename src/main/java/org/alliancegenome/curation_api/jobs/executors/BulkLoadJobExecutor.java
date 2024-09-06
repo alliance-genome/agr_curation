@@ -20,14 +20,8 @@ import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSLocationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonLocationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptCDSExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptExonExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptGeneExecutor;
-import org.alliancegenome.curation_api.jobs.executors.gff.Gff3TranscriptLocationExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -64,14 +58,6 @@ public class BulkLoadJobExecutor {
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
-
-	@Inject Gff3TranscriptLocationExecutor gff3TranscriptLocationExecutor;
-	@Inject Gff3ExonLocationExecutor gff3ExonLocationExecutor;
-	@Inject Gff3CDSLocationExecutor gff3CDSLocationExecutor;
-	
-	@Inject Gff3TranscriptExonExecutor gff3TranscriptExonExecutor;
-	@Inject Gff3TranscriptCDSExecutor gff3TranscriptCDSExecutor;
-	@Inject Gff3TranscriptGeneExecutor gff3TranscriptGeneExecutor;
 	
 	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 
@@ -82,9 +68,6 @@ public class BulkLoadJobExecutor {
 		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, CONSTRUCT_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {
-
-			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(0);
-			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 			if (loadType == AGM || loadType == FULL_INGEST) {
 				agmExecutor.execLoad(bulkLoadFileHistory, cleanUp);
@@ -144,19 +127,6 @@ public class BulkLoadJobExecutor {
 			gff3CDSExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT) {
 			gff3TranscriptExecutor.execLoad(bulkLoadFileHistory);
-		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_EXON_LOCATION) {
-			gff3ExonLocationExecutor.execLoad(bulkLoadFileHistory);
-		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_CDS_LOCATION) {
-			gff3CDSLocationExecutor.execLoad(bulkLoadFileHistory);
-		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_LOCATION) {
-			gff3TranscriptLocationExecutor.execLoad(bulkLoadFileHistory);
-		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_GENE) {
-			gff3TranscriptGeneExecutor.execLoad(bulkLoadFileHistory);
-		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_EXON) {
-			gff3TranscriptExonExecutor.execLoad(bulkLoadFileHistory);
-		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GFF_TRANSCRIPT_CDS) {
-			gff3TranscriptCDSExecutor.execLoad(bulkLoadFileHistory);
-			
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASET) {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
 		} else {

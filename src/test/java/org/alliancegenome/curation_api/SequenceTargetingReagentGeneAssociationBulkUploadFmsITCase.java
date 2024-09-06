@@ -91,13 +91,13 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	@Test
 	@Order(2)
 	public void sqtrGeneAssociationBulkUploadInvalidGenes() throws Exception {
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "IV_01_invalid_gene_ids.json", 2, 1, 1);
+		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "IV_01_invalid_gene_ids.json", "Records", 2, 1, 1);
 	}
 	
 	@Test
 	@Order(3)
 	public void sqtrGeneAssociationBulkUploadMissingGenes() throws Exception {
-		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", 2, 0, 2);
+		checkFailedBulkLoad(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", "Records", 2, 0, 2);
 	}
 	
 

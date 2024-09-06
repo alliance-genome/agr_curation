@@ -31,12 +31,13 @@ public class MoleculeExecutor extends LoadFileExecutor {
 			}
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-			bulkLoadFileHistory.setTotalRecords((long) moleculeData.getData().size());
+			bulkLoadFileHistory.setCount(moleculeData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
 			runLoad(moleculeService, bulkLoadFileHistory, null, moleculeData.getData(), null);
 			bulkLoadFileHistory.finishLoad();
-			finalSaveHistory(bulkLoadFileHistory);
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

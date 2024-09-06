@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
@@ -71,7 +72,7 @@ public class Gff3DtoValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	
 	@Transactional
-	public Exon validateExonEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		Exon exon = null;
 
@@ -98,11 +99,14 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, exonResponse.errorMessagesString());
 		}
 		
-		return exonDAO.persist(exonResponse.getEntity());
+		exon = exonDAO.persist(exonResponse.getEntity());
+		if (exon != null) {
+			idsAdded.add(exon.getId());
+		}
 	}
 	
 	@Transactional
-	public CodingSequence validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		CodingSequence cds = null;
 		
@@ -129,11 +133,14 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, cdsResponse.errorMessagesString());
 		}
 		
-		return codingSequenceDAO.persist(cdsResponse.getEntity());
+		cds = codingSequenceDAO.persist(cdsResponse.getEntity());
+		if (cds != null) {
+			idsAdded.add(cds.getId());
+		}
 	}
 	
 	@Transactional
-	public Transcript validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
 		if (!Gff3Constants.TRANSCRIPT_TYPES.contains(dto.getType())) {
 			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for Transcript Entity");
@@ -168,7 +175,10 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, transcriptResponse.errorMessagesString());
 		}
 		
-		return transcriptDAO.persist(transcriptResponse.getEntity());
+		transcript = transcriptDAO.persist(transcriptResponse.getEntity());
+		if (transcript != null) {
+			idsAdded.add(transcript.getId());
+		}
 	}
 	
 	private <E extends GenomicEntity> ObjectResponse<E> validateGenomicEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
@@ -187,7 +197,7 @@ public class Gff3DtoValidator {
 		AssemblyComponent assemblyComponent = null;
 		CodingSequenceGenomicLocationAssociation locationAssociation = new CodingSequenceGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.CODING_SEQUENCE_ASSOCIATION_SUBJECT + ".id", cds.getId());
 			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
@@ -215,7 +225,7 @@ public class Gff3DtoValidator {
 		AssemblyComponent assemblyComponent = null;
 		ExonGenomicLocationAssociation locationAssociation = new ExonGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT + ".id", exon.getId());
 			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT, assemblyComponent.getName());
@@ -242,7 +252,7 @@ public class Gff3DtoValidator {
 		AssemblyComponent assemblyComponent = null;
 		TranscriptGenomicLocationAssociation locationAssociation = new TranscriptGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider.sourceOrganization);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", transcript.getId());
 			params.put(EntityFieldConstants.TRANSCRIPT_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
@@ -267,7 +277,7 @@ public class Gff3DtoValidator {
 	@Transactional
 	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Map<String, String> attributes, Map<String, String> geneIdCurieMap) throws ObjectValidationException {
 		TranscriptGeneAssociation association = new TranscriptGeneAssociation();
-		
+		boolean newAssociation = true;
 		ObjectResponse<TranscriptGeneAssociation> associationResponse = new ObjectResponse<TranscriptGeneAssociation>();
 		if (!attributes.containsKey("Parent")) {
 			associationResponse.addErrorMessage("Attributes - Parent", ValidationConstants.REQUIRED_MESSAGE);
@@ -283,6 +293,7 @@ public class Gff3DtoValidator {
 				SearchResponse<TranscriptGeneAssociation> searchResponse = transcriptGeneDAO.findByParams(params);
 				if (searchResponse != null && searchResponse.getSingleResult() != null) {
 					association = searchResponse.getSingleResult();
+					newAssociation = false;
 				}
 				association.setTranscriptGeneAssociationObject(parentGene);
 			}
@@ -294,7 +305,11 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(gffEntry, associationResponse.errorMessagesString());
 		}
 
-		return transcriptGeneDAO.persist(association);
+		if (newAssociation) {
+			return transcriptGeneDAO.persist(association);
+		} else {
+			return association;
+		}
 	}
 	
 	@Transactional

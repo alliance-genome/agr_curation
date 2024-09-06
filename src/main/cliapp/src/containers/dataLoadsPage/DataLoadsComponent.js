@@ -1,6 +1,7 @@
 import React, { useReducer, useRef, useState, useContext } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
+import Moment from 'react-moment';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from 'primereact/toast';
@@ -494,6 +495,56 @@ export const DataLoadsComponent = () => {
 		return <Button label={latestStatus} tooltip={latestError} className={`p-button-rounded ${styleClass}`} />;
 	};
 
+	const durationTemplate = (rowData) => {
+		let started = new Date(rowData.loadStarted);
+		let finished = Date.now();
+		if (rowData.loadFinished) {
+			finished = new Date(rowData.loadFinished);
+		}
+
+		return (
+			<>
+				Start: <Moment format="YYYY-MM-DD HH:mm:ss" date={started} />
+				<br />
+				{rowData.loadFinished && (
+					<>
+						End: <Moment format="YYYY-MM-DD HH:mm:ss" date={finished} />
+						<br />
+						Duration: <Moment format="HH:mm:ss" duration={started} date={finished} />
+					</>
+				)}
+				{!rowData.loadFinished && rowData.bulkloadStatus !== 'FAILED' && (
+					<>
+						Running Time: <Moment format="HH:mm:ss" duration={started} date={finished} />
+					</>
+				)}
+			</>
+		);
+	};
+
+	const numberTemplate = (number) => {
+		//still want to pass through falsy 0 values
+		if (number === null || number === undefined) return;
+		return new Intl.NumberFormat().format(number);
+	};
+
+	const countsTemplate = (rowData) => {
+		let countsArray = [];
+		for (let count in rowData.counts) {
+			countsArray.push({ ...rowData.counts[count], name: count });
+		}
+
+		return (
+			<DataTable key="countsTable" value={countsArray}>
+				<Column field="name" />
+				<Column field="completed" header="Completed" />
+				<Column field="failed" header="Failed" />
+				<Column field="skipped" header="Skipped" />
+				<Column field="total" header="Total" />
+			</DataTable>
+		);
+	};
+
 	const historyTable = (file) => {
 		let sortedHistory = [];
 		if (file.history != null) {
@@ -503,22 +554,19 @@ export const DataLoadsComponent = () => {
 				return start2 - start1;
 			});
 		}
+
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={sortedHistory} responsiveLayout="scroll">
-					<Column field="loadStarted" header="Load Started" />
-					<Column field="loadFinished" header="Load Finished" />
+					<Column field="duration" header="Time" body={durationTemplate} />
 					<Column field="bulkloadStatus" body={bulkloadFileStatusTemplate} header="Status" />
-					<Column field="completedRecords" header="Records Completed" />
-					<Column field="failedRecords" header="Records Failed" />
-					<Column field="totalRecords" header="Total Records" />
-					<Column field="deletedRecords" header="Deletes Completed" />
-					<Column field="deleteFailedRecords" header="Deletes Failed" />
-					<Column field="totalDeleteRecords" header="Total Deletes" />
-
+					<Column field="counts" body={countsTemplate} header="Counts" />
 					<Column field="bulkLoadFile.md5Sum" header="MD5 Sum" />
-					<Column field="bulkLoadFile.fileSize" header="Compressed File Size" />
-					<Column field="bulkLoadFile.recordCount" header="Record Count" />
+					<Column
+						field="bulkLoadFile.fileSize"
+						header="Compressed File Size"
+						body={(rowData) => numberTemplate(rowData.bulkLoadFile.fileSize)}
+					/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
 					{showModRelease(file)}

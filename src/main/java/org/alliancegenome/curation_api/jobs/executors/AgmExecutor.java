@@ -52,7 +52,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(agms.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalRecords((long) agms.size());
+		bulkLoadFileHistory.setCount(agms.size());
 		updateHistory(bulkLoadFileHistory);
 
 		boolean success = runLoad(affectedGenomicModelService, bulkLoadFileHistory, dataProvider, agms, agmIdsLoaded);
@@ -60,7 +60,8 @@ public class AgmExecutor extends LoadFileExecutor {
 			runCleanup(affectedGenomicModelService, bulkLoadFileHistory, dataProvider.name(), agmIdsBefore, agmIdsLoaded, "AGM");
 		}
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 
 	}
 

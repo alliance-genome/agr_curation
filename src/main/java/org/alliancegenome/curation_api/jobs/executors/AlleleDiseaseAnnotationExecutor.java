@@ -51,7 +51,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(annotations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setTotalRecords((long) annotations.size());
+		bulkLoadFileHistory.setCount(annotations.size());
 		
 		updateHistory(bulkLoadFileHistory);
 		
@@ -60,7 +60,8 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			runCleanup(diseaseAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, "allele disease annotation");
 		}
 		bulkLoadFileHistory.finishLoad();
-		finalSaveHistory(bulkLoadFileHistory);
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
 	}
 
 }
