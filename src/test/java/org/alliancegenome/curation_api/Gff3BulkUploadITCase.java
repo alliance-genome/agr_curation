@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.util.HashMap;
+
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -59,8 +61,13 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Order(1)
 	public void gff3DataBulkUploadTranscriptEntity() throws Exception {
 		loadRequiredEntities();
-		
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", "Entities", 1, 0, 1);
+
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1));
+		params.put("Locations", createCountParams(1, 0, 1));
+		params.put("Associations", createCountParams(1, 0, 1));
+
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "GFF_01_transcript.json", params);
 		
 		RestAssured.given().
 			when().
@@ -85,11 +92,17 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 			body("entity.transcriptGeneAssociations[0].transcriptGeneAssociationObject.modEntityId", is("WB:WBGene00022276"));
 
 	}
-	
+
 	@Test
 	@Order(2)
 	public void gff3DataBulkUploadExonEntity() throws Exception {
-		checkFailedBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", "Entities", 1, 0, 1);
+		
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1));
+		params.put("Locations", createCountParams(1, 0, 1));
+		params.put("Associations", createCountParams(1, 0, 1));
+		
+		checkFailedBulkLoad(exonBulkPostEndpoint, gffDataTestFilePath + "GFF_02_exon.json", params);
 		
 		RestAssured.given().
 			when().
@@ -120,7 +133,13 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(3)
 	public void gff3DataBulkUploadCodingSequenceEntity() throws Exception {
-		checkFailedBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", "Entities", 1, 0, 1);
+		
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1));
+		params.put("Locations", createCountParams(1, 0, 1));
+		params.put("Associations", createCountParams(1, 0, 1));
+		
+		checkFailedBulkLoad(cdsBulkPostEndpoint, gffDataTestFilePath + "GFF_03_CDS.json", params);
 		
 		RestAssured.given().
 			when().
@@ -153,7 +172,13 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void gff3DataBulkUploadUpdateTranscriptEntity() throws Exception {
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", "Entities", 1, 0, 1);
+		
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1));
+		params.put("Locations", createCountParams(1, 0, 1));
+		params.put("Associations", createCountParams(1, 0, 1));
+		
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "UD_01_update_transcript.json", params);
 		
 		RestAssured.given().
 			when().
@@ -179,42 +204,51 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(5)
 	public void gff3DataBulkUploadMissingRequiredFields() throws Exception {
-		int total = 1;
-		int failed = 0;
-		int completed = 1;
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_01_no_seq_id.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_02_no_start.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_03_no_end.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_04_no_strand.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_05_no_transcript_parent.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_06_no_exon_parent.json", "Entities", 1, failed, 1);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_07_no_cds_parent.json", "Entities", 1, failed, 1);
+		
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1));
+		params.put("Locations", createCountParams(1, 0, 1));
+		params.put("Associations", createCountParams(1, 0, 1));
+		
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_01_no_seq_id.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_02_no_start.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_03_no_end.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_04_no_strand.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_05_no_transcript_parent.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_06_no_exon_parent.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "MR_07_no_cds_parent.json", params);
 	}
 
 	@Test
 	@Order(6)
 	public void gff3DataBulkUploadEmptyRequiredFields() throws Exception {
-		int total = 1;
-		int failed = 0;
-		int completed = 1;
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_01_empty_seq_id.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_02_empty_strand.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_03_empty_transcript_parent.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_04_empty_exon_parent.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_05_empty_cds_parent.json", "Entities", total, failed, completed);
+		
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1));
+		params.put("Locations", createCountParams(1, 0, 1));
+		params.put("Associations", createCountParams(1, 0, 1));
+		
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_01_empty_seq_id.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_02_empty_strand.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_03_empty_transcript_parent.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_04_empty_exon_parent.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "ER_05_empty_cds_parent.json", params);
 	}
 
 	@Test
 	@Order(7)
 	public void gff3DataBulkUploadInvalidFields() throws Exception {
-		int total = 1;
-		int failed = 0;
-		int completed = 1;
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_01_invalid_strand.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_02_invalid_phase.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_03_invalid_transcript_parent.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_04_invalid_exon_parent.json", "Entities", total, failed, completed);
-		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_05_invalid_cds_parent.json", "Entities", total, failed, completed);
+		
+		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
+		params.put("Entities", createCountParams(1, 0, 1));
+		params.put("Locations", createCountParams(1, 0, 1));
+		params.put("Associations", createCountParams(1, 0, 1));
+		
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_01_invalid_strand.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_02_invalid_phase.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_03_invalid_transcript_parent.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_04_invalid_exon_parent.json", params);
+		checkFailedBulkLoad(transcriptBulkPostEndpoint, gffDataTestFilePath + "IV_05_invalid_cds_parent.json", params);
 	}
 
 }

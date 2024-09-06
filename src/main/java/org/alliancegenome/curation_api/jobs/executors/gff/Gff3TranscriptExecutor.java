@@ -162,7 +162,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedTranscriptGffData.size());
+		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, null, preProcessedTranscriptGffData, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();

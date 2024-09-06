@@ -163,7 +163,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedCDSGffData = Gff3AttributesHelper.getCDSGffData(gffData, dataProvider);
-		BulkLoadFileHistory history = new BulkLoadFileHistory(preProcessedCDSGffData.size());
+		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, null, preProcessedCDSGffData, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();

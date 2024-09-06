@@ -6,7 +6,9 @@ import static org.hamcrest.Matchers.is;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
@@ -62,6 +64,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.response.ValidatableResponse;
 
 public class BaseITCase {
 
@@ -115,6 +118,26 @@ public class BaseITCase {
 			body("history.counts." + countType + ".failed", is(expectedFailedRecords)).
 			body("history.counts." + countType + ".completed", is(expectedCompletedRecords));
 	}
+	
+	
+	public void checkFailedBulkLoad(String endpoint, String filePath, HashMap<String, HashMap<String, Integer>> params) throws Exception {
+		String content = Files.readString(Path.of(filePath));
+
+		ValidatableResponse resp = RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post(endpoint).
+			then().
+			statusCode(200);
+		
+		for (Entry<String, HashMap<String, Integer>> entry: params.entrySet()) {
+			resp.body("history.counts." + entry.getKey() + ".total", is(entry.getValue().get("total")));
+			resp.body("history.counts." + entry.getKey() + ".failed", is(entry.getValue().get("failed")));
+			resp.body("history.counts." + entry.getKey() + ".completed", is(entry.getValue().get("completed")));
+		}
+	}
+	
 
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath) throws Exception {
 		checkSuccessfulBulkLoad(endpoint, filePath, "Records", 1);
@@ -137,6 +160,15 @@ public class BaseITCase {
 			body("history.counts." + countType + ".total", is(nrRecords)).
 			body("history.counts." + countType + ".failed", is(0)).
 			body("history.counts." + countType + ".completed", is(nrRecords));
+	}
+	
+	
+	public HashMap<String, Integer> createCountParams(int total, int failed, int completed) {
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
+		map.put("total", total);
+		map.put("failed", failed);
+		map.put("completed", completed);
+		return map;
 	}
 
 	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String taxonCurie, String subtypeName, String name, Boolean obsolete) {
