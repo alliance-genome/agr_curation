@@ -504,18 +504,18 @@ export const DataLoadsComponent = () => {
 
 		return (
 			<>
-				Start: <Moment format="YYYY-MM-DD HH:mm:ss" date={started} />
+				Start: <Moment local format="YYYY-MM-DD hh:mm:ss" date={started} />
 				<br />
 				{rowData.loadFinished && (
 					<>
-						End: <Moment format="YYYY-MM-DD HH:mm:ss" date={finished} />
+						End: <Moment local format="YYYY-MM-DD HH:mm:ss" date={finished} />
 						<br />
 						Duration: <Moment format="HH:mm:ss" duration={started} date={finished} />
 					</>
 				)}
 				{!rowData.loadFinished && rowData.bulkloadStatus !== 'FAILED' && (
 					<>
-						Running Time: <Moment format="HH:mm:ss" duration={started} date={finished} />
+						Running Time: <Moment interval={1000} format="HH:mm:ss" duration={started} date={finished} />
 					</>
 				)}
 			</>
@@ -537,10 +537,10 @@ export const DataLoadsComponent = () => {
 		return (
 			<DataTable key="countsTable" value={countsArray}>
 				<Column field="name" />
-				<Column field="completed" header="Completed" />
-				<Column field="failed" header="Failed" />
-				<Column field="skipped" header="Skipped" />
-				<Column field="total" header="Total" />
+				<Column field="completed" header="Completed" body={(rowData) => numberTemplate(rowData.completed)}/>
+				<Column field="failed" header="Failed" body={(rowData) => numberTemplate(rowData.failed)}/>
+				<Column field="skipped" header="Skipped" body={(rowData) => numberTemplate(rowData.skipped)}/>
+				<Column field="total" header="Total" body={(rowData) => numberTemplate(rowData.total)}/>
 			</DataTable>
 		);
 	};
