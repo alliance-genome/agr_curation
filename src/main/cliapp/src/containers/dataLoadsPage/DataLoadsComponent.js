@@ -185,7 +185,6 @@ export const DataLoadsComponent = () => {
 			});
 	};
 
-
 	const editLoad = (rowData) => {
 		bulkLoadDispatch({ type: 'EDIT', editBulkLoad: rowData });
 		setBulkLoadDialog(true);
@@ -287,7 +286,10 @@ export const DataLoadsComponent = () => {
 			rowData.bulkloadStatus === 'FAILED' ||
 			rowData.bulkloadStatus === 'STOPPED'
 		) {
-			if (fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType) || exemptTypes(bulkload.backendBulkLoadType)) {
+			if (
+				fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType) ||
+				exemptTypes(bulkload.backendBulkLoadType)
+			) {
 				ret.push(
 					<Button
 						key="run"
@@ -539,10 +541,10 @@ export const DataLoadsComponent = () => {
 		return (
 			<DataTable key="countsTable" value={countsArray}>
 				<Column field="name" />
-				<Column field="completed" header="Completed" body={(rowData) => numberTemplate(rowData.completed)}/>
-				<Column field="failed" header="Failed" body={(rowData) => numberTemplate(rowData.failed)}/>
-				<Column field="skipped" header="Skipped" body={(rowData) => numberTemplate(rowData.skipped)}/>
-				<Column field="total" header="Total" body={(rowData) => numberTemplate(rowData.total)}/>
+				<Column field="completed" header="Completed" body={(rowData) => numberTemplate(rowData.completed)} />
+				<Column field="failed" header="Failed" body={(rowData) => numberTemplate(rowData.failed)} />
+				<Column field="skipped" header="Skipped" body={(rowData) => numberTemplate(rowData.skipped)} />
+				<Column field="total" header="Total" body={(rowData) => numberTemplate(rowData.total)} />
 			</DataTable>
 		);
 	};
@@ -574,7 +576,11 @@ export const DataLoadsComponent = () => {
 					{showModRelease(bulkload)}
 
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-					<Column body={(rowData) => loadFileActionBodyTemplate(rowData, bulkload)} exportable={false} style={{ minWidth: '8rem' }}></Column>
+					<Column
+						body={(rowData) => loadFileActionBodyTemplate(rowData, bulkload)}
+						exportable={false}
+						style={{ minWidth: '8rem' }}
+					></Column>
 				</DataTable>
 			</div>
 		);
@@ -695,8 +701,8 @@ export const DataLoadsComponent = () => {
 	};
 
 	const exemptTypes = (loadType) => {
-		return (loadType === "GFF_EXON" || loadType === "GFF_TRANSCRIPT" || loadType === "GFF_CDS");
-	}
+		return loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS';
+	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
 		if (!fileVersion) return false;
