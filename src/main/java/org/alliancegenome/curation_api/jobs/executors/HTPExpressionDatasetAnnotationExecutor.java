@@ -99,10 +99,12 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				updateHistory(history);
 				updateExceptions(history);
 				failLoadAboveErrorRateCutoff(history);
+				return false;
 			}
 			ph.progressProcess();
 		}
 		updateHistory(history);
+		updateExceptions(history);
 		ph.finishProcess();
 		return true;
 	}
