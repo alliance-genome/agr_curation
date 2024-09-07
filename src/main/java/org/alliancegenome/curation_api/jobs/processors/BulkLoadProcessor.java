@@ -193,6 +193,8 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.setErrorMessage(null);
 		bulkLoadFileHistory.setLoadFinished(null);
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
+		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(bulkLoadFileHistory.getBulkloadStatus());
+		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
 		Log.info("Load File: " + bulkLoadFileHistory.getBulkLoadFile().getMd5Sum() + " is running with file: " + bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath());
 	}
 
@@ -210,6 +212,8 @@ public class BulkLoadProcessor {
 			slackNotifier.slackalert(bulkLoadFileHistory);
 		}
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
+		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(status);
+		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
 		Log.info("Load File: " + bulkLoadFileHistory.getBulkLoadFile().getMd5Sum() + " is finished. Message: " + message + " Status: " + status);
 	}
 
