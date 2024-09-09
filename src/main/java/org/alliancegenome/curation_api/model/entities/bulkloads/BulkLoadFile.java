@@ -30,10 +30,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(
 	indexes = {
-		@Index(name = "bulkloadfile_bulkLoad_index", columnList = "bulkLoad_id"),
 		@Index(name = "bulkloadfile_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "bulkloadfile_updatedby_index", columnList = "updatedBy_id"),
-		@Index(name = "bulkloadfile_bulkloadStatus_index", columnList = "bulkloadStatus")
+		@Index(name = "bulkloadfile_updatedby_index", columnList = "updatedBy_id")
 	}
 )
 public class BulkLoadFile extends AuditedObject {
