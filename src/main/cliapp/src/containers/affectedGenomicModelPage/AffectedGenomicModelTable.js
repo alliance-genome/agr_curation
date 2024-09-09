@@ -3,7 +3,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { NameTemplate } from '../../components/Templates/NameTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
@@ -49,7 +49,7 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: 'name',
 			header: 'Name',
-			body: (rowData) => <NameTemplate name={rowData.name} />,
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 		},

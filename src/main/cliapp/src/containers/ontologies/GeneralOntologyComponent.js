@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
-import { NameTemplate } from './NameTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { DefinitionTemplate } from './DefinitionTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
@@ -94,7 +94,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 		field: 'name',
 		header: 'Name',
 		sortable: true,
-		body: (rowData) => <NameTemplate rowData={rowData} />,
+		body: (rowData) => <StringTemplate string={rowData.name} />,
 		filterConfig: FILTER_CONFIGS.nameFilterConfig,
 	});
 	if (!hideDefinition) {

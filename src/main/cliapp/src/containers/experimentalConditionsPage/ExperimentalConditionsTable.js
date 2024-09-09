@@ -25,6 +25,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 export const ExperimentalConditionsTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
@@ -72,18 +73,6 @@ export const ExperimentalConditionsTable = () => {
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
 			</>
 		);
-	};
-
-	//todo: replace
-	const summaryBodyTemplate = (rowData) => {
-		if (rowData) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
-					<Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
-				</>
-			);
-		}
 	};
 
 	//todo: replace
@@ -278,7 +267,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionSummary',
 			header: 'Summary',
 			sortable: true,
-			body: summaryBodyTemplate,
+			body: (rowData) => <StringTemplate string={rowData.conditionSummary} />,
 			filterConfig: FILTER_CONFIGS.conditionRelationSummaryFilterConfig,
 		},
 		{
