@@ -7,6 +7,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
@@ -31,7 +32,7 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		setSQLDao(geneToGeneOrthologyGeneratedDAO);
 	}
 
-	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException {
+	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ObjectUpdateException, KnownIssueValidationException {
 		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);
 	}
 
