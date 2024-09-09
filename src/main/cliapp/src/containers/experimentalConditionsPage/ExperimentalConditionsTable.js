@@ -24,6 +24,7 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
 
 export const ExperimentalConditionsTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
@@ -73,17 +74,7 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
-	const uniqueIdBodyTemplate = (rowData) => {
-		if (rowData) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.uniqueId}</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
-				</>
-			);
-		}
-	};
-
+	//todo: replace
 	const summaryBodyTemplate = (rowData) => {
 		if (rowData) {
 			return (
@@ -95,6 +86,7 @@ export const ExperimentalConditionsTable = () => {
 		}
 	};
 
+	//todo: replace
 	const conditionClassBodyTemplate = (rowData) => {
 		if (rowData?.conditionClass) {
 			return (
@@ -111,6 +103,7 @@ export const ExperimentalConditionsTable = () => {
 		}
 	};
 
+	//todo: replace
 	const conditionIdBodyTemplate = (rowData) => {
 		if (rowData?.conditionId) {
 			return (
@@ -127,6 +120,7 @@ export const ExperimentalConditionsTable = () => {
 		}
 	};
 
+	//todo: replace
 	const conditionGeneOntologyBodyTemplate = (rowData) => {
 		if (rowData?.conditionGeneOntology) {
 			return (
@@ -137,6 +131,7 @@ export const ExperimentalConditionsTable = () => {
 		}
 	};
 
+	//todo: replace
 	const conditionChemicalBodyTemplate = (rowData) => {
 		if (rowData?.conditionChemical) {
 			return (
@@ -146,7 +141,8 @@ export const ExperimentalConditionsTable = () => {
 			);
 		}
 	};
-
+	
+	//todo: replace
 	const conditionAnatomyBodyTemplate = (rowData) => {
 		if (rowData?.conditionAnatomy) {
 			return (
@@ -157,6 +153,7 @@ export const ExperimentalConditionsTable = () => {
 		}
 	};
 
+	//todo: replace
 	const conditionTaxonBodyTemplate = (rowData) => {
 		if (rowData?.conditionTaxon) {
 			return (
@@ -170,12 +167,13 @@ export const ExperimentalConditionsTable = () => {
 						target={`.${'TAXON_NAME_'}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`}
 						content={`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`}
 						style={{ width: '250px', maxWidth: '450px' }}
-					/>
+						/>
 				</>
 			);
 		}
 	};
-
+	
+	//todo: replace
 	const internalBodyTemplate = (rowData) => {
 		if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
 			return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
@@ -188,7 +186,7 @@ export const ExperimentalConditionsTable = () => {
 			updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
 		}
 	};
-
+	
 	const internalEditor = (props) => {
 		return (
 			<>
@@ -273,7 +271,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'uniqueId',
 			header: 'Unique ID',
 			sortable: true,
-			body: uniqueIdBodyTemplate,
+			body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 		},
 		{
@@ -343,6 +341,7 @@ export const ExperimentalConditionsTable = () => {
 		},
 		{
 			field: 'conditionQuantity',
+			//todo: replace with number template
 			header: 'Quantity',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
