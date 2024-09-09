@@ -6,7 +6,6 @@ import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Button } from 'primereact/button';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
@@ -25,6 +24,7 @@ import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 export const ExperimentalConditionsTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
@@ -72,13 +72,6 @@ export const ExperimentalConditionsTable = () => {
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
 			</>
 		);
-	};
-
-	//todo: replace
-	const internalBodyTemplate = (rowData) => {
-		if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
-		}
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
@@ -258,7 +251,7 @@ export const ExperimentalConditionsTable = () => {
 		{
 			field: 'internal',
 			header: 'Internal',
-			body: internalBodyTemplate,
+			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 			filterConfig: FILTER_CONFIGS.internalFilterConfig,
 			sortable: true,
 			editor: (props) => internalEditor(props),
