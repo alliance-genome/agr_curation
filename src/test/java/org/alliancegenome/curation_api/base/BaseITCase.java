@@ -152,7 +152,7 @@ public class BaseITCase {
 	}
 	
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath, int nrRecords) throws Exception {
-		checkBulkLoadRecordCounts(endpoint, filePath, "Records",nrRecords, 0, nrRecords, 0);
+		checkBulkLoadRecordCounts(endpoint, filePath, "Records", nrRecords, 0, nrRecords, 0);
 	}
 	
 	public HashMap<String, Integer> createCountParams(int total, int failed, int completed, int skipped) {
