@@ -54,7 +54,7 @@ public class BulkLoadFile extends AuditedObject {
 	private String s3Path;
 
 	@JsonView({ View.FieldsOnly.class })
-	private Integer recordCount;
+	private Integer recordCount = 0;
 
 	@JsonView({ View.FieldsOnly.class })
 	private String linkMLSchemaVersion;
