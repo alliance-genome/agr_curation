@@ -100,10 +100,6 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public void checkFailedBulkLoad(String endpoint, String filePath) throws Exception {
-		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 1, 0, 0);
-	}
-
 	public void checkBulkLoadRecordCounts(String endpoint, String filePath, String countType, int expectedTotalRecords, int expectedFailedRecords, int expectedCompletedRecords, int expectedSkippedRecords) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 
@@ -120,7 +116,7 @@ public class BaseITCase {
 			body("history.counts." + countType + ".skipped", is(expectedSkippedRecords));
 	}
 	
-	public void checkFailedBulkLoad(String endpoint, String filePath, HashMap<String, HashMap<String, Integer>> params) throws Exception {
+	public void checkBulkLoadRecordCounts(String endpoint, String filePath, HashMap<String, HashMap<String, Integer>> params) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 
 		ValidatableResponse resp = RestAssured.given().
@@ -137,6 +133,10 @@ public class BaseITCase {
 			resp.body("history.counts." + entry.getKey() + ".completed", is(entry.getValue().get("completed")));
 			resp.body("history.counts." + entry.getKey() + ".skipped", is(entry.getValue().get("skipped")));
 		}
+	}
+
+	public void checkFailedBulkLoad(String endpoint, String filePath) throws Exception {
+		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 1, 0, 0);
 	}
 
 	public void checkSkippedBulkLoad(String endpoint, String filePath) throws Exception {
