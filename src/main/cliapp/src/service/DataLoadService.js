@@ -42,13 +42,12 @@ export class DataLoadService extends BaseAuthService {
 		return this.api.delete(`/${endpoint}/${id}`);
 	}
 
-	restartLoad(loadType, id) {
-		let endpoint = loadType.toLowerCase();
-		return this.api.get(`/${endpoint}/restart/${id}`);
+	restartLoad(id) {
+		return this.api.get(`/bulkloadfilehistory/restartload/${id}`);
 	}
 
-	restartLoadFile(id) {
-		return this.api.get(`/bulkloadfile/restart/${id}`);
+	restartHistoryLoad(id) {
+		return this.api.get(`/bulkloadfilehistory/restartloadhistory/${id}`);
 	}
 
 	getFileHistoryFile(id) {
@@ -82,20 +81,11 @@ export class DataLoadService extends BaseAuthService {
 	getBackendBulkLoadTypes(loadType) {
 		const bulkLoadTypes = {
 			BulkFMSLoad: [
-				'GFF',
+				'GFF', // This needs to be removed at some point
 
 				'GFF_EXON',
 				'GFF_CDS',
 				'GFF_TRANSCRIPT',
-
-				'GFF_EXON_LOCATION',
-				'GFF_CDS_LOCATION',
-				'GFF_TRANSCRIPT_LOCATION',
-
-				'GFF_TRANSCRIPT_CDS',
-				'GFF_TRANSCRIPT_EXON',
-				'GFF_TRANSCRIPT_GENE',
-
 				'HTPDATASET',
 				'INTERACTION-GEN',
 				'INTERACTION-MOL',

@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
@@ -16,8 +16,7 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 
-	public void bulkLoadFile(@Observes StartedLoadJobEvent event) { // An @Observes method should not be in a super class as then it gets run for
-																	// every child class
+	public void bulkLoadFile(@ObservesAsync StartedLoadJobEvent event) { // An @Observes method should not be in a super class as then it gets run for every child class
 		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(event.getId());
 
 		if (!bulkLoadFileHistory.getBulkloadStatus().isStarted()) {

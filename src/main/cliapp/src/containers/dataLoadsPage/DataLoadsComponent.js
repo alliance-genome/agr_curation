@@ -171,15 +171,15 @@ export const DataLoadsComponent = () => {
 
 	const runLoad = (rowData) => {
 		getService()
-			.restartLoad(rowData.type, rowData.id)
+			.restartLoad(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
 	};
 
-	const runLoadFile = (rowData) => {
+	const runHistoryLoad = (rowData) => {
 		getService()
-			.restartLoadFile(rowData.id)
+			.restartHistoryLoad(rowData.id)
 			.then((response) => {
 				queryClient.invalidateQueries(['bulkloadtable']);
 			});
@@ -277,21 +277,25 @@ export const DataLoadsComponent = () => {
 		setUploadConfirmDialog(false);
 	};
 
-	const loadFileActionBodyTemplate = (rowData) => {
+	const loadFileActionBodyTemplate = (rowData, bulkload) => {
 		let ret = [];
+		console.log(rowData);
 		if (
 			!rowData.bulkloadStatus ||
 			rowData.bulkloadStatus === 'FINISHED' ||
 			rowData.bulkloadStatus === 'FAILED' ||
 			rowData.bulkloadStatus === 'STOPPED'
 		) {
-			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.loadType)) {
+			if (
+				fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType) ||
+				exemptTypes(bulkload.backendBulkLoadType)
+			) {
 				ret.push(
 					<Button
 						key="run"
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
-						onClick={() => runLoadFile(rowData)}
+						onClick={() => runHistoryLoad(rowData)}
 					/>
 				);
 			}
@@ -497,7 +501,7 @@ export const DataLoadsComponent = () => {
 
 	const durationTemplate = (rowData) => {
 		let started = new Date(rowData.loadStarted);
-		let finished = Date.now();
+		let finished = Date.UTC();
 		if (rowData.loadFinished) {
 			finished = new Date(rowData.loadFinished);
 		}
@@ -515,7 +519,7 @@ export const DataLoadsComponent = () => {
 				)}
 				{!rowData.loadFinished && rowData.bulkloadStatus !== 'FAILED' && (
 					<>
-						Running Time: <Moment format="HH:mm:ss" duration={started} date={finished} />
+						Running Time: <Moment interval={1000} format="HH:mm:ss" duration={started} date={finished} />
 					</>
 				)}
 			</>
@@ -537,18 +541,18 @@ export const DataLoadsComponent = () => {
 		return (
 			<DataTable key="countsTable" value={countsArray}>
 				<Column field="name" />
-				<Column field="completed" header="Completed" />
-				<Column field="failed" header="Failed" />
-				<Column field="skipped" header="Skipped" />
-				<Column field="total" header="Total" />
+				<Column field="completed" header="Completed" body={(rowData) => numberTemplate(rowData.completed)} />
+				<Column field="failed" header="Failed" body={(rowData) => numberTemplate(rowData.failed)} />
+				<Column field="skipped" header="Skipped" body={(rowData) => numberTemplate(rowData.skipped)} />
+				<Column field="total" header="Total" body={(rowData) => numberTemplate(rowData.total)} />
 			</DataTable>
 		);
 	};
 
-	const historyTable = (file) => {
+	const historyTable = (bulkload) => {
 		let sortedHistory = [];
-		if (file.history != null) {
-			sortedHistory = file.history.sort(function (a, b) {
+		if (bulkload.history != null) {
+			sortedHistory = bulkload.history.sort(function (a, b) {
 				const start1 = new Date(a.loadStarted);
 				const start2 = new Date(b.loadStarted);
 				return start2 - start1;
@@ -569,10 +573,14 @@ export const DataLoadsComponent = () => {
 					/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />
-					{showModRelease(file)}
+					{showModRelease(bulkload)}
 
 					<Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+					<Column
+						body={(rowData) => loadFileActionBodyTemplate(rowData, bulkload)}
+						exportable={false}
+						style={{ minWidth: '8rem' }}
+					></Column>
 				</DataTable>
 			</div>
 		);
@@ -690,6 +698,10 @@ export const DataLoadsComponent = () => {
 		} else {
 			return [];
 		}
+	};
+
+	const exemptTypes = (loadType) => {
+		return loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS';
 	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {

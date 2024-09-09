@@ -52,25 +52,10 @@ public class BulkLoadProcessor {
 
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 
-//	private String processFMS(String dataType, String dataSubType) {
-//		List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
-//
-//		if (files.size() == 1) {
-//			DataFile df = files.get(0);
-//			return df.getS3Url();
-//		} else {
-//			Log.warn("Files: " + files);
-//			Log.warn("Issue pulling files from the FMS: " + dataType + " " + dataSubType);
-//		}
-//		return null;
-//	}
-
 	public void syncWithS3(BulkLoadFileHistory bulkLoadFileHistory) {
 		BulkLoad bulkLoad = bulkLoadFileHistory.getBulkLoad();
 		BulkLoadFile bulkLoadFile = bulkLoadFileHistory.getBulkLoadFile();
-		Log.info("Syncing with S3");
-		Log.info("Local: " + bulkLoadFile.getLocalFilePath());
-		Log.info("S3: " + bulkLoadFile.getS3Path());
+		Log.info("Starting Syncing with S3: Local File: " + bulkLoadFile.getLocalFilePath() + " S3 File: " + bulkLoadFile.getS3Path());
 
 		if ((bulkLoadFile.getS3Path() != null || bulkLoadFile.generateS3MD5Path(bulkLoad) != null) && bulkLoadFile.getLocalFilePath() == null) {
 			File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, bulkLoadFile.getS3Path());
@@ -175,7 +160,7 @@ public class BulkLoadProcessor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		bulkLoadDAO.merge(load);
 		Log.info("Firing Pending Bulk File History Event: " + history.getId());
-		pendingFileJobEvents.fire(new PendingLoadJobEvent(history.getId()));
+		pendingFileJobEvents.fireAsync(new PendingLoadJobEvent(history.getId()));
 	}
 
 	protected void startLoad(BulkLoad load) {
@@ -204,7 +189,12 @@ public class BulkLoadProcessor {
 
 	protected void startLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		bulkLoadFileHistory.setBulkloadStatus(bulkLoadFileHistory.getBulkloadStatus().getNextStatus());
+		bulkLoadFileHistory.setLoadStarted(LocalDateTime.now());
+		bulkLoadFileHistory.setErrorMessage(null);
+		bulkLoadFileHistory.setLoadFinished(null);
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
+		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(bulkLoadFileHistory.getBulkloadStatus());
+		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
 		Log.info("Load File: " + bulkLoadFileHistory.getBulkLoadFile().getMd5Sum() + " is running with file: " + bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath());
 	}
 
@@ -222,6 +212,8 @@ public class BulkLoadProcessor {
 			slackNotifier.slackalert(bulkLoadFileHistory);
 		}
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
+		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(status);
+		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
 		Log.info("Load File: " + bulkLoadFileHistory.getBulkLoadFile().getMd5Sum() + " is finished. Message: " + message + " Status: " + status);
 	}
 
