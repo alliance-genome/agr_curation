@@ -38,7 +38,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "OntologyTermType")
+@DiscriminatorColumn(name = "OntologyTermType", length = 64)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
