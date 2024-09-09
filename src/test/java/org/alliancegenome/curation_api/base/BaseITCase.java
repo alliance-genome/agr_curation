@@ -101,10 +101,10 @@ public class BaseITCase {
 	}
 
 	public void checkFailedBulkLoad(String endpoint, String filePath) throws Exception {
-		checkFailedBulkLoad(endpoint, filePath, "Records", 1, 1, 0);
+		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 1, 0, 0);
 	}
 
-	public void checkFailedBulkLoad(String endpoint, String filePath, String countType, int expectedTotalRecords, int expectedFailedRecords, int expectedCompletedRecords) throws Exception {
+	public void checkBulkLoadRecordCounts(String endpoint, String filePath, String countType, int expectedTotalRecords, int expectedFailedRecords, int expectedCompletedRecords, int expectedSkippedRecords) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 
 		RestAssured.given().
@@ -116,9 +116,9 @@ public class BaseITCase {
 			statusCode(200).
 			body("history.counts." + countType + ".total", is(expectedTotalRecords)).
 			body("history.counts." + countType + ".failed", is(expectedFailedRecords)).
-			body("history.counts." + countType + ".completed", is(expectedCompletedRecords));
+			body("history.counts." + countType + ".completed", is(expectedCompletedRecords)).
+			body("history.counts." + countType + ".skipped", is(expectedSkippedRecords));
 	}
-	
 	
 	public void checkFailedBulkLoad(String endpoint, String filePath, HashMap<String, HashMap<String, Integer>> params) throws Exception {
 		String content = Files.readString(Path.of(filePath));
@@ -135,39 +135,32 @@ public class BaseITCase {
 			resp.body("history.counts." + entry.getKey() + ".total", is(entry.getValue().get("total")));
 			resp.body("history.counts." + entry.getKey() + ".failed", is(entry.getValue().get("failed")));
 			resp.body("history.counts." + entry.getKey() + ".completed", is(entry.getValue().get("completed")));
+			resp.body("history.counts." + entry.getKey() + ".skipped", is(entry.getValue().get("skipped")));
 		}
 	}
-	
 
+	public void checkSkippedBulkLoad(String endpoint, String filePath) throws Exception {
+		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 0, 0, 1);
+	}
+	
+	public void checkSkippedBulkLoad(String endpoint, String filePath, int nrRecords) throws Exception {
+		checkBulkLoadRecordCounts(endpoint, filePath, "Records", nrRecords, 0, 0, nrRecords);
+	}
+	
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath) throws Exception {
-		checkSuccessfulBulkLoad(endpoint, filePath, "Records", 1);
+		checkSuccessfulBulkLoad(endpoint, filePath, 1);
 	}
 	
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath, int nrRecords) throws Exception {
-		checkSuccessfulBulkLoad(endpoint, filePath, "Records", nrRecords);
-	}
-
-	public void checkSuccessfulBulkLoad(String endpoint, String filePath, String countType, int nrRecords) throws Exception {
-		String content = Files.readString(Path.of(filePath));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post(endpoint).
-			then().
-			statusCode(200).
-			body("history.counts." + countType + ".total", is(nrRecords)).
-			body("history.counts." + countType + ".failed", is(0)).
-			body("history.counts." + countType + ".completed", is(nrRecords));
+		checkBulkLoadRecordCounts(endpoint, filePath, "Records",nrRecords, 0, nrRecords, 0);
 	}
 	
-	
-	public HashMap<String, Integer> createCountParams(int total, int failed, int completed) {
+	public HashMap<String, Integer> createCountParams(int total, int failed, int completed, int skipped) {
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		map.put("total", total);
 		map.put("failed", failed);
 		map.put("completed", completed);
+		map.put("skipped", skipped);
 		return map;
 	}
 
