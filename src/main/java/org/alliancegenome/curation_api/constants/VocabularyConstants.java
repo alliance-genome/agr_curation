@@ -78,4 +78,7 @@ public final class VocabularyConstants {
 	public static final String ANATOMICAL_STRUCTURE_UBERON_SLIM_TERMS = "anatomical_structure_uberon_slim_terms";
 	public static final String CELLULAR_COMPONENT_QUALIFIERS = "cellular_component_qualifiers";
 
+	public static final String HTP_DATASET_CATEGORY_TAGS = "data_set_category_tags";
+	public static final String HTP_DATASET_NOTE_TYPE_VOCABULARY_TERM_SET = "htp_expression_dataset_note_type";
+
 }
