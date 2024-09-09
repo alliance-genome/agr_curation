@@ -168,7 +168,7 @@ public class ParalogyFmsDTOValidator {
 		if (dto.getIdentity() != null) {
 			paralogyData.setIdentity(dto.getIdentity());
 		}
-		if (dto.getLength() != null) {	
+		if (dto.getLength() != null) {
 			paralogyData.setLength(dto.getLength());
 		}
 		if (dto.getRank() == null) {
