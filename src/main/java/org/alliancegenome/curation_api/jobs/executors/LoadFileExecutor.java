@@ -221,11 +221,10 @@ public class LoadFileExecutor {
 					// e.printStackTrace();
 					history.incrementFailed();
 					addException(history, e.getData());
-				} catch (KnownIssueValidationException e) { 
+				} catch (KnownIssueValidationException e) {
 					Log.debug(e.getMessage());
 					history.incrementSkipped();
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					// e.printStackTrace();
 					history.incrementFailed();
 					addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
