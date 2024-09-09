@@ -35,7 +35,7 @@ import io.quarkus.scheduler.Scheduled;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
@@ -76,7 +76,7 @@ public class JobScheduler {
 					boolean isFirst = true;
 					for (BulkLoadFileHistory bfh : b.getHistory()) {
 						BulkLoadFile bulkLoadFile = bfh.getBulkLoadFile();
-						if (bfh.getBulkloadStatus() == null || bfh.getBulkloadStatus().isRunning() || bfh.getBulkloadStatus().isStarted() || bulkLoadFile.getLocalFilePath() != null) {
+						if (bfh.getBulkloadStatus() == null || bfh.getBulkloadStatus().isPending() || bfh.getBulkloadStatus().isRunning() || bfh.getBulkloadStatus().isStarted() || bulkLoadFile.getLocalFilePath() != null) {
 							if (bulkLoadFile.getLocalFilePath() != null) {
 								File file = new File(bulkLoadFile.getLocalFilePath());
 								if (file.exists()) {
@@ -137,7 +137,7 @@ public class JobScheduler {
 												bsl.setSchedulingErrorMessage(null);
 												bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
 												bulkLoadDAO.merge(bsl);
-												pendingJobEvents.fire(new PendingBulkLoadJobEvent(bsl.getId()));
+												pendingJobEvents.fireAsync(new PendingBulkLoadJobEvent(bsl.getId()));
 											}
 										}
 									} catch (Exception e) {
@@ -161,28 +161,26 @@ public class JobScheduler {
 		}
 	}
 
-	public void pendingJobs(@Observes PendingBulkLoadJobEvent event) {
-		// Log.info("pendingJobs: " + event.getId());
+	public void pendingJobs(@ObservesAsync PendingBulkLoadJobEvent event) {
 		BulkLoad load = bulkLoadDAO.find(event.getId());
 		if (load != null) {
 			if (load.getBulkloadStatus().isPending()) {
 				load.setBulkloadStatus(load.getBulkloadStatus().getNextStatus());
 				bulkLoadDAO.merge(load);
-				// Log.info("Firing Start Job Event: " + load.getId());
-				startedJobEvents.fire(new StartedBulkLoadJobEvent(load.getId()));
+				Log.debug("Firing Start Job Event: " + load.getId());
+				startedJobEvents.fireAsync(new StartedBulkLoadJobEvent(load.getId()));
 			}
 		}
 	}
 
-	public void pendingFileJobs(@Observes PendingLoadJobEvent event) {
-		// Log.info("pendingFileJobs: " + event.getId());
+	public void pendingFileJobs(@ObservesAsync PendingLoadJobEvent event) {
 		BulkLoadFileHistory fileLoadHistory = bulkLoadFileHistoryDAO.find(event.getId());
 		if (fileLoadHistory != null) {
 			if (fileLoadHistory.getBulkloadStatus().isPending()) {
 				fileLoadHistory.setBulkloadStatus(fileLoadHistory.getBulkloadStatus().getNextStatus());
 				bulkLoadFileHistoryDAO.merge(fileLoadHistory);
-				// Log.info("Firing Start File Job Event: " + fileLoad.getId());
-				startedFileJobEvents.fire(new StartedLoadJobEvent(fileLoadHistory.getId()));
+				Log.debug("Firing Start File History Job Event: " + fileLoadHistory.getId());
+				startedFileJobEvents.fireAsync(new StartedLoadJobEvent(fileLoadHistory.getId()));
 			}
 		}
 	}
