@@ -46,11 +46,6 @@ CREATE TABLE association_vocabularyterm (
     diseasequalifiers_id bigint NOT NULL
 );
 
-CREATE TABLE association_phenotypesortraits (
-    genegeneticinteraction_id bigint,
-    phenotypesortraits character varying(255)
-);
-
 ALTER TABLE association
 	ADD COLUMN curie character varying(255),
 	ADD COLUMN modentityid character varying(255),
@@ -274,10 +269,8 @@ UPDATE association a SET
 	interactorbgeneticperturbation_id = b.interactorbgeneticperturbation_id
 FROM GeneGeneticInteraction b WHERE a.id = b.id;
 
-INSERT INTO association_phenotypesortraits (genegeneticinteraction_id, phenotypesortraits)
-   SELECT genegeneticinteraction_id, phenotypesortraits FROM genegeneticinteraction_phenotypesortraits;
-
-DROP TABLE genegeneticinteraction_phenotypesortraits;
+-- association_phenotypesortraits
+DROP CONSTRAINT genegeneticinteraction_phenotypesortraits_genegeneticinteractio;
 
 DROP TABLE GeneGeneticInteraction;
 
@@ -475,10 +468,6 @@ CREATE INDEX association_phenotypeannotation_phenotypeterms_index ON association
 CREATE INDEX association_diseaseannotation_vt_diseaseannotation_index ON association_vocabularyterm USING btree (diseaseannotation_id);
 CREATE INDEX association_diseaseannotation_diseasequalifiers_index ON association_vocabularyterm USING btree (diseasequalifiers_id);
 
--- association_phenotypesortraits
-CREATE INDEX association_genegeneticinteraction_phenotypesortraits_index ON association_phenotypesortraits USING btree (genegeneticinteraction_id);
-
-
 -- FK's
 
 -- association_gene
@@ -529,8 +518,6 @@ ALTER TABLE ONLY association_ontologyterm ADD CONSTRAINT fk9hbubr81amn71dtvm86qw
 ALTER TABLE ONLY association_vocabularyterm ADD CONSTRAINT fkcfijtoyigdh9b4ss8efnf3jro FOREIGN KEY (diseaseannotation_id) REFERENCES association(id);
 ALTER TABLE ONLY association_vocabularyterm ADD CONSTRAINT fkbf73p7v3d72e2fsni076talw4 FOREIGN KEY (diseasequalifiers_id) REFERENCES vocabularyterm(id);
 
--- association_phenotypesortraits
--- ALTER TABLE ONLY association_phenotypesortraits ADD CONSTRAINT fklufk1y85ki3qeo1ixbko56rol FOREIGN KEY (genegeneticinteraction_id) REFERENCES association(id);
 
 
 
