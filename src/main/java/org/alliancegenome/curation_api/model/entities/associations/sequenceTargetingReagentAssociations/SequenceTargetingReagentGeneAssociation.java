@@ -1,10 +1,13 @@
 package org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
@@ -16,13 +19,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-
-import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -34,13 +30,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.3.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "SequenceTargetingReagentGeneAssociation", description = "POJO representing an association between an SQTR and a gene")
-@Table(
-	indexes = {
-		@Index(name = "sequencetargetingreagentassociation_subject_index", columnList = "sequencetargetingreagentassociationsubject_id"),
-		@Index(name = "sequencetargetingreagentgeneassociation_relation_index", columnList = "relation_id"),
-		@Index(name = "sequencetargetingreagentgeneassociation_sequencetargetingreagentgeneassociationobject_index", columnList = "sequencetargetingreagentgeneassociationobject_id")
-	}
-)
 public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})

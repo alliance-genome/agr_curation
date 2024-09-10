@@ -27,7 +27,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -38,11 +37,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "ConstructGenomicEntityAssociation", description = "POJO representing an association between a construct and a genomic entity")
-@Table(indexes = {
-	@Index(name = "constructgenomicentityassociation_subject_index", columnList = "constructassociationsubject_id"),
-	@Index(name = "constructgenomicentityassociation_object_index", columnList = "constructgenomicentityassociationobject_id"),
-	@Index(name = "constructgenomicentityassociation_relation_index", columnList = "relation_id")
-})
 public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {
@@ -80,8 +74,8 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
-			@Index(name = "cgeassociation_note_cgeassociation_index", columnList = "constructgenomicentityassociation_id"),
-			@Index(name = "cgeassociation_note_relatednotes_index", columnList = "relatedNotes_id")
+			@Index(name = "association_cgeassociation_cgeassociation_index", columnList = "constructgenomicentityassociation_id"),
+			@Index(name = "association_relatednotes_index", columnList = "relatedNotes_id")
 		})
 	private List<Note> relatedNotes;
 }

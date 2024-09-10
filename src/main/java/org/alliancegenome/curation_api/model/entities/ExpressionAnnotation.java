@@ -21,11 +21,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -38,11 +36,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Expression_Annotation", description = "Annotation class representing an expression annotation")
-@Table(indexes = {
-	@Index(name = "expressionannotation_whenexpressedstagename_index ", columnList = "whenexpressedstagename"),
-	@Index(name = "expressionannotation_whereexpressedstatement_index", columnList = "whereexpressedstatement"),
-	@Index(name = "expressionannotation_expressionpattern_index", columnList = "expressionpattern_id")
-})
 public abstract class ExpressionAnnotation extends Annotation {
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

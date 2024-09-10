@@ -11,9 +11,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,11 +20,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "singleReferenceAssociation", description = "POJO that represents an association supported by a single reference")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
-
-@Table(indexes = {
-	@Index(name = "singlereferenceassociation_singlereference_index", columnList = "singleReference_id")
-})
-
 public class SingleReferenceAssociation extends Association {
 
 	@IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie",

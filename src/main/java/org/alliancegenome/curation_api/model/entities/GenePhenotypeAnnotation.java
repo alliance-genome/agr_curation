@@ -13,9 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,10 +25,6 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Gene_Phenotype_Annotation", description = "Annotation class representing a gene phenotype annotation")
 @JsonTypeName("GenePhenotypeAnnotation")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
-@Table(indexes = {
-	@Index(name = "genephenotypeannotation_phenotypeannotationsubject_index", columnList = "phenotypeannotationsubject_id"),
-	@Index(name = "genephenotypeannotation_sgdstrainbackground_index", columnList = "sgdstrainbackground_id")
-})
 public class GenePhenotypeAnnotation extends PhenotypeAnnotation {
 
 	@IndexedEmbedded(includePaths = {
