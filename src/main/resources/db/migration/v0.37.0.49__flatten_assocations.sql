@@ -270,7 +270,8 @@ UPDATE association a SET
 FROM GeneGeneticInteraction b WHERE a.id = b.id;
 
 -- association_phenotypesortraits
-DROP CONSTRAINT genegeneticinteraction_phenotypesortraits_genegeneticinteractio;
+ALTER TABLE genegeneticinteraction_phenotypesortraits
+	DROP CONSTRAINT genegeneticinteraction_phenotypesortraits_genegeneticinteractio;
 
 DROP TABLE GeneGeneticInteraction;
 
