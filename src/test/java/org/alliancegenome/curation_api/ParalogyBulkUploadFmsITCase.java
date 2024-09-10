@@ -53,7 +53,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		DataProvider dataProvider = createDataProvider("WB", false);
-		loadGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, dataProvider);
+		createGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, false, dataProvider);
 	}
 
 	@Test
