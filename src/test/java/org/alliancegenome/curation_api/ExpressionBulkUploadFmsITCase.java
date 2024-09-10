@@ -148,22 +148,22 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		DataProvider dataProvider = createDataProvider("ZFIN", false);
 		Vocabulary vocabulary1 = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(vocabulary1, "nomenclature_symbol");
-		loadGenes(List.of(gene), taxon, symbolTerm, dataProvider);
-		loadMMOTerm(mmoTerm, "assay001");
+		createGene(gene, taxon, symbolTerm, false, dataProvider);
+		createMmoTerm(mmoTerm, "assay001");
 		ResourceDescriptor rd1 = createResourceDescriptor("ZFIN");
 		createResourceDescriptorPage("homepage", "https://zfin.org/", rd1);
 		createResourceDescriptorPage("reference", "https://zfin.org/[%s]", rd1);
-		loadReference(agrPublicationId, publicationId);
-		loadReference(agrReferenceId, referenceId);
+		createReference(agrPublicationId, publicationId);
+		createReference(agrReferenceId, referenceId);
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
 		Vocabulary stageUberonTermVocabulary = getVocabulary(VocabularyConstants.STAGE_UBERON_SLIM_TERMS);
 		Vocabulary anatomicalStructureUberonTermVocabulary = getVocabulary(VocabularyConstants.ANATOMICAL_STRUCTURE_UBERON_SLIM_TERMS);
 		Vocabulary cellullarComponentQualififerVocabulary = getVocabulary(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIERS);
-		loadStageTerm(stageTermId, "StageTermTest");
+		createStageTerm(stageTermId, "StageTermTest");
 		createVocabularyTerm(stageUberonTermVocabulary, stageUberonTermId, false);
-		loadAnatomyTerm(anatomicalStructureTermId, "AnatomicalStructureTermTest");
-		loadAnatomyTerm(anatomicalSubstructureTermId, "AnatomicalSubStructureTermTest");
+		createAnatomicalTerm(anatomicalStructureTermId, "AnatomicalStructureTermTest");
+		createAnatomicalTerm(anatomicalSubstructureTermId, "AnatomicalSubStructureTermTest");
 		List<String> subsets = new ArrayList<String>();
 		subsets.add("goslim_agr");
 		GOTerm isaAncestor = createGoTerm(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", false, subsets);
@@ -171,9 +171,9 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalStructureQualifierTermId, false);
 		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalSubstructureQualifierTermId, false);
 		createVocabularyTerm(cellullarComponentQualififerVocabulary, cellularComponentQualifierTermId, false);
-		loadUberonTerm(anatomicalStructureUberonTermId1, "UberonTermTest1");
-		loadUberonTerm(anatomicalStructureUberonTermId2, "UberonTermTest2");
-		loadUberonTerm(anatomicalSubstructureUberonTermId1, "UberonTermTest3");
-		loadUberonTerm(anatomicalSubstructureUberonTermId2, "UberonTermTest4");
+		createUberonTerm(anatomicalStructureUberonTermId1, "UberonTermTest1");
+		createUberonTerm(anatomicalStructureUberonTermId2, "UberonTermTest2");
+		createUberonTerm(anatomicalSubstructureUberonTermId1, "UberonTermTest3");
+		createUberonTerm(anatomicalSubstructureUberonTermId2, "UberonTermTest4");
 	}
 }

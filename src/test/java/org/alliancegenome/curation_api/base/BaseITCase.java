@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -48,9 +47,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
@@ -67,8 +69,6 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.ValidatableResponse;
 
 public class BaseITCase {
-
-	private static Pattern keyPattern = Pattern.compile("^(.+)\\.([^\\.]+)$");
 
 	public VocabularyTerm addVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary, Boolean obsolete) {
 		VocabularyTermSet set = getVocabularyTermSet(setName);
@@ -164,7 +164,11 @@ public class BaseITCase {
 		return map;
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String taxonCurie, String subtypeName, String name, Boolean obsolete) {
+	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
+		return createAffectedGenomicModel(modEntityId, name, taxonCurie, subtypeName, obsolete, null);
+	}
+	
+	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, Boolean obsolete, DataProvider dataProvider) {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 
@@ -174,6 +178,7 @@ public class BaseITCase {
 		model.setSubtype(subtype);
 		model.setName(name);
 		model.setObsolete(obsolete);
+		model.setDataProvider(dataProvider);
 
 		ObjectResponse<AffectedGenomicModel> response = given().
 				contentType("application/json").
@@ -185,20 +190,25 @@ public class BaseITCase {
 				extract().body().as(getObjectResponseTypeRefAffectedGenomicModel());
 		return response.getEntity();
 	}
-
-	public Allele createAllele(String modEntityId, String taxonCurie, Boolean obsolete, VocabularyTerm symbolNameTerm) {
+	
+	public Allele createAllele(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
+		return createAllele(modEntityId, modEntityId, taxonCurie, symbolNameTerm, obsolete, null);
+	}
+	
+	public Allele createAllele(String modEntityId, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
 		Allele allele = new Allele();
 		allele.setModEntityId(modEntityId);
 		allele.setTaxon(getNCBITaxonTerm(taxonCurie));
 		allele.setObsolete(obsolete);
 		allele.setInternal(false);
+		allele.setDataProvider(dataProvider);
+		
+		AlleleSymbolSlotAnnotation alleleSymbol = new AlleleSymbolSlotAnnotation();
+		alleleSymbol.setNameType(symbolNameTerm);
+		alleleSymbol.setDisplayText(symbol);
+		alleleSymbol.setFormatText(symbol);
 
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(modEntityId);
-		symbol.setFormatText(modEntityId);
-
-		allele.setAlleleSymbol(symbol);
+		allele.setAlleleSymbol(alleleSymbol);
 
 		ObjectResponse<Allele> response = given().
 				contentType("application/json").
@@ -228,6 +238,25 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public AnatomicalTerm createAnatomicalTerm(String curie, String name) throws Exception {
+		AnatomicalTerm anatomicalTerm = new AnatomicalTerm();
+		anatomicalTerm.setCurie(curie);
+		anatomicalTerm.setName(name);
+		anatomicalTerm.setObsolete(false);
+		anatomicalTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<AnatomicalTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(anatomicalTerm).
+			when().
+			put("/api/anatomicalterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefAnatomicalTerm());
+		
+		return response.getEntity();
+	}
+
 	public CHEBITerm createChebiTerm(String curie, String name, Boolean obsolete) {
 		CHEBITerm chebiTerm = new CHEBITerm();
 		chebiTerm.setCurie(curie);
@@ -243,6 +272,26 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefCHEBITerm());
+		
+		return response.getEntity();
+	}
+
+	public ChemicalTerm createChemicalTerm(String curie, String name) throws Exception {
+		ChemicalTerm chemicalTerm = new ChemicalTerm();
+		chemicalTerm.setCurie(curie);
+		chemicalTerm.setName(name);
+		chemicalTerm.setObsolete(false);
+		chemicalTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<ChemicalTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(chemicalTerm).
+			when().
+			put("/api/chemicalterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefChemicalTerm());
+		
 		return response.getEntity();
 	}
 
@@ -310,10 +359,19 @@ public class BaseITCase {
 
 		return response.getEntity();
 	}
-
+	
+	public DOTerm createDoTerm(String curie, String name) {
+		return createDoTerm(curie, name, false);
+	}
+	
 	public DOTerm createDoTerm(String curie, Boolean obsolete) {
+		return createDoTerm(curie, curie, obsolete);
+	}
+
+	public DOTerm createDoTerm(String curie, String name, Boolean obsolete) {
 		DOTerm doTerm = new DOTerm();
 		doTerm.setCurie(curie);
+		doTerm.setName(name);
 		doTerm.setObsolete(obsolete);
 		doTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
@@ -325,6 +383,7 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefDOTerm());
+		
 		return response.getEntity();
 	}
 
@@ -366,10 +425,47 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Gene createGene(String modEntityId, String taxonCurie, Boolean obsolete, VocabularyTerm symbolNameTerm) {
+	public ExperimentalConditionOntologyTerm createExperimentalConditionOntologyTerm(String curie, String name) throws Exception {
+		ExperimentalConditionOntologyTerm ecTerm = new ExperimentalConditionOntologyTerm();
+		ecTerm.setCurie(curie);
+		ecTerm.setName(name);
+		ecTerm.setObsolete(false);
+		ecTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<ExperimentalConditionOntologyTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(ecTerm).
+			when().
+			post("/api/experimentalconditionontologyterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefExperimentalConditionOntologyTerm());
+		
+		return response.getEntity();
+	}
+
+	public Gene createGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
+		return createGene(modEntityId, taxonCurie, symbolNameTerm, obsolete, null);
+	}
+	
+	public Gene createGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
+		return createGeneWithXref(modEntityId, taxonCurie, symbolNameTerm, obsolete, dataProvider, null);
+	}
+	
+	public List<Gene> createGenes(List<String> modEntityIds, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
+		List<Gene> geneList = new ArrayList<>();
+		for (String modEntityId : modEntityIds) {
+			geneList.add(createGene(modEntityId, taxonCurie, symbolNameTerm, obsolete, dataProvider));
+		}
+		
+		return geneList;
+	}
+	
+	public Gene createGeneWithXref(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider, String xrefCurie) {
 		Gene gene = new Gene();
 		gene.setModEntityId(modEntityId);
 		gene.setTaxon(getNCBITaxonTerm(taxonCurie));
+		gene.setDataProvider(dataProvider);
 		gene.setObsolete(obsolete);
 
 		GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
@@ -381,6 +477,13 @@ public class BaseITCase {
 
 		SOTerm geneType = getSoTerm("SO:0001217");
 		gene.setGeneType(geneType);
+		
+		if (StringUtils.isNotBlank(xrefCurie)) {
+			CrossReference xref = new CrossReference();
+			xref.setReferencedCurie(xrefCurie);
+			xref.setDisplayName(xrefCurie);
+			gene.setCrossReferences(List.of(xref));
+		}
 
 		ObjectResponse<Gene> response = given().
 				contentType("application/json").
@@ -425,11 +528,57 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public MITerm createMiTerm(String curie, String name) throws Exception {
+		MITerm miTerm = new MITerm();
+		miTerm.setCurie(curie);
+		miTerm.setName(name);
+		miTerm.setObsolete(false);
+		miTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<MITerm> response = RestAssured.given().
+			contentType("application/json").
+			body(miTerm).
+			when().
+			put("/api/miterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefMITerm());
+		
+		return response.getEntity();
+	}
+	
+	public MMOTerm createMmoTerm(String curie, String name) throws Exception {
+		MMOTerm mmoTerm = new MMOTerm();
+		mmoTerm.setCurie(curie);
+		mmoTerm.setName(name);
+		mmoTerm.setObsolete(false);
+		mmoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<MMOTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(mmoTerm).
+			when().
+			put("/api/mmoterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefMMOTerm());
+		
+		return response.getEntity();
+	}
+	
+	public MPTerm createMpTerm(String curie, String name) {
+		return createMpTerm(curie, name, false);
+	}
+	
 	public MPTerm createMpTerm(String curie, Boolean obsolete) {
+		return createMpTerm(curie, "Test MPTerm", obsolete);
+	}
+
+	public MPTerm createMpTerm(String curie, String name, Boolean obsolete) {
 		MPTerm mpTerm = new MPTerm();
 		mpTerm.setCurie(curie);
 		mpTerm.setObsolete(obsolete);
-		mpTerm.setName("Test MPTerm");
+		mpTerm.setName(name);
 		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 
 		ObjectResponse<MPTerm> response = given().
@@ -440,6 +589,7 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefMPTerm());
+		
 		return response.getEntity();
 	}
 
@@ -506,13 +656,20 @@ public class BaseITCase {
 		person = response.getEntity();
 		return person;
 	}
-
+	
+	public Reference createReference(String curie, String xrefCurie) {
+		return createReference(curie, xrefCurie, false);
+	}
+	
 	public Reference createReference(String curie, Boolean obsolete) {
+		return createReference(curie, "PMID:TestXref", obsolete);
+	}
+
+	public Reference createReference(String curie, String xrefCurie, Boolean obsolete) {
 		Reference reference = new Reference();
 		reference.setCurie(curie);
 		reference.setObsolete(obsolete);
 
-		String xrefCurie = "PMID:TestXref";
 		CrossReference xref = new CrossReference();
 		xref.setReferencedCurie(xrefCurie);
 		xref.setDisplayName(xrefCurie);
@@ -592,6 +749,44 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public StageTerm createStageTerm(String curie, String name) throws Exception {
+		StageTerm stageTerm = new StageTerm();
+		stageTerm.setCurie(curie);
+		stageTerm.setName(name);
+		stageTerm.setObsolete(false);
+		stageTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<StageTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(stageTerm).
+			when().
+			put("/api/stageterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefStageTerm());
+		
+		return response.getEntity();
+	}
+
+	public UBERONTerm createUberonTerm(String curie, String name) throws Exception {
+		UBERONTerm uberonTerm = new UBERONTerm();
+		uberonTerm.setCurie(curie);
+		uberonTerm.setName(name);
+		uberonTerm.setObsolete(false);
+		uberonTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<UBERONTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(uberonTerm).
+			when().
+			put("/api/uberonterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefUBERONTerm());
+		
+		return response.getEntity();
+	}
+
 	public Vocabulary createVocabulary(String name, Boolean obsolete) {
 		Vocabulary vocabulary = new Vocabulary();
 		vocabulary.setName(name);
@@ -649,6 +844,29 @@ public class BaseITCase {
 				post("/api/vocabularytermset").
 				then().
 				statusCode(200);
+	}
+
+	public WBPhenotypeTerm createWbPhenotypeTerm(String curie, String name) throws Exception {
+		WBPhenotypeTerm wbTerm = new WBPhenotypeTerm();
+		wbTerm.setCurie(curie);
+		wbTerm.setName(name);
+		wbTerm.setObsolete(false);
+		wbTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<WBPhenotypeTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(wbTerm).
+			when().
+			put("/api/wbphenotypeterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefWBPhenotypeTerm());
+		
+		return response.getEntity();
+	}
+	
+	public ZECOTerm createZecoTerm(String curie, String name, Boolean obsolete) {
+		return createZecoTerm(curie, name, obsolete, null);
 	}
 
 	public ZECOTerm createZecoTerm(String curie, String name, Boolean obsolete, String subset) {
@@ -910,6 +1128,11 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<AnatomicalTerm>> getObjectResponseTypeRefAnatomicalTerm() {
+		return new TypeRef<ObjectResponse<AnatomicalTerm>>() {
+		};
+	}
+	
 	private TypeRef<ObjectResponse<BiologicalEntity>> getObjectResponseTypeRefBiologicalEntity() {
 		return new TypeRef<ObjectResponse<BiologicalEntity>>() {
 		};
@@ -917,6 +1140,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<CHEBITerm>> getObjectResponseTypeRefCHEBITerm() {
 		return new TypeRef<ObjectResponse<CHEBITerm>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<ChemicalTerm>> getObjectResponseTypeRefChemicalTerm() {
+		return new TypeRef<ObjectResponse<ChemicalTerm>>() {
 		};
 	}
 
@@ -960,6 +1188,11 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<ExperimentalConditionOntologyTerm>> getObjectResponseTypeRefExperimentalConditionOntologyTerm() {
+		return new TypeRef<ObjectResponse<ExperimentalConditionOntologyTerm>>() {
+		};
+	}
+
 	private TypeRef<ObjectResponse<Gene>> getObjectResponseTypeRefGene() {
 		return new TypeRef<ObjectResponse<Gene>>() {
 		};
@@ -982,6 +1215,16 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<Person>> getObjectResponseTypeRefLoggedInPerson() {
 		return new TypeRef<ObjectResponse<Person>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<MITerm>> getObjectResponseTypeRefMITerm() {
+		return new TypeRef<ObjectResponse<MITerm>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<MMOTerm>> getObjectResponseTypeRefMMOTerm() {
+		return new TypeRef<ObjectResponse<MMOTerm>>() {
 		};
 	}
 
@@ -1025,6 +1268,16 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<StageTerm>> getObjectResponseTypeRefStageTerm() {
+		return new TypeRef<ObjectResponse<StageTerm>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<UBERONTerm>> getObjectResponseTypeRefUBERONTerm() {
+		return new TypeRef<ObjectResponse<UBERONTerm>>() {
+		};
+	}
+
 	private TypeRef<ObjectResponse<Variant>> getObjectResponseTypeRefVariant() {
 		return new TypeRef<ObjectResponse<Variant>>() {
 		};
@@ -1040,8 +1293,13 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<WBPhenotypeTerm>> getObjectResponseTypeRefWBPhenotypeTerm() {
+		return new TypeRef<ObjectResponse<WBPhenotypeTerm>>() {
+		};
+	}
+
 	private TypeRef<ObjectResponse<ZECOTerm>> getObjectResponseTypeRefZecoTerm() {
-		return new TypeRef<>() {
+		return new TypeRef<ObjectResponse<ZECOTerm>>() {
 		};
 	}
 
@@ -1171,329 +1429,5 @@ public class BaseITCase {
 				extract().body().as(getObjectResponseTypeRefZecoTerm());
 
 		return response.getEntity();
-	}
-
-	public void loadAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, DataProvider dataProvider) throws Exception {
-		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
-		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
-
-		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setModEntityId(modEntityId);
-		agm.setTaxon(getNCBITaxonTerm(taxonCurie));
-		agm.setName(name);
-		agm.setSubtype(subtype);
-		agm.setDataProvider(dataProvider);
-		RestAssured.given().
-			contentType("application/json").
-			body(agm).
-			when().
-			post("/api/agm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadAllele(String identifier, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) throws Exception {
-		Allele allele = new Allele();
-		allele.setModEntityId(identifier);
-		allele.setTaxon(getNCBITaxonTerm(taxonCurie));
-		allele.setInternal(false);
-		allele.setDataProvider(dataProvider);
-
-		AlleleSymbolSlotAnnotation alleleSymbol = new AlleleSymbolSlotAnnotation();
-		alleleSymbol.setNameType(symbolNameTerm);
-		alleleSymbol.setDisplayText(symbol);
-		alleleSymbol.setFormatText(symbol);
-
-		allele.setAlleleSymbol(alleleSymbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(200);
-	}
-
-	public void loadAnatomyTerm(String curie, String name) throws Exception {
-		AnatomicalTerm anatomicalTerm = new AnatomicalTerm();
-		anatomicalTerm.setCurie(curie);
-		anatomicalTerm.setName(name);
-		anatomicalTerm.setObsolete(false);
-		anatomicalTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(anatomicalTerm).
-			when().
-			put("/api/anatomicalterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadChemicalTerm(String curie, String name) throws Exception {
-		ChemicalTerm chemicalTerm = new ChemicalTerm();
-		chemicalTerm.setCurie(curie);
-		chemicalTerm.setName(name);
-		chemicalTerm.setObsolete(false);
-		chemicalTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(chemicalTerm).
-			when().
-			put("/api/chemicalterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadDOTerm(String curie, String name) throws Exception {
-		DOTerm doTerm = new DOTerm();
-		doTerm.setCurie(curie);
-		doTerm.setName(name);
-		doTerm.setObsolete(false);
-		doTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(doTerm).
-			when().
-			put("/api/doterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadExperimentalConditionTerm(String curie, String name) throws Exception {
-		ExperimentalConditionOntologyTerm ecTerm = new ExperimentalConditionOntologyTerm();
-		ecTerm.setCurie(curie);
-		ecTerm.setName(name);
-		ecTerm.setObsolete(false);
-		ecTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(ecTerm).
-			when().
-			post("/api/experimentalconditionontologyterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) {
-		loadGeneWithXref(modEntityId, taxonCurie, symbolNameTerm, dataProvider, null);
-	}
-
-	public void loadGeneWithXref(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider, String xrefCurie) {
-			Gene gene = new Gene();
-			gene.setModEntityId(modEntityId);
-			gene.setTaxon(getNCBITaxonTerm(taxonCurie));
-			gene.setDataProvider(dataProvider);
-
-			GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
-			symbol.setNameType(symbolNameTerm);
-			symbol.setDisplayText(modEntityId);
-			symbol.setFormatText(modEntityId);
-
-			gene.setGeneSymbol(symbol);
-
-			SOTerm geneType = getSoTerm("SO:0001217");
-			gene.setGeneType(geneType);
-
-			if (StringUtils.isNotBlank(xrefCurie)) {
-				CrossReference xref = new CrossReference();
-				xref.setReferencedCurie(xrefCurie);
-				xref.setDisplayName(xrefCurie);
-				gene.setCrossReferences(List.of(xref));
-			}
-
-			RestAssured.given().
-					contentType("application/json").
-					body(gene).
-					when().
-					post("/api/gene").
-					then().
-					statusCode(200);
-	}
-
-	public void loadGenes(List<String> modEntityIds, String taxonCurie, VocabularyTerm symbolNameTerm, DataProvider dataProvider) throws Exception {
-		for (String modEntityId : modEntityIds) {
-			loadGene(modEntityId, taxonCurie, symbolNameTerm, dataProvider);
-		}
-	}
-
-	public void loadMITerm(String curie, String name) throws Exception {
-		MITerm miTerm = new MITerm();
-		miTerm.setCurie(curie);
-		miTerm.setName(name);
-		miTerm.setObsolete(false);
-		miTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(miTerm).
-			when().
-			put("/api/miterm").
-			then().
-			statusCode(200);
-	}
-	public void loadMMOTerm(String curie, String name) throws Exception {
-		MPTerm mpTerm = new MPTerm();
-		mpTerm.setCurie(curie);
-		mpTerm.setName(name);
-		mpTerm.setObsolete(false);
-		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(mpTerm).
-			when().
-			put("/api/mmoterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadMPTerm(String curie, String name) throws Exception {
-		MPTerm mpTerm = new MPTerm();
-		mpTerm.setCurie(curie);
-		mpTerm.setName(name);
-		mpTerm.setObsolete(false);
-		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(mpTerm).
-			when().
-			put("/api/mpterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadStageTerm(String curie, String name) throws Exception {
-		MPTerm mpTerm = new MPTerm();
-		mpTerm.setCurie(curie);
-		mpTerm.setName(name);
-		mpTerm.setObsolete(false);
-		mpTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(mpTerm).
-			when().
-			put("/api/stageterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadOrganization(String abbreviation) throws Exception {
-		Organization organization = new Organization();
-		organization.setAbbreviation(abbreviation);
-		organization.setObsolete(false);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(organization).
-			when().
-			put("/api/organization").
-			then().
-			statusCode(200);
-	}
-
-	public void loadReference(String curie, String xrefCurie) throws Exception {
-
-		CrossReference xref = new CrossReference();
-		xref.setReferencedCurie(xrefCurie);
-		xref.setDisplayName(xrefCurie);
-
-		ObjectResponse<CrossReference> response =
-			RestAssured.given().
-				contentType("application/json").
-				body(xref).
-				when().
-				post("/api/cross-reference").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefCrossReference());
-
-		Reference reference = new Reference();
-		reference.setCurie(curie);
-		reference.setCrossReferences(List.of(response.getEntity()));
-		reference.setObsolete(false);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(reference).
-			when().
-			post("/api/reference").
-			then().
-			statusCode(200);
-	}
-
-	public void loadSOTerm(String curie, String name) throws Exception {
-		SOTerm soTerm = new SOTerm();
-		soTerm.setCurie(curie);
-		soTerm.setName(name);
-		soTerm.setObsolete(false);
-		soTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(soTerm).
-			when().
-			put("/api/soterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadUberonTerm(String curie, String name) throws Exception {
-		SOTerm soTerm = new SOTerm();
-		soTerm.setCurie(curie);
-		soTerm.setName(name);
-		soTerm.setObsolete(false);
-		soTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(soTerm).
-			when().
-			put("/api/uberonterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadWbPhenotypeTerm(String curie, String name) throws Exception {
-		WBPhenotypeTerm wbTerm = new WBPhenotypeTerm();
-		wbTerm.setCurie(curie);
-		wbTerm.setName(name);
-		wbTerm.setObsolete(false);
-		wbTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(wbTerm).
-			when().
-			put("/api/wbphenotypeterm").
-			then().
-			statusCode(200);
-	}
-
-	public void loadZecoTerm(String curie, String name, String subset) throws Exception {
-		ZECOTerm zecoTerm = new ZECOTerm();
-		zecoTerm.setCurie(curie);
-		zecoTerm.setName(name);
-		zecoTerm.setObsolete(false);
-		List<String> subsets = new ArrayList<String>();
-		if (subset != null) {
-			subsets.add(subset);
-			zecoTerm.setSubsets(subsets);
-		}
-		zecoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(zecoTerm).
-			when().
-			post("/api/zecoterm").
-			then().
-			statusCode(200);
 	}
 }

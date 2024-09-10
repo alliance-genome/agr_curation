@@ -56,7 +56,7 @@ public class Gff3BulkUploadITCase extends BaseITCase {
 		createSoTerm("SO:0001035", "piRNA", false);
 		createSoTerm("SO:0000147", "exon", false);
 		createSoTerm("SO:0000316", "CDS", false);
-		createGene("WB:WBGene00022276", "NCBITaxon:6239", false, getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol"));
+		createGene("WB:WBGene00022276", "NCBITaxon:6239", getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol"), false);
 	}
 	
 	@Test
