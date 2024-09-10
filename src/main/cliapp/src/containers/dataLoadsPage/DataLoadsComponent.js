@@ -21,6 +21,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { SiteContext } from '../layout/SiteContext';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import moment from 'moment-timezone';
+import { NumberTemplate } from '../../components/Templates/NumberTemplate';
 
 export const DataLoadsComponent = () => {
 	const { authState } = useOktaAuth();
@@ -530,11 +531,7 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
-	const numberTemplate = (number) => {
-		//still want to pass through falsy 0 values
-		if (number === null || number === undefined) return;
-		return new Intl.NumberFormat().format(number);
-	};
+
 
 	const countsTemplate = (rowData) => {
 		let countsArray = [];
@@ -545,10 +542,10 @@ export const DataLoadsComponent = () => {
 		return (
 			<DataTable key="countsTable" value={countsArray}>
 				<Column field="name" />
-				<Column field="completed" header="Completed" body={(rowData) => numberTemplate(rowData.completed)} />
-				<Column field="failed" header="Failed" body={(rowData) => numberTemplate(rowData.failed)} />
-				<Column field="skipped" header="Skipped" body={(rowData) => numberTemplate(rowData.skipped)} />
-				<Column field="total" header="Total" body={(rowData) => numberTemplate(rowData.total)} />
+				<Column field="completed" header="Completed" body={(rowData) => <NumberTemplate number={rowData.completed}/>}/>
+				<Column field="failed" header="Failed" body={(rowData) => <NumberTemplate number={rowData.failed}/>} />
+				<Column field="skipped" header="Skipped" body={(rowData) => <NumberTemplate number={rowData.skipped}/>} />
+				<Column field="total" header="Total" body={(rowData) => <NumberTemplate number={rowData.total}/>} />
 			</DataTable>
 		);
 	};
@@ -573,7 +570,7 @@ export const DataLoadsComponent = () => {
 					<Column
 						field="bulkLoadFile.fileSize"
 						header="Compressed File Size"
-						body={(rowData) => numberTemplate(rowData.bulkLoadFile.fileSize)}
+						body={(rowData) => <NumberTemplate number={rowData.bulkLoadFile.fileSize}/>}
 					/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />

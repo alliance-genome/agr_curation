@@ -25,6 +25,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { NumberTemplate } from '../../components/Templates/NumberTemplate';
 
 export const ExperimentalConditionsTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
@@ -235,9 +236,9 @@ export const ExperimentalConditionsTable = () => {
 		},
 		{
 			field: 'conditionQuantity',
-			//todo: replace with number template
 			header: 'Quantity',
 			sortable: true,
+			body: (rowData) => <NumberTemplate number={rowData.conditionQuantity} />,
 			filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
 			editor: (props) => freeTextEditor(props, 'conditionQuantity'),
 		},
