@@ -3,11 +3,7 @@ package org.alliancegenome.curation_api;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-
-import java.util.List;
-
-import org.alliancegenome.curation_api.base.BaseITCase;
+import static org.hamcrest.Matchers.not;ome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
