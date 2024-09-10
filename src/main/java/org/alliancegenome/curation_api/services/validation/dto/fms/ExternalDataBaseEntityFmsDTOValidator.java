@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
@@ -38,7 +39,7 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Transactional
-	public ExternalDataBaseEntity validateExternalDataBaseEntityFmsDTO(HTPIdFmsDTO dto) throws ObjectValidationException {
+	public ExternalDataBaseEntity validateExternalDataBaseEntityFmsDTO(HTPIdFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<ExternalDataBaseEntity> externalDBEntityResponse = new ObjectResponse<>();
 		ExternalDataBaseEntity externalDBEntity = null;

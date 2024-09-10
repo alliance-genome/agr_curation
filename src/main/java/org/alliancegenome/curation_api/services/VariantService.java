@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
@@ -55,7 +55,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		return new ObjectResponse<Variant>(dbEntity);
 	}
 
-	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
 	}
 

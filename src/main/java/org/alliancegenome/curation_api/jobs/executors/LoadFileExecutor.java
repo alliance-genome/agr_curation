@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -220,6 +221,9 @@ public class LoadFileExecutor {
 					// e.printStackTrace();
 					history.incrementFailed();
 					addException(history, e.getData());
+				} catch (KnownIssueValidationException e) {
+					Log.debug(e.getMessage());
+					history.incrementSkipped();
 				} catch (Exception e) {
 					// e.printStackTrace();
 					history.incrementFailed();
