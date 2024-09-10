@@ -20,9 +20,9 @@ import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.T
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
-import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
@@ -72,7 +72,7 @@ public class Gff3DtoValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	
 	@Transactional
-	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		Exon exon = null;
 
@@ -106,7 +106,7 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public void validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		CodingSequence cds = null;
 		
@@ -140,7 +140,7 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public void validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public void validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		if (!Gff3Constants.TRANSCRIPT_TYPES.contains(dto.getType())) {
 			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for Transcript Entity");
@@ -408,13 +408,6 @@ public class Gff3DtoValidator {
 		}
 		
 		associationResponse.setEntity(association);
-		
-		return associationResponse;
-	}
-	
-	private <E extends EvidenceAssociation> ObjectResponse<E> validateParent(E association, Map<String, String> attributes) {
-		ObjectResponse<E> associationResponse = new ObjectResponse<E>();
-		
 		
 		return associationResponse;
 	}

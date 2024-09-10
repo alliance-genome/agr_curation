@@ -11,7 +11,7 @@ import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
@@ -73,7 +73,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	}
 
 	@Transactional
-	public Construct upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
+	public Construct upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		Construct construct = constructDtoValidator.validateConstructDTO(dto, dataProvider);
 
 		return constructDAO.persist(construct);
