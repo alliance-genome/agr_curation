@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.controllers.base;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AnnotationDTO;
@@ -23,11 +23,11 @@ public abstract class BaseAnnotationDTOCrudController<S extends BaseAnnotationDT
 	}
 
 	@Override
-	public E upsert(T dto) throws ObjectUpdateException, KnownIssueValidationException {
+	public E upsert(T dto) throws ValidationException, KnownIssueValidationException {
 		return service.upsert(dto);
 	}
 
-	public E upsert(T dto, BackendBulkDataProvider dataProvider) throws ObjectUpdateException, KnownIssueValidationException {
+	public E upsert(T dto, BackendBulkDataProvider dataProvider) throws ValidationException, KnownIssueValidationException {
 		return service.upsert(dto, dataProvider);
 	}
 

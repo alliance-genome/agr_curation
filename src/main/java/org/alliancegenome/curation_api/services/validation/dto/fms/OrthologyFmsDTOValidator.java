@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGenerate
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -37,7 +38,7 @@ public class OrthologyFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
-	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ObjectValidationException, KnownIssueValidationException {
+	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<GeneToGeneOrthologyGenerated> orthologyResponse = new ObjectResponse<GeneToGeneOrthologyGenerated>();
 

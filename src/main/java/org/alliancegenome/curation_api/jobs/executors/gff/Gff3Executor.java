@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.jobs.executors.gff;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.services.Gff3Service;
 
@@ -14,7 +14,7 @@ public class Gff3Executor extends LoadFileExecutor {
 
 	@Inject Gff3Service gff3Service;
 	
-	public String loadGenomeAssemblyFromGFF(List<String> gffHeaderData) throws ObjectUpdateException {
+	public String loadGenomeAssemblyFromGFF(List<String> gffHeaderData) throws ValidationException {
 		for (String header : gffHeaderData) {
 			if (header.startsWith("#!assembly")) {
 				String assemblyName = header.split(" ")[1];
