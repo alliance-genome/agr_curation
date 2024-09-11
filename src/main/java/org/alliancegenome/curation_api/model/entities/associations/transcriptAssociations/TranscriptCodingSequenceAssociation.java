@@ -16,9 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -29,11 +27,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "TranscriptCodingSequenceAssociation", description = "POJO representing an association between a transcript and a CDS")
-@Table(indexes = {
-	@Index(name = "transcriptcdsassociation_subject_index", columnList = "transcriptassociationsubject_id"),
-	@Index(name = "transcriptcdsassociation_relation_index", columnList = "relation_id"),
-	@Index(name = "transcriptcdsassociation_object_index", columnList = "transcriptcodingsequenceassociationobject_id")
-})
 public class TranscriptCodingSequenceAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "modEntityId", "modInternalId",

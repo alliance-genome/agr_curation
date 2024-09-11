@@ -15,9 +15,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -29,10 +27,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "Gene_Molecular_Interaction", description = "Class representing an interaction between gene products")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
-@Table(indexes = {
-	@Index(name = "genemolecularinteraction_aggregationdatabase_index", columnList = "aggregationdatabase_id"),
-	@Index(name = "genemolecularinteraction_detectionmethod_index", columnList = "detectionmethod_id")
-})
 public class GeneMolecularInteraction extends GeneInteraction {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",

@@ -14,9 +14,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,11 +25,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "GeneGeneAssociation", description = "POJO representing an association between a gene and a gene")
-@Table(indexes = {
-	@Index(name = "genegeneassociation_geneassociationsubject_index", columnList = "geneassociationsubject_id"),
-	@Index(name = "genegeneassociation_relation_index", columnList = "relation_id"),
-	@Index(name = "genegeneassociation_genegeneassociationobject_index", columnList = "genegeneassociationobject_id")
-})
 public class GeneGeneAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",

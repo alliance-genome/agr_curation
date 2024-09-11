@@ -33,7 +33,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,16 +45,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
-
-@Table(indexes = {
-	@Index(name = "DiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseannotationobject_id"),
-	@Index(name = "DiseaseAnnotation_relation_index", columnList = "relation_id"),
-	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
-	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
-	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
-	@Index(name = "DiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id")
-})
-
 public abstract class DiseaseAnnotation extends Annotation {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
@@ -84,8 +73,8 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = {
-		@Index(name = "diseaseannotation_ecoterm_diseaseannotation_index", columnList = "diseaseannotation_id"),
-		@Index(name = "diseaseannotation_ecoterm_evidencecodes_index", columnList = "evidencecodes_id")
+		@Index(name = "association_diseaseannotation_diseaseannotation_index", columnList = "diseaseannotation_id"),
+		@Index(name = "association_diseaseannotation_evidencecodes_index", columnList = "evidencecodes_id")
 	})
 	private List<ECOTerm> evidenceCodes;
 
@@ -101,8 +90,8 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
 	@JoinTable(indexes = {
-		@Index(name = "diseaseannotation_gene_diseaseannotation_index", columnList = "diseaseannotation_id"),
-		@Index(name = "diseaseannotation_gene_with_index", columnList = "with_id")
+		@Index(name = "association_diseaseannotation_gene_index", columnList = "diseaseannotation_id"),
+		@Index(name = "association_diseaseannotation_with_index", columnList = "with_id")
 	})
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> with;
@@ -118,8 +107,8 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = {
-		@Index(name = "diseaseannotation_vocabularyterm_diseaseannotation_index", columnList = "diseaseannotation_id"),
-		@Index(name = "diseaseannotation_vocabularyterm_diseasequalifiers_index", columnList = "diseasequalifiers_id")
+		@Index(name = "association_diseaseannotation_vt_diseaseannotation_index", columnList = "diseaseannotation_id"),
+		@Index(name = "association_diseaseannotation_diseasequalifiers_index", columnList = "diseasequalifiers_id")
 	})
 	private List<VocabularyTerm> diseaseQualifiers;
 
@@ -143,8 +132,8 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(indexes = {
-		@Index(name = "diseaseannotation_biologicalentity_diseaseannotation_index", columnList = "diseaseannotation_id"),
-		@Index(name = "diseaseannotation_biologicalentity_dgms_index", columnList = "diseasegeneticmodifiers_id")
+		@Index(name = "association_diseaseannotation_BiologicalEntity_index", columnList = "diseaseannotation_id"),
+		@Index(name = "association_diseaseannotation_dgms_index", columnList = "diseasegeneticmodifiers_id")
 	})
 	private List<BiologicalEntity> diseaseGeneticModifiers;
 
