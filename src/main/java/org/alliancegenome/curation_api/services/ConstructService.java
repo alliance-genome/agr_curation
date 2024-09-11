@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -55,7 +56,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 				construct = response.getSingleResult();
 			}
 		}
-		return new ObjectResponse<Construct>(construct);
+		return new ObjectResponse<>(construct);
 	}
 
 	@Override
@@ -124,5 +125,13 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		constructIds.removeIf(Objects::isNull);
 
 		return constructIds;
+	}
+
+	public Long getIdByModID(String modID) {
+		return constructDAO.getConstructIdByModID(modID);
+	}
+
+	public Construct getShallowEntity(Long id) {
+		return constructDAO.getShallowEntity(Construct.class, id);
 	}
 }

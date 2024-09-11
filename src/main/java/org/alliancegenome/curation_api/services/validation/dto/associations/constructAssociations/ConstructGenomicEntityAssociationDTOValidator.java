@@ -43,15 +43,14 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 
 	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 
-		assocResponse = new ObjectResponse<ConstructGenomicEntityAssociation>();
+		assocResponse = new ObjectResponse<>();
 
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
-			ObjectResponse<Construct> constructResponse = constructService.getByIdentifier(dto.getConstructIdentifier());
-			if (constructResponse == null || constructResponse.getEntity() == null) {
+			construct = constructService.getShallowEntity(constructService.getIdByModID(dto.getConstructIdentifier()));
+			if (construct == null) {
 				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
-				construct = constructResponse.getEntity();
 				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
 					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
 				}
@@ -64,7 +63,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		if (StringUtils.isBlank(dto.getGenomicEntityIdentifier())) {
 			assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			genomicEntity = genomicEntityService.findByIdentifierString(dto.getGenomicEntityIdentifier());
+			genomicEntity = genomicEntityService.getShallowEntity(genomicEntityService.getIdByModID(dto.getGenomicEntityIdentifier()));
 			if (genomicEntity == null) {
 				assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 			}

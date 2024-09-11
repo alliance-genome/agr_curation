@@ -37,4 +37,11 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 		return null;
 	}
 
+	public Long getIdByModID(String modID) {
+		return genomicEntityDAO.getGenomicEntityIdByModID(modID);
+	}
+
+	public GenomicEntity getShallowEntity(Long id) {
+		return genomicEntityDAO.getShallowEntity(GenomicEntity.class, id);
+	}
 }

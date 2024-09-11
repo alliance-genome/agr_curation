@@ -72,11 +72,6 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 	@Transactional
 	public ConstructGenomicEntityAssociation upsert(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ConstructGenomicEntityAssociation association = constructGenomicEntityAssociationDtoValidator.validateConstructGenomicEntityAssociationDTO(dto, dataProvider);
-		if (association != null) {
-			addAssociationToConstruct(association);
-			addAssociationToGenomicEntity(association);
-		}
-
 		return association;
 	}
 
