@@ -4,6 +4,7 @@ import { NumberTemplate } from '../Templates/NumberTemplate';
 
 export const DataTableFooter = ({ first, rows, totalRecords, onLazyLoad, isInEditMode }) => {
     return (!isInEditMode && <Paginator
+        data-testid="datatable-footer"
         first={first}
         rows={rows}
         totalRecords={totalRecords}
