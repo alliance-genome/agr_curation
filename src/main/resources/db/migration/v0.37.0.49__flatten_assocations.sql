@@ -469,6 +469,9 @@ CREATE INDEX association_phenotypeannotation_phenotypeterms_index ON association
 CREATE INDEX association_diseaseannotation_vt_diseaseannotation_index ON association_vocabularyterm USING btree (diseaseannotation_id);
 CREATE INDEX association_diseaseannotation_diseasequalifiers_index ON association_vocabularyterm USING btree (diseasequalifiers_id);
 
+-- genegeneticinteraction_phenotypesortraits
+CREATE INDEX association_genegeneticinteraction_phenotypesortraits_index ON genegeneticinteraction_phenotypesortraits USING btree (genegeneticinteraction_id);
+
 -- FK's
 
 -- association_gene
@@ -521,7 +524,6 @@ ALTER TABLE ONLY association_vocabularyterm ADD CONSTRAINT fkbf73p7v3d72e2fsni07
 
 
 
-
 ALTER TABLE ONLY association ADD CONSTRAINT fkgobipxrs66w3ur1w1tk4sl8ac FOREIGN KEY (constructassociationsubject_id) REFERENCES construct(id);
 ALTER TABLE ONLY association ADD CONSTRAINT fkscnsbwmhpug2to0yu6gw895oh FOREIGN KEY (constructgenomicentityassociationobject_id) REFERENCES genomicentity(id);
 ALTER TABLE ONLY association ADD CONSTRAINT fk1sb2qk5clgbkk2976x13v5bum FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
@@ -534,6 +536,8 @@ ALTER TABLE ONLY association ADD CONSTRAINT fk9ko4u7l6641hlhpn9eeyf8toh FOREIGN 
 
 -- ALTER TABLE ONLY association ADD CONSTRAINT fktgpn8b91m1qb178srwe9n8s7  FOREIGN KEY (phenotypeannotationsubject_id) REFERENCES gene(id) ON DELETE CASCADE;
 -- ALTER TABLE ONLY association ADD CONSTRAINT fk3bh18tfrhnab3usyc1naldwde FOREIGN KEY (phenotypeannotationsubject_id) REFERENCES affectedgenomicmodel(id) ON DELETE CASCADE;
+-- ALTER TABLE ONLY Association ADD CONSTRAINT fk5dmwn688s6ls0mjo3nhgtli2h FOREIGN KEY (phenotypeAnnotationSubject_id) REFERENCES allele(id) ON DELETE CASCADE;
+-- These constraints can't be added as the field points to 3 different objects
 
 ALTER TABLE ONLY association ADD CONSTRAINT fknrw40h3f8fkk01kclygxd86h9 FOREIGN KEY (sgdstrainbackground_id) REFERENCES affectedgenomicmodel(id);
 ALTER TABLE ONLY association ADD CONSTRAINT fknx6o6bclwogm0v4rli1cdrfdv FOREIGN KEY (expressionpattern_id) REFERENCES expressionpattern(id);
@@ -558,6 +562,7 @@ ALTER TABLE ONLY association ADD CONSTRAINT fk554ce408ek9gf44f6db3w4et1 FOREIGN 
 -- ALTER TABLE ONLY association ADD CONSTRAINT fkouxa4j6wep8rss3jviti0qibg FOREIGN KEY (diseaseannotationsubject_id) REFERENCES allele(id) ON DELETE CASCADE;
 -- ALTER TABLE ONLY association ADD CONSTRAINT fk8qyy1fyhm3273j2p57alkp02t FOREIGN KEY (diseaseannotationsubject_id) REFERENCES gene(id) ON DELETE CASCADE;
 -- ALTER TABLE ONLY association ADD CONSTRAINT fkksi8xjap9hliwoo4j3io09frg FOREIGN KEY (diseaseannotationsubject_id) REFERENCES affectedgenomicmodel(id) ON DELETE CASCADE;
+-- These constraints can't be added as the field points to 3 different objects
 
 ALTER TABLE ONLY association ADD CONSTRAINT fkaj9ynw0e9bswh3dth646t834o FOREIGN KEY (interactionsource_id) REFERENCES ontologyterm(id);
 ALTER TABLE ONLY association ADD CONSTRAINT fkh8gqvx5c40tlw0a37uff6e9ky FOREIGN KEY (interactiontype_id) REFERENCES ontologyterm(id);
@@ -576,4 +581,71 @@ ALTER TABLE ONLY association ADD CONSTRAINT fkeot29m2x4peefkgwrqmu36ub1 FOREIGN 
 ALTER TABLE ONLY association ADD CONSTRAINT fkd6l423ab6u2hfoyjaf85nxt4f FOREIGN KEY (aggregationdatabase_id) REFERENCES ontologyterm(id);
 ALTER TABLE ONLY association ADD CONSTRAINT fkkbi83cmvdnis7mdsx966rvdxe FOREIGN KEY (detectionmethod_id) REFERENCES ontologyterm(id);
 ALTER TABLE ONLY association ADD CONSTRAINT fkfk71crh2hl7wuwpmrwvcybnq3 FOREIGN KEY (transcriptcodingsequenceassociationobject_id) REFERENCES codingsequence(id);
+
+ALTER TABLE ONLY genegeneticinteraction_phenotypesortraits ADD CONSTRAINT fklufk1y85ki3qeo1ixbko56rol FOREIGN KEY (genegeneticinteraction_id) REFERENCES association(id);
+
+
+-- Fix sqtr long names;
+
+DROP INDEX sequencetargetingreagent_secondaryIdentifiers_sequencetargetingreagent_index;
+DROP INDEX sequencetargetingreagent_synonyms_sequencetargetingreagent_index;
+
+CREATE INDEX sqtr_secondaryidentifiers_sqtr_index ON sequencetargetingreagent_secondaryidentifiers USING btree (sequencetargetingreagent_id);
+CREATE INDEX sqtr_synonyms_sqtr_index ON sequencetargetingreagent_synonyms USING btree (sequencetargetingreagent_id);
+
+-- Missing Indexes
+
+CREATE INDEX biologicalentity_curie_index ON public.biologicalentity USING btree (curie);
+CREATE INDEX biologicalentity_modinternalid_index ON public.biologicalentity USING btree (modinternalid);
+CREATE INDEX cellularcomponentqualifiers_cellularcomponentqualifiers_index ON public.anatomicalsite_cellularcomponentqualifiers USING btree (cellularcomponentqualifiers_id);
+CREATE INDEX informationcontententity_curie_index ON public.informationcontententity USING btree (curie);
+CREATE INDEX ontologyterm_curie_index ON public.ontologyterm USING btree (curie);
+CREATE INDEX ontologyterm_isa_ancestor_descendant_isancestors_index ON public.ontologyterm_isa_ancestor_descendant USING btree (isaancestors_id);
+
+-- Missing Constrains
+
+ALTER TABLE ONLY public.anatomicalsite ADD CONSTRAINT fk4h252bd81x75fwxgyy6wa61u7 FOREIGN KEY (anatomicalstructure_id) REFERENCES public.ontologyterm(id);
+ALTER TABLE ONLY public.anatomicalsite ADD CONSTRAINT fk820ik52dv75y8yeeymw9fib0l FOREIGN KEY (anatomicalsubstructure_id) REFERENCES public.ontologyterm(id);
+ALTER TABLE ONLY public.anatomicalsite ADD CONSTRAINT fka5b13b9htt6lmwtckr393w62r FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.anatomicalsite ADD CONSTRAINT fkbwi9cqjupg87x1fjiea13swda FOREIGN KEY (createdby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.anatomicalsite ADD CONSTRAINT fkkbkvdh25o66jw9mkimtvt0fjl FOREIGN KEY (cellularcomponentterm_id) REFERENCES public.ontologyterm(id);
+
+ALTER TABLE ONLY public.expressionpattern ADD CONSTRAINT fkjnwc0l0tjukc7939l5aa3gylu FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.expressionpattern ADD CONSTRAINT fksnvyfgvqvdcf49lnklncwjm0t FOREIGN KEY (createdby_id) REFERENCES public.person(id);
+
+ALTER TABLE ONLY public.temporalcontext ADD CONSTRAINT fkqxng45bjismw8qcc4x3met821 FOREIGN KEY (developmentalstagestart_id) REFERENCES public.ontologyterm(id);
+ALTER TABLE ONLY public.temporalcontext ADD CONSTRAINT fks5wnscfpf8l2fxacvo8bdg6rp FOREIGN KEY (createdby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.temporalcontext ADD CONSTRAINT fk7saeiw0res25be1sekjkebvxp FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
+ALTER TABLE ONLY public.temporalcontext ADD CONSTRAINT fksrvvhoclqm33da4boc3dopmxh FOREIGN KEY (developmentalstagestop_id) REFERENCES public.ontologyterm(id);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
