@@ -23,9 +23,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,13 +34,6 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { LocationAssociation.class })
 @Schema(name = "ExonGenomicLocationAssociation", description = "POJO representing an association between an exon and a genomic location")
-@Table(
-	indexes = {
-		@Index(name = "exonlocationassociation_relation_index", columnList = "relation_id"),
-		@Index(name = "exonlocationassociation_subject_index", columnList = "exonassociationsubject_id"),
-		@Index(name = "exonlocationassociation_object_index", columnList = "exongenomiclocationassociationobject_id")
-	}
-)
 public class ExonGenomicLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {

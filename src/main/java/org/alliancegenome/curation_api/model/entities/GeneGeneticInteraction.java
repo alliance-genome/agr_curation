@@ -25,7 +25,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -37,10 +36,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "Gene_Genetic_Interaction", description = "Class representing an interaction between genes")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
-@Table(indexes = {
-	@Index(name = "genegeneticinteraction_interactorageneticperturbarion_index", columnList = "interactorageneticperturbation_id"),
-	@Index(name = "genegeneticinteraction_interactorbgeneticperturbarion_index", columnList = "interactorbgeneticperturbation_id")
-})
 public class GeneGeneticInteraction extends GeneInteraction {
 
 	@IndexedEmbedded(includePaths = {
@@ -75,6 +70,6 @@ public class GeneGeneticInteraction extends GeneInteraction {
 	@KeywordField(name = "phenotypesOrTraits_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView({View.FieldsAndLists.class, View.GeneInteractionView.class})
-	@JoinTable(indexes = @Index(name = "genegeneticinteraction_phenotypesortraits_interaction_index", columnList = "genegeneticinteraction_id"))
+	@JoinTable(indexes = @Index(name = "association_genegeneticinteraction_phenotypesortraits_index", columnList = "genegeneticinteraction_id"))
 	private List<String> phenotypesOrTraits;
 }

@@ -31,8 +31,8 @@ public class EvidenceAssociation extends Association {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class, View.ConstructView.class, View.GeneInteractionView.class })
 	@JoinTable(indexes = {
-		@Index(name = "evidenceassociation_infocontent_evidenceassociation_index", columnList = "evidenceassociation_id"),
-		@Index(name = "evidenceassociation_infocontent_evidence_index", columnList = "evidence_id")
+		@Index(name = "association_evidenceassociation_index", columnList = "evidenceassociation_id"),
+		@Index(name = "association_evidenceassociation_evidence_index", columnList = "evidence_id")
 	})
 	private List<InformationContentEntity> evidence;
 

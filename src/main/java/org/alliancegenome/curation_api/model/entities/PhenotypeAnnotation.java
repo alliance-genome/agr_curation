@@ -29,7 +29,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,9 +41,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Phenotype_Annotation", description = "Annotation class representing a phenotype annotation")
-@Table(indexes = {
-	@Index(name = "phenotypeannotation_relation_index", columnList = "relation_id")
-})
 public abstract class PhenotypeAnnotation extends Annotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -58,8 +54,8 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
 	@JoinTable(indexes = {
-		@Index(name = "phenotypeannotation_ontologyterm_phenotypeannotation_index", columnList = "phenotypeannotation_id"),
-		@Index(name = "phenotypeannotation_ontologyterm_phenotypeterms_index", columnList = "phenotypeterms_id")
+		@Index(name = "association_phenotypeannotation_phenotypeannotation_index", columnList = "phenotypeannotation_id"),
+		@Index(name = "association_phenotypeannotation_phenotypeterms_index", columnList = "phenotypeterms_id")
 	})
 	private List<PhenotypeTerm> phenotypeTerms;
 
