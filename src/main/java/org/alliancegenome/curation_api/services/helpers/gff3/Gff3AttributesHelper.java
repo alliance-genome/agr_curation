@@ -116,7 +116,7 @@ public class Gff3AttributesHelper {
 					}
 				}
 			} else {
-				if (attributes.get("Parent").endsWith("_transposable_element")) {
+				if (!attributes.get("Parent").endsWith("_transposable_element")) {
 					retGffData.add(new ImmutablePair<>(originalGffEntry, attributes));
 				}
 			}
