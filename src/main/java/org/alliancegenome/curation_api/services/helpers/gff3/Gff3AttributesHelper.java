@@ -101,21 +101,26 @@ public class Gff3AttributesHelper {
 
 	private static void processGffEntry(Gff3DTO originalGffEntry, List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData, BackendBulkDataProvider dataProvider) {
 		Map<String, String> attributes = getAttributes(originalGffEntry, dataProvider);
-		if (attributes.containsKey("Parent") && attributes.get("Parent").indexOf(",") > -1) {
-			for (String parent : attributes.get("Parent").split(",")) {
-				HashMap<String, String> attributesCopy = new HashMap<>();
-				attributesCopy.putAll(attributes);
-				String[] parentIdParts = parent.split(":");
-				if (parentIdParts.length == 1) {
-					parent = dataProvider.name() + ':' + parentIdParts[0];
+		if (attributes.containsKey("Parent")) {
+			if (attributes.get("Parent").indexOf(",") > -1) {
+				for (String parent : attributes.get("Parent").split(",")) {
+					if (!parent.endsWith("_transposable_element")) {
+						HashMap<String, String> attributesCopy = new HashMap<>();
+						attributesCopy.putAll(attributes);
+						String[] parentIdParts = parent.split(":");
+						if (parentIdParts.length == 1) {
+							parent = dataProvider.name() + ':' + parentIdParts[0];
+						}
+						attributesCopy.put("Parent", parent);
+						retGffData.add(new ImmutablePair<>(originalGffEntry, attributesCopy));
+					}
 				}
-				attributesCopy.put("Parent", parent);
-				retGffData.add(new ImmutablePair<>(originalGffEntry, attributesCopy));
+			} else {
+				if (attributes.get("Parent").endsWith("_transposable_element")) {
+					retGffData.add(new ImmutablePair<>(originalGffEntry, attributes));
+				}
 			}
-		} else {
-			retGffData.add(new ImmutablePair<>(originalGffEntry, attributes));
 		}
-		
 	}
 
 }

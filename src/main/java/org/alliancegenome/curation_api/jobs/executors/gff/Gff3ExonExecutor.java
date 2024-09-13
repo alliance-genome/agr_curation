@@ -100,8 +100,6 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		List<Long> associationIdsAdded,
 		BackendBulkDataProvider dataProvider, String assemblyId) {
 		
-		Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
-		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF Exon update for " + dataProvider.name(), gffData.size());
@@ -131,7 +129,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			if (assemblyId != null) {
 				countType = "Locations";
 				try {
-					gff3Service.loadExonLocationAssociations(gff3EntryPair, locationIdsAdded, dataProvider, assemblyId, geneIdCurieMap);
+					gff3Service.loadExonLocationAssociations(gff3EntryPair, locationIdsAdded, dataProvider, assemblyId);
 					history.incrementCompleted(countType);
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
@@ -145,7 +143,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			
 			countType = "Associations";
 			try {
-				gff3Service.loadExonParentChildAssociations(gff3EntryPair, associationIdsAdded, dataProvider, geneIdCurieMap);
+				gff3Service.loadExonParentChildAssociations(gff3EntryPair, associationIdsAdded, dataProvider);
 				history.incrementCompleted(countType);
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed(countType);
