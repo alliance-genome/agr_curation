@@ -30,6 +30,7 @@ import org.alliancegenome.curation_api.services.associations.transcriptAssociati
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptExonAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.transcriptAssociations.TranscriptGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.gff3.Gff3UniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
@@ -58,7 +59,7 @@ public class Gff3Service {
 	@Inject Gff3DtoValidator gff3DtoValidator;
 
 	@Transactional
-	public void loadExonLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ValidationException {
+	public void loadExonLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 
 		if (StringUtils.isBlank(assemblyId)) {
@@ -85,7 +86,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadCDSLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ValidationException {
+	public void loadCDSLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -112,7 +113,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadTranscriptLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId, Map<String, String> geneIdCurieMap) throws ValidationException {
+	public void loadTranscriptLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -140,7 +141,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadExonParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, Map<String, String> geneIdCurieMap) throws ValidationException {
+	public void loadExonParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 
 		if (!StringUtils.equals(gffEntry.getType(), "exon") && !StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
@@ -164,7 +165,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadCDSParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, Map<String, String> geneIdCurieMap) throws ValidationException {
+	public void loadCDSParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 
@@ -211,13 +212,15 @@ public class Gff3Service {
 		}
 	}
 
-	public Map<String, String> getIdCurieMap(List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData) {
+	public Map<String, String> getGeneIdCurieMap(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
 		Map<String, String> geneIdCurieMap = new HashMap<>();
 
-		for (ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair : gffData) {
-			Map<String, String> attributes = gffEntryPair.getValue();
-			if (attributes.containsKey("ID") && attributes.containsKey("gene_id")) {
-				geneIdCurieMap.put(attributes.get("ID"), attributes.get("gene_id"));
+		for (Gff3DTO gffEntry : gffData) {
+			if (gffEntry.getType().contains("gene")) {
+				Map<String, String> attributes = Gff3AttributesHelper.getAttributes(gffEntry, dataProvider);
+				if (attributes.containsKey("gene_id") && attributes.containsKey("ID")) {
+					geneIdCurieMap.put(attributes.get("ID"), attributes.get("gene_id"));
+				}
 			}
 		}
 
