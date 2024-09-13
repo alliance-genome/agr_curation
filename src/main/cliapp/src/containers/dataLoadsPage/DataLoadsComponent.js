@@ -20,6 +20,7 @@ import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from '@tanstack/react-query';
 import { SiteContext } from '../layout/SiteContext';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
+import moment from 'moment-timezone';
 
 export const DataLoadsComponent = () => {
 	const { authState } = useOktaAuth();
@@ -279,7 +280,7 @@ export const DataLoadsComponent = () => {
 
 	const loadFileActionBodyTemplate = (rowData, bulkload) => {
 		let ret = [];
-		console.log(rowData);
+		// console.log(rowData);
 		if (
 			!rowData.bulkloadStatus ||
 			rowData.bulkloadStatus === 'FINISHED' ||
@@ -500,10 +501,13 @@ export const DataLoadsComponent = () => {
 	};
 
 	const durationTemplate = (rowData) => {
-		let started = new Date(rowData.loadStarted);
-		let finished = Date.UTC();
+		moment.tz.setDefault('GMT');
+
+		let started = moment(rowData.loadStarted);
+		let finished = moment(Date.now());
+
 		if (rowData.loadFinished) {
-			finished = new Date(rowData.loadFinished);
+			finished = moment(rowData.loadFinished);
 		}
 
 		return (
@@ -517,9 +521,9 @@ export const DataLoadsComponent = () => {
 						Duration: <Moment format="HH:mm:ss" duration={started} date={finished} />
 					</>
 				)}
-				{!rowData.loadFinished && rowData.bulkloadStatus !== 'FAILED' && (
+				{!rowData.loadFinished && rowData.bulkloadStatus !== 'FAILED' && rowData.bulkloadStatus !== 'STOPPED' && (
 					<>
-						Running Time: <Moment interval={1000} format="HH:mm:ss" duration={started} date={finished} />
+						Running Time: <Moment tz="GMT" interval={1000} format="HH:mm:ss" duration={started} date={finished} />
 					</>
 				)}
 			</>
