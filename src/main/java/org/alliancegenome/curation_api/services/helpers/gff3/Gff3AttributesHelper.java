@@ -120,6 +120,8 @@ public class Gff3AttributesHelper {
 					retGffData.add(new ImmutablePair<>(originalGffEntry, attributes));
 				}
 			}
+		} else {
+			retGffData.add(new ImmutablePair<>(originalGffEntry, attributes));
 		}
 	}
 
