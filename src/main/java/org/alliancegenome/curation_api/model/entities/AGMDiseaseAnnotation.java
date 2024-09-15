@@ -6,8 +6,8 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -22,6 +22,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,13 +34,33 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
 @JsonTypeName("AGMDiseaseAnnotation")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
+
+@Table(indexes = {
+	@Index(name = "AGMDiseaseAnnotation_curie_index", columnList = "curie"),
+	@Index(name = "AGMDiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
+	@Index(name = "AGMDiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "AGMDiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
+	@Index(name = "AGMDiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "AGMDiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "AGMDiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
+	@Index(name = "AGMDiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "AGMDiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
+	@Index(name = "AGMDiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseAnnotationObject_id"),
+	@Index(name = "AGMDiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
+	@Index(name = "AGMDiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
+	@Index(name = "AGMDiseaseAnnotation_relation_index", columnList = "relation_id"),
+	@Index(name = "AGMDiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
+	@Index(name = "AGMDiseaseAnnotation_assertedAllele_index", columnList = "assertedAllele_id"),
+	@Index(name = "AGMDiseaseAnnotation_diseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id"),
+	@Index(name = "AGMDiseaseAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
+	@Index(name = "AGMDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id")
+})
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
-	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private AffectedGenomicModel diseaseAnnotationSubject;
 
@@ -53,7 +74,6 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene inferredGene;
 
@@ -66,7 +86,6 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Allele inferredAllele;
 
@@ -80,10 +99,9 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.SELECT)
 	@JoinTable(indexes = {
-		@Index(name = "association_agmdiseaseannotation_index", columnList = "agmdiseaseannotation_id"),
-		@Index(name = "association_assertedgenes_index", columnList = "assertedgenes_id")
+		@Index(columnList = "agmdiseaseannotation_id"),
+		@Index(columnList = "assertedgenes_id")
 	})
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> assertedGenes;
@@ -97,7 +115,6 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Allele assertedAllele;
 

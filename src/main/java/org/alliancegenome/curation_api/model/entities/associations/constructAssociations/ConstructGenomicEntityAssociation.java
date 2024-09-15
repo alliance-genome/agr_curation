@@ -26,7 +26,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -58,7 +57,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne
+	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({
 		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",

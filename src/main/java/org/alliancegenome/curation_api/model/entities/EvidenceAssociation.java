@@ -12,14 +12,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "evidenceAssociation", description = "POJO that represents an association supported by any number of information content entities")

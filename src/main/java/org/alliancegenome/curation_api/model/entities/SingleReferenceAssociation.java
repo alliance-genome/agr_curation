@@ -10,12 +10,12 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "singleReferenceAssociation", description = "POJO that represents an association supported by a single reference")

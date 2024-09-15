@@ -5,24 +5,20 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.Table;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "AssociationType", length = 96)
-@Entity
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+//@DiscriminatorColumn(name = "AssociationType", length = 96)
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "association", description = "POJO that represents an association")
-@Table(indexes = {
+//@Table(indexes = {
+	/*
 	@Index(name = "association_curie_index", columnList = "curie"),
 	@Index(name = "association_modEntityId_index", columnList = "modEntityId"),
 	@Index(name = "association_modInternalId_index", columnList = "modInternalId"),
@@ -82,7 +78,8 @@ import lombok.ToString;
 
 	@Index(name = "association_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "association_updatedby_index", columnList = "updatedBy_id")
-})
+*/
+//})
 
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Association extends AuditedObject {

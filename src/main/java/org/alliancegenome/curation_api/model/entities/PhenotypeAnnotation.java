@@ -23,11 +23,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import lombok.Data;
@@ -36,7 +36,7 @@ import lombok.EqualsAndHashCode;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = AGMPhenotypeAnnotation.class, name = "AGMPhenotypeAnnotation"), @Type(value = AllelePhenotypeAnnotation.class, name = "AllelePhenotypeAnnotation"),
 	@Type(value = GenePhenotypeAnnotation.class, name = "GenePhenotypeAnnotation") })
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })

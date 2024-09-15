@@ -9,8 +9,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -28,11 +26,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,7 +36,7 @@ import lombok.EqualsAndHashCode;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({ @Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"), @Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
 	@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation") })
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
@@ -51,7 +47,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DOTerm diseaseAnnotationObject;
 
@@ -72,10 +67,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "association_diseaseannotation_diseaseannotation_index", columnList = "diseaseannotation_id"),
-		@Index(name = "association_diseaseannotation_evidencecodes_index", columnList = "evidencecodes_id")
-	})
 	private List<ECOTerm> evidenceCodes;
 
 	@IndexedEmbedded(includePaths = {
@@ -88,11 +79,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = {
-		@Index(name = "association_diseaseannotation_gene_index", columnList = "diseaseannotation_id"),
-		@Index(name = "association_diseaseannotation_with_index", columnList = "with_id")
-	})
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> with;
 
@@ -106,10 +92,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "association_diseaseannotation_vt_diseaseannotation_index", columnList = "diseaseannotation_id"),
-		@Index(name = "association_diseaseannotation_diseasequalifiers_index", columnList = "diseasequalifiers_id")
-	})
 	private List<VocabularyTerm> diseaseQualifiers;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
@@ -122,19 +104,13 @@ public abstract class DiseaseAnnotation extends Annotation {
 			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private DataProvider secondaryDataProvider;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "association_diseaseannotation_BiologicalEntity_index", columnList = "diseaseannotation_id"),
-		@Index(name = "association_diseaseannotation_dgms_index", columnList = "diseasegeneticmodifiers_id")
-	})
 	private List<BiologicalEntity> diseaseGeneticModifiers;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
