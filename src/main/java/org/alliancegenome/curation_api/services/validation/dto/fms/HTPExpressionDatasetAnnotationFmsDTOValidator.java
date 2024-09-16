@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PublicationFmsDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.DataProviderService;
@@ -26,6 +27,9 @@ import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -118,13 +122,50 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 
 		if (CollectionUtils.isNotEmpty(dto.getCategoryTags())) {
 			List<VocabularyTerm> categoryTags = new ArrayList<>();
+			ObjectMapper mapper = new ObjectMapper();
 			for (String categoryTag : dto.getCategoryTags()) {
 				if (StringUtils.isNotEmpty(categoryTag)) {
-					VocabularyTerm tag = vocabularyTermService.getTermInVocabulary(VocabularyConstants.HTP_DATASET_CATEGORY_TAGS, categoryTag).getEntity();
-					if (tag == null) {
-						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
+					String query = """
+						{
+							"searchFilters": {
+								"vocabularyNameFilter": {
+									"vocabulary.name": {
+										"queryString": "Data Set Category Tags",
+										"useKeywordFields": true
+									}
+								},
+								"synonymsOrNameFilter": {
+									"synonyms": {
+										"queryString": "aging",
+										"useKeywordFields": true,
+										"queryType": "matchQuery"
+									},
+									"name": {
+										"queryString": "aging",
+										"useKeywordFields": true,
+										"queryType": "matchQuery"
+									}
+								}
+							}
+						}
+					""".formatted("Data Set Category Tags", categoryTag, categoryTag);
+					Map<String, Object> params = new HashMap<>();
+					try{
+						params = mapper.readValue(query, new TypeReference<Map<String, Object>>() {});
+					} catch (Exception e) {
+						e.printStackTrace();
+						break;
+					}
+					SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.searchByParams(new Pagination(), params);
+					if(searchResponse.getTotalResults() == 1) {
+						VocabularyTerm tag = searchResponse.getSingleResult();
+						if (tag == null) {
+							htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
+						} else {
+							categoryTags.add(tag);
+						}
 					} else {
-						categoryTags.add(tag);
+						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary " +" (" + categoryTag + ")");
 					}
 				}
 			}
