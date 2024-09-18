@@ -472,8 +472,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 										BooleanPredicateClausesStep<?> clause = p.bool();
 										if (useKeywordFields != null && useKeywordFields) {
 											clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost + 500));
+										} else {
+											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
 										}
-										clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
 										q.should(clause);
 									} else { // assume simple query
 										BooleanPredicateClausesStep<?> clause = p.bool();

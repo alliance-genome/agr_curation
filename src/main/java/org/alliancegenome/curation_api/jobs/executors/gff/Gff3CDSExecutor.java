@@ -100,8 +100,6 @@ public class Gff3CDSExecutor extends Gff3Executor {
 		List<Long> associationIdsAdded,
 		BackendBulkDataProvider dataProvider, String assemblyId) {
 
-		Map<String, String> geneIdCurieMap = gff3Service.getIdCurieMap(gffData);
-		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF CDS update for " + dataProvider.name(), gffData.size());
@@ -129,7 +127,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 			if (assemblyId != null) {
 				countType = "Locations";
 				try {
-					gff3Service.loadCDSLocationAssociations(gff3EntryPair, locationIdsAdded, dataProvider, assemblyId, geneIdCurieMap);
+					gff3Service.loadCDSLocationAssociations(gff3EntryPair, locationIdsAdded, dataProvider, assemblyId);
 					history.incrementCompleted(countType);
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
@@ -142,7 +140,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 			}
 			countType = "Associations";
 			try {
-				gff3Service.loadCDSParentChildAssociations(gff3EntryPair, associationIdsAdded, dataProvider, geneIdCurieMap);
+				gff3Service.loadCDSParentChildAssociations(gff3EntryPair, associationIdsAdded, dataProvider);
 				history.incrementCompleted(countType);
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed(countType);
