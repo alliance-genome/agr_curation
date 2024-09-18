@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import jakarta.persistence.Query;
 import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -10,6 +11,10 @@ import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RequestScoped
 public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEntity, GenomicEntityDTO, GenomicEntityDAO> {
@@ -37,8 +42,18 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 		return null;
 	}
 
+	public Map<String, Long> getGenomicEntityIdMap() {
+		if (genomicEntityIdMap.size() > 0) {
+			return genomicEntityIdMap;
+		}
+		genomicEntityIdMap = genomicEntityDAO.getGenomicEntityIdMap();
+		return genomicEntityIdMap;
+	}
+
+	private Map<String, Long> genomicEntityIdMap = new HashMap<>();
+
 	public Long getIdByModID(String modID) {
-		return genomicEntityDAO.getGenomicEntityIdByModID(modID);
+		return getGenomicEntityIdMap().get(modID);
 	}
 
 	public GenomicEntity getShallowEntity(Long id) {
