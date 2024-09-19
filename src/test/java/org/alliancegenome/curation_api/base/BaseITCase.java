@@ -1,61 +1,14 @@
 package org.alliancegenome.curation_api.base;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.response.ValidatableResponse;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.Construct;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
-import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
-import org.alliancegenome.curation_api.model.entities.Variant;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
-import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
-import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
@@ -64,9 +17,15 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.lang3.StringUtils;
 
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.response.ValidatableResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 
 public class BaseITCase {
 
@@ -115,7 +74,7 @@ public class BaseITCase {
 			body("history.counts." + countType + ".completed", is(expectedCompletedRecords)).
 			body("history.counts." + countType + ".skipped", is(expectedSkippedRecords));
 	}
-	
+
 	public void checkBulkLoadRecordCounts(String endpoint, String filePath, HashMap<String, HashMap<String, Integer>> params) throws Exception {
 		String content = Files.readString(Path.of(filePath));
 
@@ -126,7 +85,7 @@ public class BaseITCase {
 			post(endpoint).
 			then().
 			statusCode(200);
-		
+
 		for (Entry<String, HashMap<String, Integer>> entry: params.entrySet()) {
 			resp.body("history.counts." + entry.getKey() + ".total", is(entry.getValue().get("total")));
 			resp.body("history.counts." + entry.getKey() + ".failed", is(entry.getValue().get("failed")));
@@ -142,19 +101,19 @@ public class BaseITCase {
 	public void checkSkippedBulkLoad(String endpoint, String filePath) throws Exception {
 		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 0, 0, 1);
 	}
-	
+
 	public void checkSkippedBulkLoad(String endpoint, String filePath, int nrRecords) throws Exception {
 		checkBulkLoadRecordCounts(endpoint, filePath, "Records", nrRecords, 0, 0, nrRecords);
 	}
-	
+
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath) throws Exception {
 		checkSuccessfulBulkLoad(endpoint, filePath, 1);
 	}
-	
+
 	public void checkSuccessfulBulkLoad(String endpoint, String filePath, int nrRecords) throws Exception {
 		checkBulkLoadRecordCounts(endpoint, filePath, "Records", nrRecords, 0, nrRecords, 0);
 	}
-	
+
 	public HashMap<String, Integer> createCountParams(int total, int failed, int completed, int skipped) {
 		HashMap<String, Integer> map = new HashMap<String, Integer>();
 		map.put("total", total);
@@ -167,7 +126,7 @@ public class BaseITCase {
 	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
 		return createAffectedGenomicModel(modEntityId, name, taxonCurie, subtypeName, obsolete, null);
 	}
-	
+
 	public AffectedGenomicModel createAffectedGenomicModel(String modEntityId, String name, String taxonCurie, String subtypeName, Boolean obsolete, DataProvider dataProvider) {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
@@ -190,11 +149,11 @@ public class BaseITCase {
 				extract().body().as(getObjectResponseTypeRefAffectedGenomicModel());
 		return response.getEntity();
 	}
-	
+
 	public Allele createAllele(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
 		return createAllele(modEntityId, modEntityId, taxonCurie, symbolNameTerm, obsolete, null);
 	}
-	
+
 	public Allele createAllele(String modEntityId, String symbol, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
 		Allele allele = new Allele();
 		allele.setModEntityId(modEntityId);
@@ -202,7 +161,7 @@ public class BaseITCase {
 		allele.setObsolete(obsolete);
 		allele.setInternal(false);
 		allele.setDataProvider(dataProvider);
-		
+
 		AlleleSymbolSlotAnnotation alleleSymbol = new AlleleSymbolSlotAnnotation();
 		alleleSymbol.setNameType(symbolNameTerm);
 		alleleSymbol.setDisplayText(symbol);
@@ -253,7 +212,7 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefAnatomicalTerm());
-		
+
 		return response.getEntity();
 	}
 
@@ -272,7 +231,7 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefCHEBITerm());
-		
+
 		return response.getEntity();
 	}
 
@@ -291,7 +250,7 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefChemicalTerm());
-		
+
 		return response.getEntity();
 	}
 
@@ -359,11 +318,11 @@ public class BaseITCase {
 
 		return response.getEntity();
 	}
-	
+
 	public DOTerm createDoTerm(String curie, String name) {
 		return createDoTerm(curie, name, false);
 	}
-	
+
 	public DOTerm createDoTerm(String curie, Boolean obsolete) {
 		return createDoTerm(curie, curie, obsolete);
 	}
@@ -383,7 +342,7 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefDOTerm());
-		
+
 		return response.getEntity();
 	}
 
@@ -440,27 +399,27 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefExperimentalConditionOntologyTerm());
-		
+
 		return response.getEntity();
 	}
 
 	public Gene createGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete) {
 		return createGene(modEntityId, taxonCurie, symbolNameTerm, obsolete, null);
 	}
-	
+
 	public Gene createGene(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
 		return createGeneWithXref(modEntityId, taxonCurie, symbolNameTerm, obsolete, dataProvider, null);
 	}
-	
+
 	public List<Gene> createGenes(List<String> modEntityIds, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider) {
 		List<Gene> geneList = new ArrayList<>();
 		for (String modEntityId : modEntityIds) {
 			geneList.add(createGene(modEntityId, taxonCurie, symbolNameTerm, obsolete, dataProvider));
 		}
-		
+
 		return geneList;
 	}
-	
+
 	public Gene createGeneWithXref(String modEntityId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, DataProvider dataProvider, String xrefCurie) {
 		Gene gene = new Gene();
 		gene.setModEntityId(modEntityId);
@@ -477,7 +436,7 @@ public class BaseITCase {
 
 		SOTerm geneType = getSoTerm("SO:0001217");
 		gene.setGeneType(geneType);
-		
+
 		if (StringUtils.isNotBlank(xrefCurie)) {
 			CrossReference xref = new CrossReference();
 			xref.setReferencedCurie(xrefCurie);
@@ -493,6 +452,22 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefGene());
+		return response.getEntity();
+	}
+
+	public OntologyTerm createOntologyTerm(String curie, String name, Boolean obsolete) {
+		OntologyTerm ontologyTerm = new OntologyTerm();
+		ontologyTerm.setCurie(curie);
+		ontologyTerm.setName(name);
+		ontologyTerm.setObsolete(obsolete);
+		ObjectResponse<OntologyTerm> response = given().
+			contentType("application/json").
+			body(ontologyTerm).
+			when().
+			post("/api/ontologyterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefOntologyTerm());
 		return response.getEntity();
 	}
 
@@ -543,10 +518,10 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefMITerm());
-		
+
 		return response.getEntity();
 	}
-	
+
 	public MMOTerm createMmoTerm(String curie, String name) throws Exception {
 		MMOTerm mmoTerm = new MMOTerm();
 		mmoTerm.setCurie(curie);
@@ -562,14 +537,14 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefMMOTerm());
-		
+
 		return response.getEntity();
 	}
-	
+
 	public MPTerm createMpTerm(String curie, String name) {
 		return createMpTerm(curie, name, false);
 	}
-	
+
 	public MPTerm createMpTerm(String curie, Boolean obsolete) {
 		return createMpTerm(curie, "Test MPTerm", obsolete);
 	}
@@ -589,7 +564,7 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefMPTerm());
-		
+
 		return response.getEntity();
 	}
 
@@ -656,11 +631,11 @@ public class BaseITCase {
 		person = response.getEntity();
 		return person;
 	}
-	
+
 	public Reference createReference(String curie, String xrefCurie) {
 		return createReference(curie, xrefCurie, false);
 	}
-	
+
 	public Reference createReference(String curie, Boolean obsolete) {
 		return createReference(curie, "PMID:TestXref", obsolete);
 	}
@@ -764,7 +739,7 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefStageTerm());
-		
+
 		return response.getEntity();
 	}
 
@@ -783,7 +758,7 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefUBERONTerm());
-		
+
 		return response.getEntity();
 	}
 
@@ -861,10 +836,10 @@ public class BaseITCase {
 			then().
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefWBPhenotypeTerm());
-		
+
 		return response.getEntity();
 	}
-	
+
 	public ZECOTerm createZecoTerm(String curie, String name, Boolean obsolete) {
 		return createZecoTerm(curie, name, obsolete, null);
 	}
@@ -1128,11 +1103,16 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<OntologyTerm>> getObjectResponseTypeRefOntologyTerm() {
+		return new TypeRef<ObjectResponse<OntologyTerm>>() {
+		};
+	}
+
 	private TypeRef<ObjectResponse<AnatomicalTerm>> getObjectResponseTypeRefAnatomicalTerm() {
 		return new TypeRef<ObjectResponse<AnatomicalTerm>>() {
 		};
 	}
-	
+
 	private TypeRef<ObjectResponse<BiologicalEntity>> getObjectResponseTypeRefBiologicalEntity() {
 		return new TypeRef<ObjectResponse<BiologicalEntity>>() {
 		};

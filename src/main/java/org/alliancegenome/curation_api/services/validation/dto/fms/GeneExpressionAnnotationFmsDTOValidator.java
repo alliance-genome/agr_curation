@@ -224,31 +224,37 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureQualifierTermId())) {
 				String anatomicalstructurequalifiertermId = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureQualifierTermId();
-				OntologyTerm anatomicalStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalstructurequalifiertermId);
-				if (anatomicalStructureQualifierTerm == null) {
-					response.addErrorMessage("whereExpressed - anatomicalStructureQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + anatomicalstructurequalifiertermId + ")");
-				} else {
-					anatomicalSite.setAnatomicalStructureQualifiers(List.of(anatomicalStructureQualifierTerm));
+				if (vocabularyTermService.getTermInVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS, anatomicalstructurequalifiertermId) != null) {
+					OntologyTerm anatomicalStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalstructurequalifiertermId);
+					if (anatomicalStructureQualifierTerm == null) {
+						response.addErrorMessage("whereExpressed - anatomicalStructureQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + anatomicalstructurequalifiertermId + ")");
+					} else {
+						anatomicalSite.setAnatomicalStructureQualifiers(List.of(anatomicalStructureQualifierTerm));
+					}
 				}
 			}
 
 			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureQualifierTermId())) {
 				String anatomicalsubstructurequalifierId = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureQualifierTermId();
-				OntologyTerm anatomicalSubStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalsubstructurequalifierId);
-				if (anatomicalSubStructureQualifierTerm == null) {
-					response.addErrorMessage("whereExpressed - anatomicalSubStructureQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + anatomicalsubstructurequalifierId + ")");
-				} else {
-					anatomicalSite.setAnatomicalSubstructureQualifiers(List.of(anatomicalSubStructureQualifierTerm));
+				if (vocabularyTermService.getTermInVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS, anatomicalsubstructurequalifierId) != null) {
+					OntologyTerm anatomicalSubStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalsubstructurequalifierId);
+					if (anatomicalSubStructureQualifierTerm == null) {
+						response.addErrorMessage("whereExpressed - anatomicalSubStructureQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + anatomicalsubstructurequalifierId + ")");
+					} else {
+						anatomicalSite.setAnatomicalSubstructureQualifiers(List.of(anatomicalSubStructureQualifierTerm));
+					}
 				}
 			}
 
 			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getCellularComponentQualifierTermId())) {
 				String cellularComponentQualifierTermId = geneExpressionFmsDTO.getWhereExpressed().getCellularComponentQualifierTermId();
-				OntologyTerm cellularComponentQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(cellularComponentQualifierTermId);
-				if (cellularComponentQualifierTerm == null) {
-					response.addErrorMessage("whereExpressed - cellularComponentQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + cellularComponentQualifierTermId + ")");
-				} else {
-					anatomicalSite.setCellularComponentQualifiers(List.of(cellularComponentQualifierTerm));
+				if (vocabularyTermService.getTermInVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS, cellularComponentQualifierTermId) != null) {
+					OntologyTerm cellularComponentQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(cellularComponentQualifierTermId);
+					if (cellularComponentQualifierTerm == null) {
+						response.addErrorMessage("whereExpressed - cellularComponentQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + cellularComponentQualifierTermId + ")");
+					} else {
+						anatomicalSite.setCellularComponentQualifiers(List.of(cellularComponentQualifierTerm));
+					}
 				}
 			}
 
