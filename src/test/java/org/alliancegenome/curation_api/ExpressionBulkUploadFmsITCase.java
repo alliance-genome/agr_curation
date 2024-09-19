@@ -69,14 +69,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	public void expressionBulkUploadAllFields() throws Exception {
 		loadRequiredEntities();
 		checkSuccessfulBulkLoad(expressionBulkPostEndpoint, expressionTestFilePath + "AF_01_all_fields.json");
-//		System.out.println(RestAssured.given().when()
-//			.header("Content-Type", "application/json")
-//			.body("{}")
-//			.post(expressionFindEndpoint)
-//			.then()
-//			.statusCode(200)
-//			.extract().asPrettyString());
-
 		RestAssured.given().when()
 			.header("Content-Type", "application/json")
 			.body("{}")
@@ -172,15 +164,12 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		createVocabularyTerm(stageUberonTermVocabulary, stageUberonTermId, false);
 		createAnatomicalTerm(anatomicalStructureTermId, "AnatomicalStructureTermTest");
         createAnatomicalTerm(anatomicalSubstructureTermId, "AnatomicalSubStructureTermTest");
-
 		createOntologyTerm(anatomicalStructureQualifierTermId, "anatomicalSubstructureQualifierTermId", false);
 		createOntologyTerm(anatomicalSubstructureQualifierTermId, "anatomicalSubstructureQualifierTermId", false);
 		createOntologyTerm(cellularComponentQualifierTermId, "anatomicalSubstructureQualifierTermId", false);
-
 		createVocabularyTerm(spatialExpressionQualififerVocabulary, anatomicalStructureQualifierTermId, false);
 		createVocabularyTerm(spatialExpressionQualififerVocabulary, anatomicalSubstructureQualifierTermId, false);
 		createVocabularyTerm(spatialExpressionQualififerVocabulary, cellularComponentQualifierTermId, false);
-
 		List<String> subsets = new ArrayList<String>();
 		subsets.add("goslim_agr");
 		GOTerm isaAncestor = createGoTerm(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", false, subsets);
