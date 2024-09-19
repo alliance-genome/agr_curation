@@ -1,15 +1,14 @@
 package org.alliancegenome.curation_api.dao.base;
 
-import static org.reflections.scanners.Scanners.TypesAnnotated;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
+import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
@@ -39,27 +38,20 @@ import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.reflections.Reflections;
 
-import io.quarkus.logging.Log;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.metamodel.IdentifiableType;
-import jakarta.persistence.metamodel.Metamodel;
-import jakarta.transaction.Transactional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
-	@Inject protected EntityManager entityManager;
-	@Inject protected SearchSession searchSession;
-	@Inject protected IndexProcessDisplayService indexProcessDisplayService;
+	@Inject
+	protected EntityManager entityManager;
+	@Inject
+	protected SearchSession searchSession;
+	@Inject
+	protected IndexProcessDisplayService indexProcessDisplayService;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
@@ -717,6 +709,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public E getShallowEntity(Class<E> entityClass, long id) {
+		return entityManager.getReference(entityClass, id);
 	}
 
 }

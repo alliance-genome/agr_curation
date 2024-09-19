@@ -1,11 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
@@ -23,22 +22,29 @@ import org.alliancegenome.curation_api.services.validation.ConstructValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ConstructDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @RequestScoped
 public class ConstructService extends SubmittedObjectCrudService<Construct, ConstructDTO, ConstructDAO> {
 
-	@Inject ConstructDAO constructDAO;
-	@Inject ConstructValidator constructValidator;
-	@Inject ConstructDTOValidator constructDtoValidator;
-	@Inject ConstructService constructService;
-	@Inject PersonService personService;
-	@Inject ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject
+	ConstructDAO constructDAO;
+	@Inject
+	ConstructValidator constructValidator;
+	@Inject
+	ConstructDTOValidator constructDtoValidator;
+	@Inject
+	ConstructService constructService;
+	@Inject
+	PersonService personService;
+	@Inject
+	ConstructComponentSlotAnnotationDAO constructComponentDAO;
+	@Inject
+	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
 	@PostConstruct
@@ -55,7 +61,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 				construct = response.getSingleResult();
 			}
 		}
-		return new ObjectResponse<Construct>(construct);
+		return new ObjectResponse<>(construct);
 	}
 
 	@Override
@@ -91,7 +97,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	@Transactional
 	public Construct deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Construct construct = constructDAO.find(id);
-		
+
 		if (construct != null) {
 			if (forceDeprecate || CollectionUtils.isNotEmpty(construct.getConstructGenomicEntityAssociations())) {
 				if (!construct.getObsolete()) {
@@ -124,5 +130,23 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		constructIds.removeIf(Objects::isNull);
 
 		return constructIds;
+	}
+
+	public Map<String, Long> getConstructIdMap() {
+		if (constructIdMap.size() > 0) {
+			return constructIdMap;
+		}
+		constructIdMap = constructDAO.getConstructIdMap();
+		return constructIdMap;
+	}
+
+	private Map<String, Long> constructIdMap = new HashMap<>();
+
+	public Long getIdByModID(String modID) {
+		return getConstructIdMap().get(modID);
+	}
+
+	public Construct getShallowEntity(Long id) {
+		return constructDAO.getShallowEntity(Construct.class, id);
 	}
 }
