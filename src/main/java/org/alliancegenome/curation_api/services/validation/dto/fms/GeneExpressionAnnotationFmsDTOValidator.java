@@ -224,7 +224,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureQualifierTermId())) {
 				String anatomicalstructurequalifiertermId = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalStructureQualifierTermId();
-				if (vocabularyTermService.getTermInVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS, anatomicalstructurequalifiertermId) != null) {
+				if (vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ANATOMICAL_STRUCTURE_QUALIFIER, anatomicalstructurequalifiertermId) != null) {
 					OntologyTerm anatomicalStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalstructurequalifiertermId);
 					if (anatomicalStructureQualifierTerm == null) {
 						response.addErrorMessage("whereExpressed - anatomicalStructureQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + anatomicalstructurequalifiertermId + ")");
@@ -236,7 +236,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureQualifierTermId())) {
 				String anatomicalsubstructurequalifierId = geneExpressionFmsDTO.getWhereExpressed().getAnatomicalSubStructureQualifierTermId();
-				if (vocabularyTermService.getTermInVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS, anatomicalsubstructurequalifierId) != null) {
+				if (vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.ANATOMICAL_SUBSTRUCTURE_QUALIFIER, anatomicalsubstructurequalifierId) != null) {
 					OntologyTerm anatomicalSubStructureQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(anatomicalsubstructurequalifierId);
 					if (anatomicalSubStructureQualifierTerm == null) {
 						response.addErrorMessage("whereExpressed - anatomicalSubStructureQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + anatomicalsubstructurequalifierId + ")");
@@ -248,7 +248,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 			if (!ObjectUtils.isEmpty(geneExpressionFmsDTO.getWhereExpressed().getCellularComponentQualifierTermId())) {
 				String cellularComponentQualifierTermId = geneExpressionFmsDTO.getWhereExpressed().getCellularComponentQualifierTermId();
-				if (vocabularyTermService.getTermInVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS, cellularComponentQualifierTermId) != null) {
+				if (vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIER, cellularComponentQualifierTermId) != null) {
 					OntologyTerm cellularComponentQualifierTerm = ontologyTermService.findByCurieOrSecondaryId(cellularComponentQualifierTermId);
 					if (cellularComponentQualifierTerm == null) {
 						response.addErrorMessage("whereExpressed - cellularComponentQualifierTermId", ValidationConstants.INVALID_MESSAGE + " (" + cellularComponentQualifierTermId + ")");

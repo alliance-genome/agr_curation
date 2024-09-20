@@ -804,6 +804,27 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public VocabularyTerm createVocabularyTerm(VocabularyTermSet vocabularyTermSet, String name, Boolean obsolete) {
+		VocabularyTerm vocabularyTerm = new VocabularyTerm();
+		vocabularyTerm.setName(name);
+		vocabularyTerm.setVocabulary(vocabularyTermSet.getVocabularyTermSetVocabulary());
+		vocabularyTerm.setVocabularyTermSets(List.of(vocabularyTermSet));
+		vocabularyTerm.setObsolete(obsolete);
+		vocabularyTerm.setInternal(false);
+
+		ObjectResponse<VocabularyTerm> response =
+			RestAssured.given().
+				contentType("application/json").
+				body(vocabularyTerm).
+				when().
+				post("/api/vocabularyterm").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
+
+		return response.getEntity();
+	}
+
 	public void createVocabularyTermSet(String name, Vocabulary vocabulary, List<VocabularyTerm> terms) {
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
 		vocabularyTermSet.setName(name);
