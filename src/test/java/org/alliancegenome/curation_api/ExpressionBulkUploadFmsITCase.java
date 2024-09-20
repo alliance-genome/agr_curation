@@ -7,10 +7,7 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.DataProvider;
-import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.*;
@@ -93,9 +90,9 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentTerm.curie", is(cellularComponentTermId))
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentRibbonTerm.curie", is(cellularComponentRibbonTermId))
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentOther", is(false))
-			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureQualifiers[0].name", is(anatomicalStructureQualifierTermId))
-			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureQualifiers[0].name", is(anatomicalSubstructureQualifierTermId))
-			.body("results[0].expressionPattern.whereExpressed.cellularComponentQualifiers[0].name", is(cellularComponentQualifierTermId))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureQualifiers[0].curie", is(anatomicalStructureQualifierTermId))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureQualifiers[0].curie", is(anatomicalSubstructureQualifierTermId))
+			.body("results[0].expressionPattern.whereExpressed.cellularComponentQualifiers[0].curie", is(cellularComponentQualifierTermId))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureUberonTerms[0].curie", is(anatomicalStructureUberonTermId1))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureUberonTerms[1].curie", is(anatomicalStructureUberonTermId2))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureUberonTerms[0].curie", is(anatomicalSubstructureUberonTermId1))
@@ -158,19 +155,24 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
 		Vocabulary stageUberonTermVocabulary = getVocabulary(VocabularyConstants.STAGE_UBERON_SLIM_TERMS);
-		Vocabulary anatomicalStructureUberonTermVocabulary = getVocabulary(VocabularyConstants.ANATOMICAL_STRUCTURE_UBERON_SLIM_TERMS);
-		Vocabulary cellullarComponentQualififerVocabulary = getVocabulary(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIERS);
+		Vocabulary spatialExpressionQualififerVocabulary = getVocabulary(VocabularyConstants.SPATIAL_EXPRESSION_QUALIFIERS);
+		VocabularyTermSet anatatomicalStructureQualifierTermset = getVocabularyTermSet(VocabularyConstants.ANATOMICAL_STRUCTURE_QUALIFIER);
+		VocabularyTermSet anatatomicalSubstructureQualifierTermset = getVocabularyTermSet(VocabularyConstants.ANATOMICAL_SUBSTRUCTURE_QUALIFIER);
+		VocabularyTermSet cellularComponentQualifierTermset = getVocabularyTermSet(VocabularyConstants.CELLULAR_COMPONENT_QUALIFIER);
 		createStageTerm(stageTermId, "StageTermTest");
 		createVocabularyTerm(stageUberonTermVocabulary, stageUberonTermId, false);
 		createAnatomicalTerm(anatomicalStructureTermId, "AnatomicalStructureTermTest");
 		createAnatomicalTerm(anatomicalSubstructureTermId, "AnatomicalSubStructureTermTest");
+		createOntologyTerm(anatomicalStructureQualifierTermId, "anatomicalSubstructureQualifierTermId", false);
+		createOntologyTerm(anatomicalSubstructureQualifierTermId, "anatomicalSubstructureQualifierTermId", false);
+		createOntologyTerm(cellularComponentQualifierTermId, "anatomicalSubstructureQualifierTermId", false);
+		createVocabularyTerm(anatatomicalStructureQualifierTermset, anatomicalStructureQualifierTermId, false);
+		createVocabularyTerm(anatatomicalSubstructureQualifierTermset, anatomicalSubstructureQualifierTermId, false);
+		createVocabularyTerm(cellularComponentQualifierTermset, cellularComponentQualifierTermId, false);
 		List<String> subsets = new ArrayList<String>();
 		subsets.add("goslim_agr");
 		GOTerm isaAncestor = createGoTerm(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", false, subsets);
 		createGoTerm(cellularComponentTermId, "CellularComponentTermTest", false, isaAncestor);
-		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalStructureQualifierTermId, false);
-		createVocabularyTerm(anatomicalStructureUberonTermVocabulary, anatomicalSubstructureQualifierTermId, false);
-		createVocabularyTerm(cellullarComponentQualififerVocabulary, cellularComponentQualifierTermId, false);
 		createUberonTerm(anatomicalStructureUberonTermId1, "UberonTermTest1");
 		createUberonTerm(anatomicalStructureUberonTermId2, "UberonTermTest2");
 		createUberonTerm(anatomicalSubstructureUberonTermId1, "UberonTermTest3");

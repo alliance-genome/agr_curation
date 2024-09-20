@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -30,7 +31,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.6.1", max = LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 @Schema(name = "Anatomical_Site", description = "Anatomical part of an expression pattern")
 @Table(indexes = {
 	@Index(name = "anatomicalsite_anatomicalstructure_index ", columnList = "anatomicalstructure_id"),
@@ -55,7 +56,7 @@ public class AnatomicalSite extends AuditedObject {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private GOTerm cellularComponentTerm;
-	
+
 	//celullar compoent ribbon -- slim
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -79,7 +80,7 @@ public class AnatomicalSite extends AuditedObject {
 			@Index(name = "anatomicalstructurequalifiers_anatomicalsite_index", columnList = "anatomicalsite_id"),
 			@Index(name = "anatomicalstructurequalifiers_structurequalifiers_index", columnList = "anatomicalstructurequalifiers_id")}
 	)
-	private List<VocabularyTerm> anatomicalStructureQualifiers;
+	private List<OntologyTerm> anatomicalStructureQualifiers;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalsubstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -91,7 +92,7 @@ public class AnatomicalSite extends AuditedObject {
 			@Index(name = "anatomicalsubstructurequalifiers_anatomicalsite_index", columnList = "anatomicalsite_id"),
 			@Index(name = "anatomicalsubstructurequalifiers_qualifiers_index", columnList = "anatomicalsubstructurequalifiers_id")}
 	)
-	private List<VocabularyTerm> anatomicalSubstructureQualifiers;
+	private List<OntologyTerm> anatomicalSubstructureQualifiers;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "cellularcomponentqualifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -103,7 +104,7 @@ public class AnatomicalSite extends AuditedObject {
 			@Index(name = "cellularcomponentqualifiers_anatomicalsite_index", columnList = "anatomicalsite_id"),
 			@Index(name = "cellularcomponentqualifiers_cellularcomponentqualifiers_index", columnList = "cellularcomponentqualifiers_id")}
 	)
-	private List<VocabularyTerm> cellularComponentQualifiers;
+	private List<OntologyTerm> cellularComponentQualifiers;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalstructureuberonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
