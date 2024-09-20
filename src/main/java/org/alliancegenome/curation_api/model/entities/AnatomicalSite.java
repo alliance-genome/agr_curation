@@ -31,7 +31,7 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.6.1", max = LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 @Schema(name = "Anatomical_Site", description = "Anatomical part of an expression pattern")
 @Table(indexes = {
 	@Index(name = "anatomicalsite_anatomicalstructure_index ", columnList = "anatomicalstructure_id"),
