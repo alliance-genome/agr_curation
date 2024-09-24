@@ -51,22 +51,46 @@ export const EntityCountsComponent = () => {
 				<div className="col-4">
 					<DataTable header="Entities" value={tableData.entity} sortField="name" sortOrder={1}>
 						<Column field="name" header="Entity Name" body={nameHyperlinkTemplate} />
-						<Column field="dbCount" header="Database Entity Count" body={(rowData) => <NumberTemplate number={rowData.dbCount}/>}/>
-						<Column field="esCount" header="Search index Entity Count" body={(rowData) => <NumberTemplate number={rowData.esCount}/>}/>
+						<Column
+							field="dbCount"
+							header="Database Entity Count"
+							body={(rowData) => <NumberTemplate number={rowData.dbCount} />}
+						/>
+						<Column
+							field="esCount"
+							header="Search index Entity Count"
+							body={(rowData) => <NumberTemplate number={rowData.esCount} />}
+						/>
 					</DataTable>
 				</div>
 				<div className="col-4">
 					<DataTable header="Ontologies" value={tableData.ontology} sortField="name" sortOrder={1}>
 						<Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
-						<Column field="dbCount" header="Database Term Count" body={(rowData) => <NumberTemplate number={rowData.dbCount}/>}/>
-						<Column field="esCount" header="Search index Term Count" body={(rowData) => <NumberTemplate number={rowData.esCount}/>}/>
+						<Column
+							field="dbCount"
+							header="Database Term Count"
+							body={(rowData) => <NumberTemplate number={rowData.dbCount} />}
+						/>
+						<Column
+							field="esCount"
+							header="Search index Term Count"
+							body={(rowData) => <NumberTemplate number={rowData.esCount} />}
+						/>
 					</DataTable>
 				</div>
 				<div className="col-4">
 					<DataTable header="System" value={tableData.system} sortField="name" sortOrder={1}>
 						<Column field="name" header="System Name" body={nameHyperlinkTemplate} />
-						<Column field="dbCount" header="Database Object Count" body={(rowData) => <NumberTemplate number={rowData.dbCount}/>}/>
-						<Column field="esCount" header="Search index Object Count" body={(rowData) => <NumberTemplate number={rowData.esCount}/>}/>
+						<Column
+							field="dbCount"
+							header="Database Object Count"
+							body={(rowData) => <NumberTemplate number={rowData.dbCount} />}
+						/>
+						<Column
+							field="esCount"
+							header="Search index Object Count"
+							body={(rowData) => <NumberTemplate number={rowData.esCount} />}
+						/>
 					</DataTable>
 				</div>
 			</div>

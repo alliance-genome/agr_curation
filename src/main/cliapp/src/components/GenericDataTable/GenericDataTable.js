@@ -315,13 +315,14 @@ export const GenericDataTable = (props) => {
 				rowClassName={(props) => getRowClass(props)}
 				loading={fetching}
 				loadingIcon="pi pi-spin pi-spinner"
-				footer={<DataTableFooter
-					first={tableState.first}
-					rows={tableState.rows}
-					totalRecords={totalRecords}
-					onLazyLoad={onLazyLoad}
-					isInEditMode={isInEditMode}
-				/>
+				footer={
+					<DataTableFooter
+						first={tableState.first}
+						rows={tableState.rows}
+						totalRecords={totalRecords}
+						onLazyLoad={onLazyLoad}
+						isInEditMode={isInEditMode}
+					/>
 				}
 			>
 				{isEditable && (
@@ -462,6 +463,6 @@ export const GenericDataTable = (props) => {
 				<hr />
 				<div className="error-message-detail">{<span className="text-sm">{exceptionMessage}</span>}</div>
 			</Dialog>
-		</div >
+		</div>
 	);
 };

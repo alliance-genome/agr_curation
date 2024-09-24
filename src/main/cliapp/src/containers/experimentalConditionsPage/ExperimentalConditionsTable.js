@@ -82,7 +82,7 @@ export const ExperimentalConditionsTable = () => {
 			updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
 		}
 	};
-	
+
 	const internalEditor = (props) => {
 		return (
 			<>
@@ -181,7 +181,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionClass.name',
 			header: 'Class',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
 			filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
 			editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields),
 		},
@@ -189,7 +189,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionId.name',
 			header: 'Condition Term',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionId}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
 			filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(
@@ -203,7 +203,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionGeneOntology.name',
 			header: 'Gene Ontology',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
 			filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionGeneOntology', 'goterm', curieAutocompleteFields),
@@ -212,7 +212,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionChemical.name',
 			header: 'Chemical',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
 			filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionChemical', 'chemicalterm', curieAutocompleteFields),
@@ -221,7 +221,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionAnatomy.name',
 			header: 'Anatomy',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
 			filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionAnatomy', 'anatomicalterm', curieAutocompleteFields),
@@ -230,7 +230,7 @@ export const ExperimentalConditionsTable = () => {
 			field: 'conditionTaxon.name',
 			header: 'Condition Taxon',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
 			filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
 			editor: (props) =>
 				singleOntologyEditorTemplate(props, 'conditionTaxon', 'ncbitaxonterm', curieAutocompleteFields),

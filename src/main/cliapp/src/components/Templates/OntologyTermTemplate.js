@@ -10,7 +10,7 @@ export const OntologyTermTemplate = ({ term }) => {
 	return (
 		<>
 			<EllipsisTableCell otherClasses={targetClass}>{textString}</EllipsisTableCell>
-			<Tooltip target={`.${targetClass}`} content={textString} mouseTrack position='bottom'/>
+			<Tooltip target={`.${targetClass}`} content={textString} mouseTrack position="bottom" />
 		</>
 	);
 };

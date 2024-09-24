@@ -83,7 +83,7 @@ export const GeneGeneticInteractionsTable = () => {
 			field: 'relation.name',
 			header: 'Interaction Relation',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.relation?.name}/>,
+			body: (rowData) => <StringTemplate string={rowData.relation?.name} />,
 			filterConfig: FILTER_CONFIGS.gmiRelationFilterConfig,
 		},
 		{

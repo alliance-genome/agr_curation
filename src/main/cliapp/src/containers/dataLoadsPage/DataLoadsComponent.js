@@ -531,8 +531,6 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
-
-
 	const countsTemplate = (rowData) => {
 		let countsArray = [];
 		for (let count in rowData.counts) {
@@ -542,10 +540,14 @@ export const DataLoadsComponent = () => {
 		return (
 			<DataTable key="countsTable" value={countsArray}>
 				<Column field="name" />
-				<Column field="completed" header="Completed" body={(rowData) => <NumberTemplate number={rowData.completed}/>}/>
-				<Column field="failed" header="Failed" body={(rowData) => <NumberTemplate number={rowData.failed}/>} />
-				<Column field="skipped" header="Skipped" body={(rowData) => <NumberTemplate number={rowData.skipped}/>} />
-				<Column field="total" header="Total" body={(rowData) => <NumberTemplate number={rowData.total}/>} />
+				<Column
+					field="completed"
+					header="Completed"
+					body={(rowData) => <NumberTemplate number={rowData.completed} />}
+				/>
+				<Column field="failed" header="Failed" body={(rowData) => <NumberTemplate number={rowData.failed} />} />
+				<Column field="skipped" header="Skipped" body={(rowData) => <NumberTemplate number={rowData.skipped} />} />
+				<Column field="total" header="Total" body={(rowData) => <NumberTemplate number={rowData.total} />} />
 			</DataTable>
 		);
 	};
@@ -570,7 +572,7 @@ export const DataLoadsComponent = () => {
 					<Column
 						field="bulkLoadFile.fileSize"
 						header="Compressed File Size"
-						body={(rowData) => <NumberTemplate number={rowData.bulkLoadFile.fileSize}/>}
+						body={(rowData) => <NumberTemplate number={rowData.bulkLoadFile.fileSize} />}
 					/>
 					<Column field="bulkLoadFile.s3Url" header="S3 Url (Download)" body={urlTemplate} />
 					<Column field="bulkLoadFile.linkMLSchemaVersion" header="LinkML Schema Version" />

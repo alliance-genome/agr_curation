@@ -10,7 +10,7 @@ export const IdTemplate = ({ id }) => {
 	return (
 		<>
 			<EllipsisTableCell otherClasses={targetClass}>{id}</EllipsisTableCell>
-			<Tooltip target={`.${targetClass}`} content={id} mouseTrack position='right' />
+			<Tooltip target={`.${targetClass}`} content={id} mouseTrack position="right" />
 		</>
 	);
 };

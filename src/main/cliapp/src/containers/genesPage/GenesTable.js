@@ -205,7 +205,7 @@ export const GenesTable = () => {
 			field: 'taxon.name',
 			header: 'Taxon',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.taxon}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 		},

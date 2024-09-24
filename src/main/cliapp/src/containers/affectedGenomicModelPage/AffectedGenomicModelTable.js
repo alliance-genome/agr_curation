@@ -64,7 +64,7 @@ export const AffectedGenomicModelTable = () => {
 			field: 'taxon.name',
 			header: 'Taxon',
 			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.taxon}/>,
+			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 		},
 		{
