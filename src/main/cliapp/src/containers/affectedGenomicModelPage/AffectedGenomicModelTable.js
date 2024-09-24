@@ -3,8 +3,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { NameTemplate } from '../../components/Templates/NameTemplate';
-import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
@@ -13,6 +12,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -49,13 +49,14 @@ export const AffectedGenomicModelTable = () => {
 		{
 			field: 'name',
 			header: 'Name',
-			body: (rowData) => <NameTemplate name={rowData.name} />,
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 		},
 		{
 			field: 'subtype.name',
 			header: 'Sub Type',
+			body: (rowData) => <StringTemplate string={rowData.subtype?.name} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.subtypeFilterConfig,
 		},
@@ -63,7 +64,7 @@ export const AffectedGenomicModelTable = () => {
 			field: 'taxon.name',
 			header: 'Taxon',
 			sortable: true,
-			body: (rowData) => <TaxonTemplate taxon={rowData.taxon} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 		},
 		{
@@ -89,6 +90,7 @@ export const AffectedGenomicModelTable = () => {
 			field: 'updatedBy.uniqueId',
 			header: 'Updated By',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
@@ -96,6 +98,7 @@ export const AffectedGenomicModelTable = () => {
 			header: 'Date Updated',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
@@ -103,6 +106,7 @@ export const AffectedGenomicModelTable = () => {
 			header: 'Created By',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
@@ -110,6 +114,7 @@ export const AffectedGenomicModelTable = () => {
 			header: 'Date Created',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{

@@ -1,17 +1,17 @@
 import React from 'react';
 import { Tooltip } from 'primereact/tooltip';
 
-export const NameTemplate = ({ name }) => {
+export const StringTemplate = ({ string }) => {
 	const targetClass = `a${global.crypto.randomUUID()}`;
-	if (!name) return null;
+	if (!string) return null;
 	return (
 		<>
 			<div
 				className={`overflow-hidden text-overflow-ellipsis ${targetClass}`}
-				dangerouslySetInnerHTML={{ __html: name }}
+				dangerouslySetInnerHTML={{ __html: string }}
 			/>
-			<Tooltip target={`.${targetClass}`}>
-				<div dangerouslySetInnerHTML={{ __html: name }} />
+			<Tooltip target={`.${targetClass}`} mouseTrack position="bottom">
+				<div dangerouslySetInnerHTML={{ __html: string }} />
 			</Tooltip>
 		</>
 	);

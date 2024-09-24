@@ -17,6 +17,7 @@ import { filterColumns, orderColumns, getIdentifier } from '../../utils/utils';
 import { useGenericDataTable } from './useGenericDataTable';
 
 import style from './styles.module.scss';
+import { DataTableFooter } from './DataTableFooter';
 export const GenericDataTable = (props) => {
 	const {
 		tableName,
@@ -309,18 +310,20 @@ export const GenericDataTable = (props) => {
 				columnResizeMode="expand"
 				showGridlines={true}
 				onColumnResizeEnd={handleColumnResizeEnd}
-				paginator={!isInEditMode}
 				totalRecords={totalRecords}
-				onPage={onLazyLoad}
 				lazy={true}
-				first={tableState.first}
-				paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-				currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-				rows={tableState.rows}
-				rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 				rowClassName={(props) => getRowClass(props)}
 				loading={fetching}
 				loadingIcon="pi pi-spin pi-spinner"
+				footer={
+					<DataTableFooter
+						first={tableState.first}
+						rows={tableState.rows}
+						totalRecords={totalRecords}
+						onLazyLoad={onLazyLoad}
+						isInEditMode={isInEditMode}
+					/>
+				}
 			>
 				{isEditable && (
 					<Column

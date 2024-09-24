@@ -14,9 +14,10 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
-import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
@@ -196,7 +197,7 @@ export const GenesTable = () => {
 		{
 			field: 'geneType.name',
 			header: 'Gene Type',
-			body: (rowData) => <OntologyTermTemplate object={rowData.geneType} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.geneType} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.geneTypeFilterConfig,
 		},
@@ -204,7 +205,7 @@ export const GenesTable = () => {
 			field: 'taxon.name',
 			header: 'Taxon',
 			sortable: true,
-			body: (rowData) => <TaxonTemplate taxon={rowData.taxon} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 			filter: true,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 		},
@@ -231,6 +232,7 @@ export const GenesTable = () => {
 			field: 'updatedBy.uniqueId',
 			header: 'Updated By',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
@@ -238,6 +240,7 @@ export const GenesTable = () => {
 			header: 'Date Updated',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
@@ -245,6 +248,7 @@ export const GenesTable = () => {
 			header: 'Created By',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
@@ -252,6 +256,7 @@ export const GenesTable = () => {
 			header: 'Date Created',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{
@@ -272,7 +277,7 @@ export const GenesTable = () => {
 		},
 	];
 
-	const DEFAULT_COLUMN_WIDTH = 20;
+	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'gene';
 
 	const initialTableState = getDefaultTableState('Genes', columns, DEFAULT_COLUMN_WIDTH);

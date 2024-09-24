@@ -1,15 +1,15 @@
 import { render } from '@testing-library/react';
-import { NameTemplate } from '../NameTemplate';
+import { StringTemplate } from '../StringTemplate';
 import '../../../tools/jest/setupTests';
 
-describe('NameTemplate', () => {
+describe('StringTemplate', () => {
 	it('should return null when value is null', () => {
-		const { container } = render(<NameTemplate name={null} />);
+		const { container } = render(<StringTemplate string={null} />);
 		expect(container.firstChild).toBeNull();
 	});
 
 	it('should render the name inside the div', () => {
-		const result = render(<NameTemplate name="test" />);
+		const result = render(<StringTemplate string="test" />);
 		expect(result.getByText('test')).toBeInTheDocument();
 	});
 });
