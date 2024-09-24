@@ -20,6 +20,8 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
@@ -307,6 +309,7 @@ export const VariantsTable = () => {
 			field: 'updatedBy.uniqueId',
 			header: 'Updated By',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
@@ -314,6 +317,7 @@ export const VariantsTable = () => {
 			header: 'Date Updated',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
@@ -321,6 +325,7 @@ export const VariantsTable = () => {
 			header: 'Created By',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
@@ -328,6 +333,7 @@ export const VariantsTable = () => {
 			header: 'Date Created',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{

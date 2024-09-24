@@ -25,7 +25,6 @@ import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTabl
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { TaxonTemplate } from '../../components/Templates/TaxonTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
@@ -39,6 +38,8 @@ import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 
 export const AllelesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -1077,7 +1078,6 @@ export const AllelesTable = () => {
 		{
 			field: 'alleleSecondaryIds.secondaryId',
 			header: 'Secondary IDs',
-			//todo
 			body: (rowData) => (
 				<ListDialogTemplate
 					entities={rowData.alleleSecondaryIds}
@@ -1106,8 +1106,8 @@ export const AllelesTable = () => {
 		{
 			field: 'taxon.name',
 			header: 'Taxon',
-			body: (rowData) => <TaxonTemplate taxon={rowData.taxon} />,
 			sortable: true,
+			body: (rowData) => <OntologyTermTemplate term={rowData.taxon}/>,
 			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
@@ -1201,6 +1201,7 @@ export const AllelesTable = () => {
 			field: 'inCollection.name',
 			header: 'In Collection',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.inCollection?.name}/>,
 			filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
 			editor: (props) => <InCollectionTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
 		},
@@ -1247,6 +1248,7 @@ export const AllelesTable = () => {
 			field: 'updatedBy.uniqueId',
 			header: 'Updated By',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
@@ -1254,6 +1256,7 @@ export const AllelesTable = () => {
 			header: 'Date Updated',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
@@ -1261,6 +1264,7 @@ export const AllelesTable = () => {
 			header: 'Created By',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
@@ -1268,6 +1272,7 @@ export const AllelesTable = () => {
 			header: 'Date Created',
 			sortable: true,
 			filter: true,
+			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{

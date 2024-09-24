@@ -21,7 +21,7 @@ export const StringListTemplate = ({ list }) => {
 			<div className={`-my-2 p-1 ${targetClass}`}>
 				<ListTableCell template={listTemplate} listData={sortedList} />
 			</div>
-			<Tooltip target={`.${targetClass}`} style={{ width: '450px', maxWidth: '450px' }} position="left">
+			<Tooltip target={`.${targetClass}`} style={{ width: '450px', maxWidth: '450px' }} mouseTrack position='bottom'>
 				<ListTableCell template={listTemplate} listData={sortedList} />
 			</Tooltip>
 		</>

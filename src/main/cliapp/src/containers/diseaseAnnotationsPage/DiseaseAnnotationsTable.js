@@ -24,6 +24,7 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { NotTemplate } from '../../components/Templates/NotTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { NotEditor } from '../../components/Editors/NotEditor';
 
@@ -1065,7 +1066,7 @@ export const DiseaseAnnotationsTable = () => {
 		{
 			field: 'diseaseAnnotationObject.name',
 			header: 'Disease',
-			body: (rowData) => <OntologyTermTemplate object={rowData.diseaseAnnotationObject} />,
+			body: (rowData) => <OntologyTermTemplate term={rowData.diseaseAnnotationObject} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 			editor: (props) => diseaseEditorTemplate(props),
@@ -1242,24 +1243,28 @@ export const DiseaseAnnotationsTable = () => {
 			field: 'updatedBy.uniqueId',
 			header: 'Updated By',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 		},
 		{
 			field: 'dateUpdated',
 			header: 'Date Updated',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 		},
 		{
 			field: 'createdBy.uniqueId',
 			header: 'Created By',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
 			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 		},
 		{
 			field: 'dateCreated',
 			header: 'Date Created',
 			sortable: true,
+			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
 		},
 		{
