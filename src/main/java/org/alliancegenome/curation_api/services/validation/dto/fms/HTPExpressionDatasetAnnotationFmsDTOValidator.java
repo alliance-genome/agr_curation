@@ -130,18 +130,19 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 							"searchFilters": {
 								"vocabularyNameFilter": {
 									"vocabulary.name": {
-										"queryString": "Data Set Category Tags",
-										"useKeywordFields": true
+										"queryString": "%s",
+										"useKeywordFields": true,
+										"queryType": "matchQuery"
 									}
 								},
 								"synonymsOrNameFilter": {
 									"synonyms": {
-										"queryString": "aging",
+										"queryString": "%s",
 										"useKeywordFields": true,
 										"queryType": "matchQuery"
 									},
 									"name": {
-										"queryString": "aging",
+										"queryString": "%s",
 										"useKeywordFields": true,
 										"queryType": "matchQuery"
 									}
@@ -164,8 +165,10 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 						} else {
 							categoryTags.add(tag);
 						}
-					} else {
+					} else if (searchResponse.getTotalResults() > 1) {
 						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary " +" (" + categoryTag + ")");
+					} else {
+						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
 					}
 				}
 			}
