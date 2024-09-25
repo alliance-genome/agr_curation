@@ -152,7 +152,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 					""".formatted("Data Set Category Tags", categoryTag, categoryTag);
 					Map<String, Object> params = new HashMap<>();
 					try {
-						params = mapper.readValue(query, new TypeReference<Map<String, Object>>(){ } );
+						params = mapper.readValue(query, new TypeReference<Map<String, Object>>() { });
 					} catch (Exception e) {
 						e.printStackTrace();
 						break;
