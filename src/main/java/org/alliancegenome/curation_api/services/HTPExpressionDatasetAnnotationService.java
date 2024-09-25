@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.services.validation.dto.fms.HTPExpression
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService<HTPExpressionDatasetAnnotation, HTPExpressionDatasetAnnotationDAO> implements BaseUpsertServiceInterface<HTPExpressionDatasetAnnotation, HTPExpressionDatasetAnnotationFmsDTO> {
@@ -30,7 +31,7 @@ public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService
 	protected void init() {
 		setSQLDao(htpExpressionDatasetAnnotationDAO);
 	}
-
+	@Transactional
 	public HTPExpressionDatasetAnnotation upsert(HTPExpressionDatasetAnnotationFmsDTO htpExpressionDatasetAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return htpExpressionDatasetAnnotationFmsDtoValidator.validateHTPExpressionDatasetAnnotationFmsDTO(htpExpressionDatasetAnnotationData, backendBulkDataProvider);
 	}
