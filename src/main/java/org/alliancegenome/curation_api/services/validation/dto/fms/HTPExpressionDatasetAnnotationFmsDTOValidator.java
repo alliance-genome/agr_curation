@@ -151,14 +151,14 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 						}
 					""".formatted("Data Set Category Tags", categoryTag, categoryTag);
 					Map<String, Object> params = new HashMap<>();
-					try{
-						params = mapper.readValue(query, new TypeReference<Map<String, Object>>() {});
+					try { 
+						params = mapper.readValue(query, new TypeReference<Map<String, Object>>() { } );
 					} catch (Exception e) {
 						e.printStackTrace();
 						break;
 					}
 					SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.searchByParams(new Pagination(), params);
-					if(searchResponse.getTotalResults() == 1) {
+					if (searchResponse.getTotalResults() == 1) {
 						VocabularyTerm tag = searchResponse.getSingleResult();
 						if (tag == null) {
 							htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
@@ -166,7 +166,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 							categoryTags.add(tag);
 						}
 					} else if (searchResponse.getTotalResults() > 1) {
-						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary " +" (" + categoryTag + ")");
+						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary " + " (" + categoryTag + ")");
 					} else {
 						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
 					}
