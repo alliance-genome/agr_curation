@@ -39,17 +39,19 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { LocationAssociation.class })
 @Schema(name = "CodingSequenceGenomicLocationAssociation", description = "POJO representing an association between a CDS and a genomic location")
 
-@Table(indexes = {
-	@Index(columnList = "internal"),
-	@Index(columnList = "obsolete"),
-	@Index(columnList = "phase"),
-	@Index(columnList = "strand"),
-	@Index(columnList = "createdBy_id"),
-	@Index(columnList = "updatedBy_id"),
-	@Index(columnList = "relation_id"),
-	@Index(columnList = "codingsequenceassociationsubject_id"),
-	@Index(columnList = "codingsequencegenomiclocationassociationobject_id")
-})
+@Table(
+	indexes = {
+		@Index(columnList = "internal"),
+		@Index(columnList = "obsolete"),
+		@Index(columnList = "phase"),
+		@Index(columnList = "strand"),
+		@Index(columnList = "createdBy_id"),
+		@Index(columnList = "updatedBy_id"),
+		@Index(columnList = "relation_id"),
+		@Index(columnList = "codingsequenceassociationsubject_id"),
+		@Index(columnList = "codingsequencegenomiclocationassociationobject_id")
+	}, name = "CDSGLAssociation" // Need to trim the name
+)
 
 public class CodingSequenceGenomicLocationAssociation extends LocationAssociation {
 

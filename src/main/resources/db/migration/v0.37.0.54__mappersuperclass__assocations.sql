@@ -94,6 +94,7 @@ CREATE INDEX idxfm4pv5tjr8rs97jq7b2b0yqhp ON allelediseaseannotation_biologicale
 CREATE INDEX idxhi5g56wq41id4f59mta1v0p2s ON allelediseaseannotation_conditionrelation USING btree (association_id);
 CREATE INDEX idx947m3fd883uabr629ws4fy4re ON allelediseaseannotation_conditionrelation USING btree (conditionrelations_id);
 
+CREATE INDEX idxaxj2yecc9hy8f6rn6fej18kcv ON allelediseaseannotation_gene USING btree (assertedgenes_id);
 CREATE INDEX idxofo1cyfmfs4jol9c5gp012o4a ON allelediseaseannotation_gene USING btree (association_id);
 CREATE INDEX idxesohht66qle9l8d748nfrx35a ON allelediseaseannotation_gene USING btree (with_id);
 
