@@ -117,7 +117,6 @@ ALTER TABLE ONLY allelephenotypeannotation_note ADD CONSTRAINT fk1jpugur8ys3h6xx
 ALTER TABLE ONLY allelephenotypeannotation_note ADD CONSTRAINT fkl1wvmkkdgr5tdl78u7nvb5xsj FOREIGN KEY (relatednotes_id) REFERENCES note(id);
 
 ALTER TABLE ONLY allelephenotypeannotation_ontologyterm ADD CONSTRAINT fkqhv6onfy2edcrm5khqvfgojs5 FOREIGN KEY (association_id) REFERENCES allelephenotypeannotation(id);
-ALTER TABLE ONLY allelephenotypeannotation_ontologyterm ADD CONSTRAINT fkaalpgc505er83ep8iw2ny8l6c FOREIGN KEY (allelephenotypeannotation_id) REFERENCES allelephenotypeannotation(id);
 ALTER TABLE ONLY allelephenotypeannotation_ontologyterm ADD CONSTRAINT fkrwlge742entlnkle2g9rj3mne FOREIGN KEY (phenotypeterms_id) REFERENCES ontologyterm(id);
 
 ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fk4efucyh5rpl0g0fpdti9y0qda FOREIGN KEY (updatedby_id) REFERENCES person(id);
