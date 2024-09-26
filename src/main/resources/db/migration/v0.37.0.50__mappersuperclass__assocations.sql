@@ -488,7 +488,7 @@ CREATE TABLE genegeneticinteraction_informationcontententity (
 	evidence_id bigint NOT NULL
 );
 
-DROP TABLE genegeneticinteraction_phenotypesortraits;
+DROP TABLE IF EXISTS genegeneticinteraction_phenotypesortraits;
 
 CREATE TABLE genegeneticinteraction_phenotypesortraits (
 	association_id bigint NOT NULL,
