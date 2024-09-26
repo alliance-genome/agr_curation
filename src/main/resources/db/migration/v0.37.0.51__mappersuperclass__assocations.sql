@@ -39,7 +39,7 @@ CREATE TABLE agmdiseaseannotation_conditionrelation (
 
 CREATE TABLE agmdiseaseannotation_gene (
 	association_id bigint NOT NULL,
-	assertedgenes_id bigint NOT NULL,
+	assertedgenes_id bigint,
 	with_id bigint
 );
 
@@ -157,7 +157,7 @@ CREATE TABLE allelediseaseannotation_conditionrelation (
 
 CREATE TABLE allelediseaseannotation_gene (
 	association_id bigint NOT NULL,
-	assertedgenes_id bigint NOT NULL,
+	assertedgenes_id bigint,
 	with_id bigint
 );
 
