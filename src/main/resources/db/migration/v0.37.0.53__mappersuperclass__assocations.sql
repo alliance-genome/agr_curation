@@ -298,7 +298,7 @@ INSERT INTO codingsequencegenomiclocationassociation
 		codingsequenceassociationsubject_id,
 		codingsequencegenomiclocationassociationobject_id FROM Association WHERE AssociationType = 'CodingSequenceGenomicLocationAssociation';
 
-INSERT INTO codingsequencegenomiclocationassociation_informationcontententi
+INSERT INTO CodingSequenceGenomicLocationAssociation_InformationContentEntity
 	SELECT ai.evidenceassociation_id, ai.evidence_id
 	FROM association_informationcontententity ai, Association a
 	WHERE ai.evidenceassociation_id = a.id AND a.associationtype = 'CodingSequenceGenomicLocationAssociation';

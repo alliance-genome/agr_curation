@@ -125,8 +125,8 @@ ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fkbdlao
 ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fkipqt0lqrx61hgek3pmt679xoj FOREIGN KEY (codingsequenceassociationsubject_id) REFERENCES codingsequence(id);
 ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fklkt1u6mvqb5im061x5437amin FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
 
-ALTER TABLE ONLY codingsequencegenomiclocationassociation_informationcontententi ADD CONSTRAINT fkm4es4h50h4511egeuoyfyxk0v FOREIGN KEY (association_id) REFERENCES codingsequencegenomiclocationassociation(id);
-ALTER TABLE ONLY codingsequencegenomiclocationassociation_informationcontententi ADD CONSTRAINT fksugal77n5hdh385dgpdx9tdmc FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+ALTER TABLE ONLY CodingSequenceGenomicLocationAssociation_InformationContentEntity ADD CONSTRAINT fkm4es4h50h4511egeuoyfyxk0v FOREIGN KEY (association_id) REFERENCES codingsequencegenomiclocationassociation(id);
+ALTER TABLE ONLY CodingSequenceGenomicLocationAssociation_InformationContentEntity ADD CONSTRAINT fksugal77n5hdh385dgpdx9tdmc FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
 
 ALTER TABLE ONLY constructgenomicentityassociation ADD CONSTRAINT fk5me06it1f8io7h4mktk6431b2 FOREIGN KEY (updatedby_id) REFERENCES person(id);
 ALTER TABLE ONLY constructgenomicentityassociation ADD CONSTRAINT fk9i7kbfdcy5hn6ws7xxf5kh0h2 FOREIGN KEY (constructgenomicentityassociationobject_id) REFERENCES genomicentity(id);

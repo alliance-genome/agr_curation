@@ -156,8 +156,8 @@ CREATE INDEX idxkr58i2vv5784vl6osva8shi9e ON codingsequencegenomiclocationassoci
 CREATE INDEX idxr0bkeewpnaajqi1xds5c7j1oc ON codingsequencegenomiclocationassociation USING btree (strand);
 CREATE INDEX idxsb0mnawmi55r20kcipnykm41q ON codingsequencegenomiclocationassociation USING btree (updatedby_id);
 
-CREATE INDEX idxp4b569h2wevn6yxgv6veonxfr ON codingsequencegenomiclocationassociation_informationcontententi USING btree (association_id);
-CREATE INDEX idxp0ldc7a577pft5v9959muhdh5 ON codingsequencegenomiclocationassociation_informationcontententi USING btree (evidence_id);
+CREATE INDEX idxp4b569h2wevn6yxgv6veonxfr ON CodingSequenceGenomicLocationAssociation_InformationContentEntity USING btree (association_id);
+CREATE INDEX idxp0ldc7a577pft5v9959muhdh5 ON CodingSequenceGenomicLocationAssociation_InformationContentEntity USING btree (evidence_id);
 
 CREATE INDEX idxvsibphiuleew24wjckpfxeae  ON constructgenomicentityassociation USING btree (internal);
 CREATE INDEX idx8myuo0a6hx59vxfhlbrcn8ujk ON constructgenomicentityassociation USING btree (constructassociationsubject_id);

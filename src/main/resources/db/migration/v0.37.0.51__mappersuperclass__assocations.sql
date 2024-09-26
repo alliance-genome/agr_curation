@@ -281,7 +281,7 @@ CREATE TABLE codingsequencegenomiclocationassociation (
 	codingsequencegenomiclocationassociationobject_id bigint
 );
 
-CREATE TABLE codingsequencegenomiclocationassociation_informationcontententi (
+CREATE TABLE CodingSequenceGenomicLocationAssociation_InformationContentEntity (
 	association_id bigint NOT NULL,
 	evidence_id bigint NOT NULL
 );
