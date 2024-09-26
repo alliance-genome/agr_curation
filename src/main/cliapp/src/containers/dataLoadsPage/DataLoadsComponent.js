@@ -239,7 +239,7 @@ export const DataLoadsComponent = () => {
 					</a>
 				}*/}
 
-				{(rowData.counts?.Records?.failed !== undefined && rowData.counts?.Records?.failed > 0) && (
+				{rowData.counts?.Records?.failed !== undefined && rowData.counts?.Records?.failed > 0 && (
 					<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
 						<i className="pi pi-exclamation-triangle"></i>
 						<i className="pi pi-download ml-1"></i>
