@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -53,10 +54,14 @@ public abstract class PhenotypeAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "association_phenotypeannotation_phenotypeannotation_index", columnList = "phenotypeannotation_id"),
-		@Index(name = "association_phenotypeannotation_phenotypeterms_index", columnList = "phenotypeterms_id")
-	})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "phenotypeTerms_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "phenotypeTerms_id")
+		}
+	)
 	private List<PhenotypeTerm> phenotypeTerms;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

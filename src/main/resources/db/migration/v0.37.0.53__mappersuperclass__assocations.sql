@@ -1,0 +1,382 @@
+CREATE INDEX agmdiseaseannotation_annotationtype_index ON agmdiseaseannotation USING btree (annotationtype_id);
+CREATE INDEX agmdiseaseannotation_assertedallele_index ON agmdiseaseannotation USING btree (assertedallele_id);
+CREATE INDEX agmdiseaseannotation_createdby_index ON agmdiseaseannotation USING btree (createdby_id);
+CREATE INDEX agmdiseaseannotation_curie_index ON agmdiseaseannotation USING btree (curie);
+CREATE INDEX agmdiseaseannotation_dataprovider_index ON agmdiseaseannotation USING btree (dataprovider_id);
+CREATE INDEX agmdiseaseannotation_diseaseannotationobject_index ON agmdiseaseannotation USING btree (diseaseannotationobject_id);
+CREATE INDEX agmdiseaseannotation_diseaseannotationsubject_index ON agmdiseaseannotation USING btree (diseaseannotationsubject_id);
+CREATE INDEX agmdiseaseannotation_diseasegeneticmodifierrelation_index ON agmdiseaseannotation USING btree (diseasegeneticmodifierrelation_id);
+CREATE INDEX agmdiseaseannotation_geneticsex_index ON agmdiseaseannotation USING btree (geneticsex_id);
+CREATE INDEX agmdiseaseannotation_inferredallele_index ON agmdiseaseannotation USING btree (inferredallele_id);
+CREATE INDEX agmdiseaseannotation_inferredgene_index ON agmdiseaseannotation USING btree (inferredgene_id);
+CREATE INDEX agmdiseaseannotation_internal_index ON agmdiseaseannotation USING btree (internal);
+CREATE INDEX agmdiseaseannotation_modentityid_index ON agmdiseaseannotation USING btree (modentityid);
+CREATE INDEX agmdiseaseannotation_modinternalid_index ON agmdiseaseannotation USING btree (modinternalid);
+CREATE INDEX agmdiseaseannotation_negated_index ON agmdiseaseannotation USING btree (negated);
+CREATE INDEX agmdiseaseannotation_obsolete_index ON agmdiseaseannotation USING btree (obsolete);
+CREATE INDEX agmdiseaseannotation_relation_index ON agmdiseaseannotation USING btree (relation_id);
+CREATE INDEX agmdiseaseannotation_secondarydataprovider_index ON agmdiseaseannotation USING btree (secondarydataprovider_id);
+CREATE INDEX agmdiseaseannotation_singlereference_index ON agmdiseaseannotation USING btree (singlereference_id);
+CREATE INDEX agmdiseaseannotation_uniqueid_index ON agmdiseaseannotation USING btree (uniqueid);
+CREATE INDEX agmdiseaseannotation_updatedby_index ON agmdiseaseannotation USING btree (updatedby_id);
+
+CREATE INDEX idxfm9hjt2cp5opepuhro41rko11 ON agmdiseaseannotation_biologicalentity USING btree (association_id);
+CREATE INDEX idx2q76899x3i9nmfrpk1s4gqaa5 ON agmdiseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
+
+CREATE INDEX idx7ckisymg9glquxs8ckv58o4wa ON agmdiseaseannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx6ie2uykt18gbauf5t26c9gw4p ON agmdiseaseannotation_conditionrelation USING btree (conditionrelations_id);
+
+CREATE INDEX idx3s76vpljgsx07k1ggvfl0syp  ON agmdiseaseannotation_gene USING btree (assertedgenes_id);
+CREATE INDEX idxkvf72io0gj5fp23ao008q283k ON agmdiseaseannotation_gene USING btree (association_id);
+CREATE INDEX idxe78i8xpvroa23syyg1eqp3d0k ON agmdiseaseannotation_gene USING btree (with_id);
+
+CREATE INDEX idxn2ac81velbbenm2oce4xqkyy0 ON agmdiseaseannotation_note USING btree (association_id);
+CREATE INDEX idx6kkpigf83ojt26fiqg2w1dy1p ON agmdiseaseannotation_note USING btree (relatednotes_id);
+
+CREATE INDEX idxoimanxnlnh4w94q7wfy4botmr ON agmdiseaseannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxrrrc3fh4ubf75r6fyv9syms4u ON agmdiseaseannotation_ontologyterm USING btree (evidencecodes_id);
+
+CREATE INDEX idx34lopnjoyj5oi6o2kr5g0hcpx ON agmdiseaseannotation_vocabularyterm USING btree (association_id);
+CREATE INDEX idxkkfpqscjy9qej3x21ej6oniip ON agmdiseaseannotation_vocabularyterm USING btree (diseasequalifiers_id);
+
+CREATE INDEX agmphenotypeannotation_assertedallele_index ON agmphenotypeannotation USING btree (assertedallele_id);
+CREATE INDEX agmphenotypeannotation_createdby_index ON agmphenotypeannotation USING btree (createdby_id);
+CREATE INDEX agmphenotypeannotation_crossreference_index ON agmphenotypeannotation USING btree (crossreference_id);
+CREATE INDEX agmphenotypeannotation_curie_index ON agmphenotypeannotation USING btree (curie);
+CREATE INDEX agmphenotypeannotation_dataprovider_index ON agmphenotypeannotation USING btree (dataprovider_id);
+CREATE INDEX agmphenotypeannotation_inferredallele_index ON agmphenotypeannotation USING btree (inferredallele_id);
+CREATE INDEX agmphenotypeannotation_inferredgene_index ON agmphenotypeannotation USING btree (inferredgene_id);
+CREATE INDEX agmphenotypeannotation_internal_index ON agmphenotypeannotation USING btree (internal);
+CREATE INDEX agmphenotypeannotation_modentityid_index ON agmphenotypeannotation USING btree (modentityid);
+CREATE INDEX agmphenotypeannotation_modinternalid_index ON agmphenotypeannotation USING btree (modinternalid);
+CREATE INDEX agmphenotypeannotation_obsolete_index ON agmphenotypeannotation USING btree (obsolete);
+CREATE INDEX agmphenotypeannotation_phenotypeannotationsubject_index ON agmphenotypeannotation USING btree (phenotypeannotationsubject_id);
+CREATE INDEX agmphenotypeannotation_relation_index ON agmphenotypeannotation USING btree (relation_id);
+CREATE INDEX agmphenotypeannotation_singlereference_index ON agmphenotypeannotation USING btree (singlereference_id);
+CREATE INDEX agmphenotypeannotation_uniqueid_index ON agmphenotypeannotation USING btree (uniqueid);
+CREATE INDEX agmphenotypeannotation_updatedby_index ON agmphenotypeannotation USING btree (updatedby_id);
+
+CREATE INDEX idx4p03xofye2drhcxfv4wh5btvj ON agmphenotypeannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx84beulwvg0hkmudmow0dlsxv7 ON agmphenotypeannotation_conditionrelation USING btree (conditionrelations_id);
+
+CREATE INDEX idxi915qncqnpclsyq0ki2qgvpe2 ON agmphenotypeannotation_gene USING btree (assertedgenes_id);
+CREATE INDEX idxrkudpfv7bukgfyq52lpqoy71f ON agmphenotypeannotation_gene USING btree (association_id);
+
+CREATE INDEX idxrgqdq9ngi6fi44kqb6l6gqn1s ON agmphenotypeannotation_note USING btree (association_id);
+CREATE INDEX idxit2xg2ed815njy85kl3hgsjwu ON agmphenotypeannotation_note USING btree (relatednotes_id);
+
+CREATE INDEX idxh31el0byd6ow9ly8a8aji9nev ON agmphenotypeannotation_ontologyterm USING btree (phenotypeterms_id);
+CREATE INDEX idxmajx55xmyj71xjr0kh6fgv1p8 ON agmphenotypeannotation_ontologyterm USING btree (association_id);
+
+CREATE INDEX allelediseaseannotation_annotationtype_index ON allelediseaseannotation USING btree (annotationtype_id);
+CREATE INDEX allelediseaseannotation_createdby_index ON allelediseaseannotation USING btree (createdby_id);
+CREATE INDEX allelediseaseannotation_curie_index ON allelediseaseannotation USING btree (curie);
+CREATE INDEX allelediseaseannotation_dataprovider_index ON allelediseaseannotation USING btree (dataprovider_id);
+CREATE INDEX allelediseaseannotation_diseaseannotationobject_index ON allelediseaseannotation USING btree (diseaseannotationobject_id);
+CREATE INDEX allelediseaseannotation_diseaseannotationsubject_index ON allelediseaseannotation USING btree (diseaseannotationsubject_id);
+CREATE INDEX allelediseaseannotation_diseasegeneticmodifierrelation_index ON allelediseaseannotation USING btree (diseasegeneticmodifierrelation_id);
+CREATE INDEX allelediseaseannotation_geneticsex_index ON allelediseaseannotation USING btree (geneticsex_id);
+CREATE INDEX allelediseaseannotation_inferredgene_index ON allelediseaseannotation USING btree (inferredgene_id);
+CREATE INDEX allelediseaseannotation_internal_index ON allelediseaseannotation USING btree (internal);
+CREATE INDEX allelediseaseannotation_modentityid_index ON allelediseaseannotation USING btree (modentityid);
+CREATE INDEX allelediseaseannotation_modinternalid_index ON allelediseaseannotation USING btree (modinternalid);
+CREATE INDEX allelediseaseannotation_negated_index ON allelediseaseannotation USING btree (negated);
+CREATE INDEX allelediseaseannotation_obsolete_index ON allelediseaseannotation USING btree (obsolete);
+CREATE INDEX allelediseaseannotation_relation_index ON allelediseaseannotation USING btree (relation_id);
+CREATE INDEX allelediseaseannotation_secondarydataprovider_index ON allelediseaseannotation USING btree (secondarydataprovider_id);
+CREATE INDEX allelediseaseannotation_singlereference_index ON allelediseaseannotation USING btree (singlereference_id);
+CREATE INDEX allelediseaseannotation_uniqueid_index ON allelediseaseannotation USING btree (uniqueid);
+CREATE INDEX allelediseaseannotation_updatedby_index ON allelediseaseannotation USING btree (updatedby_id);
+
+CREATE INDEX idxkwi0hmi5is7j11kba9a3wcy9w ON allelediseaseannotation_biologicalentity USING btree (association_id);
+CREATE INDEX idxfm4pv5tjr8rs97jq7b2b0yqhp ON allelediseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
+
+CREATE INDEX idxhi5g56wq41id4f59mta1v0p2s ON allelediseaseannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx947m3fd883uabr629ws4fy4re ON allelediseaseannotation_conditionrelation USING btree (conditionrelations_id);
+
+CREATE INDEX idxofo1cyfmfs4jol9c5gp012o4a ON allelediseaseannotation_gene USING btree (association_id);
+CREATE INDEX idxesohht66qle9l8d748nfrx35a ON allelediseaseannotation_gene USING btree (with_id);
+
+CREATE INDEX idxfvf61jlaic8nkjquoycsswmsq ON allelediseaseannotation_note USING btree (association_id);
+CREATE INDEX idxdnlqnaqcuoku49wa7hweqqh3h ON allelediseaseannotation_note USING btree (relatednotes_id);
+
+CREATE INDEX idxbi31t44lvo24mkv1mfnc4fcw3 ON allelediseaseannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxb1r481lvh5q5wlg5rtf3j5q45 ON allelediseaseannotation_ontologyterm USING btree (evidencecodes_id);
+
+CREATE INDEX idx2jc8npk4fjmm80hh9f0y1v3he ON allelediseaseannotation_vocabularyterm USING btree (association_id);
+CREATE INDEX idxgcp0ghpx8rv5njry59gfqswxx ON allelediseaseannotation_vocabularyterm USING btree (diseasequalifiers_id);
+
+CREATE INDEX allelegeneassociation_alleleassociationsubject_index ON allelegeneassociation USING btree (alleleassociationsubject_id);
+CREATE INDEX allelegeneassociation_allelegeneassociationobject_index ON allelegeneassociation USING btree (allelegeneassociationobject_id);
+CREATE INDEX allelegeneassociation_createdby_index ON allelegeneassociation USING btree (createdby_id);
+CREATE INDEX allelegeneassociation_evidencecode_index ON allelegeneassociation USING btree (evidencecode_id);
+CREATE INDEX allelegeneassociation_internal_index ON allelegeneassociation USING btree (internal);
+CREATE INDEX allelegeneassociation_obsolete_index ON allelegeneassociation USING btree (obsolete);
+CREATE INDEX allelegeneassociation_relatednote_index ON allelegeneassociation USING btree (relatednote_id);
+CREATE INDEX allelegeneassociation_relation_index ON allelegeneassociation USING btree (relation_id);
+CREATE INDEX allelegeneassociation_updatedby_index ON allelegeneassociation USING btree (updatedby_id);
+
+CREATE INDEX idx9u4cqfbtajokovj1quacsvld2 ON allelegeneassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxp3na9i2xw0ea9igcwx1jdpc9g ON allelegeneassociation_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX allelephenotypeannotation_createdby_index ON allelephenotypeannotation USING btree (createdby_id);
+CREATE INDEX allelephenotypeannotation_crossreference_index ON allelephenotypeannotation USING btree (crossreference_id);
+CREATE INDEX allelephenotypeannotation_curie_index ON allelephenotypeannotation USING btree (curie);
+CREATE INDEX allelephenotypeannotation_dataprovider_index ON allelephenotypeannotation USING btree (dataprovider_id);
+CREATE INDEX allelephenotypeannotation_inferredgene_index ON allelephenotypeannotation USING btree (inferredgene_id);
+CREATE INDEX allelephenotypeannotation_internal_index ON allelephenotypeannotation USING btree (internal);
+CREATE INDEX allelephenotypeannotation_modentityid_index ON allelephenotypeannotation USING btree (modentityid);
+CREATE INDEX allelephenotypeannotation_modinternalid_index ON allelephenotypeannotation USING btree (modinternalid);
+CREATE INDEX allelephenotypeannotation_obsolete_index ON allelephenotypeannotation USING btree (obsolete);
+CREATE INDEX allelephenotypeannotation_phenotypeannotationsubject_index ON allelephenotypeannotation USING btree (phenotypeannotationsubject_id);
+CREATE INDEX allelephenotypeannotation_relation_index ON allelephenotypeannotation USING btree (relation_id);
+CREATE INDEX allelephenotypeannotation_singlereference_index ON allelephenotypeannotation USING btree (singlereference_id);
+CREATE INDEX allelephenotypeannotation_uniqueid_index ON allelephenotypeannotation USING btree (uniqueid);
+CREATE INDEX allelephenotypeannotation_updatedby_index ON allelephenotypeannotation USING btree (updatedby_id);
+
+CREATE INDEX idxakkdw3451v7usrsb8ouvj9hj0 ON allelephenotypeannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idxdse642c7dlmvdbb97jj49kc84 ON allelephenotypeannotation_conditionrelation USING btree (conditionrelations_id);
+
+CREATE INDEX idxdsw5skx7e6ym959jxqmvfyknq ON allelephenotypeannotation_gene USING btree (assertedgenes_id);
+CREATE INDEX idxrbk9a9lt5bhdxgyo7cm0fnvik ON allelephenotypeannotation_gene USING btree (association_id);
+
+CREATE INDEX idxp5r4an1hcil06mlvcvvps4wsl ON allelephenotypeannotation_note USING btree (association_id);
+CREATE INDEX idx2qw6k7xxxrqtfi6vc01j7cds3 ON allelephenotypeannotation_note USING btree (relatednotes_id);
+
+CREATE INDEX idxd2k2tyjqcfql4wvi41d41sokj ON allelephenotypeannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxo9k3yyl9npw9jfsb2ocv7m7kx ON allelephenotypeannotation_ontologyterm USING btree (phenotypeterms_id);
+
+CREATE INDEX idxebg770w4q4fayk1vpfucdu1xy ON codingsequencegenomiclocationassociation USING btree (codingsequenceassociationsubject_id);
+CREATE INDEX idxbmljoyqmk4cdd3os0dumc9bgp ON codingsequencegenomiclocationassociation USING btree (codingsequencegenomiclocationassociationobject_id);
+CREATE INDEX idx6khftnwxcrifhid51ffnd054g ON codingsequencegenomiclocationassociation USING btree (createdby_id);
+CREATE INDEX idxhfv6me8h9mleiytvoytio0nsi ON codingsequencegenomiclocationassociation USING btree (internal);
+CREATE INDEX idxgrky8raqexv45mq83suvekrdo ON codingsequencegenomiclocationassociation USING btree (obsolete);
+CREATE INDEX idxa5wjxifv7vi0y5ltgdnp5ep9t ON codingsequencegenomiclocationassociation USING btree (phase);
+CREATE INDEX idxkr58i2vv5784vl6osva8shi9e ON codingsequencegenomiclocationassociation USING btree (relation_id);
+CREATE INDEX idxr0bkeewpnaajqi1xds5c7j1oc ON codingsequencegenomiclocationassociation USING btree (strand);
+CREATE INDEX idxsb0mnawmi55r20kcipnykm41q ON codingsequencegenomiclocationassociation USING btree (updatedby_id);
+
+CREATE INDEX idxp4b569h2wevn6yxgv6veonxfr ON codingsequencegenomiclocationassociation_informationcontententi USING btree (association_id);
+CREATE INDEX idxp0ldc7a577pft5v9959muhdh5 ON codingsequencegenomiclocationassociation_informationcontententi USING btree (evidence_id);
+
+CREATE INDEX idxvsibphiuleew24wjckpfxeae  ON constructgenomicentityassociation USING btree (internal);
+CREATE INDEX idx8myuo0a6hx59vxfhlbrcn8ujk ON constructgenomicentityassociation USING btree (constructassociationsubject_id);
+CREATE INDEX idxevduykusoc08mycbrmn4o7dnq ON constructgenomicentityassociation USING btree (constructgenomicentityassociationobject_id);
+CREATE INDEX idxch64a8ot2vv6i0rue8khyjb3m ON constructgenomicentityassociation USING btree (createdby_id);
+CREATE INDEX idxi6hc4krcrxpsrrwj728vd2wpx ON constructgenomicentityassociation USING btree (obsolete);
+CREATE INDEX idxsoyddowolab2mrp5eaxj57yar ON constructgenomicentityassociation USING btree (relation_id);
+CREATE INDEX idxevh4c07xjfxyylj7ck2dtn6jh ON constructgenomicentityassociation USING btree (updatedby_id);
+
+CREATE INDEX idxg5fxj3nedebt3cw93uxptf7om ON constructgenomicentityassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxb9tloa39yyvirjvacah10hfd5 ON constructgenomicentityassociation_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX idxh3oudw9wb9wfvjewxywysi1ey ON constructgenomicentityassociation_note USING btree (association_id);
+CREATE INDEX idxj3o4mwvqgbj57m6k22cm49j4r ON constructgenomicentityassociation_note USING btree (relatednotes_id);
+
+CREATE INDEX idxhgjuh3b5r08q54fwecp64k3a4 ON exongenomiclocationassociation USING btree (createdby_id);
+CREATE INDEX idx82dedqro7ri1f8g558icrjxc6 ON exongenomiclocationassociation USING btree (exonassociationsubject_id);
+CREATE INDEX idx53jvdw533s5e082xlj0sx7p7x ON exongenomiclocationassociation USING btree (exongenomiclocationassociationobject_id);
+CREATE INDEX idx2knwxko11qkxvr98w7l76wlgi ON exongenomiclocationassociation USING btree (internal);
+CREATE INDEX idxo923wv3e7dg9e2flm08ghwiig ON exongenomiclocationassociation USING btree (obsolete);
+CREATE INDEX idx5ufu3a6guayhxy2cg6crxde2i ON exongenomiclocationassociation USING btree (relation_id);
+CREATE INDEX idxdwfj56lqtx86brdvwafjqo8nn ON exongenomiclocationassociation USING btree (strand);
+CREATE INDEX idxd12130inhcxcp1dbks190955j ON exongenomiclocationassociation USING btree (updatedby_id); 
+
+CREATE INDEX idxtaunnvner3uu6vfarcb9kv0o1 ON exongenomiclocationassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxbugjixb2a6vb0xuho653me8as ON exongenomiclocationassociation_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX genediseaseannotation_annotationtype_index ON genediseaseannotation USING btree (annotationtype_id);
+CREATE INDEX genediseaseannotation_createdby_index ON genediseaseannotation USING btree (createdby_id);
+CREATE INDEX genediseaseannotation_curie_index ON genediseaseannotation USING btree (curie);
+CREATE INDEX genediseaseannotation_dataprovider_index ON genediseaseannotation USING btree (dataprovider_id);
+CREATE INDEX genediseaseannotation_diseaseannotationobject_index ON genediseaseannotation USING btree (diseaseannotationobject_id);
+CREATE INDEX genediseaseannotation_diseaseannotationsubject_index ON genediseaseannotation USING btree (diseaseannotationsubject_id);
+CREATE INDEX genediseaseannotation_diseasegeneticmodifierrelation_index ON genediseaseannotation USING btree (diseasegeneticmodifierrelation_id);
+CREATE INDEX genediseaseannotation_geneticsex_index ON genediseaseannotation USING btree (geneticsex_id);
+CREATE INDEX genediseaseannotation_internal_index ON genediseaseannotation USING btree (internal);
+CREATE INDEX genediseaseannotation_modentityid_index ON genediseaseannotation USING btree (modentityid);
+CREATE INDEX genediseaseannotation_modinternalid_index ON genediseaseannotation USING btree (modinternalid);
+CREATE INDEX genediseaseannotation_negated_index ON genediseaseannotation USING btree (negated);
+CREATE INDEX genediseaseannotation_obsolete_index ON genediseaseannotation USING btree (obsolete);
+CREATE INDEX genediseaseannotation_relation_index ON genediseaseannotation USING btree (relation_id);
+CREATE INDEX genediseaseannotation_secondarydataprovider_index ON genediseaseannotation USING btree (secondarydataprovider_id);
+CREATE INDEX genediseaseannotation_sgdstrainbackground_index ON genediseaseannotation USING btree (sgdstrainbackground_id);
+CREATE INDEX genediseaseannotation_singlereference_index ON genediseaseannotation USING btree (singlereference_id);
+CREATE INDEX genediseaseannotation_uniqueid_index ON genediseaseannotation USING btree (uniqueid);
+CREATE INDEX genediseaseannotation_updatedby_index ON genediseaseannotation USING btree (updatedby_id);
+
+CREATE INDEX idxjeh9y20kiqhxc79hounhdq8f6 ON genediseaseannotation_biologicalentity USING btree (association_id);
+CREATE INDEX idxnagxqk14lxkm1vw1wn4bknssg ON genediseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
+
+CREATE INDEX idxqkla5i9l82m9p5y9a6api863h ON genediseaseannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idxg92dtnhnsxebexy9bccosflb6 ON genediseaseannotation_conditionrelation USING btree (conditionrelations_id);
+
+CREATE INDEX idxoq5yfgp5v7n0xagmgr0sj99lb ON genediseaseannotation_gene USING btree (association_id);
+CREATE INDEX idx77us55vceq3g3jjrg9r6lsmer ON genediseaseannotation_gene USING btree (with_id);
+
+CREATE INDEX idx23muxx77utkabuwdnxfyblse0 ON genediseaseannotation_note USING btree (association_id);
+CREATE INDEX idxp1sx9wg4x5r33mggresvspdgv ON genediseaseannotation_note USING btree (relatednotes_id);
+
+CREATE INDEX idx3epu6h5p8x2304x6mij8tyklx ON genediseaseannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxl1o7i0c5y70m9kr9it6xvaubn ON genediseaseannotation_ontologyterm USING btree (evidencecodes_id);
+
+CREATE INDEX idxncrqkmbo3sfv1ixwu51ueon4b ON genediseaseannotation_vocabularyterm USING btree (association_id);
+CREATE INDEX idxnkf114aqn7u3ggn9seti2ey2y ON genediseaseannotation_vocabularyterm USING btree (diseasequalifiers_id);
+
+CREATE INDEX geneexpressionannotation_createdby_index ON geneexpressionannotation USING btree (createdby_id);
+CREATE INDEX geneexpressionannotation_curie_index ON geneexpressionannotation USING btree (curie);
+CREATE INDEX geneexpressionannotation_dataprovider_index ON geneexpressionannotation USING btree (dataprovider_id);
+CREATE INDEX geneexpressionannotation_expressionannotationsubject_index ON geneexpressionannotation USING btree (expressionannotationsubject_id);
+CREATE INDEX geneexpressionannotation_expressionassayused_index ON geneexpressionannotation USING btree (expressionassayused_id);
+CREATE INDEX geneexpressionannotation_expressionpattern_index ON geneexpressionannotation USING btree (expressionpattern_id);
+CREATE INDEX geneexpressionannotation_internal_index ON geneexpressionannotation USING btree (internal);
+CREATE INDEX geneexpressionannotation_modentityid_index ON geneexpressionannotation USING btree (modentityid);
+CREATE INDEX geneexpressionannotation_modinternalid_index ON geneexpressionannotation USING btree (modinternalid);
+CREATE INDEX geneexpressionannotation_obsolete_index ON geneexpressionannotation USING btree (obsolete);
+CREATE INDEX geneexpressionannotation_relation_index ON geneexpressionannotation USING btree (relation_id);
+CREATE INDEX geneexpressionannotation_singlereference_index ON geneexpressionannotation USING btree (singlereference_id);
+CREATE INDEX geneexpressionannotation_uniqueid_index ON geneexpressionannotation USING btree (uniqueid);
+CREATE INDEX geneexpressionannotation_updatedby_index ON geneexpressionannotation USING btree (updatedby_id);
+
+CREATE INDEX idxa1uthowkvl1bch1namofq466f ON geneexpressionannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idxrcptfqy2xuw35xeer5ilrqtc1 ON geneexpressionannotation_conditionrelation USING btree (conditionrelations_id);
+
+CREATE INDEX idx87c6fqrsecyifcktu92y7jde4 ON geneexpressionannotation_note USING btree (association_id);
+CREATE INDEX idxm4mig223w5vb6bpjubkd5xuac ON geneexpressionannotation_note USING btree (relatednotes_id);
+
+CREATE INDEX genegeneticinteraction_createdby_index ON genegeneticinteraction USING btree (createdby_id);
+CREATE INDEX genegeneticinteraction_geneassociationsubject_index ON genegeneticinteraction USING btree (geneassociationsubject_id);
+CREATE INDEX genegeneticinteraction_genegeneassociationobject_index ON genegeneticinteraction USING btree (genegeneassociationobject_id);
+CREATE INDEX genegeneticinteraction_interactionid_index ON genegeneticinteraction USING btree (interactionid);
+CREATE INDEX genegeneticinteraction_interactionsource_index ON genegeneticinteraction USING btree (interactionsource_id);
+CREATE INDEX genegeneticinteraction_interactiontype_index ON genegeneticinteraction USING btree (interactiontype_id);
+CREATE INDEX genegeneticinteraction_interactorageneticperturbation_index ON genegeneticinteraction USING btree (interactorageneticperturbation_id);
+CREATE INDEX genegeneticinteraction_interactorarole_index ON genegeneticinteraction USING btree (interactorarole_id);
+CREATE INDEX genegeneticinteraction_interactoratype_index ON genegeneticinteraction USING btree (interactoratype_id);
+CREATE INDEX genegeneticinteraction_interactorbgeneticperturbation_index ON genegeneticinteraction USING btree (interactorbgeneticperturbation_id);
+CREATE INDEX genegeneticinteraction_interactorbrole_index ON genegeneticinteraction USING btree (interactorbrole_id);
+CREATE INDEX genegeneticinteraction_interactorbtype_index ON genegeneticinteraction USING btree (interactorbtype_id);
+CREATE INDEX genegeneticinteraction_internal_index ON genegeneticinteraction USING btree (internal);
+CREATE INDEX genegeneticinteraction_obsolete_index ON genegeneticinteraction USING btree (obsolete);
+CREATE INDEX genegeneticinteraction_relation_index ON genegeneticinteraction USING btree (relation_id);
+CREATE INDEX genegeneticinteraction_uniqueid_index ON genegeneticinteraction USING btree (uniqueid);
+CREATE INDEX genegeneticinteraction_updatedby_index ON genegeneticinteraction USING btree (updatedby_id);
+
+CREATE INDEX idxlyqi995di8uvyll25qqmvvsnq ON genegeneticinteraction_crossreference USING btree (association_id);
+CREATE INDEX idxolfx2gsnlx0vyvpv85ba3s1my ON genegeneticinteraction_crossreference USING btree (crossreferences_id);
+
+CREATE INDEX idxiwxeu6vppndg2hl252knhgcm2 ON genegeneticinteraction_informationcontententity USING btree (association_id);
+CREATE INDEX idx3l5ew8bcu7dqbqu2gux877rqp ON genegeneticinteraction_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX idx8erit2819gi1uof54xpq7c4ia ON genegeneticinteraction_phenotypesortraits USING btree (association_id);
+CREATE INDEX idxkldmr3gvvv2elnbkilyuvtbsv ON genegeneticinteraction_phenotypesortraits USING btree (phenotypesortraits);
+
+CREATE INDEX genemolecularinteraction_aggregationdatabase_index ON genemolecularinteraction USING btree (aggregationdatabase_id);
+CREATE INDEX genemolecularinteraction_createdby_index ON genemolecularinteraction USING btree (createdby_id);
+CREATE INDEX genemolecularinteraction_detectionmethod_index ON genemolecularinteraction USING btree (detectionmethod_id);
+CREATE INDEX genemolecularinteraction_geneassociationsubject_index ON genemolecularinteraction USING btree (geneassociationsubject_id);
+CREATE INDEX genemolecularinteraction_genegeneassociationobject_index ON genemolecularinteraction USING btree (genegeneassociationobject_id);
+CREATE INDEX genemolecularinteraction_interactionid_index ON genemolecularinteraction USING btree (interactionid);
+CREATE INDEX genemolecularinteraction_interactionsource_index ON genemolecularinteraction USING btree (interactionsource_id);
+CREATE INDEX genemolecularinteraction_interactiontype_index ON genemolecularinteraction USING btree (interactiontype_id);
+CREATE INDEX genemolecularinteraction_interactorarole_index ON genemolecularinteraction USING btree (interactorarole_id);
+CREATE INDEX genemolecularinteraction_interactoratype_index ON genemolecularinteraction USING btree (interactoratype_id);
+CREATE INDEX genemolecularinteraction_interactorbrole_index ON genemolecularinteraction USING btree (interactorbrole_id);
+CREATE INDEX genemolecularinteraction_interactorbtype_index ON genemolecularinteraction USING btree (interactorbtype_id);
+CREATE INDEX genemolecularinteraction_internal_index ON genemolecularinteraction USING btree (internal);
+CREATE INDEX genemolecularinteraction_obsolete_index ON genemolecularinteraction USING btree (obsolete);
+CREATE INDEX genemolecularinteraction_relation_index ON genemolecularinteraction USING btree (relation_id);
+CREATE INDEX genemolecularinteraction_uniqueid_index ON genemolecularinteraction USING btree (uniqueid);
+CREATE INDEX genemolecularinteraction_updatedby_index ON genemolecularinteraction USING btree (updatedby_id);
+
+CREATE INDEX idx7lx7isr6eb5w0w5in5vsncutg ON genemolecularinteraction_crossreference USING btree (crossreferences_id);
+CREATE INDEX idx7wsd79wrsj6s8e33ij89a3eg8 ON genemolecularinteraction_crossreference USING btree (association_id);
+
+CREATE INDEX idxcuc2oxltucskw9yld02sck6kk ON genemolecularinteraction_informationcontententity USING btree (association_id);
+CREATE INDEX idxqdpatuorfp3xeoa2ogmg20x1q ON genemolecularinteraction_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX genephenotypeannotation_createdby_index ON genephenotypeannotation USING btree (createdby_id);
+CREATE INDEX genephenotypeannotation_crossreference_index ON genephenotypeannotation USING btree (crossreference_id);
+CREATE INDEX genephenotypeannotation_curie_index ON genephenotypeannotation USING btree (curie);
+CREATE INDEX genephenotypeannotation_dataprovider_index ON genephenotypeannotation USING btree (dataprovider_id);
+CREATE INDEX genephenotypeannotation_internal_index ON genephenotypeannotation USING btree (internal);
+CREATE INDEX genephenotypeannotation_modentityid_index ON genephenotypeannotation USING btree (modentityid);
+CREATE INDEX genephenotypeannotation_modinternalid_index ON genephenotypeannotation USING btree (modinternalid);
+CREATE INDEX genephenotypeannotation_obsolete_index ON genephenotypeannotation USING btree (obsolete);
+CREATE INDEX genephenotypeannotation_phenotypeannotationsubject_index ON genephenotypeannotation USING btree (phenotypeannotationsubject_id);
+CREATE INDEX genephenotypeannotation_relation_index ON genephenotypeannotation USING btree (relation_id);
+CREATE INDEX genephenotypeannotation_sgdstrainbackground_index ON genephenotypeannotation USING btree (sgdstrainbackground_id);
+CREATE INDEX genephenotypeannotation_singlereference_index ON genephenotypeannotation USING btree (singlereference_id);
+CREATE INDEX genephenotypeannotation_uniqueid_index ON genephenotypeannotation USING btree (uniqueid);
+CREATE INDEX genephenotypeannotation_updatedby_index ON genephenotypeannotation USING btree (updatedby_id);
+
+CREATE INDEX idxkfgsd0u371pph821s9aau68lv ON genephenotypeannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx8ryt4br4hcumua9tljy5d6a3c ON genephenotypeannotation_conditionrelation USING btree (conditionrelations_id);
+
+CREATE INDEX idxi0xq22an9lyiv9cdhw1r3hkt6 ON genephenotypeannotation_note USING btree (association_id);
+CREATE INDEX idx7w57lxopma8j5cv2enc1sw2cr ON genephenotypeannotation_note USING btree (relatednotes_id);
+
+CREATE INDEX idxewcqh5tp5y85t8cipw3yvhkrm ON genephenotypeannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxffs8c41hve7srb9sfhjrsr29g ON genephenotypeannotation_ontologyterm USING btree (phenotypeterms_id);
+
+CREATE INDEX sqtrgeneassociation_createdby_index ON sequencetargetingreagentgeneassociation USING btree (createdby_id);
+CREATE INDEX sqtrgeneassociation_internal_index ON sequencetargetingreagentgeneassociation USING btree (internal);
+CREATE INDEX sqtrgeneassociation_obsolete_index ON sequencetargetingreagentgeneassociation USING btree (obsolete);
+CREATE INDEX sqtrgeneassociation_relation_index ON sequencetargetingreagentgeneassociation USING btree (relation_id);
+CREATE INDEX sqtrgeneassociation_sqtrassociationsubject_index ON sequencetargetingreagentgeneassociation USING btree (sequencetargetingreagentassociationsubject_id);
+CREATE INDEX sqtrgeneassociation_sqtrgeneassociationobject_index ON sequencetargetingreagentgeneassociation USING btree (sequencetargetingreagentgeneassociationobject_id);
+CREATE INDEX sqtrgeneassociation_updatedby_index ON sequencetargetingreagentgeneassociation USING btree (updatedby_id);
+
+CREATE INDEX idx3qy7to4cavfvoj89fkux971yb ON sequencetargetingreagentgeneassociation_informationcontententit USING btree (association_id);
+CREATE INDEX idxeo9v38oy64ff8lbhb656yl532 ON sequencetargetingreagentgeneassociation_informationcontententit USING btree (evidence_id);
+
+CREATE INDEX idxon9k4nqnwlav7ammge7obyshm ON transcriptcodingsequenceassociation USING btree (createdby_id);
+CREATE INDEX idxf95tn5xv2nugt594ch7kggtex ON transcriptcodingsequenceassociation USING btree (internal);
+CREATE INDEX idxd7d7oeub6eclirxmjpmc7ibot ON transcriptcodingsequenceassociation USING btree (obsolete);
+CREATE INDEX idxio6g2jejebbjqugso2ge8cncf ON transcriptcodingsequenceassociation USING btree (relation_id);
+CREATE INDEX idxptss0twuhfg2ibqnb8vai4v2v ON transcriptcodingsequenceassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX idx8jsnbfbebppm2memg9yywpea6 ON transcriptcodingsequenceassociation USING btree (transcriptcodingsequenceassociationobject_id);
+CREATE INDEX idxe31s0f5w54vnjhxeysi3g1oy0 ON transcriptcodingsequenceassociation USING btree (updatedby_id); 
+
+CREATE INDEX idxl4jg4t2dlkjivgea1lta3l9xm ON transcriptcodingsequenceassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxmbtwtvy0731b13p3dhoni3ywd ON transcriptcodingsequenceassociation_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX idxfdeljm7108w0j2nbrrme945ur ON transcriptexonassociation USING btree (createdby_id);
+CREATE INDEX idxrig5300vc2ppesjckdkpv219m ON transcriptexonassociation USING btree (internal);
+CREATE INDEX idxfmwe55e0r89q00xqlvi4v7sm0 ON transcriptexonassociation USING btree (obsolete);
+CREATE INDEX idxm76icxt2r2qs52o4wpiexpb39 ON transcriptexonassociation USING btree (relation_id);
+CREATE INDEX idxdct5af7efyqufibj1rjrvieam ON transcriptexonassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX idxhpo9wefgxyoasohcctnr0qev3 ON transcriptexonassociation USING btree (transcriptexonassociationobject_id);
+CREATE INDEX idx29575n6x9yueygvw1mj9exc2g ON transcriptexonassociation USING btree (updatedby_id);
+
+CREATE INDEX idxf124air9olggpyrs5i3rgkbkj ON transcriptexonassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxgg4iqmx96raypy761sn4h99ns ON transcriptexonassociation_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX transcriptgeneassociation_createdby_index ON transcriptgeneassociation USING btree (createdby_id);
+CREATE INDEX transcriptgeneassociation_internal_index ON transcriptgeneassociation USING btree (internal);
+CREATE INDEX transcriptgeneassociation_obsolete_index ON transcriptgeneassociation USING btree (obsolete);
+CREATE INDEX transcriptgeneassociation_relation_index ON transcriptgeneassociation USING btree (relation_id);
+CREATE INDEX transcriptgeneassociation_transcriptassociationsubject_index ON transcriptgeneassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX transcriptgeneassociation_transcriptgeneassociationobject_index ON transcriptgeneassociation USING btree (transcriptgeneassociationobject_id);
+CREATE INDEX transcriptgeneassociation_updatedby_index ON transcriptgeneassociation USING btree (updatedby_id);
+
+CREATE INDEX idxnu079dovpg7bfrb6uawgtscqs ON transcriptgeneassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxis18nw3pj2ru6wlejbwotqsv9 ON transcriptgeneassociation_informationcontententity USING btree (evidence_id);
+
+CREATE INDEX idxaicr23temspg10v3f22k52ssd ON transcriptgenomiclocationassociation USING btree (createdby_id);
+CREATE INDEX idxd06sc5p3gc11brcoxwp7ppbmr ON transcriptgenomiclocationassociation USING btree (internal);
+CREATE INDEX idxgrqw9lxw4l1whho97aose6qh5 ON transcriptgenomiclocationassociation USING btree (obsolete);
+CREATE INDEX idxii7jvungodeeudebo6c4kebny ON transcriptgenomiclocationassociation USING btree (phase);
+CREATE INDEX idxtqvg5149lyo8q1oof4hhd7mmw ON transcriptgenomiclocationassociation USING btree (relation_id);
+CREATE INDEX idx9yipaclxcmb82h69o4k5q3utt ON transcriptgenomiclocationassociation USING btree (strand);
+CREATE INDEX idx4yukrngwb6ipj72wujbxa87bb ON transcriptgenomiclocationassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX idxgo4p2kepo9x83moktih7gurb0 ON transcriptgenomiclocationassociation USING btree (transcriptgenomiclocationassociationobject_id);
+CREATE INDEX idx1fpq38gqgxatnm69ge6purjbc ON transcriptgenomiclocationassociation USING btree (updatedby_id);
+
+CREATE INDEX idx5bqn8a8osk6oy4514gpf8xs3  ON transcriptgenomiclocationassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX idxghedmb4mmore7js1d3ni9thpn ON transcriptgenomiclocationassociation_informationcontententity USING btree (association_id);
+
+-- Missing Index
+
+CREATE INDEX cellularcomponentqualifiers_cellularcomponentqualifiers_index ON public.anatomicalsite_cellularcomponentqualifiers USING btree (cellularcomponentqualifiers_id);
+

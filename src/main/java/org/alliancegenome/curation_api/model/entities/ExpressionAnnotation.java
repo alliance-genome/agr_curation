@@ -26,7 +26,6 @@ import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)

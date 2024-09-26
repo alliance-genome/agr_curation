@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -36,10 +37,13 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 
 @Table(indexes = {
+	@Index(name = "AGMDiseaseAnnotation_internal_index", columnList = "internal"),
+	@Index(name = "AGMDiseaseAnnotation_obsolete_index", columnList = "obsolete"),
 	@Index(name = "AGMDiseaseAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "AGMDiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "AGMDiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
 	@Index(name = "AGMDiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
+	@Index(name = "AGMDiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
+	@Index(name = "AGMDiseaseAnnotation_negated_index", columnList = "negated"),
 	@Index(name = "AGMDiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
 	@Index(name = "AGMDiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
 	@Index(name = "AGMDiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
@@ -99,10 +103,14 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = {
-		@Index(columnList = "agmdiseaseannotation_id"),
-		@Index(columnList = "assertedgenes_id")
-	})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "assertedgenes_id")
+		}
+	)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	private List<Gene> assertedGenes;
 

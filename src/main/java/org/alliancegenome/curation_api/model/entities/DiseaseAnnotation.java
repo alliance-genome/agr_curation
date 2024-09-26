@@ -26,6 +26,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -34,8 +37,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"), @Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
-	@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation") })
+@JsonSubTypes({
+	@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"),
+	@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
+	@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation")
+})
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -67,6 +73,14 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "evidencecodes_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "evidencecodes_id")
+		}
+	)
 	private List<ECOTerm> evidenceCodes;
 
 	@IndexedEmbedded(includePaths = {
@@ -80,6 +94,14 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "with_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "with_id")
+		}
+	)
 	private List<Gene> with;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
@@ -92,6 +114,14 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "diseasequalifiers_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "diseasequalifiers_id")
+		}
+	)
 	private List<VocabularyTerm> diseaseQualifiers;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
@@ -111,6 +141,14 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "diseasegeneticmodifiers_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "diseasegeneticmodifiers_id")
+		}
+	)
 	private List<BiologicalEntity> diseaseGeneticModifiers;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

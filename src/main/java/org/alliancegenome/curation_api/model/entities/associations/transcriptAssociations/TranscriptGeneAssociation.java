@@ -16,7 +16,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -27,6 +29,17 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "TranscriptGeneAssociation", description = "POJO representing an association between a transcript and a gene")
+
+@Table(indexes = {
+	@Index(name = "TranscriptGeneAssociation_internal_index", columnList = "internal"),
+	@Index(name = "TranscriptGeneAssociation_obsolete_index", columnList = "obsolete"),
+	@Index(name = "TranscriptGeneAssociation_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "TranscriptGeneAssociation_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "TranscriptGeneAssociation_relation_index", columnList = "relation_id"),
+	@Index(name = "TranscriptGeneAssociation_transcriptAssociationSubject_index", columnList = "transcriptassociationsubject_id"),
+	@Index(name = "TranscriptGeneAssociation_transcriptGeneAssociationObject_index", columnList = "transcriptgeneassociationobject_id")
+})
+
 public class TranscriptGeneAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "modEntityId", "modInternalId",

@@ -13,6 +13,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.MappedSuperclass;
@@ -30,11 +31,14 @@ public class EvidenceAssociation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class, View.ConstructView.class, View.GeneInteractionView.class })
-	@JoinTable(indexes = {
-		@Index(name = "association_evidenceassociation_index", columnList = "evidenceassociation_id"),
-		@Index(name = "association_evidenceassociation_evidence_index", columnList = "evidence_id")
-	})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "evidence_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "evidence_id")
+		}
+	)
 	private List<InformationContentEntity> evidence;
 
 }
-

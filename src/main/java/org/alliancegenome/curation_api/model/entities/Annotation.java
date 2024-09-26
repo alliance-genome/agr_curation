@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
@@ -68,6 +71,14 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "conditionRelations_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "conditionRelations_id")
+		}
+	)
 	private List<ConditionRelation> conditionRelations;
 
 	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
@@ -77,6 +88,14 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "association_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),
+		indexes = {
+			@Index(columnList = "association_id"),
+			@Index(columnList = "relatedNotes_id")
+		}
+	)
 	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
