@@ -1,302 +1,382 @@
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fk2kkuby8cha4mi979rfrufh8ms FOREIGN KEY (assertedallele_id) REFERENCES allele(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fk2umyg0v10hgtljwjbpond8jrc FOREIGN KEY (singlereference_id) REFERENCES reference(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fk37dsmk0slmfxeeibjqkqkixda FOREIGN KEY (geneticsex_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fk60is9ul76u2gwwt3kri70nw8 FOREIGN KEY (diseaseannotationsubject_id) REFERENCES affectedgenomicmodel(id) ON DELETE CASCADE;
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fk7ahiuo64x1a5hxracbvlagdt FOREIGN KEY (diseasegeneticmodifierrelation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fk8gxsa86awg2oqv0vs8s7jb7fw FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fk8jli70oa2ilrdlttpla0ds4di FOREIGN KEY (annotationtype_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fkcovck6ip7rxrud0twr4kid8f3 FOREIGN KEY (inferredallele_id) REFERENCES allele(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fkg7mtotyaq0cs501cll3bk45hr FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fkhh9as28mwsysbjgx6hwt622wr FOREIGN KEY (secondarydataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fkjl650wl0c24o9tq3hkbggxhwy FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fkjpqd4ps8pjklagy0wq6u6ljk1 FOREIGN KEY (inferredgene_id) REFERENCES gene(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fkk64jxju84kxfc90ok6uor1wv2 FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY agmdiseaseannotation ADD CONSTRAINT fkmipqq6lp7u6rr7gif932q4vca FOREIGN KEY (diseaseannotationobject_id) REFERENCES ontologyterm(id);
+CREATE INDEX agmdiseaseannotation_annotationtype_index ON agmdiseaseannotation USING btree (annotationtype_id);
+CREATE INDEX agmdiseaseannotation_assertedallele_index ON agmdiseaseannotation USING btree (assertedallele_id);
+CREATE INDEX agmdiseaseannotation_createdby_index ON agmdiseaseannotation USING btree (createdby_id);
+CREATE INDEX agmdiseaseannotation_curie_index ON agmdiseaseannotation USING btree (curie);
+CREATE INDEX agmdiseaseannotation_dataprovider_index ON agmdiseaseannotation USING btree (dataprovider_id);
+CREATE INDEX agmdiseaseannotation_diseaseannotationobject_index ON agmdiseaseannotation USING btree (diseaseannotationobject_id);
+CREATE INDEX agmdiseaseannotation_diseaseannotationsubject_index ON agmdiseaseannotation USING btree (diseaseannotationsubject_id);
+CREATE INDEX agmdiseaseannotation_diseasegeneticmodifierrelation_index ON agmdiseaseannotation USING btree (diseasegeneticmodifierrelation_id);
+CREATE INDEX agmdiseaseannotation_geneticsex_index ON agmdiseaseannotation USING btree (geneticsex_id);
+CREATE INDEX agmdiseaseannotation_inferredallele_index ON agmdiseaseannotation USING btree (inferredallele_id);
+CREATE INDEX agmdiseaseannotation_inferredgene_index ON agmdiseaseannotation USING btree (inferredgene_id);
+CREATE INDEX agmdiseaseannotation_internal_index ON agmdiseaseannotation USING btree (internal);
+CREATE INDEX agmdiseaseannotation_modentityid_index ON agmdiseaseannotation USING btree (modentityid);
+CREATE INDEX agmdiseaseannotation_modinternalid_index ON agmdiseaseannotation USING btree (modinternalid);
+CREATE INDEX agmdiseaseannotation_negated_index ON agmdiseaseannotation USING btree (negated);
+CREATE INDEX agmdiseaseannotation_obsolete_index ON agmdiseaseannotation USING btree (obsolete);
+CREATE INDEX agmdiseaseannotation_relation_index ON agmdiseaseannotation USING btree (relation_id);
+CREATE INDEX agmdiseaseannotation_secondarydataprovider_index ON agmdiseaseannotation USING btree (secondarydataprovider_id);
+CREATE INDEX agmdiseaseannotation_singlereference_index ON agmdiseaseannotation USING btree (singlereference_id);
+CREATE INDEX agmdiseaseannotation_uniqueid_index ON agmdiseaseannotation USING btree (uniqueid);
+CREATE INDEX agmdiseaseannotation_updatedby_index ON agmdiseaseannotation USING btree (updatedby_id);
 
-ALTER TABLE ONLY agmdiseaseannotation_biologicalentity ADD CONSTRAINT fkg694iaaw2ydb0cdslugifj8l5 FOREIGN KEY (diseasegeneticmodifiers_id) REFERENCES biologicalentity(id);
-ALTER TABLE ONLY agmdiseaseannotation_biologicalentity ADD CONSTRAINT fkhqcbm1d8ou0qqre8snp6cg5u7 FOREIGN KEY (association_id) REFERENCES agmdiseaseannotation(id);
+CREATE INDEX idxfm9hjt2cp5opepuhro41rko11 ON agmdiseaseannotation_biologicalentity USING btree (association_id);
+CREATE INDEX idx2q76899x3i9nmfrpk1s4gqaa5 ON agmdiseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
 
-ALTER TABLE ONLY agmdiseaseannotation_conditionrelation ADD CONSTRAINT fkabtdvl6g81qdhi5cw77tnhlvl FOREIGN KEY (association_id) REFERENCES agmdiseaseannotation(id);
-ALTER TABLE ONLY agmdiseaseannotation_conditionrelation ADD CONSTRAINT fkrgr1hx0oqqa2966t1730c8a0l FOREIGN KEY (conditionrelations_id) REFERENCES conditionrelation(id);
+CREATE INDEX idx7ckisymg9glquxs8ckv58o4wa ON agmdiseaseannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx6ie2uykt18gbauf5t26c9gw4p ON agmdiseaseannotation_conditionrelation USING btree (conditionrelations_id);
 
-ALTER TABLE ONLY agmdiseaseannotation_gene ADD CONSTRAINT fkbif35stv5wbi5uh9n0kdmou0q FOREIGN KEY (association_id) REFERENCES agmdiseaseannotation(id);
-ALTER TABLE ONLY agmdiseaseannotation_gene ADD CONSTRAINT fkcch8h6dw4rft9d68a0yn6se6e FOREIGN KEY (with_id) REFERENCES gene(id);
-ALTER TABLE ONLY agmdiseaseannotation_gene ADD CONSTRAINT fkeyw19j24y6nwrxkqk9gad9eli FOREIGN KEY (assertedgenes_id) REFERENCES gene(id);
+CREATE INDEX idx3s76vpljgsx07k1ggvfl0syp  ON agmdiseaseannotation_gene USING btree (assertedgenes_id);
+CREATE INDEX idxkvf72io0gj5fp23ao008q283k ON agmdiseaseannotation_gene USING btree (association_id);
+CREATE INDEX idxe78i8xpvroa23syyg1eqp3d0k ON agmdiseaseannotation_gene USING btree (with_id);
 
-ALTER TABLE ONLY agmdiseaseannotation_note ADD CONSTRAINT fk7vskf61fs1ti0kk05bm4ywcg6 FOREIGN KEY (association_id) REFERENCES agmdiseaseannotation(id);
-ALTER TABLE ONLY agmdiseaseannotation_note ADD CONSTRAINT fkr55esx6lfo1f4u9eem1iwfkgx FOREIGN KEY (relatednotes_id) REFERENCES note(id);
+CREATE INDEX idxn2ac81velbbenm2oce4xqkyy0 ON agmdiseaseannotation_note USING btree (association_id);
+CREATE INDEX idx6kkpigf83ojt26fiqg2w1dy1p ON agmdiseaseannotation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY agmdiseaseannotation_ontologyterm ADD CONSTRAINT fkhldp7usikdqpabhs8k6e7tqm6 FOREIGN KEY (evidencecodes_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY agmdiseaseannotation_ontologyterm ADD CONSTRAINT fktbnis09ieoxxxn0uac17y4tqj FOREIGN KEY (association_id) REFERENCES agmdiseaseannotation(id);
+CREATE INDEX idxoimanxnlnh4w94q7wfy4botmr ON agmdiseaseannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxrrrc3fh4ubf75r6fyv9syms4u ON agmdiseaseannotation_ontologyterm USING btree (evidencecodes_id);
 
-ALTER TABLE ONLY agmdiseaseannotation_vocabularyterm ADD CONSTRAINT fk7tkcolewth9efu38upga0s8fr FOREIGN KEY (association_id) REFERENCES agmdiseaseannotation(id);
-ALTER TABLE ONLY agmdiseaseannotation_vocabularyterm ADD CONSTRAINT fkrj9u5k77j4lljg6bw7qo1y20w FOREIGN KEY (diseasequalifiers_id) REFERENCES vocabularyterm(id);
+CREATE INDEX idx34lopnjoyj5oi6o2kr5g0hcpx ON agmdiseaseannotation_vocabularyterm USING btree (association_id);
+CREATE INDEX idxkkfpqscjy9qej3x21ej6oniip ON agmdiseaseannotation_vocabularyterm USING btree (diseasequalifiers_id);
 
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fk22g2vuw5nph0qq41xtij396e3 FOREIGN KEY (inferredallele_id) REFERENCES allele(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fk7plbgonr9g4yoefd1k5t0b1ap FOREIGN KEY (crossreference_id) REFERENCES crossreference(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fkf0v97kcpydfiqiyvl3uh3rc90 FOREIGN KEY (inferredgene_id) REFERENCES gene(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fkk86dqfob7lotkw7yuxd5dkaln FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fkkblpivg8a4flg0t34evh25w8v FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fkl1478mporoblxqjhqwma373ge FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fkn1pb5j9be6lbvv8cwykecqjr9 FOREIGN KEY (singlereference_id) REFERENCES reference(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fkn9jqg4yu2l1fq57f9k7egtawo FOREIGN KEY (assertedallele_id) REFERENCES allele(id);
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fkry48ahelheguy1pbu5dccxo2c FOREIGN KEY (phenotypeannotationsubject_id) REFERENCES affectedgenomicmodel(id) ON DELETE CASCADE;
-ALTER TABLE ONLY agmphenotypeannotation ADD CONSTRAINT fksf5ja292y4tqljav1jrqeg60b FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
+CREATE INDEX agmphenotypeannotation_assertedallele_index ON agmphenotypeannotation USING btree (assertedallele_id);
+CREATE INDEX agmphenotypeannotation_createdby_index ON agmphenotypeannotation USING btree (createdby_id);
+CREATE INDEX agmphenotypeannotation_crossreference_index ON agmphenotypeannotation USING btree (crossreference_id);
+CREATE INDEX agmphenotypeannotation_curie_index ON agmphenotypeannotation USING btree (curie);
+CREATE INDEX agmphenotypeannotation_dataprovider_index ON agmphenotypeannotation USING btree (dataprovider_id);
+CREATE INDEX agmphenotypeannotation_inferredallele_index ON agmphenotypeannotation USING btree (inferredallele_id);
+CREATE INDEX agmphenotypeannotation_inferredgene_index ON agmphenotypeannotation USING btree (inferredgene_id);
+CREATE INDEX agmphenotypeannotation_internal_index ON agmphenotypeannotation USING btree (internal);
+CREATE INDEX agmphenotypeannotation_modentityid_index ON agmphenotypeannotation USING btree (modentityid);
+CREATE INDEX agmphenotypeannotation_modinternalid_index ON agmphenotypeannotation USING btree (modinternalid);
+CREATE INDEX agmphenotypeannotation_obsolete_index ON agmphenotypeannotation USING btree (obsolete);
+CREATE INDEX agmphenotypeannotation_phenotypeannotationsubject_index ON agmphenotypeannotation USING btree (phenotypeannotationsubject_id);
+CREATE INDEX agmphenotypeannotation_relation_index ON agmphenotypeannotation USING btree (relation_id);
+CREATE INDEX agmphenotypeannotation_singlereference_index ON agmphenotypeannotation USING btree (singlereference_id);
+CREATE INDEX agmphenotypeannotation_uniqueid_index ON agmphenotypeannotation USING btree (uniqueid);
+CREATE INDEX agmphenotypeannotation_updatedby_index ON agmphenotypeannotation USING btree (updatedby_id);
 
-ALTER TABLE ONLY agmphenotypeannotation_conditionrelation ADD CONSTRAINT fk707208iqski5px893183pk8f3 FOREIGN KEY (conditionrelations_id) REFERENCES conditionrelation(id);
-ALTER TABLE ONLY agmphenotypeannotation_conditionrelation ADD CONSTRAINT fk7g3pjr9xu3425uylbk5v7ijje FOREIGN KEY (association_id) REFERENCES agmphenotypeannotation(id);
+CREATE INDEX idx4p03xofye2drhcxfv4wh5btvj ON agmphenotypeannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx84beulwvg0hkmudmow0dlsxv7 ON agmphenotypeannotation_conditionrelation USING btree (conditionrelations_id);
 
-ALTER TABLE ONLY agmphenotypeannotation_gene ADD CONSTRAINT fk3bh3w7dbey6cmvnjveqrcmw3p FOREIGN KEY (association_id) REFERENCES agmphenotypeannotation(id);
-ALTER TABLE ONLY agmphenotypeannotation_gene ADD CONSTRAINT fks0f8p72jth9vtbquhyir7wpbh FOREIGN KEY (assertedgenes_id) REFERENCES gene(id);
+CREATE INDEX idxi915qncqnpclsyq0ki2qgvpe2 ON agmphenotypeannotation_gene USING btree (assertedgenes_id);
+CREATE INDEX idxrkudpfv7bukgfyq52lpqoy71f ON agmphenotypeannotation_gene USING btree (association_id);
 
-ALTER TABLE ONLY agmphenotypeannotation_note ADD CONSTRAINT fkm35y1lsuyeoa4wsvw0s7fa8ge FOREIGN KEY (association_id) REFERENCES agmphenotypeannotation(id);
-ALTER TABLE ONLY agmphenotypeannotation_note ADD CONSTRAINT fkswu81d1c6sq3b654gow81kpdc FOREIGN KEY (relatednotes_id) REFERENCES note(id);
+CREATE INDEX idxrgqdq9ngi6fi44kqb6l6gqn1s ON agmphenotypeannotation_note USING btree (association_id);
+CREATE INDEX idxit2xg2ed815njy85kl3hgsjwu ON agmphenotypeannotation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY agmphenotypeannotation_ontologyterm ADD CONSTRAINT fkkcbaa7jit2qom15cggnbiw45b FOREIGN KEY (association_id) REFERENCES agmphenotypeannotation(id);
-ALTER TABLE ONLY agmphenotypeannotation_ontologyterm ADD CONSTRAINT fkjxjka3d3dapimmtx0dy0okela FOREIGN KEY (phenotypeterms_id) REFERENCES ontologyterm(id);
+CREATE INDEX idxh31el0byd6ow9ly8a8aji9nev ON agmphenotypeannotation_ontologyterm USING btree (phenotypeterms_id);
+CREATE INDEX idxmajx55xmyj71xjr0kh6fgv1p8 ON agmphenotypeannotation_ontologyterm USING btree (association_id);
 
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fk42ltpt92iwcgrcvsx385p40pj FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fk7hkgbbyd5jadc48u1eni1fn7 FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fk8m4n3t9g0m0tfaenq42amdkwy FOREIGN KEY (singlereference_id) REFERENCES reference(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fkfffivtd2k2wonukc72nwnpomc FOREIGN KEY (diseasegeneticmodifierrelation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fkfis6g4qua1wjxsobv3398u8l5 FOREIGN KEY (geneticsex_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fkh4r54eorp2fnd2obo645vw8re FOREIGN KEY (annotationtype_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fknj79ev10ouw1yary8lo3dpnqo FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fko7hnqo0kyxuppl70d9uhd01vl FOREIGN KEY (diseaseannotationobject_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fkoc7ltgyt521kcoykk39i6xuj5 FOREIGN KEY (secondarydataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fkqeqofi8sivg0j670gwpg5yvpp FOREIGN KEY (diseaseannotationsubject_id) REFERENCES allele(id) ON DELETE CASCADE;
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fks31cr9r8ljjv3c775f6bqwpw2 FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY allelediseaseannotation ADD CONSTRAINT fktp2an4byav09yi71drrvtyjum FOREIGN KEY (inferredgene_id) REFERENCES gene(id);
+CREATE INDEX allelediseaseannotation_annotationtype_index ON allelediseaseannotation USING btree (annotationtype_id);
+CREATE INDEX allelediseaseannotation_createdby_index ON allelediseaseannotation USING btree (createdby_id);
+CREATE INDEX allelediseaseannotation_curie_index ON allelediseaseannotation USING btree (curie);
+CREATE INDEX allelediseaseannotation_dataprovider_index ON allelediseaseannotation USING btree (dataprovider_id);
+CREATE INDEX allelediseaseannotation_diseaseannotationobject_index ON allelediseaseannotation USING btree (diseaseannotationobject_id);
+CREATE INDEX allelediseaseannotation_diseaseannotationsubject_index ON allelediseaseannotation USING btree (diseaseannotationsubject_id);
+CREATE INDEX allelediseaseannotation_diseasegeneticmodifierrelation_index ON allelediseaseannotation USING btree (diseasegeneticmodifierrelation_id);
+CREATE INDEX allelediseaseannotation_geneticsex_index ON allelediseaseannotation USING btree (geneticsex_id);
+CREATE INDEX allelediseaseannotation_inferredgene_index ON allelediseaseannotation USING btree (inferredgene_id);
+CREATE INDEX allelediseaseannotation_internal_index ON allelediseaseannotation USING btree (internal);
+CREATE INDEX allelediseaseannotation_modentityid_index ON allelediseaseannotation USING btree (modentityid);
+CREATE INDEX allelediseaseannotation_modinternalid_index ON allelediseaseannotation USING btree (modinternalid);
+CREATE INDEX allelediseaseannotation_negated_index ON allelediseaseannotation USING btree (negated);
+CREATE INDEX allelediseaseannotation_obsolete_index ON allelediseaseannotation USING btree (obsolete);
+CREATE INDEX allelediseaseannotation_relation_index ON allelediseaseannotation USING btree (relation_id);
+CREATE INDEX allelediseaseannotation_secondarydataprovider_index ON allelediseaseannotation USING btree (secondarydataprovider_id);
+CREATE INDEX allelediseaseannotation_singlereference_index ON allelediseaseannotation USING btree (singlereference_id);
+CREATE INDEX allelediseaseannotation_uniqueid_index ON allelediseaseannotation USING btree (uniqueid);
+CREATE INDEX allelediseaseannotation_updatedby_index ON allelediseaseannotation USING btree (updatedby_id);
 
-ALTER TABLE ONLY allelediseaseannotation_biologicalentity ADD CONSTRAINT fkccm3v2woslqydwlv72lp3vx09 FOREIGN KEY (association_id) REFERENCES allelediseaseannotation(id);
-ALTER TABLE ONLY allelediseaseannotation_biologicalentity ADD CONSTRAINT fkf7n8yi30vh2g4xr4ty7rut36b FOREIGN KEY (diseasegeneticmodifiers_id) REFERENCES biologicalentity(id);
+CREATE INDEX idxkwi0hmi5is7j11kba9a3wcy9w ON allelediseaseannotation_biologicalentity USING btree (association_id);
+CREATE INDEX idxfm4pv5tjr8rs97jq7b2b0yqhp ON allelediseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
 
-ALTER TABLE ONLY allelediseaseannotation_conditionrelation ADD CONSTRAINT fkdi2ictyxqiy8n8txrcpo1tkcl FOREIGN KEY (conditionrelations_id) REFERENCES conditionrelation(id);
-ALTER TABLE ONLY allelediseaseannotation_conditionrelation ADD CONSTRAINT fkn8emvy8ykt02ba1vhdqrayi7c FOREIGN KEY (association_id) REFERENCES allelediseaseannotation(id);
+CREATE INDEX idxhi5g56wq41id4f59mta1v0p2s ON allelediseaseannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx947m3fd883uabr629ws4fy4re ON allelediseaseannotation_conditionrelation USING btree (conditionrelations_id);
 
-ALTER TABLE ONLY allelediseaseannotation_gene ADD CONSTRAINT fk6ogbd2pywnhgiry1udwepkmtb FOREIGN KEY (assertedgenes_id) REFERENCES gene(id);
-ALTER TABLE ONLY allelediseaseannotation_gene ADD CONSTRAINT fkfsapico38pk6ubspimgsjn4a5 FOREIGN KEY (with_id) REFERENCES gene(id);
-ALTER TABLE ONLY allelediseaseannotation_gene ADD CONSTRAINT fkkqvw9ea43v28gre268o3si6ay FOREIGN KEY (association_id) REFERENCES allelediseaseannotation(id);
+CREATE INDEX idxofo1cyfmfs4jol9c5gp012o4a ON allelediseaseannotation_gene USING btree (association_id);
+CREATE INDEX idxesohht66qle9l8d748nfrx35a ON allelediseaseannotation_gene USING btree (with_id);
 
-ALTER TABLE ONLY allelediseaseannotation_note ADD CONSTRAINT fke6j1lk9gvp4d1ujt0eq7gxpv2 FOREIGN KEY (relatednotes_id) REFERENCES note(id);
-ALTER TABLE ONLY allelediseaseannotation_note ADD CONSTRAINT fkmgq0kr71emrafr30h83rf2f56 FOREIGN KEY (association_id) REFERENCES allelediseaseannotation(id);
+CREATE INDEX idxfvf61jlaic8nkjquoycsswmsq ON allelediseaseannotation_note USING btree (association_id);
+CREATE INDEX idxdnlqnaqcuoku49wa7hweqqh3h ON allelediseaseannotation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY allelediseaseannotation_ontologyterm ADD CONSTRAINT fkb5bevp4fqns7j142jlkkv3vkj FOREIGN KEY (association_id) REFERENCES allelediseaseannotation(id);
-ALTER TABLE ONLY allelediseaseannotation_ontologyterm ADD CONSTRAINT fkto9gfo88e6h0hu903w6u4sfuu FOREIGN KEY (evidencecodes_id) REFERENCES ontologyterm(id);
+CREATE INDEX idxbi31t44lvo24mkv1mfnc4fcw3 ON allelediseaseannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxb1r481lvh5q5wlg5rtf3j5q45 ON allelediseaseannotation_ontologyterm USING btree (evidencecodes_id);
 
-ALTER TABLE ONLY allelediseaseannotation_vocabularyterm ADD CONSTRAINT fk6g35a17r6un4jgayjlr8ianq2 FOREIGN KEY (diseasequalifiers_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY allelediseaseannotation_vocabularyterm ADD CONSTRAINT fkfbis46u2ip7c7xs2b39v8n5d8 FOREIGN KEY (association_id) REFERENCES allelediseaseannotation(id);
+CREATE INDEX idx2jc8npk4fjmm80hh9f0y1v3he ON allelediseaseannotation_vocabularyterm USING btree (association_id);
+CREATE INDEX idxgcp0ghpx8rv5njry59gfqswxx ON allelediseaseannotation_vocabularyterm USING btree (diseasequalifiers_id);
 
-ALTER TABLE ONLY allelegeneassociation ADD CONSTRAINT fk6p0nk2n01ab2ksjrdlyq25h4y FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY allelegeneassociation ADD CONSTRAINT fkao3pmku9d1lh67ptuiq2t08wr FOREIGN KEY (allelegeneassociationobject_id) REFERENCES gene(id);
-ALTER TABLE ONLY allelegeneassociation ADD CONSTRAINT fki6gdp1pjjtirs1v3k47oluqc3 FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY allelegeneassociation ADD CONSTRAINT fkjhasohfaw7s26ogq5eg772rf0 FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY allelegeneassociation ADD CONSTRAINT fko082oqtvkx9k55nm67vas3n1k FOREIGN KEY (evidencecode_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY allelegeneassociation ADD CONSTRAINT fkqn4egk0drms9hxcekff8gam6q FOREIGN KEY (relatednote_id) REFERENCES note(id);
-ALTER TABLE ONLY allelegeneassociation ADD CONSTRAINT fktho8ivna95vaox70mtry5cwwj FOREIGN KEY (alleleassociationsubject_id) REFERENCES allele(id);
+CREATE INDEX allelegeneassociation_alleleassociationsubject_index ON allelegeneassociation USING btree (alleleassociationsubject_id);
+CREATE INDEX allelegeneassociation_allelegeneassociationobject_index ON allelegeneassociation USING btree (allelegeneassociationobject_id);
+CREATE INDEX allelegeneassociation_createdby_index ON allelegeneassociation USING btree (createdby_id);
+CREATE INDEX allelegeneassociation_evidencecode_index ON allelegeneassociation USING btree (evidencecode_id);
+CREATE INDEX allelegeneassociation_internal_index ON allelegeneassociation USING btree (internal);
+CREATE INDEX allelegeneassociation_obsolete_index ON allelegeneassociation USING btree (obsolete);
+CREATE INDEX allelegeneassociation_relatednote_index ON allelegeneassociation USING btree (relatednote_id);
+CREATE INDEX allelegeneassociation_relation_index ON allelegeneassociation USING btree (relation_id);
+CREATE INDEX allelegeneassociation_updatedby_index ON allelegeneassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY allelegeneassociation_informationcontententity ADD CONSTRAINT fkemd3tife09j5ur86mf0elsjr9 FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
-ALTER TABLE ONLY allelegeneassociation_informationcontententity ADD CONSTRAINT fkj6e0pl03cm27tahbt289e5h3f FOREIGN KEY (association_id) REFERENCES allelegeneassociation(id);
+CREATE INDEX idx9u4cqfbtajokovj1quacsvld2 ON allelegeneassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxp3na9i2xw0ea9igcwx1jdpc9g ON allelegeneassociation_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fk101brljqqqmm4n02rtvlbse5 FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fk1nd47lkg6wge7vtkdf61m9dqj FOREIGN KEY (inferredgene_id) REFERENCES gene(id);
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fk229u0i4c687jymh0fnd477ajq FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fk42cguk3r5h43w7533h5daync2 FOREIGN KEY (singlereference_id) REFERENCES reference(id);
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fk49apxime31ari75ylx5dgfg3v FOREIGN KEY (crossreference_id) REFERENCES crossreference(id);
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fkbqvnnkft2o1qbt80wx5gf9vqe FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fkg0srqxfsmbh36t2oi242nlgwc FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY allelephenotypeannotation ADD CONSTRAINT fkmurlgsm5dsodxtj3rg2dccrcs FOREIGN KEY (phenotypeannotationsubject_id) REFERENCES allele(id) ON DELETE CASCADE;
+CREATE INDEX allelephenotypeannotation_createdby_index ON allelephenotypeannotation USING btree (createdby_id);
+CREATE INDEX allelephenotypeannotation_crossreference_index ON allelephenotypeannotation USING btree (crossreference_id);
+CREATE INDEX allelephenotypeannotation_curie_index ON allelephenotypeannotation USING btree (curie);
+CREATE INDEX allelephenotypeannotation_dataprovider_index ON allelephenotypeannotation USING btree (dataprovider_id);
+CREATE INDEX allelephenotypeannotation_inferredgene_index ON allelephenotypeannotation USING btree (inferredgene_id);
+CREATE INDEX allelephenotypeannotation_internal_index ON allelephenotypeannotation USING btree (internal);
+CREATE INDEX allelephenotypeannotation_modentityid_index ON allelephenotypeannotation USING btree (modentityid);
+CREATE INDEX allelephenotypeannotation_modinternalid_index ON allelephenotypeannotation USING btree (modinternalid);
+CREATE INDEX allelephenotypeannotation_obsolete_index ON allelephenotypeannotation USING btree (obsolete);
+CREATE INDEX allelephenotypeannotation_phenotypeannotationsubject_index ON allelephenotypeannotation USING btree (phenotypeannotationsubject_id);
+CREATE INDEX allelephenotypeannotation_relation_index ON allelephenotypeannotation USING btree (relation_id);
+CREATE INDEX allelephenotypeannotation_singlereference_index ON allelephenotypeannotation USING btree (singlereference_id);
+CREATE INDEX allelephenotypeannotation_uniqueid_index ON allelephenotypeannotation USING btree (uniqueid);
+CREATE INDEX allelephenotypeannotation_updatedby_index ON allelephenotypeannotation USING btree (updatedby_id);
 
-ALTER TABLE ONLY allelephenotypeannotation_conditionrelation ADD CONSTRAINT fk9qt748e11jcsk27v8huk1d81u FOREIGN KEY (association_id) REFERENCES allelephenotypeannotation(id);
-ALTER TABLE ONLY allelephenotypeannotation_conditionrelation ADD CONSTRAINT fknlx29g363lg7vfcgu8oyf9my3 FOREIGN KEY (conditionrelations_id) REFERENCES conditionrelation(id);
+CREATE INDEX idxakkdw3451v7usrsb8ouvj9hj0 ON allelephenotypeannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idxdse642c7dlmvdbb97jj49kc84 ON allelephenotypeannotation_conditionrelation USING btree (conditionrelations_id);
 
-ALTER TABLE ONLY allelephenotypeannotation_gene ADD CONSTRAINT fkdqeeeahsm84hjksl8593fbo6v FOREIGN KEY (association_id) REFERENCES allelephenotypeannotation(id);
-ALTER TABLE ONLY allelephenotypeannotation_gene ADD CONSTRAINT fkp6gsx4q1q2d5ct5kpumhbd94y FOREIGN KEY (assertedgenes_id) REFERENCES gene(id);
+CREATE INDEX idxdsw5skx7e6ym959jxqmvfyknq ON allelephenotypeannotation_gene USING btree (assertedgenes_id);
+CREATE INDEX idxrbk9a9lt5bhdxgyo7cm0fnvik ON allelephenotypeannotation_gene USING btree (association_id);
 
-ALTER TABLE ONLY allelephenotypeannotation_note ADD CONSTRAINT fk1jpugur8ys3h6xxnf8efakprb FOREIGN KEY (association_id) REFERENCES allelephenotypeannotation(id);
-ALTER TABLE ONLY allelephenotypeannotation_note ADD CONSTRAINT fkl1wvmkkdgr5tdl78u7nvb5xsj FOREIGN KEY (relatednotes_id) REFERENCES note(id);
+CREATE INDEX idxp5r4an1hcil06mlvcvvps4wsl ON allelephenotypeannotation_note USING btree (association_id);
+CREATE INDEX idx2qw6k7xxxrqtfi6vc01j7cds3 ON allelephenotypeannotation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY allelephenotypeannotation_ontologyterm ADD CONSTRAINT fkqhv6onfy2edcrm5khqvfgojs5 FOREIGN KEY (association_id) REFERENCES allelephenotypeannotation(id);
-ALTER TABLE ONLY allelephenotypeannotation_ontologyterm ADD CONSTRAINT fkaalpgc505er83ep8iw2ny8l6c FOREIGN KEY (allelephenotypeannotation_id) REFERENCES allelephenotypeannotation(id);
-ALTER TABLE ONLY allelephenotypeannotation_ontologyterm ADD CONSTRAINT fkrwlge742entlnkle2g9rj3mne FOREIGN KEY (phenotypeterms_id) REFERENCES ontologyterm(id);
+CREATE INDEX idxd2k2tyjqcfql4wvi41d41sokj ON allelephenotypeannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxo9k3yyl9npw9jfsb2ocv7m7kx ON allelephenotypeannotation_ontologyterm USING btree (phenotypeterms_id);
 
-ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fk4efucyh5rpl0g0fpdti9y0qda FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fk6q7qkw2peq0erl2n4cni6kbyb FOREIGN KEY (codingsequencegenomiclocationassociationobject_id) REFERENCES assemblycomponent(id);
-ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fkbdlaouhol3v1law37h2q9ifaw FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fkipqt0lqrx61hgek3pmt679xoj FOREIGN KEY (codingsequenceassociationsubject_id) REFERENCES codingsequence(id);
-ALTER TABLE ONLY codingsequencegenomiclocationassociation ADD CONSTRAINT fklkt1u6mvqb5im061x5437amin FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
+CREATE INDEX idxebg770w4q4fayk1vpfucdu1xy ON codingsequencegenomiclocationassociation USING btree (codingsequenceassociationsubject_id);
+CREATE INDEX idxbmljoyqmk4cdd3os0dumc9bgp ON codingsequencegenomiclocationassociation USING btree (codingsequencegenomiclocationassociationobject_id);
+CREATE INDEX idx6khftnwxcrifhid51ffnd054g ON codingsequencegenomiclocationassociation USING btree (createdby_id);
+CREATE INDEX idxhfv6me8h9mleiytvoytio0nsi ON codingsequencegenomiclocationassociation USING btree (internal);
+CREATE INDEX idxgrky8raqexv45mq83suvekrdo ON codingsequencegenomiclocationassociation USING btree (obsolete);
+CREATE INDEX idxa5wjxifv7vi0y5ltgdnp5ep9t ON codingsequencegenomiclocationassociation USING btree (phase);
+CREATE INDEX idxkr58i2vv5784vl6osva8shi9e ON codingsequencegenomiclocationassociation USING btree (relation_id);
+CREATE INDEX idxr0bkeewpnaajqi1xds5c7j1oc ON codingsequencegenomiclocationassociation USING btree (strand);
+CREATE INDEX idxsb0mnawmi55r20kcipnykm41q ON codingsequencegenomiclocationassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY codingsequencegenomiclocationassociation_informationcontententi ADD CONSTRAINT fkm4es4h50h4511egeuoyfyxk0v FOREIGN KEY (association_id) REFERENCES codingsequencegenomiclocationassociation(id);
-ALTER TABLE ONLY codingsequencegenomiclocationassociation_informationcontententi ADD CONSTRAINT fksugal77n5hdh385dgpdx9tdmc FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+CREATE INDEX idxp4b569h2wevn6yxgv6veonxfr ON codingsequencegenomiclocationassociation_informationcontententi USING btree (association_id);
+CREATE INDEX idxp0ldc7a577pft5v9959muhdh5 ON codingsequencegenomiclocationassociation_informationcontententi USING btree (evidence_id);
 
-ALTER TABLE ONLY constructgenomicentityassociation ADD CONSTRAINT fk5me06it1f8io7h4mktk6431b2 FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY constructgenomicentityassociation ADD CONSTRAINT fk9i7kbfdcy5hn6ws7xxf5kh0h2 FOREIGN KEY (constructgenomicentityassociationobject_id) REFERENCES genomicentity(id);
-ALTER TABLE ONLY constructgenomicentityassociation ADD CONSTRAINT fkei5227y3hjt2t6vsduwaqnnk7 FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY constructgenomicentityassociation ADD CONSTRAINT fkjg9e0tx4lynyaolbllcc3vg02 FOREIGN KEY (constructassociationsubject_id) REFERENCES construct(id);
-ALTER TABLE ONLY constructgenomicentityassociation ADD CONSTRAINT fkpa6wqqg7gmm5d2nqdcml13aj3 FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
+CREATE INDEX idxvsibphiuleew24wjckpfxeae  ON constructgenomicentityassociation USING btree (internal);
+CREATE INDEX idx8myuo0a6hx59vxfhlbrcn8ujk ON constructgenomicentityassociation USING btree (constructassociationsubject_id);
+CREATE INDEX idxevduykusoc08mycbrmn4o7dnq ON constructgenomicentityassociation USING btree (constructgenomicentityassociationobject_id);
+CREATE INDEX idxch64a8ot2vv6i0rue8khyjb3m ON constructgenomicentityassociation USING btree (createdby_id);
+CREATE INDEX idxi6hc4krcrxpsrrwj728vd2wpx ON constructgenomicentityassociation USING btree (obsolete);
+CREATE INDEX idxsoyddowolab2mrp5eaxj57yar ON constructgenomicentityassociation USING btree (relation_id);
+CREATE INDEX idxevh4c07xjfxyylj7ck2dtn6jh ON constructgenomicentityassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY constructgenomicentityassociation_informationcontententity ADD CONSTRAINT fka63t5u6e2c4dtcuwkwrhc8u9q FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
-ALTER TABLE ONLY constructgenomicentityassociation_informationcontententity ADD CONSTRAINT fkf95vn8pjy50619o0y7iefyxo9 FOREIGN KEY (association_id) REFERENCES constructgenomicentityassociation(id);
+CREATE INDEX idxg5fxj3nedebt3cw93uxptf7om ON constructgenomicentityassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxb9tloa39yyvirjvacah10hfd5 ON constructgenomicentityassociation_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY constructgenomicentityassociation_note ADD CONSTRAINT fk9whd0ahcjprqnj131koir30wf FOREIGN KEY (association_id) REFERENCES constructgenomicentityassociation(id);
-ALTER TABLE ONLY constructgenomicentityassociation_note ADD CONSTRAINT fkg64353f5upaidhljoj6m1yuc9 FOREIGN KEY (relatednotes_id) REFERENCES note(id);
+CREATE INDEX idxh3oudw9wb9wfvjewxywysi1ey ON constructgenomicentityassociation_note USING btree (association_id);
+CREATE INDEX idxj3o4mwvqgbj57m6k22cm49j4r ON constructgenomicentityassociation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY exongenomiclocationassociation ADD CONSTRAINT fk3c0ysdo5k8nmm0u6evjr1hdjo FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY exongenomiclocationassociation ADD CONSTRAINT fk5gbibcffgcyxc4ecwwl6jqks6 FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY exongenomiclocationassociation ADD CONSTRAINT fka0ne6k6iyq1rp73ij2s5upbfw FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY exongenomiclocationassociation ADD CONSTRAINT fkj36y7gfpojdgw0cei8p09uv5j FOREIGN KEY (exonassociationsubject_id) REFERENCES exon(id);
-ALTER TABLE ONLY exongenomiclocationassociation ADD CONSTRAINT fkrhqru9jlmpeb9hllrbyonmndh FOREIGN KEY (exongenomiclocationassociationobject_id) REFERENCES assemblycomponent(id);
+CREATE INDEX idxhgjuh3b5r08q54fwecp64k3a4 ON exongenomiclocationassociation USING btree (createdby_id);
+CREATE INDEX idx82dedqro7ri1f8g558icrjxc6 ON exongenomiclocationassociation USING btree (exonassociationsubject_id);
+CREATE INDEX idx53jvdw533s5e082xlj0sx7p7x ON exongenomiclocationassociation USING btree (exongenomiclocationassociationobject_id);
+CREATE INDEX idx2knwxko11qkxvr98w7l76wlgi ON exongenomiclocationassociation USING btree (internal);
+CREATE INDEX idxo923wv3e7dg9e2flm08ghwiig ON exongenomiclocationassociation USING btree (obsolete);
+CREATE INDEX idx5ufu3a6guayhxy2cg6crxde2i ON exongenomiclocationassociation USING btree (relation_id);
+CREATE INDEX idxdwfj56lqtx86brdvwafjqo8nn ON exongenomiclocationassociation USING btree (strand);
+CREATE INDEX idxd12130inhcxcp1dbks190955j ON exongenomiclocationassociation USING btree (updatedby_id); 
 
-ALTER TABLE ONLY exongenomiclocationassociation_informationcontententity ADD CONSTRAINT fkr5x4yhyie8e2cxetmuls112a3 FOREIGN KEY (association_id) REFERENCES exongenomiclocationassociation(id);
-ALTER TABLE ONLY exongenomiclocationassociation_informationcontententity ADD CONSTRAINT fkti351r4r2wp3cm7e5f3qn894g FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+CREATE INDEX idxtaunnvner3uu6vfarcb9kv0o1 ON exongenomiclocationassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxbugjixb2a6vb0xuho653me8as ON exongenomiclocationassociation_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fk230r383qgr3s3y77me480n02w FOREIGN KEY (annotationtype_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fk4k2s1b7glrbvk1751x2jp40qy FOREIGN KEY (geneticsex_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fk56ujtsnv32ped0i923pbw7nvr FOREIGN KEY (diseaseannotationobject_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fk5ju06d2elbol4e5rn216bwu8h FOREIGN KEY (secondarydataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fk5sgdwglijf43tnomai4weganh FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fkiciy6a2x78onye45ax0f6ipqv FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fkiwlsm7bc6tqyfjn9x7oyes0l1 FOREIGN KEY (singlereference_id) REFERENCES reference(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fkpslxu551f5mb4y838s36fopnd FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fkq3305m88m8kjyl7ugujlb25mh FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fkq452h9xivcnjug7llpg47x9vu FOREIGN KEY (diseasegeneticmodifierrelation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fkrb70ercqcvrw29rfkivta704o FOREIGN KEY (diseaseannotationsubject_id) REFERENCES gene(id) ON DELETE CASCADE;
-ALTER TABLE ONLY genediseaseannotation ADD CONSTRAINT fktpww72cuubetd08y0ansac6gw FOREIGN KEY (sgdstrainbackground_id) REFERENCES affectedgenomicmodel(id);
+CREATE INDEX genediseaseannotation_annotationtype_index ON genediseaseannotation USING btree (annotationtype_id);
+CREATE INDEX genediseaseannotation_createdby_index ON genediseaseannotation USING btree (createdby_id);
+CREATE INDEX genediseaseannotation_curie_index ON genediseaseannotation USING btree (curie);
+CREATE INDEX genediseaseannotation_dataprovider_index ON genediseaseannotation USING btree (dataprovider_id);
+CREATE INDEX genediseaseannotation_diseaseannotationobject_index ON genediseaseannotation USING btree (diseaseannotationobject_id);
+CREATE INDEX genediseaseannotation_diseaseannotationsubject_index ON genediseaseannotation USING btree (diseaseannotationsubject_id);
+CREATE INDEX genediseaseannotation_diseasegeneticmodifierrelation_index ON genediseaseannotation USING btree (diseasegeneticmodifierrelation_id);
+CREATE INDEX genediseaseannotation_geneticsex_index ON genediseaseannotation USING btree (geneticsex_id);
+CREATE INDEX genediseaseannotation_internal_index ON genediseaseannotation USING btree (internal);
+CREATE INDEX genediseaseannotation_modentityid_index ON genediseaseannotation USING btree (modentityid);
+CREATE INDEX genediseaseannotation_modinternalid_index ON genediseaseannotation USING btree (modinternalid);
+CREATE INDEX genediseaseannotation_negated_index ON genediseaseannotation USING btree (negated);
+CREATE INDEX genediseaseannotation_obsolete_index ON genediseaseannotation USING btree (obsolete);
+CREATE INDEX genediseaseannotation_relation_index ON genediseaseannotation USING btree (relation_id);
+CREATE INDEX genediseaseannotation_secondarydataprovider_index ON genediseaseannotation USING btree (secondarydataprovider_id);
+CREATE INDEX genediseaseannotation_sgdstrainbackground_index ON genediseaseannotation USING btree (sgdstrainbackground_id);
+CREATE INDEX genediseaseannotation_singlereference_index ON genediseaseannotation USING btree (singlereference_id);
+CREATE INDEX genediseaseannotation_uniqueid_index ON genediseaseannotation USING btree (uniqueid);
+CREATE INDEX genediseaseannotation_updatedby_index ON genediseaseannotation USING btree (updatedby_id);
 
-ALTER TABLE ONLY genediseaseannotation_biologicalentity ADD CONSTRAINT fk997a8tmb3lgecgctpcytjfowr FOREIGN KEY (diseasegeneticmodifiers_id) REFERENCES biologicalentity(id);
-ALTER TABLE ONLY genediseaseannotation_biologicalentity ADD CONSTRAINT fkecpmsmvm8crgl8tucp7f1ncfd FOREIGN KEY (association_id) REFERENCES genediseaseannotation(id);
+CREATE INDEX idxjeh9y20kiqhxc79hounhdq8f6 ON genediseaseannotation_biologicalentity USING btree (association_id);
+CREATE INDEX idxnagxqk14lxkm1vw1wn4bknssg ON genediseaseannotation_biologicalentity USING btree (diseasegeneticmodifiers_id);
 
-ALTER TABLE ONLY genediseaseannotation_conditionrelation ADD CONSTRAINT fk41jvy0lvt457rvgxvqocsggcd FOREIGN KEY (conditionrelations_id) REFERENCES conditionrelation(id);
-ALTER TABLE ONLY genediseaseannotation_conditionrelation ADD CONSTRAINT fk41webdj74tx200uh994mgq4jx FOREIGN KEY (association_id) REFERENCES genediseaseannotation(id);
+CREATE INDEX idxqkla5i9l82m9p5y9a6api863h ON genediseaseannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idxg92dtnhnsxebexy9bccosflb6 ON genediseaseannotation_conditionrelation USING btree (conditionrelations_id);
 
-ALTER TABLE ONLY genediseaseannotation_gene ADD CONSTRAINT fkoqp2d0qlbfft9lh6udxnuilva FOREIGN KEY (association_id) REFERENCES genediseaseannotation(id);
-ALTER TABLE ONLY genediseaseannotation_gene ADD CONSTRAINT fktqcxe6wwrywdse3cm1ao4rnf FOREIGN KEY (with_id) REFERENCES gene(id);
+CREATE INDEX idxoq5yfgp5v7n0xagmgr0sj99lb ON genediseaseannotation_gene USING btree (association_id);
+CREATE INDEX idx77us55vceq3g3jjrg9r6lsmer ON genediseaseannotation_gene USING btree (with_id);
 
-ALTER TABLE ONLY genediseaseannotation_note ADD CONSTRAINT fketxyiuqpuuvd7cymffkstds9d FOREIGN KEY (association_id) REFERENCES genediseaseannotation(id);
-ALTER TABLE ONLY genediseaseannotation_note ADD CONSTRAINT fkt7sfpmi1cxfkls5s3bpyenlie FOREIGN KEY (relatednotes_id) REFERENCES note(id);
+CREATE INDEX idx23muxx77utkabuwdnxfyblse0 ON genediseaseannotation_note USING btree (association_id);
+CREATE INDEX idxp1sx9wg4x5r33mggresvspdgv ON genediseaseannotation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY genediseaseannotation_ontologyterm ADD CONSTRAINT fk2y3hmiucnqgko7ljoujcf9gtn FOREIGN KEY (evidencecodes_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genediseaseannotation_ontologyterm ADD CONSTRAINT fk8gau68rht88pm0s63ckb92ayv FOREIGN KEY (association_id) REFERENCES genediseaseannotation(id);
+CREATE INDEX idx3epu6h5p8x2304x6mij8tyklx ON genediseaseannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxl1o7i0c5y70m9kr9it6xvaubn ON genediseaseannotation_ontologyterm USING btree (evidencecodes_id);
 
-ALTER TABLE ONLY genediseaseannotation_vocabularyterm ADD CONSTRAINT fkhb4982srkc5qrhnsrvxc0t2ux FOREIGN KEY (association_id) REFERENCES genediseaseannotation(id);
-ALTER TABLE ONLY genediseaseannotation_vocabularyterm ADD CONSTRAINT fkhovnk1srpjjuod10f68cejegw FOREIGN KEY (diseasequalifiers_id) REFERENCES vocabularyterm(id);
+CREATE INDEX idxncrqkmbo3sfv1ixwu51ueon4b ON genediseaseannotation_vocabularyterm USING btree (association_id);
+CREATE INDEX idxnkf114aqn7u3ggn9seti2ey2y ON genediseaseannotation_vocabularyterm USING btree (diseasequalifiers_id);
 
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fk17ng0qvlftfcfwrvr1yhrnh9h FOREIGN KEY (singlereference_id) REFERENCES reference(id);
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fk2xe5vtnm2sba1a8legviqpytj FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fk5gdi65gt84d6ieu34ncu33ftf FOREIGN KEY (expressionpattern_id) REFERENCES expressionpattern(id);
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fkgx41eka7b0e065kwo23n5fs5q FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fklaj7vmfvdk90xkn6qadgfxwdr FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fknrlc59ffsxn8bc4h8kwj7mgu4 FOREIGN KEY (expressionassayused_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fkny440x2v8wufob980onb8vexv FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY geneexpressionannotation ADD CONSTRAINT fkpmfpi2pglpegd8c5ssqh2uv1w FOREIGN KEY (expressionannotationsubject_id) REFERENCES gene(id);
+CREATE INDEX geneexpressionannotation_createdby_index ON geneexpressionannotation USING btree (createdby_id);
+CREATE INDEX geneexpressionannotation_curie_index ON geneexpressionannotation USING btree (curie);
+CREATE INDEX geneexpressionannotation_dataprovider_index ON geneexpressionannotation USING btree (dataprovider_id);
+CREATE INDEX geneexpressionannotation_expressionannotationsubject_index ON geneexpressionannotation USING btree (expressionannotationsubject_id);
+CREATE INDEX geneexpressionannotation_expressionassayused_index ON geneexpressionannotation USING btree (expressionassayused_id);
+CREATE INDEX geneexpressionannotation_expressionpattern_index ON geneexpressionannotation USING btree (expressionpattern_id);
+CREATE INDEX geneexpressionannotation_internal_index ON geneexpressionannotation USING btree (internal);
+CREATE INDEX geneexpressionannotation_modentityid_index ON geneexpressionannotation USING btree (modentityid);
+CREATE INDEX geneexpressionannotation_modinternalid_index ON geneexpressionannotation USING btree (modinternalid);
+CREATE INDEX geneexpressionannotation_obsolete_index ON geneexpressionannotation USING btree (obsolete);
+CREATE INDEX geneexpressionannotation_relation_index ON geneexpressionannotation USING btree (relation_id);
+CREATE INDEX geneexpressionannotation_singlereference_index ON geneexpressionannotation USING btree (singlereference_id);
+CREATE INDEX geneexpressionannotation_uniqueid_index ON geneexpressionannotation USING btree (uniqueid);
+CREATE INDEX geneexpressionannotation_updatedby_index ON geneexpressionannotation USING btree (updatedby_id);
 
-ALTER TABLE ONLY geneexpressionannotation_conditionrelation ADD CONSTRAINT fk967wi9o53ibvsoww5pxr7y3y2 FOREIGN KEY (association_id) REFERENCES geneexpressionannotation(id);
-ALTER TABLE ONLY geneexpressionannotation_conditionrelation ADD CONSTRAINT fkqlyp0tmp9kowr3fasiq4lfgp FOREIGN KEY (conditionrelations_id) REFERENCES conditionrelation(id);
+CREATE INDEX idxa1uthowkvl1bch1namofq466f ON geneexpressionannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idxrcptfqy2xuw35xeer5ilrqtc1 ON geneexpressionannotation_conditionrelation USING btree (conditionrelations_id);
 
-ALTER TABLE ONLY geneexpressionannotation_note ADD CONSTRAINT fk555k6362tmne0w4km2e2khn9a FOREIGN KEY (association_id) REFERENCES geneexpressionannotation(id);
-ALTER TABLE ONLY geneexpressionannotation_note ADD CONSTRAINT fko3gm56s7kyef1fp07fwq69lw4 FOREIGN KEY (relatednotes_id) REFERENCES note(id);
+CREATE INDEX idx87c6fqrsecyifcktu92y7jde4 ON geneexpressionannotation_note USING btree (association_id);
+CREATE INDEX idxm4mig223w5vb6bpjubkd5xuac ON geneexpressionannotation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fk223kijupg28b6mm86feo17r87 FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fk71xgxcnjkufiafwbavyr6m2ka FOREIGN KEY (interactiontype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkb68mw5p0eril3ff6nfa47vqh8 FOREIGN KEY (interactorbtype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkcnm6fb1eihhe5nuj2wiaksd8f FOREIGN KEY (interactorbgeneticperturbation_id) REFERENCES allele(id) ON DELETE CASCADE;
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkcsuqi3l8tradsactj8t52khud FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkd70w7xi4ml95h5banj5vy2lqc FOREIGN KEY (interactorbrole_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkfxq8sixxwkb1jv7rh18yvwi53 FOREIGN KEY (interactorageneticperturbation_id) REFERENCES allele(id) ON DELETE CASCADE;
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkh2fp3yothl234yu9kitgspfpd FOREIGN KEY (interactorarole_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkhj6l8tygpxpab2moqx4h4pef7 FOREIGN KEY (interactoratype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkj4fphalc7tmgy8sp7e0qsm5sx FOREIGN KEY (interactionsource_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkkr3yyhywq1px02gnli02eynvs FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fklov5kqhbymgrnmifgy1sdf09l FOREIGN KEY (geneassociationsubject_id) REFERENCES gene(id);
-ALTER TABLE ONLY genegeneticinteraction ADD CONSTRAINT fkpgava8ud39i9a1bbioqm8s6hy FOREIGN KEY (genegeneassociationobject_id) REFERENCES gene(id);
+CREATE INDEX genegeneticinteraction_createdby_index ON genegeneticinteraction USING btree (createdby_id);
+CREATE INDEX genegeneticinteraction_geneassociationsubject_index ON genegeneticinteraction USING btree (geneassociationsubject_id);
+CREATE INDEX genegeneticinteraction_genegeneassociationobject_index ON genegeneticinteraction USING btree (genegeneassociationobject_id);
+CREATE INDEX genegeneticinteraction_interactionid_index ON genegeneticinteraction USING btree (interactionid);
+CREATE INDEX genegeneticinteraction_interactionsource_index ON genegeneticinteraction USING btree (interactionsource_id);
+CREATE INDEX genegeneticinteraction_interactiontype_index ON genegeneticinteraction USING btree (interactiontype_id);
+CREATE INDEX genegeneticinteraction_interactorageneticperturbation_index ON genegeneticinteraction USING btree (interactorageneticperturbation_id);
+CREATE INDEX genegeneticinteraction_interactorarole_index ON genegeneticinteraction USING btree (interactorarole_id);
+CREATE INDEX genegeneticinteraction_interactoratype_index ON genegeneticinteraction USING btree (interactoratype_id);
+CREATE INDEX genegeneticinteraction_interactorbgeneticperturbation_index ON genegeneticinteraction USING btree (interactorbgeneticperturbation_id);
+CREATE INDEX genegeneticinteraction_interactorbrole_index ON genegeneticinteraction USING btree (interactorbrole_id);
+CREATE INDEX genegeneticinteraction_interactorbtype_index ON genegeneticinteraction USING btree (interactorbtype_id);
+CREATE INDEX genegeneticinteraction_internal_index ON genegeneticinteraction USING btree (internal);
+CREATE INDEX genegeneticinteraction_obsolete_index ON genegeneticinteraction USING btree (obsolete);
+CREATE INDEX genegeneticinteraction_relation_index ON genegeneticinteraction USING btree (relation_id);
+CREATE INDEX genegeneticinteraction_uniqueid_index ON genegeneticinteraction USING btree (uniqueid);
+CREATE INDEX genegeneticinteraction_updatedby_index ON genegeneticinteraction USING btree (updatedby_id);
 
-ALTER TABLE ONLY genegeneticinteraction_crossreference ADD CONSTRAINT fkgkf3r1nb1c4nk32xex79psi42 FOREIGN KEY (association_id) REFERENCES genegeneticinteraction(id);
-ALTER TABLE ONLY genegeneticinteraction_crossreference ADD CONSTRAINT fksog88v596kgbud929oeonf92s FOREIGN KEY (crossreferences_id) REFERENCES crossreference(id);
+CREATE INDEX idxlyqi995di8uvyll25qqmvvsnq ON genegeneticinteraction_crossreference USING btree (association_id);
+CREATE INDEX idxolfx2gsnlx0vyvpv85ba3s1my ON genegeneticinteraction_crossreference USING btree (crossreferences_id);
 
-ALTER TABLE ONLY genegeneticinteraction_informationcontententity ADD CONSTRAINT fkgpv0m4gscumstbs8y3ek9sp2k FOREIGN KEY (association_id) REFERENCES genegeneticinteraction(id);
-ALTER TABLE ONLY genegeneticinteraction_informationcontententity ADD CONSTRAINT fkgutrng68vtdhwr1qlx92ml715 FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+CREATE INDEX idxiwxeu6vppndg2hl252knhgcm2 ON genegeneticinteraction_informationcontententity USING btree (association_id);
+CREATE INDEX idx3l5ew8bcu7dqbqu2gux877rqp ON genegeneticinteraction_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY genegeneticinteraction_phenotypesortraits ADD CONSTRAINT fk428xqcrj9euixb8jryhqqjc4g FOREIGN KEY (association_id) REFERENCES genegeneticinteraction(id);
+CREATE INDEX idx8erit2819gi1uof54xpq7c4ia ON genegeneticinteraction_phenotypesortraits USING btree (association_id);
+CREATE INDEX idxkldmr3gvvv2elnbkilyuvtbsv ON genegeneticinteraction_phenotypesortraits USING btree (phenotypesortraits);
 
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fk1jgic74kl1c0g8b00li2x9uta FOREIGN KEY (interactorarole_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkafjwyp0cf3pqof2ri7yirj07a FOREIGN KEY (interactorbtype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkc2ts1psdlxv1q5pt4bykdgx2x FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkgmt12207c9ll4jj2ev9tb7ltr FOREIGN KEY (interactiontype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkhfosavsr0c588aoyt243idi6s FOREIGN KEY (geneassociationsubject_id) REFERENCES gene(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkk9kl5bdcfebb9nn8ux6hv84vn FOREIGN KEY (detectionmethod_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkl11owt2vsvjj6gfctjg0wm5ee FOREIGN KEY (interactorbrole_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkob42y8ggn4tqr5dj8wp5jarvc FOREIGN KEY (interactionsource_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkpf8prdftq2o1ayen1c8w3kbrj FOREIGN KEY (interactoratype_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fkr8u0gn70cc7va4q0yt8o0wh6p FOREIGN KEY (aggregationdatabase_id) REFERENCES ontologyterm(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fks6m85gh445ieytj9n665rr9eg FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fksjxeqrdby7udc1v71xcawbehr FOREIGN KEY (genegeneassociationobject_id) REFERENCES gene(id);
-ALTER TABLE ONLY genemolecularinteraction ADD CONSTRAINT fksqnn5xdoniaory4upnkkk2iry FOREIGN KEY (updatedby_id) REFERENCES person(id);
+CREATE INDEX genemolecularinteraction_aggregationdatabase_index ON genemolecularinteraction USING btree (aggregationdatabase_id);
+CREATE INDEX genemolecularinteraction_createdby_index ON genemolecularinteraction USING btree (createdby_id);
+CREATE INDEX genemolecularinteraction_detectionmethod_index ON genemolecularinteraction USING btree (detectionmethod_id);
+CREATE INDEX genemolecularinteraction_geneassociationsubject_index ON genemolecularinteraction USING btree (geneassociationsubject_id);
+CREATE INDEX genemolecularinteraction_genegeneassociationobject_index ON genemolecularinteraction USING btree (genegeneassociationobject_id);
+CREATE INDEX genemolecularinteraction_interactionid_index ON genemolecularinteraction USING btree (interactionid);
+CREATE INDEX genemolecularinteraction_interactionsource_index ON genemolecularinteraction USING btree (interactionsource_id);
+CREATE INDEX genemolecularinteraction_interactiontype_index ON genemolecularinteraction USING btree (interactiontype_id);
+CREATE INDEX genemolecularinteraction_interactorarole_index ON genemolecularinteraction USING btree (interactorarole_id);
+CREATE INDEX genemolecularinteraction_interactoratype_index ON genemolecularinteraction USING btree (interactoratype_id);
+CREATE INDEX genemolecularinteraction_interactorbrole_index ON genemolecularinteraction USING btree (interactorbrole_id);
+CREATE INDEX genemolecularinteraction_interactorbtype_index ON genemolecularinteraction USING btree (interactorbtype_id);
+CREATE INDEX genemolecularinteraction_internal_index ON genemolecularinteraction USING btree (internal);
+CREATE INDEX genemolecularinteraction_obsolete_index ON genemolecularinteraction USING btree (obsolete);
+CREATE INDEX genemolecularinteraction_relation_index ON genemolecularinteraction USING btree (relation_id);
+CREATE INDEX genemolecularinteraction_uniqueid_index ON genemolecularinteraction USING btree (uniqueid);
+CREATE INDEX genemolecularinteraction_updatedby_index ON genemolecularinteraction USING btree (updatedby_id);
 
-ALTER TABLE ONLY genemolecularinteraction_crossreference ADD CONSTRAINT fkmnlia9wqktsqf6n0nce2q2l9 FOREIGN KEY (association_id) REFERENCES genemolecularinteraction(id);
-ALTER TABLE ONLY genemolecularinteraction_crossreference ADD CONSTRAINT fk6rdt433qfoib1q26sbxbpt489 FOREIGN KEY (crossreferences_id) REFERENCES crossreference(id);
+CREATE INDEX idx7lx7isr6eb5w0w5in5vsncutg ON genemolecularinteraction_crossreference USING btree (crossreferences_id);
+CREATE INDEX idx7wsd79wrsj6s8e33ij89a3eg8 ON genemolecularinteraction_crossreference USING btree (association_id);
 
-ALTER TABLE ONLY genemolecularinteraction_informationcontententity ADD CONSTRAINT fk7u6wpv1juxshjv1noyshkrtla FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
-ALTER TABLE ONLY genemolecularinteraction_informationcontententity ADD CONSTRAINT fkooo9u7pkb7yar3qlbdb9k1l87 FOREIGN KEY (association_id) REFERENCES genemolecularinteraction(id);
+CREATE INDEX idxcuc2oxltucskw9yld02sck6kk ON genemolecularinteraction_informationcontententity USING btree (association_id);
+CREATE INDEX idxqdpatuorfp3xeoa2ogmg20x1q ON genemolecularinteraction_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fk8e6wa7h1d64pvueh9ng7gpksc FOREIGN KEY (sgdstrainbackground_id) REFERENCES affectedgenomicmodel(id);
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fkbuqi03vioqtwqen2i9ugemqye FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fkca9jnh4snsv4whcxfhiuv3o5f FOREIGN KEY (phenotypeannotationsubject_id) REFERENCES gene(id) ON DELETE CASCADE;
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fkdvj438fmosypfu23ye94uv8xb FOREIGN KEY (dataprovider_id) REFERENCES dataprovider(id);
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fkfwoaro9y8jb8ld9h5pkgfs0px FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fkmv9qr19e1qpktumygwwh4529v FOREIGN KEY (crossreference_id) REFERENCES crossreference(id);
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fknbwaxf7q90q37uiuckxtsjl27 FOREIGN KEY (singlereference_id) REFERENCES reference(id);
-ALTER TABLE ONLY genephenotypeannotation ADD CONSTRAINT fkrirgjcbqkye098mm2rlmwtkiw FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
+CREATE INDEX genephenotypeannotation_createdby_index ON genephenotypeannotation USING btree (createdby_id);
+CREATE INDEX genephenotypeannotation_crossreference_index ON genephenotypeannotation USING btree (crossreference_id);
+CREATE INDEX genephenotypeannotation_curie_index ON genephenotypeannotation USING btree (curie);
+CREATE INDEX genephenotypeannotation_dataprovider_index ON genephenotypeannotation USING btree (dataprovider_id);
+CREATE INDEX genephenotypeannotation_internal_index ON genephenotypeannotation USING btree (internal);
+CREATE INDEX genephenotypeannotation_modentityid_index ON genephenotypeannotation USING btree (modentityid);
+CREATE INDEX genephenotypeannotation_modinternalid_index ON genephenotypeannotation USING btree (modinternalid);
+CREATE INDEX genephenotypeannotation_obsolete_index ON genephenotypeannotation USING btree (obsolete);
+CREATE INDEX genephenotypeannotation_phenotypeannotationsubject_index ON genephenotypeannotation USING btree (phenotypeannotationsubject_id);
+CREATE INDEX genephenotypeannotation_relation_index ON genephenotypeannotation USING btree (relation_id);
+CREATE INDEX genephenotypeannotation_sgdstrainbackground_index ON genephenotypeannotation USING btree (sgdstrainbackground_id);
+CREATE INDEX genephenotypeannotation_singlereference_index ON genephenotypeannotation USING btree (singlereference_id);
+CREATE INDEX genephenotypeannotation_uniqueid_index ON genephenotypeannotation USING btree (uniqueid);
+CREATE INDEX genephenotypeannotation_updatedby_index ON genephenotypeannotation USING btree (updatedby_id);
 
-ALTER TABLE ONLY genephenotypeannotation_conditionrelation ADD CONSTRAINT fk3gowvbi5oxp5e2c2h1ctmym1b FOREIGN KEY (conditionrelations_id) REFERENCES conditionrelation(id);
-ALTER TABLE ONLY genephenotypeannotation_conditionrelation ADD CONSTRAINT fkecdfrx4xcidcao5u5t7gy6kna FOREIGN KEY (association_id) REFERENCES genephenotypeannotation(id);
+CREATE INDEX idxkfgsd0u371pph821s9aau68lv ON genephenotypeannotation_conditionrelation USING btree (association_id);
+CREATE INDEX idx8ryt4br4hcumua9tljy5d6a3c ON genephenotypeannotation_conditionrelation USING btree (conditionrelations_id);
 
-ALTER TABLE ONLY genephenotypeannotation_note ADD CONSTRAINT fk7v0xrmd5k8x0yvhj3sxcagsao FOREIGN KEY (relatednotes_id) REFERENCES note(id);
-ALTER TABLE ONLY genephenotypeannotation_note ADD CONSTRAINT fkqq8853dx3cr8e1oi7j86j5rl9 FOREIGN KEY (association_id) REFERENCES genephenotypeannotation(id);
+CREATE INDEX idxi0xq22an9lyiv9cdhw1r3hkt6 ON genephenotypeannotation_note USING btree (association_id);
+CREATE INDEX idx7w57lxopma8j5cv2enc1sw2cr ON genephenotypeannotation_note USING btree (relatednotes_id);
 
-ALTER TABLE ONLY genephenotypeannotation_ontologyterm ADD CONSTRAINT fk3br051cdktiitm6sdqglxyyk9 FOREIGN KEY (association_id) REFERENCES genephenotypeannotation(id);
-ALTER TABLE ONLY genephenotypeannotation_ontologyterm ADD CONSTRAINT fkip82aeh1egcbkry0t10gnkqjv FOREIGN KEY (phenotypeterms_id) REFERENCES ontologyterm(id);
+CREATE INDEX idxewcqh5tp5y85t8cipw3yvhkrm ON genephenotypeannotation_ontologyterm USING btree (association_id);
+CREATE INDEX idxffs8c41hve7srb9sfhjrsr29g ON genephenotypeannotation_ontologyterm USING btree (phenotypeterms_id);
 
-ALTER TABLE ONLY sequencetargetingreagentgeneassociation ADD CONSTRAINT fk4oywb4vxq460mph6qqfucrklc FOREIGN KEY (sequencetargetingreagentassociationsubject_id) REFERENCES sequencetargetingreagent(id);
-ALTER TABLE ONLY sequencetargetingreagentgeneassociation ADD CONSTRAINT fk7h8rchplqiu7rji3t751d16fb FOREIGN KEY (sequencetargetingreagentgeneassociationobject_id) REFERENCES gene(id);
-ALTER TABLE ONLY sequencetargetingreagentgeneassociation ADD CONSTRAINT fkaxs3aj4tdrywqpf6sfrk824rn FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY sequencetargetingreagentgeneassociation ADD CONSTRAINT fkf34iyy9myqed615lvm21exrp FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY sequencetargetingreagentgeneassociation ADD CONSTRAINT fkp1m5va6abm32twxddmcxl50xb FOREIGN KEY (createdby_id) REFERENCES person(id);
+CREATE INDEX sqtrgeneassociation_createdby_index ON sequencetargetingreagentgeneassociation USING btree (createdby_id);
+CREATE INDEX sqtrgeneassociation_internal_index ON sequencetargetingreagentgeneassociation USING btree (internal);
+CREATE INDEX sqtrgeneassociation_obsolete_index ON sequencetargetingreagentgeneassociation USING btree (obsolete);
+CREATE INDEX sqtrgeneassociation_relation_index ON sequencetargetingreagentgeneassociation USING btree (relation_id);
+CREATE INDEX sqtrgeneassociation_sqtrassociationsubject_index ON sequencetargetingreagentgeneassociation USING btree (sequencetargetingreagentassociationsubject_id);
+CREATE INDEX sqtrgeneassociation_sqtrgeneassociationobject_index ON sequencetargetingreagentgeneassociation USING btree (sequencetargetingreagentgeneassociationobject_id);
+CREATE INDEX sqtrgeneassociation_updatedby_index ON sequencetargetingreagentgeneassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY sequencetargetingreagentgeneassociation_informationcontententit ADD CONSTRAINT fke9vquysmfh3c4lkcfmajh5hj8 FOREIGN KEY (association_id) REFERENCES sequencetargetingreagentgeneassociation(id);
-ALTER TABLE ONLY sequencetargetingreagentgeneassociation_informationcontententit ADD CONSTRAINT fkfib30x859rb0p83hlojly8ghc FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+CREATE INDEX idx3qy7to4cavfvoj89fkux971yb ON sequencetargetingreagentgeneassociation_informationcontententit USING btree (association_id);
+CREATE INDEX idxeo9v38oy64ff8lbhb656yl532 ON sequencetargetingreagentgeneassociation_informationcontententit USING btree (evidence_id);
 
-ALTER TABLE ONLY transcriptcodingsequenceassociation ADD CONSTRAINT fk13y1vlql0xt9moj0ulf4nsdj7 FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY transcriptcodingsequenceassociation ADD CONSTRAINT fk4n6xdc24lo3rymynnjmjg98yb FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY transcriptcodingsequenceassociation ADD CONSTRAINT fk4wsw77bry9naicli7b6jxqqq8 FOREIGN KEY (transcriptassociationsubject_id) REFERENCES transcript(id);
-ALTER TABLE ONLY transcriptcodingsequenceassociation ADD CONSTRAINT fkjlfma6v1oit4atwbwelo6b3uw FOREIGN KEY (transcriptcodingsequenceassociationobject_id) REFERENCES codingsequence(id);
-ALTER TABLE ONLY transcriptcodingsequenceassociation ADD CONSTRAINT fkpos4jj7u82aojox7pssksgkjx FOREIGN KEY (createdby_id) REFERENCES person(id);
+CREATE INDEX idxon9k4nqnwlav7ammge7obyshm ON transcriptcodingsequenceassociation USING btree (createdby_id);
+CREATE INDEX idxf95tn5xv2nugt594ch7kggtex ON transcriptcodingsequenceassociation USING btree (internal);
+CREATE INDEX idxd7d7oeub6eclirxmjpmc7ibot ON transcriptcodingsequenceassociation USING btree (obsolete);
+CREATE INDEX idxio6g2jejebbjqugso2ge8cncf ON transcriptcodingsequenceassociation USING btree (relation_id);
+CREATE INDEX idxptss0twuhfg2ibqnb8vai4v2v ON transcriptcodingsequenceassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX idx8jsnbfbebppm2memg9yywpea6 ON transcriptcodingsequenceassociation USING btree (transcriptcodingsequenceassociationobject_id);
+CREATE INDEX idxe31s0f5w54vnjhxeysi3g1oy0 ON transcriptcodingsequenceassociation USING btree (updatedby_id); 
 
-ALTER TABLE ONLY transcriptcodingsequenceassociation_informationcontententity ADD CONSTRAINT fk7i7m32cuet11t71r7arbao3yy FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
-ALTER TABLE ONLY transcriptcodingsequenceassociation_informationcontententity ADD CONSTRAINT fkk6mgowf6uq7nw8cxa2huj8h67 FOREIGN KEY (association_id) REFERENCES transcriptcodingsequenceassociation(id);
+CREATE INDEX idxl4jg4t2dlkjivgea1lta3l9xm ON transcriptcodingsequenceassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxmbtwtvy0731b13p3dhoni3ywd ON transcriptcodingsequenceassociation_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY transcriptexonassociation ADD CONSTRAINT fka00ut46dje2rc4qtbryl8as7b FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY transcriptexonassociation ADD CONSTRAINT fkdmwvnm7xnfh3qo8k0f3933opr FOREIGN KEY (transcriptexonassociationobject_id) REFERENCES exon(id);
-ALTER TABLE ONLY transcriptexonassociation ADD CONSTRAINT fkfbxqumoil00tmd67mawmscdt7 FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY transcriptexonassociation ADD CONSTRAINT fkoug4l2bpj2ineapkwnopxcld4 FOREIGN KEY (transcriptassociationsubject_id) REFERENCES transcript(id);
-ALTER TABLE ONLY transcriptexonassociation ADD CONSTRAINT fkruqduw01ixripbq0jsy6bvj8d FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
+CREATE INDEX idxfdeljm7108w0j2nbrrme945ur ON transcriptexonassociation USING btree (createdby_id);
+CREATE INDEX idxrig5300vc2ppesjckdkpv219m ON transcriptexonassociation USING btree (internal);
+CREATE INDEX idxfmwe55e0r89q00xqlvi4v7sm0 ON transcriptexonassociation USING btree (obsolete);
+CREATE INDEX idxm76icxt2r2qs52o4wpiexpb39 ON transcriptexonassociation USING btree (relation_id);
+CREATE INDEX idxdct5af7efyqufibj1rjrvieam ON transcriptexonassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX idxhpo9wefgxyoasohcctnr0qev3 ON transcriptexonassociation USING btree (transcriptexonassociationobject_id);
+CREATE INDEX idx29575n6x9yueygvw1mj9exc2g ON transcriptexonassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY transcriptexonassociation_informationcontententity ADD CONSTRAINT fkgdasgw5u791fn92fdkskn51w3 FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
-ALTER TABLE ONLY transcriptexonassociation_informationcontententity ADD CONSTRAINT fkiii0hpbot3mksbdyesqj38ust FOREIGN KEY (association_id) REFERENCES transcriptexonassociation(id);
+CREATE INDEX idxf124air9olggpyrs5i3rgkbkj ON transcriptexonassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxgg4iqmx96raypy761sn4h99ns ON transcriptexonassociation_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY transcriptgeneassociation ADD CONSTRAINT fk3dbarf3ebsa6kjvu3j8wv5s99 FOREIGN KEY (transcriptgeneassociationobject_id) REFERENCES gene(id);
-ALTER TABLE ONLY transcriptgeneassociation ADD CONSTRAINT fk3j11pvym3scjrw7889oos21rd FOREIGN KEY (transcriptassociationsubject_id) REFERENCES transcript(id);
-ALTER TABLE ONLY transcriptgeneassociation ADD CONSTRAINT fkdbaufd0xuh8vql7po8vityjnd FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY transcriptgeneassociation ADD CONSTRAINT fkii8alynjje87mims76rjvhubp FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY transcriptgeneassociation ADD CONSTRAINT fkk1vrpkcc7j2edjvfbidq5fil6 FOREIGN KEY (createdby_id) REFERENCES person(id);
+CREATE INDEX transcriptgeneassociation_createdby_index ON transcriptgeneassociation USING btree (createdby_id);
+CREATE INDEX transcriptgeneassociation_internal_index ON transcriptgeneassociation USING btree (internal);
+CREATE INDEX transcriptgeneassociation_obsolete_index ON transcriptgeneassociation USING btree (obsolete);
+CREATE INDEX transcriptgeneassociation_relation_index ON transcriptgeneassociation USING btree (relation_id);
+CREATE INDEX transcriptgeneassociation_transcriptassociationsubject_index ON transcriptgeneassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX transcriptgeneassociation_transcriptgeneassociationobject_index ON transcriptgeneassociation USING btree (transcriptgeneassociationobject_id);
+CREATE INDEX transcriptgeneassociation_updatedby_index ON transcriptgeneassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY transcriptgeneassociation_informationcontententity ADD CONSTRAINT fk4j4tyh9wjrr4xcaau05thvmrl FOREIGN KEY (association_id) REFERENCES transcriptgeneassociation(id);
-ALTER TABLE ONLY transcriptgeneassociation_informationcontententity ADD CONSTRAINT fkrfpiqj508x62wbmf8hn6c2iq6 FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+CREATE INDEX idxnu079dovpg7bfrb6uawgtscqs ON transcriptgeneassociation_informationcontententity USING btree (association_id);
+CREATE INDEX idxis18nw3pj2ru6wlejbwotqsv9 ON transcriptgeneassociation_informationcontententity USING btree (evidence_id);
 
-ALTER TABLE ONLY transcriptgenomiclocationassociation ADD CONSTRAINT fk2xsh4isfa05148kxx4b44sx22 FOREIGN KEY (relation_id) REFERENCES vocabularyterm(id);
-ALTER TABLE ONLY transcriptgenomiclocationassociation ADD CONSTRAINT fk68ctcfo18ki8aecl8nwoe5iy7 FOREIGN KEY (updatedby_id) REFERENCES person(id);
-ALTER TABLE ONLY transcriptgenomiclocationassociation ADD CONSTRAINT fk7x6dki5ye5bo7q8l7q4spliwn FOREIGN KEY (transcriptassociationsubject_id) REFERENCES transcript(id);
-ALTER TABLE ONLY transcriptgenomiclocationassociation ADD CONSTRAINT fko9x0yg7fso9wrakgkjgik5jf8 FOREIGN KEY (createdby_id) REFERENCES person(id);
-ALTER TABLE ONLY transcriptgenomiclocationassociation ADD CONSTRAINT fksrry8iu0efl589u9e36028k00 FOREIGN KEY (transcriptgenomiclocationassociationobject_id) REFERENCES assemblycomponent(id);
+CREATE INDEX idxaicr23temspg10v3f22k52ssd ON transcriptgenomiclocationassociation USING btree (createdby_id);
+CREATE INDEX idxd06sc5p3gc11brcoxwp7ppbmr ON transcriptgenomiclocationassociation USING btree (internal);
+CREATE INDEX idxgrqw9lxw4l1whho97aose6qh5 ON transcriptgenomiclocationassociation USING btree (obsolete);
+CREATE INDEX idxii7jvungodeeudebo6c4kebny ON transcriptgenomiclocationassociation USING btree (phase);
+CREATE INDEX idxtqvg5149lyo8q1oof4hhd7mmw ON transcriptgenomiclocationassociation USING btree (relation_id);
+CREATE INDEX idx9yipaclxcmb82h69o4k5q3utt ON transcriptgenomiclocationassociation USING btree (strand);
+CREATE INDEX idx4yukrngwb6ipj72wujbxa87bb ON transcriptgenomiclocationassociation USING btree (transcriptassociationsubject_id);
+CREATE INDEX idxgo4p2kepo9x83moktih7gurb0 ON transcriptgenomiclocationassociation USING btree (transcriptgenomiclocationassociationobject_id);
+CREATE INDEX idx1fpq38gqgxatnm69ge6purjbc ON transcriptgenomiclocationassociation USING btree (updatedby_id);
 
-ALTER TABLE ONLY transcriptgenomiclocationassociation_informationcontententity ADD CONSTRAINT fk5byb2ffc3nvu6iroggtof0p96 FOREIGN KEY (association_id) REFERENCES transcriptgenomiclocationassociation(id);
-ALTER TABLE ONLY transcriptgenomiclocationassociation_informationcontententity ADD CONSTRAINT fkf72x535nil1ng129s1sg13lko FOREIGN KEY (evidence_id) REFERENCES informationcontententity(id);
+CREATE INDEX idx5bqn8a8osk6oy4514gpf8xs3  ON transcriptgenomiclocationassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX idxghedmb4mmore7js1d3ni9thpn ON transcriptgenomiclocationassociation_informationcontententity USING btree (association_id);
+
+-- Missing Index
+
+CREATE INDEX cellularcomponentqualifiers_cellularcomponentqualifiers_index ON public.anatomicalsite_cellularcomponentqualifiers USING btree (cellularcomponentqualifiers_id);
+
